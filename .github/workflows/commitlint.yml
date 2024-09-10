@@ -12,3 +12,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: tools/commitlint/commitlint.config.mjs
