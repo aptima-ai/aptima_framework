@@ -5,7 +5,7 @@
 * [Key Concepts](vision/key_concepts.md)
 * [Scenarios](vision/application_scenarios.md)
 
-## Getting Started
+## Getting Started with Astra
 
 * [Quickstart](getting_started/quickstart.md)
 * [Customize Agent](getting_started/customize_your_agent.md)
