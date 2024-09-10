@@ -1,0 +1,44 @@
+#
+# This file is part of the TEN Framework project.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file for more information.
+#
+import("//build/feature/ten_package.gni")
+import("//build/ten_runtime/feature/publish.gni")
+import("//build/ten_runtime/glob.gni")
+import("//build/ten_runtime/options.gni")
+
+glob("default_extension_group_files") {
+  file_list = [
+    "src/default_extension_group.h",
+    "src/default_extension_group.c",
+  ]
+}
+
+ten_package("default_extension_group") {
+  package_kind = "extension_group"
+  enable_build = true
+
+  resources = [
+    "BUILD_release.gn.tent=>BUILD.gn.tent",
+    "BUILD_release.gn=>BUILD.gn",
+    "manifest.json",
+    "property.json",
+  ]
+
+  sources = [ "src/default_extension_group.c" ]
+  include_dirs = [
+    "//core/src",
+    "//core",
+  ]
+
+  deps = [ "//core/src/ten_runtime" ]
+}
+
+if (ten_enable_package_manager) {
+  ten_package_publish("upload_default_extension_group_to_server") {
+    base_dir = rebase_path(
+            "${root_out_dir}/ten_packages/extension_group/default_extension_group")
+    deps = [ ":default_extension_group" ]
+  }
+}

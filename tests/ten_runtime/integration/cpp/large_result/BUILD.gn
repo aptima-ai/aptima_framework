@@ -1,0 +1,47 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/feature/test.gni")
+import("//build/ten_runtime/ten.gni")
+
+ten_package_test_prepare_app("large_result_http") {
+  src_app = "default_app_cpp"
+  src_app_language = "cpp"
+  generated_app_src_root_dir_name = "large_result_source"
+
+  replace_files_after_install_app = [
+    "large_result_source/manifest.json",
+    "large_result_source/property.json",
+  ]
+
+  replace_files_after_install_all = [ "large_result_source/ten_packages/extension/default_extension_cpp/src/main.cc" ]
+  if (ten_enable_package_manager) {
+    deps = [
+      "//core/src/ten_manager",
+      "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
+      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
+      "//packages/core_extensions/default_extension_cpp:upload_default_extension_cpp_to_server",
+      "//packages/example_extensions/simple_http_server_cpp:upload_simple_http_server_cpp_to_server",
+    ]
+  }
+}
+
+ten_package_test_prepare_auxiliary_resources("large_result_http_test_files") {
+  resources = [
+    "//tests/ten_runtime/integration/common=>common",
+    "__init__.py",
+    "test_case.py",
+  ]
+  if (enable_sanitizer && !is_clang) {
+    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
+  }
+}
+
+group("large_result") {
+  deps = [
+    ":large_result_http",
+    ":large_result_http_test_files",
+  ]
+}

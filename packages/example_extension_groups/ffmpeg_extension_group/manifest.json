@@ -1,0 +1,6 @@
+{
+  "type": "extension_group",
+  "name": "ffmpeg_extension_group",
+  "version": "0.1.0",
+  "dependencies": []
+}

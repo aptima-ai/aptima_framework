@@ -1,0 +1,18 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+group("install_all") {
+  deps = [
+    "install_a_before_install_all",
+    "install_all_fail_with_local_unsupported_pkg",
+    "install_all_in_local_file_system",
+    "install_breaking_lock",
+    "install_dependencies_of_local_pkgs",
+    "install_locked_pkg_same_version",
+    "install_under_the_guidance_of_lock",
+    "not_install_again_for_installed_extension",
+    "update_pkgs_that_local_pkgs_depend_on",
+  ]
+}

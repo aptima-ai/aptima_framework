@@ -1,0 +1,13 @@
+{
+  "type": "extension",
+  "name": "aio_http_server_python",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "ten_runtime_python",
+      "version": "0.1.0"
+    }
+  ],
+  "api": {}
+}

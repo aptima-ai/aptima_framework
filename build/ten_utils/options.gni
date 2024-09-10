@@ -1,0 +1,24 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+declare_args() {
+  # If set, including io engine(s) and its(their) underlying io engine lib
+  ten_utils_enable_io = true
+
+  # If set, including system library wrapper
+  ten_utils_enable_lib = true
+
+  # If set, including system backtrace
+  ten_utils_enable_backtrace = true
+
+  # If set, including log system
+  ten_utils_enable_log = true
+
+  # If set, including value system
+  ten_utils_enable_value = true
+
+  # If set, including tests
+  ten_utils_enable_tests = is_linux
+}

@@ -1,0 +1,91 @@
+{
+  "_ten": {
+    "uri": "msgpack://127.0.0.1:8007/",
+    "log_level": 1,
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "name": "nodetest_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "name": "A",
+            "addon": "nodetest",
+            "extension_group": "nodetest_group"
+          },
+          {
+            "type": "extension",
+            "name": "B",
+            "addon": "nodetest",
+            "extension_group": "nodetest_group"
+          },
+          {
+            "type": "extension",
+            "name": "C",
+            "addon": "nodetest",
+            "extension_group": "nodetest_group"
+          }
+        ],
+        "connections": [
+          {
+            "extension_group": "nodetest_group",
+            "extension": "A",
+            "cmd": [
+              {
+                "name": "start",
+                "dest": [
+                  {
+                    "extension_group": "nodetest_group",
+                    "extension": "B"
+                  }
+                ]
+              },
+              {
+                "name": "stop",
+                "dest": [
+                  {
+                    "extension_group": "nodetest_group",
+                    "extension": "B"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "nodetest_group",
+            "extension": "B",
+            "cmd": [
+              {
+                "name": "start",
+                "dest": [
+                  {
+                    "extension_group": "nodetest_group",
+                    "extension": "C"
+                  }
+                ]
+              },
+              {
+                "name": "stop",
+                "dest": [
+                  {
+                    "extension_group": "nodetest_group",
+                    "extension": "C"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "nodetest_group",
+            "extension": "C"
+          }
+        ]
+      }
+    ]
+  }
+}

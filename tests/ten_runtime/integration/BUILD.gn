@@ -1,0 +1,18 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/options.gni")
+
+group("integration") {
+  deps = [ "cpp" ]
+
+  if (ten_enable_go_binding) {
+    deps += [ "go" ]
+  }
+
+  if (ten_enable_python_binding) {
+    deps += [ "python" ]
+  }
+}

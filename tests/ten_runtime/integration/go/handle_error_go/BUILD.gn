@@ -1,0 +1,66 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/feature/test.gni")
+import("//build/ten_runtime/ten.gni")
+
+ten_package_test_prepare_app("handle_error_go_app") {
+  src_app = "default_app_go"
+  src_app_language = "go"
+  generated_app_src_root_dir_name = "handle_error_go_app"
+
+  replace_files_after_install_app = [
+    "handle_error_go_app/manifest.json",
+    "handle_error_go_app/property.json",
+  ]
+
+  replace_files_after_install_all = [ "handle_error_go_app/ten_packages/extension/default_extension_go/default_extension.go" ]
+
+  if (ten_enable_package_manager) {
+    deps = [
+      "//core/src/ten_manager",
+      "//packages/core_apps/default_app_go:upload_default_app_go_to_server",
+      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
+      "//packages/core_extensions/default_extension_go:upload_default_extension_go_to_server",
+      "//packages/core_protocols/msgpack:upload_protocol_msgpack_to_server",
+    ]
+  }
+}
+
+ten_package_test_prepare_client("handle_error_go_app_client") {
+  sources = [ "client/client.cc" ]
+  include_dirs = [
+    "//core/src",
+    "//core",
+    "//packages",
+    "//tests",
+  ]
+  deps = [
+    "//core/src/ten_runtime",
+    "//packages/core_protocols/msgpack:msgpack_files",
+    "//tests/common/client:msgpack_client",
+    "//third_party/msgpack:msgpackc",
+    "//third_party/nlohmann_json",
+  ]
+}
+
+ten_package_test_prepare_auxiliary_resources("handle_error_go_app_test_files") {
+  resources = [
+    "//tests/ten_runtime/integration/common=>common",
+    "__init__.py",
+    "test_case.py",
+  ]
+  if (enable_sanitizer && !is_clang) {
+    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
+  }
+}
+
+group("handle_error_go") {
+  deps = [
+    ":handle_error_go_app",
+    ":handle_error_go_app_client",
+    ":handle_error_go_app_test_files",
+  ]
+}

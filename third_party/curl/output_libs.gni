@@ -1,0 +1,80 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+declare_args() {
+  curl_use_shared_lib = false
+}
+
+curl_output_libs = []
+
+if (is_win) {
+  if (is_debug) {
+    if (curl_use_shared_lib) {
+      curl_output_libs += [
+        "${root_gen_dir}/cmake/curl/install/bin/libcurl-d.dll",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.lib",
+      ]
+    } else {
+      curl_output_libs +=
+          [ "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.lib" ]
+    }
+  } else {
+    if (curl_use_shared_lib) {
+      curl_output_libs += [
+        "${root_gen_dir}/cmake/curl/install/bin/libcurl.dll",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.lib",
+      ]
+    } else {
+      curl_output_libs +=
+          [ "${root_gen_dir}/cmake/curl/install/lib/libcurl.lib" ]
+    }
+  }
+} else if (is_linux) {
+  if (is_debug) {
+    if (curl_use_shared_lib) {
+      curl_output_libs += [
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.so",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.so.4",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.so.4.8.0",
+      ]
+    } else {
+      curl_output_libs +=
+          [ "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.a" ]
+    }
+  } else {
+    if (curl_use_shared_lib) {
+      curl_output_libs += [
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.so",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.so.4",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.so.4.8.0",
+      ]
+    } else {
+      curl_output_libs += [ "${root_gen_dir}/cmake/curl/install/lib/libcurl.a" ]
+    }
+  }
+} else if (is_mac) {
+  if (is_debug) {
+    if (curl_use_shared_lib) {
+      curl_output_libs += [
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.dylib",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.4.dylib",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.4.8.0.dylib",
+      ]
+    } else {
+      curl_output_libs +=
+          [ "${root_gen_dir}/cmake/curl/install/lib/libcurl-d.a" ]
+    }
+  } else {
+    if (curl_use_shared_lib) {
+      curl_output_libs += [
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.dylib",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.4.dylib",
+        "${root_gen_dir}/cmake/curl/install/lib/libcurl.4.8.0.dylib",
+      ]
+    } else {
+      curl_output_libs += [ "${root_gen_dir}/cmake/curl/install/lib/libcurl.a" ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/options.gni")
+
+group("ten_manager") {
+  deps = [
+    "dependency_resolve:tman_dependency_resolve",
+    "error_context",
+    "install",
+    "install_all",
+    "publish:tman_publish",
+    "//build/ten_runtime/feature:create_tman_config",
+  ]
+
+  if (ten_enable_package_manager) {
+    deps += [ "standalone" ]
+  }
+}

@@ -1,0 +1,565 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$defs": {
+    "logLevels": {
+      "type": "integer",
+      "format": "int8",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "uri": {
+      "oneOf": [
+        {
+          "type": "string",
+          "const": "localhost"
+        },
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value"
+          ],
+          "properties": {
+            "value": {
+              "type": "string",
+              "format": "uri"
+            },
+            "tags": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "notEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alphanumericCharacters": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "valueType": {
+      "type": "string",
+      "enum": [
+        "bool",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "float32",
+        "float64",
+        "string",
+        "buf",
+        "ptr",
+        "array",
+        "object"
+      ]
+    },
+    "cmdDest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extension_group",
+        "extension"
+      ],
+      "properties": {
+        "app": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "extension_group": {
+          "$ref": "#/$defs/addonInstance"
+        },
+        "extension": {
+          "$ref": "#/$defs/addonInstance"
+        },
+        "msg_conversion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "rules"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "per_property"
+              ]
+            },
+            "keep_original": {
+              "type": "boolean"
+            },
+            "rules": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "path": {
+                    "$ref": "#/$defs/notEmptyString"
+                  },
+                  "conversion_mode": {
+                    "type": "string",
+                    "enum": [
+                      "fixed_value",
+                      "from_original"
+                    ]
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "original_path": {
+                    "$ref": "#/$defs/notEmptyString"
+                  }
+                }
+              }
+            },
+            "result": {
+              "$ref": "#/$defs/msgConversion"
+            }
+          }
+        }
+      }
+    },
+    "dataDest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extension_group",
+        "extension"
+      ],
+      "properties": {
+        "app": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "extension_group": {
+          "$ref": "#/$defs/addonInstance"
+        },
+        "extension": {
+          "$ref": "#/$defs/addonInstance"
+        },
+        "msg_conversion": {
+          "$ref": "#/$defs/msgConversion"
+        }
+      }
+    },
+    "graphNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "name"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "extension",
+            "extension_group"
+          ]
+        },
+        "name": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "addon": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "app": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "extension_group": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "property": {
+          "type": "object",
+          "propertyNames": { // The property name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "patternProperties": {
+            "^[A-Za-z_][A-Za-z0-9_]*$": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/$defs/validPropertyObject"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/validPropertyArrayItem"
+                  }
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "graphConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extension_group",
+        "extension"
+      ],
+      "properties": {
+        "app": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "extension_group": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "extension": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "cmd": {
+          "$ref": "#/$defs/extensionCmdsInGraph"
+        },
+        "interface": {
+          "$ref": "#/$defs/extensionCmdsInGraph"
+        },
+        "data": {
+          "$ref": "#/$defs/extensionDatasInGraph"
+        },
+        "video_frame": {
+          "$ref": "#/$defs/extensionDatasInGraph"
+        },
+        "audio_frame": {
+          "$ref": "#/$defs/extensionDatasInGraph"
+        }
+      }
+    },
+    "msgConversion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "rules"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "per_property"
+          ]
+        },
+        "keep_original": {
+          "type": "boolean"
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/notEmptyString"
+              },
+              "conversion_mode": {
+                "type": "string",
+                "enum": [
+                  "fixed_value",
+                  "from_original"
+                ]
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "original_path": {
+                "$ref": "#/$defs/notEmptyString"
+              }
+            }
+          }
+        }
+      }
+    },
+    "extensionDatasInGraph": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dest"
+        ],
+        "properties": {
+          "name": { // The api name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "dest": {
+            "$ref": "#/$defs/dataDests"
+          }
+        }
+      }
+    },
+    "extensionCmdsInGraph": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "dest"
+        ],
+        "properties": {
+          "name": { // The api name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "dest": {
+            "$ref": "#/$defs/cmdDests"
+          }
+        }
+      }
+    },
+    "cmdDests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/cmdDest"
+      }
+    },
+    "dataDests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/dataDest"
+      }
+    },
+    "addonInstance": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "addon",
+            "name"
+          ],
+          "properties": {
+            "addon": {
+              "$ref": "#/$defs/notEmptyString"
+            },
+            "name": {
+              "$ref": "#/$defs/notEmptyString"
+            }
+          }
+        }
+      ]
+    },
+    "validPropertyObject": {
+      "type": "object",
+      "propertyNames": { // The property name should be alphanumericCharacters.
+        "$ref": "#/$defs/alphanumericCharacters"
+      },
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "object",
+              "$ref": "#/$defs/validPropertyObject"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/validPropertyArrayItem"
+              }
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "validPropertyArrayItem": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "$ref": "#/$defs/validPropertyObject"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/validPropertyArrayItem"
+          }
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "_ten": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "log_level": {
+          "$ref": "#/$defs/logLevels"
+        },
+        "log_file": {
+          "$ref": "#/$defs/notEmptyString"
+        },
+        "long_running_mode": {
+          "type": "boolean"
+        },
+        "one_event_loop_per_engine": {
+          "type": "boolean"
+        },
+        "path_timeout": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "format": "int64"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "in_path": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "out_path": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          ]
+        },
+        "path_check_interval": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "predefined_graphs": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/notEmptyString"
+              },
+              "auto_start": {
+                "type": "boolean",
+                "default": false
+              },
+              "nodes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/graphNode"
+                }
+              },
+              "connections": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/graphConnection"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "patternProperties": {
+    "^[A-Za-z_][A-Za-z0-9_]*$": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "$ref": "#/$defs/validPropertyObject"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/validPropertyArrayItem"
+          }
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

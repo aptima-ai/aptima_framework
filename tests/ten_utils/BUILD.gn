@@ -1,0 +1,39 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_utils/options.gni")
+import("//build/ten_utils/utils.gni")
+
+ten_utils_test("ten_utils_unit_test") {
+  output_dir = "${root_out_dir}/tests/standalone"
+
+  public_deps = [
+    "unit",
+    "//core/src/ten_utils/backtrace",
+    "//core/src/ten_utils/container",
+    "//core/src/ten_utils/io",
+    "//core/src/ten_utils/io/general/loops",
+    "//core/src/ten_utils/lib",
+    "//core/src/ten_utils/log",
+    "//core/src/ten_utils/sanitizer",
+    "//core/src/ten_utils/schema",
+    "//core/src/ten_utils/value",
+    "//tests:copy_jansson_library_for_test",
+  ]
+
+  # !Important notice!
+  #
+  # Do not set the value of `configs` here, because setting `configs` within a
+  # template will prevent the `executable` target from using the default
+  # `common_configs`.
+
+  public_deps += [ "//third_party/googletest:gtest_main" ]
+}
+
+ten_utils_group("ten_utils") {
+  if (ten_utils_enable_tests) {
+    public_deps = [ ":ten_utils_unit_test" ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "_ten": {
+    "uri": "msgpack://127.0.0.1:8007/",
+    "log_level": 1,
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "name": "nodetest",
+            "addon": "nodetest"
+          }
+        ]
+      }
+    ]
+  }
+}

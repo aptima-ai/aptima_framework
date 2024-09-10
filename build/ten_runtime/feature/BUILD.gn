@@ -1,0 +1,27 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+action("create_tman_config") {
+  script = "//build/ten_manager/scripts/create_tman_config.py"
+
+  base_path = rebase_path("${root_out_dir}/tests/local_registry")
+
+  args = [
+    "--tman-config-file-path",
+    rebase_path("${root_out_dir}/tests/local_registry/config.json"),
+    "--registry-path",
+  ]
+  if (is_win) {
+    args += [ "file:///${base_path}" ]
+  } else {
+    args += [ "file://${base_path}" ]
+  }
+  args += [
+    "--log-level",
+    "${log_level}",
+  ]
+
+  outputs = [ "${root_out_dir}/tests/local_registry/config.json" ]
+}

@@ -1,0 +1,14 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_utils/utils.gni")
+
+ten_utils_glob("posix") {
+  if (is_linux) {
+    deps = [ "linux" ]
+  } else if (is_mac) {
+    deps = [ "darwin" ]
+  }
+}

@@ -1,0 +1,73 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//core/src/ten_utils/output_libs.gni")
+import("//third_party/jansson/output_libs.gni")
+
+ten_runtime_output_libs = []
+
+if (is_win) {
+  ten_runtime_output_libs += [
+    "${root_out_dir}/ten_runtime.dll",
+    "${root_out_dir}/ten_runtime.dll.lib",
+  ]
+} else if (is_mac) {
+  ten_runtime_output_libs += [ "${root_out_dir}/libten_runtime.dylib" ]
+} else if (is_linux) {
+  ten_runtime_output_libs += [ "${root_out_dir}/libten_runtime.so" ]
+}
+
+if (is_linux) {
+  ten_runtime_go_output_libs = [ "${root_out_dir}/libten_runtime_go.so" ]
+  ten_runtime_python_output_libs =
+      [ "${root_out_dir}/libten_runtime_python.so" ]
+} else if (is_mac) {
+  ten_runtime_go_output_libs = [ "${root_out_dir}/libten_runtime_go.dylib" ]
+  ten_runtime_python_output_libs =
+      [ "${root_out_dir}/libten_runtime_python.dylib" ]
+}
+
+template("ten_runtime_copy_deps") {
+  basedir = invoker.basedir
+
+  action("ten_runtime_copy_runtime_libs") {
+    runtime_libs_src_dir = "${root_out_dir}"
+    runtime_libs_dest_dir = basedir + "/lib"
+
+    script = "//build/common/scripts/copy_files_with_pattern.py"
+    args = [
+      "--sources",
+      rebase_path(runtime_libs_src_dir),
+      "--patterns",
+      ".*/libten_runtime\\..*\$",
+      "--dest-dir",
+      rebase_path(runtime_libs_dest_dir),
+      "--tg-timestamp-proxy-file",
+      rebase_path("${target_gen_dir}/tg_timestamp_proxy_file"),
+    ]
+
+    outputs = [ "${target_gen_dir}/tg_timestamp_proxy_file" ]
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "testonly",
+                           ])
+
+    # This action should wait for the completion of the building of runtime.
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ "//core/src/ten_runtime" ]
+  }
+
+  all_deps = [ ":ten_runtime_copy_runtime_libs" ]
+
+  group("${target_name}") {
+    deps = all_deps
+  }
+}

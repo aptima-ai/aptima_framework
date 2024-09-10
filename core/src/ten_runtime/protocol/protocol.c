@@ -1,0 +1,587 @@
+//
+// This file is part of the TEN Framework project.
+// See https://github.com/TEN-framework/ten_framework/LICENSE for license
+// information.
+//
+#include "include_internal/ten_runtime/protocol/protocol.h"
+
+#include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/protocol/protocol.h"
+#include "include_internal/ten_runtime/app/app.h"
+#include "include_internal/ten_runtime/common/closeable.h"
+#include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/connection/connection.h"
+#include "include_internal/ten_runtime/connection/migration.h"
+#include "include_internal/ten_runtime/engine/engine.h"
+#include "include_internal/ten_runtime/engine/internal/migration.h"
+#include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_runtime/protocol/close.h"
+#include "include_internal/ten_runtime/remote/remote.h"
+#include "ten_runtime/addon/addon.h"
+#include "ten_runtime/app/app.h"
+#include "ten_runtime/protocol/close.h"
+#include "ten_utils/lib/error.h"
+#include "ten_utils/lib/mutex.h"
+#include "ten_utils/lib/ref.h"
+#include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/lib/uri.h"
+#include "ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
+#include "ten_utils/sanitizer/thread_check.h"
+#include "ten_utils/value/value_object.h"
+
+bool ten_protocol_check_integrity(ten_protocol_t *self, bool check_thread) {
+  TEN_ASSERT(self, "Should not happen.");
+
+  if (ten_signature_get(&self->signature) != TEN_PROTOCOL_SIGNATURE) {
+    return false;
+  }
+
+  if (check_thread) {
+    return ten_sanitizer_thread_check_do_check(&self->thread_check);
+  }
+
+  return true;
+}
+
+void ten_protocol_determine_default_property_value(ten_protocol_t *self) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(
+      self->addon_host && ten_addon_host_check_integrity(self->addon_host),
+      "Should not happen.");
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  self->cascade_close_upward = ten_value_object_get_bool(
+      &self->addon_host->property, TEN_STR_CASCADE_CLOSE_UPWARD, &err);
+  if (!ten_error_is_success(&err)) {
+    self->cascade_close_upward = true;
+  }
+
+  ten_error_deinit(&err);
+}
+
+// The life cycle of 'protocol' is managed by a ten_ref_t, so the 'destroy'
+// function of protocol is declared as 'static' to avoid wrong usage of the
+// 'destroy' function.
+static void ten_protocol_destroy(ten_protocol_t *self) {
+  TEN_ASSERT(self &&
+                 // TEN_NOLINTNEXTLINE(thread-check)
+                 // thread-check: The belonging thread of the 'protocol' is
+                 // ended when this function is called, so we can not check
+                 // thread integrity here.
+                 ten_protocol_check_integrity(self, false),
+             "Invalid argument.");
+  TEN_ASSERT(self->is_closed,
+             "Protocol should be closed first before been destroyed.");
+
+  self->addon_host->addon->on_destroy_instance(self->addon_host->addon,
+                                               self->addon_host->ten_env, self);
+}
+
+static void ten_protocol_on_end_of_life(TEN_UNUSED ten_ref_t *ref,
+                                        void *supervisor) {
+  ten_protocol_t *self = (ten_protocol_t *)supervisor;
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, false),
+             "Should not happen.");
+  TEN_ASSERT(self->is_closed,
+             "The protocol should be closed first before being destroyed.");
+
+  ten_ref_deinit(&self->ref);
+
+  ten_protocol_destroy(self);
+}
+
+void ten_protocol_init(ten_protocol_t *self, const char *name,
+                       ten_protocol_close_func_t close,
+                       ten_protocol_on_output_func_t on_output,
+                       ten_protocol_listen_func_t listen,
+                       ten_protocol_connect_to_func_t connect_to,
+                       ten_protocol_migrate_func_t migrate,
+                       ten_protocol_clean_func_t clean) {
+  TEN_ASSERT(self && name, "Should not happen.");
+
+  ten_signature_set(&self->signature, (ten_signature_t)TEN_PROTOCOL_SIGNATURE);
+
+  ten_closeable_init(&self->closeable, offsetof(ten_protocol_t, closeable));
+
+  ten_sanitizer_thread_check_init_with_current_thread(&self->thread_check);
+
+  self->addon_host = NULL;
+  ten_atomic_store(&self->is_closing, 0);
+  self->is_closed = false;
+
+  self->close = close;
+
+  self->on_output = on_output;
+
+  self->listen = listen;
+  self->on_accepted = NULL;
+
+  self->connect_to = connect_to;
+  self->on_connected = NULL;
+
+  self->migrate = migrate;
+  self->on_migrated = NULL;
+
+  self->clean = clean;
+  self->on_cleaned_for_internal = NULL;
+
+  self->on_cleaned_for_external = NULL;
+
+  self->cascade_close_upward = true;
+
+  ten_string_init(&self->uri);
+
+  self->attach_to = TEN_PROTOCOL_ATTACH_TO_INVALID;
+  self->attached_target.app = NULL;
+  self->attached_target.connection = NULL;
+
+  self->in_lock = ten_mutex_create();
+  TEN_ASSERT(self->in_lock, "Should not happen.");
+  self->out_lock = ten_mutex_create();
+  TEN_ASSERT(self->out_lock, "Should not happen.");
+
+  self->role = TEN_PROTOCOL_ROLE_INVALID;
+
+  self->context_store = NULL;
+
+  ten_list_init(&self->in_msgs);
+  ten_list_init(&self->out_msgs);
+
+  ten_ref_init(&self->ref, self, ten_protocol_on_end_of_life);
+}
+
+void ten_protocol_deinit(ten_protocol_t *self) {
+  TEN_ASSERT(self &&
+                 // TEN_NOLINTNEXTLINE(thread-check)
+                 // thread-check: The belonging thread of the 'protocol' is
+                 // ended when this function is called, so we can not check
+                 // thread integrity here.
+                 ten_protocol_check_integrity(self, false),
+             "Should not happen.");
+
+  ten_signature_set(&self->signature, 0);
+
+  ten_closeable_deinit(&self->closeable);
+
+  self->attach_to = TEN_PROTOCOL_ATTACH_TO_INVALID;
+  self->attached_target.app = NULL;
+  self->attached_target.connection = NULL;
+
+  ten_string_deinit(&self->uri);
+
+  ten_mutex_destroy(self->in_lock);
+  ten_list_clear(&self->in_msgs);
+
+  ten_mutex_destroy(self->out_lock);
+  ten_list_clear(&self->out_msgs);
+
+  if (self->addon_host) {
+    // Since the protocol has already been destroyed, there is no need to
+    // release its resources through the corresponding addon anymore. Therefore,
+    // decrement the reference count of the corresponding addon.
+    ten_ref_dec_ref(&self->addon_host->ref);
+    self->addon_host = NULL;
+  }
+
+  ten_sanitizer_thread_check_deinit(&self->thread_check);
+}
+
+void ten_protocol_listen(ten_protocol_t *self, const char *uri,
+                         ten_protocol_on_accepted_func_t on_accepted) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(self->listen && uri && on_accepted, "Should not happen.");
+
+  TEN_ASSERT(self->attach_to == TEN_PROTOCOL_ATTACH_TO_APP,
+             "Should not happen.");
+
+  ten_app_t *app = self->attached_target.app;
+  TEN_ASSERT(app && ten_app_check_integrity(app, true),
+             "Access across threads.");
+
+  self->context_store = ten_app_get_protocol_context_store(app);
+  TEN_ASSERT(self->context_store,
+             "The protocol context store in app is not ready.");
+
+  self->on_accepted = on_accepted;
+  self->listen(self, uri);
+}
+
+bool ten_protocol_cascade_close_upward(ten_protocol_t *self) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  return self->cascade_close_upward;
+}
+
+void ten_protocol_attach_to_app(ten_protocol_t *self, ten_app_t *app) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+
+  self->attach_to = TEN_PROTOCOL_ATTACH_TO_APP;
+  self->attached_target.app = app;
+}
+
+void ten_protocol_attach_to_app_and_thread(ten_protocol_t *self,
+                                           ten_app_t *app) {
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+  TEN_ASSERT(self, "Should not happen.");
+
+  ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
+      &self->thread_check);
+
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+
+  ten_protocol_attach_to_app(self, app);
+}
+
+void ten_protocol_attach_to_connection(ten_protocol_t *self,
+                                       ten_connection_t *connection) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(connection && ten_connection_check_integrity(connection, true),
+             "Should not happen.");
+
+  self->attach_to = TEN_PROTOCOL_ATTACH_TO_CONNECTION;
+  self->attached_target.connection = connection;
+
+  ten_protocol_set_on_closed(self, ten_connection_on_protocol_closed,
+                             connection);
+}
+
+TEN_PROTOCOL_ATTACH_TO
+ten_protocol_attach_to(ten_protocol_t *self) {
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: This function will be called from the implementation protocol
+  // who has its own thread, and the modification and reading of
+  // 'attach_to_type' field is time-staggered.
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, false),
+             "Invalid argument.");
+
+  return self->attach_to;
+}
+
+void ten_protocol_on_input(ten_protocol_t *self, ten_shared_ptr_t *msg) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(msg, "Should not happen.");
+
+  if (ten_protocol_is_closing(self)) {
+    TEN_LOGD("Protocol is closing, do not handle msgs.");
+    return;
+  }
+
+  TEN_ASSERT(ten_protocol_role_is_communication(self),
+             "Only the protocols of the communication type should receive TEN "
+             "messages.");
+  TEN_ASSERT(self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION,
+             "The protocol should have already been attached to a connection.");
+
+  ten_connection_t *connection = self->attached_target.connection;
+  TEN_ASSERT(connection,
+             "The protocol should have already been attached to a connection.");
+
+  TEN_CONNECTION_MIGRATION_STATE migration_state =
+      ten_connection_get_migration_state(connection);
+  TEN_ASSERT(migration_state == TEN_CONNECTION_MIGRATION_STATE_INIT ||
+                 migration_state == TEN_CONNECTION_MIGRATION_STATE_DONE,
+             "The protocol only can handle the input messages when the "
+             "migration has not started yet or has been completed.");
+
+  if (migration_state == TEN_CONNECTION_MIGRATION_STATE_INIT) {
+    ten_connection_set_migration_state(
+        connection, TEN_CONNECTION_MIGRATION_STATE_FIRST_MSG);
+  }
+
+  ten_list_t msgs = TEN_LIST_INIT_VAL;
+  ten_list_push_smart_ptr_back(&msgs, msg);
+
+  ten_connection_on_msgs(connection, &msgs);
+
+  ten_list_clear(&msgs);
+}
+
+void ten_protocol_on_inputs(ten_protocol_t *self, ten_list_t *msgs) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(msgs, "Should not happen.");
+
+  if (ten_protocol_is_closing(self)) {
+    TEN_LOGD("Protocol is closing, do not handle msgs.");
+    return;
+  }
+
+  TEN_ASSERT(ten_protocol_role_is_communication(self),
+             "Only the protocols of the communication type should receive TEN "
+             "messages.");
+  TEN_ASSERT(self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION,
+             "The protocol should have already been attached to a connection.");
+
+  ten_connection_t *connection = self->attached_target.connection;
+  TEN_ASSERT(connection,
+             "The protocol should have already been attached to a connection.");
+  TEN_ASSERT(ten_connection_get_migration_state(connection) ==
+                 TEN_CONNECTION_MIGRATION_STATE_DONE,
+             "The connection migration must be completed when batch handling "
+             "messages.");
+
+  ten_connection_on_msgs(connection, msgs);
+}
+
+void ten_protocol_send_msg(ten_protocol_t *self, ten_shared_ptr_t *msg) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(msg, "Should not happen.");
+
+  if (ten_protocol_is_closing(self)) {
+    TEN_LOGD("Protocol is closing, do not send msgs.");
+    return;
+  }
+
+  if (self->on_output) {
+    ten_list_t msgs = TEN_LIST_INIT_VAL;
+
+    ten_listnode_t *node = ten_smart_ptr_listnode_create(msg);
+    ten_list_push_back(&msgs, node);
+
+    self->on_output(self, &msgs);
+  }
+}
+
+static ten_protocol_context_store_t *
+ten_protocol_get_context_store_in_connect_to(ten_protocol_t *self) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Access across threads.");
+  TEN_ASSERT(self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION,
+             "Invalid argument.");
+
+  ten_connection_t *connection = self->attached_target.connection;
+  TEN_ASSERT(ten_connection_check_integrity(connection, true),
+             "Invalid argument.");
+  TEN_ASSERT(
+      ten_connection_attach_to(connection) == TEN_CONNECTION_ATTACH_TO_REMOTE,
+      "connection should attach to remote.");
+
+  ten_remote_t *remote = connection->attached_target.remote;
+  TEN_ASSERT(remote && ten_remote_check_integrity(remote, true),
+             "Access across threads.");
+
+  ten_engine_t *engine = remote->engine;
+  TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
+             "Access across threads.");
+
+  ten_app_t *app = engine->app;
+
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: The engine and app thread maybe different.
+  TEN_ASSERT(app && ten_app_check_integrity(app, false), "Invalid argument.");
+
+  return ten_app_get_protocol_context_store(app);
+}
+
+bool ten_protocol_connect_to(ten_protocol_t *self, const char *uri,
+                             ten_protocol_on_connected_func_t on_connected) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(uri, "Should not happen.");
+
+  if (self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION &&
+      ten_connection_attach_to(self->attached_target.connection) ==
+          TEN_CONNECTION_ATTACH_TO_REMOTE) {
+    TEN_ASSERT(
+        ten_engine_check_integrity(
+            self->attached_target.connection->attached_target.remote->engine,
+            true),
+        "Should not happen.");
+  }
+
+  self->context_store = ten_protocol_get_context_store_in_connect_to(self);
+  TEN_ASSERT(self->context_store,
+             "The protocol context store is not ready in 'connect_to'.");
+
+  self->on_connected = on_connected;
+  if (self->connect_to) {
+    return self->connect_to(self, uri);
+  }
+  return false;
+}
+
+void ten_protocol_migrate(ten_protocol_t *self, ten_engine_t *engine,
+                          ten_connection_t *connection, ten_shared_ptr_t *cmd,
+                          ten_protocol_on_migrated_func_t on_migrated) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  // Call in the app thread.
+  TEN_ASSERT(ten_app_check_integrity(engine->app, true), "Should not happen.");
+
+  self->on_migrated = on_migrated;
+  if (self->migrate) {
+    self->migrate(self, engine, connection, cmd);
+  }
+}
+
+void ten_protocol_clean(
+    ten_protocol_t *self,
+    ten_protocol_on_cleaned_for_internal_func_t on_cleaned_for_internal) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(on_cleaned_for_internal, "Should not happen.");
+  TEN_ASSERT(self->attached_target.connection &&
+                 ten_connection_attach_to(self->attached_target.connection) ==
+                     TEN_CONNECTION_ATTACH_TO_APP,
+             "Should not happen.");
+  TEN_ASSERT(ten_app_check_integrity(
+                 self->attached_target.connection->attached_target.app, true),
+             "Should not happen.");
+
+  self->on_cleaned_for_internal = on_cleaned_for_internal;
+  if (self->clean) {
+    self->clean(self);
+  } else {
+    // The actual protocol implementation doesn't need to do cleanup during the
+    // migration, so the 'on_cleaned_for_internal' callback is called now.
+    self->on_cleaned_for_internal(self);
+  }
+}
+
+void ten_protocol_update_belonging_thread_on_cleaned(ten_protocol_t *self) {
+  TEN_ASSERT(self, "Should not happen.");
+
+  ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
+      &self->thread_check);
+  TEN_ASSERT(ten_protocol_check_integrity(self, true),
+             "Access across threads.");
+
+  ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
+      &self->closeable.thread_check);
+}
+
+ten_protocol_t *ten_protocol_create(const char *uri, TEN_PROTOCOL_ROLE role) {
+  TEN_ASSERT(uri && role > TEN_PROTOCOL_ROLE_INVALID, "Should not happen.");
+
+  ten_protocol_t *protocol = NULL;
+  ten_string_t *protocol_str = ten_uri_get_protocol(uri);
+
+  ten_addon_host_t *addon_host =
+      ten_addon_protocol_find(ten_string_get_raw_str(protocol_str));
+  if (!addon_host) {
+    TEN_LOGE("Can not handle protocol '%s' because no addon installed for it",
+             uri);
+    goto done;
+  }
+
+  TEN_LOGD("Loading protocol addon: %s",
+           ten_string_get_raw_str(&addon_host->name));
+
+  protocol = ten_addon_create_instance(
+      addon_host->ten_env, ten_string_get_raw_str(&addon_host->name),
+      ten_string_get_raw_str(&addon_host->name), TEN_ADDON_TYPE_PROTOCOL);
+  TEN_ASSERT(protocol, "Should not happen.");
+
+  ten_protocol_determine_default_property_value(protocol);
+  ten_env_on_create_instance_done(addon_host->ten_env, protocol, NULL, NULL);
+
+  ten_string_set_formatted(&protocol->uri, "%s", uri);
+  protocol->role = role;
+
+done:
+  ten_string_destroy(protocol_str);
+  return protocol;
+}
+
+void ten_protocol_set_addon(ten_protocol_t *self,
+                            ten_addon_host_t *addon_host) {
+  TEN_ASSERT(self, "Should not happen.");
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: in the case of JS binding, the extension group would
+  // initially created in the JS main thread, and and engine thread will
+  // call this function. However, these operations are all occurred
+  // before the whole extension system is running, so it's thread safe.
+  TEN_ASSERT(ten_protocol_check_integrity(self, false), "Should not happen.");
+
+  TEN_ASSERT(addon_host, "Should not happen.");
+  TEN_ASSERT(ten_addon_host_check_integrity(addon_host), "Should not happen.");
+
+  // Since the extension requires the corresponding addon to release
+  // its resources, therefore, hold on to a reference count of the corresponding
+  // addon.
+  TEN_ASSERT(!self->addon_host, "Should not happen.");
+  self->addon_host = addon_host;
+  ten_ref_inc_ref(&addon_host->ref);
+}
+
+ten_string_t *ten_protocol_uri_to_transport_uri(const char *uri) {
+  TEN_ASSERT(uri && strlen(uri), "Should not happen.");
+
+  ten_string_t *protocol = ten_uri_get_protocol(uri);
+  ten_string_t *host = ten_uri_get_host(uri);
+  uint16_t port = ten_uri_get_port(uri);
+
+  ten_addon_host_t *addon_host =
+      ten_addon_protocol_find(ten_string_get_raw_str(protocol));
+  TEN_ASSERT(addon_host && addon_host->type == TEN_ADDON_TYPE_PROTOCOL,
+             "Should not happen.");
+
+  const char *transport_type = ten_value_object_peek_string(
+      &addon_host->manifest, TEN_STR_TRANSPORT_TYPE);
+  if (!transport_type) {
+    transport_type = TEN_STR_TCP;
+  }
+
+  ten_string_t *transport_uri = ten_string_create_formatted(
+      "%s://%s:%d/", transport_type, ten_string_get_raw_str(host), port);
+
+  ten_string_destroy(protocol);
+  ten_string_destroy(host);
+
+  return transport_uri;
+}
+
+ten_runloop_t *ten_protocol_get_attached_runloop(ten_protocol_t *self) {
+  TEN_ASSERT(self &&
+                 // TEN_NOLINTNEXTLINE(thread-check)
+                 ten_protocol_check_integrity(self, false),
+             "This function is intended to be called in different threads.");
+
+  switch (self->attach_to) {
+    case TEN_PROTOCOL_ATTACH_TO_APP:
+      return ten_app_get_attached_runloop(self->attached_target.app);
+    case TEN_PROTOCOL_ATTACH_TO_CONNECTION:
+      return ten_connection_get_attached_runloop(
+          self->attached_target.connection);
+
+    default:
+      TEN_ASSERT(0, "Should not happen.");
+      break;
+  }
+
+  return NULL;
+}
+
+ten_protocol_context_store_t *ten_protocol_get_context_store(
+    ten_protocol_t *self) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Access across threads.");
+
+  return self->context_store;
+}
+
+void ten_protocol_set_uri(ten_protocol_t *self, ten_string_t *uri) {
+  TEN_ASSERT(self && uri, "Invalid argument.");
+  TEN_ASSERT(ten_protocol_check_integrity(self, true),
+             "Access across threads.");
+
+  ten_string_copy(&self->uri, uri);
+}
+
+bool ten_protocol_role_is_communication(ten_protocol_t *self) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Access across threads.");
+
+  return self->role > TEN_PROTOCOL_ROLE_LISTEN;
+}

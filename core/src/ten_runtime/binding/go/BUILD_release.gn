@@ -1,0 +1,48 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+config("ten_runtime_go_common_libs") {
+  if (is_win) {
+    libs = [ "ten_runtime_go.dll.lib" ]
+  } else {
+    libs = [ "ten_runtime_go" ]
+  }
+}
+
+config("ten_runtime_go_common_config") {
+  configs = [ ":ten_runtime_go_common_libs" ]
+
+  include_dirs = [ "//ten_packages/system/ten_runtime_go/include" ]
+  lib_dirs = [ "//ten_packages/system/ten_runtime_go/lib" ]
+}
+
+config("config_for_app") {
+  configs = [ ":ten_runtime_go_common_config" ]
+
+  if (is_linux) {
+    ldflags =
+        [ "-Wl,-rpath=\$ORIGIN/../ten_packages/system/ten_runtime_go/lib" ]
+  } else if (is_mac) {
+    ldflags =
+        [ "-Wl,-rpath,@loader_path/../ten_packages/system/ten_runtime_go/lib" ]
+  }
+}
+
+config("config_for_ten_packages") {
+  configs = [ ":ten_runtime_go_common_config" ]
+
+  if (is_linux) {
+    ldflags = [ "-Wl,-rpath=\$ORIGIN/../../../system/ten_runtime_go/lib" ]
+  } else if (is_mac) {
+    ldflags = [ "-Wl,-rpath,@loader_path/../../../system/ten_runtime_go/lib" ]
+  }
+}
+
+config("config_for_standalone_ten_packages") {
+  configs = [ ":ten_runtime_go_common_libs" ]
+
+  include_dirs = [ "//.ten/app/ten_packages/system/ten_runtime_go/include" ]
+  lib_dirs = [ "//.ten/app/ten_packages/system/ten_runtime_go/lib" ]
+}

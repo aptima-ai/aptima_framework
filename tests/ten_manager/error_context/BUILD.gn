@@ -1,0 +1,12 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+group("error_context") {
+  deps = [
+    "invalid_package_type",
+    "no_such_package",
+    "package_version_not_found",
+  ]
+}

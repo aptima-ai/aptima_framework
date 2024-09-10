@@ -1,0 +1,46 @@
+{
+  "_ten": {
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "name": "default_extension_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "name": "simple_http_server_cpp",
+            "addon": "simple_http_server_cpp",
+            "extension_group": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "name": "default_extension_cpp",
+            "addon": "default_extension_cpp",
+            "extension_group": "default_extension_group"
+          }
+        ],
+        "connections": [
+          {
+            "extension_group": "default_extension_group",
+            "extension": "simple_http_server_cpp",
+            "cmd": [
+              {
+                "name": "hello_world",
+                "dest": [
+                  {
+                    "extension_group": "default_extension_group",
+                    "extension": "default_extension_cpp"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/feature/test.gni")
+
+ten_package_test_prepare_auxiliary_resources("no_such_package") {
+  resources = [
+    "//.gnfiles/build/scripts/cmd_exec.py=>common/cmd_exec.py",
+    "//tests/ten_runtime/integration/common=>common",
+    "__init__.py",
+    "test_app/manifest.json",
+    "test_case.py",
+  ]
+  deps = [
+    "//core/src/ten_manager",
+    "//tests/local_registry",
+  ]
+}

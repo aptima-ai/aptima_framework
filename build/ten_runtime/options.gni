@@ -1,0 +1,73 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//.gnfiles/build/feature/base_options.gni")
+import("//build/options.gni")
+
+declare_args() {
+  # If set, build TEN runtime as shared library, otherwise static library
+  ten_build_shared = true
+
+  # If set, enable libwebsockets dependency, it will be used in http/websocket
+  # client and protocol.
+  ten_enable_libwebsockets = true
+
+  ten_enable_curl = true
+
+  ten_enable_package_manager = true
+  ten_enable_package_manager_publish = target_cpu != "arm64"
+}
+
+# ten_runtime binding
+declare_args() {
+  # If set, also build go binding
+  ten_enable_go_binding = is_mac || is_linux
+
+  # TODO: enable it on mac and win
+  ten_enable_python_binding = is_linux && target_cpu == "x64"
+}
+
+# ten_runtime extensions
+declare_args() {
+  # If set, enable example extensions
+  # The original value is: (is_linux || is_mac || is_win) && target_cpu == "x64"
+  ten_enable_example_packages = true
+
+  # If set, build native ffmpeg relevant extension and app
+  #
+  # ffmpeg has continuously made modifications, and those modifications might
+  # not be backward compatible. In order to simplified the coding and the CI
+  # environments, we embed a ffmpeg source codes in the TEN framework source
+  # tree, and build it by ourselves. This embedded ffmpeg can be built on clang
+  # and gcc, debug or release. To minimize the CI resource comsuption, and
+  # increase the CI efficiency, we just enable the building of the ffmpeg
+  # relevant modules in a restricted combination.
+  ten_enable_ffmpeg_extensions =
+      is_linux && is_debug && is_clang && target_cpu == "x64"
+}
+
+declare_args() {
+  # The go lint only depends on GO SDK which is platform independent, so only
+  # one CI node is enough to run the lint.
+  ten_enable_go_lint = ten_enable_go_binding && is_linux && is_clang && is_debug
+}
+
+ten_runtime_common_defines = common_defines
+if (ten_enable_memory_check) {
+  ten_runtime_common_defines += [ "TEN_ENABLE_MEMORY_CHECK" ]
+}
+
+common_deps = []
+common_public_deps = []
+
+ten_runtime_common_includes = common_includes
+ten_runtime_common_includes += [
+  "$root_build_dir/src",
+  "${root_out_dir}",
+  "${root_out_dir}/obj",
+  "//core",
+  "//core/src",
+  "//core/include",
+]

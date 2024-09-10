@@ -1,0 +1,728 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ten_utils_unit_test (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/standalone/ten_utils_unit_test",
+      "cwd": "${workspaceFolder}/out/linux/x64",
+      "args": [
+        "--gtest_filter=SchemaTest.ValidStringType"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/standalone/",
+        "ASAN_OPTIONS": "abort_on_error=1"
+      },
+    },
+    {
+      "name": "ten_utils_unit_test (cppdbg)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_utils_unit_test",
+      "cwd": "${workspaceFolder}/out/linux/x64",
+      "args": [
+        "--gtest_filter=CoroutineTest.stackful_basic"
+      ],
+      "environment": [
+        {
+          "name": "LD_LIBRARY_PATH",
+          "value": "${workspaceFolder}/out/linux/x64"
+        },
+        {
+          "name": "LD_PRELOAD",
+          "value": "/usr/lib/gcc/x86_64-linux-gnu/10/libasan.so"
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "ten_runtime_unit_test (cppdbg, launch)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/standalone/ten_runtime_unit_test",
+      "args": [
+        "--gtest_filter=SchemaTest.SchemaStoreValidateProperty"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "environment": [
+        {
+          "name": "LD_LIBRARY_PATH",
+          "value": "${workspaceFolder}/out/linux/x64"
+        },
+        {
+          "name": "LD_PRELOAD",
+          "value": "/usr/lib/gcc/x86_64-linux-gnu/10/libasan.so"
+        }
+      ],
+      "externalConsole": false,
+      "MIMode": "gdb", // or lldb
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "ten_runtime_unit_test (cppdbg, attach)",
+      "type": "cppdbg",
+      "request": "attach",
+      "program": "${workspaceFolder}/out/linux/x64/ten_runtime_unit_test",
+      "processId": "${command:pickProcess}",
+      "MIMode": "gdb", // or lldb
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "ten_runtime_smoke_test (cppdbg, launch)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/standalone/ten_runtime_smoke_test",
+      "args": [
+        "--gtest_filter=ExtensionTest.PropertySetFloat32"
+      ],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/standalone/",
+      "environment": [
+        // {
+        //   "name": "LD_LIBRARY_PATH",
+        //   "value": "${workspaceFolder}/out/linux/x64/gen/cmake/uv/"
+        // },
+        {
+          "name": "ASAN_OPTIONS",
+          "value": "abort_on_error=1"
+        }
+      ],
+      "externalConsole": false,
+      "MIMode": "gdb", // or lldb
+      "setupCommands": [
+        {
+          "text": "set exec-wrapper taskset -c 3"
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "ten_runtime_smoke_test (lldb, launch)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/standalone/ten_runtime_smoke_test",
+      "args": [
+        "--gtest_filter=DataTest.Basic"
+      ],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/standalone/",
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/standalone/",
+        "ASAN_OPTIONS": "abort_on_error=1",
+        "TEN_ENABLE_MEMORY_TRACKING": "true"
+      },
+    },
+    {
+      "name": "ten_runtime_smoke_test testing (cppdbg, attach)",
+      "type": "cppdbg",
+      "request": "attach",
+      "program": "${workspaceFolder}/out/linux/x64/ten_runtime_smoke_test",
+      "processId": "${command:pickProcess}",
+      "MIMode": "gdb", // or lldb
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "Open a core dump (cppdbg)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_runtime_smoke_test",
+      "coreDumpPath": "${input:coreFileName}",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb", // or lldb
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "Open a core dump (lldb)",
+      "type": "lldb",
+      "request": "custom",
+      "initCommands": [
+        "target create -c ${input:coreFileName}"
+      ]
+    },
+    {
+      "name": "tman (rust)",
+      "type": "lldb",
+      "request": "launch",
+      "cwd": "/home/wei/MyData/MyProject/ten_framework/out/linux/x64/tests/ten_runtime/integration/ten_manager/test_cases/dependency_resolve/test_cases/c_depends_d_resolved",
+      "cargo": {
+        "args": [
+          "build",
+          "--manifest-path=${workspaceFolder}/core/src/ten_manager/Cargo.toml"
+        ],
+        "env": {
+          "CARGO_TARGET_DIR": "${workspaceFolder}/out/linux/x64/ten_manager/",
+          "CLINGO_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/gen/cmake/clingo/install/lib/",
+          "RUST_BACKTRACE": "1",
+        },
+      },
+      "args": [
+        "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/",
+        "install",
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/gen/cmake/clingo/install/lib/",
+        "RUST_BACKTRACE": "1",
+      },
+    },
+    {
+      "name": "tman test (rust)",
+      "type": "lldb",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/core/src/ten_manager",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=tman",
+          "--manifest-path=${workspaceFolder}/core/src/ten_manager/Cargo.toml"
+        ],
+        "filter": {
+          "name": "tman",
+          "kind": "bin"
+        },
+        "env": {
+          "CARGO_TARGET_DIR": "${workspaceFolder}/out/linux/x64/ten_manager/",
+          "CLINGO_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/gen/cmake/clingo/install/lib/",
+          "RUST_BACKTRACE": "1",
+        },
+      },
+      "args": [
+        "--test-threads=1"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/ten_manager/lib/",
+        "RUST_BACKTRACE": "1",
+      },
+    },
+    {
+      "name": "tman install (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/app/default_app_cpp",
+      "args": [
+        "install"
+      ],
+      "env": {},
+    },
+    {
+      "name": "tman delete (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/ten_manager",
+      "args": [
+        "delete",
+        "extension",
+        "uap",
+        "0.1.1",
+      ],
+      "env": {},
+    },
+    {
+      "name": "tman_test (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tman_test",
+      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "args": [],
+    },
+    {
+      "name": "tman check (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "args": [
+        "check"
+      ],
+    },
+    {
+      "name": "tman install_cpp_app_mock (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "args": [
+        "install",
+        "app",
+        "ddd",
+        "--mock=${workspaceFolder}/out/linux/x64/tests/local_registry/"
+      ],
+    },
+    {
+      "name": "tman install_cpp_app_oss (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "args": [
+        "install",
+        "app",
+        "default_app_cpp",
+        "--build=debug"
+      ],
+      "env": {
+        "aliyun_oss_access_key_id": "",
+        "aliyun_oss_access_key_secret": ""
+      }
+    },
+    {
+      "name": "tman install_nodejs_app_mock (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/ddd/",
+      "args": [
+        "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/config.json",
+        "install",
+        "app",
+        "smart_meeting_minutes",
+      ],
+    },
+    {
+      "name": "tman install_extension_mock (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/app/ffmpeg",
+      "args": [
+        "install",
+        "extension",
+        "default_extension_cpp"
+      ],
+    },
+    {
+      "name": "tman install_protocol_mock (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/default_app_cpp",
+      "args": [
+        "install",
+        "protocol",
+        "msgpack",
+        "--build=debug",
+        "--mock=${workspaceFolder}/out/linux/x64/tests/local_registry/"
+      ],
+    },
+    {
+      "name": "tman install_app_mock (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_manager/install_all/install_all_in_local_file_system/test_app",
+      "args": [
+        "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/config.json",
+        "install",
+      ],
+    },
+    {
+      "name": "tman publish_mock (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/ten_manager/install/extension/mock_extension",
+      "args": [
+        "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/config.json",
+        "install",
+      ],
+    },
+    {
+      "name": "tman dev-server (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "args": [
+        "dev-server",
+        "--base-dir=/home/wei/MyData/Temp/ASTRA.ai/agents",
+        "--port=49484"
+      ],
+    },
+    {
+      "name": "tman check_cmd (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
+      "cwd": "${workspaceFolder}/out/linux/x64/solution/app/default_app_cpp/ten_packages/extension",
+      "args": [
+        "check_cmd",
+        "../../../tests/ten_runtime/integration/ten_manager/res/source_manifest.json",
+        "../../../tests/ten_runtime/integration/ten_manager/res/dest_manifest.json",
+        "hello_world",
+      ],
+    },
+    {
+      "name": "ten_rust (rust)",
+      "type": "lldb",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/core/src/ten_rust",
+      "cargo": {
+        "args": [
+          "build",
+          "--manifest-path=${workspaceFolder}/core/src/ten_rust/Cargo.toml",
+          "--tests",
+          "--target",
+          "x86_64-unknown-linux-gnu"
+        ],
+        "env": {
+          "TEN_UTILS_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/obj/core/src/utils/",
+          "RUST_BACKTRACE": "1",
+          "RUSTFLAGS": "-Zsanitizer=address",
+        },
+      },
+      "env": {
+        "RUST_BACKTRACE": "1",
+      },
+      "args": [
+        "test_create_schema_invalid_json"
+      ]
+    },
+    {
+      "name": "app (C/C++) (lldb, launch)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/asr_xf_nrt/asr_xf_nrt_app/bin/asr_xf_nrt_app_source",
+      "args": [],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/asr_xf_nrt/asr_xf_nrt_app/",
+      "env": {
+        "ASAN_OPTIONS": "use_sigaltstack=0",
+      },
+    },
+    {
+      "name": "app (C/C++) (cppdbg, launch)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/graph_env_var_1/graph_env_var_1_app/bin/graph_env_var_1_app_source",
+      "args": [],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/graph_env_var_1/graph_env_var_1_app",
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "app (C/C++) (cppdbg, attach)",
+      "type": "cppdbg",
+      "request": "attach",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/restful/wrk_concurrent/http_benchmark_app/bin/restful_app_source",
+      "processId": "${command:pickProcess}",
+      "MIMode": "gdb", // or lldb
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "app (Python Main) (debugpy, launch)",
+      "type": "debugpy",
+      "python": "/usr/bin/python3",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime_python/interface",
+        "TEN_APP_BASE_DIR": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/",
+        "LD_PRELOAD": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime/lib/libasan.so",
+        "PYTHONMALLOC": "malloc",
+        "TEN_ENABLE_PYTHON_DEBUG": "true",
+      },
+    },
+    {
+      "name": "app (debugpy, remote attach)",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "preLaunchTask": "delay 3 seconds",
+      "justMyCode": false
+    },
+    {
+      "name": "app (debugpy, local attach)",
+      "type": "debugpy",
+      "request": "attach",
+      "processId": "${command:pickProcess}",
+    },
+    {
+      "name": "app (Python Main) (cppdbg, launch)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/python3",
+      "args": [
+        "main.py"
+      ],
+      "environment": [
+        {
+          "name": "PYTHONPATH",
+          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime_python/interface"
+        },
+        {
+          "name": "TEN_APP_BASE_DIR",
+          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/"
+        },
+        {
+          "name": "LD_PRELOAD",
+          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime/lib/libasan.so"
+        },
+        {
+          "name": "PYTHONMALLOC",
+          "value": "malloc"
+        }
+      ],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app",
+      "additionalSOLibSearchPath": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime/lib",
+      "MIMode": "gdb",
+    },
+    {
+      "name": "app (Python) (cppdbg) attach",
+      "type": "cppdbg",
+      "request": "attach",
+      "processId": "${command:pickProcess}",
+      "program": "/usr/bin/python3",
+      "additionalSOLibSearchPath": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_python/send_cmd_python_app/ten_packages/system/ten_runtime/lib",
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      },
+    },
+    {
+      "name": "app (Java) (cppdbg, attach)",
+      "type": "cppdbg",
+      "request": "attach",
+      "program": "/home/wei/MyData/DevTools/JDK/jdk-11.0.11+9/bin/java",
+      "processId": "${command:pickProcess}",
+      "MIMode": "gdb", // or lldb
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "app (Nodejs, native) (lldb, launch)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "node",
+      "args": [
+        "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/nodejs/default_ui_app_ts_basic/default_ui_app_ts_basic_app/build/start.js"
+      ],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/nodejs/default_ui_app_ts_basic/default_ui_app_ts_basic_app/",
+      "env": {
+        "LD_PRELOAD": "lib/libasan.so",
+        "NODE_PATH": "lib:$NODE_PATH",
+      },
+    },
+    {
+      "name": "app (Nodejs, native) (cppdbg, launch)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/node",
+      "args": [
+        "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/nodejs/access_app_property_store/access_app_property_store_app/build/start.js"
+      ],
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/nodejs/access_app_property_store/access_app_property_store_app",
+      "environment": [
+        {
+          "name": "LD_PRELOAD",
+          "value": "lib/libasan.so"
+        },
+        {
+          "name": "NODE_PATH",
+          "value": "lib:$NODE_PATH"
+        }
+      ],
+      "sourceFileMap": {
+        "${workspaceFolder}": {
+          "editorPath": "${workspaceFolder}",
+          "useForBreakpoints": "true"
+        }
+      }
+    },
+    {
+      "name": "app (Nodejs, JS) (lldb, windows)",
+      "type": "lldb",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/out/win/x64/tests/ten_runtime/integration/default_ui_app_ts/solution/app/default_ui_app_ts",
+      "program": "node",
+      "args": [
+        "--expose-gc",
+        "build/start.js"
+      ],
+    },
+    {
+      "name": "app (Nodejs, JS) (launch)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/default_ui_app_ts/solution/app/default_ui_app_ts/",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/default_ui_app_ts/solution/app/default_ui_app_ts/build/start.js",
+      "outputCapture": "std",
+      "env": {
+        "LD_PRELOAD": "lib/libasan.so",
+        "NODE_PATH": "lib:$NODE_PATH",
+      },
+    },
+    {
+      "name": "app (golang) (go, launch)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "output": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/bin/main",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/",
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/lib",
+        "DYLD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/lib",
+        "CGO_LDFLAGS": "-L${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/lib -lten_runtime_go -Wl,-rpath,@loader_path/lib -Wl,-rpath,@loader_path/../lib"
+      }
+    },
+    {
+      "name": "app (golang) (lldb, launch)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/bin/main",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/",
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/ten_packages/system/ten_runtime/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/ten_packages/system/ten_runtime_go/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/ten_packages/system/ten_runtime_python/lib",
+        "DYLD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/go/access_property_go/access_property_goo_app/lib",
+        "CGO_LDFLAGS": "-L${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/go_app_python/go_app_python_app/ten_packages/system/ten_runtime_go/lib -lten_runtime_go -Wl,-rpath,@loader_path/lib -Wl,-rpath,@loader_path/../lib",
+        "TEN_ENABLE_PYTHON_DEBUG": "true",
+      },
+      "initCommands": [
+        "process handle SIGURG --stop false --pass true"
+      ]
+    },
+    {
+      "name": "app (golang) (lldb, attach)",
+      "type": "lldb",
+      "request": "attach",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/go/simple_http_server/simple_http_server_app/bin/main",
+      "initCommands": [
+        "process handle SIGURG --stop false --pass true"
+      ],
+      "pid": "${command:pickMyProcess}"
+    },
+    {
+      "name": "app (golang) (go, attach)",
+      "type": "go",
+      "request": "attach",
+      "mode": "local",
+      "processId": 0,
+      "stopOnEntry": true
+    },
+    {
+      "name": "go test",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${workspaceFolder}/core/src/ten_runtime/binding/go/interface/ten",
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64",
+        "DYLD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64",
+        "CGO_LDFLAGS": "-L${workspaceFolder}/out/linux/x64 -lten_runtime_go -Wl,-rpath,@loader_path/lib -Wl,-rpath,@loader_path/../lib",
+      },
+      "args": [
+        "-test.run",
+        "TestNewVideoFrame"
+      ]
+    },
+    {
+      "name": "ffmpeg app (C/C++) (lldb, launch)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/restful/http_basic/restful/http_basic_app/bin/restful/http_basic_app_source",
+      "args": [],
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/restful/http_basic/restful/http_basic_app/lib"
+      },
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/restful/http_basic/restful/http_basic_app/",
+    },
+    {
+      "name": "Python Debugger: Python File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Mixed (Golang + Python + C++)",
+      "configurations": [
+        "app (golang) (lldb, launch)",
+        "app (debugpy, remote attach)"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "coreFileName",
+      "type": "promptString",
+      "description": "Enter core file path"
+    }
+  ]
+}

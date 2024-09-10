@@ -1,0 +1,25 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+config("gtest_header") {
+  include_dirs = [
+    ".",
+    "include",
+    "../googlemock",
+    "../googlemock/include",
+  ]
+}
+
+source_set("googletest") {
+  public_configs = [ ":gtest_header" ]
+
+  sources = [ "src/gtest-all.cc" ]
+}
+
+source_set("gtest_main") {
+  public_configs = [ ":gtest_header" ]
+
+  sources = [ "src/gtest_main.cc" ]
+}

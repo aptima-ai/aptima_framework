@@ -1,0 +1,61 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/ten.gni")
+import("//core/src/ten_runtime/output_libs.gni")
+import("//core/src/ten_utils/output_libs.gni")
+import("//third_party/curl/output_libs.gni")
+import("//third_party/jansson/output_libs.gni")
+import("//third_party/libwebsockets/output_libs.gni")
+import("//third_party/mbedtls/output_libs.gni")
+
+# Because there is no 'rpath' mechanism in Windows, we need to copy all the
+# dependend libraries of 'smoke' to one folder, and setup 'PATH' before
+# executing 'smoke' and 'unit' testing.
+copy("copy_libraries_for_test") {
+  sources = ten_runtime_output_libs
+  sources += ten_utils_output_libs
+
+  deps = [
+    "//core/src/ten_runtime",
+    "//core/src/ten_utils:ten_utils_shared",
+    "//tests:copy_jansson_library_for_test",
+  ]
+
+  if (ten_enable_curl) {
+    sources += curl_output_libs
+    deps += [ "//third_party/curl" ]
+  }
+
+  if (ten_enable_libwebsockets) {
+    sources += mbedtls_output_libs
+    sources += libwebsockets_output_libs
+
+    deps += [
+      "//third_party/libwebsockets",
+      "//third_party/mbedtls",
+    ]
+  }
+
+  outputs = [ "${root_out_dir}/tests/standalone/{{source_file_part}}" ]
+}
+
+group("ten_runtime") {
+  deps = [
+    "smoke",
+    "unit",
+  ]
+
+  if (
+  # Almost all integration test cases needs ten_manager.
+  ten_enable_package_manager &&
+  # Currently, there is only x64 Mac machine in TEN CI clusters, and we need to
+  # run 'tman' during the preparation phase of each 'dev' test case, and tman of
+  # non-x64 version could not be run in x64 Mac machine, so we have to only
+  # enable 'dev' test cases on Mac for x64 only.
+  (is_linux || is_win || (is_mac && target_cpu == "x64"))) {
+    deps += [ "integration" ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "ten_runtime",
+      "version": "0.2.0"
+    },
+    {
+      "type": "extension",
+      "name": "default_extension_cpp",
+      "version": "0.1.0"
+    },
+    {
+      "type": "extension_group",
+      "name": "default_extension_group",
+      "version": "0.1.0"
+    },
+    {
+      "type": "protocol",
+      "name": "msgpack",
+      "version": "0.1.0"
+    }
+  ],
+  "api": {
+    "property": {
+      "hello": {
+        "type": "string"
+      }
+    }
+  }
+}

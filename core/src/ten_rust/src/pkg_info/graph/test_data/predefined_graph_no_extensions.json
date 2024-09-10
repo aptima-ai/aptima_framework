@@ -1,0 +1,18 @@
+{
+  "_ten": {
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": false,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "addon": "default_extension_group",
+            "name": "some_group"
+          }
+        ]
+      }
+    ],
+    "uri": "http://localhost:8001"
+  }
+}

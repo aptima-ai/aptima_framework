@@ -1,0 +1,36 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/feature/cmake.gni")
+import("//third_party/jansson/output_libs.gni")
+
+config("jansson_header") {
+  include_dirs = [ "${root_gen_dir}/cmake/jansson/install/include" ]
+}
+
+cmake_project("jansson") {
+  public_configs = [ ":jansson_header" ]
+
+  project_path = "."
+  project_name = "jansson"
+  build_path = "${root_gen_dir}/cmake/jansson/"
+  install_path = "${build_path}/install/"
+
+  library_path = [ "$install_path/lib/" ]
+
+  options = [
+    "JANSSON_WITHOUT_TESTS=ON",
+    "JANSSON_EXAMPLES=OFF",
+    "JANSSON_BUILD_DOCS=OFF",
+  ]
+
+  if (jansson_use_shared_lib) {
+    options += [ "JANSSON_BUILD_SHARED_LIBS=ON" ]
+  } else {
+    options += [ "JANSSON_BUILD_SHARED_LIBS=OFF" ]
+  }
+
+  outputs_seen_by_ag = jansson_output_libs
+}

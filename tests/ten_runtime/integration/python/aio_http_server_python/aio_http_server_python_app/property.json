@@ -1,0 +1,55 @@
+{
+  "_ten": {
+    "log_level": 1,
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "name": "default_extension_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension_group",
+            "name": "test",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "name": "aio_http_server_python",
+            "addon": "aio_http_server_python",
+            "extension_group": "test",
+            "property": {
+              "server_port": 8002
+            }
+          },
+          {
+            "type": "extension",
+            "name": "simple_echo_cpp",
+            "addon": "simple_echo_cpp",
+            "extension_group": "default_extension_group"
+          }
+        ],
+        "connections": [
+          {
+            "extension_group": "test",
+            "extension": "aio_http_server_python",
+            "cmd": [
+              {
+                "name": "test",
+                "dest": [
+                  {
+                    "extension_group": "default_extension_group",
+                    "extension": "simple_echo_cpp"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

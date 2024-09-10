@@ -1,0 +1,56 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+declare_args() {
+  jansson_use_shared_lib = false
+}
+
+jansson_output_libs = []
+
+if (is_win) {
+  if (is_debug) {
+    if (jansson_use_shared_lib) {
+      jansson_output_libs += [
+        "${root_gen_dir}/cmake/jansson/install/bin/jansson_d.dll",
+        "${root_gen_dir}/cmake/jansson/install/lib/jansson_d.lib",
+      ]
+    } else {
+      jansson_output_libs +=
+          [ "${root_gen_dir}/cmake/jansson/install/lib/jansson_d.lib" ]
+    }
+  } else {
+    if (jansson_use_shared_lib) {
+      jansson_output_libs += [
+        "${root_gen_dir}/cmake/jansson/install/bin/jansson.dll",
+        "${root_gen_dir}/cmake/jansson/install/lib/jansson.lib",
+      ]
+    } else {
+      jansson_output_libs +=
+          [ "${root_gen_dir}/cmake/jansson/install/lib/jansson.lib" ]
+    }
+  }
+} else if (is_mac) {
+  if (jansson_use_shared_lib) {
+    jansson_output_libs += [
+      "${root_gen_dir}/cmake/jansson/install/lib/libjansson.dylib",
+      "${root_gen_dir}/cmake/jansson/install/lib/libjansson.4.dylib",
+      "${root_gen_dir}/cmake/jansson/install/lib/libjansson.4.14.0.dylib",
+    ]
+  } else {
+    jansson_output_libs +=
+        [ "${root_gen_dir}/cmake/jansson/install/lib/libjansson.a" ]
+  }
+} else if (is_linux) {
+  if (jansson_use_shared_lib) {
+    jansson_output_libs += [
+      "${root_gen_dir}/cmake/jansson/install/lib/libjansson.so",
+      "${root_gen_dir}/cmake/jansson/install/lib/libjansson.so.4",
+      "${root_gen_dir}/cmake/jansson/install/lib/libjansson.so.4.14.0",
+    ]
+  } else {
+    jansson_output_libs +=
+        [ "${root_gen_dir}/cmake/jansson/install/lib/libjansson.a" ]
+  }
+}

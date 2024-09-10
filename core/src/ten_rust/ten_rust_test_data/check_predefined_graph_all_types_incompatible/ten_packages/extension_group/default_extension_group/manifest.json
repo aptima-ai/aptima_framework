@@ -1,0 +1,19 @@
+{
+  "type": "extension_group",
+  "name": "default_extension_group",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "ten_runtime",
+      "version": "0.1.0"
+    }
+  ],
+  "package": {
+    "include": [
+      "manifest.json",
+      "property.json",
+      "lib/**"
+    ]
+  }
+}

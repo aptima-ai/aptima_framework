@@ -1,0 +1,55 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/feature/test.gni")
+import("//build/ten_runtime/ten.gni")
+
+ten_package_test_prepare_app("cpp_app_python_app") {
+  src_app = "default_app_cpp"
+  src_app_language = "cpp"
+  generated_app_src_root_dir_name = "cpp_app_python_app_source"
+
+  replace_files_after_install_app = [
+    "cpp_app_python_app_source/manifest.json",
+    "cpp_app_python_app_source/property.json",
+  ]
+
+  replace_files_after_install_all = [
+    "cpp_app_python_app_source/ten_packages/extension/default_extension_python/extension.py",
+    "cpp_app_python_app_source/BUILD.gn",
+    "cpp_app_python_app_source/bin",
+  ]
+
+  if (ten_enable_package_manager) {
+    deps = [
+      "//core/src/ten_manager",
+      "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
+      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
+      "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
+      "//packages/core_extensions/py_init_extension_cpp:upload_py_init_extension_cpp_to_server",
+      "//packages/example_extensions/pil_demo_python:upload_pil_demo_python_to_server",
+      "//packages/example_extensions/simple_echo_cpp:upload_simple_echo_cpp_to_server",
+      "//packages/example_extensions/simple_http_server_cpp:upload_simple_http_server_cpp_to_server",
+    ]
+  }
+}
+
+ten_package_test_prepare_auxiliary_resources("cpp_app_python_test_files") {
+  resources = [
+    "//tests/ten_runtime/integration/common=>common",
+    "__init__.py",
+    "test_case.py",
+  ]
+  if (enable_sanitizer && !is_clang) {
+    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
+  }
+}
+
+group("cpp_app_python") {
+  deps = [
+    ":cpp_app_python_app",
+    ":cpp_app_python_test_files",
+  ]
+}

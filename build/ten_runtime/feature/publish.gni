@@ -1,0 +1,78 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/options.gni")
+
+template("ten_package_publish") {
+  _target_name = target_name
+
+  published_results = "$target_gen_dir/published_results"
+
+  action("ten_package_publish_${_target_name}") {
+    script = "//build/ten_runtime/feature/publish.py"
+
+    args = [ "--tman-path" ]
+    if (is_win) {
+      args += [ rebase_path("${root_out_dir}/ten_manager/bin/tman.exe") ]
+    } else {
+      args += [ rebase_path("${root_out_dir}/ten_manager/bin/tman") ]
+    }
+
+    args += [
+      "--config-file",
+      rebase_path("${root_out_dir}/tests/local_registry/config.json"),
+    ]
+
+    args += [
+      "--base-dir",
+      invoker.base_dir,
+    ]
+
+    args += [
+      "--published-results",
+      rebase_path(published_results),
+    ]
+
+    if (!ten_enable_package_manager_publish) {
+      args += [ "--no-enable-publish" ]
+    }
+
+    args += [
+      "--log-level",
+      "${log_level}",
+    ]
+
+    sources = []
+    outputs = [ published_results ]
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "testonly",
+                           ])
+
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [
+      "//build/ten_runtime/feature:create_tman_config",
+      "//core/src/ten_manager",
+    ]
+  }
+
+  group("${target_name}") {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    public_deps = [ ":ten_package_publish_${_target_name}" ]
+  }
+}

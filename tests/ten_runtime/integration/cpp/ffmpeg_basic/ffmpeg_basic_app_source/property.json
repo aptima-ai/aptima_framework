@@ -1,0 +1,154 @@
+{
+  "_ten": {
+    "uri": "msgpack://127.0.0.1:8001/",
+    "log_level": 1,
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "name": "default_extension_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension_group",
+            "name": "muxer_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension_group",
+            "name": "demuxer_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "addon": "ffmpeg_client",
+            "name": "ffmpeg_client",
+            "extension_group": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "name": "ffmpeg_muxer",
+            "addon": "ffmpeg_muxer",
+            "extension_group": "muxer_group"
+          },
+          {
+            "type": "extension",
+            "name": "ffmpeg_demuxer",
+            "addon": "ffmpeg_demuxer",
+            "extension_group": "demuxer_group"
+          }
+        ],
+        "connections": [
+          {
+            "extension_group": "default_extension_group",
+            "extension": "ffmpeg_client",
+            "cmd": [
+              {
+                "name": "prepare_demuxer",
+                "dest": [
+                  {
+                    "extension_group": "demuxer_group",
+                    "extension": "ffmpeg_demuxer"
+                  }
+                ]
+              },
+              {
+                "name": "start_muxer",
+                "dest": [
+                  {
+                    "extension_group": "muxer_group",
+                    "extension": "ffmpeg_muxer"
+                  }
+                ]
+              },
+              {
+                "name": "start_demuxer",
+                "dest": [
+                  {
+                    "extension_group": "demuxer_group",
+                    "extension": "ffmpeg_demuxer"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "muxer_group",
+            "extension": "ffmpeg_muxer",
+            "cmd": [
+              {
+                "name": "complete",
+                "dest": [
+                  {
+                    "extension_group": "default_extension_group",
+                    "extension": "ffmpeg_client",
+                    "msg_conversion": {
+                      "type": "per_property",
+                      "rules": [
+                        {
+                          "path": "_ten.name",
+                          "conversion_mode": "fixed_value",
+                          "value": "muxer_complete"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "demuxer_group",
+            "extension": "ffmpeg_demuxer",
+            "cmd": [
+              {
+                "name": "complete",
+                "dest": [
+                  {
+                    "extension_group": "default_extension_group",
+                    "extension": "ffmpeg_client",
+                    "msg_conversion": {
+                      "type": "per_property",
+                      "rules": [
+                        {
+                          "path": "_ten.name",
+                          "conversion_mode": "fixed_value",
+                          "value": "demuxer_complete"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "video_frame": [
+              {
+                "name": "video_frame",
+                "dest": [
+                  {
+                    "extension_group": "muxer_group",
+                    "extension": "ffmpeg_muxer"
+                  }
+                ]
+              }
+            ],
+            "audio_frame": [
+              {
+                "name": "audio_frame",
+                "dest": [
+                  {
+                    "extension_group": "muxer_group",
+                    "extension": "ffmpeg_muxer"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

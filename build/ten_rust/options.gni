@@ -1,0 +1,14 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+declare_args() {
+  # The 'ten_rust' crate depends on the 'ten_utils' (C codes) static library.
+  # The C compiler supports AddressSanitizer on Linux x86, however the rustc
+  # does not. Therefore, the 'ten_rust' crate is disabled on x86.
+  #
+  # TODO(Liu): Add a gn target to compile the 'ten_utils' static without asan on
+  # x86.
+  enable_ten_rust = !(enable_sanitizer && target_cpu == "x86")
+}

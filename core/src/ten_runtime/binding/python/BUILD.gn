@@ -1,0 +1,53 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/feature/ten_package.gni")
+import("//build/options.gni")
+import("//build/ten_runtime/feature/publish.gni")
+import("//build/ten_runtime/options.gni")
+import("//build/ten_runtime/ten.gni")
+import("//core/src/ten_runtime/output_libs.gni")
+
+ten_package("ten_python_binding_system_package") {
+  package_kind = "system"
+  package_output_root_dir_name = "ten_runtime_python"
+
+  resources = [
+    "//core/src/ten_runtime/binding/python/interface=>interface",
+    "//core/src/ten_runtime/binding/python/tools=>tools",
+    "BUILD_release.gn=>BUILD.gn",
+    "manifest.json",
+  ]
+
+  foreach(lib, ten_runtime_python_output_libs) {
+    libname = get_path_info(rebase_path(lib), "file")
+    resources += [ "${lib}=>lib/${libname}" ]
+  }
+
+  deps = [ "native:ten_runtime_python" ]
+}
+
+if (ten_enable_package_manager) {
+  ten_package_publish("upload_ten_python_binding_system_package_to_server") {
+    base_dir =
+        rebase_path("${root_out_dir}/ten_packages/system/ten_runtime_python")
+    deps = [
+      ":ten_python_binding_system_package",
+      "native:ten_runtime_python",
+    ]
+  }
+}
+
+group("python") {
+  deps = [ "native:ten_runtime_python" ]
+
+  if (ten_enable_package_manager) {
+    deps += [ ":upload_ten_python_binding_system_package_to_server" ]
+  }
+
+  if (ten_enable_package_manager) {
+    deps += [ ":upload_ten_python_binding_system_package_to_server" ]
+  }
+}

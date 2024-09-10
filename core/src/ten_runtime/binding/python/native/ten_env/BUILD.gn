@@ -1,0 +1,13 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/glob.gni")
+
+glob("ten_env") {
+  configs = [
+    "//core/src/ten_runtime/binding/python/native:ten_runtime_python_config",
+  ]
+  file_list = all_native_files
+}

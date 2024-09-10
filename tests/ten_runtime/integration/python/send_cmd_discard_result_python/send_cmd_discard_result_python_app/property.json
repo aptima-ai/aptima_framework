@@ -1,0 +1,96 @@
+{
+  "_ten": {
+    "log_level": 1,
+    "predefined_graphs": [
+      {
+        "name": "0",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension_group",
+            "name": "default_extension_group",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension_group",
+            "name": "test1",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension_group",
+            "name": "test2",
+            "addon": "default_extension_group"
+          },
+          {
+            "type": "extension",
+            "name": "simple_http_server_cpp",
+            "addon": "simple_http_server_cpp",
+            "extension_group": "default_extension_group",
+            "property": {
+              "server_port": 8002
+            }
+          },
+          {
+            "type": "extension",
+            "name": "default_extension_python_1",
+            "addon": "default_extension_python",
+            "extension_group": "test1"
+          },
+          {
+            "type": "extension",
+            "name": "default_extension_python_2",
+            "addon": "default_extension_python",
+            "extension_group": "test2"
+          }
+        ],
+        "connections": [
+          {
+            "extension_group": "default_extension_group",
+            "extension": "simple_http_server_cpp",
+            "cmd": [
+              {
+                "name": "test",
+                "dest": [
+                  {
+                    "extension_group": "test1",
+                    "extension": "default_extension_python_1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "test1",
+            "extension": "default_extension_python_1",
+            "cmd": [
+              {
+                "name": "hello",
+                "dest": [
+                  {
+                    "extension_group": "test2",
+                    "extension": "default_extension_python_2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "test2",
+            "extension": "default_extension_python_2",
+            "cmd": [
+              {
+                "name": "hello2",
+                "dest": [
+                  {
+                    "extension_group": "test1",
+                    "extension": "default_extension_python_1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

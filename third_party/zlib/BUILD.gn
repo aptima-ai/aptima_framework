@@ -1,0 +1,44 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_runtime/feature/cmake.gni")
+
+config("zlib_header") {
+  include_dirs = [ "${root_gen_dir}/cmake/zlib/install/include" ]
+}
+
+cmake_project("zlib") {
+  public_configs = [ ":zlib_header" ]
+
+  project_path = "."
+  if (is_win) {
+    project_name = "ALL_BUILD"
+  } else {
+    project_name = "all"
+  }
+
+  build_path = "${root_gen_dir}/cmake/zlib/"
+  install_path = "${build_path}/install/"
+  library_path = [ "$install_path/lib/" ]
+
+  cflags = [ "\"-fPIC\"" ]
+
+  outputs_seen_by_ag = []
+  if (is_win) {
+    if (is_debug) {
+      outputs_seen_by_ag += [
+        "$install_path/lib/zlibd.lib",
+        "$install_path/lib/zlibstaticd.lib",
+      ]
+    } else {
+      outputs_seen_by_ag += [
+        "$install_path/lib/zlib.lib",
+        "$install_path/lib/zlibstatic.lib",
+      ]
+    }
+  } else {
+    outputs_seen_by_ag += [ "$install_path/lib/libz.a" ]
+  }
+}

@@ -1,0 +1,32 @@
+# Windows targets
+[target.i686-pc-windows-msvc]
+runner = "python ./tools/test_runner.py"
+
+[target.x86_64-pc-windows-msvc]
+runner = "python ./tools/test_runner.py"
+
+[target.aarch64-pc-windows-msvc]
+runner = "python ./tools/test_runner.py"
+
+# Linux targets
+[target.aarch64-unknown-linux-gnu]
+runner = "python3 ./tools/test_runner.py"
+
+[target.armv7-unknown-linux-gnueabi]
+runner = "python3 ./tools/test_runner.py"
+
+[target.i686-unknown-linux-gnu]
+runner = "python3 ./tools/test_runner.py"
+
+[target.x86_64-unknown-linux-gnu]
+runner = "python3 ./tools/test_runner.py"
+
+# macOS targets
+[target.aarch64-apple-darwin]
+runner = "python3 ./tools/test_runner.py"
+
+[target.i686-apple-darwin]
+runner = "python3 ./tools/test_runner.py"
+
+[target.x86_64-apple-darwin]
+runner = "python3 ./tools/test_runner.py"

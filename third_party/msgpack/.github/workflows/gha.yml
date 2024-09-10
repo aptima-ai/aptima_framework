@@ -1,0 +1,233 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+    - c_master
+    tags:
+    - '*'
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pattern: [0, 1, 2, 3]
+    steps:
+    - uses: actions/checkout@v1
+    - name: build and test
+      env:
+        CC: clang
+        CXX: clang++
+      shell: bash
+      run: |
+        BASE=`pwd`;
+
+        # matrix config
+        ACTION="ci/build_cmake.sh"
+        export ARCH="64"
+        if [ ${{ matrix.pattern }} == 0 ]; then
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="unsigned"
+        fi
+        if [ ${{ matrix.pattern }} == 1 ]; then
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="signed"
+        fi
+        if [ ${{ matrix.pattern }} == 2 ]; then
+          export SHARED="OFF"
+          export CHAR_SIGN="signed"
+        fi
+        if [ ${{ matrix.pattern }} == 3 ]; then
+          export SHARED="OFF"
+          export CHAR_SIGN="unsigned"
+        fi
+
+        # install gtest
+        wget https://github.com/google/googletest/archive/release-1.7.0.zip -O googletest-release-1.7.0.zip
+        unzip -q googletest-release-1.7.0.zip
+        cd googletest-release-1.7.0
+        $CXX -m${ARCH} src/gtest-all.cc -I. -Iinclude -c
+        $CXX -m${ARCH} src/gtest_main.cc -I. -Iinclude -c
+        ar -rv libgtest.a gtest-all.o
+        ar -rv libgtest_main.a gtest_main.o
+        mkdir -p ${BASE}/usr/include
+        cp -r include/gtest ${BASE}/usr/include
+        mkdir -p ${BASE}/usr/lib
+        mv *.a ${BASE}/usr/lib
+        cd ..
+
+        # build and test
+        CMAKE_CXX_COMPILER="${CXX}" CMAKE_C_COMPILER="${CC}" GTEST_ROOT="${BASE}/usr" CFLAGS="-Werror -g -fsanitize=undefined  -fno-sanitize-recover=all" CXXFLAGS="-Werror -g -ggdb3 -fsanitize=undefined  -fno-sanitize-recover=all" ${ACTION}
+
+  linux:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        pattern: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+    - uses: actions/checkout@v1
+    - name: install build depends
+      run: |
+        sudo apt-get update
+        sudo apt-get install g++-multilib clang-8 valgrind
+    - name: build and test
+      shell: bash
+      run: |
+        BASE=`pwd`;
+
+        # matrix config
+        if [ ${{ matrix.pattern }} == 0 ]; then
+          export CC=clang
+          export CXX=clang++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="64"
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="unsigned"
+        fi
+        if [ ${{ matrix.pattern }} == 1 ]; then
+          export CC=clang
+          export CXX=clang++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="32"
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="signed"
+        fi
+        if [ ${{ matrix.pattern }} == 2 ]; then
+          export CC=clang
+          export CXX=clang++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="64"
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="signed"
+        fi
+        if [ ${{ matrix.pattern }} == 3 ]; then
+          export CC=clang
+          export CXX=clang++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="32"
+          export SHARED="OFF"
+          export CHAR_SIGN="unsigned"
+        fi
+        if [ ${{ matrix.pattern }} == 4 ]; then
+          export CC=gcc
+          export CXX=g++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="64"
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="signed"
+        fi
+        if [ ${{ matrix.pattern }} == 5 ]; then
+          export CC=gcc
+          export CXX=g++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="32"
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="unsigned"
+        fi
+        if [ ${{ matrix.pattern }} == 6 ]; then
+          export CC=gcc
+          export CXX=g++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="64"
+          export SHARED="ON"
+          export SAN="-fsanitize=address -fno-omit-frame-pointer"
+          export CHAR_SIGN="unsigned"
+        fi
+        if [ ${{ matrix.pattern }} == 7 ]; then
+          export CC=gcc
+          export CXX=g++
+          ACTION="ci/build_cmake.sh"
+          export ARCH="32"
+          export SHARED="OFF"
+          export CHAR_SIGN="signed"
+        fi
+        if [ ${{ matrix.pattern }} == 8 ]; then
+          export CC=gcc
+          export CXX=g++
+          ACTION="ci/build_cmake_embedded.sh"
+          export ARCH="64"
+        fi
+
+        # install gtest
+        wget https://github.com/google/googletest/archive/release-1.7.0.zip -O googletest-release-1.7.0.zip
+        unzip -q googletest-release-1.7.0.zip
+        cd googletest-release-1.7.0
+        $CXX -m${ARCH} src/gtest-all.cc -I. -Iinclude -c -fPIC
+        $CXX -m${ARCH} src/gtest_main.cc -I. -Iinclude -c -fPIC
+        ar -rv libgtest.a gtest-all.o
+        ar -rv libgtest_main.a gtest_main.o
+        mkdir -p ${BASE}/usr/include
+        cp -r include/gtest ${BASE}/usr/include
+        mkdir -p ${BASE}/usr/lib
+        mv *.a ${BASE}/usr/lib
+        cd ..
+
+        # install zlib
+        if [ ${ARCH} == 32 ]; then
+          sudo apt-get install lib32z1-dev
+        fi
+
+        # build and test
+        CMAKE_CXX_COMPILER="${CXX}" CMAKE_C_COMPILER="${CC}" GTEST_ROOT="${BASE}/usr" CFLAGS="-Werror -g -fsanitize=undefined  -fno-sanitize-recover=all" CXXFLAGS="-Werror -g -ggdb3 -fsanitize=undefined  -fno-sanitize-recover=all" ${ACTION}
+
+  windows:
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        pattern: [0, 1, 2, 3]
+    steps:
+    - uses: actions/checkout@v2.0.0
+    - name: Cache vcpkg
+      id: cache-vcpkg
+      uses: actions/cache@v1.1.2
+      with:
+        path: C:/vcpkg/installed
+        key: windows-2019-vcpkg-v2
+    - name: Build dependencies
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+      shell: powershell
+      run: |
+        vcpkg install gtest:x64-windows gtest:x86-windows
+        vcpkg install zlib:x64-windows zlib:x86-windows
+    - name: Build and test
+      shell: powershell
+      run: |
+        if (${{ matrix.pattern }} -eq 0) {
+          $ARCH="x64"
+          $SHARED="ON"
+        }
+        elseif (${{ matrix.pattern }} -eq 1) {
+          $ARCH="x64"
+          $SHARED="OFF"
+        }
+        elseif (${{ matrix.pattern }} -eq 2) {
+          $ARCH="Win32"
+          $SHARED="ON"
+        }
+        else {
+          $ARCH="Win32"
+          $SHARED="OFF"
+        }
+
+        $CUR=(Get-Location).Path
+        md build
+        cd build
+        cmake -A $ARCH -DBUILD_SHARED_LIBS=$SHARED -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_CXX_FLAGS=/D_VARIADIC_MAX=10 /EHsc /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING" ..
+        cmake --build . --config Release
+        $pathbak="$env:PATH"
+        $env:PATH="C:\vcpkg\installed\x64-windows\bin;$CUR\build\Release;$pathbak"
+        ctest -V
+        $env:PATH=$pathbak

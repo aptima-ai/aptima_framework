@@ -1,0 +1,19 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_utils/utils.gni")
+
+ten_utils_glob("general") {
+  deps = [
+    "//core/src/ten_utils/value",
+    "//third_party/jansson",
+  ]
+
+  if (is_win) {
+    libs = [ "bcrypt.lib" ]
+  } else if (is_mac || is_win) {
+    frameworks = [ "Security.framework" ]
+  }
+}

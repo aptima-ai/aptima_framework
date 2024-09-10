@@ -1,0 +1,33 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/ten_utils/utils.gni")
+import("//core/src/ten_utils/io/feature.gni")
+
+config("loops_config") {
+  defines = []
+
+  if (utils_enable_libuv) {
+    defines += [ "TEN_USE_LIBUV" ]
+  }
+
+  if (utils_enable_bare_runloop) {
+    defines += [ "TEN_USE_BARE_RUNLOOP" ]
+  }
+}
+
+ten_utils_glob("loops") {
+  deps = [ "bare" ]
+
+  if (utils_enable_libuv) {
+    deps += [ "uv" ]
+  }
+
+  if (utils_enable_bare_runloop) {
+    deps += [ "bare" ]
+  }
+
+  public_configs = [ ":loops_config" ]
+}

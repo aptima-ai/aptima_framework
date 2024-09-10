@@ -1,0 +1,75 @@
+//
+// This file is part of the TEN Framework project.
+// See https://github.com/TEN-framework/ten_framework/LICENSE for license
+// information.
+//
+#pragma once
+
+#include "ten_runtime/ten_config.h"
+
+#include "include_internal/ten_runtime/path/common.h"
+#include "ten_utils/container/list.h"
+#include "ten_utils/lib/signature.h"
+#include "ten_utils/lib/string.h"
+#include "ten_utils/sanitizer/thread_check.h"
+
+#define TEN_PATH_TABLE_SIGNATURE 0xB7C015B5FD691797U
+
+typedef struct ten_loc_t ten_loc_t;
+typedef struct ten_path_group_t ten_path_group_t;
+typedef struct ten_extension_t ten_extension_t;
+typedef struct ten_engine_t ten_engine_t;
+typedef struct ten_path_t ten_path_t;
+typedef struct ten_path_out_t ten_path_out_t;
+typedef struct ten_path_in_t ten_path_in_t;
+typedef struct ten_msg_conversion_operation_t ten_msg_conversion_operation_t;
+
+typedef enum TEN_PATH_TABLE_ATTACH_TO {
+  TEN_PATH_TABLE_ATTACH_TO_INVALID,
+
+  TEN_PATH_TABLE_ATTACH_TO_EXTENSION,
+  TEN_PATH_TABLE_ATTACH_TO_ENGINE,
+} TEN_PATH_TABLE_ATTACH_TO;
+
+typedef struct ten_path_table_t {
+  ten_signature_t signature;
+  ten_sanitizer_thread_check_t thread_check;
+
+  TEN_PATH_TABLE_ATTACH_TO attach_to;
+  union {
+    ten_extension_t *extension;
+    ten_engine_t *engine;
+  } attached_target;
+
+  ten_list_t in_paths;   // ten_path_in_t
+  ten_list_t out_paths;  // ten_path_out_t
+} ten_path_table_t;
+
+TEN_RUNTIME_PRIVATE_API ten_path_table_t *ten_path_table_create(
+    TEN_PATH_TABLE_ATTACH_TO attach_to, void *attached_target);
+
+TEN_RUNTIME_PRIVATE_API void ten_path_table_destroy(ten_path_table_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_path_table_check_empty(ten_path_table_t *self);
+
+TEN_RUNTIME_PRIVATE_API ten_path_in_t *ten_path_table_add_in_path(
+    ten_path_table_t *self, ten_shared_ptr_t *cmd,
+    ten_msg_conversion_operation_t *result_conversion);
+
+TEN_RUNTIME_PRIVATE_API ten_path_out_t *ten_path_table_add_out_path(
+    ten_path_table_t *self, ten_shared_ptr_t *cmd);
+
+TEN_RUNTIME_PRIVATE_API ten_listnode_t *ten_path_table_find_path_from_cmd_id(
+    ten_path_table_t *self, TEN_PATH_TYPE type, const char *cmd_id);
+
+TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *
+ten_path_table_determine_actual_cmd_result(ten_path_table_t *self,
+                                           TEN_PATH_TYPE path_type,
+                                           ten_path_t *path, bool remove_path);
+
+TEN_RUNTIME_PRIVATE_API ten_path_t *ten_path_table_set_result(
+    ten_path_table_t *self, TEN_PATH_TYPE path_type,
+    ten_shared_ptr_t *cmd_result);
+
+TEN_RUNTIME_PRIVATE_API ten_string_t *ten_path_table_get_graph_name(
+    ten_path_table_t *self);

@@ -1,0 +1,12 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+libuv_output_libs = []
+
+if (is_win) {
+  libuv_output_libs += [ "${root_gen_dir}/cmake/uv_a/install/lib/libuv.lib" ]
+} else {
+  libuv_output_libs += [ "${root_gen_dir}/cmake/uv_a/install/lib/libuv.a" ]
+}

@@ -1,0 +1,6 @@
+Diagnostics:
+  UnusedIncludes: Strict
+  Includes:
+    IgnoreHeader: ten_config\.h
+InlayHints:
+  Enabled: No

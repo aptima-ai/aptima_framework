@@ -1,0 +1,77 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+action("copy_local_registry") {
+  script = "//.gnfiles/build/scripts/copy_fs_entry.py"
+  args = [
+    "--source",
+    rebase_path("//tests/local_registry"),
+    "--destination",
+    rebase_path("${root_out_dir}/tests/local_registry"),
+  ]
+
+  sources = [
+    #
+    "//tests/local_registry/extension/ext_1/1.0.0/ext_1_1.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_1/2.0.0/ext_1_2.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_1/3.0.0/ext_1_3.0.0_all.all.all.tpkg",
+
+    #
+    "//tests/local_registry/extension/ext_2/1.0.0/ext_2_1.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_2/2.0.0/ext_2_2.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_2/3.0.0/ext_2_3.0.0_all.all.all.tpkg",
+
+    #
+    "//tests/local_registry/extension/ext_3/1.0.0/ext_3_1.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_3/2.0.0/ext_3_2.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_3/3.0.0/ext_3_3.0.0_all.all.all.tpkg",
+
+    #
+    "//tests/local_registry/extension/ext_a/0.0.1/ext_a_0.0.1_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_a/0.0.2/ext_a_0.0.2_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_a/1.0.0/ext_a_1.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_a/1.2.3/ext_a_1.2.3_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_a/2.0.0/ext_a_2.0.0_linux.all.all.tpkg",
+    "//tests/local_registry/extension/ext_a/2.0.1/ext_a_2.0.1_mac.all.all.tpkg",
+    "//tests/local_registry/extension/ext_a/3.0.0/ext_a_3.0.0_linux.x64.all.tpkg",
+    "//tests/local_registry/extension/ext_a/3.0.1/ext_a_3.0.1_linux.x86.all.tpkg",
+    "//tests/local_registry/extension/ext_a/3.0.2/ext_a_3.0.2_mac.all.all.tpkg",
+
+    #
+    "//tests/local_registry/extension/ext_b/0.0.1/ext_b_0.0.1_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_b/0.0.2/ext_b_0.0.2_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_b/0.2.4/ext_b_0.2.4_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_b/0.2.6/ext_b_0.2.6_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_b/1.0.0/ext_b_1.0.0_all.all.all.tpkg",
+
+    #
+    "//tests/local_registry/extension/ext_c/0.0.1/ext_c_0.0.1_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/0.0.2/ext_c_0.0.2_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/0.1.2/ext_c_0.1.2_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/0.2.0/ext_c_0.2.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/0.3.0/ext_c_0.3.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/0.4.0/ext_c_0.4.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/0.5.0/ext_c_0.5.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_c/2.0.0/ext_c_2.0.0_all.all.all.tpkg",
+
+    #
+    "//tests/local_registry/extension/ext_d/1.0.0/ext_d_1.0.0_all.all.all.tpkg",
+    "//tests/local_registry/extension/ext_d/1.0.0/ext_d_1.0.0_linux.all.all.tpkg",
+    "//tests/local_registry/extension/ext_d/2.0.0/ext_d_2.0.0_linux.arm64.all.tpkg",
+    "//tests/local_registry/extension/ext_d/2.0.0/ext_d_2.0.0_linux.x64.all.tpkg",
+    "//tests/local_registry/extension/ext_d/2.0.0/ext_d_2.0.0_mac.x64.all.tpkg",
+
+    #
+    "//tests/local_registry/system/sys_1/1.0.0/sys_1_1.0.0_all.all.all.tpkg",
+    "//tests/local_registry/system/sys_1/2.0.0/sys_1_2.0.0_all.all.all.tpkg",
+    "//tests/local_registry/system/sys_2/1.0.0/sys_2_1.0.0_all.all.all.tpkg",
+  ]
+
+  outputs = [ "${root_out_dir}/tests/local_registry" ]
+}
+
+group("local_registry") {
+  deps = [ ":copy_local_registry" ]
+}

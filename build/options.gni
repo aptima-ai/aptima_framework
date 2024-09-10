@@ -1,0 +1,22 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+declare_args() {
+  ten_enable_memory_check = true
+}
+
+declare_args() {
+  ten_enable_test = true
+  ten_enable_private_tests = false
+}
+
+declare_args() {
+  # Rust AddressSanitizer is supported on Linux x64 and macOS x64/arm64. Refer
+  # to: https://doc.rust-lang.org/stable/unstable-book/compiler-flags/sanitizer.html#addresssanitizer
+  #
+  # rustc finds the asan runtime library in ~/.rustup/toolchains/<target_cpu>/
+  # lib/rustlib/<target_cpu>/lib/librustc-nightly_rt.asan.a
+  ten_enable_rust_asan = is_mac || (is_linux && target_cpu == "x64")
+}

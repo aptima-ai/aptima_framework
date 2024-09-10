@@ -1,0 +1,48 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/options.gni")
+import("//build/ten_runtime/options.gni")
+import("//build/ten_runtime/ten.gni")
+import("//build/ten_utils/options.gni")
+
+# When you want to get the output of the console in real time, you can use this
+# pool
+pool("serialized_action_pool") {
+  depth = 1
+}
+
+group("ten_framework_all") {
+  deps = [
+    "//core/src/ten_runtime",
+    "//core/src/ten_rust",
+    "//packages/core_apps",
+    "//packages/core_extension_groups",
+    "//packages/core_extensions",
+    "//packages/core_protocols",
+    "//packages/example_apps",
+    "//packages/example_extension_groups",
+    "//packages/example_extensions",
+    "//third_party",
+  ]
+
+  if (ten_enable_package_manager) {
+    deps += [ "//core/src/ten_manager" ]
+  }
+
+  if (ten_enable_test) {
+    deps += [ "//tests" ]
+  }
+
+  if (enable_sanitizer) {
+    if (!is_clang) {
+      # If the sanitizer is enabled, the libasan.so will be needed in many test
+      # scenarios. Therefore, it is copied to the root_out_dir for unified
+      # usage.
+      deps +=
+          [ "//build/common/asan:package_asan_lib_for_ten_framework_itself" ]
+    }
+  }
+}

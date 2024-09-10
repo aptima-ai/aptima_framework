@@ -1,0 +1,347 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+import("//build/options.gni")
+
+template("rust_target") {
+  assert(defined(invoker.project_path), "project_file is not defined")
+  assert(defined(invoker.output_name), "output_name is not defined")
+
+  _target_name = target_name
+  target_path = target_gen_dir
+
+  action("${_target_name}") {
+    script = "//build/common/rust/rust.py"
+
+    args = [
+      "--project-path",
+      rebase_path(invoker.project_path),
+      "--manifest-path",
+      rebase_path(invoker.manifest_path),
+      "--target-path",
+      rebase_path(target_path),
+      "--build-type",
+    ]
+
+    if (is_debug) {
+      args += [ "debug" ]
+    } else {
+      args += [ "release" ]
+    }
+
+    args += [
+      "--log-level",
+      "${log_level}",
+    ]
+
+    _rustflags = ""
+    if (defined(invoker._rustflags)) {
+      _rustflags = invoker._rustflags
+    }
+
+    if (is_debug) {
+      if (ten_enable_rust_asan) {
+        if (enable_sanitizer) {
+          _rustflags = "${_rustflags} -Zsanitizer=address"
+        }
+      }
+    }
+
+    if (_rustflags != "") {
+      args += [
+        "--env",
+        "RUSTFLAGS=${_rustflags}",
+      ]
+    }
+
+    if (defined(invoker.env)) {
+      foreach(env, invoker.env) {
+        args += [
+          "--env",
+          "${env}",
+        ]
+      }
+    }
+
+    # Note that the `target` is required for `cargo build` if the asan is
+    # enabled, otherwise the platform-dependent dependencies might not be found,
+    # and there might be asan conflict with the shared libraries depeneded by
+    # the denendencies.
+    if (is_win) {
+      if (target_cpu == "x86") {
+        target = "i686-pc-windows-msvc"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-pc-windows-msvc"
+      } else if (target_cpu == "arm64") {
+        target = "aarch64-pc-windows-msvc"
+      }
+    } else if (is_linux) {
+      if (target_cpu == "arm64") {
+        target = "aarch64-unknown-linux-gnu"
+      } else if (target_cpu == "arm") {
+        target = "armv7-unknown-linux-gnueabi"
+      } else if (target_cpu == "x86") {
+        target = "i686-unknown-linux-gnu"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-unknown-linux-gnu"
+      }
+    } else if (is_mac) {
+      if (target_cpu == "arm64") {
+        target = "aarch64-apple-darwin"
+      } else if (target_cpu == "x86") {
+        target = "i686-apple-darwin"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-apple-darwin"
+      }
+    }
+
+    args += [
+      "--target",
+      target,
+    ]
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "public_configs",
+                           ])
+
+    rust_source_files =
+        exec_script("//.gnfiles/build/scripts/glob_file.py",
+                    [
+                      "--dir",
+                      rebase_path("${invoker.project_path}/**/*.rs"),
+                      "--recursive",
+                    ],
+                    "list lines")
+    sources = rust_source_files
+    if (defined(invoker.extra_sources)) {
+      sources += invoker.extra_sources
+    }
+
+    inputs = [ invoker.manifest_path ]
+    if (defined(invoker.extra_inputs)) {
+      inputs += invoker.extra_inputs
+    }
+
+    output_path = "${target_path}/${target}/"
+    if (is_debug) {
+      output_path = "${output_path}/debug"
+    } else {
+      output_path = "${output_path}/release"
+    }
+
+    outputs = [ "${output_path}/${invoker.output_name}" ]
+  }
+}
+
+# `cargo build` supports building the binary/library and the unit tests at the
+# same time, ex: 'cargo build --bins --lib --tests', or 'cargo build
+# --all-targets'. However, `cargo build` does not produce outputs with a
+# deterministic filename, but with a hash in the filename, ex:
+# `tman-021fee598b3b377a`. If we want to build a binary and its unit tests
+# together, there will be two executable files with the same format, ex:
+#
+# -rwxrwxr-x 1 user user  37M  4月 17 17:36 tman-021fee598b3b377a
+# -rwxrwxr-x 2 user user  52M  4月 17 17:36 tman-e1f07d2b8f7e511a
+#
+# We have no idea which one is the binary and which one is the unit test. That's
+# why we need to add a separate target for building the tests only.
+template("rust_test") {
+  assert(defined(invoker.project_path), "project_path is not defined")
+
+  _target_name = target_name
+  target_path = target_gen_dir
+  tg_timestamp_proxy_file = "${target_path}/${target_name}_rust_tests"
+
+  action("${_target_name}") {
+    script = "//build/common/rust/rust_build_tests.py"
+
+    args = [
+      "--project-path",
+      rebase_path(invoker.project_path),
+      "--target-path",
+      rebase_path(target_path),
+      "--tg-timestamp-proxy-file",
+      rebase_path(tg_timestamp_proxy_file),
+    ]
+
+    args += [ "--build-type" ]
+    if (is_debug) {
+      args += [ "debug" ]
+    } else {
+      args += [ "release" ]
+    }
+
+    args += [
+      "--log-level",
+      "${log_level}",
+    ]
+
+    if (defined(invoker.test_output_dir)) {
+      args += [
+        "--test-output-dir",
+        rebase_path(invoker.test_output_dir),
+      ]
+    }
+
+    _rustflags = ""
+    if (defined(invoker._rustflags)) {
+      _rustflags = invoker._rustflags
+    }
+
+    if (is_debug) {
+      if (ten_enable_rust_asan) {
+        if (enable_sanitizer) {
+          _rustflags = "${_rustflags} -Zsanitizer=address"
+        }
+      }
+    }
+
+    if (_rustflags != "") {
+      args += [
+        "--env",
+        "RUSTFLAGS=${_rustflags}",
+      ]
+    }
+
+    if (defined(invoker.env)) {
+      foreach(env, invoker.env) {
+        args += [
+          "--env",
+          "${env}",
+        ]
+      }
+    }
+
+    # Note that the `target` is required for `cargo build` if the asan is
+    # enabled, otherwise the platform-dependent dependencies might not be found,
+    # and there might be asan conflict with the shared libraries depeneded by
+    # the denendencies.
+    if (is_win) {
+      if (target_cpu == "x86") {
+        target = "i686-pc-windows-msvc"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-pc-windows-msvc"
+      } else if (target_cpu == "arm64") {
+        target = "aarch64-pc-windows-msvc"
+      }
+    } else if (is_linux) {
+      if (target_cpu == "arm64") {
+        target = "aarch64-unknown-linux-gnu"
+      } else if (target_cpu == "arm") {
+        target = "armv7-unknown-linux-gnueabi"
+      } else if (target_cpu == "x86") {
+        target = "i686-unknown-linux-gnu"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-unknown-linux-gnu"
+      }
+    } else if (is_mac) {
+      if (target_cpu == "arm64") {
+        target = "aarch64-apple-darwin"
+      } else if (target_cpu == "x86") {
+        target = "i686-apple-darwin"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-apple-darwin"
+      }
+    }
+
+    args += [
+      "--target",
+      target,
+    ]
+
+    if (defined(invoker.through_real_test) && invoker.through_real_test) {
+      args += [
+        "--through-real-test",
+        "True",
+      ]
+    }
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "public_configs",
+                           ])
+
+    rust_source_files =
+        exec_script("//.gnfiles/build/scripts/glob_file.py",
+                    [
+                      "--dir",
+                      rebase_path("${invoker.project_path}/**/*.rs"),
+                      "--recursive",
+                    ],
+                    "list lines")
+    sources = rust_source_files
+    if (defined(invoker.extra_sources)) {
+      sources += invoker.extra_sources
+    }
+
+    cargo_tomls =
+        exec_script("//.gnfiles/build/scripts/glob_file.py",
+                    [
+                      "--dir",
+                      rebase_path("${invoker.project_path}/**/Cargo.toml"),
+                      "--recursive",
+                    ],
+                    "list lines")
+
+    inputs = cargo_tomls
+    if (defined(invoker.extra_inputs)) {
+      inputs += invoker.extra_inputs
+    }
+
+    outputs = [ tg_timestamp_proxy_file ]
+  }
+}
+
+template("rust_cbindgen") {
+  assert(defined(invoker.config_file), "config_file is not defined")
+  assert(defined(invoker.project_path), "project_path is not defined")
+  assert(defined(invoker.output_file), "output_file is not defined")
+
+  _target_name = target_name
+  target_path = target_gen_dir
+
+  action("${_target_name}") {
+    script = "//build/common/rust/rust_cbindgen.py"
+
+    _output = "${target_path}/${invoker.output_file}"
+
+    args = [
+      "--config-file",
+      invoker.config_file,
+      "--project-path",
+      rebase_path(invoker.project_path),
+      "--output-file",
+      rebase_path(_output),
+      "--log-level",
+      "${log_level}",
+    ]
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "public_configs",
+                           ])
+
+    inputs = [ "${invoker.project_path}/${invoker.config_file}" ]
+
+    # Only the source files used by the cbindgen are under watch.
+    if (defined(invoker.binding_files)) {
+      foreach(f, invoker.binding_files) {
+        inputs += [ "${invoker.project_path}/${f}" ]
+      }
+    }
+
+    outputs = [ _output ]
+  }
+}

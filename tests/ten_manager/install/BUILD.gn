@@ -1,0 +1,11 @@
+#
+# This file is part of the TEN Framework project.
+# See https://github.com/TEN-framework/ten_framework/LICENSE for license
+# information.
+#
+group("install") {
+  deps = [
+    "app:mock_app",
+    "extension:mock_extension",
+  ]
+}
