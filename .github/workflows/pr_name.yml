@@ -13,4 +13,4 @@ jobs:
         run: npm install @commitlint/config-conventional@16.0.0
       - uses: JulienKode/pull-request-name-linter-action@v0.5.0
         with:
-          configuration-path: tools/commitlint/commitlint.config.js
+          configuration-path: .github/configs/commitlint.config.js
