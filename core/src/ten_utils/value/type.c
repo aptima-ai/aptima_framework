@@ -1,9 +1,8 @@
-/**
- *
- * TEN Framework.
- * 这边有需要放 LICENSE 相关 info 嘛?
- *
- */
+//
+// This file is part of the TEN Framework project.
+// See https://github.com/TEN-framework/ten_framework/LICENSE for license
+// information.
+//
 #include "ten_utils/value/type.h"
 
 #include <float.h>
