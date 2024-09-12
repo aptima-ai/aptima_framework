@@ -31,16 +31,19 @@
 #include "include_internal/ten_runtime/extension_thread/msg_interface/common.h"
 #include "include_internal/ten_runtime/metadata/metadata.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_table.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/extension/extension.h"
+#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_ptr.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
@@ -469,14 +472,35 @@ static void ten_extension_thread_process_remaining_paths(
     TEN_LOGD("[%s] Flushing %zu remaining out paths.",
              ten_extension_get_name(extension), out_paths_cnt);
 
+    ten_list_t cmd_result_list = TEN_LIST_INIT_VAL;
     ten_list_foreach (out_paths, iter) {
       ten_path_t *path = (ten_path_t *)ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(path && ten_path_check_integrity(path, true),
                  "Should not happen.");
 
-      ten_extension_terminate_out_path_prematurely(extension, path,
-                                                   "The extension is stopped.");
+      ten_shared_ptr_t *cmd_result =
+          ten_cmd_result_create(TEN_STATUS_CODE_ERROR);
+      TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
+                 "Should not happen.");
+
+      ten_msg_set_property(
+          cmd_result, "detail",
+          ten_value_create_string(ten_string_get_raw_str(&path->cmd_id)), NULL);
+      ten_cmd_base_set_cmd_id(cmd_result,
+                              ten_string_get_raw_str(&path->cmd_id));
+      ten_list_push_smart_ptr_back(&cmd_result_list, cmd_result);
+      ten_shared_ptr_destroy(cmd_result);
     }
+
+    ten_list_foreach (&cmd_result_list, iter) {
+      ten_shared_ptr_t *cmd_result = ten_smart_ptr_listnode_get(iter.node);
+      TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
+                 "Should not happen.");
+
+      ten_extension_handle_in_msg(extension, cmd_result);
+    }
+
+    ten_list_clear(&cmd_result_list);
   }
 }
 

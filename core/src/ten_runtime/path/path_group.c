@@ -14,6 +14,7 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
 
@@ -64,6 +65,8 @@ static ten_path_group_t *ten_path_group_create(ten_path_table_t *table,
       (ten_path_group_t *)TEN_MALLOC(sizeof(ten_path_group_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
+  ten_signature_set(&self->signature, TEN_PATH_GROUP_SIGNATURE);
+
   self->table = table;
   self->role = role;
 
@@ -79,6 +82,7 @@ static ten_path_group_t *ten_path_group_create_master(
 
   self->master.policy = policy;
   ten_list_init(&self->master.members);
+  self->master.has_been_processed = false;
 
   return self;
 }

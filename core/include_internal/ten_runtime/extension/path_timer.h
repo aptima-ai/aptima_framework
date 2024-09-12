@@ -29,6 +29,3 @@ TEN_RUNTIME_PRIVATE_API ten_timer_t *ten_extension_create_timer_for_in_path(
 
 TEN_RUNTIME_PRIVATE_API ten_timer_t *ten_extension_create_timer_for_out_path(
     ten_extension_t *self);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_terminate_out_path_prematurely(
-    ten_extension_t *self, ten_path_t *path, const char *msg);
