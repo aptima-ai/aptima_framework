@@ -21,7 +21,7 @@ The TEN framework offers the following advantages:
 
 ## Use Cases
 
-With the TEN framework, you can easily accomplish the following scenarios. You can see actual demos at [TEN Agent](https://github.com/TEN-framework/ASTRA.ai):
+With the TEN framework, you can easily accomplish the following scenarios. You can see actual demos at [TEN Agent](https://github.com/TEN-framework/TEN-Agent):
 
 1. Simultaneous interpretation
 2. Speech-to-text conversion

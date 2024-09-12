@@ -60,11 +60,11 @@ astra_playground      |  ✓ Ready in 293ms
 
 Now, we’ve got the following services running:
 
-• `astra_agents_dev` at `http://0.0.0.0:49483` (the backend server for the Graph Designer)
+• `astra_agents_dev` at `http://0.0.0.0:49483` (the backend server)
 
-• `astra_graph_designer` at `http://localhost:3000` (the UI of the Graph Designer)
+• `astra_playground` at `http://localhost:3000` (the frontend of TEN Agent)
 
-• `astra_playground` at `http://localhost:3001` (the UI of the Astra agent)
+• `astra_graph_designer` at `http://localhost:3001` (the frontend of Graph Designer)
 
 ## 2. Enter the docker container
 
@@ -84,29 +84,26 @@ By running the following commands, an extension called `hello_world` will be cre
 
 {% tabs %}
 {% tab title="Python" %}
-<pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents/ten_packages/extension
+<pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents
 
 <strong>tman install extension default_extension_python --template-mode --template-data package_name=hello_world --template-data class_name_prefix=HelloWorld
 </strong>
-cd /app
 </code></pre>
 {% endtab %}
 
 {% tab title="Go" %}
-<pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents/ten_packages/extension
+<pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents
 
 <strong>tman install extension default_extension_go --template-mode --template-data package_name=hello_world --template-data class_name_prefix=HelloWorld
 </strong>
-cd /app
 </code></pre>
 {% endtab %}
 
 {% tab title="C++" %}
-<pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents/ten_packages/extension
+<pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents
 
 <strong>tman install extension default_extension_cpp --template-mode --template-data package_name=hello_world --template-data class_name_prefix=HelloWorld
 </strong>
-cd /app
 </code></pre>
 {% endtab %}
 {% endtabs %}
@@ -157,8 +154,6 @@ Navigate into the `hello_world` directory and open manifest.json. Add the API ob
 </strong>  }
 }
 </code></pre>
-
-For detailed information on the API and schema, please refer to [ten_api_beta.md](../ten_service/ten_api_beta.md "mention") and [ten_schema_beta.md](../ten_service/ten_schema_beta.md "mention").
 
 ## 5. Build the extension
 

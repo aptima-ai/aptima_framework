@@ -7,7 +7,7 @@ Here, you’ll get an overview of all the incredible features TEN offers to help
 
 Before we get started, please click the [**star button on our GitHub repo**](https://github.com/TEN-framework/ten_framework) to stay updated with TEN.
 
-TEN’s capabilities are immense, and we’ve harnessed its power to create a real-time multimodal agent that we actively maintain and support. You can explore this agent in our dedicated repository of [ **Astra Agent** ](https://github.com/ten-framework/astra.ai) We’d love to have your support, don’t forget to give it a star as well!
+TEN’s capabilities are immense, and we’ve harnessed its power to create a real-time multimodal agent that we actively maintain and support. You can explore this agent in our dedicated repository of [ **TEN Agent** ](https://github.com/ten-framework/TEN-Agent) We’d love to have your support, don’t forget to give it a star as well!
 
 
-<figure><img src="assets/gif/star_the_repo_confetti.gif" alt=""><figcaption><p>Star us to stay updated with Astra Agent</p></figcaption></figure>
+<figure><img src="assets/gif/star_the_repo_confetti.gif" alt=""><figcaption><p>Star us to stay updated with TEN Agent</p></figcaption></figure>

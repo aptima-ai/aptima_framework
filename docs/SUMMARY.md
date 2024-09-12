@@ -5,12 +5,12 @@
 * [Key Concepts](vision/key_concepts.md)
 * [Scenarios](vision/application_scenarios.md)
 
-## Getting Started with Astra
+## TEN Agent
 
-* [Quickstart](getting_started/quickstart.md)
-* [Customize Agent](getting_started/customize_your_agent.md)
-* [Create a Hello World Extension](getting_started/create_a_hello_world_extension.md)
-* [Setup VSCode Inside Container](getting_started/setting_up_vscode_for_development_inside_container.md)
+* [Getting Started](ten_agent/getting_started.md)
+* [Customize TEN Agent](ten_agent/customize_your_agent.md)
+* [Create a Hello World Extension](ten_agent/create_a_hello_world_extension.md)
+* [Setup VSCode Inside Container](ten_agent/setting_up_vscode_for_development_inside_container.md)
 
 ## TEN framework
 

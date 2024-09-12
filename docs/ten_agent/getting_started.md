@@ -14,7 +14,7 @@ layout:
 
 # Quickstart
 
-In this chapter, we’ll build the Astra agent together. For additional help, check out the YouTube video tutorial at the end.
+In this chapter, we’ll build the TEN Agent together. For additional help, check out the YouTube video tutorial at the end.
 
 <figure><img src="../assets/gif/astra_voice_agent.gif" alt=""><figcaption></figcaption></figure>
 
