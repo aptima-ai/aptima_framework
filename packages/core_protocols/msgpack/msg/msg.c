@@ -1,5 +1,5 @@
 //
-// This file is part of the TEN Framework project.
+// This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -12,8 +12,8 @@
 #include "core_protocols/msgpack/msg/field/field_info.h"
 #include "core_protocols/msgpack/msg/msg.h"
 #include "core_protocols/msgpack/msg/msg_info.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 
 void ten_msgpack_msghdr_serialize(ten_msg_t *self, msgpack_packer *pck) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && pck,

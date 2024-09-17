@@ -1,5 +1,5 @@
 //
-// This file is part of the TEN Framework project.
+// This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -22,8 +22,8 @@
 #include "include_internal/ten_runtime/msg/audio_frame/field/field.h"
 
 #ifdef __cplusplus
-  #error \
-      "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
+#error \
+    "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
 #endif
 
 static const ten_protocol_msgpack_msg_field_info_t

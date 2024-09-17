@@ -1,5 +1,5 @@
 //
-// This file is part of the TEN Framework project.
+// This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -11,10 +11,10 @@
 #include "core_protocols/msgpack/common/common.h"
 #include "core_protocols/msgpack/common/value.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "msgpack/object.h"
 #include "msgpack/pack.h"
 #include "ten_utils/container/list_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value_kv.h"
 
 void ten_msgpack_msg_properties_serialize(ten_msg_t *self,

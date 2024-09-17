@@ -1,5 +1,5 @@
 //
-// This file is part of the TEN Framework project.
+// This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -7,7 +7,6 @@
 
 #include "core_protocols/msgpack/common/common.h"
 #include "core_protocols/msgpack/common/value.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_kv.h"
 #include "msgpack/object.h"
 #include "msgpack/pack.h"
@@ -15,6 +14,7 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value_get.h"
