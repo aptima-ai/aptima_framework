@@ -10,56 +10,68 @@
 #include <assert.h>
 #include <time.h>
 
-#include "include_internal/ten_utils/log/format.h"
 #include "include_internal/ten_utils/log/time_cache.h"
+#include "ten_utils/lib/string.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-  #include <windows.h>
+#if defined(OS_WINDOWS)
+#include <windows.h>
 #else
 
-  #include <sys/time.h>
-  #include <unistd.h>
+#include <sys/time.h>
+#include <unistd.h>
 
-  #if defined(__linux__)
-    #include <linux/limits.h>
-  #elif defined(__MACH__)
-    #include <sys/syslimits.h>
-  #endif
+#if defined(OS_LINUX)
+#include <linux/limits.h>
+#elif defined(OS_MACOS)
+#include <sys/syslimits.h>
+#endif
 
 #endif
 
-ten_log_get_time_func_t g_ten_log_get_time = ten_log_get_time;
+// Maximum length of "MM-DD HH:MM:SS.XXX"
+//                     212 1 212 12 1 3 = 18
+#define TIME_LOG_SIZE (size_t)(18 * 2)
 
-void ten_log_get_time(struct tm *tm, size_t *msec) {
-  assert(tm && msec && "Invalid argument.");
+void ten_log_get_time(struct tm *time_info, size_t *msec) {
+  assert(time_info && msec && "Invalid argument.");
 
-#if !_TEN_LOG_MESSAGE_FORMAT_DATETIME_USED
-  VAR_UNUSED(tm);
-  VAR_UNUSED(msec);
-#else
-
-  #if defined(_WIN32) || defined(_WIN64)
+#if defined(OS_WINDOWS)
   SYSTEMTIME st;
   GetLocalTime(&st);
-  tm->tm_year = st.wYear;
-  tm->tm_mon = st.wMonth - 1;
-  tm->tm_mday = st.wDay;
-  tm->tm_wday = st.wDayOfWeek;
-  tm->tm_hour = st.wHour;
-  tm->tm_min = st.wMinute;
-  tm->tm_sec = st.wSecond;
+  time_info->tm_year = st.wYear;
+  time_info->tm_mon = st.wMonth - 1;
+  time_info->tm_mday = st.wDay;
+  time_info->tm_wday = st.wDayOfWeek;
+  time_info->tm_hour = st.wHour;
+  time_info->tm_min = st.wMinute;
+  time_info->tm_sec = st.wSecond;
   *msec = st.wMilliseconds;
-  #else
+#else
   struct timeval tv;
   gettimeofday(&tv, 0);
 
-  if (!ten_log_time_cache_get(&tv, tm)) {
-    localtime_r(&tv.tv_sec, tm);
-    ten_log_time_cache_set(&tv, tm);
+  if (!ten_log_time_cache_get(&tv, time_info)) {
+    (void)localtime_r(&tv.tv_sec, time_info);
+    ten_log_time_cache_set(&tv, time_info);
   }
 
   *msec = (unsigned)tv.tv_usec / 1000;
-  #endif
-
 #endif
+}
+
+void ten_log_add_time_string(ten_string_t *buf, struct tm *time_info,
+                             size_t msec) {
+  assert(buf && "Invalid argument.");
+
+  ten_string_reserve(buf, TIME_LOG_SIZE);
+
+  // Format the date and time into the buffer, excluding milliseconds.
+  size_t written = strftime(&buf->buf[buf->first_unused_idx],
+                            buf->buf_size - buf->first_unused_idx,
+                            "%m-%d %H:%M:%S", time_info);
+  assert(written && "Should not happen.");
+
+  buf->first_unused_idx = strlen(buf->buf);
+
+  ten_string_append_formatted(buf, ".%03zu", msec);
 }

@@ -1128,7 +1128,7 @@ mod tests {
         let property = r#"
         {
           "_ten": {
-            "log_level": 1,
+            "log_level": 2,
             "log_file": "api.log",
             "uri": "localhost"
           },

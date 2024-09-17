@@ -9,11 +9,11 @@
 
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "object.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/signature.h"
-#include "ten_utils/macro/check.h"
 
 bool ten_py_ten_env_check_integrity(ten_py_ten_env_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -170,6 +170,7 @@ PyTypeObject *ten_py_ten_env_type(void) {
       {"is_cmd_connected", ten_py_ten_env_is_cmd_connected, METH_VARARGS, NULL},
       {"init_property_from_json", ten_py_ten_env_init_property_from_json,
        METH_VARARGS, NULL},
+      {"log", ten_py_ten_env_log, METH_VARARGS, NULL},
       {NULL, NULL, 0, NULL},
   };
 

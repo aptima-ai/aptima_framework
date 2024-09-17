@@ -14,13 +14,13 @@
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/metadata/default/default.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/path.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 
 bool ten_metadata_info_check_integrity(ten_metadata_info_t *self) {
   TEN_ASSERT(self, "Should not happen.");

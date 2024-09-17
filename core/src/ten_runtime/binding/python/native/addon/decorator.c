@@ -11,6 +11,7 @@
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/addon/extension_group/extension_group.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/mark.h"
 
 static PyObject *ten_py_decorator_register_addon_create(
     PyTypeObject *ty, PyObject *args, TEN_UNUSED PyObject *kwds) {

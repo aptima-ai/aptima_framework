@@ -11,13 +11,15 @@
 #include "include_internal/ten_runtime/app/migration.h"
 #include "include_internal/ten_runtime/connection/connection.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
+#include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
 #include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/global/global.h"
 #include "ten_runtime/protocol/context_store.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
@@ -27,8 +29,7 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 #include "ten_utils/value/value.h"
 
@@ -184,8 +185,6 @@ void ten_app_destroy(ten_app_t *self) {
 
   ten_sanitizer_thread_check_deinit(&self->thread_check);
   ten_event_destroy(self->belonging_thread_is_set);
-
-  ten_log_close();
 
   ten_string_deinit(&self->base_dir);
 

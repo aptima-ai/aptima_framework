@@ -9,9 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 bool ten_list_check_integrity(ten_list_t *self) {

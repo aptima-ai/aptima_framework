@@ -7,8 +7,8 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timer/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_utils/lib/json.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 bool ten_cmd_timer_put_timeout_in_us_to_json(ten_msg_t *self, ten_json_t *json,
                                              ten_error_t *err) {

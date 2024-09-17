@@ -8,11 +8,12 @@
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "longobject.h"
 #include "object.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 static ten_py_audio_frame_t *ten_py_audio_frame_create_internal(
     PyTypeObject *py_type) {

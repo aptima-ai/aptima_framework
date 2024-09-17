@@ -10,6 +10,7 @@
 #include "include_internal/ten_runtime/protocol/context.h"
 #include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/protocol/context.h"
 #include "ten_utils/container/hash_table.h"
 #include "ten_utils/container/list.h"
@@ -22,7 +23,6 @@
 #include "ten_utils/lib/rwlock.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/sanitizer/thread_check.h"
 

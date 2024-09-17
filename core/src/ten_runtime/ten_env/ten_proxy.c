@@ -10,11 +10,11 @@
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list_ptr.h"
-#include "ten_utils/macro/check.h"
 
 void ten_env_add_ten_proxy(ten_env_t *self, ten_env_proxy_t *ten_env_proxy) {
   TEN_ASSERT(self && ten_env_check_integrity(self, true), "Invalid argument.");

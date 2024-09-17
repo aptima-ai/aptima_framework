@@ -9,12 +9,12 @@
 #include <sys/time.h>
 
 #include "include_internal/ten_utils/lib/mutex.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/cond.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/macro/check.h"
 
 #define TEN_EVENT_SIGNATURE 0xB5F7D324A07B41E4U
 

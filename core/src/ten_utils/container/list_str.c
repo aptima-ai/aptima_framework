@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
-#include "ten_utils/macro/check.h"
 
 void ten_list_push_str_back(ten_list_t *self, const char *str) {
   TEN_ASSERT(self && ten_list_check_integrity(self) && str,

@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/engine/internal/thread.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
-#include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/remote/remote.h"
 #include "include_internal/ten_runtime/timer/timer.h"
@@ -22,9 +21,9 @@
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/atomic.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
+#include "ten_utils/macro/mark.h"
 
 static void ten_engine_close_sync(ten_engine_t *self) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),

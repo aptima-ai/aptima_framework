@@ -10,8 +10,9 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
@@ -20,7 +21,6 @@
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 typedef struct ten_env_notify_set_property_info_t {
@@ -91,10 +91,11 @@ static void ten_go_ten_env_set_property(ten_go_ten_env_t *self,
 
   ten_error_t err;
   ten_error_init(&err);
+
   ten_env_notify_set_property_info_t *info =
       ten_env_notify_set_property_info_create(path, path_len, value);
 
-  if (!ten_env_proxy_notify(self->c_ten_proxy, ten_env_notify_set_property,
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_set_property,
                             info, false, &err)) {
     ten_go_status_from_error(status, &err);
     goto done;
@@ -104,14 +105,16 @@ static void ten_go_ten_env_set_property(ten_go_ten_env_t *self,
 
 done:
   ten_env_notify_set_property_info_destroy(info);
+
   ten_error_deinit(&err);
+
   TEN_GO_TEN_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_bool(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_bool(uintptr_t bridge_addr,
                                                  const void *path, int path_len,
                                                  bool value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -130,7 +133,7 @@ ten_go_status_t ten_go_ten_env_property_set_bool(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_int8(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_int8(uintptr_t bridge_addr,
                                                  const void *path, int path_len,
                                                  int8_t value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -149,7 +152,7 @@ ten_go_status_t ten_go_ten_env_property_set_int8(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_int16(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_int16(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len, int16_t value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -168,7 +171,7 @@ ten_go_status_t ten_go_ten_env_property_set_int16(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_int32(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_int32(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len, int32_t value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -187,7 +190,7 @@ ten_go_status_t ten_go_ten_env_property_set_int32(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_int64(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_int64(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len, int64_t value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -206,7 +209,7 @@ ten_go_status_t ten_go_ten_env_property_set_int64(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_uint8(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_uint8(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len, uint8_t value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -225,7 +228,7 @@ ten_go_status_t ten_go_ten_env_property_set_uint8(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_uint16(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_uint16(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    uint16_t value) {
@@ -245,7 +248,7 @@ ten_go_status_t ten_go_ten_env_property_set_uint16(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_uint32(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_uint32(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    uint32_t value) {
@@ -265,7 +268,7 @@ ten_go_status_t ten_go_ten_env_property_set_uint32(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_uint64(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_uint64(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    uint64_t value) {
@@ -285,7 +288,7 @@ ten_go_status_t ten_go_ten_env_property_set_uint64(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_float32(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_float32(uintptr_t bridge_addr,
                                                     const void *path,
                                                     int path_len, float value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -304,7 +307,7 @@ ten_go_status_t ten_go_ten_env_property_set_float32(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_float64(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_float64(uintptr_t bridge_addr,
                                                     const void *path,
                                                     int path_len,
                                                     double value) {
@@ -324,7 +327,7 @@ ten_go_status_t ten_go_ten_env_property_set_float64(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_string(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_string(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    const void *value,
@@ -355,7 +358,7 @@ ten_go_status_t ten_go_ten_env_property_set_string(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_buf(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_buf(uintptr_t bridge_addr,
                                                 const void *path, int path_len,
                                                 void *value, int value_len) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -374,7 +377,7 @@ ten_go_status_t ten_go_ten_env_property_set_buf(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_ptr(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
                                                 const void *path, int path_len,
                                                 ten_go_handle_t value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -393,7 +396,7 @@ ten_go_status_t ten_go_ten_env_property_set_ptr(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_set_json_bytes(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_set_property_json_bytes(uintptr_t bridge_addr,
                                                        const void *path,
                                                        int path_len,
                                                        const void *json_str,

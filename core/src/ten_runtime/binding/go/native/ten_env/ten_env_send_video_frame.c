@@ -10,13 +10,14 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 typedef struct ten_env_notify_send_video_frame_info_t {
   ten_shared_ptr_t *c_video_frame;
@@ -89,8 +90,9 @@ ten_go_status_t ten_go_ten_env_send_video_frame(
       ten_env_notify_send_video_frame_info_create(
           ten_go_msg_move_c_msg(video_frame));
 
-  if (!ten_env_proxy_notify(self->c_ten_proxy, ten_env_notify_send_video_frame,
-                            notify_info, false, &err)) {
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy,
+                            ten_env_notify_send_video_frame, notify_info, false,
+                            &err)) {
     ten_env_notify_send_video_frame_info_destroy(notify_info);
     ten_go_status_from_error(&status, &err);
   }

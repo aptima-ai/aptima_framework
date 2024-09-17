@@ -9,6 +9,7 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/macro/mark.h"
 
 static void ten_env_notify_on_start_done(ten_env_t *ten_env,
                                          TEN_UNUSED void *user_data) {

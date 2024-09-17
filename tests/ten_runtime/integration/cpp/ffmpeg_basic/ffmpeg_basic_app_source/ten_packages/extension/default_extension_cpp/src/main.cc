@@ -5,8 +5,8 @@
 //
 #include <nlohmann/json.hpp>
 
-#include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/macro/check.h"
+#include "ten_runtime/binding/cpp/ten.h"
 
 class ffmpeg_client_extension : public ten::extension_t {
  public:

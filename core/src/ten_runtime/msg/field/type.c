@@ -7,8 +7,9 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/json.h"
+#include "ten_utils/macro/mark.h"
 
 bool ten_raw_msg_type_from_json(ten_msg_t *self, ten_json_t *json,
                                 TEN_UNUSED ten_error_t *err) {

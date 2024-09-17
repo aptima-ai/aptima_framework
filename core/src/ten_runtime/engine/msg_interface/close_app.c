@@ -11,8 +11,9 @@
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/engine/internal/thread.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_runtime/app/app.h"
 #include "ten_utils/macro/check.h"
+#include "ten_runtime/app/app.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_engine_handle_cmd_close_app(ten_engine_t *self, ten_shared_ptr_t *cmd,
                                      TEN_UNUSED ten_error_t *err) {

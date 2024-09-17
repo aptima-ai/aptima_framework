@@ -11,7 +11,6 @@
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/extension_group/extension_group.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 static ten_addon_store_t g_extension_group_store = {

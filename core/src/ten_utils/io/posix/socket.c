@@ -12,7 +12,6 @@
 #include <unistd.h>
 
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 

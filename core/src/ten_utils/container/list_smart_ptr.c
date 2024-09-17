@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/container/list_node_smart_ptr.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 
 ten_listnode_t *ten_list_find_shared_ptr_custom_(
     ten_list_t *self, const void *ptr,

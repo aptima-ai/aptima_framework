@@ -154,7 +154,7 @@ TEN_UTILS_API void ten_runloop_async_destroy(ten_runloop_async_t *async);
  * @brief Notify the signal.
  * @param async The signal.
  * @return 0 if success, -1 otherwise.
- * @note The signal callback will be called in the thread of |loop| that inited
+ * @note The signal callback will be called in the thread of |loop| that initted
  */
 TEN_UTILS_API int ten_runloop_async_notify(ten_runloop_async_t *async);
 

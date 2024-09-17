@@ -10,8 +10,8 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lib/json.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 bool ten_cmd_result_put_original_cmd_type_to_json(ten_msg_t *self,
                                                   ten_json_t *json,

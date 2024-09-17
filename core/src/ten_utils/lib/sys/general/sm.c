@@ -22,7 +22,7 @@ struct ten_sm_t {
   int begin_state;
   ten_sm_op default_op;
   ten_list_t history;
-  int inited;
+  int initted;
 };
 
 ten_sm_t *ten_state_machine_create() {
@@ -110,7 +110,7 @@ int ten_state_machine_init(ten_sm_t *sm, int begin_state, ten_sm_op default_op,
   }
 
   ten_mutex_lock(sm->lock);
-  if (sm->entries || sm->entry_count || sm->inited) {
+  if (sm->entries || sm->entry_count || sm->initted) {
     goto leave_and_error;
   }
 
@@ -121,7 +121,7 @@ int ten_state_machine_init(ten_sm_t *sm, int begin_state, ten_sm_op default_op,
   sm->current_state = begin_state;
   sm->begin_state = begin_state;
   sm->default_op = default_op;
-  sm->inited = 1;
+  sm->initted = 1;
   ten_mutex_unlock(sm->lock);
   return 0;
 
@@ -145,7 +145,7 @@ int ten_state_machine_reset_state(ten_sm_t *sm) {
   }
 
   ten_mutex_lock(sm->lock);
-  if (!sm->entries || !sm->entry_count || !sm->inited) {
+  if (!sm->entries || !sm->entry_count || !sm->initted) {
     goto leave_and_error;
   }
 
@@ -177,7 +177,7 @@ int ten_state_machine_trigger(ten_sm_t *sm, int event, int reason, void *arg) {
   }
 
   ten_mutex_lock(sm->lock);
-  if (!sm->entries || !sm->entry_count || !sm->inited) {
+  if (!sm->entries || !sm->entry_count || !sm->initted) {
     goto leave_and_error;
   }
 

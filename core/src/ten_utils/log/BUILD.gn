@@ -6,5 +6,4 @@
 import("//build/ten_utils/utils.gni")
 
 ten_utils_glob("log") {
-  deps = [ "platform" ]
 }

@@ -13,6 +13,7 @@
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/mark.h"
 
 #define TEN_CMD_STATUS_SIGNATURE 0x9EAF798217CDEC8DU
 

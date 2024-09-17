@@ -9,10 +9,10 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension/extension.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 bool ten_loc_check_integrity(ten_loc_t *self) {
   TEN_ASSERT(self, "Should not happen.");

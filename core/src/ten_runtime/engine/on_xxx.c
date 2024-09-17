@@ -16,12 +16,13 @@
 #include "include_internal/ten_runtime/extension_thread/on_xxx.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
 void ten_engine_on_all_extensions_added(void *self_, void *arg) {
@@ -117,7 +118,7 @@ void ten_engine_on_extension_thread_inited(void *self_, void *arg) {
   self->extension_context->extension_threads_cnt_of_inited++;
   if (self->extension_context->extension_threads_cnt_of_inited ==
       ten_list_size(&self->extension_context->extension_threads)) {
-    TEN_LOGD("[%s] All extension threads are inited.",
+    TEN_LOGD("[%s] All extension threads are initted.",
              ten_engine_get_name(self));
 
     ten_list_foreach (&self->extension_context->extension_threads, iter) {
@@ -171,8 +172,9 @@ void ten_engine_on_extension_thread_inited(void *self_, void *arg) {
     extension_thread->extension_context->state_requester_cmd = NULL;
 
 #if defined(_DEBUG)
-    ten_msg_dump(returned_cmd, NULL,
-                 "Return extension-system-inited-result to previous stage: ^m");
+    ten_msg_dump(
+        returned_cmd, NULL,
+        "Return extension-system-initted-result to previous stage: ^m");
 #endif
 
     ten_engine_dispatch_msg(self, returned_cmd);

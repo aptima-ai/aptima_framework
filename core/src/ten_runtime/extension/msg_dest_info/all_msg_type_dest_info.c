@@ -7,11 +7,11 @@
 
 #include "include_internal/ten_runtime/extension/extension_hdr.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/container/list_smart_ptr.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 
 void ten_all_msg_type_dest_static_info_init(
     ten_all_msg_type_dest_static_info_t *self) {

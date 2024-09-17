@@ -9,9 +9,10 @@
 
 #include "core_protocols/msgpack/common/common.h"
 #include "core_protocols/msgpack/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "msgpack.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_msgpack_parser_init(ten_msgpack_parser_t *self) {
   TEN_ASSERT(self, "Invalid argument.");

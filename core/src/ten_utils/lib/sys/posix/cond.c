@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/mutex.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 struct ten_cond_t {

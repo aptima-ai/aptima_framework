@@ -5,10 +5,10 @@
 //
 #include "include_internal/ten_utils/schema/bindings/rust/schema.h"
 
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/schema.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/macro/check.h"
 
 ten_schema_t *ten_schema_create_from_json_string_proxy(const char *json_string,
                                                        const char **err_msg) {

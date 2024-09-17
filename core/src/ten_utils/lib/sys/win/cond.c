@@ -8,10 +8,10 @@
 #include <Windows.h>
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/time.h"
-#include "ten_utils/macro/check.h"
 
 struct ten_cond_t {
   CONDITION_VARIABLE cond;

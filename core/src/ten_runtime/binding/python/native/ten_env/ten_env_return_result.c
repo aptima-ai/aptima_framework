@@ -80,7 +80,7 @@ PyObject *ten_py_ten_env_return_result(PyObject *self, PyObject *args) {
 
   if (PyTuple_GET_SIZE(args) != 2) {
     return ten_py_raise_py_value_error_exception(
-        "Invalid argument count when ten.ten_py_ten_env_return_result.");
+        "Invalid argument count when ten_env.return_result.");
   }
 
   bool success = true;
@@ -145,8 +145,7 @@ PyObject *ten_py_ten_env_return_result_directly(PyObject *self,
 
   if (PyTuple_GET_SIZE(args) != 1) {
     return ten_py_raise_py_value_error_exception(
-        "Invalid argument count when "
-        "ten.ten_py_ten_env_return_result_directly.");
+        "Invalid argument count when ten_env.return_result_directly.");
   }
 
   bool success = true;

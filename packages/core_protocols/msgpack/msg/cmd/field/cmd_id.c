@@ -8,8 +8,8 @@
 #include <assert.h>
 
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
-#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/string.h"
 
 void ten_msgpack_cmd_id_serialize(ten_msg_t *self, msgpack_packer *pck) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && pck,

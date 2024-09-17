@@ -3,7 +3,7 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "ten_utils/io/general/transport/backend/uv/stream/pipe.h"
+#include "include_internal/ten_utils/io/general/transport/backend/uv/stream/pipe.h"
 
 #include <stdlib.h>
 #include <uv.h>

@@ -3,27 +3,71 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "include_internal/ten_runtime/ten_env/log.h"
+#include "ten_runtime/ten_env/internal/log.h"
 
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_utils/log/log.h"
 #include "ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/log/log.h"
+#include "ten_utils/lib/string.h"
 
-static void ten_vlog(ten_env_t *self, const char *func_name,
-                     const char *file_name, const size_t lineno,
-                     TEN_LOG_LEVEL level, const char *tag, const char *fmt,
-                     va_list va) {
-  TEN_ASSERT(self && ten_env_check_integrity(self, true), "Should not happen.");
+static void ten_env_log_internal(ten_env_t *self, TEN_LOG_LEVEL level,
+                                 const char *func_name, const char *file_name,
+                                 size_t line_no, const char *msg,
+                                 bool check_thread) {
+  TEN_ASSERT(self && ten_env_check_integrity(self, check_thread),
+             "Should not happen.");
 
-  ten_log_vwrite_d(func_name, file_name, lineno, level, tag, fmt, va);
+  ten_string_t final_msg;
+  ten_string_init_formatted(
+      &final_msg, "[%s] %s",
+      ten_env_get_attached_instance_name(self, check_thread), msg);
+
+  ten_log_log(&ten_global_log, level, func_name, file_name, line_no,
+              ten_string_get_raw_str(&final_msg));
+
+  ten_string_deinit(&final_msg);
 }
 
-void ten_log(ten_env_t *self, const char *func_name, const char *file_name,
-             const size_t lineno, TEN_LOG_LEVEL level, const char *tag,
-             const char *fmt, ...) {
+// TODO(Wei): This function is currently specifically designed for the addon
+// because the addon currently does not have a main thread, so it's unable to
+// check thread safety. Once the main thread for the addon is determined in the
+// future, these hacks made specifically for the addon can be completely
+// removed, and comprehensive thread safety checking can be implemented.
+void ten_env_log_without_check_thread(ten_env_t *self, TEN_LOG_LEVEL level,
+                                      const char *func_name,
+                                      const char *file_name, size_t line_no,
+                                      const char *msg) {
+  ten_env_log_internal(self, level, func_name, file_name, line_no, msg, false);
+}
+
+void ten_env_log(ten_env_t *self, TEN_LOG_LEVEL level, const char *func_name,
+                 const char *file_name, size_t line_no, const char *msg) {
+  ten_env_log_internal(self, level, func_name, file_name, line_no, msg, true);
+}
+
+void ten_env_log_with_size_formatted(ten_env_t *self, TEN_LOG_LEVEL level,
+                                     const char *func_name,
+                                     size_t func_name_len,
+                                     const char *file_name,
+                                     size_t file_name_len, size_t line_no,
+                                     const char *fmt, ...) {
   TEN_ASSERT(self && ten_env_check_integrity(self, true), "Should not happen.");
 
-  va_list va;
-  va_start(va, fmt);
-  ten_vlog(self, func_name, file_name, lineno, level, tag, fmt, va);
-  va_end(va);
+  ten_string_t final_msg;
+  ten_string_init_formatted(&final_msg, "[%s] ",
+                            ten_env_get_attached_instance_name(self, true));
+
+  va_list ap;
+  va_start(ap, fmt);
+
+  ten_string_append_from_va_list(&final_msg, fmt, ap);
+
+  va_end(ap);
+
+  ten_log_log_with_size(&ten_global_log, level, func_name, func_name_len,
+                        file_name, file_name_len, line_no,
+                        ten_string_get_raw_str(&final_msg),
+                        ten_string_len(&final_msg));
+
+  ten_string_deinit(&final_msg);
 }

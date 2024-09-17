@@ -88,13 +88,15 @@ TEN_RUNTIME_API bool ten_extension_thread_not_call_by_me(
 TEN_RUNTIME_PRIVATE_API bool ten_extension_thread_call_by_me(
     ten_extension_thread_t *self);
 
-TEN_RUNTIME_PRIVATE_API bool ten_extension_thread_check_integrity_if_in_lock_mode(
+TEN_RUNTIME_PRIVATE_API bool
+ten_extension_thread_check_integrity_if_in_lock_mode(
     ten_extension_thread_t *self);
 
 TEN_RUNTIME_PRIVATE_API bool ten_extension_thread_check_integrity(
     ten_extension_thread_t *self, bool check_thread);
 
-TEN_RUNTIME_PRIVATE_API ten_extension_thread_t *ten_extension_thread_create(void);
+TEN_RUNTIME_PRIVATE_API ten_extension_thread_t *ten_extension_thread_create(
+    void);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_thread_attach_to_context_and_group(
     ten_extension_thread_t *self, ten_extension_context_t *extension_context,
@@ -135,8 +137,8 @@ TEN_RUNTIME_PRIVATE_API void
 ten_extension_thread_start_to_add_all_created_extension_to_engine(
     ten_extension_thread_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_runloop_t *ten_extension_thread_get_attached_runloop(
-    ten_extension_thread_t *self);
+TEN_RUNTIME_PRIVATE_API ten_runloop_t *
+ten_extension_thread_get_attached_runloop(ten_extension_thread_t *self);
 
-TEN_RUNTIME_PRIVATE_API void ten_extension_thread_process_acquire_lock_mode_task(
-    void *self_, void *arg);
+TEN_RUNTIME_PRIVATE_API void
+ten_extension_thread_process_acquire_lock_mode_task(void *self_, void *arg);

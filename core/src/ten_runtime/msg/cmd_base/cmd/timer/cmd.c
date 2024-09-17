@@ -11,6 +11,7 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timer/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_path.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
@@ -18,7 +19,6 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_is.h"
 

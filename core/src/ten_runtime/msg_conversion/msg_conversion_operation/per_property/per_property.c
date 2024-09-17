@@ -9,9 +9,9 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/base.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/per_property/rules.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"
 

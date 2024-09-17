@@ -12,6 +12,7 @@
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 
 typedef struct ten_env_notify_send_json_info_t {

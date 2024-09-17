@@ -18,13 +18,13 @@
 #include "include_internal/ten_runtime/extension_group/extension_group_info/json.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/value.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value_get.h"
 
 ten_predefined_graph_info_t *ten_predefined_graph_info_create(void) {

@@ -10,6 +10,7 @@
 
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_smart_ptr.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/common/errno.h"
@@ -19,7 +20,6 @@
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"

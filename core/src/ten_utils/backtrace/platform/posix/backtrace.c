@@ -6,13 +6,14 @@
 // This file is modified from
 // https://github.com/ianlancetaylor/libbacktrace [BSD license]
 //
-#include "ten_utils/backtrace/backtrace.h"
+#include "ten_utils/ten_config.h"
+
+#include "include_internal/ten_utils/backtrace/backtrace.h"
 
 #include <assert.h>
 #include <sys/types.h>
 
-#include "internal.h"
-#include "ten_utils/ten_config.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
 #include "unwind.h"
 
 /**

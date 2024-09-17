@@ -9,7 +9,6 @@
 
 #include "include_internal/ten_utils/sanitizer/thread_check.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 bool ten_sanitizer_thread_check_check_integrity(

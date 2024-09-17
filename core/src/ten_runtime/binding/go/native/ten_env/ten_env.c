@@ -12,15 +12,15 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 
 bool ten_go_ten_env_check_integrity(ten_go_ten_env_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -55,7 +55,7 @@ static void ten_go_ten_env_destroy_c_part(void *ten_bridge_) {
   ten_go_ten_env_t *ten_bridge = (ten_go_ten_env_t *)ten_bridge_;
   TEN_ASSERT(ten_bridge && ten_go_ten_env_check_integrity(ten_bridge),
              "Should not happen.");
-  ten_bridge->c_ten = NULL;
+  ten_bridge->c_ten_env = NULL;
   ten_go_bridge_destroy_c_part(&ten_bridge->bridge);
 
   // Remove the Go ten object from the global map.
@@ -68,7 +68,7 @@ static void ten_go_ten_env_close(void *ten_bridge_) {
              "Should not happen.");
 
   ten_rwlock_lock(ten_bridge->lock, 0);
-  ten_bridge->c_ten = NULL;
+  ten_bridge->c_ten_env = NULL;
   ten_rwlock_unlock(ten_bridge->lock, 0);
 }
 
@@ -95,8 +95,8 @@ ten_go_ten_env_t *ten_go_ten_env_wrap(ten_env_t *c_ten) {
   ten_bridge->bridge.sp_ref_by_go =
       ten_shared_ptr_clone(ten_bridge->bridge.sp_ref_by_c);
 
-  ten_bridge->c_ten = c_ten;
-  ten_bridge->c_ten_proxy = NULL;
+  ten_bridge->c_ten_env = c_ten;
+  ten_bridge->c_ten_env_proxy = NULL;
 
   ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)c_ten,
                                            ten_bridge);
@@ -130,7 +130,7 @@ const char *ten_go_ten_env_debug_info(uintptr_t bridge_addr) {
 
   ten_string_t debug_info;
   ten_string_init_formatted(&debug_info, "ten attach_to type: %d",
-                            self->c_ten->attach_to);
+                            self->c_ten_env->attach_to);
   const char *res = ten_go_str_dup(ten_string_get_raw_str(&debug_info));
 
   ten_string_deinit(&debug_info);

@@ -11,6 +11,7 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/extension_group/extension_group.h"
@@ -19,7 +20,7 @@
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/mutex.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 // There's no need to check for thread-safety, as ten_env_proxy is inherently
 // designed to be used in a multi-threaded environment.

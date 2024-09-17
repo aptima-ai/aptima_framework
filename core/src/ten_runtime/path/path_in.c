@@ -7,8 +7,8 @@
 
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_table.h"
-#include "ten_utils/lib/alloc.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/alloc.h"
 
 ten_path_in_t *ten_path_in_create(
     ten_path_table_t *table, const char *cmd_name, const char *parent_cmd_id,

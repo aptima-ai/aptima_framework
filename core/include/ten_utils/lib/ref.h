@@ -24,13 +24,13 @@ typedef struct ten_ref_t {
   ten_atomic_t ref_cnt;
 
   // The object which is managed by this 'ten_ref_t'. This field should _not_ be
-  // modified after 'ten_ref_t' has been inited, therefore, we don't need to
+  // modified after 'ten_ref_t' has been initted, therefore, we don't need to
   // care about its thread safety.
   void *supervisee;
 
   // This function will be called when the end-of-life of 'supervisee' is
   // reached. This field should _not_ be modified after 'ten_ref_t' has been
-  // inited, therefore, we don't need to care about its thread safety.
+  // initted, therefore, we don't need to care about its thread safety.
   ten_ref_on_end_of_life_func_t on_end_of_life;
 } ten_ref_t;
 

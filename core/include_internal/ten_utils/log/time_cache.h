@@ -12,14 +12,14 @@
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
-  #include <sys/time.h>
-  #include <unistd.h>
+#include <sys/time.h>
+#include <unistd.h>
 
-  #if defined(__linux__)
-    #include <linux/limits.h>
-  #elif defined(__MACH__)
-    #include <sys/syslimits.h>
-  #endif
+#if defined(__linux__)
+#include <linux/limits.h>
+#elif defined(__MACH__)
+#include <sys/syslimits.h>
+#endif
 
 TEN_UTILS_PRIVATE_API bool ten_log_time_cache_get(const struct timeval *tv,
                                                   struct tm *tm);

@@ -6,6 +6,7 @@
 #include "include_internal/ten_runtime/schema_store/property.h"
 
 #include "include_internal/ten_runtime/common/constant_str.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/constant_str.h"
 #include "include_internal/ten_utils/schema/keywords/keyword.h"
 #include "include_internal/ten_utils/schema/schema.h"
@@ -13,7 +14,6 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"

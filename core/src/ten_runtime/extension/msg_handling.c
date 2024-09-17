@@ -26,7 +26,6 @@
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 static void ten_extension_cache_cmd_result_to_in_path_for_auto_return(

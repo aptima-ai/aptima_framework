@@ -3,12 +3,11 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "include_internal/ten_runtime/addon/addon_autoload.h"
 #include "include_internal/ten_runtime/common/log.h"
+#include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
-#include "ten_runtime/global/global.h"
-#include "ten_utils/backtrace/backtrace.h"
-#include "ten_utils/log/log.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/log/log.h"
 #include "ten_utils/macro/ctor.h"
 #include "ten_utils/sanitizer/memory_check.h"
 
@@ -31,11 +30,13 @@ TEN_CONSTRUCTOR(ten_runtime_on_load) {
   ten_global_init();
 
   ten_global_setup_signal_stuff();
-  ten_log_set_output_level(DEFAULT_LOG_LEVEL);
+  ten_log_global_init();
+  ten_log_global_set_output_level(DEFAULT_LOG_OUTPUT_LEVEL);
 }
 
 TEN_DESTRUCTOR(ten_runtime_on_unload) {
   ten_global_deinit();
+  ten_log_global_deinit();
   ten_backtrace_destroy_global();
   ten_global_signal_alt_stack_destroy();
   ten_sanitizer_memory_record_deinit();

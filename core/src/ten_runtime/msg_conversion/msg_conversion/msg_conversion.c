@@ -12,6 +12,7 @@
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_and_result_conversion.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_and_result_conversion_operation.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/base.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
@@ -20,7 +21,6 @@
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 
 bool ten_msg_conversion_check_integrity(ten_msg_conversion_t *self) {

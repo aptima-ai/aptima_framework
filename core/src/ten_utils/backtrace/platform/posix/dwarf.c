@@ -13,9 +13,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "internal.h"
-#include "ten_utils/backtrace/backtrace.h"
-#include "ten_utils/backtrace/platform/posix/internal.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
 #include "ten_utils/container/vector.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic.h"

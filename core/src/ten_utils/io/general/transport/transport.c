@@ -8,11 +8,11 @@
 #include <stdlib.h>
 
 #include "include_internal/ten_utils/io/runloop.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/io/general/transport/backend/base.h"
 #include "ten_utils/io/general/transport/backend/factory.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 // Destroy all the resources hold by this transport object.

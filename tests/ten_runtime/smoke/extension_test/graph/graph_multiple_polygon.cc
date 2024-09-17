@@ -188,7 +188,7 @@ class test_app_1 : public ten::app_t {
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "long_running_mode": true,
-                        "log_level": 1
+                        "log_level": 2
                       }
                     })"
         // clang-format on
@@ -208,7 +208,7 @@ class test_app_2 : public ten::app_t {
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8002/",
                         "long_running_mode": true,
-                        "log_level": 1
+                        "log_level": 2
                       }
                     })"
         // clang-format on
@@ -228,7 +228,7 @@ class test_app_3 : public ten::app_t {
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8003/",
                         "long_running_mode": true,
-                        "log_level": 1
+                        "log_level": 2
                       }
                     })"
         // clang-format on

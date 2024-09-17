@@ -16,9 +16,13 @@ type defaultApp struct {
 	ten.DefaultApp
 }
 
-func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
-	fmt.Println("defaultApp onDeinit")
+func (p *defaultApp) OnInit(tenEnv ten.TenEnv) {
+	tenEnv.LogDebug("onInit")
+	tenEnv.OnInitDone()
+}
 
+func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
+	tenEnv.LogDebug("onDeinit")
 	tenEnv.OnDeinitDone()
 }
 

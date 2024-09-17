@@ -12,11 +12,11 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/lib/time.h"
-#include "ten_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -344,7 +344,7 @@ class test_app : public ten::app_t {
                  R"({
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8001/",
-                        "log_level": 1
+                        "log_level": 2
                       }
                     })"
         // clang-format on

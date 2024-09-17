@@ -7,10 +7,10 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 // NOLINTNEXTLINE(misc-no-recursion)
 ten_json_t *ten_extension_group_info_to_json(ten_extension_group_info_t *self) {

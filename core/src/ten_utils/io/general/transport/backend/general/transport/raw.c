@@ -18,6 +18,7 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread_once.h"
 #include "ten_utils/macro/field.h"
+#include "ten_utils/macro/mark.h"
 
 #define TEN_STREAMBACKEND_RAW_SIGNATURE 0x861D0758EA843916U
 

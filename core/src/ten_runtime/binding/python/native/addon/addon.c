@@ -20,6 +20,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/mark.h"
 
 static bool ten_py_addon_check_integrity(ten_py_addon_t *self) {
   TEN_ASSERT(self, "Should not happen.");

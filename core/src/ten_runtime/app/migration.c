@@ -9,8 +9,9 @@
 #include "include_internal/ten_runtime/app/close.h"
 #include "include_internal/ten_runtime/connection/connection.h"
 #include "include_internal/ten_runtime/engine/engine.h"
-#include "ten_utils/io/runloop.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/io/runloop.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_app_clean_connection(ten_app_t *self, ten_connection_t *connection) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true),

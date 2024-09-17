@@ -3,7 +3,7 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
 
 #include <assert.h>
 #include <execinfo.h>
@@ -11,9 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ten_utils/backtrace/common.h"
+#include "include_internal/ten_utils/backtrace/common.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/log/log.h"
 
 /**
  * @note On Mac, we are currently using a simple method instead of a complicated
@@ -58,7 +57,7 @@ void ten_backtrace_dump(ten_backtrace_t *self, size_t skip) {
   int frames = backtrace(call_stack, 128);
   char **strs = backtrace_symbols(call_stack, frames);
   for (size_t i = skip; i < frames; ++i) {
-    TEN_LOGE_AUX(((ten_backtrace_common_t *)self)->log, "%s", strs[i]);
+    TEN_LOGE("%s", strs[i]);
   }
   free(strs);
 }

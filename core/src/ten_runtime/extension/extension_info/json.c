@@ -10,11 +10,11 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/json.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 static ten_json_t *pack_msg_dest(ten_extension_info_t *self,
                                  ten_list_t *msg_dests, ten_error_t *err) {

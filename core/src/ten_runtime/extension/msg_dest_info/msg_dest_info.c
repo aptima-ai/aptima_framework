@@ -9,11 +9,11 @@
 
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/extension_info/json.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list_node_smart_ptr.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 bool ten_msg_dest_static_info_check_integrity(
     ten_msg_dest_static_info_t *self) {

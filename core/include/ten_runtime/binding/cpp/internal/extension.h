@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/cpp/internal/common.h"
 #include "ten_runtime/binding/cpp/internal/msg/audio_frame.h"
@@ -26,8 +27,6 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 
 using ten_json_t = ::ten_json_t;
 using ten_env_t = struct ten_env_t;

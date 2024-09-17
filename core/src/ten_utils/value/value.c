@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
@@ -20,7 +21,7 @@
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value_kv.h"
@@ -370,7 +371,7 @@ static bool ten_value_init_vastring(ten_value_t *self, const char *fmt,
 
   ten_value_init_string(self);
 
-  ten_string_set_from_va_list(&self->content.string, fmt, ap);
+  ten_string_append_from_va_list(&self->content.string, fmt, ap);
 
   return true;
 }

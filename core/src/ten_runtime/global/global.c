@@ -3,7 +3,7 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "ten_runtime/global/global.h"
+#include "include_internal/ten_runtime/global/global.h"
 
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/common/preserved_metadata.h"

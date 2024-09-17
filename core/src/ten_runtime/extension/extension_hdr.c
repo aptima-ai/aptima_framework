@@ -5,8 +5,8 @@
 //
 #include "include_internal/ten_runtime/extension/extension_hdr.h"
 
-#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/memory.h"
 
 ten_extensionhdr_t *ten_extensionhdr_create_for_extension(

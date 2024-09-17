@@ -5,47 +5,49 @@
 //
 #include "ten_utils/ten_config.h"
 
+#include "ten_utils/lib/string.h"
+
 #if defined(_WIN32) || defined(_WIN64)
-  #include <io.h>
-  #include <windows.h>
+#include <io.h>
+#include <windows.h>
 #else
-  #include <fcntl.h>
-  #include <unistd.h>
+#include <fcntl.h>
+#include <unistd.h>
 #endif
 
-#include "include_internal/ten_utils/log/platform/general/log.h"
-#include "ten_utils/lib/alloc.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "include_internal/ten_utils/log/output.h"
 #include "ten_utils/lib/file.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 
-void ten_log_set_output_v(const uint64_t mask,
-                          const ten_log_output_func_t output_cb,
-                          const ten_log_close_func_t close_cb, void *arg) {
-  ten_log_global_output.mask = mask;
-  ten_log_global_output.arg = arg;
-  ten_log_global_output.output_cb = output_cb;
-  ten_log_global_output.close_cb = close_cb;
+static void ten_log_output_set(ten_log_t *self,
+                               const ten_log_output_func_t output_cb,
+                               const ten_log_close_func_t close_cb,
+                               void *user_data) {
+  assert(self && "Invalid argument.");
+
+  self->output.user_data = user_data;
+  self->output.output_cb = output_cb;
+  self->output.close_cb = close_cb;
 }
 
-static void ten_log_close_file_cb(void *arg) {
-  int *fd = arg;
-  TEN_ASSERT(fd && *fd, "Invalid argument.");
+static void ten_log_close_file_cb(void *user_data) {
+  int *fd = user_data;
+  assert(fd && *fd && "Invalid argument.");
 
 #if defined(_WIN32) || defined(_WIN64)
-  arg = NULL;
+  user_data = NULL;
   HANDLE handle = (HANDLE)_get_osfhandle(*fd);
   CloseHandle(handle);
 #else
   close(*fd);
 #endif
 
-  TEN_FREE(fd);
+  free(fd);
 }
 
 static int *get_log_fd(const char *log_path) {
-  int *fd_ptr = TEN_MALLOC(sizeof(int));
-  TEN_ASSERT(fd_ptr, "Failed to allocate memory.");
+  int *fd_ptr = malloc(sizeof(int));
+  assert(fd_ptr && "Failed to allocate memory.");
 
   FILE *fp = fopen(log_path, "ab");
   *fd_ptr = ten_file_get_fd(fp);
@@ -53,54 +55,61 @@ static int *get_log_fd(const char *log_path) {
   return fd_ptr;
 }
 
-void ten_log_set_output_to_file(const char *log_path) {
-  TEN_ASSERT(log_path, "Invalid argument.");
+static void ten_log_output_file_cb(ten_string_t *msg, void *user_data) {
+  assert(msg && "Invalid argument.");
 
-  int *fd = get_log_fd(log_path);
-
-  ten_log_set_output_v(TEN_LOG_PUT_STD, ten_log_out_file_cb,
-                       ten_log_close_file_cb, fd);
-}
-
-void ten_log_set_output_to_file_aux(ten_log_t *log, const char *log_path) {
-  TEN_ASSERT(log && ten_log_check_integrity(log) && log_path,
-             "Invalid argument.");
-
-  int *fd = get_log_fd(log_path);
-
-  log->format = TEN_LOG_GLOBAL_FORMAT;
-  log->output = ten_log_output_create(TEN_LOG_PUT_STD, ten_log_out_file_cb,
-                                      ten_log_close_file_cb, fd);
-}
-
-void ten_log_set_output_to_stderr(void) {
-  ten_log_set_output_v(TEN_LOG_PUT_STD, ten_log_out_stderr_cb, NULL, NULL);
-}
-
-void ten_log_set_output_to_stderr_aux(ten_log_t *log) {
-  TEN_ASSERT(log && ten_log_check_integrity(log), "Invalid argument.");
-
-  log->format = TEN_LOG_GLOBAL_FORMAT;
-  log->output = TEN_LOG_GLOBAL_OUTPUT;
-}
-
-void ten_log_save_output_spec(ten_log_output_t *output) {
-  TEN_ASSERT(output, "Invalid argument.");
-  if (!output) {
+  if (!user_data) {
     return;
   }
 
-  output->mask = TEN_LOG_GLOBAL_OUTPUT->mask;
-  output->arg = TEN_LOG_GLOBAL_OUTPUT->arg;
-  output->output_cb = TEN_LOG_GLOBAL_OUTPUT->output_cb;
-  output->close_cb = TEN_LOG_GLOBAL_OUTPUT->close_cb;
+  ten_string_append_formatted(msg, "%s", TEN_LOG_EOL);
+
+#if defined(_WIN32) || defined(_WIN64)
+  HANDLE handle = *(HANDLE *)user_data;
+
+  // WriteFile() is atomic for local files opened with
+  // FILE_APPEND_DATA and without FILE_WRITE_DATA
+  DWORD written;
+  WriteFile(handle, ten_string_get_raw_str(msg), (DWORD)ten_string_len(msg),
+            &written, 0);
+#else
+  int fd = *(int *)user_data;
+
+  // TODO(Wei): write() is atomic for buffers less than or equal to PIPE_BUF,
+  // therefore we need to have some locking mechanism here to prevent log
+  // interleaved.
+  write(fd, ten_string_get_raw_str(msg), ten_string_len(msg));
+#endif
 }
 
-void ten_log_restore_output_spec(ten_log_output_t *output) {
-  TEN_ASSERT(output, "Invalid argument.");
-  if (!output) {
-    return;
-  }
+void ten_log_set_output_to_file(ten_log_t *self, const char *log_path) {
+  assert(log_path && "Invalid argument.");
 
-  ten_log_set_output_p(output);
+  int *fd = get_log_fd(log_path);
+  ten_log_output_set(self, ten_log_output_file_cb, ten_log_close_file_cb, fd);
+}
+
+void ten_log_out_stderr_cb(ten_string_t *msg, void *user_data) {
+  assert(msg && "Invalid argument.");
+
+  (void)user_data;
+
+  ten_string_append_formatted(msg, "%s", TEN_LOG_EOL);
+
+#if defined(_WIN32) || defined(_WIN64)
+  // WriteFile() is atomic for local files opened with FILE_APPEND_DATA and
+  // without FILE_WRITE_DATA
+  DWORD written;
+  WriteFile(GetStdHandle(STD_ERROR_HANDLE), ten_string_get_raw_str(msg),
+            (DWORD)ten_string_len(msg), &written, 0);
+#else
+  // TODO(Wei): write() is atomic for buffers less than or equal to PIPE_BUF,
+  // therefore we need to have some locking mechanism here to prevent log
+  // interleaved.
+  write(STDERR_FILENO, ten_string_get_raw_str(msg), ten_string_len(msg));
+#endif
+}
+
+void ten_log_set_output_to_stderr(ten_log_t *self) {
+  ten_log_output_set(self, ten_log_out_stderr_cb, NULL, NULL);
 }

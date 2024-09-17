@@ -8,9 +8,9 @@
 #include "ten_runtime/ten_config.h"
 
 #include "include_internal/ten_runtime/common/loc.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/container/list.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 #define TEN_MSG_SIGNATURE 0xA9FA53F77185F856U

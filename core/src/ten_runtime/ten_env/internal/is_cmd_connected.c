@@ -14,6 +14,7 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/extension/extension.h"
@@ -21,7 +22,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 typedef struct ten_is_cmd_connected_context_t {
   ten_string_t name;

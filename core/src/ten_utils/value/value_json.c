@@ -6,10 +6,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"

@@ -3,17 +3,18 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
+#include "ten_runtime/binding/go/interface/ten/video_frame.h"
+
 #include <stdint.h>
 
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
-#include "ten_runtime/binding/go/interface/ten/video_frame.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/msg/video_frame/video_frame.h"
-#include "ten_utils/macro/check.h"
 
 ten_go_status_t ten_go_video_frame_create(const void *msg_name,
                                           int msg_name_len,

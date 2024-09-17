@@ -13,13 +13,13 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_and_result_conversion_operation.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 ten_json_t *ten_msg_dest_static_info_to_json(
     ten_msg_dest_static_info_t *self, ten_extension_info_t *src_extension_info,

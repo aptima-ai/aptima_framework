@@ -8,9 +8,9 @@
 #include <assert.h>
 
 #include "core_protocols/msgpack/msg/loc.h"
-#include "core_protocols/msgpack/msg/msg.h"
-#include "ten_utils/lib/string.h"
+#include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/string.h"
 
 void ten_msgpack_msg_dest_serialize(ten_msg_t *self, msgpack_packer *pck) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && pck,

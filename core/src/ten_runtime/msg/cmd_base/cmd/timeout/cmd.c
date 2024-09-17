@@ -10,10 +10,10 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timeout/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 
 static ten_cmd_timeout_t *get_raw_cmd(ten_shared_ptr_t *self) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self), "Should not happen.");

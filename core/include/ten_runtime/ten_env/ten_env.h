@@ -8,6 +8,7 @@
 #include "ten_runtime/ten_config.h"
 
 #include "ten_runtime/common/errno.h"                  // IWYU pragma: keep
+#include "ten_runtime/ten_env/internal/log.h"          // IWYU pragma: keep
 #include "ten_runtime/ten_env/internal/metadata.h"     // IWYU pragma: keep
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"  // IWYU pragma: keep
 #include "ten_runtime/ten_env/internal/return.h"       // IWYU pragma: keep

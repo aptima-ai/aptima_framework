@@ -7,12 +7,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"

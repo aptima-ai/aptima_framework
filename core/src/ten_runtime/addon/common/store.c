@@ -9,12 +9,12 @@
 #include <string.h>
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/atomic.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 void ten_addon_store_init(ten_addon_store_t *store) {
   TEN_ASSERT(store, "Can not init empty addon store.");

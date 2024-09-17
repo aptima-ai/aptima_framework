@@ -6,7 +6,6 @@
 #include <nlohmann/json.hpp>
 
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/mark.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 

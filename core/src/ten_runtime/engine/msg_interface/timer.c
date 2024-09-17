@@ -13,7 +13,6 @@
 #include "include_internal/ten_runtime/timer/timer.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/timer/timer.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 static void ten_engine_timer_on_trigger(ten_timer_t *self,

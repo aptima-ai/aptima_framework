@@ -1,7 +1,7 @@
 {
   "_ten": {
     "uri": "msgpack://127.0.0.1:8007/",
-    "log_level": 1,
+    "log_level": 2,
     "predefined_graphs": [
       {
         "name": "0",

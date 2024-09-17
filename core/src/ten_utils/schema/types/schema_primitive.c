@@ -5,9 +5,9 @@
 //
 #include "include_internal/ten_utils/schema/types/schema_primitive.h"
 
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/schema.h"
 #include "ten_utils/lib/signature.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 bool ten_schema_primitive_check_integrity(ten_schema_primitive_t *self) {

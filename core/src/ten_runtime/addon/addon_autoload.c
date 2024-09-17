@@ -8,23 +8,23 @@
 #include "ten_utils/lib/error.h"
 
 #if defined(OS_LINUX)
-  #define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <stdlib.h>
 #include <string.h>
 
 #if defined(_WIN32) || defined(_WIN64)
-  #include <windows.h>
+#include <windows.h>
 #endif
 
 #include "include_internal/ten_runtime/app/base_dir.h"
+#include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
-#include "ten_runtime/global/global.h"
+#include "include_internal/ten_utils/log/log.h"
 #include "ten_utils/lib/module.h"
 #include "ten_utils/lib/path.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
 
 /**
  * @brief
@@ -267,9 +267,9 @@ bool ten_addon_load_all(ten_error_t *err) {
     goto done;
   }
 
-  #if defined(_WIN32)
+#if defined(_WIN32)
   AddDllDirectory(ten_string_get_raw_str(app_lib_path));
-  #endif
+#endif
 
   for (int i = 0; i < sizeof(folders) / sizeof(folders[0]); i++) {
     ten_string_copy(&module_path, app_path);

@@ -5,8 +5,9 @@
 //
 #pragma once
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/ten_config.h"
+
+#include "ten_utils/macro/check.h"
 
 #define TEN_TYPED_LIST_NODE_SIGNATURE 0x3CE1EAC77F72D345U
 

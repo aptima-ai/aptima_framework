@@ -15,7 +15,6 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/thread_local.h"
 #include "ten_utils/lib/thread_once.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/macro/mark.h"

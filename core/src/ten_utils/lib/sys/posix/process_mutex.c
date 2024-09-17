@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 #define TEN_PROCESS_MUTEX_CREATE_MODE 0644
 

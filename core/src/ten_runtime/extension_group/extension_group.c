@@ -14,6 +14,8 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
@@ -22,8 +24,6 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/sanitizer/thread_check.h"
 #include "ten_utils/value/value.h"
 

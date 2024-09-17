@@ -19,6 +19,8 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/common/errno.h"
@@ -29,8 +31,7 @@
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_extension_thread_handle_start_msg_task(void *self_,
                                                 TEN_UNUSED void *arg) {

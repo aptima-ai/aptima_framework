@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <winbase.h>
 
-#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/string.h"
 
 ten_string_t *ten_path_get_cwd() {
   char *buf = NULL;

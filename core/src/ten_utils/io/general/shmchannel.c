@@ -12,11 +12,12 @@
 #include "ten_utils/lib/shm.h"
 #include "ten_utils/lib/spinlock.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/mark.h"
 
 #if defined(_WIN32)
-  #define TEN_ANYSIZE_ARRAY 1
+#define TEN_ANYSIZE_ARRAY 1
 #else
-  #define TEN_ANYSIZE_ARRAY 0
+#define TEN_ANYSIZE_ARRAY 0
 #endif
 
 typedef struct ten_shm_layout_t {

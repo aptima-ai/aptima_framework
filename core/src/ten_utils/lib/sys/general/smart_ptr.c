@@ -9,10 +9,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic.h"
 #include "ten_utils/lib/signature.h"
-#include "ten_utils/macro/check.h"
 
 #define TEN_SMART_PTR_SIGNATURE 0x7BB9769E3A5CBA5FU
 

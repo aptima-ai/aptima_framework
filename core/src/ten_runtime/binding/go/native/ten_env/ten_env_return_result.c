@@ -12,9 +12,10 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
@@ -22,7 +23,6 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 typedef struct ten_env_notify_return_result_info_t {
@@ -113,7 +113,7 @@ ten_go_status_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
       ten_env_notify_return_result_info_create(
           ten_go_msg_move_c_msg(cmd_result), ten_go_msg_move_c_msg(cmd));
 
-  if (!ten_env_proxy_notify(self->c_ten_proxy, ten_notify_return_result,
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_notify_return_result,
                             return_result_info, false, &err)) {
     ten_env_notify_return_result_info_destroy(return_result_info);
     ten_go_status_from_error(&api_status, &err);
@@ -148,7 +148,7 @@ ten_go_status_t ten_go_ten_env_return_result_directly(
       ten_env_notify_return_result_info_create(
           ten_go_msg_move_c_msg(cmd_result), NULL);
 
-  if (!ten_env_proxy_notify(self->c_ten_proxy, ten_notify_return_result,
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_notify_return_result,
                             return_result_info, false, &err)) {
     ten_env_notify_return_result_info_destroy(return_result_info);
     ten_go_status_from_error(&api_status, &err);
@@ -185,7 +185,7 @@ bool ten_go_ten_return_status_value(ten_go_ten_env_t *self, ten_go_msg_t *cmd,
   ten_env_notify_return_result_info_t *return_result_info =
       ten_env_notify_return_result_info_create(cmd_result,
                                                ten_go_msg_move_c_msg(cmd));
-  if (!ten_env_proxy_notify(self->c_ten_proxy, ten_notify_return_result,
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_notify_return_result,
                             return_result_info, false, &err)) {
     result = false;
     ten_env_notify_return_result_info_destroy(return_result_info);

@@ -5,6 +5,7 @@
 //
 #include "include_internal/ten_utils/schema/keywords/keyword_properties.h"
 
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/keywords/keyword.h"
 #include "include_internal/ten_utils/schema/schema.h"
 #include "include_internal/ten_utils/schema/types/schema_object.h"
@@ -13,7 +14,6 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"

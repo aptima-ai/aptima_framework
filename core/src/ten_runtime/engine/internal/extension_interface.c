@@ -15,13 +15,11 @@
 #include "include_internal/ten_runtime/engine/msg_interface/start_graph.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 

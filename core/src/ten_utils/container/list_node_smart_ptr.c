@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 
 static bool ten_smart_ptr_listnode_check_integrity(
     ten_smart_ptr_listnode_t *self) {

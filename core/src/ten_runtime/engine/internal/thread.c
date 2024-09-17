@@ -16,8 +16,8 @@
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
 #define TIMEOUT_FOR_ENGINE_THREAD_STARTED 5000  // ms

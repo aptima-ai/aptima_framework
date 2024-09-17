@@ -11,9 +11,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/signature.h"
-#include "ten_utils/macro/check.h"
 
 #define TEN_STRING_SIGNATURE 0x178445C0402E320DU
 #define TEN_STRING_PRE_BUF_SIZE 256
@@ -119,8 +119,8 @@ TEN_UTILS_API void ten_string_clear(ten_string_t *self);
  */
 TEN_UTILS_API void ten_string_reserve(ten_string_t *self, size_t extra);
 
-TEN_UTILS_API void ten_string_set_from_va_list(ten_string_t *self,
-                                               const char *fmt, va_list ap);
+TEN_UTILS_API void ten_string_append_from_va_list(ten_string_t *self,
+                                                  const char *fmt, va_list ap);
 
 /**
  * @brief Set the string object with a c string.
@@ -235,7 +235,7 @@ inline const char *ten_string_get_raw_str(const ten_string_t *self) {
  */
 inline size_t ten_string_len(const ten_string_t *self) {
   TEN_ASSERT(self && ten_string_check_integrity(self), "Invalid argument.");
-  return self ? strlen(self->buf) : 0;
+  return self ? self->first_unused_idx : 0;
 }
 
 /**

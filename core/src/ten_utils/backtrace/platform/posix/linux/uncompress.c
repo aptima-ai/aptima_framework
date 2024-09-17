@@ -6,7 +6,7 @@
 // This file is modified from
 // https://github.com/ianlancetaylor/libbacktrace [BSD license]
 //
-#include "ten_utils/backtrace/platform/posix/linux/uncompress.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/uncompress.h"
 
 /**
  * @brief A function useful for setting a breakpoint for an inflation failure

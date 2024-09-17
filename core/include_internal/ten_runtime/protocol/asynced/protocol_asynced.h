@@ -98,7 +98,7 @@ typedef struct ten_protocol_asynced_t {
   /**
    * The ten_protocol_asynced_t is an underlying resource of the base protocol.
    *
-   * @note All protocol instances are created and inited in the ten world,
+   * @note All protocol instances are created and initted in the ten world,
    * including this 'ten_protocol_asynced_t'. So this 'closeable' belongs to the
    * ten world, and the underlying resource (ex: this closeable) and its owner
    * (ex: the base protocol) must be in the same thread.

@@ -9,10 +9,10 @@
 #include <string.h>
 
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 ten_go_handle_array_t *ten_go_handle_array_create(size_t size) {

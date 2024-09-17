@@ -6,7 +6,7 @@
 #include "ten_runtime/ten_config.h"
 
 #include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/value/value.h"
 

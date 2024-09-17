@@ -19,8 +19,8 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_addon_on_init_done(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");

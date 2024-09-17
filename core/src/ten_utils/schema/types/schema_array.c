@@ -5,8 +5,8 @@
 //
 #include "include_internal/ten_utils/schema/types/schema_array.h"
 
-#include "include_internal/ten_utils/schema/schema.h"
 #include "ten_utils/macro/check.h"
+#include "include_internal/ten_utils/schema/schema.h"
 #include "ten_utils/macro/memory.h"
 
 bool ten_schema_array_check_integrity(ten_schema_array_t *self) {

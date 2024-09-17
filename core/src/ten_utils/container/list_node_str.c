@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/macro/check.h"
 
 static bool ten_str_listnode_check_integrity(ten_str_listnode_t *self) {
   TEN_ASSERT(self, "Invalid argument.");

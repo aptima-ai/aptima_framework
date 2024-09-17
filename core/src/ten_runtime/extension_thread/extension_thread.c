@@ -22,6 +22,7 @@
 #include "include_internal/ten_runtime/extension_thread/msg_interface/common.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/sanitizer/thread_check.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/ten_env/ten_env.h"
@@ -31,8 +32,6 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
@@ -244,7 +243,7 @@ static void ten_extension_thread_inherit_thread_ownership(
 }
 
 void *ten_extension_thread_main_actual(ten_extension_thread_t *self) {
-  TEN_LOGD("Extension thread is started.");
+  TEN_LOGD("Extension thread is started");
 
   TEN_ASSERT(self &&
                  // TEN_NOLINTNEXTLINE(thread-check)

@@ -10,10 +10,10 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_return_result.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_runtime/binding/go/interface/ten/msg.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
-#include "ten_utils/lib/error.h"
 #include "ten_utils/macro/check.h"
+#include "ten_runtime/binding/go/interface/ten/msg.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
+#include "ten_utils/lib/error.h"
 #include "ten_utils/value/value.h"
 
 ten_go_status_t ten_go_ten_env_return_string(uintptr_t bridge_addr,

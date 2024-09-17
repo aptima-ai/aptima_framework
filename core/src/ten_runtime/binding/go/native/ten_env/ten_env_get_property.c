@@ -11,8 +11,9 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
@@ -20,7 +21,6 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 
@@ -100,7 +100,7 @@ static void ten_env_notify_get_property(ten_env_t *ten_env, void *user_data) {
   ten_error_deinit(&err);
 }
 
-static ten_value_t *ten_go_ten_env_property_get_and_check_if_exists(
+static ten_value_t *ten_go_ten_env_get_property_and_check_if_exists(
     ten_go_ten_env_t *self, const void *path, int path_len,
     ten_go_status_t *status) {
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
@@ -115,13 +115,13 @@ static ten_value_t *ten_go_ten_env_property_get_and_check_if_exists(
   ten_env_notify_get_property_info_t *info =
       ten_env_notify_get_property_info_create(path, path_len);
 
-  if (!ten_env_proxy_notify(self->c_ten_proxy, ten_env_notify_get_property,
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_get_property,
                             info, false, &err)) {
     ten_go_status_from_error(status, &err);
     goto done;
   }
 
-  // The ten_go_ten_property_get_and_check_if_exists() is called from a
+  // The ten_go_ten_env_get_property_and_check_if_exists() is called from a
   // goroutine in GO world. The goroutine runs on a OS thread (i.e., M is GO
   // world), and the M won't be scheduled to other goroutine until the cgo call
   // is completed (i.e., this function returns). The following
@@ -150,7 +150,7 @@ done:
   return c_value;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_type_and_size(
+ten_go_status_t ten_go_ten_env_get_property_type_and_size(
     uintptr_t bridge_addr, const void *path, int path_len, uint8_t *type,
     uintptr_t *size, uintptr_t *value_addr) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -165,7 +165,7 @@ ten_go_status_t ten_go_ten_env_property_get_type_and_size(
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_go_ten_value_get_type_and_size(c_value, type, size);
@@ -199,7 +199,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_int8(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_int8(uintptr_t bridge_addr,
                                                  const void *path, int path_len,
                                                  int8_t *value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -214,7 +214,7 @@ ten_go_status_t ten_go_ten_env_property_get_int8(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -235,7 +235,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_int16(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_int16(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len,
                                                   int16_t *value) {
@@ -251,7 +251,7 @@ ten_go_status_t ten_go_ten_env_property_get_int16(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -272,7 +272,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_int32(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_int32(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len,
                                                   int32_t *value) {
@@ -288,7 +288,7 @@ ten_go_status_t ten_go_ten_env_property_get_int32(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -309,7 +309,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_int64(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_int64(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len,
                                                   int64_t *value) {
@@ -325,7 +325,7 @@ ten_go_status_t ten_go_ten_env_property_get_int64(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -346,7 +346,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_uint8(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_uint8(uintptr_t bridge_addr,
                                                   const void *path,
                                                   int path_len,
                                                   uint8_t *value) {
@@ -362,7 +362,7 @@ ten_go_status_t ten_go_ten_env_property_get_uint8(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -383,7 +383,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_uint16(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_uint16(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    uint16_t *value) {
@@ -399,7 +399,7 @@ ten_go_status_t ten_go_ten_env_property_get_uint16(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -420,7 +420,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_uint32(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_uint32(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    uint32_t *value) {
@@ -436,7 +436,7 @@ ten_go_status_t ten_go_ten_env_property_get_uint32(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -457,7 +457,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_uint64(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_uint64(uintptr_t bridge_addr,
                                                    const void *path,
                                                    int path_len,
                                                    uint64_t *value) {
@@ -473,7 +473,7 @@ ten_go_status_t ten_go_ten_env_property_get_uint64(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -494,7 +494,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_float32(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_float32(uintptr_t bridge_addr,
                                                     const void *path,
                                                     int path_len,
                                                     float *value) {
@@ -510,7 +510,7 @@ ten_go_status_t ten_go_ten_env_property_get_float32(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -531,7 +531,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_float64(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_float64(uintptr_t bridge_addr,
                                                     const void *path,
                                                     int path_len,
                                                     double *value) {
@@ -547,7 +547,7 @@ ten_go_status_t ten_go_ten_env_property_get_float64(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -568,7 +568,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_bool(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_bool(uintptr_t bridge_addr,
                                                  const void *path, int path_len,
                                                  bool *value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -583,7 +583,7 @@ ten_go_status_t ten_go_ten_env_property_get_bool(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_error_t err;
@@ -604,7 +604,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_ptr(uintptr_t bridge_addr,
+ten_go_status_t ten_go_ten_env_get_property_ptr(uintptr_t bridge_addr,
                                                 const void *path, int path_len,
                                                 ten_go_handle_t *value) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -619,7 +619,7 @@ ten_go_status_t ten_go_ten_env_property_get_ptr(uintptr_t bridge_addr,
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *c_value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (c_value != NULL) {
     ten_go_ten_value_get_ptr(c_value, value, &status);
@@ -634,7 +634,7 @@ ten_is_close:
   return status;
 }
 
-ten_go_status_t ten_go_ten_env_property_get_json_and_size(
+ten_go_status_t ten_go_ten_env_get_property_json_and_size(
     uintptr_t bridge_addr, const void *path, int path_len,
     uintptr_t *json_str_len, const char **json_str) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -649,7 +649,7 @@ ten_go_status_t ten_go_ten_env_property_get_json_and_size(
   TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
-  ten_value_t *value = ten_go_ten_env_property_get_and_check_if_exists(
+  ten_value_t *value = ten_go_ten_env_get_property_and_check_if_exists(
       self, path, path_len, &status);
   if (value != NULL) {
     ten_go_ten_value_to_json(value, json_str_len, json_str, &status);

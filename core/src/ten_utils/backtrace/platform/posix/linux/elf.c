@@ -16,44 +16,44 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "ten_utils/backtrace/platform/posix/config.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/config.h"
 
 #ifdef HAVE_DL_ITERATE_PHDR
-  #ifdef HAVE_LINK_H
-    #define __USE_GNU
-    #include <link.h>
-    #undef __USE_GNU
-  #endif
+#ifdef HAVE_LINK_H
+#define __USE_GNU
+#include <link.h>
+#undef __USE_GNU
+#endif
 #endif
 
-#include "ten_utils/backtrace/backtrace.h"
-#include "ten_utils/backtrace/platform/posix/internal.h"
-#include "ten_utils/backtrace/platform/posix/linux/crc32.h"
-#include "ten_utils/backtrace/platform/posix/linux/debugfile.h"
-#include "ten_utils/backtrace/platform/posix/linux/uncompress.h"
-#include "ten_utils/backtrace/platform/posix/linux/view.h"
-#include "ten_utils/backtrace/platform/posix/linux/zlib.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/crc32.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/debugfile.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/uncompress.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/view.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/zlib.h"
 #include "ten_utils/io/mmap.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic_ptr.h"
 #include "ten_utils/lib/file.h"
 
 #ifndef S_ISLNK
-  #ifndef S_IFLNK
-    #define S_IFLNK 0120000
-  #endif
-  #ifndef S_IFMT
-    #define S_IFMT 0170000
-  #endif
-  #define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+#ifndef S_IFLNK
+#define S_IFLNK 0120000
+#endif
+#ifndef S_IFMT
+#define S_IFMT 0170000
+#endif
+#define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
 #endif
 
 #ifndef HAVE_DL_ITERATE_PHDR
 
 /* Dummy version of dl_iterate_phdr for systems that don't have it.  */
 
-  #define dl_phdr_info x_dl_phdr_info
-  #define dl_iterate_phdr x_dl_iterate_phdr
+#define dl_phdr_info x_dl_phdr_info
+#define dl_iterate_phdr x_dl_iterate_phdr
 
 struct dl_phdr_info {
   uintptr_t dlpi_addr;
@@ -75,7 +75,7 @@ static int dl_iterate_phdr(int (*callback)(struct dl_phdr_info *, size_t,
    configure time.  */
 
 #if BACKTRACE_ELF_SIZE != 32 && BACKTRACE_ELF_SIZE != 64
-  #error "Unknown BACKTRACE_ELF_SIZE"
+#error "Unknown BACKTRACE_ELF_SIZE"
 #endif
 
 /* <link.h> might #include <elf.h> which might define our constants
@@ -573,9 +573,9 @@ int elf_fetch_bits(const unsigned char **ppin, const unsigned char *pinend,
   /* We've ensured that PIN is aligned.  */
   next = *(const uint32_t *)pin;
 
-  #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   next = __builtin_bswap32(next);
-  #endif
+#endif
 #else
   next = pin[0] | (pin[1] << 8) | (pin[2] << 16) | (pin[3] << 24);
 #endif
@@ -626,9 +626,9 @@ static int elf_fetch_bits_backward(const unsigned char **ppin,
   /* We've ensured that PIN is aligned.  */
   next = *(const uint32_t *)pin;
 
-  #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   next = __builtin_bswap32(next);
-  #endif
+#endif
 #else
   next = pin[0] | (pin[1] << 8) | (pin[2] << 16) | (pin[3] << 24);
 #endif
@@ -1199,7 +1199,7 @@ static int elf_zstd_make_match_baseline_fse(
 
 /* Used to generate the predefined FSE decoding tables for zstd.  */
 
-  #include <stdio.h>
+#include <stdio.h>
 
 /* These values are straight from RFC 8878.  */
 
@@ -2958,7 +2958,7 @@ skip:
    Linux kernel implementation.  */
 
 #if LZMA_PROB_TOTAL_COUNT != 1846 + (1 << 4) * 0x300
-  #error Wrong number of LZMA probabilities
+#error Wrong number of LZMA probabilities
 #endif
 
 /* Expressions for the offset in the LZMA probabilities array of a
@@ -4064,9 +4064,9 @@ static int elf_add(ten_backtrace_t *self, const char *filename, int descriptor,
   }
 
 #if BACKTRACE_ELF_SIZE == 32
-  #define BACKTRACE_ELFCLASS ELFCLASS32
+#define BACKTRACE_ELFCLASS ELFCLASS32
 #else
-  #define BACKTRACE_ELFCLASS ELFCLASS64
+#define BACKTRACE_ELFCLASS ELFCLASS64
 #endif
 
   if (ehdr.e_ident[EI_CLASS] != BACKTRACE_ELFCLASS) {

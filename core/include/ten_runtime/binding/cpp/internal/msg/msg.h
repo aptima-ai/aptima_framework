@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lang/cpp/lib/error.h"
@@ -16,7 +17,6 @@
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_json.h"

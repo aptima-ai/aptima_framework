@@ -59,7 +59,7 @@ class test_app : public ten::app_t {
                  R"###({
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8001/",
-                        "log_level": 1,
+                        "log_level": 2,
                         "predefined_graphs": [{
                           "name": "0",
                           "auto_start": false,
@@ -116,7 +116,7 @@ TEST(ExtensionTest, PropertyAccessAppStore) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send a request to test_property_access_app_store_1 to make sure
-  // it has been inited.
+  // it has been initted.
   nlohmann::json resp = client->send_json_and_recv_resp_in_json(R"({
     "_ten": {
       "name": "test",

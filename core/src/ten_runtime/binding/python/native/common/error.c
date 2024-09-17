@@ -67,7 +67,7 @@ bool ten_py_check_and_clear_py_error(void) {
 }
 
 PyObject *ten_py_raise_py_value_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python ValueError exception: %s", msg);
+  TEN_LOGD("Raise Python ValueError exception: %s", msg);
   PyErr_SetString(PyExc_ValueError, msg);
 
   // Returning NULL indicates that an exception has occurred during the
@@ -77,42 +77,42 @@ PyObject *ten_py_raise_py_value_error_exception(const char *msg) {
 }
 
 PyObject *ten_py_raise_py_type_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python TypeError exception: %s", msg);
+  TEN_LOGD("Raise Python TypeError exception: %s", msg);
   PyErr_SetString(PyExc_TypeError, msg);
 
   return NULL;
 }
 
 PyObject *ten_py_raise_py_memory_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python TypeError exception: %s", msg);
+  TEN_LOGD("Raise Python TypeError exception: %s", msg);
   PyErr_SetString(PyExc_MemoryError, msg);
 
   return NULL;
 }
 
 PyObject *ten_py_raise_py_system_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python SystemError exception: %s", msg);
+  TEN_LOGD("Raise Python SystemError exception: %s", msg);
   PyErr_SetString(PyExc_SystemError, msg);
 
   return NULL;
 }
 
 PyObject *ten_py_raise_py_import_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python ImportError exception: %s", msg);
+  TEN_LOGD("Raise Python ImportError exception: %s", msg);
   PyErr_SetString(PyExc_ImportError, msg);
 
   return NULL;
 }
 
 PyObject *ten_py_raise_py_runtime_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python RuntimeError exception: %s", msg);
+  TEN_LOGD("Raise Python RuntimeError exception: %s", msg);
   PyErr_SetString(PyExc_RuntimeError, msg);
 
   return NULL;
 }
 
 PyObject *ten_py_raise_py_not_implemented_error_exception(const char *msg) {
-  TEN_LOGD("TEN runtime raise Python NotImplementedError exception: %s", msg);
+  TEN_LOGD("Raise Python NotImplementedError exception: %s", msg);
   PyErr_SetString(PyExc_NotImplementedError, msg);
 
   return NULL;

@@ -12,6 +12,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"

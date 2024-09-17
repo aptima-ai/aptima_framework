@@ -15,13 +15,13 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "ten_utils/backtrace/backtrace.h"
-#include "ten_utils/backtrace/platform/posix/internal.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/io/mmap.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic_ptr.h"
 #include "ten_utils/lib/file.h"
-#include "ten_utils/macro/check.h"
 
 // Mach-O file header for a 32-bit executable.
 typedef struct macho_header_32 {
@@ -1035,9 +1035,9 @@ static int macho_add(ten_backtrace_t *self, const char *filename,
 
     is_big_endian = 0;
 #if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__)
-  #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     is_big_endian = 1;
-  #endif
+#endif
 #endif
 
     if (!backtrace_dwarf_add(self, base_address, &dwarf_sections, is_big_endian,

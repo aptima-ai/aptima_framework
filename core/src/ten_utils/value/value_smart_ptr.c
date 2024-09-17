@@ -7,9 +7,9 @@
 
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_kv.h"

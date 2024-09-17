@@ -20,7 +20,9 @@ typedef struct ten_py_extension_t {
   PyObject_HEAD
   ten_signature_t signature;
   ten_extension_t *c_extension;
-  PyObject *py_ten;  // Companion TEN object.
+
+  // Companion TEN object, the actual type is ten_py_ten_env_t.
+  PyObject *py_ten_env;
 } ten_py_extension_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_py_extension_init_for_module(PyObject *module);

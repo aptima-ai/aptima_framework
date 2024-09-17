@@ -37,7 +37,6 @@
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
@@ -931,7 +930,7 @@ static bool ten_raw_msg_dump_internal(ten_msg_t *msg, ten_error_t *err,
 
   ten_string_t description;
   ten_string_init(&description);
-  ten_string_set_from_va_list(&description, fmt, ap);
+  ten_string_append_from_va_list(&description, fmt, ap);
 
   const char *p = ten_string_get_raw_str(&description);
 

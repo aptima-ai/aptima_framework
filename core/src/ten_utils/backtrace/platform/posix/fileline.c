@@ -15,23 +15,22 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "ten_utils/backtrace/platform/posix/config.h"  // IWYU pragma: keep
+#include "include_internal/ten_utils/backtrace/platform/posix/config.h"  // IWYU pragma: keep
+#include "ten_utils/log/log.h"
 
 #ifdef HAVE_MACH_O_DYLD_H
-  #include <mach-o/dyld.h>
+#include <mach-o/dyld.h>
 #endif
 
-#include "internal.h"
-#include "ten_utils/backtrace/backtrace.h"
-#include "ten_utils/backtrace/platform/posix/internal.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
 #include "ten_utils/lib/atomic_ptr.h"
 #include "ten_utils/lib/file.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/mark.h"
 
 #ifdef HAVE_MACH_O_DYLD_H
 
-  #include "ten_utils/lib/alloc.h"
+#include "ten_utils/lib/alloc.h"
 
 static char *macho_get_executable_path(ten_backtrace_t *self,
                                        ten_backtrace_error_func_t error_cb,
@@ -54,7 +53,7 @@ static char *macho_get_executable_path(ten_backtrace_t *self,
 
 #else /* !defined (HAVE_MACH_O_DYLD_H) */
 
-  #define macho_get_executable_path(self, error_cb, data) NULL
+#define macho_get_executable_path(self, error_cb, data) NULL
 
 #endif /* !defined (HAVE_MACH_O_DYLD_H) */
 

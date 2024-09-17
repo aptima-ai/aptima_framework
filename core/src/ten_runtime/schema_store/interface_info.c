@@ -8,7 +8,6 @@
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"

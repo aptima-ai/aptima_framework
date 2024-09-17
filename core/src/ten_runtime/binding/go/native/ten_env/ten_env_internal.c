@@ -10,10 +10,10 @@
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/macro/check.h"
 
 extern void tenGoOnCmdResult(ten_go_handle_t ten_bridge,
                              ten_go_handle_t cmd_bridge,

@@ -3,9 +3,9 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/macro/check.h"
 
 static bool ten_int32_listnode_check_integrity(ten_int32_listnode_t *self) {
   TEN_ASSERT(self, "Invalid argument.");

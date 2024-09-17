@@ -21,8 +21,8 @@
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
 static void ten_app_close_sync(ten_app_t *self) {

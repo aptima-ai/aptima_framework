@@ -18,8 +18,8 @@
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_extension_group_on_init(ten_env_t *ten_env) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),

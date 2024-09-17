@@ -13,7 +13,6 @@
 #include "include_internal/ten_runtime/extension_thread/on_xxx.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_ptr.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 void ten_extension_context_on_all_extensions_in_extension_group_are_inited(
@@ -32,26 +31,26 @@ void ten_extension_context_on_all_extensions_in_extension_group_are_inited(
                  ten_extension_group_check_integrity(extension_group, false),
              "Should not happen.");
 
-  TEN_LOGD("[%s] Engine is notified that %s is inited",
+  TEN_LOGD("[%s] Engine is notified that %s is initted",
            ten_engine_get_name(self->engine),
            ten_string_get_raw_str(&extension_group->name));
 
   self->extension_threads_cnt_of_all_extensions_inited++;
 
   // TODO(Wei): At present, we only check whether all extension threads in the
-  // same TEN app has reached the 'inited' state. And if this condition is met,
+  // same TEN app has reached the 'initted' state. And if this condition is met,
   // the engine will enable all the extension threads (in the belonging TEN app)
   // proceed to the 'on_start' stage.
   //
   // If, in the future, we need to ensure that all extension threads in _all_
-  // the TEN app have reached the 'inited' state before entering into the
+  // the TEN app have reached the 'initted' state before entering into the
   // 'on_start' stage, this location is the right place to add more logic about
   // this.
 
   if (self->extension_threads_cnt_of_all_extensions_inited ==
       ten_list_size(&self->extension_threads)) {
     TEN_LOGD(
-        "[%s] All extension threads enter 'all extensions are inited' state.",
+        "[%s] All extension threads enter 'all extensions are initted' state.",
         ten_engine_get_name(self->engine));
 
     ten_list_foreach (&self->extension_threads, iter) {

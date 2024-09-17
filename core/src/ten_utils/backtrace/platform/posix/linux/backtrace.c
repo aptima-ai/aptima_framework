@@ -3,14 +3,14 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "ten_utils/backtrace/common.h"
-#include "ten_utils/backtrace/platform/posix/internal.h"
+#include "include_internal/ten_utils/backtrace/common.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
 #include "ten_utils/lib/alloc.h"
 
 ten_backtrace_t *ten_backtrace_create(void) {

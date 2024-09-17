@@ -3,13 +3,7 @@
 # See https://github.com/TEN-framework/ten_framework/LICENSE for license
 # information.
 #
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    StatusCode,
-    CmdResult,
-)
+from ten import Extension, TenEnv, Cmd, StatusCode, CmdResult, LogLevel
 
 
 class DefaultExtension(Extension):
@@ -18,7 +12,9 @@ class DefaultExtension(Extension):
         self.name = name
 
     def on_init(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_init, name", self.name)
+        ten_env.log(
+            LogLevel.DEBUG, f"DefaultExtension on_init, name: {self.name}"
+        )
         assert self.name == "default_extension_python"
 
         ten_env.init_property_from_json('{"testKey": "testValue"}')

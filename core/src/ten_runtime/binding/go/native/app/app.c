@@ -15,7 +15,7 @@
 #include "include_internal/ten_runtime/global/signal.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
@@ -45,7 +45,7 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(app_bridge, "Should not happen.");
 
   ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
-  ten_bridge->c_ten_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+  ten_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
 
   tenGoAppOnInit(app_bridge->bridge.go_instance,
                  ten_go_ten_env_go_handle(ten_bridge));

@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
-#include "ten_utils/macro/check.h"
 
 ten_listnode_t *ten_list_find_int32(ten_list_t *self, int32_t int32) {
   TEN_ASSERT(self && ten_list_check_integrity(self), "Invalid argument.");

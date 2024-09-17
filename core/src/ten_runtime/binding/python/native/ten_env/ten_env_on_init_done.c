@@ -9,9 +9,9 @@
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 static void ten_env_notify_on_init_done(ten_env_t *ten_env,

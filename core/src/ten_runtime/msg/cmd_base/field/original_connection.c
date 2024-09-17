@@ -5,10 +5,11 @@
 //
 #include "include_internal/ten_runtime/msg/cmd_base/field/original_connection.h"
 
-#include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/string.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_cmd_base_copy_original_connection(
     ten_msg_t *self, ten_msg_t *src,

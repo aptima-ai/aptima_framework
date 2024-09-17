@@ -6,11 +6,12 @@
 // This file is modified from
 // https://github.com/ianlancetaylor/libbacktrace [BSD license]
 //
-#include "ten_utils/backtrace/platform/posix/linux/view.h"
+#include "include_internal/ten_utils/backtrace/platform/posix/linux/view.h"
 
 #include <stdint.h>
 
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 /**
  * @brief Create a view of SIZE bytes from DESCRIPTOR/MEMORY at OFFSET.

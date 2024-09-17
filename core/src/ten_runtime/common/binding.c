@@ -4,8 +4,8 @@
 // information.
 //
 #include "include_internal/ten_runtime/binding/common.h"
-#include "ten_runtime/binding/common.h"
 #include "ten_utils/macro/check.h"
+#include "ten_runtime/binding/common.h"
 
 void ten_binding_handle_set_me_in_target_lang(ten_binding_handle_t *self,
                                               void *me_in_target_lang) {

@@ -12,22 +12,22 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/lib/time.h"
-#include "ten_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
 #if defined(__i386__)
-  #define OUTER_THREAD_FOR_LOOP_CNT 100
-  #define FROM_EXTENSION_2_CMD_CNT 500
-  #define OUTER_THREAD_CNT 16
+#define OUTER_THREAD_FOR_LOOP_CNT 100
+#define FROM_EXTENSION_2_CMD_CNT 500
+#define OUTER_THREAD_CNT 16
 #else
-  #define OUTER_THREAD_FOR_LOOP_CNT 100
-  #define FROM_EXTENSION_2_CMD_CNT 500
-  #define OUTER_THREAD_CNT 128
+#define OUTER_THREAD_FOR_LOOP_CNT 100
+#define FROM_EXTENSION_2_CMD_CNT 500
+#define OUTER_THREAD_CNT 128
 #endif
 
 namespace {
@@ -983,7 +983,7 @@ class test_app : public ten::app_t {
                  R"({
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8001/",
-                        "log_level": 1
+                        "log_level": 2
                       }
                     })"
         // clang-format on

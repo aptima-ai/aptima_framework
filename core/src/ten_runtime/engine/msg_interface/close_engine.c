@@ -12,9 +12,10 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/stop_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/remote/remote.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_engine_handle_cmd_stop_graph(ten_engine_t *self, ten_shared_ptr_t *cmd,
                                       TEN_UNUSED ten_error_t *err) {

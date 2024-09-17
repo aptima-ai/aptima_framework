@@ -8,12 +8,12 @@
 #include <float.h>
 #include <inttypes.h>
 
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/constant_str.h"
 #include "include_internal/ten_utils/value/value_convert.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"

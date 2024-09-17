@@ -11,7 +11,6 @@
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 void ten_extension_group_load_metadata(ten_extension_group_t *self) {

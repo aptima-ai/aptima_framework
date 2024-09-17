@@ -18,7 +18,6 @@
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 /**

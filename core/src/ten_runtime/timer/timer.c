@@ -15,7 +15,6 @@
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
@@ -57,10 +56,10 @@ static void ten_timer_on_close(ten_timer_t *self) {
              "Should not happen.");
 
   if (!ten_timer_could_be_close(self)) {
-    TEN_LOGD("Could not close alive timer.");
+    TEN_LOGV("Could not close alive timer.");
     return;
   }
-  TEN_LOGD("Close timer.");
+  TEN_LOGV("Close timer.");
 
   ten_timer_do_close(self);
 }
@@ -151,7 +150,7 @@ static ten_timer_t *ten_timer_create_internal(ten_runloop_t *runloop) {
   TEN_ASSERT(runloop && ten_runloop_check_integrity(runloop, true),
              "Should not happen.");
 
-  TEN_LOGD("Create a timer.");
+  TEN_LOGV("Create a timer.");
 
   ten_timer_t *self = (ten_timer_t *)TEN_MALLOC(sizeof(ten_timer_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
@@ -233,7 +232,7 @@ void ten_timer_destroy(ten_timer_t *self) {
                  ten_timer_could_be_close(self),
              "Should not happen.");
 
-  TEN_LOGD("Destroy a timer.");
+  TEN_LOGV("Destroy a timer.");
 
   ten_sanitizer_thread_check_deinit(&self->thread_check);
   ten_signature_set(&self->signature, 0);
@@ -275,7 +274,7 @@ void ten_timer_stop_async(ten_timer_t *self) {
   TEN_ASSERT(self && ten_timer_check_integrity(self, true),
              "Should not happen.");
 
-  TEN_LOGD("Stop a timer.");
+  TEN_LOGV("Stop a timer.");
 
   ten_runloop_post_task_tail(self->runloop, ten_timer_stop_, self, NULL);
 }
@@ -315,7 +314,7 @@ void ten_timer_close_async(ten_timer_t *self) {
              "Should not happen.");
 
   if (ten_atomic_bool_compare_swap(&self->is_closing, 0, 1)) {
-    TEN_LOGD("Try to close a timer.");
+    TEN_LOGV("Try to close a timer.");
 
     ten_runloop_post_task_tail(self->runloop, ten_timer_close_, self, NULL);
   }

@@ -9,9 +9,9 @@
 #include "include_internal/ten_runtime/binding/go/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
-#include "ten_runtime/ten.h"
 #include "ten_utils/macro/check.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
+#include "ten_runtime/ten.h"
 
 void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
                                             bool is_extension,
@@ -44,8 +44,9 @@ void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_env_on_create_instance_done(
-      self->c_ten, c_extension_or_extension_group, (void *)context_addr, &err);
+  bool rc = ten_env_on_create_instance_done(self->c_ten_env,
+                                            c_extension_or_extension_group,
+                                            (void *)context_addr, &err);
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_error_deinit(&err);

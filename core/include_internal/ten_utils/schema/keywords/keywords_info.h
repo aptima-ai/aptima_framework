@@ -5,6 +5,7 @@
 //
 #pragma once
 
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/constant_str.h"
 #include "include_internal/ten_utils/schema/keywords/keyword.h"
 #include "include_internal/ten_utils/schema/keywords/keyword_items.h"
@@ -12,11 +13,10 @@
 #include "include_internal/ten_utils/schema/keywords/keyword_required.h"
 #include "include_internal/ten_utils/schema/keywords/keyword_type.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 #ifdef __cplusplus
-  #error \
-      "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
+#error \
+    "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
 #endif
 
 typedef ten_schema_keyword_t *(*ten_schema_keyword_create_from_value_func_t)(

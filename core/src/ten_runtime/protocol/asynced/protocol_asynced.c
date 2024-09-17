@@ -29,8 +29,8 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/sanitizer/thread_check.h"
 

@@ -13,23 +13,23 @@
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten.h"
+#include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/rwlock.h"
 
-#define TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(ten_bridge, err_stmt)          \
-  do {                                                                  \
-    ten_rwlock_lock((ten_bridge)->lock, 1);                             \
-    if (((ten_bridge)->c_ten == NULL) ||                                \
-        (((ten_bridge)->c_ten->attach_to != TEN_ENV_ATTACH_TO_ADDON) && \
-         ((ten_bridge)->c_ten_proxy == NULL))) {                        \
-      ten_rwlock_unlock((ten_bridge)->lock, 1);                         \
-      {                                                                 \
-        err_stmt                                                        \
-      }                                                                 \
-      goto ten_is_close;                                                \
-    }                                                                   \
+#define TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(ten_bridge, err_stmt)              \
+  do {                                                                      \
+    ten_rwlock_lock((ten_bridge)->lock, 1);                                 \
+    if (((ten_bridge)->c_ten_env == NULL) ||                                \
+        (((ten_bridge)->c_ten_env->attach_to != TEN_ENV_ATTACH_TO_ADDON) && \
+         ((ten_bridge)->c_ten_env_proxy == NULL))) {                        \
+      ten_rwlock_unlock((ten_bridge)->lock, 1);                             \
+      {                                                                     \
+        err_stmt                                                            \
+      }                                                                     \
+      goto ten_is_close;                                                    \
+    }                                                                       \
   } while (0)
 
 #define TEN_GO_TEN_IS_ALIVE_REGION_END(ten_bridge) \
@@ -42,9 +42,11 @@ typedef struct ten_go_ten_env_t {
 
   ten_go_bridge_t bridge;
 
-  ten_env_t *c_ten;  // Point to the corresponding C ten.
-  ten_env_proxy_t
-      *c_ten_proxy;  // Point to the corresponding C ten_env_proxy if any.
+  // Point to the corresponding C ten.
+  ten_env_t *c_ten_env;
+
+  // Point to the corresponding C ten_env_proxy if any.
+  ten_env_proxy_t *c_ten_env_proxy;
 
   ten_rwlock_t *lock;
 } ten_go_ten_env_t;

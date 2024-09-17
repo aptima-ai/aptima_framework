@@ -8,10 +8,11 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/audio_frame/audio_frame.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lib/json.h"
-#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/mark.h"
 
 bool ten_audio_frame_put_number_of_channel_to_json(ten_msg_t *self,
                                                    ten_json_t *json,

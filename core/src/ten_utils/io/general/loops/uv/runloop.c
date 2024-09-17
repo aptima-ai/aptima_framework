@@ -9,13 +9,13 @@
 #include <string.h>
 #include <uv.h>
 
+#include "include_internal/ten_utils/io/general/transport/backend/uv/stream/migrate.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/io/general/loops/runloop.h"
-#include "ten_utils/io/general/transport/backend/uv/stream/migrate.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic.h"
 #include "ten_utils/lib/mutex.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
@@ -51,7 +51,7 @@ typedef struct ten_runloop_async_uv_t {
 typedef struct ten_runloop_timer_uv_t {
   ten_runloop_timer_common_t common;
   uv_timer_t uv_timer;
-  bool inited;
+  bool initted;
   void (*notify_callback)(ten_runloop_timer_t *, void *);
   void (*stop_callback)(ten_runloop_timer_t *, void *);
   void (*close_callback)(ten_runloop_timer_t *, void *);
@@ -494,13 +494,13 @@ static int ten_runloop_timer_uv_start(
              "Invalid argument.");
 
   timer_impl->notify_callback = notify_callback;
-  if (timer_impl->inited == false) {
+  if (timer_impl->initted == false) {
     int rc = uv_timer_init(loop_impl->uv_loop, &timer_impl->uv_timer);
     if (rc != 0) {
       TEN_ASSERT(!rc, "uv_timer_init() failed: %d", rc);
       return -1;
     }
-    timer_impl->inited = true;
+    timer_impl->initted = true;
   }
 
   int rc = uv_timer_start(&timer_impl->uv_timer, uv_timer_callback,
@@ -594,7 +594,7 @@ ten_runloop_timer_common_t *ten_runloop_timer_create_uv(void) {
 
   memset(impl, 0, sizeof(ten_runloop_timer_uv_t));
 
-  impl->inited = false;
+  impl->initted = false;
   impl->common.base.impl = ten_strdup(TEN_RUNLOOP_UV);
   impl->common.start = ten_runloop_timer_uv_start;
   impl->common.stop = ten_runloop_timer_uv_stop;

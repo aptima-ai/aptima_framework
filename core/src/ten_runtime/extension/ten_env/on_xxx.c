@@ -14,7 +14,6 @@
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 static ten_extension_on_init_done_t *ten_extension_on_init_done_create(

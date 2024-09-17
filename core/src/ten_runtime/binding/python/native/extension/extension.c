@@ -22,6 +22,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/mark.h"
 
 static bool ten_py_extension_check_integrity(ten_py_extension_t *self,
                                              bool check_thread) {
@@ -60,7 +61,7 @@ static void proxy_on_init(ten_extension_t *extension, ten_env_t *ten_env) {
       "Invalid argument.");
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
-  py_extension->py_ten = (PyObject *)py_ten_env;
+  py_extension->py_ten_env = (PyObject *)py_ten_env;
 
   py_ten_env->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
   TEN_ASSERT(py_ten_env->c_ten_env_proxy &&
@@ -99,11 +100,12 @@ static void proxy_on_start(ten_extension_t *extension, ten_env_t *ten_env) {
       py_extension && ten_py_extension_check_integrity(py_extension, true),
       "Invalid argument.");
 
-  PyObject *py_ten = py_extension->py_ten;
-  TEN_ASSERT(py_ten, "Should not happen.");
+  PyObject *py_ten_env = py_extension->py_ten_env;
+  TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_start", "O", py_ten);
+      PyObject_CallMethod((PyObject *)py_extension, "on_start", "O",
+                          ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -129,11 +131,12 @@ static void proxy_on_stop(ten_extension_t *extension, ten_env_t *ten_env) {
       py_extension && ten_py_extension_check_integrity(py_extension, true),
       "Invalid argument.");
 
-  PyObject *py_ten = py_extension->py_ten;
-  TEN_ASSERT(py_ten, "Should not happen.");
+  PyObject *py_ten_env = py_extension->py_ten_env;
+  TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_stop", "O", py_ten);
+      PyObject_CallMethod((PyObject *)py_extension, "on_stop", "O",
+                          ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -159,11 +162,12 @@ static void proxy_on_deinit(ten_extension_t *extension, ten_env_t *ten_env) {
       py_extension && ten_py_extension_check_integrity(py_extension, true),
       "Invalid argument.");
 
-  PyObject *py_ten = py_extension->py_ten;
-  TEN_ASSERT(py_ten, "Should not happen.");
+  PyObject *py_ten_env = py_extension->py_ten_env;
+  TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_deinit", "O", py_ten);
+      PyObject_CallMethod((PyObject *)py_extension, "on_deinit", "O",
+                          ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -189,13 +193,14 @@ static void proxy_on_cmd(ten_extension_t *extension, ten_env_t *ten_env,
       py_extension && ten_py_extension_check_integrity(py_extension, true),
       "Invalid argument.");
 
-  PyObject *py_ten = py_extension->py_ten;
-  TEN_ASSERT(py_ten, "Should not happen.");
+  PyObject *py_ten_env = py_extension->py_ten_env;
+  TEN_ASSERT(py_ten_env, "Should not happen.");
 
   ten_py_cmd_t *py_cmd = ten_py_cmd_wrap(cmd);
 
-  PyObject *py_res = PyObject_CallMethod((PyObject *)py_extension, "on_cmd",
-                                         "OO", py_ten, py_cmd);
+  PyObject *py_res = PyObject_CallMethod(
+      (PyObject *)py_extension, "on_cmd", "OO",
+      ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_cmd);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -223,13 +228,14 @@ static void proxy_on_data(ten_extension_t *extension, ten_env_t *ten_env,
       py_extension && ten_py_extension_check_integrity(py_extension, true),
       "Invalid argument.");
 
-  PyObject *py_ten = py_extension->py_ten;
-  TEN_ASSERT(py_ten, "Should not happen.");
+  PyObject *py_ten_env = py_extension->py_ten_env;
+  TEN_ASSERT(py_ten_env, "Should not happen.");
 
   ten_py_data_t *py_data = ten_py_data_wrap(data);
 
-  PyObject *py_res = PyObject_CallMethod((PyObject *)py_extension, "on_data",
-                                         "OO", py_ten, py_data);
+  PyObject *py_res = PyObject_CallMethod(
+      (PyObject *)py_extension, "on_data", "OO",
+      ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_data);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -258,13 +264,14 @@ static void proxy_on_audio_frame(ten_extension_t *extension, ten_env_t *ten_env,
       py_extension && ten_py_extension_check_integrity(py_extension, true),
       "Invalid argument.");
 
-  PyObject *py_ten = py_extension->py_ten;
-  TEN_ASSERT(py_ten, "Should not happen.");
+  PyObject *py_ten_env = py_extension->py_ten_env;
+  TEN_ASSERT(py_ten_env, "Should not happen.");
 
   ten_py_audio_frame_t *py_audio_frame = ten_py_audio_frame_wrap(audio_frame);
 
   PyObject *py_res = PyObject_CallMethod(
-      (PyObject *)py_extension, "on_audio_frame", "OO", py_ten, py_audio_frame);
+      (PyObject *)py_extension, "on_audio_frame", "OO",
+      ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_audio_frame);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -288,11 +295,12 @@ static void proxy_on_video_frame(ten_extension_t *extension, ten_env_t *ten_env,
 
   PyObject *py_extension = (PyObject *)ten_binding_handle_get_me_in_target_lang(
       (ten_binding_handle_t *)extension);
-  PyObject *py_ten = ((ten_py_extension_t *)py_extension)->py_ten;
+  PyObject *py_ten_env = ((ten_py_extension_t *)py_extension)->py_ten_env;
   ten_py_video_frame_t *py_video_frame = ten_py_video_frame_wrap(video_frame);
 
-  PyObject *py_res = PyObject_CallMethod(py_extension, "on_video_frame", "OO",
-                                         py_ten, py_video_frame);
+  PyObject *py_res = PyObject_CallMethod(
+      py_extension, "on_video_frame", "OO",
+      ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_video_frame);
   Py_XDECREF(py_res);
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -328,7 +336,7 @@ static PyObject *ten_py_extension_create(PyTypeObject *type, PyObject *py_name,
   TEN_ASSERT(py_extension->c_extension, "Should not happen.");
 
   ten_extension_set_me_in_target_lang(py_extension->c_extension, py_extension);
-  py_extension->py_ten = Py_None;
+  py_extension->py_ten_env = Py_None;
 
   return (PyObject *)py_extension;
 }

@@ -11,7 +11,7 @@
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
-#include "ten_utils/log/log.h"
+#include "include_internal/ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 static ten_connection_t *create_connection_when_client_accepted(

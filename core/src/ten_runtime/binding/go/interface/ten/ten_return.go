@@ -6,7 +6,7 @@
 
 package ten
 
-//#include "ten.h"
+//#include "ten_env.h"
 import "C"
 
 func (p *tenEnv) ReturnResult(statusCmd CmdResult, cmd Cmd) error {

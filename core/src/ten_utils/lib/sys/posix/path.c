@@ -4,7 +4,7 @@
 // information.
 //
 #if defined(OS_LINUX)
-  #define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include "ten_utils/lib/path.h"
@@ -17,10 +17,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 int ten_path_to_system_flavor(ten_string_t *path) {

@@ -24,13 +24,13 @@ func newDefaultExtension(name string) ten.Extension {
 }
 
 func (p *defaultExtension) OnStart(tenEnv ten.TenEnv) {
-	fmt.Println("defaultExtension OnStart")
+	tenEnv.LogDebug("OnStart")
 
 	tenEnv.OnStartDone()
 }
 
 func (p *defaultExtension) OnStop(tenEnv ten.TenEnv) {
-	fmt.Println("defaultExtension OnStop")
+	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
 }
@@ -39,7 +39,7 @@ func (p *defaultExtension) OnCmd(
 	tenEnv ten.TenEnv,
 	cmd ten.Cmd,
 ) {
-	fmt.Println("defaultExtension OnCmd")
+	tenEnv.LogDebug("OnCmd")
 
 	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 	cmdResult.SetPropertyString("detail", "This is default go extension.")

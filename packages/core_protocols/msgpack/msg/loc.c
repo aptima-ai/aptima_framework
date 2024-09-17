@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 #include "core_protocols/msgpack/common/common.h"
+#include "ten_utils/macro/check.h"
 #include "msgpack/object.h"
 #include "msgpack/pack.h"
 #include "msgpack/unpack.h"
@@ -15,7 +16,6 @@
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 void ten_msgpack_loc_serialize(ten_loc_t *self, msgpack_packer *pck) {
   TEN_ASSERT(self && pck, "Invalid argument.");

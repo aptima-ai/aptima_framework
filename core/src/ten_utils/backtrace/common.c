@@ -3,22 +3,22 @@
 // See https://github.com/TEN-framework/ten_framework/LICENSE for license
 // information.
 //
-#include "ten_utils/backtrace/common.h"
+#include "include_internal/ten_utils/backtrace/common.h"
 
 #include <assert.h>
 #include <inttypes.h>
 #include <string.h>
 
-#include "include_internal/ten_utils/log/platform/general/log.h"
-#include "ten_utils/backtrace/backtrace.h"
+#include "include_internal/ten_utils/backtrace/backtrace.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/mark.h"
 
 ten_backtrace_t *g_ten_backtrace;
 
 #if defined(OS_WINDOWS)
-  // There is no 'strerror_r in Windows, use strerror_s instead. Note that the
-  // parameter order of strerror_s is different from strerror_r.
-  #define strerror_r(errno, buf, len) strerror_s(buf, len, errno)
+// There is no 'strerror_r in Windows, use strerror_s instead. Note that the
+// parameter order of strerror_s is different from strerror_r.
+#define strerror_r(errno, buf, len) strerror_s(buf, len, errno)
 #endif
 
 /**
@@ -46,8 +46,7 @@ int ten_backtrace_default_dump_cb(ten_backtrace_t *self_, uintptr_t pc,
   ten_backtrace_common_t *self = (ten_backtrace_common_t *)self_;
   assert(self && "Invalid argument.");
 
-  TEN_LOGE_AUX(self->log, "%s:%d %s (0x%0" PRIxPTR ")", filename, lineno,
-               function, pc);
+  TEN_LOGE("%s:%d %s (0x%0" PRIxPTR ")", filename, lineno, function, pc);
 
   return 0;
 }
@@ -57,11 +56,11 @@ void ten_backtrace_default_error_cb(ten_backtrace_t *self_, const char *msg,
   ten_backtrace_common_t *self = (ten_backtrace_common_t *)self_;
   assert(self && "Invalid argument.");
 
-  TEN_LOGE_AUX(self->log, "%s", msg);
+  TEN_LOGE("%s", msg);
 
   if (errnum > 0) {
     char *buf = ten_strerror(errnum);
-    TEN_LOGE_AUX(self->log, ": %s", buf);
+    TEN_LOGE(": %s", buf);
 
     ten_free_without_backtrace(buf);
   }
@@ -72,11 +71,6 @@ void ten_backtrace_common_init(ten_backtrace_common_t *self,
                                ten_backtrace_error_func_t error_cb) {
   assert(self && "Invalid argument.");
 
-  self->log = ten_log_create();
-  self->log->format = TEN_LOG_GLOBAL_FORMAT;
-  self->log->output =
-      ten_log_output_create(TEN_LOG_PUT_MSG, ten_log_out_stderr_cb, NULL, NULL);
-
   self->dump_cb = dump_cb;
   self->error_cb = error_cb;
 }
@@ -84,8 +78,6 @@ void ten_backtrace_common_init(ten_backtrace_common_t *self,
 void ten_backtrace_common_deinit(ten_backtrace_t *self) {
   ten_backtrace_common_t *common_self = (ten_backtrace_common_t *)self;
   assert(common_self && "Invalid argument.");
-
-  ten_log_destroy(common_self->log);
 }
 
 void ten_backtrace_create_global(void) {

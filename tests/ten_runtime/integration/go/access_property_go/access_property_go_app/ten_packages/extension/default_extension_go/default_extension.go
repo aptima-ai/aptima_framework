@@ -8,8 +8,6 @@
 package defaultextension
 
 import (
-	"fmt"
-
 	"ten_framework/ten"
 )
 
@@ -18,13 +16,13 @@ type baseExtension struct {
 }
 
 func (ext *baseExtension) OnStart(tenEnv ten.TenEnv) {
-	fmt.Println("baseExtension OnStart")
+	tenEnv.LogDebug("OnStart")
 
 	tenEnv.OnStartDone()
 }
 
 func (ext *baseExtension) OnStop(tenEnv ten.TenEnv) {
-	fmt.Println("baseExtension OnStop")
+	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
 }

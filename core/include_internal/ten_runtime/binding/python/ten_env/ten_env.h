@@ -116,3 +116,6 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_float(
 
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_init_property_from_json(
     PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_log(PyObject *self,
+                                                     PyObject *args);

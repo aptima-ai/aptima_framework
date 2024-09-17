@@ -8,13 +8,13 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/file.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/check.h"
 
 #if defined(_WIN32)
-  #include <Windows.h>
-  #include <fileapi.h>
+#include <Windows.h>
+#include <fileapi.h>
 #endif
 
 int ten_path_is_special_dir(const ten_string_t *path) {

@@ -9,8 +9,8 @@
 #include "include_internal/ten_runtime/protocol/asynced/protocol_asynced.h"
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
-#include "ten_utils/lib/ref.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/lib/ref.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/macro/mark.h"
 

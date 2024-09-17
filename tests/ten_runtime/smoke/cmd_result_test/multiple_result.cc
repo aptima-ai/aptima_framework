@@ -28,9 +28,9 @@ class test_extension_1 : public ten::extension_t {
             ++received_result_cnt;
 
             if (received_result_cnt == 1) {
-              TEN_LOGI("test_extension_1 receives 1 cmd result");
+              TEN_ENV_LOG_INFO(ten_env, "receives 1 cmd result");
             } else if (received_result_cnt == 2) {
-              TEN_LOGI("test_extension_1 receives 2 cmd result");
+              TEN_ENV_LOG_INFO(ten_env, "receives 2 cmd result");
               ten_env.return_result_directly(std::move(cmd_result));
             }
           });
@@ -69,7 +69,7 @@ class test_app : public ten::app_t {
                  R"({
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8001/",
-                        "log_level": 1
+                        "log_level": 2
                       }
                     })"
         // clang-format on

@@ -17,13 +17,13 @@
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_group.h"
 #include "include_internal/ten_runtime/remote/remote.h"
+#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 
 void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
                                        ten_shared_ptr_t *cmd,

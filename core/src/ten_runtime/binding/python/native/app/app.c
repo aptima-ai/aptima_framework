@@ -16,7 +16,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/signature.h"
-#include "ten_utils/log/log.h"
+#include "ten_utils/macro/mark.h"
 
 static bool ten_py_app_check_integrity(ten_py_app_t *self, bool check_thread) {
   TEN_ASSERT(self, "Should not happen.");

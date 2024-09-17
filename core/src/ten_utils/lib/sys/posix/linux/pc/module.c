@@ -10,7 +10,7 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
 
-#include "ten_utils/log/log.h"
+#include "include_internal/ten_utils/log/log.h"
 
 void *ten_module_load(const ten_string_t *name, int as_local) {
   if (!name || !ten_string_check_integrity(name)) {

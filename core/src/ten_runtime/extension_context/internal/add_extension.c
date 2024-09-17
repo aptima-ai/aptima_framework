@@ -13,8 +13,9 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/extension_thread/on_xxx.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/macro/check.h"
+#include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_extension_context_add_extension(void *self_, void *arg) {
   ten_extension_context_t *self = self_;

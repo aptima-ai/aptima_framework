@@ -65,7 +65,7 @@ class test_app : public ten::app_t {
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "one_event_loop_per_engine": true,
-                        "log_level": 1,
+                        "log_level": 2,
                         "predefined_graphs": [{
                           "name": "0",
                           "auto_start": true,

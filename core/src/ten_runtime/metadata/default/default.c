@@ -6,6 +6,7 @@
 #include "include_internal/ten_runtime/metadata/metadata.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/path.h"
+#include "ten_utils/macro/mark.h"
 
 void ten_set_default_manifest_info(const char *base_dir,
                                    ten_metadata_info_t *manifest,

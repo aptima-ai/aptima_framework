@@ -9,8 +9,10 @@
 
 #include <time.h>
 
-typedef void (*ten_log_get_time_func_t)(struct tm *tm, size_t *usec);
+#include "ten_utils/lib/string.h"
 
-TEN_UTILS_PRIVATE_API ten_log_get_time_func_t g_ten_log_get_time;
+TEN_UTILS_PRIVATE_API void ten_log_get_time(struct tm *time_info, size_t *msec);
 
-TEN_UTILS_PRIVATE_API void ten_log_get_time(struct tm *tm, size_t *msec);
+TEN_UTILS_PRIVATE_API void ten_log_add_time_string(ten_string_t *buf,
+                                                   struct tm *time_info,
+                                                   size_t msec);
