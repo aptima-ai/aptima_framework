@@ -69,6 +69,9 @@ ten_go_status_t ten_go_audio_frame_is_eof(uintptr_t bridge_addr, bool *is_eof);
 
 ten_go_status_t ten_go_audio_frame_alloc_buf(uintptr_t bridge_addr, int size);
 
+ten_go_status_t ten_go_audio_frame_get_buf(uintptr_t bridge_addr,
+                                           const void *buf_addr, int buf_size);
+
 ten_go_status_t ten_go_audio_frame_lock_buf(uintptr_t bridge_addr,
                                             uint8_t **buf_addr,
                                             uint64_t *buf_size);

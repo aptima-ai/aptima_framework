@@ -32,25 +32,35 @@ const (
 type AudioFrame interface {
 	Msg
 
-	SetTimestamp(timestamp int64) error
-	GetTimestamp() (int64, error)
-	SetSampleRate(sampleRate int32) error
-	GetSampleRate() (int32, error)
-	SetChannelLayout(channelLayout uint64) error
-	GetChannelLayout() (uint64, error)
-	SetSamplesPerChannel(samplesPerChannel int32) error
-	GetSamplesPerChannel() (int32, error)
-	SetBytesPerSample(bytesPerSample int32) error
-	GetBytesPerSample() (int32, error)
-	SetNumberOfChannels(numberOfChannels int32) error
-	GetNumberOfChannels() (int32, error)
-	SetDataFmt(dataFmt AudioFrameDataFmt) error
-	GetDataFmt() (AudioFrameDataFmt, error)
-	SetLineSize(lineSize int32) error
-	GetLineSize() (int32, error)
 	AllocBuf(size int) error
 	LockBuf() ([]byte, error)
 	UnlockBuf(buf *[]byte) error
+	GetBuf() ([]byte, error)
+
+	SetTimestamp(timestamp int64) error
+	GetTimestamp() (int64, error)
+
+	SetSampleRate(sampleRate int32) error
+	GetSampleRate() (int32, error)
+
+	SetChannelLayout(channelLayout uint64) error
+	GetChannelLayout() (uint64, error)
+
+	SetSamplesPerChannel(samplesPerChannel int32) error
+	GetSamplesPerChannel() (int32, error)
+
+	SetBytesPerSample(bytesPerSample int32) error
+	GetBytesPerSample() (int32, error)
+
+	SetNumberOfChannels(numberOfChannels int32) error
+	GetNumberOfChannels() (int32, error)
+
+	SetDataFmt(dataFmt AudioFrameDataFmt) error
+	GetDataFmt() (AudioFrameDataFmt, error)
+
+	SetLineSize(lineSize int32) error
+	GetLineSize() (int32, error)
+
 	IsEOF() (bool, error)
 	SetIsEOF(isEOF bool) error
 }
@@ -331,6 +341,29 @@ func (p *audioFrame) AllocBuf(size int) error {
 	}
 
 	return err
+}
+
+func (p *audioFrame) GetBuf() ([]byte, error) {
+	if p.size == 0 {
+		return nil, newTenError(ErrnoInvalidArgument, "call AllocBuf() first")
+	}
+
+	buf := make([]byte, p.size)
+	err := withCGOLimiter(func() error {
+		apiStatus := C.ten_go_audio_frame_get_buf(
+			p.getCPtr(),
+			unsafe.Pointer(&buf[0]),
+			C.int(p.size),
+		)
+
+		return withGoStatus(&apiStatus)
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return buf, nil
 }
 
 func (p *audioFrame) LockBuf() ([]byte, error) {

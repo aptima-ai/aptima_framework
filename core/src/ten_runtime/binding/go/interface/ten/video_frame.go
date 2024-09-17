@@ -41,14 +41,19 @@ type VideoFrame interface {
 	LockBuf() ([]byte, error)
 	UnlockBuf(buf *[]byte) error
 	GetBuf() ([]byte, error)
+
 	SetWidth(width int32) error
 	GetWidth() (int32, error)
+
 	SetHeight(height int32) error
 	GetHeight() (int32, error)
+
 	SetTimestamp(timestamp int64) error
 	GetTimestamp() (int64, error)
+
 	IsEOF() (bool, error)
 	SetIsEOF(isEOF bool) error
+
 	GetPixelFmt() (PixelFmt, error)
 	SetPixelFmt(pixelFmt PixelFmt) error
 }
