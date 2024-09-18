@@ -37,6 +37,7 @@
 
 * [Required](ten_framework/api/required.md)
 * [Interface](ten_framework/api/interface.md)
+* [Log](ten_framework/api/log.md)
 
 ### TEN Packages
 
