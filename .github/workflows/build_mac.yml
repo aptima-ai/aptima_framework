@@ -1,0 +1,92 @@
+name: Build - mac
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "**"
+    paths-ignore:
+      - "tools/**"
+      - "docs/**"
+      - ".vscode/**"
+      - ".devcontainer/**"
+      - ".github/**"
+      - "!.github/workflows/build_mac.yml"
+      - "**.md"
+  pull_request:
+
+jobs:
+  build-arm64:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build_type: [debug, release]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          submodules: "true"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+          cache: false
+
+      - name: Install tools and dependencies
+        run: |
+          brew install tree
+          pip3 install --use-pep517 python-dotenv jinja2
+          go install golang.org/dl/go1.20.12@latest && go1.20.12 download
+          go env -w GOFLAGS="-buildvcs=false"
+          rustup default nightly
+          cargo install --force cbindgen
+
+      - name: Build
+        run: |
+          export PATH=$(pwd)/core/ten_gn:$PATH
+          echo $PATH
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false ten_enable_go_binding=${{ matrix.build_type == 'debug' && 'false' || 'true' }} ten_enable_package_manager=${{ matrix.build_type == 'debug' && 'false' || 'true' }} enable_sanitizer=false
+          tgn build mac arm64 ${{ matrix.build_type }}
+          tree -I 'gen|obj' out
+
+  build-x64:
+    runs-on: macos-13
+    strategy:
+      matrix:
+        build_type: [debug, release]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          submodules: "true"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+          cache: false
+
+      - name: Install tools and dependencies
+        run: |
+          brew install tree
+          pip3 install --use-pep517 python-dotenv jinja2
+          go install golang.org/dl/go1.20.12@latest && go1.20.12 download
+          go env -w GOFLAGS="-buildvcs=false"
+          rustup default nightly
+          cargo install --force cbindgen
+
+      - name: Build
+        run: |
+          export PATH=$(pwd)/core/ten_gn:$PATH
+          echo $PATH
+          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false ten_enable_go_binding=${{ matrix.build_type == 'debug' && 'false' || 'true' }} ten_enable_package_manager=${{ matrix.build_type == 'debug' && 'false' || 'true' }} enable_sanitizer=false
+          tgn build mac x64 ${{ matrix.build_type }}
+          tree -I 'gen|obj' out
