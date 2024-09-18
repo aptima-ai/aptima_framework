@@ -16,7 +16,7 @@ layout:
 
 In this chapter, we’ll build the TEN Agent together. For additional help, check out the YouTube video tutorial at the end.
 
-<figure><img src="../assets/gif/astra_voice_agent.gif" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/features.gif?raw=true" alt=""><figcaption>TEN Agent Features</figcaption></figure>
 
 ## Prerequisites
 
@@ -101,7 +101,7 @@ docker compose up
 
 {% endcode %}
 
-**4. Build Astra agent**&#x20;
+**4. Build TEN Agent**&#x20;
 
 Open up a separate terminal window, build the agent and start the server:
 
