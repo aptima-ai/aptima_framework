@@ -11,7 +11,8 @@ on:
       - "docs/**"
       - ".vscode/**"
       - ".devcontainer/**"
-      - ".github/configs/**"
+      - ".github/**"
+      - "!.github/workflows/build_linux_ubuntu2204.yml"
       - "**.md"
   pull_request:
 
@@ -23,7 +24,7 @@ jobs:
         compiler: [gcc, clang]
         build_type: [debug, release]
     container:
-      image: ghcr.io/${{ github.repository_owner }}/ten_building_ubuntu2204
+      image: ghcr.io/ten-framework/ten_building_ubuntu2204
     steps:
       - uses: actions/checkout@v4
         with:
