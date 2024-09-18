@@ -1,5 +1,5 @@
 module.exports = {
   printWidth: 80,
-  singleQuote: true,
+  singleQuote: false,
   tsdoc: true,
 };

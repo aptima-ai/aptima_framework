@@ -1,0 +1,73 @@
+name: Build - linux ubuntu1804
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "**"
+    paths-ignore:
+      - "tools/**"
+      - "docs/**"
+      - ".vscode/**"
+      - ".devcontainer/**"
+      - ".github/configs/**"
+      - "**.md"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+    strategy:
+      matrix:
+        build_type: [release]
+    container:
+      image: ghcr.io/${{ github.repository_owner }}/ten_building_ubuntu1804
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: "0"
+          submodules: "true"
+
+      - name: Build
+        run: |
+          export PATH=$(pwd)/core/ten_gn/:$PATH
+          echo $PATH
+          go env -w GOFLAGS="-buildvcs=false"
+          rustup default nightly
+          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=false log_level=1 enable_serialized_actions=true ten_enable_test=false ten_enable_package_manager=false
+          tgn build linux x64 ${{ matrix.build_type }}
+          tree -I 'gen|obj' out
+
+      - name: Upload ten_packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}
+          path: |
+            out/linux/x64/ten_packages/system
+            out/linux/x64/ten_packages/extension_group
+            out/linux/x64/ten_packages/extension/default_extension_cpp
+            out/linux/x64/ten_packages/extension/default_extension_go
+            out/linux/x64/ten_packages/extension/default_extension_python
+            out/linux/x64/ten_packages/extension/py_init_extension_cpp
+
+      - name: Package assets
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cd out/linux/x64
+          zip -vr ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip \
+            ten_packages/system \
+            ten_packages/extension_group \
+            ten_packages/extension/default_extension_cpp \
+            ten_packages/extension/default_extension_go \
+            ten_packages/extension/default_extension_python \
+            ten_packages/extension/py_init_extension_cpp
+
+      - name: Release assets
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            out/linux/x64/ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip
