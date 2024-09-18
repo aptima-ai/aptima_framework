@@ -158,7 +158,7 @@ class plugin_extension_2 : public ten::extension_t {
 
 class business_app : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     // Note that the graph is very simple. It does _not_ contain any workflows,
     // just what the extensions contained in the graph.
     //
@@ -218,7 +218,7 @@ class business_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

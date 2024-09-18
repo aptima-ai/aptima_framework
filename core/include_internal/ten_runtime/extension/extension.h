@@ -66,12 +66,13 @@ typedef struct ten_timer_t ten_timer_t;
 //   or receive messages.
 typedef enum TEN_EXTENSION_STATE {
   TEN_EXTENSION_STATE_INIT,
-  TEN_EXTENSION_STATE_INITED,   // on_init_done() is completed.
-  TEN_EXTENSION_STATE_STARTED,  // on_start_done() is completed.
+  TEN_EXTENSION_STATE_CONFIGURED,  // on_configure_done is completed.
+  TEN_EXTENSION_STATE_INITTED,     // on_init_done() is completed.
+  TEN_EXTENSION_STATE_STARTED,     // on_start_done() is completed.
   TEN_EXTENSION_STATE_CLOSING,  // on_stop_done() is completed and could proceed
                                 // to be closed.
   TEN_EXTENSION_STATE_DEINITING,  // on_deinit() is started.
-  TEN_EXTENSION_STATE_DEINITED,   // on_deinit_done() is called.
+  TEN_EXTENSION_STATE_DEINITTED,  // on_deinit_done() is called.
 } TEN_EXTENSION_STATE;
 
 struct ten_extension_t {
@@ -96,14 +97,21 @@ struct ten_extension_t {
   // API to addons, such that onXxxSync().
 
   /**
-   * @brief on_init () must be the first public interface function of an
-   * extension to be called. Therefore, extension can initialize itself in its
-   * on_init(). After on_init() is completed, the TEN runtime will think that
-   * the extension can start to respond to
-   * commands/data/audio-frames/video-frames.
+   * @brief on_configure () must be the first public interface function of an
+   * extension to be called.
    *
-   * @note Extension can _not_ interact with other extensions (ex: send_cmd) in
-   * its on_init() stage.
+   * @note Extension can _not_ interact with other extensions (ex: send_cmd)
+   * in its on_configure() stage.
+   */
+  ten_extension_on_configure_func_t on_configure;
+
+  /**
+   * @brief Extension can initialize itself in its on_init(). After on_init() is
+   * completed, the TEN runtime will think that the extension can start to
+   * respond to commands/data/audio-frames/video-frames.
+   *
+   * @note Extension can _not_ interact with other extensions (ex: send_cmd)
+   * in its on_init() stage.
    */
   ten_extension_on_init_func_t on_init;
 
@@ -218,6 +226,8 @@ ten_extension_determine_and_merge_all_interface_dest_extension(
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_link_its_ten_to_extension_context(
     ten_extension_t *self, ten_extension_context_t *extension_context);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_on_init(ten_env_t *ten_env);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_on_start(ten_extension_t *self);
 

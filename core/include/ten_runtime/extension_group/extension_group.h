@@ -16,6 +16,9 @@ typedef struct ten_extension_group_t ten_extension_group_t;
 typedef struct ten_metadata_info_t ten_metadata_info_t;
 typedef struct ten_env_t ten_env_t;
 
+typedef void (*ten_extension_group_on_configure_func_t)(
+    ten_extension_group_t *self, ten_env_t *ten_env);
+
 typedef void (*ten_extension_group_on_init_func_t)(ten_extension_group_t *self,
                                                    ten_env_t *ten_env);
 
@@ -32,7 +35,8 @@ TEN_RUNTIME_API bool ten_extension_group_check_integrity(
     ten_extension_group_t *self, bool check_thread);
 
 TEN_RUNTIME_API ten_extension_group_t *ten_extension_group_create(
-    const char *name, ten_extension_group_on_init_func_t on_init,
+    const char *name, ten_extension_group_on_configure_func_t on_configure,
+    ten_extension_group_on_init_func_t on_init,
     ten_extension_group_on_deinit_func_t on_deinit,
     ten_extension_group_on_create_extensions_func_t on_create_extensions,
     ten_extension_group_on_destroy_extensions_func_t on_destroy_extensions);

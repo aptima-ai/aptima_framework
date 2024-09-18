@@ -33,7 +33,7 @@ class test_extension_2 : public ten::extension_t {
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(error_client_send_json__extension_2,
                                     test_extension_2);
 
-void test_app_on_init(TEN_UNUSED ten_app_t *self, ten_env_t *ten_env) {
+void test_app_on_configure(TEN_UNUSED ten_app_t *self, ten_env_t *ten_env) {
   bool result = ten_env_init_property_from_json(ten_env,
                                                 "{\
                           \"_ten\": {\
@@ -41,14 +41,15 @@ void test_app_on_init(TEN_UNUSED ten_app_t *self, ten_env_t *ten_env) {
                           \"log_level\": 1\
                           }\
                          }",
-                                                NULL);
+                                                nullptr);
   ASSERT_EQ(result, true);
 
-  ten_env_on_init_done(ten_env, nullptr);
+  ten_env_on_configure_done(ten_env, nullptr);
 }
 
 void *test_app_thread_main(TEN_UNUSED void *args) {
-  ten_app_t *app = ten_app_create(test_app_on_init, nullptr, nullptr);
+  ten_app_t *app =
+      ten_app_create(test_app_on_configure, nullptr, nullptr, nullptr);
   ten_app_run(app, false, nullptr);
   ten_app_wait(app, nullptr);
   ten_app_destroy(app);
@@ -104,7 +105,7 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
   )";
 
   // Send graph.
-  ten_json_t *graph = ten_json_from_string(invalid_graph.c_str(), NULL);
+  ten_json_t *graph = ten_json_from_string(invalid_graph.c_str(), nullptr);
   ten_error_t *err = ten_error_create();
   ten_json_t *resp =
       ten_test_msgpack_tcp_client_send_and_recv_json(client, graph, err);

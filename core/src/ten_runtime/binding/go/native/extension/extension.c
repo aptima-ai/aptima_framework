@@ -15,7 +15,6 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
@@ -26,6 +25,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 extern void tenGoExtensionOnInit(ten_go_handle_t go_extension,
                                  ten_go_handle_t go_ten);
@@ -284,10 +284,10 @@ ten_go_extension_t *ten_go_extension_create_internal(
       ten_shared_ptr_create(extension_bridge, ten_go_extension_bridge_destroy);
   extension_bridge->bridge.sp_ref_by_c = NULL;
 
-  extension_bridge->c_extension =
-      ten_extension_create(name, proxy_on_init, proxy_on_start, proxy_on_stop,
-                           proxy_on_deinit, proxy_on_cmd, proxy_on_data,
-                           proxy_on_audio_frame, proxy_on_video_frame, NULL);
+  extension_bridge->c_extension = ten_extension_create(
+      name, NULL, proxy_on_init, proxy_on_start, proxy_on_stop, proxy_on_deinit,
+      proxy_on_cmd, proxy_on_data, proxy_on_audio_frame, proxy_on_video_frame,
+      NULL);
 
   ten_binding_handle_set_me_in_target_lang(
       &extension_bridge->c_extension->binding_handle, extension_bridge);

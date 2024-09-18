@@ -18,11 +18,11 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
@@ -102,7 +102,7 @@ void ten_engine_on_extension_thread_closed(void *self_, void *arg) {
   ten_extension_context_on_close(self->extension_context);
 }
 
-void ten_engine_on_extension_thread_inited(void *self_, void *arg) {
+void ten_engine_on_extension_thread_initted(void *self_, void *arg) {
   ten_engine_t *self = self_;
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
@@ -116,8 +116,8 @@ void ten_engine_on_extension_thread_inited(void *self_, void *arg) {
           ten_extension_thread_check_integrity(extension_thread, false),
       "Should not happen.");
 
-  self->extension_context->extension_threads_cnt_of_inited++;
-  if (self->extension_context->extension_threads_cnt_of_inited ==
+  self->extension_context->extension_threads_cnt_of_initted++;
+  if (self->extension_context->extension_threads_cnt_of_initted ==
       ten_list_size(&self->extension_context->extension_threads)) {
     TEN_LOGD("[%s] All extension threads are initted.",
              ten_engine_get_name(self));

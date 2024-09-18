@@ -21,5 +21,8 @@ class App(_App):
     def close(self) -> None:
         _App.close(self)
 
+    def on_configure(self, ten_env: TenEnv) -> None:
+        ten_env.on_configure_done()
+
     def on_init(self, ten_env: TenEnv) -> None:
         ten_env.on_init_done()

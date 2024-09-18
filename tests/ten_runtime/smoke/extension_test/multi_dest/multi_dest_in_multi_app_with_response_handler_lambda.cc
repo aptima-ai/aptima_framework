@@ -39,7 +39,7 @@
 #define DEFINE_APP(N, port)                                                       \
   class test_app_##N : public ten::app_t {                                        \
    public:                                                                        \
-    void on_init(ten::ten_env_t &ten_env) {                                       \
+    void on_configure(ten::ten_env_t &ten_env) {                                  \
       /* clang-format off */                                                    \
       bool rc = ten_env.init_property_from_json(                          \
                    "{\"_ten\": { \"uri\": \"msgpack://127.0.0.1:" #port "/\",   \
@@ -48,7 +48,7 @@
       ASSERT_EQ(rc, true); \
                                                                                   \
       /* clang-format on */                                                       \
-      ten_env.on_init_done();                                                     \
+      ten_env.on_configure_done();                                                \
     }                                                                             \
   };                                                                              \
   static void *test_app_##N##_thread_main(TEN_UNUSED void *args) {                \

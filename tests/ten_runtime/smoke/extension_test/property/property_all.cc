@@ -41,7 +41,7 @@ class test_extension : public ten::extension_t {
  public:
   explicit test_extension(const std::string &name) : ten::extension_t(name) {}
 
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
     bool rc = ten_env_internal_accessor.init_manifest_from_json(
         // clang-format off
@@ -67,7 +67,7 @@ class test_extension : public ten::extension_t {
           \"" EXTENSION_PROP_NAME_BOOL "\": " TEN_XSTR(EXTENSION_PROP_VAL_BOOL) "}");
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 
   void on_cmd(ten::ten_env_t &ten_env,
@@ -123,7 +123,7 @@ class test_extension_group : public ten::extension_group_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
     bool rc = ten_env_internal_accessor.init_manifest_from_json(
         // clang-format off
@@ -150,7 +150,7 @@ class test_app : public ten::app_t {
                     \"" APP_PROP_NAME "\": " TEN_XSTR(APP_PROP_VAL) "}");
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

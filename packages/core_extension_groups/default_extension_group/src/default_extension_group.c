@@ -181,7 +181,7 @@ static void default_extension_group_addon_create_instance(ten_addon_t *addon,
   TEN_ASSERT(addon && name, "Invalid argument.");
 
   ten_extension_group_t *ext_group = ten_extension_group_create(
-      name, ten_default_extension_group_on_init,
+      name, NULL, ten_default_extension_group_on_init,
       ten_default_extension_group_on_deinit,
       ten_default_extension_group_on_create_extensions,
       ten_default_extension_group_on_destroy_extensions);

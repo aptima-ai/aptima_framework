@@ -13,11 +13,11 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/lib/time.h"
+#include "ten_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -46,7 +46,7 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
 
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     // clang-format off
     bool rc = ten_env.init_property_from_json( R"({
       "_ten": {
@@ -56,7 +56,7 @@ class test_extension_1 : public ten::extension_t {
     // clang-format on
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 
 #define OUTER_THREAD_MAIN(X)                                                 \
@@ -830,13 +830,13 @@ class test_extension_2 : public ten::extension_t {
         expected_data_received_count(OUTER_THREAD_CNT,
                                      OUTER_THREAD_FOR_LOOP_CNT + 1) {}
 
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     ten_env.init_property_from_json(R"({
       "_ten": {
         "path_timeout": 600000000
       }
     })");
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 
   void on_cmd(ten::ten_env_t &ten_env,
@@ -885,10 +885,12 @@ class test_extension_2 : public ten::extension_t {
                           "Failed to send 'from_extension_2' command.");
 
                       received_from_extension_2_cmd_result++;
-                      TEN_LOGD(
-                          "extension_2 got a result for from_extension_2 "
-                          "cmd: %d",
-                          received_from_extension_2_cmd_result);
+                      TEN_ENV_LOG_INFO(
+                          ten_env,
+                          (std::string("extension_2 got a result for "
+                                       "from_extension_2 cmd: ") +
+                           std::to_string(received_from_extension_2_cmd_result))
+                              .c_str());
 
                       if ((hello_cmd != nullptr) && is_received_all_data() &&
                           (received_from_extension_2_cmd_result ==
@@ -978,7 +980,7 @@ class test_extension_2 : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -992,7 +994,7 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

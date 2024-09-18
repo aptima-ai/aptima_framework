@@ -30,12 +30,15 @@ class TenEnv:
     def __del__(self) -> None:
         pass
 
-    def on_init_done(self) -> None:
+    def on_configure_done(self) -> None:
         from .addon import Addon
 
         if self._internal._attach_to == _TenEnvAttachTo.APP:
-            # Load all python addons when app on_init_done.
+            # Load all python addons when app on_configure_done.
             Addon._load_all()
+        return self._internal.on_configure_done()
+
+    def on_init_done(self) -> None:
         return self._internal.on_init_done()
 
     def on_start_done(self) -> None:

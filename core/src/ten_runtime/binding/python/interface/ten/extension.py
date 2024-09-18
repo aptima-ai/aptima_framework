@@ -19,7 +19,7 @@ class Extension(_Extension):
         pass
 
     @final
-    def _proxy_on_init(self, ten_env: TenEnv) -> None:
+    def _proxy_on_configure(self, ten_env: TenEnv) -> None:
         if os.getenv("TEN_ENABLE_PYTHON_DEBUG") == "true":
             # Import the necessary module for debugging.
             import debugpy
@@ -28,7 +28,10 @@ class Extension(_Extension):
             # function, it allows setting breakpoints in all Extension::on_xxx
             # methods.
             debugpy.debug_this_thread()
-        self.on_init(ten_env)
+        self.on_configure(ten_env)
+
+    def on_configure(self, ten_env: TenEnv) -> None:
+        ten_env.on_configure_done()
 
     def on_init(self, ten_env: TenEnv) -> None:
         ten_env.on_init_done()

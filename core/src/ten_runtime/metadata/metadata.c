@@ -10,11 +10,11 @@
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_rust/ten_rust.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/file.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_object.h"
@@ -113,11 +113,12 @@ bool ten_metadata_load_from_info(ten_value_t *metadata,
       err);
 }
 
-void ten_metadata_load(ten_object_on_init_func_t on_init, ten_env_t *ten_env) {
-  TEN_ASSERT(on_init && ten_env && ten_env_check_integrity(ten_env, true),
+void ten_metadata_load(ten_object_on_configure_func_t on_configure,
+                       ten_env_t *ten_env) {
+  TEN_ASSERT(on_configure && ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  on_init(ten_env);
+  on_configure(ten_env);
 }
 
 ten_value_t *ten_metadata_init_schema_store(ten_value_t *manifest,

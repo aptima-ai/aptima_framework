@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -49,7 +48,7 @@ class test_extension_2 : public ten::extension_t {
 
 class test_app_1 : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
     bool rc = ten_env_internal_accessor.init_manifest_from_json(
         // clang-format off
@@ -114,20 +113,20 @@ class test_app_1 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 
 class test_app_2 : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     ten_env.init_property_from_json(
         R"({
                       "_ten": {
                         "uri": "msgpack://127.0.0.1:8002/"
                       }
                      })");
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

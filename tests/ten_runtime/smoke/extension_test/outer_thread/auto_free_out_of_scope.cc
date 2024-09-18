@@ -14,11 +14,11 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/thread.h"
+#include "ten_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -164,7 +164,7 @@ class test_extension_2 : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -178,7 +178,7 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

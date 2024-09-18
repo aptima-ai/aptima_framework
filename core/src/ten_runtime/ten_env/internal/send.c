@@ -88,7 +88,7 @@ static bool ten_send_msg_internal(
   ten_extension_t *extension = ten_env_get_attached_extension(self);
   TEN_ASSERT(extension, "Invalid argument.");
 
-  if (extension->state < TEN_EXTENSION_STATE_INITED) {
+  if (extension->state < TEN_EXTENSION_STATE_INITTED) {
     TEN_LOGE("Cannot send messages before on_init_done.");
     ten_error_set(err, TEN_ERRNO_GENERIC,
                   "Cannot send messages before on_init_done.");

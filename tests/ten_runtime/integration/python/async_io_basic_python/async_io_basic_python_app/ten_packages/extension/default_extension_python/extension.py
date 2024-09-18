@@ -51,7 +51,7 @@ class DefaultExtension(Extension):
         ten_env.on_init_done()
 
     def on_start(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_start")
+        ten_env.log_debug("on_start")
 
         self.thread = threading.Thread(
             target=asyncio.run, args=(self.__thread_routine(ten_env),)

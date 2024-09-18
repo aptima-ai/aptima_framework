@@ -12,9 +12,9 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 
 static bool ten_env_return_result_internal(ten_env_t *self,
                                            ten_shared_ptr_t *result_cmd,
@@ -51,7 +51,7 @@ static bool ten_env_return_result_internal(ten_env_t *self,
 
   bool result = true;
 
-  if (extension->state < TEN_EXTENSION_STATE_INITED) {
+  if (extension->state < TEN_EXTENSION_STATE_INITTED) {
     TEN_LOGE("Cannot return results before on_init_done.");
     ten_error_set(err, TEN_ERRNO_GENERIC,
                   "Cannot return results before on_init_done.");

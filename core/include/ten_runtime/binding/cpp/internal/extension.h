@@ -13,7 +13,6 @@
 #include <string>
 #include <utility>
 
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/cpp/internal/common.h"
 #include "ten_runtime/binding/cpp/internal/msg/audio_frame.h"
@@ -28,6 +27,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 
 using ten_json_t = ::ten_json_t;
 using ten_env_t = struct ten_env_t;
@@ -71,6 +71,8 @@ class extension_t {
          // *' to 'void *'
         c_extension(::ten_extension_create(
             name.c_str(),
+            reinterpret_cast<ten_extension_on_configure_func_t>(
+                &proxy_on_configure),
             reinterpret_cast<ten_extension_on_init_func_t>(&proxy_on_init),
             reinterpret_cast<ten_extension_on_start_func_t>(&proxy_on_start),
             reinterpret_cast<ten_extension_on_stop_func_t>(&proxy_on_stop),
@@ -91,6 +93,8 @@ class extension_t {
     cpp_ten_env = new ten_env_t(ten_extension_get_ten(c_extension));
     TEN_ASSERT(cpp_ten_env, "Should not happen.");
   }
+
+  virtual void on_configure(ten_env_t &ten_env) { ten_env.on_configure_done(); }
 
   virtual void on_init(ten_env_t &ten_env) { ten_env.on_init_done(); }
 
@@ -136,6 +140,20 @@ class extension_t {
     ten_env_send_cmd(ten_env.get_c_ten_env(), stop_graph_cmd, nullptr, nullptr,
                      nullptr);
     ten_shared_ptr_destroy(stop_graph_cmd);
+  }
+
+  static void proxy_on_configure(ten_extension_t *extension,
+                                 ::ten_env_t *ten_env) {
+    TEN_ASSERT(extension && ten_env, "Should not happen.");
+
+    auto *cpp_extension =
+        static_cast<extension_t *>(ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(extension)));
+    auto *cpp_ten_env =
+        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
+
+    cpp_extension->invoke_cpp_extension_on_configure(*cpp_ten_env);
   }
 
   static void proxy_on_init(ten_extension_t *extension, ::ten_env_t *ten_env) {
@@ -259,6 +277,30 @@ class extension_t {
 
     cpp_extension->invoke_cpp_extension_on_video_frame(
         *cpp_ten_env, std::move(cpp_frame_ptr));
+  }
+
+  void invoke_cpp_extension_on_configure(ten_env_t &ten_env) {
+    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // merely to intercept any exceptions that might be thrown by the user's app
+    // code. If exceptions are disabled during the compilation of the TEN
+    // runtime (i.e., with -fno-exceptions), it implies that the extensions used
+    // will also not employ exceptions (otherwise it would be unreasonable). In
+    // this case, the try/catch blocks become no-ops. Conversely, if exceptions
+    // are enabled during compilation, then the try/catch here can intercept all
+    // exceptions thrown by user code that are not already caught, serving as a
+    // kind of fallback.
+    try {
+      on_configure(ten_env);
+    } catch (std::exception &e) {
+      TEN_LOGW("Caught a exception in extension on_configure(), %s", e.what());
+
+      issue_stop_graph_cmd(ten_env);
+    } catch (...) {
+      TEN_LOGW("Caught a exception of type '%s' in extension on_configure().",
+               curr_exception_type_name().c_str());
+
+      issue_stop_graph_cmd(ten_env);
+    }
   }
 
   void invoke_cpp_extension_on_init(ten_env_t &ten_env) {

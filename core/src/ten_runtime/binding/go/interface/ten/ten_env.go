@@ -12,7 +12,6 @@ import "C"
 
 import (
 	"fmt"
-	"log"
 	"runtime"
 	"strings"
 	"unsafe"
@@ -46,6 +45,7 @@ type TenEnv interface {
 	ReturnResult(result CmdResult, cmd Cmd) error
 	ReturnResultDirectly(result CmdResult) error
 
+	OnConfigureDone() error
 	OnInitDone() error
 	OnStartDone() error
 	OnStopDone() error
@@ -304,8 +304,15 @@ func (p *tenEnv) SendAudioFrame(audioFrame AudioFrame) error {
 	return nil
 }
 
+func (p *tenEnv) OnConfigureDone() error {
+	p.LogDebug("OnConfigureDone")
+	C.ten_go_ten_env_on_configure_done(p.cPtr)
+
+	return nil
+}
+
 func (p *tenEnv) OnInitDone() error {
-	log.Println("ten OnInitDone")
+	p.LogDebug("OnInitDone")
 	C.ten_go_ten_env_on_init_done(p.cPtr)
 
 	return nil

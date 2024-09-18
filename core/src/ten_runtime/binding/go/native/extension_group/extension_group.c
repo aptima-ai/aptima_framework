@@ -15,7 +15,6 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
@@ -25,6 +24,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 void tenGoExtensionGroupOnInit(ten_go_handle_t go_extension_group,
                                ten_go_handle_t go_ten);
@@ -207,7 +207,7 @@ ten_go_extension_group_t *ten_go_extension_group_create_internal(
   extension_group_bridge->bridge.sp_ref_by_c = NULL;
 
   extension_group_bridge->c_extension_group = ten_extension_group_create(
-      name, proxy_on_init, proxy_on_deinit, proxy_on_create_extensions,
+      name, NULL, proxy_on_init, proxy_on_deinit, proxy_on_create_extensions,
       proxy_on_destroy_extensions);
 
   ten_binding_handle_set_me_in_target_lang(

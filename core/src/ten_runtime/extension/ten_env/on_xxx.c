@@ -17,6 +17,46 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/macro/check.h"
 
+static ten_extension_on_configure_done_t *
+ten_extension_on_configure_done_create(ten_extension_t *extension) {
+  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
+             "Should not happen.");
+
+  ten_extension_on_configure_done_t *on_configure_done =
+      TEN_MALLOC(sizeof(ten_extension_on_configure_done_t));
+  TEN_ASSERT(on_configure_done, "Failed to allocate memory.");
+
+  on_configure_done->extension = extension;
+
+  return on_configure_done;
+}
+
+void ten_extension_on_configure_done(ten_env_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_env_check_integrity(self, true), "Invalid use of ten_env %p.",
+             self);
+
+  ten_extension_t *extension = ten_env_get_attached_extension(self);
+  TEN_ASSERT(extension, "Invalid argument.");
+  TEN_ASSERT(ten_extension_check_integrity(extension, true),
+             "Invalid use of extension %p.", extension);
+
+  TEN_LOGD("[%s] on_configure() done.", ten_extension_get_name(extension));
+
+  ten_extension_thread_t *extension_thread = extension->extension_thread;
+  TEN_ASSERT(extension_thread &&
+                 ten_extension_thread_check_integrity(extension_thread, true),
+             "Should not happen.");
+
+  ten_extension_on_configure_done_t *on_configure_done =
+      ten_extension_on_configure_done_create(extension);
+
+  ten_runloop_post_task_tail(
+      ten_extension_get_attached_runloop(extension),
+      ten_extension_thread_on_extension_on_configure_done, extension_thread,
+      on_configure_done);
+}
+
 static ten_extension_on_init_done_t *ten_extension_on_init_done_create(
     ten_extension_t *extension) {
   TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
@@ -129,11 +169,11 @@ void ten_extension_on_deinit_done(ten_env_t *self) {
   TEN_ASSERT(extension->state >= TEN_EXTENSION_STATE_DEINITING,
              "Should not happen.");
 
-  if (extension->state == TEN_EXTENSION_STATE_DEINITED) {
+  if (extension->state == TEN_EXTENSION_STATE_DEINITTED) {
     return;
   }
 
-  ten_extension_set_state(extension, TEN_EXTENSION_STATE_DEINITED);
+  ten_extension_set_state(extension, TEN_EXTENSION_STATE_DEINITTED);
 
   TEN_LOGD("[%s] on_deinit() done.", ten_extension_get_name(extension));
 
@@ -167,6 +207,13 @@ ten_extension_on_start_stop_deinit_done_create(ten_extension_t *extension) {
 
 void ten_extension_on_start_stop_deinit_done_destroy(
     ten_extension_on_start_stop_deinit_done_t *self) {
+  TEN_ASSERT(self, "Should not happen.");
+
+  TEN_FREE(self);
+}
+
+void ten_extension_on_configure_done_destroy(
+    ten_extension_on_configure_done_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   TEN_FREE(self);

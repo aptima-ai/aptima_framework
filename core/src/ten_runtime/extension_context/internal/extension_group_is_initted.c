@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/extension_context/internal/extension_group_is_inited.h"
+#include "include_internal/ten_runtime/extension_context/internal/extension_group_is_initted.h"
 
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/extension/extension.h"
@@ -16,7 +16,7 @@
 #include "ten_utils/container/list_node_ptr.h"
 #include "ten_utils/macro/check.h"
 
-void ten_extension_context_on_all_extensions_in_extension_group_are_inited(
+void ten_extension_context_on_all_extensions_in_extension_group_are_initted(
     void *self_, void *arg) {
   ten_extension_context_t *self = self_;
   TEN_ASSERT(self, "Invalid argument.");
@@ -36,7 +36,7 @@ void ten_extension_context_on_all_extensions_in_extension_group_are_inited(
            ten_engine_get_name(self->engine),
            ten_string_get_raw_str(&extension_group->name));
 
-  self->extension_threads_cnt_of_all_extensions_inited++;
+  self->extension_threads_cnt_of_all_extensions_initted++;
 
   // TODO(Wei): At present, we only check whether all extension threads in the
   // same TEN app has reached the 'initted' state. And if this condition is met,
@@ -48,7 +48,7 @@ void ten_extension_context_on_all_extensions_in_extension_group_are_inited(
   // 'on_start' stage, this location is the right place to add more logic about
   // this.
 
-  if (self->extension_threads_cnt_of_all_extensions_inited ==
+  if (self->extension_threads_cnt_of_all_extensions_initted ==
       ten_list_size(&self->extension_threads)) {
     TEN_LOGD(
         "[%s] All extension threads enter 'all extensions are initted' state.",

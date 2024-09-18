@@ -13,6 +13,9 @@
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_metadata_info_t ten_metadata_info_t;
 
+TEN_RUNTIME_API bool ten_env_on_configure_done(ten_env_t *self,
+                                               ten_error_t *err);
+
 TEN_RUNTIME_API bool ten_env_on_init_done(ten_env_t *self, ten_error_t *err);
 
 TEN_RUNTIME_API bool ten_env_on_deinit_done(ten_env_t *self, ten_error_t *err);

@@ -30,6 +30,45 @@ static bool ten_py_app_check_integrity(ten_py_app_t *self, bool check_thread) {
   return ten_app_check_integrity(self->c_app, check_thread);
 }
 
+static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Invalid argument.");
+
+  TEN_LOGI("proxy_on_configure");
+
+  // The current state may be PyGILState_LOCKED or PyGILState_UNLOCKED which
+  // depends on whether the app is running in the Python thread or native
+  // thread.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  ten_py_app_t *py_app =
+      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
+  TEN_ASSERT(py_app && ten_py_app_check_integrity(py_app, true),
+             "Should not happen.");
+
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  py_ten_env->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+
+  PyObject *py_res = PyObject_CallMethod((PyObject *)py_app, "on_configure",
+                                         "O", py_ten_env->actual_py_ten_env);
+  Py_XDECREF(py_res);
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  if (prev_state == PyGILState_UNLOCKED) {
+    // Release the GIL but not release the thread state.
+    ten_py_eval_save_thread();
+  } else {
+    // No need to release the GIL.
+  }
+
+  py_ten_env->need_to_release_gil_state = true;
+
+  TEN_LOGI("proxy_on_configure done");
+}
+
 static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
@@ -48,7 +87,6 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
              "Should not happen.");
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
-  py_ten_env->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
 
   PyObject *py_res = PyObject_CallMethod((PyObject *)py_app, "on_init", "O",
                                          py_ten_env->actual_py_ten_env);
@@ -57,14 +95,7 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  if (prev_state == PyGILState_UNLOCKED) {
-    // Release the GIL but not release the thread state.
-    ten_py_eval_save_thread();
-  } else {
-    // No need to release the GIL.
-  }
-
-  py_ten_env->need_to_release_gil_state = true;
+  ten_py_gil_state_release(prev_state);
 
   TEN_LOGI("proxy_on_init done");
 }
@@ -118,7 +149,8 @@ static PyObject *ten_py_app_create(PyTypeObject *type, PyObject *args,
     return ten_py_raise_py_type_error_exception("Expect 0 argument.");
   }
 
-  py_app->c_app = ten_app_create(proxy_on_init, proxy_on_deinit, NULL);
+  py_app->c_app =
+      ten_app_create(proxy_on_configure, proxy_on_init, proxy_on_deinit, NULL);
   if (!py_app->c_app) {
     TEN_ASSERT(0, "Failed to create TEN app.");
 

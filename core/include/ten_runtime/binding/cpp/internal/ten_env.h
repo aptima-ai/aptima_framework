@@ -949,6 +949,18 @@ class ten_env_t {
     return addon_destroy_extension_async(extension, nullptr, err);
   }
 
+  bool on_configure_done() { return on_configure_done(nullptr); }
+
+  virtual bool on_configure_done(error_t *err) {
+    TEN_ASSERT(c_ten_env, "Should not happen.");
+
+    bool rc = ten_env_on_configure_done(
+        c_ten_env,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+
+    return rc;
+  }
+
   virtual bool on_init_done(error_t *err) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 

@@ -21,6 +21,8 @@ typedef struct ten_go_msg_t ten_go_msg_t;
 typedef struct ten_go_ten_env_t ten_go_ten_env_t;
 typedef struct ten_go_value_t ten_go_value_t;
 
+void ten_go_ten_env_on_configure_done(uintptr_t bridge_addr);
+
 void ten_go_ten_env_on_init_done(uintptr_t bridge_addr);
 
 void ten_go_ten_env_on_start_done(uintptr_t bridge_addr);

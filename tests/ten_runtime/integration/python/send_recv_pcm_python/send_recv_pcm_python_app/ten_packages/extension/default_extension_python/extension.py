@@ -18,11 +18,11 @@ from pydub import AudioSegment
 
 class DefaultExtension(Extension):
     def on_init(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_init")
+        ten_env.log_debug("on_init")
         ten_env.on_init_done()
 
     def on_start(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_start")
+        ten_env.log_debug("on_start")
         self.audio = AudioSegment.from_file(
             "../test_data/speech_16k_1.pcm",
             format="s16le",

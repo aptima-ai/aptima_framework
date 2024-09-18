@@ -18,13 +18,13 @@ from PIL import Image
 
 
 class DefaultExtension(Extension):
-    def on_init(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_init")
+    def on_configure(self, ten_env: TenEnv) -> None:
+        ten_env.log_debug("on_init")
         ten_env.init_property_from_json('{"testKey": "testValue"}')
-        ten_env.on_init_done()
+        ten_env.on_configure_done()
 
     def on_start(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_start")
+        ten_env.log_debug("on_start")
 
         im = Image.open("../test_data/tiger.jpg")
         self.pixels = im.convert("RGBA")
@@ -34,7 +34,7 @@ class DefaultExtension(Extension):
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.to_json()
-        print("DefaultExtension on_cmd json: " + cmd_json)
+        ten_env.log_info(f"DefaultExtension on_cmd json: {cmd_json}")
 
         assert hasattr(self, "request_cmd") != True
 
@@ -64,7 +64,7 @@ class DefaultExtension(Extension):
         ten_env.send_video_frame(new_image)
 
     def on_video_frame(self, ten_env: TenEnv, video_frame: VideoFrame) -> None:
-        print("DefaultExtension on_video_frame")
+        ten_env.log_debug("on_video_frame")
 
         assert hasattr(self, "request_cmd") == True
 

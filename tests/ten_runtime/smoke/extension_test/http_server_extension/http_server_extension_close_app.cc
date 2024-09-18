@@ -39,7 +39,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
 
 class test_app : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) final {
+  void on_configure(ten::ten_env_t &ten_env) final {
     ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
     bool rc = ten_env_internal_accessor.init_manifest_from_json(
         // clang-format off
@@ -93,7 +93,7 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

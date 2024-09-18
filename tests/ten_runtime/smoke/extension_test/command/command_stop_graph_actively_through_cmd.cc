@@ -151,7 +151,7 @@ class test_extension_group_3 : public ten::extension_group_t {
 
 class test_app_1 : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -165,13 +165,13 @@ class test_app_1 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 
 class test_app_2 : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -186,13 +186,13 @@ class test_app_2 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 
 class test_app_3 : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -206,7 +206,7 @@ class test_app_3 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

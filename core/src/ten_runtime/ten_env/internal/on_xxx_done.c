@@ -16,9 +16,38 @@
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
+
+bool ten_env_on_configure_done(ten_env_t *self, ten_error_t *err) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(
+      ten_env_check_integrity(
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+      "Invalid use of ten_env %p.", self);
+
+  switch (self->attach_to) {
+    case TEN_ENV_ATTACH_TO_EXTENSION:
+      ten_extension_on_configure_done(self);
+      break;
+
+    case TEN_ENV_ATTACH_TO_APP:
+      ten_app_on_configure_done(self);
+      break;
+
+    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
+    case TEN_ENV_ATTACH_TO_ADDON:
+      TEN_ASSERT(0, "Handle these types.");
+      break;
+
+    default:
+      TEN_ASSERT(0, "Should not happen.");
+      break;
+  }
+
+  return true;
+}
 
 bool ten_env_on_init_done(ten_env_t *self, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");

@@ -18,34 +18,14 @@
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 
-void ten_app_on_init(ten_env_t *ten_env) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-  TEN_ASSERT(ten_env_get_attach_to(ten_env) == TEN_ENV_ATTACH_TO_APP,
-             "Should not happen.");
-
-  ten_app_t *self = ten_env_get_attached_app(ten_env);
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  self->manifest_info =
-      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_MANIFEST, self->ten_env);
-  self->property_info =
-      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_PROPERTY, self->ten_env);
-
-  if (self->on_init) {
-    self->on_init(self, self->ten_env);
-  } else {
-    ten_app_on_init_done(self->ten_env);
-  }
-}
-
-static void ten_app_adjust_and_validate_property_on_init(ten_app_t *self) {
+static void ten_app_adjust_and_validate_property_on_configure_done(
+    ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
   ten_error_t err;
@@ -72,14 +52,14 @@ done:
   }
 }
 
-static void ten_app_on_init_done_internal(ten_app_t *self) {
+static void ten_app_on_configure_done_internal(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true) && self->loop,
              "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_handle_manifest_info_when_on_init_done(
+  bool rc = ten_handle_manifest_info_when_on_configure_done(
       &self->manifest_info, ten_string_get_raw_str(ten_app_get_base_dir(self)),
       &self->manifest, &err);
   if (!rc) {
@@ -87,7 +67,7 @@ static void ten_app_on_init_done_internal(ten_app_t *self) {
     exit(EXIT_FAILURE);
   }
 
-  rc = ten_handle_property_info_when_on_init_done(
+  rc = ten_handle_property_info_when_on_configure_done(
       &self->property_info, ten_string_get_raw_str(ten_app_get_base_dir(self)),
       &self->property, &err);
   if (!rc) {
@@ -100,7 +80,7 @@ static void ten_app_on_init_done_internal(ten_app_t *self) {
   }
 
   ten_metadata_init_schema_store(&self->manifest, &self->schema_store);
-  ten_app_adjust_and_validate_property_on_init(self);
+  ten_app_adjust_and_validate_property_on_configure_done(self);
 
   if (ten_string_is_empty(&self->uri)) {
     ten_string_copy_c_str(&self->uri, TEN_STR_LOCALHOST,
@@ -128,6 +108,62 @@ static void ten_app_on_init_done_internal(ten_app_t *self) {
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_error_deinit(&err);
+}
+
+void ten_app_on_configure_done(ten_env_t *ten_env) {
+  TEN_ASSERT(ten_env, "Invalid argument.");
+  TEN_ASSERT(ten_env_check_integrity(ten_env, true),
+             "Invalid use of ten_env %p.", ten_env);
+
+  ten_app_t *self = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  ten_app_on_configure_done_internal(self);
+
+  // Trigger on_init.
+  ten_app_on_init(ten_env);
+}
+
+void ten_app_on_configure(ten_env_t *ten_env) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env_get_attach_to(ten_env) == TEN_ENV_ATTACH_TO_APP,
+             "Should not happen.");
+
+  ten_app_t *self = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  self->manifest_info =
+      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_MANIFEST, self->ten_env);
+  self->property_info =
+      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_PROPERTY, self->ten_env);
+
+  if (self->on_configure) {
+    self->on_configure(self, self->ten_env);
+  } else {
+    ten_app_on_configure_done(self->ten_env);
+  }
+}
+
+void ten_app_on_init(ten_env_t *ten_env) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env_get_attach_to(ten_env) == TEN_ENV_ATTACH_TO_APP,
+             "Should not happen.");
+
+  ten_app_t *self = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  if (self->on_init) {
+    self->on_init(self, self->ten_env);
+  } else {
+    ten_app_on_init_done(self->ten_env);
+  }
+}
+
+static void ten_app_on_init_done_internal(ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true) && self->loop,
+             "Should not happen.");
 }
 
 void ten_app_on_init_done(ten_env_t *ten_env) {

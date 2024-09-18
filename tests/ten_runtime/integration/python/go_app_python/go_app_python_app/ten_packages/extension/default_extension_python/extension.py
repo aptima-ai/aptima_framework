@@ -19,11 +19,11 @@ from ten import (
 
 
 class DefaultExtension(Extension):
-    def on_init(self, ten_env: TenEnv) -> None:
+    def on_configure(self, ten_env: TenEnv) -> None:
         ten_env.log_debug("on_init")
 
         ten_env.init_property_from_json('{"testKey": "testValue"}')
-        ten_env.on_init_done()
+        ten_env.on_configure_done()
 
     def on_start(self, ten_env: TenEnv) -> None:
         ten_env.log_debug("on_start")

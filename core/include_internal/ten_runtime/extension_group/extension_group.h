@@ -36,7 +36,7 @@ typedef struct ten_extension_group_info_t ten_extension_group_info_t;
 typedef enum TEN_EXTENSION_GROUP_STATE {
   TEN_EXTENSION_GROUP_STATE_INIT,
   TEN_EXTENSION_GROUP_STATE_DEINITING,  // on_deinit() is started.
-  TEN_EXTENSION_GROUP_STATE_DEINITED,   // on_deinit_done() is called.
+  TEN_EXTENSION_GROUP_STATE_DEINITTED,  // on_deinit_done() is called.
 } TEN_EXTENSION_GROUP_STATE;
 
 typedef struct ten_extension_group_t {
@@ -49,6 +49,7 @@ typedef struct ten_extension_group_t {
 
   // @{
   // Public interface
+  ten_extension_group_on_configure_func_t on_configure;
   ten_extension_group_on_init_func_t on_init;
   ten_extension_group_on_deinit_func_t on_deinit;
   ten_extension_group_on_create_extensions_func_t on_create_extensions;
@@ -123,7 +124,8 @@ ten_extension_group_decrement_extension_cnt_of_being_destroyed(
 
 TEN_RUNTIME_PRIVATE_API ten_extension_group_t *
 ten_extension_group_create_internal(
-    const char *name, ten_extension_group_on_init_func_t on_init,
+    const char *name, ten_extension_group_on_configure_func_t on_configure,
+    ten_extension_group_on_init_func_t on_init,
     ten_extension_group_on_deinit_func_t on_deinit,
     ten_extension_group_on_create_extensions_func_t on_create_extensions,
     ten_extension_group_on_destroy_extensions_func_t on_destroy_extensions);

@@ -80,7 +80,7 @@ class test_extension_group : public ten::extension_group_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_configure(ten::ten_env_t &ten_env) override {
     ten_env.init_property_from_json(
         R"({
                       "_ten": {
@@ -88,7 +88,7 @@ class test_app : public ten::app_t {
                         "log_level": 2
                       }
                     })");
-    ten_env.on_init_done();
+    ten_env.on_configure_done();
   }
 };
 

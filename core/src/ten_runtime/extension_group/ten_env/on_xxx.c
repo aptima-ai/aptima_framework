@@ -107,10 +107,10 @@ void ten_extension_group_on_deinit_done(ten_env_t *self) {
     return;
   }
 
-  if (extension_group->state == TEN_EXTENSION_GROUP_STATE_DEINITED) {
+  if (extension_group->state == TEN_EXTENSION_GROUP_STATE_DEINITTED) {
     return;
   }
-  extension_group->state = TEN_EXTENSION_GROUP_STATE_DEINITED;
+  extension_group->state = TEN_EXTENSION_GROUP_STATE_DEINITTED;
 
   TEN_LOGD("[%s] on_deinit() done.",
            ten_extension_group_get_name(extension_group));

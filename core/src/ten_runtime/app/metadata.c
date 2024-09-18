@@ -15,12 +15,12 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "include_internal/ten_utils/log/output.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_ptr.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_is.h"
@@ -196,5 +196,5 @@ void ten_app_handle_metadata(ten_app_t *self) {
              self);
 
   // Load custom TEN app metadata.
-  ten_metadata_load(ten_app_on_init, self->ten_env);
+  ten_metadata_load(ten_app_on_configure, self->ten_env);
 }

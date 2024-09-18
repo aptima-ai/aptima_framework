@@ -18,6 +18,7 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/json.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
+#include "include_internal/ten_runtime/extension/on_xxx.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
@@ -32,7 +33,6 @@
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/common/errno.h"
@@ -50,11 +50,13 @@
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 
 ten_extension_t *ten_extension_create(
-    const char *name, ten_extension_on_init_func_t on_init,
+    const char *name, ten_extension_on_configure_func_t on_configure,
+    ten_extension_on_init_func_t on_init,
     ten_extension_on_start_func_t on_start,
     ten_extension_on_stop_func_t on_stop,
     ten_extension_on_deinit_func_t on_deinit,
@@ -73,6 +75,7 @@ ten_extension_t *ten_extension_create(
 
   // --------------------------
   // Public interface.
+  self->on_configure = on_configure;
   self->on_init = on_init;
   self->on_start = on_start;
   self->on_stop = on_stop;
@@ -351,8 +354,8 @@ bool ten_extension_determine_and_merge_all_interface_dest_extension(
     ten_extension_t *self) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
              "Invalid argument.");
-  TEN_ASSERT(self->state == TEN_EXTENSION_STATE_INITED,
-             "Extension should be on_init_done.");
+  TEN_ASSERT(self->state == TEN_EXTENSION_STATE_CONFIGURED,
+             "Extension should be on_configure_done.");
 
   if (!self->extension_info) {
     return true;
@@ -866,7 +869,32 @@ void ten_extension_link_its_ten_to_extension_context(
   self->extension_context = extension_context;
 }
 
-static void ten_extension_on_init(ten_env_t *ten_env) {
+static void ten_extension_on_configure(ten_env_t *ten_env) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env_get_attach_to(ten_env) == TEN_ENV_ATTACH_TO_EXTENSION,
+             "Invalid argument.");
+
+  ten_extension_t *self = ten_env_get_attached_extension(ten_env);
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_check_integrity(self, true),
+             "Invalid use of extension %p.", self);
+
+  TEN_LOGD("[%s] on_configure().", ten_extension_get_name(self));
+
+  self->manifest_info =
+      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_MANIFEST, self->ten_env);
+  self->property_info =
+      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_PROPERTY, self->ten_env);
+
+  if (self->on_configure) {
+    self->on_configure(self, self->ten_env);
+  } else {
+    ten_extension_on_configure_done(self->ten_env);
+  }
+}
+
+void ten_extension_on_init(ten_env_t *ten_env) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
   TEN_ASSERT(ten_env_get_attach_to(ten_env) == TEN_ENV_ATTACH_TO_EXTENSION,
@@ -879,15 +907,10 @@ static void ten_extension_on_init(ten_env_t *ten_env) {
 
   TEN_LOGD("[%s] on_init().", ten_extension_get_name(self));
 
-  self->manifest_info =
-      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_MANIFEST, self->ten_env);
-  self->property_info =
-      ten_metadata_info_create(TEN_METADATA_ATTACH_TO_PROPERTY, self->ten_env);
-
   if (self->on_init) {
     self->on_init(self, self->ten_env);
   } else {
-    ten_env_on_init_done(self->ten_env, NULL);
+    ten_extension_on_init_done(self->ten_env);
   }
 }
 
@@ -1024,7 +1047,7 @@ void ten_extension_load_metadata(ten_extension_t *self) {
                                 &self->base_dir);
   }
 
-  ten_metadata_load(ten_extension_on_init, self->ten_env);
+  ten_metadata_load(ten_extension_on_configure, self->ten_env);
 }
 
 void ten_extension_set_me_in_target_lang(ten_extension_t *self,

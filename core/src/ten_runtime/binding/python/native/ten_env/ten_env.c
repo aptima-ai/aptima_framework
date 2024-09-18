@@ -10,11 +10,11 @@
 
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "object.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/signature.h"
+#include "ten_utils/macro/check.h"
 
 bool ten_py_ten_env_check_integrity(ten_py_ten_env_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -134,6 +134,8 @@ PyTypeObject *ten_py_ten_env_type(void) {
       {NULL, NULL, NULL, NULL, NULL}};
 
   static PyMethodDef ten_methods[] = {
+      {"on_configure_done", ten_py_ten_env_on_configure_done, METH_VARARGS,
+       NULL},
       {"on_init_done", ten_py_ten_env_on_init_done, METH_VARARGS, NULL},
       {"on_start_done", ten_py_ten_env_on_start_done, METH_VARARGS, NULL},
       {"on_stop_done", ten_py_ten_env_on_stop_done, METH_VARARGS, NULL},

@@ -108,12 +108,24 @@ void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_log, info,
-                            false, &err)) {
-    goto done;
+  if (self->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
+    // TODO(Wei): This function is currently specifically designed for the addon
+    // because the addon currently does not have a main thread, so it's unable
+    // to check thread safety. Once the main thread for the addon is determined
+    // in the future, these hacks made specifically for the addon can be
+    // completely removed, and comprehensive thread safety checking can be
+    // implemented.
+    ten_env_log_with_size_formatted_without_check_thread(
+        self->c_ten_env, info->level, info->func_name, info->func_name_len,
+        info->file_name, info->file_name_len, info->line_no, "%.*s",
+        info->msg_len, info->msg);
+  } else {
+    if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_log, info,
+                              false, &err)) {
+      goto done;
+    }
+    ten_event_wait(info->completed, -1);
   }
-
-  ten_event_wait(info->completed, -1);
 
 done:
   ten_error_deinit(&err);

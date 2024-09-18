@@ -21,6 +21,8 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 
+void tenGoAppOnConfigure(ten_go_handle_t go_app, ten_go_handle_t go_ten);
+
 void tenGoAppOnInit(ten_go_handle_t go_app, ten_go_handle_t go_ten);
 
 void tenGoAppOnDeinit(ten_go_handle_t go_app, ten_go_handle_t go_ten);
@@ -35,7 +37,7 @@ bool ten_go_app_check_integrity(ten_go_app_t *self) {
   return true;
 }
 
-static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
+static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -47,6 +49,22 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
 
   ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
   ten_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+
+  tenGoAppOnConfigure(app_bridge->bridge.go_instance,
+                      ten_go_ten_env_go_handle(ten_bridge));
+}
+
+static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_app_get_ten_env(app) == ten_env, "Should not happen.");
+
+  ten_go_app_t *app_bridge =
+      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
+  TEN_ASSERT(app_bridge, "Should not happen.");
+
+  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoAppOnInit(app_bridge->bridge.go_instance,
                  ten_go_ten_env_go_handle(ten_bridge));
@@ -86,7 +104,8 @@ ten_go_app_t *ten_go_app_create(ten_go_handle_t go_app_index) {
       ten_shared_ptr_create(app_bridge, ten_go_app_destroy);
   app_bridge->bridge.sp_ref_by_c = NULL;
 
-  app_bridge->c_app = ten_app_create(proxy_on_init, proxy_on_deinit, NULL);
+  app_bridge->c_app =
+      ten_app_create(proxy_on_configure, proxy_on_init, proxy_on_deinit, NULL);
   ten_binding_handle_set_me_in_target_lang(
       (ten_binding_handle_t *)(app_bridge->c_app), app_bridge);
 

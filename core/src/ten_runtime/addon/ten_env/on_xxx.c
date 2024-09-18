@@ -37,14 +37,14 @@ void ten_addon_on_init_done(ten_env_t *self) {
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_handle_manifest_info_when_on_init_done(
+  bool rc = ten_handle_manifest_info_when_on_configure_done(
       &addon_host->manifest_info, NULL, &addon_host->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load addon manifest data, FATAL ERROR.");
     exit(EXIT_FAILURE);
   }
 
-  rc = ten_handle_property_info_when_on_init_done(
+  rc = ten_handle_property_info_when_on_configure_done(
       &addon_host->property_info, NULL, &addon_host->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load addon property data, FATAL ERROR.");

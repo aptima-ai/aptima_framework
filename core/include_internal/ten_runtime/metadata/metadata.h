@@ -17,7 +17,7 @@
 typedef struct ten_metadata_info_t ten_metadata_info_t;
 typedef struct ten_env_t ten_env_t;
 
-typedef void (*ten_object_on_init_func_t)(ten_env_t *ten_env);
+typedef void (*ten_object_on_configure_func_t)(ten_env_t *ten_env);
 
 typedef enum TEN_METADATA_TYPE {
   TEN_METADATA_INVALID,
@@ -35,7 +35,7 @@ TEN_RUNTIME_API bool ten_metadata_info_set(ten_metadata_info_t *self,
 TEN_RUNTIME_API void ten_metadata_info_destroy(ten_metadata_info_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_metadata_load(
-    ten_object_on_init_func_t on_init, ten_env_t *ten_env);
+    ten_object_on_configure_func_t on_configure, ten_env_t *ten_env);
 
 TEN_RUNTIME_PRIVATE_API bool ten_metadata_load_from_info(
     ten_value_t *metadata, ten_metadata_info_t *metadata_info,
@@ -56,10 +56,10 @@ TEN_RUNTIME_PRIVATE_API bool ten_property_json_string_is_valid(
 TEN_RUNTIME_PRIVATE_API bool ten_property_json_file_is_valid(
     const char *json_file, ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API bool ten_handle_manifest_info_when_on_init_done(
+TEN_RUNTIME_PRIVATE_API bool ten_handle_manifest_info_when_on_configure_done(
     ten_metadata_info_t **self, const char *base_dir, ten_value_t *manifest,
     ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API bool ten_handle_property_info_when_on_init_done(
+TEN_RUNTIME_PRIVATE_API bool ten_handle_property_info_when_on_configure_done(
     ten_metadata_info_t **self, const char *base_dir, ten_value_t *property,
     ten_error_t *err);

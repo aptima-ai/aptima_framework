@@ -21,7 +21,7 @@
 #include "include_internal/ten_runtime/extension/path_timer.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_context/internal/del_extension.h"
-#include "include_internal/ten_runtime/extension_context/internal/extension_group_is_inited.h"
+#include "include_internal/ten_runtime/extension_context/internal/extension_group_is_initted.h"
 #include "include_internal/ten_runtime/extension_context/internal/extension_group_is_stopped.h"
 #include "include_internal/ten_runtime/extension_context/internal/extension_thread_is_closing.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
@@ -154,7 +154,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_handle_manifest_info_when_on_init_done(
+  bool rc = ten_handle_manifest_info_when_on_configure_done(
       &extension_group->manifest_info,
       ten_string_get_raw_str(ten_extension_group_get_base_dir(extension_group)),
       &extension_group->manifest, &err);
@@ -163,7 +163,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
     exit(EXIT_FAILURE);
   }
 
-  rc = ten_handle_property_info_when_on_init_done(
+  rc = ten_handle_property_info_when_on_configure_done(
       &extension_group->property_info,
       ten_string_get_raw_str(ten_extension_group_get_base_dir(extension_group)),
       &extension_group->property, &err);
@@ -177,7 +177,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
   ten_extension_group_create_extensions(self->extension_group);
 }
 
-static void ten_extension_adjust_and_validate_property_on_init(
+static void ten_extension_adjust_and_validate_property_on_configure_done(
     ten_extension_t *self) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
              "Should not happen.");
@@ -227,7 +227,8 @@ static bool ten_extension_parse_interface_schema(ten_extension_t *self,
   return result;
 }
 
-void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
+void ten_extension_thread_on_extension_on_configure_done(void *self_,
+                                                         void *arg) {
   ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
@@ -236,10 +237,10 @@ void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_extension_on_init_done_t *on_init_done = arg;
-  TEN_ASSERT(on_init_done, "Should not happen.");
+  ten_extension_on_configure_done_t *on_configure_done = arg;
+  TEN_ASSERT(on_configure_done, "Should not happen.");
 
-  ten_extension_t *extension = on_init_done->extension;
+  ten_extension_t *extension = on_configure_done->extension;
   TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
              "Should not happen.");
 
@@ -248,7 +249,9 @@ void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
     goto done;
   }
 
-  bool rc = ten_handle_manifest_info_when_on_init_done(
+  ten_extension_set_state(extension, TEN_EXTENSION_STATE_CONFIGURED);
+
+  bool rc = ten_handle_manifest_info_when_on_configure_done(
       &extension->manifest_info,
       ten_string_get_raw_str(ten_extension_get_base_dir(extension)),
       &extension->manifest, &err);
@@ -257,7 +260,7 @@ void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
     exit(EXIT_FAILURE);
   }
 
-  rc = ten_handle_property_info_when_on_init_done(
+  rc = ten_handle_property_info_when_on_configure_done(
       &extension->property_info,
       ten_string_get_raw_str(ten_extension_get_base_dir(extension)),
       &extension->property, &err);
@@ -284,7 +287,7 @@ void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
     TEN_ASSERT(success, "Failed to parse interface schema.");
   }
 
-  ten_extension_adjust_and_validate_property_on_init(extension);
+  ten_extension_adjust_and_validate_property_on_configure_done(extension);
 
   // Create timers for automatically cleaning expired IN_PATHs and OUT_PATHs.
   ten_timer_t *in_path_timer =
@@ -297,14 +300,43 @@ void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
   ten_list_push_ptr_back(&extension->path_timers, out_path_timer, NULL);
   ten_timer_enable(out_path_timer);
 
-  ten_extension_set_state(extension, TEN_EXTENSION_STATE_INITED);
-
   // The interface info has been resolved, and extensions might send msg out
   // during `on_start()`, so it's the best time to merge the interface info to
   // the extension_info.
   rc =
       ten_extension_determine_and_merge_all_interface_dest_extension(extension);
   TEN_ASSERT(rc, "Should not happen.");
+
+  ten_extension_on_init(extension->ten_env);
+
+done:
+  ten_error_deinit(&err);
+
+  ten_extension_on_configure_done_destroy(on_configure_done);
+}
+
+void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
+  ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
+             "Invalid use of extension_thread %p.", self);
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  ten_extension_on_init_done_t *on_init_done = arg;
+  TEN_ASSERT(on_init_done, "Should not happen.");
+
+  ten_extension_t *extension = on_init_done->extension;
+  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
+             "Should not happen.");
+
+  if (ten_extension_thread_get_state(self) >=
+      TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE) {
+    goto done;
+  }
+
+  ten_extension_set_state(extension, TEN_EXTENSION_STATE_INITTED);
 
   self->extensions_cnt_of_on_init_done++;
 
@@ -349,7 +381,7 @@ void ten_extension_thread_on_extension_on_init_done(void *self_, void *arg) {
 
     ten_runloop_post_task_tail(
         ten_engine_get_attached_runloop(engine),
-        ten_extension_context_on_all_extensions_in_extension_group_are_inited,
+        ten_extension_context_on_all_extensions_in_extension_group_are_initted,
         extension_context, self->extension_group);
   }
 
@@ -717,7 +749,7 @@ void ten_extension_thread_on_all_extensions_in_all_extension_threads_added_to_en
 
   // TEN_NOLINTNEXTLINE(thread-check)
   ten_runloop_post_task_tail(ten_engine_get_attached_runloop(engine),
-                             ten_engine_on_extension_thread_inited, engine,
+                             ten_engine_on_extension_thread_initted, engine,
                              self);
 
   if (ten_extension_thread_get_state(self) >=
