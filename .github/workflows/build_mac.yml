@@ -39,18 +39,20 @@ jobs:
 
       - name: Install tools and dependencies
         run: |
+          brew install llvm@18
           brew install tree
           pip3 install --use-pep517 python-dotenv jinja2
           go install golang.org/dl/go1.20.12@latest && go1.20.12 download
           go env -w GOFLAGS="-buildvcs=false"
-          rustup default nightly
+          rustup default nightly-2024-07-19
           cargo install --force cbindgen
 
       - name: Build
         run: |
+          export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false ten_enable_go_binding=${{ matrix.build_type == 'debug' && 'false' || 'true' }} ten_enable_package_manager=${{ matrix.build_type == 'debug' && 'false' || 'true' }} enable_sanitizer=false
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false
           tgn build mac arm64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
@@ -76,17 +78,19 @@ jobs:
 
       - name: Install tools and dependencies
         run: |
+          brew install llvm@18
           brew install tree
           pip3 install --use-pep517 python-dotenv jinja2
           go install golang.org/dl/go1.20.12@latest && go1.20.12 download
           go env -w GOFLAGS="-buildvcs=false"
-          rustup default nightly
+          rustup default nightly-2024-07-19
           cargo install --force cbindgen
 
       - name: Build
         run: |
+          export PATH="/usr/local/opt/llvm@18/bin:$PATH"
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false ten_enable_go_binding=${{ matrix.build_type == 'debug' && 'false' || 'true' }} ten_enable_package_manager=${{ matrix.build_type == 'debug' && 'false' || 'true' }} enable_sanitizer=false
+          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false
           tgn build mac x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
