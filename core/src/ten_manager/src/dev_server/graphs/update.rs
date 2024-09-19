@@ -197,27 +197,21 @@ mod tests {
 
         let all_pkgs_json = vec![
             (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_2_manifest.json")
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_3_manifest.json")
+                include_str!("test_data_embed/extension_addon_3_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
@@ -240,7 +234,7 @@ mod tests {
         .await;
 
         let input_data: Value = serde_json::from_str(include_str!(
-            "test_data/test_update_graph_success_input_data.json"
+            "test_data_embed/update_graph_success/input_data.json"
         ))
         .unwrap();
 

@@ -171,6 +171,14 @@ template("rust_test") {
       rebase_path(tg_timestamp_proxy_file),
     ]
 
+    if (defined(invoker.integration_test_output_name) &&
+        invoker.integration_test_output_name != "") {
+      args += [
+        "--integration-test-output-name",
+        invoker.integration_test_output_name,
+      ]
+    }
+
     args += [ "--build-type" ]
     if (is_debug) {
       args += [ "debug" ]
@@ -255,13 +263,6 @@ template("rust_test") {
       "--target",
       target,
     ]
-
-    if (defined(invoker.through_real_test) && invoker.through_real_test) {
-      args += [
-        "--through-real-test",
-        "True",
-      ]
-    }
 
     forward_variables_from(invoker,
                            [

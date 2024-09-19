@@ -193,27 +193,21 @@ mod tests {
 
         let all_pkgs_json = vec![
             (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_2_manifest.json")
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_3_manifest.json")
+                include_str!("test_data_embed/extension_addon_3_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
@@ -283,18 +277,18 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("test_data/all_data_type_app_manifest.json")
+                include_str!("test_data_embed/get_connections_have_all_data_type/app_manifest.json")
                     .to_string(),
-                include_str!("test_data/all_data_type_app_property.json")
+                include_str!("test_data_embed/get_connections_have_all_data_type/app_property.json")
                     .to_string(),
             ),
             (
-                include_str!("test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/get_connections_have_all_data_type/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("test_data/extension_addon_2_manifest.json")
+                include_str!("test_data_embed/get_connections_have_all_data_type/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),

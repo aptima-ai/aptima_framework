@@ -106,10 +106,8 @@ mod tests {
         // The first item is 'manifest.json', and the second item is
         // 'property.json'.
         let all_pkgs_json = vec![(
-            include_str!("test_data/all_data_type_app_manifest.json")
-                .to_string(),
-            include_str!("test_data/all_data_type_app_property.json")
-                .to_string(),
+            include_str!("test_data_embed/app_manifest.json").to_string(),
+            include_str!("test_data_embed/app_property.json").to_string(),
         )];
 
         let inject_ret =

@@ -326,27 +326,16 @@ mod tests {
 
         let all_pkgs_json = vec![
             (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_2_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_3_manifest.json")
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
@@ -417,27 +406,16 @@ mod tests {
 
         let all_pkgs_json = vec![
             (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_2_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_3_manifest.json")
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
@@ -490,27 +468,16 @@ mod tests {
 
         let all_pkgs_json = vec![
             (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_2_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_3_manifest.json")
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
@@ -581,27 +548,16 @@ mod tests {
 
         let all_pkgs_json = vec![
             (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_1_manifest.json")
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!("../test_data/extension_addon_2_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_3_manifest.json")
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
                     .to_string(),
                 "{}".to_string(),
             ),
@@ -662,97 +618,6 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn test_get_compatible_messages_data_has_required_success() {
-        let mut dev_server_state = DevServerState {
-            base_dir: None,
-            all_pkgs: None,
-            tman_config: TmanConfig::default(),
-        };
-
-        let all_pkgs_json = vec![
-            (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_1_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_2_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_3_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-        ];
-
-        let inject_ret =
-            inject_all_pkgs_for_mock(&mut dev_server_state, all_pkgs_json);
-        assert!(inject_ret.is_ok());
-
-        let dev_server_state = Arc::new(RwLock::new(dev_server_state));
-
-        let app = test::init_service(
-            App::new().app_data(web::Data::new(dev_server_state)).route(
-                "/api/dev-server/v1/messages/compatible",
-                web::post().to(get_compatible_messages),
-            ),
-        )
-        .await;
-
-        // Define input data.
-        let input_data = json!({
-          "app": "localhost",
-          "graph": "0",
-          "extension_group": "extension_group_1",
-          "extension": "extension_2",
-          "msg_type": "data",
-          "msg_direction": "out",
-          "msg_name": "data_has_required"
-        });
-
-        // Send request to the test server.
-        let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
-            .set_json(&input_data)
-            .to_request();
-
-        // Call the service and get the response.
-        let resp = test::call_service(&app, req).await;
-        assert!(resp.status().is_success());
-
-        let body = test::read_body(resp).await;
-        let body_str = std::str::from_utf8(&body).unwrap();
-
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
-            serde_json::from_str(body_str).unwrap();
-
-        let expected_compatibles = vec![DevServerCompatibleMsg {
-            app: default_app_loc(),
-            extension_group: "extension_group_1".to_string(),
-            extension: "extension_3".to_string(),
-            msg_type: MsgType::Data,
-            msg_direction: MsgDirection::In,
-            msg_name: "data_has_required".to_string(),
-        }];
-
-        assert_eq!(compatibles.data, expected_compatibles);
-
-        println!("Response body: {:?}", compatibles);
-    }
-
-    #[actix_web::test]
     async fn test_get_compatible_messages_cmd_no_property() {
         let mut dev_server_state = DevServerState {
             base_dir: None,
@@ -764,23 +629,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];
@@ -862,23 +721,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];
@@ -950,23 +803,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];
@@ -1027,23 +874,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];
@@ -1114,23 +955,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];
@@ -1203,23 +1038,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];
@@ -1280,23 +1109,17 @@ mod tests {
         // 'property.json'.
         let all_pkgs_json = vec![
             (
-                include_str!("../test_data/compatible/app_manifest.json")
-                    .to_string(),
-                include_str!("../test_data/compatible/app_property.json")
-                    .to_string(),
+                include_str!("test_data_embed/app_manifest.json").to_string(),
+                include_str!("test_data_embed/app_property.json").to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_1_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_1_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
             (
-                include_str!(
-                    "../test_data/compatible/extension_addon_2_manifest.json"
-                )
-                .to_string(),
+                include_str!("test_data_embed/extension_addon_2_manifest.json")
+                    .to_string(),
                 "{}".to_string(),
             ),
         ];

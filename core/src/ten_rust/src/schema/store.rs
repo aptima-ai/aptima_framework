@@ -315,7 +315,7 @@ mod tests {
     #[test]
     fn test_create_schema_store_success() {
         let manifest_str = include_str!(
-            "test_data/extension_manifest_has_all_types_schema.json"
+            "test_data_embed/extension_manifest_has_all_types_schema.json"
         );
 
         let manifest_result = Manifest::from_str(manifest_str);

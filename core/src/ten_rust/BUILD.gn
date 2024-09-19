@@ -8,22 +8,25 @@ import("//build/common/rust/rust.gni")
 import("//build/ten_rust/options.gni")
 
 copy("ten_rust_test_data") {
-  sources = [ "//core/src/ten_rust/ten_rust_test_data" ]
-  outputs = [ "${root_out_dir}/tests/standalone/ten_rust_test_data" ]
+  sources = [ "//core/src/ten_rust/tests/test_data" ]
+  outputs = [ "${root_out_dir}/tests/standalone/ten_rust/tests/test_data" ]
 }
 
 if (enable_ten_rust) {
-  rust_test("ten_rust_test") {
-    project_path = "//core/src/ten_rust"
-    test_output_dir = "${root_out_dir}/tests/standalone"
+  if (is_linux || is_win || (is_mac && target_cpu == "x64")) {
+    rust_test("ten_rust_test") {
+      project_path = "//core/src/ten_rust"
+      test_output_dir = "${root_out_dir}/tests/standalone/ten_rust"
+      integration_test_output_name = "integration_test"
 
-    utils_static_lib_path = rebase_path("${root_gen_dir}/core/src/ten_utils")
-    env = [ "TEN_UTILS_LIBRARY_PATH=${utils_static_lib_path}" ]
+      utils_static_lib_path = rebase_path("${root_gen_dir}/core/src/ten_utils")
+      env = [ "TEN_UTILS_LIBRARY_PATH=${utils_static_lib_path}" ]
 
-    deps = [
-      ":ten_rust_build_deps",
-      ":ten_rust_test_data",
-    ]
+      deps = [
+        ":ten_rust_build_deps",
+        ":ten_rust_test_data",
+      ]
+    }
   }
 }
 
@@ -74,6 +77,9 @@ group("ten_rust") {
 
   if (enable_ten_rust) {
     public_deps += [ ":ten_rust_binding" ]
-    deps += [ ":ten_rust_test" ]
+
+    if (is_linux || is_win || (is_mac && target_cpu == "x64")) {
+      deps += [ ":ten_rust_test" ]
+    }
   }
 }

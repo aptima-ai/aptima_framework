@@ -1,0 +1,37 @@
+{
+  "type": "extension",
+  "name": "extension_addon_3",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "ten_runtime",
+      "version": "0.2.0"
+    }
+  ],
+  "api": {
+    "cmd_in": [
+      {
+        "name": "test_cmd",
+        "property": {
+          "test_property": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "data_in": [
+      {
+        "name": "data_has_required",
+        "property": {
+          "foo": {
+            "type": "int8"
+          }
+        },
+        "required": [
+          "foo"
+        ]
+      }
+    ]
+  }
+}

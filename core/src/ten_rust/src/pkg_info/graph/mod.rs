@@ -211,20 +211,16 @@ impl From<PkgDestination> for GraphDestination {
 
 #[cfg(test)]
 mod tests {
-    use std::{path::Path, str::FromStr};
+    use std::str::FromStr;
 
-    use crate::pkg_info::{
-        get_all_existed_pkgs_info_of_app,
-        pkg_type::PkgType,
-        property::{predefined_graph::PropertyPredefinedGraph, Property},
-    };
+    use crate::pkg_info::property::Property;
 
     use super::*;
 
     #[test]
     fn test_predefined_graph_has_no_extensions() {
         let property_str =
-            include_str!("test_data/predefined_graph_no_extensions.json");
+            include_str!("test_data_embed/predefined_graph_no_extensions.json");
         let mut property: Property = Property::from_str(property_str).unwrap();
         assert!(property.validate_and_complete().is_ok());
 
@@ -240,7 +236,7 @@ mod tests {
     #[test]
     fn test_predefined_graph_has_extension_duplicated() {
         let property_str = include_str!(
-            "test_data/predefined_graph_has_duplicated_extension.json"
+            "test_data_embed/predefined_graph_has_duplicated_extension.json"
         );
         let mut property: Property = Property::from_str(property_str).unwrap();
         assert!(property.validate_and_complete().is_ok());
@@ -257,7 +253,7 @@ mod tests {
     #[test]
     fn test_start_graph_cmd_has_extension_duplicated() {
         let cmd_str = include_str!(
-            "test_data/start_graph_cmd_has_duplicated_extension.json"
+            "test_data_embed/start_graph_cmd_has_duplicated_extension.json"
         );
 
         let mut graph: Graph = Graph::from_str(cmd_str).unwrap();
@@ -271,7 +267,7 @@ mod tests {
     #[test]
     fn test_predefined_graph_has_ext_group_duplicated() {
         let property_str = include_str!(
-            "test_data/predefined_graph_has_duplicated_ext_group.json"
+            "test_data_embed/predefined_graph_has_duplicated_ext_group.json"
         );
         let mut property: Property = Property::from_str(property_str).unwrap();
         assert!(property.validate_and_complete().is_ok());
@@ -288,8 +284,9 @@ mod tests {
 
     #[test]
     fn test_predefined_graph_has_unused_extension_group() {
-        let property_str =
-            include_str!("test_data/predefined_graph_unused_ext_group.json");
+        let property_str = include_str!(
+            "test_data_embed/predefined_graph_unused_ext_group.json"
+        );
         let mut property: Property = Property::from_str(property_str).unwrap();
         assert!(property.validate_and_complete().is_ok());
 
@@ -306,7 +303,7 @@ mod tests {
     #[test]
     fn test_predefined_graph_connection_src_not_found() {
         let property_str = include_str!(
-            "test_data/predefined_graph_connection_src_not_found.json"
+            "test_data_embed/predefined_graph_connection_src_not_found.json"
         );
         let mut property: Property = Property::from_str(property_str).unwrap();
         assert!(property.validate_and_complete().is_ok());
@@ -325,7 +322,7 @@ mod tests {
     #[test]
     fn test_predefined_graph_connection_dest_not_found() {
         let property_str = include_str!(
-            "test_data/predefined_graph_connection_dest_not_found.json"
+            "test_data_embed/predefined_graph_connection_dest_not_found.json"
         );
         let mut property: Property = Property::from_str(property_str).unwrap();
         assert!(property.validate_and_complete().is_ok());
@@ -337,105 +334,6 @@ mod tests {
         let graph = &predefined_graph.graph;
         let result = graph
             .check_if_extensions_used_in_connections_have_defined_in_nodes();
-        assert!(result.is_err());
-        println!("Error: {:?}", result.err().unwrap());
-    }
-
-    #[test]
-    fn test_predefined_graph_nodes_have_installed() {
-        let app_dir = "ten_rust_test_data/check_predefined_graph_success";
-        let pkg_infos =
-            get_all_existed_pkgs_info_of_app(Path::new(app_dir)).unwrap();
-        assert!(!pkg_infos.is_empty());
-
-        let app_pkg_info = pkg_infos
-            .iter()
-            .filter(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
-            .last();
-        let app_pkg = app_pkg_info.unwrap();
-        let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-        let predefined_graph: PropertyPredefinedGraph =
-            pkg_graph.clone().into();
-        let graph = &predefined_graph.graph;
-
-        let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-        pkg_info_map.insert(default_app_loc(), pkg_infos);
-
-        let result = graph.check_if_nodes_have_installed(&pkg_info_map);
-        assert!(result.is_ok());
-    }
-
-    #[test]
-    fn test_check_graph_extension_not_installed() {
-        let app_dir = "ten_rust_test_data/check_graph_extension_not_installed";
-        let pkg_infos =
-            get_all_existed_pkgs_info_of_app(Path::new(app_dir)).unwrap();
-        assert!(!pkg_infos.is_empty());
-
-        let app_pkg_info = pkg_infos
-            .iter()
-            .filter(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
-            .last();
-        let app_pkg = app_pkg_info.unwrap();
-        let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-        let predefined_graph: PropertyPredefinedGraph =
-            pkg_graph.clone().into();
-        let graph = &predefined_graph.graph;
-
-        let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-        pkg_info_map.insert(default_app_loc(), pkg_infos);
-
-        let result = graph.check_if_nodes_have_installed(&pkg_info_map);
-        assert!(result.is_err());
-        println!("Error: {:?}", result.err().unwrap());
-    }
-
-    #[test]
-    fn test_predefined_graph_check_success() {
-        let app_dir = "ten_rust_test_data/check_predefined_graph_success";
-        let pkg_infos =
-            get_all_existed_pkgs_info_of_app(Path::new(app_dir)).unwrap();
-        assert!(!pkg_infos.is_empty());
-
-        let app_pkg_info = pkg_infos
-            .iter()
-            .filter(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
-            .last();
-        let app_pkg = app_pkg_info.unwrap();
-        let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-        let predefined_graph: PropertyPredefinedGraph =
-            pkg_graph.clone().into();
-        let graph = &predefined_graph.graph;
-
-        let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-        pkg_info_map.insert(default_app_loc(), pkg_infos);
-
-        let result = graph.check(&pkg_info_map);
-        assert!(result.is_ok());
-    }
-
-    #[test]
-    fn test_check_predefined_graph_all_msgs_incompatible() {
-        let app_dir =
-            "ten_rust_test_data/check_predefined_graph_all_types_incompatible";
-        let pkg_infos =
-            get_all_existed_pkgs_info_of_app(Path::new(app_dir)).unwrap();
-        assert!(!pkg_infos.is_empty());
-
-        let app_pkg_info = pkg_infos
-            .iter()
-            .filter(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
-            .last();
-        let app_pkg = app_pkg_info.unwrap();
-        let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-        let predefined_graph: PropertyPredefinedGraph =
-            pkg_graph.clone().into();
-        let graph = &predefined_graph.graph;
-
-        let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-        pkg_info_map.insert(default_app_loc(), pkg_infos);
-
-        let result = graph.check(&pkg_info_map);
         assert!(result.is_err());
         println!("Error: {:?}", result.err().unwrap());
     }

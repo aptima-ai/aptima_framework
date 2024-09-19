@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn test_create_schema_invalid_json() {
-        let schema_str = include_str!("test_data/invalid_schema.json");
+        let schema_str = include_str!("test_data_embed/invalid_schema.json");
         let schema_result = create_schema_from_json_string(schema_str);
         println!("{:?}", schema_result);
         assert!(schema_result.is_err());

@@ -142,8 +142,9 @@ mod tests {
 
     #[test]
     fn test_extension_manifest_from_str() {
-        let manifest_str =
-            include_str!("test_data/test_extension_manifest_from_str.json");
+        let manifest_str = include_str!(
+            "test_data_embed/test_extension_manifest_from_str.json"
+        );
 
         let result: Result<Manifest> = manifest_str.parse();
         assert!(result.is_ok());

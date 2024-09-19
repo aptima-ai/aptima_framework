@@ -34,7 +34,7 @@ mod tests {
 
     #[test]
     fn test_property_predefined_graph_deserialize() {
-        let property_str = include_str!("test_data/property.json");
+        let property_str = include_str!("test_data_embed/property.json");
         let property = Property::from_str(property_str).unwrap();
         assert!(property._ten.is_some());
 

@@ -133,33 +133,10 @@ mod tests {
             tman_config: TmanConfig::default(),
         };
 
-        let all_pkgs_json = vec![
-            (
-                include_str!(
-                    "../test_data/large_response_source_app_manifest.json"
-                )
-                .to_string(),
-                include_str!(
-                    "../test_data/large_response_source_app_property.json"
-                )
-                .to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_1_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_2_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-            (
-                include_str!("../test_data/extension_addon_3_manifest.json")
-                    .to_string(),
-                "{}".to_string(),
-            ),
-        ];
+        let all_pkgs_json = vec![(
+            include_str!("test_data_embed/app_manifest.json").to_string(),
+            include_str!("test_data_embed/app_property.json").to_string(),
+        )];
 
         let inject_ret =
             inject_all_pkgs_for_mock(&mut dev_server_state, all_pkgs_json);
@@ -182,7 +159,7 @@ mod tests {
         .await;
 
         let input_data: Value = serde_json::from_str(include_str!(
-            "test_data/test_dump_property_success_input_data.json"
+            "test_data_embed/dump_property_success_input_data.json"
         ))
         .unwrap();
 
