@@ -129,13 +129,6 @@
 typedef struct ten_path_t ten_path_t;
 typedef struct ten_msg_conversion_operation_t ten_msg_conversion_operation_t;
 
-typedef enum TEN_PATH_GROUP_ROLE {
-  TEN_PATH_GROUP_ROLE_INVALID,
-
-  TEN_PATH_GROUP_ROLE_MASTER,
-  TEN_PATH_GROUP_ROLE_SLAVE,
-} TEN_PATH_GROUP_ROLE;
-
 typedef enum TEN_PATH_GROUP_POLICY {
   TEN_PATH_GROUP_POLICY_INVALID,
 
@@ -155,29 +148,18 @@ typedef struct ten_path_group_t {
   ten_sanitizer_thread_check_t thread_check;
 
   ten_path_table_t *table;
-  TEN_PATH_GROUP_ROLE role;
 
-  union {
-    // There should be only 1 master in a group.
-    struct {
-      TEN_PATH_GROUP_POLICY policy;
-      ten_list_t members;  // Contain the members of the group.
+  TEN_PATH_GROUP_POLICY policy;
+  ten_list_t members;  // Contain the members of the group.
 
-      // If this flag is set, none of the paths in the path_group can be used to
-      // trace back cmd results anymore.
-      //
-      // For example, if the policy is ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST
-      // and one of the paths in the group has received a fail cmd result, then
-      // the 'has_been_processed' flag will be set to true to prevent the left
-      // paths in the group from transmitting cmd results.
-      bool has_been_processed;
-    } master;
-
-    // There might be multiple slaves in a group.
-    struct {
-      ten_path_t *master;  // Point to the master of the group.
-    } slave;
-  };
+  // If this flag is set, none of the paths in the path_group can be used to
+  // trace back cmd results anymore.
+  //
+  // For example, if the policy is ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST
+  // and one of the paths in the group has received a fail cmd result, then
+  // the 'has_been_processed' flag will be set to true to prevent the left
+  // paths in the group from transmitting cmd results.
+  bool has_been_processed;
 } ten_path_group_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_path_group_check_integrity(
@@ -195,5 +177,3 @@ TEN_RUNTIME_PRIVATE_API void ten_paths_create_group(
 
 TEN_RUNTIME_PRIVATE_API ten_path_t *ten_path_group_resolve(ten_path_t *path,
                                                            TEN_PATH_TYPE type);
-
-TEN_RUNTIME_PRIVATE_API ten_path_t *ten_path_group_get_master(ten_path_t *path);

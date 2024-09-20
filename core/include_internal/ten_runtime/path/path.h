@@ -55,7 +55,7 @@ typedef struct ten_path_t {
   ten_loc_t src_loc;
   ten_loc_t dest_loc;
 
-  ten_path_group_t *group;
+  ten_shared_ptr_t *group;  // a shared_ptr of ten_path_group_t
 
   // We will cache the returned cmd result here. If someone does not call
   // return_result() before Extension::onCmd is actually completed

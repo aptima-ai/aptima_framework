@@ -10,7 +10,6 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/path/path.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
@@ -18,6 +17,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 bool ten_path_group_check_integrity(ten_path_group_t *self, bool check_thread) {
@@ -60,43 +60,18 @@ bool ten_path_is_in_a_group(ten_path_t *self) {
  * group, and return the group.
  */
 static ten_path_group_t *ten_path_group_create(ten_path_table_t *table,
-                                               TEN_PATH_GROUP_ROLE role) {
-  TEN_ASSERT(role != TEN_PATH_GROUP_ROLE_INVALID, "Invalid argument.");
-
+                                               TEN_PATH_GROUP_POLICY policy) {
   ten_path_group_t *self =
       (ten_path_group_t *)TEN_MALLOC(sizeof(ten_path_group_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_signature_set(&self->signature, TEN_PATH_GROUP_SIGNATURE);
+  ten_sanitizer_thread_check_init_with_current_thread(&self->thread_check);
 
   self->table = table;
-  self->role = role;
-
-  return self;
-}
-
-static ten_path_group_t *ten_path_group_create_master(
-    ten_path_table_t *table, TEN_PATH_GROUP_POLICY policy) {
-  TEN_ASSERT(policy != TEN_PATH_GROUP_POLICY_INVALID, "Invalid argument.");
-
-  ten_path_group_t *self =
-      ten_path_group_create(table, TEN_PATH_GROUP_ROLE_MASTER);
-
-  self->master.policy = policy;
-  ten_list_init(&self->master.members);
-  self->master.has_been_processed = false;
-
-  return self;
-}
-
-static ten_path_group_t *ten_path_group_create_slave(ten_path_table_t *table,
-                                                     ten_path_t *master) {
-  TEN_ASSERT(master, "Invalid argument.");
-
-  ten_path_group_t *self =
-      ten_path_group_create(table, TEN_PATH_GROUP_ROLE_SLAVE);
-
-  self->slave.master = master;
+  self->policy = policy;
+  self->has_been_processed = false;
+  ten_list_init(&self->members);
 
   return self;
 }
@@ -107,9 +82,10 @@ static ten_path_group_t *ten_path_group_create_slave(ten_path_table_t *table,
 void ten_path_group_destroy(ten_path_group_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
-  if (self->role == TEN_PATH_GROUP_ROLE_MASTER) {
-    ten_list_clear(&self->master.members);
-  }
+  ten_sanitizer_thread_check_deinit(&self->thread_check);
+  ten_signature_set(&self->signature, 0);
+
+  ten_list_clear(&self->members);
 
   TEN_FREE(self);
 }
@@ -124,23 +100,24 @@ void ten_paths_create_group(ten_list_t *paths, TEN_PATH_GROUP_POLICY policy) {
   TEN_ASSERT(paths, "Invalid argument.");
   TEN_ASSERT(ten_list_size(paths) > 1, "Invalid argument.");
 
-  ten_path_t *master = NULL;
+  ten_path_group_t *path_group = NULL;
+  ten_shared_ptr_t *path_group_sp = NULL;
+
   ten_list_foreach (paths, iter) {
     ten_path_t *path = ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(path && ten_path_check_integrity(path, true),
                "Invalid argument.");
     TEN_ASSERT(path->table, "Invalid argument.");
 
-    if (iter.index == 0) {
-      // It's a master.
-      master = path;
-      path->group = ten_path_group_create_master(path->table, policy);
+    if (!path_group_sp) {
+      path_group = ten_path_group_create(path->table, policy);
+      path_group_sp = ten_shared_ptr_create(path_group, ten_path_group_destroy);
+      path->group = path_group_sp;
     } else {
-      path->group = ten_path_group_create_slave(path->table, master);
+      path->group = ten_shared_ptr_clone(path_group_sp);
     }
 
-    // The 'master' is one of the members, too.
-    ten_list_push_ptr_back(&master->group->master.members, path, NULL);
+    ten_list_push_ptr_back(&path_group->members, path, NULL);
   }
 }
 
@@ -194,30 +171,6 @@ static ten_path_t *ten_path_group_resolve_in_one_fail_and_all_ok_return(
 }
 
 /**
- * @brief Takes a path as an argument and returns the master path of the group
- * that the path belongs to.
- */
-ten_path_t *ten_path_group_get_master(ten_path_t *path) {
-  TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
-  TEN_ASSERT(ten_path_is_in_a_group(path), "Invalid argument.");
-
-  ten_path_t *master = NULL;
-  switch (path->group->role) {
-    case TEN_PATH_GROUP_ROLE_MASTER:
-      master = path;
-      break;
-    case TEN_PATH_GROUP_ROLE_SLAVE:
-      master = path->group->slave.master;
-      break;
-    default:
-      TEN_ASSERT(0, "Should not happen.");
-      break;
-  }
-
-  return master;
-}
-
-/**
  * @brief Takes a path as an argument and returns a list of all the paths that
  * belong to the same group as the given path.
  */
@@ -225,10 +178,12 @@ ten_list_t *ten_path_group_get_members(ten_path_t *path) {
   TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
   TEN_ASSERT(ten_path_is_in_a_group(path), "Invalid argument.");
 
-  ten_path_t *master = ten_path_group_get_master(path);
-  TEN_ASSERT(master, "Should not happen.");
+  ten_path_group_t *path_group =
+      (ten_path_group_t *)ten_shared_ptr_get_data(path->group);
+  TEN_ASSERT(path_group && ten_path_group_check_integrity(path_group, true),
+             "Invalid argument.");
 
-  ten_list_t *members = &master->group->master.members;
+  ten_list_t *members = &path_group->members;
   TEN_ASSERT(members && ten_list_check_integrity(members),
              "Should not happen.");
 
@@ -251,14 +206,16 @@ ten_path_t *ten_path_group_resolve(ten_path_t *path, TEN_PATH_TYPE type) {
   TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
   TEN_ASSERT(ten_path_is_in_a_group(path), "Invalid argument.");
 
-  ten_path_t *master = ten_path_group_get_master(path);
-  TEN_ASSERT(master, "Should not happen.");
+  ten_path_group_t *path_group =
+      (ten_path_group_t *)ten_shared_ptr_get_data(path->group);
+  TEN_ASSERT(path_group && ten_path_group_check_integrity(path_group, true),
+             "Invalid argument.");
 
-  ten_list_t *members = &(master->group->master.members);
+  ten_list_t *members = &path_group->members;
   TEN_ASSERT(members && ten_list_check_integrity(members),
              "Should not happen.");
 
-  switch (master->group->master.policy) {
+  switch (path_group->policy) {
     case TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST:
       return ten_path_group_resolve_in_one_fail_and_all_ok_return(members, type,
                                                                   false);

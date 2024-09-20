@@ -22,7 +22,6 @@
 #include "include_internal/ten_runtime/path/path_group.h"
 #include "include_internal/ten_runtime/path/path_in.h"
 #include "include_internal/ten_runtime/path/path_out.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
@@ -30,6 +29,7 @@
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/time.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
 #define PATH_TABLE_REASONABLE_MAX_CNT 1000
@@ -387,11 +387,12 @@ static void ten_path_mark_belonging_group_processed(ten_path_t *path) {
   TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
   TEN_ASSERT(ten_path_is_in_a_group(path), "Invalid argument.");
 
-  ten_path_t *master = ten_path_group_get_master(path);
-  TEN_ASSERT(master && ten_path_check_integrity(path, true),
-             "Should not happen.");
+  ten_path_group_t *group =
+      (ten_path_group_t *)ten_shared_ptr_get_data(path->group);
+  TEN_ASSERT(group && ten_path_group_check_integrity(group, true),
+             "Invalid argument.");
 
-  master->group->master.has_been_processed = true;
+  group->has_been_processed = true;
 }
 
 static bool ten_path_table_remove_group_and_all_its_paths_if_needed(
@@ -403,11 +404,12 @@ static bool ten_path_table_remove_group_and_all_its_paths_if_needed(
 
   ten_list_t *list = type == TEN_PATH_IN ? &self->in_paths : &self->out_paths;
 
-  ten_path_t *master = ten_path_group_get_master(path);
-  TEN_ASSERT(master && ten_path_check_integrity(path, true),
-             "Should not happen.");
+  ten_path_group_t *path_group =
+      (ten_path_group_t *)ten_shared_ptr_get_data(path->group);
+  TEN_ASSERT(path_group && ten_path_group_check_integrity(path_group, true),
+             "Invalid argument.");
 
-  if (!master->group->master.has_been_processed) {
+  if (!path_group->has_been_processed) {
     // This path group has not yet completed its task, so it cannot be removed.
     return false;
   }
@@ -434,18 +436,11 @@ static bool ten_path_table_remove_group_and_all_its_paths_if_needed(
     TEN_ASSERT(group_path && ten_path_check_integrity(group_path, true),
                "Invalid argument.");
 
-    if (group_path->group->role == TEN_PATH_GROUP_ROLE_SLAVE) {
-      ten_listnode_t *group_path_node = ten_list_find_ptr(list, group_path);
-      TEN_ASSERT(group_path_node, "Should not happen.");
+    ten_listnode_t *group_path_node = ten_list_find_ptr(list, group_path);
+    TEN_ASSERT(group_path_node, "Should not happen.");
 
-      ten_list_remove_node(list, group_path_node);
-    }
+    ten_list_remove_node(list, group_path_node);
   }
-
-  // Remove the master node.
-  ten_listnode_t *master_node = ten_list_find_ptr(list, master);
-  TEN_ASSERT(master_node, "Should not happen.");
-  ten_list_remove_node(list, master_node);
 
   return true;
 }
