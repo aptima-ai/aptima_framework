@@ -1,10 +1,10 @@
 name: Build - linux ubuntu2204
 
 on:
+  release:
+    types: [created]
   push:
     branches:
-      - "**"
-    tags:
       - "**"
     paths-ignore:
       - "tools/**"
