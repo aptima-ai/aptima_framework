@@ -18,6 +18,7 @@ import (
 )
 
 type Extension interface {
+	OnConfigure(tenEnv TenEnv)
 	OnInit(
 		tenEnv TenEnv,
 	)
@@ -34,6 +35,10 @@ type Extension interface {
 type DefaultExtension struct{}
 
 var _ Extension = new(DefaultExtension)
+
+func (p *DefaultExtension) OnConfigure(tenEnv TenEnv) {
+	tenEnv.OnConfigureDone()
+}
 
 func (p *DefaultExtension) OnInit(
 	tenEnv TenEnv,
@@ -132,8 +137,8 @@ func newExtensionWithBridge(
 }
 
 //
-//export tenGoExtensionOnInit
-func tenGoExtensionOnInit(
+//export tenGoExtensionOnConfigure
+func tenGoExtensionOnConfigure(
 	extensionID C.uintptr_t,
 	tenEnvID C.uintptr_t,
 ) {
@@ -164,6 +169,41 @@ func tenGoExtensionOnInit(
 	}
 
 	tenEnvInstance.attachToExtension(extensionObj)
+
+	extensionObj.OnConfigure(tenEnvObj)
+}
+
+//
+//export tenGoExtensionOnInit
+func tenGoExtensionOnInit(
+	extensionID C.uintptr_t,
+	tenEnvID C.uintptr_t,
+) {
+	extensionObj, ok := loadImmutableHandle(goHandle(extensionID)).(*extension)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get extension from handle map, id: %d.",
+				uintptr(extensionID),
+			),
+		)
+	}
+
+	tenEnvObj, ok := handle(tenEnvID).get().(TenEnv)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get ten from handle map, id: %d.",
+				uintptr(tenEnvID),
+			),
+		)
+	}
+
+	tenEnvInstance, ok := tenEnvObj.(*tenEnv)
+	if tenEnvInstance == nil || !ok {
+		// Should not happen.
+		panic("Invalid ten object type.")
+	}
 
 	// As the `extension` struct embeds a user-defined extension instance
 	// implements the Extension interface, the `OnInit` method can be called

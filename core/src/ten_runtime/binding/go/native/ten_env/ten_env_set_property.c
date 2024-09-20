@@ -11,7 +11,6 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
@@ -22,10 +21,12 @@
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 typedef struct ten_env_notify_set_property_info_t {
   bool result;
+  ten_error_t err;
   ten_string_t path;
   ten_value_t *c_value;
   ten_event_t *completed;
@@ -39,6 +40,7 @@ ten_env_notify_set_property_info_create(const void *path, int path_len,
   TEN_ASSERT(info, "Failed to allocate memory.");
 
   info->result = true;
+  ten_error_init(&info->err);
   ten_string_init_formatted(&info->path, "%.*s", path_len, path);
   info->c_value = value;
   info->completed = ten_event_create(0, 1);
@@ -50,6 +52,7 @@ static void ten_env_notify_set_property_info_destroy(
     ten_env_notify_set_property_info_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
+  ten_error_deinit(&self->err);
   ten_string_deinit(&self->path);
   self->c_value = NULL;
   ten_event_destroy(self->completed);
@@ -65,16 +68,10 @@ static void ten_env_notify_set_property(ten_env_t *ten_env, void *user_data) {
   ten_env_notify_set_property_info_t *info = user_data;
   TEN_ASSERT(info, "Should not happen.");
 
-  ten_error_t err;
-  ten_error_init(&err);
-
   info->result = ten_env_set_property(
-      ten_env, ten_string_get_raw_str(&info->path), info->c_value, &err);
-  TEN_ASSERT(info->result, "Should not happen.");
+      ten_env, ten_string_get_raw_str(&info->path), info->c_value, &info->err);
 
   ten_event_set(info->completed);
-
-  ten_error_deinit(&err);
 }
 
 static void ten_go_ten_env_set_property(ten_go_ten_env_t *self,
@@ -90,24 +87,19 @@ static void ten_go_ten_env_set_property(ten_go_ten_env_t *self,
     ten_go_status_set_errno(status, TEN_ERRNO_TEN_IS_CLOSED);
   });
 
-  ten_error_t err;
-  ten_error_init(&err);
-
   ten_env_notify_set_property_info_t *info =
       ten_env_notify_set_property_info_create(path, path_len, value);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_set_property,
-                            info, false, &err)) {
-    ten_go_status_from_error(status, &err);
+                            info, false, &info->err)) {
     goto done;
   }
 
   ten_event_wait(info->completed, -1);
 
 done:
+  ten_go_status_from_error(status, &info->err);
   ten_env_notify_set_property_info_destroy(info);
-
-  ten_error_deinit(&err);
 
   TEN_GO_TEN_IS_ALIVE_REGION_END(self);
 

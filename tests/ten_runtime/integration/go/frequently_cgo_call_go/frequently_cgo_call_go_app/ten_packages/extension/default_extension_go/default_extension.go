@@ -133,6 +133,11 @@ func (p *extensionB) OnCmd(
 	go func() {
 		fmt.Println("extensionB OnCmd")
 
+		connected, err := tenEnv.IsCmdConnected("cmd_not_exist")
+		if err != nil || connected {
+			panic("Should not happen.")
+		}
+
 		cmdName, _ := cmd.GetName()
 		if cmdName == "B" {
 			var count uint32 = 0

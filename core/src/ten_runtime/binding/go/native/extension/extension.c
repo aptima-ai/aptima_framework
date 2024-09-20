@@ -27,6 +27,9 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 
+extern void tenGoExtensionOnConfigure(ten_go_handle_t go_extension,
+                                      ten_go_handle_t go_ten);
+
 extern void tenGoExtensionOnInit(ten_go_handle_t go_extension,
                                  ten_go_handle_t go_ten);
 
@@ -96,7 +99,7 @@ static void ten_go_extension_bridge_destroy(ten_go_extension_t *self) {
   TEN_FREE(self);
 }
 
-static void proxy_on_init(ten_extension_t *self, ten_env_t *ten_env) {
+static void proxy_on_configure(ten_extension_t *self, ten_env_t *ten_env) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
@@ -110,6 +113,24 @@ static void proxy_on_init(ten_extension_t *self, ten_env_t *ten_env) {
 
   ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
   ten_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+
+  tenGoExtensionOnConfigure(ten_go_extension_go_handle(extension_bridge),
+                            ten_go_ten_env_go_handle(ten_bridge));
+}
+
+static void proxy_on_init(ten_extension_t *self, ten_env_t *ten_env) {
+  TEN_ASSERT(self && ten_extension_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+
+  ten_go_extension_t *extension_bridge =
+      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
+  TEN_ASSERT(ten_go_extension_check_integrity(extension_bridge),
+             "Should not happen.");
+
+  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoExtensionOnInit(ten_go_extension_go_handle(extension_bridge),
                        ten_go_ten_env_go_handle(ten_bridge));
@@ -285,9 +306,9 @@ ten_go_extension_t *ten_go_extension_create_internal(
   extension_bridge->bridge.sp_ref_by_c = NULL;
 
   extension_bridge->c_extension = ten_extension_create(
-      name, NULL, proxy_on_init, proxy_on_start, proxy_on_stop, proxy_on_deinit,
-      proxy_on_cmd, proxy_on_data, proxy_on_audio_frame, proxy_on_video_frame,
-      NULL);
+      name, proxy_on_configure, proxy_on_init, proxy_on_start, proxy_on_stop,
+      proxy_on_deinit, proxy_on_cmd, proxy_on_data, proxy_on_audio_frame,
+      proxy_on_video_frame, NULL);
 
   ten_binding_handle_set_me_in_target_lang(
       &extension_bridge->c_extension->binding_handle, extension_bridge);
