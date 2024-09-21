@@ -77,6 +77,12 @@ ten_executable("ten_runtime_smoke_test") {
     ]
   }
 
+  if (enable_sanitizer) {
+    if (!is_clang) {
+      deps += [ "//build/common/asan:package_asan_lib_for_ten_framework_standalone_test" ]
+    }
+  }
+
   sources = [ "//third_party/googletest/src/gtest_main.cc" ]
 
   public_deps = [

@@ -6,6 +6,6 @@
 #
 import("//build/common/asan/package_asan_lib.gni")
 
-package_asan_lib("package_asan_lib_for_ten_framework_itself") {
-  dest_asan_lib_dir = "${root_out_dir}"
+package_asan_lib("package_asan_lib_for_ten_framework_standalone_test") {
+  dest_asan_lib_dir = "${root_out_dir}/tests/standalone"
 }

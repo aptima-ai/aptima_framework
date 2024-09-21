@@ -36,14 +36,4 @@ group("ten_framework_all") {
   if (ten_enable_test) {
     deps += [ "//tests" ]
   }
-
-  if (enable_sanitizer) {
-    if (!is_clang) {
-      # If the sanitizer is enabled, the libasan.so will be needed in many test
-      # scenarios. Therefore, it is copied to the root_out_dir for unified
-      # usage.
-      deps +=
-          [ "//build/common/asan:package_asan_lib_for_ten_framework_itself" ]
-    }
-  }
 }

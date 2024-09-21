@@ -31,6 +31,13 @@ ten_executable("ten_runtime_unit_test") {
     "//core/src/ten_utils",
     "//tests/ten_runtime:copy_libraries_for_test",
   ]
+
+  if (enable_sanitizer) {
+    if (!is_clang) {
+      deps += [ "//build/common/asan:package_asan_lib_for_ten_framework_standalone_test" ]
+    }
+  }
+
   sources = [ "//third_party/googletest/src/gtest_main.cc" ]
 
   public_deps = [
