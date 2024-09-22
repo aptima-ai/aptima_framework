@@ -9,11 +9,11 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 typedef struct ten_env_notify_get_property_info_t {
@@ -68,7 +68,8 @@ static void proxy_get_property_callback(ten_env_t *ten_env, ten_value_t *res,
   ten_env_notify_get_property_info_destroy(get_property_info);
 }
 
-static void ten_notify_get_property_async(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_get_property_async(ten_env_t *ten_env,
+                                                    void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -106,8 +107,8 @@ bool ten_go_ten_env_get_property_async(uintptr_t bridge_addr, const char *path,
       path, ten_go_callback_info_create(callback_id));
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_notify_get_property_async, get_property_info,
-                            false, &err)) {
+                            ten_env_proxy_notify_get_property_async,
+                            get_property_info, false, &err)) {
     TEN_LOGD("TEN/GO failed to get_property.");
 
     ten_env_notify_get_property_info_destroy(get_property_info);

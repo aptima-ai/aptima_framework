@@ -11,13 +11,13 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env/ten_env_proxy.h"
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/extension_group/extension_group.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/thread.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 static ten_notify_data_t *ten_notify_data_create(ten_notify_func_t notify_func,
@@ -181,7 +181,7 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
       if (ten_extension_thread_call_by_me(extension_thread)) {
         notify_func(self->ten_env, user_data);
       } else {
-        TEN_ASSERT(sync == true, "Unsupported operation.");
+        TEN_ASSERT(sync == false, "Unsupported operation.");
 
         ten_runloop_post_task_tail(
             ten_extension_group_get_attached_runloop(extension_group),
@@ -201,7 +201,7 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
       if (ten_app_thread_call_by_me(app)) {
         notify_func(self->ten_env, user_data);
       } else {
-        TEN_ASSERT(sync == true, "Unsupported operation.");
+        TEN_ASSERT(sync == false, "Unsupported operation.");
 
         ten_runloop_post_task_tail(
             ten_app_get_attached_runloop(app), ten_notify_to_app_task, app,

@@ -11,10 +11,10 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 
 typedef struct ten_env_notify_on_create_extensions_done_info_t {
   ten_list_t result;
@@ -43,8 +43,8 @@ static void ten_env_notify_on_create_extensions_done_info_destroy(
   TEN_FREE(info);
 }
 
-static void ten_notify_on_create_extensions_done(ten_env_t *ten_env,
-                                                 void *user_data) {
+static void ten_notify_proxy_on_create_extensions_done(ten_env_t *ten_env,
+                                                       void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(
       ten_env &&
@@ -97,7 +97,7 @@ done:
           ten_env_notify_on_create_extensions_done_info_create(&result);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_notify_on_create_extensions_done,
+                            ten_notify_proxy_on_create_extensions_done,
                             on_create_extensions_done_info, false, &err)) {
     TEN_LOGD("TEN/GO failed to on_create_extensions_done.");
 

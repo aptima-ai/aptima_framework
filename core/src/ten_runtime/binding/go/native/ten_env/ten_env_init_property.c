@@ -47,8 +47,8 @@ static void ten_env_notify_init_property_info_destroy(
   TEN_FREE(self);
 }
 
-static void ten_env_notify_init_property_from_json(ten_env_t *ten_env,
-                                                   void *user_data) {
+static void ten_env_proxy_notify_init_property_from_json(ten_env_t *ten_env,
+                                                         void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -86,8 +86,8 @@ ten_go_status_t ten_go_ten_env_init_property_from_json_bytes(
   TEN_ASSERT(info, "Should not happen.");
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_env_notify_init_property_from_json, info, false,
-                            &info->err)) {
+                            ten_env_proxy_notify_init_property_from_json, info,
+                            false, &info->err)) {
     goto done;
   }
 

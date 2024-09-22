@@ -22,7 +22,6 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/msg/msg.h"
@@ -32,6 +31,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 
@@ -60,10 +60,10 @@ void ten_app_do_connection_migration_or_push_to_engine_queue(
   }
 }
 
-static bool ten_app_on_msg_default_handler(ten_app_t *self,
-                                           ten_connection_t *connection,
-                                           ten_shared_ptr_t *msg,
-                                           ten_error_t *err) {
+static bool ten_app_handle_msg_default_handler(ten_app_t *self,
+                                               ten_connection_t *connection,
+                                               ten_shared_ptr_t *msg,
+                                               ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
   TEN_ASSERT(
       msg && ten_msg_check_integrity(msg) && ten_msg_get_dest_cnt(msg) == 1,
@@ -184,7 +184,10 @@ static bool ten_app_on_msg_default_handler(ten_app_t *self,
       // The 'msg' might be sent from extension A in engine 1 to extension B in
       // engine 2, there is no 'connection' in this case, the cmd result should
       // be sent back to engine A1.
-      result = ten_app_on_msg(self, NULL, resp, err);
+      //
+      // So, this cmd result needs to be passed back to the app for further
+      // processing.
+      result = ten_app_handle_in_msg(self, NULL, resp, err);
     }
 
     ten_shared_ptr_destroy(resp);
@@ -193,9 +196,9 @@ static bool ten_app_on_msg_default_handler(ten_app_t *self,
   return result;
 }
 
-static bool ten_app_on_cmd_close_app(ten_app_t *self,
-                                     ten_connection_t *connection,
-                                     ten_error_t *err) {
+static bool ten_app_handle_close_app_cmd(ten_app_t *self,
+                                         ten_connection_t *connection,
+                                         ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
   if (connection) {
@@ -213,8 +216,9 @@ static bool ten_app_on_cmd_close_app(ten_app_t *self,
   return true;
 }
 
-static bool ten_app_on_cmd_stop_graph(ten_app_t *self, ten_shared_ptr_t *cmd,
-                                      ten_error_t *err) {
+static bool ten_app_handle_stop_graph_cmd(ten_app_t *self,
+                                          ten_shared_ptr_t *cmd,
+                                          TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
   TEN_ASSERT(cmd && ten_cmd_base_check_integrity(cmd), "Should not happen.");
   TEN_ASSERT(ten_msg_get_type(cmd) == TEN_MSG_TYPE_CMD_STOP_GRAPH,
@@ -267,8 +271,36 @@ static bool ten_app_on_cmd_stop_graph(ten_app_t *self, ten_shared_ptr_t *cmd,
   return true;
 }
 
-bool ten_app_on_msg(ten_app_t *self, ten_connection_t *connection,
-                    ten_shared_ptr_t *msg, ten_error_t *err) {
+bool ten_app_handle_out_msg(ten_app_t *self, ten_shared_ptr_t *msg,
+                            ten_error_t *err) {
+  // The source of the out message is the current app.
+  ten_msg_set_src_to_app(msg, self);
+
+  ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
+  TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc) &&
+                 ten_msg_get_dest_cnt(msg) == 1,
+             "Should not happen.");
+  TEN_ASSERT(!ten_string_is_empty(&dest_loc->app_uri),
+             "App URI should not be empty.");
+
+  if (!ten_string_is_equal(&dest_loc->app_uri, ten_app_get_uri(self))) {
+    TEN_ASSERT(0, "Handle this condition.");
+  } else {
+    if (ten_string_is_empty(&dest_loc->graph_name)) {
+      // It means asking the app to do something.
+
+      ten_app_push_to_in_msgs_queue(self, msg);
+      ten_shared_ptr_destroy(msg);
+    } else {
+      TEN_ASSERT(0, "Handle this condition.");
+    }
+  }
+
+  return true;
+}
+
+bool ten_app_handle_in_msg(ten_app_t *self, ten_connection_t *connection,
+                           ten_shared_ptr_t *msg, ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Should not happen.");
 
@@ -290,16 +322,16 @@ bool ten_app_on_msg(ten_app_t *self, ten_connection_t *connection,
 
   switch (ten_msg_get_type(msg)) {
     case TEN_MSG_TYPE_CMD_START_GRAPH:
-      return ten_app_on_cmd_start_graph(self, connection, msg, err);
+      return ten_app_handle_start_graph_cmd(self, connection, msg, err);
 
     case TEN_MSG_TYPE_CMD_CLOSE_APP:
-      return ten_app_on_cmd_close_app(self, connection, err);
+      return ten_app_handle_close_app_cmd(self, connection, err);
 
     case TEN_MSG_TYPE_CMD_STOP_GRAPH:
-      return ten_app_on_cmd_stop_graph(self, msg, err);
+      return ten_app_handle_stop_graph_cmd(self, msg, err);
 
     default:
-      return ten_app_on_msg_default_handler(self, connection, msg, err);
+      return ten_app_handle_msg_default_handler(self, connection, msg, err);
   }
 }
 
@@ -373,7 +405,7 @@ static void ten_app_handle_in_msgs_sync(ten_app_t *self) {
     // And the following function -- 'ten_app_on_msg()' will do connection
     // migration if needed. So the cmd's 'origin_connection' _must_ _not_ be
     // passed to the 'ten_app_on_msg()' function here.
-    ten_app_on_msg(self, NULL, msg, &err);
+    ten_app_handle_in_msg(self, NULL, msg, &err);
   }
 
   ten_list_clear(&in_msgs_);

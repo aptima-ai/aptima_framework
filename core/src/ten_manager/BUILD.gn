@@ -25,6 +25,14 @@ if (ten_enable_package_manager) {
       utils_static_lib_path = rebase_path("${root_gen_dir}/core/src/ten_utils")
       env += [ "TEN_UTILS_LIBRARY_PATH=${utils_static_lib_path}" ]
 
+      # If the output directory of `cargo build` (tman) and
+      # `cargo build --tests` (tman_test) is the same, and if `cargo build` is
+      # executed first followed by `cargo build --tests`, the resulting
+      # executable will be the normal executable, not the test case executable.
+      # Therefore, it's necessary to separate the `target-dir` for these two
+      # `cargo build` commands to avoid interfering with each other.
+      target_path = "${root_gen_dir}/core/src/tman_test"
+
       test_output_dir = "${root_out_dir}/tests/standalone/ten_manager"
 
       deps = [

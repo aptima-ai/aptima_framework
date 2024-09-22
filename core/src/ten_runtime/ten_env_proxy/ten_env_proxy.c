@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/extension_group/extension_group.h"
@@ -21,6 +20,7 @@
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/mutex.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 // There's no need to check for thread-safety, as ten_env_proxy is inherently
@@ -53,6 +53,8 @@ ten_env_proxy_t *ten_env_proxy_create(ten_env_t *ten_env,
     return NULL;
   }
 
+  // Checking 1: The platform currently only supports creating a `ten_env_proxy`
+  // from the `ten_env` of an extension, an extension_group, and an app.
   switch (ten_env->attach_to) {
     case TEN_ENV_ATTACH_TO_EXTENSION:
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
@@ -69,6 +71,8 @@ ten_env_proxy_t *ten_env_proxy_create(ten_env_t *ten_env,
     }
   }
 
+  // Checking 2: The creation of `ten_env_proxy` must occur within the belonging
+  // thread of the corresponding `ten_env`.
   switch (ten_env->attach_to) {
     case TEN_ENV_ATTACH_TO_EXTENSION: {
       ten_extension_t *extension = ten_env->attached_target.extension;
@@ -143,6 +147,9 @@ ten_env_proxy_t *ten_env_proxy_create(ten_env_t *ten_env,
   self->thread_cnt = initial_thread_cnt;
   self->ten_env = ten_env;
 
+  // The created `ten_env_proxy` needs to be recorded, and the corresponding
+  // `ten_env` cannot be destroyed as long as any `ten_env_proxy` has not yet
+  // been destroyed.
   ten_env_add_ten_proxy(ten_env, self);
 
   return self;

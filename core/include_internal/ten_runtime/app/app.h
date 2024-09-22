@@ -101,6 +101,8 @@ typedef struct ten_app_t {
 
   ten_schema_store_t schema_store;
   ten_string_t base_dir;
+
+  void *user_data;
 } ten_app_t;
 
 TEN_RUNTIME_PRIVATE_API void ten_app_add_orphan_connection(

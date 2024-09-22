@@ -18,10 +18,14 @@ typedef struct ten_engine_t ten_engine_t;
 TEN_RUNTIME_PRIVATE_API void ten_app_push_to_in_msgs_queue(
     ten_app_t *self, ten_shared_ptr_t *msg);
 
-TEN_RUNTIME_PRIVATE_API bool ten_app_on_msg(ten_app_t *self,
-                                            ten_connection_t *connection,
-                                            ten_shared_ptr_t *msg,
-                                            ten_error_t *err);
+TEN_RUNTIME_PRIVATE_API bool ten_app_handle_out_msg(ten_app_t *self,
+                                                    ten_shared_ptr_t *msg,
+                                                    ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_app_handle_in_msg(ten_app_t *self,
+                                                   ten_connection_t *connection,
+                                                   ten_shared_ptr_t *msg,
+                                                   ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API ten_connection_t *ten_app_find_src_connection_for_msg(
     ten_app_t *self, ten_shared_ptr_t *msg);

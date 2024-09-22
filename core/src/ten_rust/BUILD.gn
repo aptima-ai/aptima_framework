@@ -16,11 +16,20 @@ if (enable_ten_rust) {
   if (is_linux || is_win || (is_mac && target_cpu == "x64")) {
     rust_test("ten_rust_test") {
       project_path = "//core/src/ten_rust"
-      test_output_dir = "${root_out_dir}/tests/standalone/ten_rust"
       integration_test_output_name = "integration_test"
 
       utils_static_lib_path = rebase_path("${root_gen_dir}/core/src/ten_utils")
       env = [ "TEN_UTILS_LIBRARY_PATH=${utils_static_lib_path}" ]
+
+      # If the output directory of `cargo build` (tman) and
+      # `cargo build --tests` (tman_test) is the same, and if `cargo build` is
+      # executed first followed by `cargo build --tests`, the resulting
+      # executable will be the normal executable, not the test case executable.
+      # Therefore, it's necessary to separate the `target-dir` for these two
+      # `cargo build` commands to avoid interfering with each other.
+      target_path = "${root_gen_dir}/core/src/ten_rust_test"
+
+      test_output_dir = "${root_out_dir}/tests/standalone/ten_rust"
 
       deps = [
         ":ten_rust_build_deps",

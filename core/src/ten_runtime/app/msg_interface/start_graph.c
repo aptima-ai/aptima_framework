@@ -23,9 +23,9 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 
 static bool ten_app_fill_start_graph_cmd_extensions_info_from_predefined_graph(
     ten_app_t *self, ten_shared_ptr_t *cmd, ten_error_t *err) {
@@ -53,8 +53,9 @@ static bool ten_app_fill_start_graph_cmd_extensions_info_from_predefined_graph(
   return true;
 }
 
-bool ten_app_on_cmd_start_graph(ten_app_t *self, ten_connection_t *connection,
-                                ten_shared_ptr_t *cmd, ten_error_t *err) {
+bool ten_app_handle_start_graph_cmd(ten_app_t *self,
+                                    ten_connection_t *connection,
+                                    ten_shared_ptr_t *cmd, ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Invalid argument.");
   TEN_ASSERT(cmd && ten_cmd_base_check_integrity(cmd), "Invalid argument.");
   TEN_ASSERT(ten_msg_get_type(cmd) == TEN_MSG_TYPE_CMD_START_GRAPH,

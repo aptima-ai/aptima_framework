@@ -60,7 +60,8 @@ static void ten_env_notify_set_property_info_destroy(
   TEN_FREE(self);
 }
 
-static void ten_env_notify_set_property(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
+                                              void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -90,8 +91,9 @@ static void ten_go_ten_env_set_property(ten_go_ten_env_t *self,
   ten_env_notify_set_property_info_t *info =
       ten_env_notify_set_property_info_create(path, path_len, value);
 
-  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_set_property,
-                            info, false, &info->err)) {
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy,
+                            ten_env_proxy_notify_set_property, info, false,
+                            &info->err)) {
     goto done;
   }
 

@@ -136,6 +136,8 @@ ten_app_t *ten_app_create(ten_app_on_configure_func_t on_configure,
   self->manifest_info = NULL;
   self->property_info = NULL;
 
+  self->user_data = NULL;
+
   return self;
 }
 

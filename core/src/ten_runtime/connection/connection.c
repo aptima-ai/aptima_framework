@@ -244,7 +244,7 @@ static bool ten_connection_on_input(ten_connection_t *self,
       return ten_remote_on_input(self->attached_target.remote, msg, err);
     case TEN_CONNECTION_ATTACH_TO_APP:
       // Enable the 'app' to handle this message.
-      return ten_app_on_msg(self->attached_target.app, self, msg, err);
+      return ten_app_handle_in_msg(self->attached_target.app, self, msg, err);
     default:
       TEN_ASSERT(0, "Should not happen.");
       return false;

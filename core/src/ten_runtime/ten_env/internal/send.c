@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/app/msg_interface/common.h"
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
@@ -85,26 +86,43 @@ static bool ten_send_msg_internal(
     // @}
   }
 
-  ten_extension_t *extension = ten_env_get_attached_extension(self);
-  TEN_ASSERT(extension, "Invalid argument.");
+  switch (ten_env_get_attach_to(self)) {
+    case TEN_ENV_ATTACH_TO_EXTENSION: {
+      ten_extension_t *extension = ten_env_get_attached_extension(self);
+      TEN_ASSERT(extension, "Should not happen.");
 
-  if (extension->state < TEN_EXTENSION_STATE_INITTED) {
-    TEN_LOGE("Cannot send messages before on_init_done.");
-    ten_error_set(err, TEN_ERRNO_GENERIC,
-                  "Cannot send messages before on_init_done.");
-    result = false;
-    goto done;
+      if (extension->state < TEN_EXTENSION_STATE_INITTED) {
+        TEN_LOGE("Cannot send messages before on_init_done.");
+        ten_error_set(err, TEN_ERRNO_GENERIC,
+                      "Cannot send messages before on_init_done.");
+        result = false;
+        goto done;
+      }
+
+      if (extension->state >= TEN_EXTENSION_STATE_CLOSING) {
+        TEN_LOGE("Cannot send messages after on_stop_done.");
+        ten_error_set(err, TEN_ERRNO_GENERIC,
+                      "Cannot send messages after on_stop_done.");
+        result = false;
+        goto done;
+      }
+
+      result = ten_extension_handle_out_msg(extension, msg, err);
+      break;
+    }
+
+    case TEN_ENV_ATTACH_TO_APP: {
+      ten_app_t *app = ten_env_get_attached_app(self);
+      TEN_ASSERT(app, "Should not happen.");
+
+      result = ten_app_handle_out_msg(app, msg, err);
+      break;
+    }
+
+    default:
+      TEN_ASSERT(0, "Handle more conditions: %d", ten_env_get_attach_to(self));
+      break;
   }
-
-  if (extension->state >= TEN_EXTENSION_STATE_CLOSING) {
-    TEN_LOGE("Cannot send messages after on_stop_done.");
-    ten_error_set(err, TEN_ERRNO_GENERIC,
-                  "Cannot send messages after on_stop_done.");
-    result = false;
-    goto done;
-  }
-
-  result = ten_extension_handle_out_msg(extension, msg, err);
 
 done:
   if (err_new_created) {

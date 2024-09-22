@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
@@ -22,6 +21,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 
@@ -55,7 +55,8 @@ static void ten_env_notify_get_property_info_destroy(
   TEN_FREE(info);
 }
 
-static void ten_env_notify_get_property(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
+                                              void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -116,8 +117,9 @@ static ten_value_t *ten_go_ten_env_get_property_and_check_if_exists(
   ten_env_notify_get_property_info_t *info =
       ten_env_notify_get_property_info_create(path, path_len);
 
-  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_get_property,
-                            info, false, &err)) {
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy,
+                            ten_env_proxy_notify_get_property, info, false,
+                            &err)) {
     ten_go_status_from_error(status, &err);
     goto done;
   }

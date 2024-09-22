@@ -26,6 +26,41 @@
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
+static bool ten_app_has_no_work(ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  if (ten_list_is_empty(&self->engines) &&
+      ten_list_is_empty(&self->orphan_connections)) {
+    return true;
+  }
+
+  return false;
+}
+
+static bool ten_app_could_be_close(ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  if (ten_app_has_no_work(self) && ten_app_is_endpoint_closed(self) &&
+      ten_protocol_context_store_is_closed(self->protocol_context_store)) {
+    return true;
+  }
+
+  return false;
+}
+
+static void ten_app_proceed_to_close(ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  if (!ten_app_could_be_close(self)) {
+    TEN_LOGD("[%s] Could not close alive app.",
+             ten_string_get_raw_str(ten_app_get_uri(self)));
+    return;
+  }
+  TEN_LOGD("[%s] Close app.", ten_string_get_raw_str(ten_app_get_uri(self)));
+
+  ten_app_on_deinit(self);
+}
+
 static void ten_app_close_sync(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
@@ -84,17 +119,6 @@ done:
   return true;
 }
 
-static bool ten_app_has_no_work(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  if (ten_list_is_empty(&self->engines) &&
-      ten_list_is_empty(&self->orphan_connections)) {
-    return true;
-  }
-
-  return false;
-}
-
 bool ten_app_is_closing(ten_app_t *self) {
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: this function is used to be called in threads other than the
@@ -109,30 +133,6 @@ bool ten_app_is_closing(ten_app_t *self) {
   ten_mutex_unlock(self->state_lock);
 
   return is_closing;
-}
-
-static bool ten_app_could_be_close(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  if (ten_app_has_no_work(self) && ten_app_is_endpoint_closed(self) &&
-      ten_protocol_context_store_is_closed(self->protocol_context_store)) {
-    return true;
-  }
-
-  return false;
-}
-
-static void ten_app_proceed_to_close(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  if (!ten_app_could_be_close(self)) {
-    TEN_LOGD("[%s] Could not close alive app.",
-             ten_string_get_raw_str(ten_app_get_uri(self)));
-    return;
-  }
-  TEN_LOGD("[%s] Close app.", ten_string_get_raw_str(ten_app_get_uri(self)));
-
-  ten_app_on_deinit(self);
 }
 
 void ten_app_check_termination_when_engine_closed(ten_app_t *self,

@@ -11,7 +11,6 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
@@ -19,6 +18,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 typedef struct ten_env_notify_addon_destroy_extension_info_t {
@@ -77,8 +77,8 @@ static void proxy_addon_destroy_extension_done(ten_env_t *ten_env,
   ten_env_notify_addon_destroy_extension_info_destroy(info);
 }
 
-static void ten_env_notify_addon_destroy_extension(ten_env_t *ten_env,
-                                                   void *user_data) {
+static void ten_env_proxy_notify_addon_destroy_extension(ten_env_t *ten_env,
+                                                         void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(
       ten_env &&
@@ -124,7 +124,7 @@ void ten_go_ten_env_addon_destroy_extension(uintptr_t bridge_addr,
           ten_go_extension_c_extension(extension_bridge), callback_info);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_env_notify_addon_destroy_extension,
+                            ten_env_proxy_notify_addon_destroy_extension,
                             addon_extension_destroy_info, false, &err)) {
     TEN_LOGD("TEN/GO failed to addon_extension_destroy.");
 

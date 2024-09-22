@@ -14,7 +14,8 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/macro/mark.h"
 
-static void ten_env_notify_on_deinit_done(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_on_deinit_done(ten_env_t *ten_env,
+                                                void *user_data) {
   TEN_ASSERT(
       ten_env &&
           ten_env_check_integrity(
@@ -74,8 +75,8 @@ PyObject *ten_py_ten_env_on_deinit_done(PyObject *self,
     rc = ten_env_on_deinit_done(py_ten->c_ten_env, &err);
   } else {
     rc = ten_env_proxy_notify(py_ten->c_ten_env_proxy,
-                              ten_env_notify_on_deinit_done, py_ten, false,
-                              &err);
+                              ten_env_proxy_notify_on_deinit_done, py_ten,
+                              false, &err);
   }
 
   ten_error_deinit(&err);

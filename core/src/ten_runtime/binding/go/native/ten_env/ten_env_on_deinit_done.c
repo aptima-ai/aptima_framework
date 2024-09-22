@@ -8,12 +8,13 @@
 
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/rwlock.h"
+#include "ten_utils/macro/check.h"
 
-static void ten_env_notify_on_deinit_done(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_on_deinit_done(ten_env_t *ten_env,
+                                                void *user_data) {
   TEN_ASSERT(
       ten_env &&
           ten_env_check_integrity(
@@ -72,7 +73,8 @@ void ten_go_ten_env_on_deinit_done(uintptr_t bridge_addr) {
     rc = ten_env_on_deinit_done(self->c_ten_env, &err);
   } else {
     rc = ten_env_proxy_notify(self->c_ten_env_proxy,
-                              ten_env_notify_on_deinit_done, self, false, &err);
+                              ten_env_proxy_notify_on_deinit_done, self, false,
+                              &err);
   }
 
   TEN_ASSERT(rc, "Should not happen.");

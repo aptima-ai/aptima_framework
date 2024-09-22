@@ -11,10 +11,10 @@
 #include "include_internal/ten_runtime/binding/python/msg/msg.h"
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 
@@ -95,7 +95,7 @@ static void ten_env_notify_send_cmd_info_destroy(
   TEN_FREE(info);
 }
 
-static void ten_env_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -152,8 +152,9 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
   ten_env_notify_send_cmd_info_t *notify_info =
       ten_env_notify_send_cmd_info_create(cloned_cmd, cb_func);
 
-  if (!ten_env_proxy_notify(py_ten->c_ten_env_proxy, ten_env_notify_send_cmd,
-                            notify_info, false, &err)) {
+  if (!ten_env_proxy_notify(py_ten->c_ten_env_proxy,
+                            ten_env_proxy_notify_send_cmd, notify_info, false,
+                            &err)) {
     ten_env_notify_send_cmd_info_destroy(notify_info);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to send cmd.");

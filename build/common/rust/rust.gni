@@ -156,7 +156,12 @@ template("rust_test") {
   assert(defined(invoker.project_path), "project_path is not defined")
 
   _target_name = target_name
+
   target_path = target_gen_dir
+  if (defined(invoker.target_path)) {
+    target_path = invoker.target_path
+  }
+
   tg_timestamp_proxy_file = "${target_path}/${target_name}_rust_tests"
 
   action("${_target_name}") {

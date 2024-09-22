@@ -9,12 +9,12 @@
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 typedef struct ten_env_notify_send_audio_frame_info_t {
@@ -46,8 +46,8 @@ static void ten_env_notify_send_audio_frame_info_destroy(
   TEN_FREE(info);
 }
 
-static void ten_env_notify_send_audio_frame(ten_env_t *ten_env,
-                                            void *user_audio_frame) {
+static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
+                                                  void *user_audio_frame) {
   TEN_ASSERT(user_audio_frame, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -86,8 +86,8 @@ bool ten_go_ten_env_send_audio_frame(uintptr_t bridge_addr,
           ten_go_msg_move_c_msg(audio_frame));
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_env_notify_send_audio_frame, notify_info, false,
-                            &err)) {
+                            ten_env_proxy_notify_send_audio_frame, notify_info,
+                            false, &err)) {
     ten_env_notify_send_audio_frame_info_destroy(notify_info);
     result = false;
   }

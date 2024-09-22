@@ -59,7 +59,7 @@ static void ten_env_notify_log_info_destroy(ten_env_notify_log_info_t *info) {
   TEN_FREE(info);
 }
 
-static void ten_env_notify_log(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_log(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -120,8 +120,8 @@ void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
         info->file_name, info->file_name_len, info->line_no, "%.*s",
         info->msg_len, info->msg);
   } else {
-    if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_log, info,
-                              false, &err)) {
+    if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_proxy_notify_log,
+                              info, false, &err)) {
       goto done;
     }
     ten_event_wait(info->completed, -1);

@@ -8,10 +8,10 @@
 
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
@@ -46,7 +46,8 @@ static void ten_env_notify_get_property_info_destroy(
   TEN_FREE(info);
 }
 
-static void ten_env_notify_get_property(ten_env_t *ten_env, void *user_data) {
+static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
+                                              void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -82,8 +83,9 @@ static ten_value_t *ten_py_ten_property_get_and_check_if_exists(
   ten_env_notify_get_property_info_t *info =
       ten_env_notify_get_property_info_create(path);
 
-  if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_notify_get_property,
-                            info, false, &err)) {
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy,
+                            ten_env_proxy_notify_get_property, info, false,
+                            &err)) {
     goto done;
   }
 
