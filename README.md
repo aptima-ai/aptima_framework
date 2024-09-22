@@ -1,4 +1,4 @@
-# TEN Framework
+[![TEN Framework Banner Image](https://github.com/TEN-framework/docs/blob/main/assets/jpg/ten-banner.jpg?raw=true)](https://theten.ai)
 
 <div align="center">
 
