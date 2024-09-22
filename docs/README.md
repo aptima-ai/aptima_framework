@@ -1,7 +1,5 @@
 # 🌟 Welcome to TEN
 
-[![TEN Framework Banner Image](https://github.com/TEN-framework/docs/blob/main/assets/jpg/ten-banner.jpg?raw=true)](https://theten.ai)
-
 Welcome to TEN! TEN stands for Transformative Extensions Network and represents the **Next-Gen AI-Agent Framework**, the **world's first truly real-time multimodal AI agent framework**.
 
 <figure><img src="https://github.com/TEN-framework/docs/raw/main/assets/gif/star_ten_w_confetti.gif" alt=""><figcaption><p>Give us a star to stay updated with TEN</p></figcaption></figure>
