@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 
-use crate::pkg_info::{graph::Graph, PkgInfo};
+use crate::pkg_info::{graph::Graph, pkg_type::PkgType, PkgInfo};
 
 impl Graph {
     pub fn check_if_nodes_have_installed(
@@ -16,7 +16,7 @@ impl Graph {
         all_needed_pkgs: &HashMap<String, Vec<PkgInfo>>,
     ) -> Result<()> {
         // app, node_type, node_addon
-        let mut not_installed_pkgs: Vec<(String, String, String)> = Vec::new();
+        let mut not_installed_pkgs: Vec<(String, PkgType, String)> = Vec::new();
 
         for node in &self.nodes {
             if !all_needed_pkgs.contains_key(node.app.as_str()) {
@@ -29,7 +29,7 @@ impl Graph {
 
             let pkgs_in_app = all_needed_pkgs.get(node.app.as_str()).unwrap();
             let found = pkgs_in_app.iter().find(|pkg| {
-                pkg.pkg_identity.pkg_type.to_string() == node.node_type
+                pkg.pkg_identity.pkg_type == node.node_type
                     && pkg.pkg_identity.name == node.addon
                     && pkg.is_local_installed
             });

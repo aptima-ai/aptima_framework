@@ -28,7 +28,7 @@ impl Graph {
         self.nodes
             .iter()
             .find_map(|node| {
-                if node.node_type == "extension"
+                if node.node_type == PkgType::Extension
                     && node.name.as_str() == extension
                     && node.app.as_str() == app
                 {

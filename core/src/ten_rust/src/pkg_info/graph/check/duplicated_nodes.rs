@@ -6,7 +6,7 @@
 //
 use anyhow::Result;
 
-use crate::pkg_info::graph::Graph;
+use crate::pkg_info::{graph::Graph, pkg_type::PkgType};
 
 impl Graph {
     pub fn check_if_nodes_duplicated(&self) -> Result<()> {
@@ -15,8 +15,8 @@ impl Graph {
         let mut all_extension_groups: Vec<String> = Vec::new();
 
         for (node_idx, node) in self.nodes.iter().enumerate() {
-            match node.node_type.as_str() {
-                "extension" => {
+            match node.node_type {
+                PkgType::Extension => {
                     let unique_ext_name = format!(
                         "{}:{}:{}",
                         node.app.as_str(),
@@ -44,7 +44,7 @@ impl Graph {
                     }
                 }
 
-                "extension_group" => {
+                PkgType::ExtensionGroup => {
                     let unique_ext_group_name =
                         format!("{}:{}", node.app.as_str(), node.name);
 

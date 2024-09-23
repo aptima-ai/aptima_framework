@@ -4,8 +4,6 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use std::str::FromStr;
-
 use crate::pkg_info::{graph::GraphNode, pkg_type::PkgType, PkgInfo};
 
 #[derive(Debug, Clone)]
@@ -28,7 +26,7 @@ pub struct PkgNode {
 impl From<GraphNode> for PkgNode {
     fn from(manifest_node: GraphNode) -> Self {
         PkgNode {
-            node_type: PkgType::from_str(&manifest_node.node_type).unwrap(),
+            node_type: manifest_node.node_type,
             name: manifest_node.name,
             addon: manifest_node.addon,
             extension_group: manifest_node.extension_group,

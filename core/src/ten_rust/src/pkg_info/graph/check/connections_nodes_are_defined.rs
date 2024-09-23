@@ -6,7 +6,10 @@
 //
 use anyhow::Result;
 
-use crate::pkg_info::graph::{Graph, GraphMessageFlow};
+use crate::pkg_info::{
+    graph::{Graph, GraphMessageFlow},
+    pkg_type::PkgType,
+};
 
 impl Graph {
     fn check_if_dest_of_connection_are_defined_in_nodes(
@@ -47,7 +50,7 @@ impl Graph {
 
         let mut all_extensions: Vec<String> = Vec::new();
         for node in &self.nodes {
-            if node.node_type.as_str() == "extension" {
+            if node.node_type == PkgType::Extension {
                 let unique_ext_name = format!(
                     "{}:{}:{}",
                     node.app.as_str(),
