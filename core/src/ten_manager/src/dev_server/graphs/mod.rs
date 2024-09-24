@@ -50,8 +50,11 @@ pub async fn get_graphs(
                 .predefined_graphs
                 .iter()
                 .map(|graph| RespGraph {
-                    name: graph.name.clone(),
-                    auto_start: graph.auto_start,
+                    name: graph.prop_predefined_graph.name.clone(),
+                    auto_start: graph
+                        .prop_predefined_graph
+                        .auto_start
+                        .unwrap_or(false),
                 })
                 .collect();
 

@@ -39,7 +39,7 @@ pub fn get_extension_nodes_in_graph(
         // package.
         if let Some(graph) =
             pkg_predefined_graphs_find(&app_pkg.predefined_graphs, |graph| {
-                graph.name == *graph_name
+                graph.prop_predefined_graph.name == *graph_name
             })
         {
             // Collect all extension nodes from the graph.

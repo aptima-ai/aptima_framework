@@ -23,7 +23,8 @@ fn test_graph_check_extension_not_installed() {
         .last();
     let app_pkg = app_pkg_info.unwrap();
     let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone().into();
+    let predefined_graph: PropertyPredefinedGraph =
+        pkg_graph.prop_predefined_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
@@ -47,7 +48,8 @@ fn test_graph_check_predefined_graph_success() {
         .last();
     let app_pkg = app_pkg_info.unwrap();
     let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone().into();
+    let predefined_graph: PropertyPredefinedGraph =
+        pkg_graph.prop_predefined_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
@@ -70,7 +72,8 @@ fn test_graph_check_all_msgs_schema_incompatible() {
         .last();
     let app_pkg = app_pkg_info.unwrap();
     let pkg_graph = app_pkg.predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone().into();
+    let predefined_graph: PropertyPredefinedGraph =
+        pkg_graph.prop_predefined_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();

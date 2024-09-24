@@ -8,15 +8,14 @@ use std::sync::{Arc, RwLock};
 
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use ten_rust::pkg_info::graph::{
+    GraphConnection, GraphDestination, GraphMessageFlow,
+};
 
 use crate::dev_server::get_all_pkgs::get_all_pkgs;
 use crate::dev_server::response::{ApiResponse, ErrorResponse, Status};
 use crate::dev_server::DevServerState;
 use ten_rust::pkg_info::pkg_type::PkgType;
-use ten_rust::pkg_info::predefined_graphs::connection::PkgDestination;
-use ten_rust::pkg_info::predefined_graphs::connection::{
-    PkgConnection, PkgMessageFlow,
-};
 use ten_rust::pkg_info::predefined_graphs::pkg_predefined_graphs_find;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -38,36 +37,24 @@ pub struct DevServerConnection {
     pub video_frame: Option<Vec<DevServerMessageFlow>>,
 }
 
-impl From<PkgConnection> for DevServerConnection {
-    fn from(conn: PkgConnection) -> Self {
+impl From<GraphConnection> for DevServerConnection {
+    fn from(conn: GraphConnection) -> Self {
         DevServerConnection {
             app: conn.app,
             extension_group: conn.extension_group,
             extension: conn.extension,
 
-            cmd: if conn.cmd.is_empty() {
-                None
-            } else {
-                Some(get_dev_server_msg_flow_from_pkg(conn.cmd.clone()))
-            },
+            cmd: conn.cmd.map(get_dev_server_msg_flow_from_property),
 
-            data: if conn.data.is_empty() {
-                None
-            } else {
-                Some(get_dev_server_msg_flow_from_pkg(conn.data.clone()))
-            },
+            data: conn.data.map(get_dev_server_msg_flow_from_property),
 
-            audio_frame: if conn.audio_frame.is_empty() {
-                None
-            } else {
-                Some(get_dev_server_msg_flow_from_pkg(conn.audio_frame.clone()))
-            },
+            audio_frame: conn
+                .audio_frame
+                .map(get_dev_server_msg_flow_from_property),
 
-            video_frame: if conn.video_frame.is_empty() {
-                None
-            } else {
-                Some(get_dev_server_msg_flow_from_pkg(conn.video_frame.clone()))
-            },
+            video_frame: conn
+                .video_frame
+                .map(get_dev_server_msg_flow_from_property),
         }
     }
 }
@@ -78,18 +65,22 @@ pub struct DevServerMessageFlow {
     pub dest: Vec<DevServerDestination>,
 }
 
-impl From<PkgMessageFlow> for DevServerMessageFlow {
-    fn from(msg_flow: PkgMessageFlow) -> Self {
+impl From<GraphMessageFlow> for DevServerMessageFlow {
+    fn from(msg_flow: GraphMessageFlow) -> Self {
         DevServerMessageFlow {
             name: msg_flow.name,
-            dest: get_dev_server_destination_from_pkg(msg_flow.dest),
+            dest: get_dev_server_destination_from_property(msg_flow.dest),
         }
     }
 }
 
-fn get_dev_server_msg_flow_from_pkg(
-    msg_flow: Vec<PkgMessageFlow>,
+fn get_dev_server_msg_flow_from_property(
+    msg_flow: Vec<GraphMessageFlow>,
 ) -> Vec<DevServerMessageFlow> {
+    if msg_flow.is_empty() {
+        return vec![];
+    }
+
     msg_flow.into_iter().map(|v| v.into()).collect()
 }
 
@@ -100,8 +91,8 @@ pub struct DevServerDestination {
     pub extension: String,
 }
 
-impl From<PkgDestination> for DevServerDestination {
-    fn from(destination: PkgDestination) -> Self {
+impl From<GraphDestination> for DevServerDestination {
+    fn from(destination: GraphDestination) -> Self {
         DevServerDestination {
             app: destination.app,
             extension_group: destination.extension_group,
@@ -110,8 +101,8 @@ impl From<PkgDestination> for DevServerDestination {
     }
 }
 
-fn get_dev_server_destination_from_pkg(
-    destinations: Vec<PkgDestination>,
+fn get_dev_server_destination_from_property(
+    destinations: Vec<GraphDestination>,
 ) -> Vec<DevServerDestination> {
     destinations.into_iter().map(|v| v.into()).collect()
 }
@@ -142,15 +133,20 @@ pub async fn get_graph_connections(
             // specified graph_name.
             if let Some(graph) =
                 pkg_predefined_graphs_find(&app_pkg.predefined_graphs, |g| {
-                    g.name == graph_name
+                    g.prop_predefined_graph.name == graph_name
                 })
             {
                 // Convert the connections field to RespConnection.
-                let resp_connections: Vec<DevServerConnection> = graph
-                    .connections
-                    .iter()
-                    .map(|conn| conn.clone().into())
-                    .collect();
+                let connections =
+                    graph.prop_predefined_graph.graph.connections.as_ref();
+                let resp_connections: Vec<DevServerConnection> =
+                    match connections {
+                        Some(connections) => connections
+                            .iter()
+                            .map(|conn| conn.clone().into())
+                            .collect(),
+                        None => vec![],
+                    };
 
                 let response = ApiResponse {
                     status: Status::Ok,

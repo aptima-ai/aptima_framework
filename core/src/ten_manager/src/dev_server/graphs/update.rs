@@ -39,8 +39,7 @@ fn update_graph_to_property(app_pkg: &mut PkgInfo) {
                 app_pkg
                     .predefined_graphs
                     .iter()
-                    .cloned()
-                    .map(|g| g.into())
+                    .map(|g| g.prop_predefined_graph.clone())
                     .collect(),
             );
         } else {
@@ -49,8 +48,7 @@ fn update_graph_to_property(app_pkg: &mut PkgInfo) {
                     app_pkg
                         .predefined_graphs
                         .iter()
-                        .cloned()
-                        .map(|g| g.into())
+                        .map(|g| g.prop_predefined_graph.clone())
                         .collect(),
                 ),
                 uri: None,
@@ -65,8 +63,7 @@ fn update_graph_to_property(app_pkg: &mut PkgInfo) {
                     app_pkg
                         .predefined_graphs
                         .iter()
-                        .cloned()
-                        .map(|g| g.into())
+                        .map(|g| g.prop_predefined_graph.clone())
                         .collect(),
                 ),
                 uri: None,
@@ -129,11 +126,11 @@ pub async fn update_graph(
             if let Some(old_graph) = app_pkg
                 .predefined_graphs
                 .iter_mut()
-                .find(|g| g.name == graph_name)
+                .find(|g| g.prop_predefined_graph.name == graph_name)
             {
-                old_graph.auto_start = new_graph.auto_start;
                 old_graph.nodes = new_graph.nodes;
-                old_graph.connections = new_graph.connections;
+                old_graph.prop_predefined_graph =
+                    new_graph.prop_predefined_graph;
             }
 
             update_graph_to_property(app_pkg);
@@ -256,12 +253,24 @@ mod tests {
                 let predefined_graph = app_pkg
                     .predefined_graphs
                     .iter()
-                    .find(|g| g.name == "0")
+                    .find(|g| g.prop_predefined_graph.name == "0")
                     .unwrap();
 
-                assert!(!predefined_graph.auto_start);
+                assert!(!predefined_graph
+                    .prop_predefined_graph
+                    .auto_start
+                    .unwrap());
                 assert_eq!(predefined_graph.nodes.len(), 2);
-                assert_eq!(predefined_graph.connections.len(), 1);
+                assert_eq!(
+                    predefined_graph
+                        .prop_predefined_graph
+                        .graph
+                        .connections
+                        .as_ref()
+                        .unwrap()
+                        .len(),
+                    1
+                );
 
                 let property = app_pkg.property.as_ref().unwrap();
                 let property_predefined_graphs = property

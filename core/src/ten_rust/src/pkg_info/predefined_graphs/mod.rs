@@ -4,7 +4,6 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-pub mod connection;
 pub mod extension;
 pub mod node;
 
@@ -14,8 +13,19 @@ use crate::pkg_info::{
     graph::Graph,
     property::{predefined_graph::PropertyPredefinedGraph, Property},
 };
-use connection::PkgConnection;
 use node::PkgNode;
+
+use super::graph::GraphConnection;
+
+#[derive(Debug, Clone)]
+pub struct PkgPredefinedGraph {
+    pub prop_predefined_graph: PropertyPredefinedGraph,
+
+    // TODO(Liu):
+    // * Using GraphNode instead.
+    // * Add Vec<PkgInfo> to store the extra pkg info for nodes in this graph.
+    pub nodes: Vec<PkgNode>,
+}
 
 pub fn get_pkg_predefined_graphs_from_property(
     property: &Property,
@@ -26,10 +36,6 @@ pub fn get_pkg_predefined_graphs_from_property(
         if let Some(predefined_graphs) = &ten.predefined_graphs {
             for property_predefined_graph in predefined_graphs {
                 graphs.push(PkgPredefinedGraph {
-                    name: property_predefined_graph.name.clone(),
-                    auto_start: property_predefined_graph
-                        .auto_start
-                        .unwrap_or(false),
                     nodes: property_predefined_graph
                         .graph
                         .nodes
@@ -37,17 +43,7 @@ pub fn get_pkg_predefined_graphs_from_property(
                         .cloned()
                         .map(|m| m.into())
                         .collect(),
-                    connections: match &property_predefined_graph
-                        .graph
-                        .connections
-                    {
-                        Some(connections) => connections
-                            .iter()
-                            .cloned()
-                            .map(|m| m.into())
-                            .collect(),
-                        None => Vec::new(),
-                    },
+                    prop_predefined_graph: property_predefined_graph.clone(),
                 });
             }
         }
@@ -70,73 +66,19 @@ pub fn get_pkg_predefined_graph_from_nodes_and_connections(
     graph_name: &str,
     auto_start: bool,
     nodes: &Vec<PkgNode>,
-    connections: &Vec<PkgConnection>,
+    connections: &Vec<GraphConnection>,
 ) -> Result<PkgPredefinedGraph> {
     Ok(PkgPredefinedGraph {
-        name: graph_name.to_owned(),
-        auto_start,
-        nodes: nodes.to_vec(),
-        connections: connections.to_vec(),
-    })
-}
-
-#[derive(Debug, Clone)]
-pub struct PkgPredefinedGraph {
-    pub name: String,
-    pub auto_start: bool,
-    pub nodes: Vec<PkgNode>,
-    pub connections: Vec<PkgConnection>,
-}
-
-impl From<PropertyPredefinedGraph> for PkgPredefinedGraph {
-    fn from(property_graph: PropertyPredefinedGraph) -> Self {
-        PkgPredefinedGraph {
-            name: property_graph.name,
-            auto_start: property_graph.auto_start.unwrap_or(false),
-            nodes: property_graph
-                .graph
-                .nodes
-                .into_iter()
-                .map(|v| v.into())
-                .collect(),
-            connections: match property_graph.graph.connections {
-                Some(connections) => {
-                    connections.into_iter().map(|v| v.into()).collect()
-                }
-                None => Vec::new(),
-            },
-        }
-    }
-}
-
-impl From<PkgPredefinedGraph> for PropertyPredefinedGraph {
-    fn from(pkg_predefined_graph: PkgPredefinedGraph) -> Self {
-        PropertyPredefinedGraph {
-            name: pkg_predefined_graph.name.clone(),
-            auto_start: Some(pkg_predefined_graph.auto_start),
+        prop_predefined_graph: PropertyPredefinedGraph {
+            name: graph_name.to_string(),
+            auto_start: Some(auto_start),
             graph: Graph {
-                nodes: pkg_predefined_graph
-                    .nodes
-                    .iter()
-                    .map(|n| n.clone().into())
-                    .collect(),
+                nodes: nodes.iter().map(|n| n.clone().into()).collect(),
                 connections: Some(
-                    pkg_predefined_graph
-                        .connections
-                        .iter()
-                        .map(|c| c.clone().into())
-                        .collect(),
+                    connections.iter().map(|c| c.clone().into()).collect(),
                 ),
             },
-        }
-    }
-}
-
-pub fn get_property_predefined_graphs_from_pkg(
-    pkg_predefined_graphs: Vec<PkgPredefinedGraph>,
-) -> Vec<PropertyPredefinedGraph> {
-    pkg_predefined_graphs
-        .into_iter()
-        .map(|v| v.into())
-        .collect()
+        },
+        nodes: nodes.to_vec(),
+    })
 }
