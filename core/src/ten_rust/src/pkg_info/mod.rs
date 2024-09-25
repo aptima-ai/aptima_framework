@@ -40,10 +40,10 @@ use dependencies::{get_pkg_dependencies_from_manifest, PkgDependency};
 use manifest::{parse_manifest_from_file, parse_manifest_in_folder, Manifest};
 use pkg_identity::PkgIdentity;
 use pkg_type::PkgType;
-use predefined_graphs::{
-    get_pkg_predefined_graphs_from_property, PkgPredefinedGraph,
+use property::{
+    parse_property_from_file, parse_property_in_folder,
+    predefined_graph::PropertyPredefinedGraph, Property,
 };
-use property::{parse_property_from_file, parse_property_in_folder, Property};
 use supports::{get_pkg_supports_from_manifest, PkgSupport};
 
 pub fn default_app_loc() -> String {
@@ -73,8 +73,6 @@ pub struct PkgInfo {
 
     pub manifest: Option<Manifest>,
     pub property: Option<Property>,
-
-    pub predefined_graphs: Vec<PkgPredefinedGraph>,
 
     pub schema_store: Option<SchemaStore>,
 }
@@ -130,13 +128,6 @@ impl PkgInfo {
             version: Version::parse(&manifest.version)?,
             dependencies: get_pkg_dependencies_from_manifest(manifest)?,
             api: PkgApi::from_manifest(manifest)?,
-            predefined_graphs: match property {
-                Some(property) => {
-                    get_pkg_predefined_graphs_from_property(property)?
-                }
-                None => vec![],
-            },
-
             supports: get_pkg_supports_from_manifest(manifest)?,
             compatible_score: -1,
 
@@ -190,6 +181,36 @@ impl PkgInfo {
         let property_fs_json = serde_json::to_value(property_from_fs)?;
 
         Ok(property_pkg_json == property_fs_json)
+    }
+
+    pub fn get_predefined_graphs(
+        &self,
+    ) -> Option<&Vec<PropertyPredefinedGraph>> {
+        if let Some(property) = &self.property {
+            if let Some(ten) = &property._ten {
+                return ten.predefined_graphs.as_ref();
+            }
+        }
+
+        None
+    }
+
+    pub fn update_predefined_graph(
+        &mut self,
+        new_graph: &PropertyPredefinedGraph,
+    ) {
+        if let Some(property) = &mut self.property {
+            if let Some(ten) = &mut property._ten {
+                if let Some(predefined_graphs) = &mut ten.predefined_graphs {
+                    if let Some(old_graph) = predefined_graphs
+                        .iter_mut()
+                        .find(|g| g.name == new_graph.name)
+                    {
+                        *old_graph = new_graph.clone();
+                    }
+                }
+            }
+        }
     }
 }
 

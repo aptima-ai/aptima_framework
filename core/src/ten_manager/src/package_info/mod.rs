@@ -30,7 +30,6 @@ pub fn pkg_info_from_find_package_data(
             &package_data.dependencies,
         )?,
         api: None,
-        predefined_graphs: vec![],
         supports: get_pkg_supports_from_manifest_supports(
             &package_data.supports,
         )?,

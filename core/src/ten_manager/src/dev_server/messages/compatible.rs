@@ -22,7 +22,7 @@ use ten_rust::pkg_info::{
     predefined_graphs::extension::{
         get_compatible_cmd_extension, get_compatible_data_like_msg_extension,
         get_extension, get_extension_nodes_in_graph,
-        get_extension_nodes_pkg_info, CompatibleExtensionAndMsg,
+        get_pkg_info_for_extension, CompatibleExtensionAndMsg,
     },
 };
 
@@ -103,7 +103,7 @@ pub async fn get_compatible_messages(
     }
 
     if let Some(all_pkgs) = &state.all_pkgs {
-        let mut extensions =
+        let extensions =
             match get_extension_nodes_in_graph(&input.graph, all_pkgs) {
                 Ok(exts) => exts,
                 Err(err) => {
@@ -118,20 +118,6 @@ pub async fn get_compatible_messages(
                     return HttpResponse::NotFound().json(error_response);
                 }
             };
-
-        if let Err(err) =
-            get_extension_nodes_pkg_info(&mut extensions, all_pkgs)
-        {
-            let error_response = ErrorResponse {
-                status: Status::Fail,
-                message: format!(
-                    "Error fetching runtime extensions for graph: {}: {}",
-                    input.graph, err
-                ),
-                error: None,
-            };
-            return HttpResponse::NotFound().json(error_response);
-        }
 
         let extension = match get_extension(
             &extensions,
@@ -188,24 +174,38 @@ pub async fn get_compatible_messages(
         let mut desired_msg_dir = msg_dir.clone();
         desired_msg_dir.toggle();
 
+        let pkg_info = get_pkg_info_for_extension(extension, all_pkgs);
+        if let Err(err) = pkg_info {
+            let error_response = ErrorResponse {
+                status: Status::Fail,
+                message: format!(
+                    "Error fetching runtime extensions for graph: {}: {}",
+                    input.graph, err
+                ),
+                error: None,
+            };
+            return HttpResponse::NotFound().json(error_response);
+        }
+
+        let pkg_info = pkg_info.unwrap();
+
         let compatible_list = match msg_ty {
             MsgType::Cmd => {
                 let src_cmd_schema =
-                    extension.pkg_info.as_ref().and_then(|pkg| {
-                        pkg.schema_store.as_ref().and_then(|schema_store| {
-                            match msg_dir {
-                                MsgDirection::In => schema_store
-                                    .cmd_in
-                                    .get(input.msg_name.as_str()),
-                                MsgDirection::Out => schema_store
-                                    .cmd_out
-                                    .get(input.msg_name.as_str()),
+                    pkg_info.schema_store.as_ref().and_then(|schema_store| {
+                        match msg_dir {
+                            MsgDirection::In => {
+                                schema_store.cmd_in.get(input.msg_name.as_str())
                             }
-                        })
+                            MsgDirection::Out => schema_store
+                                .cmd_out
+                                .get(input.msg_name.as_str()),
+                        }
                     });
 
                 let results = match get_compatible_cmd_extension(
                     &extensions,
+                    all_pkgs,
                     &desired_msg_dir,
                     src_cmd_schema,
                     input.msg_name.as_str(),
@@ -228,40 +228,39 @@ pub async fn get_compatible_messages(
             }
             _ => {
                 let src_msg_schema =
-                    extension.pkg_info.as_ref().and_then(|pkg| {
-                        pkg.schema_store.as_ref().and_then(|schema_store| {
-                            match msg_ty {
-                                MsgType::Data => match msg_dir {
-                                    MsgDirection::In => schema_store
-                                        .data_in
-                                        .get(input.msg_name.as_str()),
-                                    MsgDirection::Out => schema_store
-                                        .data_out
-                                        .get(input.msg_name.as_str()),
-                                },
-                                MsgType::AudioFrame => match msg_dir {
-                                    MsgDirection::In => schema_store
-                                        .audio_frame_in
-                                        .get(input.msg_name.as_str()),
-                                    MsgDirection::Out => schema_store
-                                        .audio_frame_out
-                                        .get(input.msg_name.as_str()),
-                                },
-                                MsgType::VideoFrame => match msg_dir {
-                                    MsgDirection::In => schema_store
-                                        .video_frame_in
-                                        .get(input.msg_name.as_str()),
-                                    MsgDirection::Out => schema_store
-                                        .video_frame_out
-                                        .get(input.msg_name.as_str()),
-                                },
-                                _ => panic!("should not happen."),
-                            }
-                        })
+                    pkg_info.schema_store.as_ref().and_then(|schema_store| {
+                        match msg_ty {
+                            MsgType::Data => match msg_dir {
+                                MsgDirection::In => schema_store
+                                    .data_in
+                                    .get(input.msg_name.as_str()),
+                                MsgDirection::Out => schema_store
+                                    .data_out
+                                    .get(input.msg_name.as_str()),
+                            },
+                            MsgType::AudioFrame => match msg_dir {
+                                MsgDirection::In => schema_store
+                                    .audio_frame_in
+                                    .get(input.msg_name.as_str()),
+                                MsgDirection::Out => schema_store
+                                    .audio_frame_out
+                                    .get(input.msg_name.as_str()),
+                            },
+                            MsgType::VideoFrame => match msg_dir {
+                                MsgDirection::In => schema_store
+                                    .video_frame_in
+                                    .get(input.msg_name.as_str()),
+                                MsgDirection::Out => schema_store
+                                    .video_frame_out
+                                    .get(input.msg_name.as_str()),
+                            },
+                            _ => panic!("should not happen."),
+                        }
                     });
 
                 let results = match get_compatible_data_like_msg_extension(
                     &extensions,
+                    all_pkgs,
                     &desired_msg_dir,
                     src_msg_schema,
                     &msg_ty,

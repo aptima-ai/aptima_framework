@@ -20,12 +20,12 @@ use crate::dev_server::common::{
 use crate::dev_server::get_all_pkgs::get_all_pkgs;
 use crate::dev_server::response::{ApiResponse, ErrorResponse, Status};
 use crate::dev_server::DevServerState;
-use ten_rust::pkg_info::api::PkgCmdResult;
 use ten_rust::pkg_info::api::{
     PkgApiCmdLike, PkgApiDataLike, PkgPropertyAttributes, PkgPropertyItem,
 };
-use ten_rust::pkg_info::predefined_graphs::extension::{
-    get_extension_nodes_in_graph, get_extension_nodes_pkg_info,
+use ten_rust::pkg_info::predefined_graphs::extension::get_extension_nodes_in_graph;
+use ten_rust::pkg_info::{
+    api::PkgCmdResult, predefined_graphs::extension::get_pkg_info_for_extension,
 };
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -223,7 +223,7 @@ pub async fn get_graph_nodes(
     }
 
     if let Some(all_pkgs) = &state.all_pkgs {
-        let mut extensions =
+        let extensions =
             match get_extension_nodes_in_graph(&graph_name, all_pkgs) {
                 Ok(exts) => exts,
                 Err(err) => {
@@ -239,104 +239,99 @@ pub async fn get_graph_nodes(
                 }
             };
 
-        if let Err(err) =
-            get_extension_nodes_pkg_info(&mut extensions, all_pkgs)
-        {
-            let error_response = ErrorResponse {
-                status: Status::Fail,
-                message: format!(
-                    "Error fetching runtime extensions for graph '{}': {}",
-                    graph_name, err
-                ),
-                error: None,
-            };
-            return HttpResponse::NotFound().json(error_response);
-        }
+        let mut resp_extensions: Vec<DevServerExtension> = Vec::new();
+        for extension in &extensions {
+            let pkg_info = get_pkg_info_for_extension(extension, all_pkgs);
+            if let Err(err) = pkg_info {
+                let error_response = ErrorResponse {
+                    status: Status::Fail,
+                    message: format!(
+                        "Error fetching runtime extensions for graph '{}': {}",
+                        graph_name, err
+                    ),
+                    error: None,
+                };
+                return HttpResponse::NotFound().json(error_response);
+            }
 
-        let resp_extensions: Vec<DevServerExtension> = extensions
-            .into_iter()
-            .map(|extension| DevServerExtension {
+            let pkg_info = pkg_info.unwrap();
+            resp_extensions.push(DevServerExtension {
                 addon: extension.addon.clone(),
                 name: extension.name.clone(),
                 extension_group: extension.extension_group.clone().unwrap(),
                 app: extension.app.clone(),
-                api: extension.pkg_info
-                    // The pkg_info should be checked in 'get_extension_nodes_pkg_info', should not happen.
-                    .unwrap_or_else(|| panic!("Addon '{}' used to instantiate extension '{}' is not found.", extension.addon, extension.name))
-                    .api.as_ref().map(|api| {
-                        DevServerApi {
-                            property: if api.property.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_property_hashmap_from_pkg(
-                                    api.property.clone(),
-                                ))
-                            },
+                api: pkg_info.api.as_ref().map(|api| DevServerApi {
+                    property: if api.property.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_property_hashmap_from_pkg(
+                            api.property.clone(),
+                        ))
+                    },
 
-                            cmd_in: if api.cmd_in.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_cmd_likes_from_pkg(
-                                    api.cmd_in.clone(),
-                                ))
-                            },
-                            cmd_out: if api.cmd_out.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_cmd_likes_from_pkg(
-                                    api.cmd_out.clone(),
-                                ))
-                            },
+                    cmd_in: if api.cmd_in.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_cmd_likes_from_pkg(
+                            api.cmd_in.clone(),
+                        ))
+                    },
+                    cmd_out: if api.cmd_out.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_cmd_likes_from_pkg(
+                            api.cmd_out.clone(),
+                        ))
+                    },
 
-                            data_in: if api.data_in.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_data_likes_from_pkg(
-                                    api.data_in.clone(),
-                                ))
-                            },
-                            data_out: if api.data_out.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_data_likes_from_pkg(
-                                    api.data_out.clone(),
-                                ))
-                            },
+                    data_in: if api.data_in.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_data_likes_from_pkg(
+                            api.data_in.clone(),
+                        ))
+                    },
+                    data_out: if api.data_out.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_data_likes_from_pkg(
+                            api.data_out.clone(),
+                        ))
+                    },
 
-                            audio_frame_in: if api.audio_frame_in.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_data_likes_from_pkg(
-                                    api.audio_frame_in.clone(),
-                                ))
-                            },
-                            audio_frame_out: if api.audio_frame_out.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_data_likes_from_pkg(
-                                    api.audio_frame_out.clone(),
-                                ))
-                            },
+                    audio_frame_in: if api.audio_frame_in.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_data_likes_from_pkg(
+                            api.audio_frame_in.clone(),
+                        ))
+                    },
+                    audio_frame_out: if api.audio_frame_out.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_data_likes_from_pkg(
+                            api.audio_frame_out.clone(),
+                        ))
+                    },
 
-                            video_frame_in: if api.video_frame_in.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_data_likes_from_pkg(
-                                    api.video_frame_in.clone(),
-                                ))
-                            },
-                            video_frame_out: if api.video_frame_out.is_empty() {
-                                None
-                            } else {
-                                Some(get_dev_server_api_data_likes_from_pkg(
-                                    api.video_frame_out.clone(),
-                                ))
-                            },
-                        }
-                    }),
-                property: extension.property,
-            })
-            .collect();
+                    video_frame_in: if api.video_frame_in.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_data_likes_from_pkg(
+                            api.video_frame_in.clone(),
+                        ))
+                    },
+                    video_frame_out: if api.video_frame_out.is_empty() {
+                        None
+                    } else {
+                        Some(get_dev_server_api_data_likes_from_pkg(
+                            api.video_frame_out.clone(),
+                        ))
+                    },
+                }),
+                property: extension.property.clone(),
+            });
+        }
 
         let response = ApiResponse {
             status: Status::Ok,

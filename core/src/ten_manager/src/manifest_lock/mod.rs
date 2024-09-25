@@ -267,7 +267,6 @@ impl<'a> From<&'a ManifestLockItem> for PkgInfo {
             hash: val.hash.clone(),
             manifest: None,
             property: None,
-            predefined_graphs: vec![],
             schema_store: None,
         }
     }

@@ -131,14 +131,13 @@ pub async fn get_graph_connections(
         {
             // If the app package has predefined graphs, find the one with the
             // specified graph_name.
-            if let Some(graph) =
-                pkg_predefined_graphs_find(&app_pkg.predefined_graphs, |g| {
-                    g.prop_predefined_graph.name == graph_name
-                })
-            {
+            if let Some(predefined_graph) = pkg_predefined_graphs_find(
+                app_pkg.get_predefined_graphs(),
+                |g| g.name == graph_name,
+            ) {
                 // Convert the connections field to RespConnection.
-                let connections =
-                    graph.prop_predefined_graph.graph.connections.as_ref();
+                let connections: Option<_> =
+                    predefined_graph.graph.connections.as_ref();
                 let resp_connections: Vec<DevServerConnection> =
                     match connections {
                         Some(connections) => connections
