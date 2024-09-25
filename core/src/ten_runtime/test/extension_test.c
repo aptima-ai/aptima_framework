@@ -10,12 +10,11 @@
 
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/extension_thread/on_xxx.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "include_internal/ten_runtime/test/test_extension_group.h"
-#include "ten_runtime/addon/extension_group/extension_group.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
@@ -124,24 +123,7 @@ void *test_app_thread_main(void *args) {
   return NULL;
 }
 
-static ten_addon_t test_extension_group_addon = {
-    NULL,
-    TEN_ADDON_SIGNATURE,
-    ten_test_extension_group_addon_on_init,
-    NULL,
-    NULL,
-    NULL,
-    ten_test_extension_group_addon_create_instance,
-    ten_test_extension_group_addon_destroy_instance,
-    NULL,
-    NULL,
-};
-
 ten_extension_test_new_t *ten_extension_test_create_new(void) {
-  // Register the test_extension_group addon.
-  ten_addon_register_extension_group("test_extension_group",
-                                     &test_extension_group_addon);
-
   ten_extension_test_new_t *self = TEN_MALLOC(sizeof(ten_extension_test_new_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
@@ -190,9 +172,6 @@ void ten_extension_test_destroy_new(ten_extension_test_new_t *self) {
   ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
 
   TEN_FREE(self);
-
-  ten_addon_unregister_extension_group("test_extension_group",
-                                       &test_extension_group_addon);
 }
 
 ten_extension_test_t *ten_extension_test_create(

@@ -567,9 +567,12 @@ static void ten_extension_context_create_extension_group_done(
   extension_group->extension_context = extension_context;
 
   if (ten_string_is_equal_c_str(&addon_host->name,
-                                TEN_STR_DEFAULT_EXTENSION_GROUP)) {
-    // default_extension_group is a pre-built special group, it needs the
-    // 'start_graph' command to fill some important information.
+                                TEN_STR_DEFAULT_EXTENSION_GROUP) ||
+      ten_string_is_equal_c_str(&addon_host->name,
+                                TEN_STR_BUILTIN_EXTENSION_GROUP)) {
+    // default_extension_group & ten:builtin_extension_group are 2 special
+    // group, it needs the 'start_graph' command to fill some important
+    // information.
 
     TEN_ASSERT(
         requester_cmd &&

@@ -23,12 +23,9 @@ class addon_t {
   addon_t()
       : c_addon(ten_addon_create(proxy_on_init, proxy_on_deinit,
                                  proxy_on_create_instance,
-                                 proxy_on_destroy_instance)),
-        cpp_ten_env(new ten_env_t(ten_addon_get_ten(c_addon))) {
+                                 proxy_on_destroy_instance)) {
     ten_binding_handle_set_me_in_target_lang(
         reinterpret_cast<ten_binding_handle_t *>(c_addon), this);
-
-    TEN_ASSERT(cpp_ten_env, "Should not happen.");
   }
 
   virtual ~addon_t() {
@@ -112,10 +109,15 @@ class addon_t {
     auto *cpp_addon =
         static_cast<addon_t *>(ten_binding_handle_get_me_in_target_lang(
             reinterpret_cast<ten_binding_handle_t *>(addon)));
-    auto *cpp_ten_env =
-        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
+    TEN_ASSERT(!ten_binding_handle_get_me_in_target_lang(
+                   reinterpret_cast<ten_binding_handle_t *>(ten_env)),
+               "Should not happen.");
+
+    auto *cpp_ten_env = new ten_env_t(ten_env);
     TEN_ASSERT(cpp_addon && cpp_ten_env, "Should not happen.");
+
+    // Remember it so that we can destroy it when C++ addon is destroyed.
+    cpp_addon->cpp_ten_env = cpp_ten_env;
 
     cpp_addon->invoke_cpp_addon_on_init(*cpp_ten_env);
   }
@@ -239,8 +241,7 @@ class extension_addon_t : public addon_t {
         #NAME, g_##NAME##_default_extension_group_addon->get_c_addon());     \
   }                                                                          \
   TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_##TYPE##_addon____) {         \
-    ten_addon_unregister_extension_group(                                    \
-        #NAME, g_##NAME##_default_extension_group_addon->get_c_addon());     \
+    ten_addon_unregister_extension_group(#NAME);                             \
     delete g_##NAME##_default_extension_group_addon;                         \
   }
 
@@ -266,7 +267,6 @@ class extension_addon_t : public addon_t {
         #NAME, g_##NAME##_default_extension_addon->get_c_addon());         \
   }                                                                        \
   TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_##TYPE##_addon____) {       \
-    ten_addon_unregister_extension(                                        \
-        #NAME, g_##NAME##_default_extension_addon->get_c_addon());         \
+    ten_addon_unregister_extension(#NAME);                                 \
     delete g_##NAME##_default_extension_addon;                             \
   }

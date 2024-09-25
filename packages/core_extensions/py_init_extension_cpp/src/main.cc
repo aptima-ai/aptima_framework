@@ -369,9 +369,7 @@ TEN_CONSTRUCTOR(____ctor_ten_declare_py_init_extension_addon____) {
 
 TEN_DESTRUCTOR(____dtor_ten_declare_py_init_extension_addon____) {
   if (g_py_init_default_extension_addon != nullptr) {
-    ten_addon_unregister_extension(
-        "py_init_extension_cpp",
-        g_py_init_default_extension_addon->get_c_addon());
+    ten_addon_unregister_extension("py_init_extension_cpp");
     delete g_py_init_default_extension_addon;
   }
 }

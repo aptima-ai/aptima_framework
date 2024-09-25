@@ -14,7 +14,7 @@
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/macro/check.h"
 
-#define TEN_SIGNATURE 0x1336D348DA779EA6U
+#define TEN_ENV_SIGNATURE 0x1336D348DA779EA6U
 
 typedef struct ten_engine_t ten_engine_t;
 

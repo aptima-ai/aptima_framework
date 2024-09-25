@@ -6,12 +6,6 @@
 #
 import("//build/ten_runtime/glob.gni")
 
-glob("extension_group") {
+glob("builtin") {
   file_list = all_native_files
-  deps = [
-    "builtin",
-    "extension_group_info",
-    "internal",
-    "ten_env",
-  ]
 }

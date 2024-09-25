@@ -62,7 +62,6 @@ typedef struct ten_addon_t {
   ten_addon_on_destroy_instance_async_func_t on_destroy_instance_async;
 
   void *user_data;
-  ten_env_t *ten_env;
 } ten_addon_t;
 
 typedef struct ten_addon_host_t {
@@ -112,14 +111,13 @@ TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_host_create(
 
 TEN_RUNTIME_API void ten_addon_host_destroy(ten_addon_host_t *self);
 
-TEN_RUNTIME_PRIVATE_API void ten_addon_register(ten_addon_store_t *store,
-                                                ten_addon_host_t *item,
+TEN_RUNTIME_PRIVATE_API void ten_addon_register(ten_addon_store_t *addon_store,
+                                                ten_addon_host_t *addon_host,
                                                 const char *name,
                                                 ten_addon_t *addon);
 
-TEN_RUNTIME_PRIVATE_API void ten_addon_unregister(ten_addon_store_t *store,
-                                                  const char *addon_name,
-                                                  ten_addon_t *addon);
+TEN_RUNTIME_PRIVATE_API ten_addon_t *ten_addon_unregister(
+    ten_addon_store_t *store, const char *addon_name);
 
 TEN_RUNTIME_PRIVATE_API const char *ten_addon_host_get_name(
     ten_addon_host_t *self);

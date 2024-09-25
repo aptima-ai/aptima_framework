@@ -29,7 +29,8 @@
 bool ten_env_check_integrity(ten_env_t *self, bool check_thread) {
   TEN_ASSERT(self, "Invalid argument.");
 
-  if (ten_signature_get(&self->signature) != (ten_signature_t)TEN_SIGNATURE) {
+  if (ten_signature_get(&self->signature) !=
+      (ten_signature_t)TEN_ENV_SIGNATURE) {
     return false;
   }
 
@@ -78,7 +79,7 @@ ten_env_t *ten_env_create(void) {
   ten_env_t *self = (ten_env_t *)TEN_MALLOC(sizeof(ten_env_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
-  ten_signature_set(&self->signature, (ten_signature_t)TEN_SIGNATURE);
+  ten_signature_set(&self->signature, (ten_signature_t)TEN_ENV_SIGNATURE);
   ten_sanitizer_thread_check_init_with_current_thread(&self->thread_check);
 
   self->category = TEN_CATEGORY_NORMAL;
@@ -275,7 +276,8 @@ TEN_ENV_ATTACH_TO ten_env_get_attach_to(ten_env_t *self) {
 
 void ten_env_set_attach_to(ten_env_t *self, TEN_ENV_ATTACH_TO attach_to_type,
                            void *attach_to) {
-  TEN_ASSERT(self && ten_env_check_integrity(self, true), "Should not happen.");
+  TEN_ASSERT(self, "Should not happen.");
+  TEN_ASSERT(ten_env_check_integrity(self, true), "Should not happen.");
 
   self->attach_to = attach_to_type;
   switch (attach_to_type) {

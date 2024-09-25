@@ -44,11 +44,10 @@ ten_addon_host_t *ten_addon_register_extension_group(const char *name,
   return addon_host;
 }
 
-void ten_addon_unregister_extension_group(const char *name,
-                                          ten_addon_t *addon) {
+ten_addon_t *ten_addon_unregister_extension_group(const char *name) {
   TEN_ASSERT(name, "Should not happen.");
 
-  ten_addon_unregister(ten_extension_group_get_store(), name, addon);
+  return ten_addon_unregister(ten_extension_group_get_store(), name);
 }
 
 bool ten_addon_extension_group_create(

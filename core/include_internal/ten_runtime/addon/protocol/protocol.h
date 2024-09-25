@@ -22,7 +22,6 @@ TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_protocol_find(
     const char *protocol);
 
 TEN_RUNTIME_API void ten_addon_register_protocol(const char *name,
-                                               ten_addon_t *addon);
-
-TEN_RUNTIME_API void ten_addon_unregister_protocol(const char *name,
                                                  ten_addon_t *addon);
+
+TEN_RUNTIME_API ten_addon_t *ten_addon_unregister_protocol(const char *name);

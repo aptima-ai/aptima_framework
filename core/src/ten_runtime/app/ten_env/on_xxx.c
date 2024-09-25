@@ -13,6 +13,7 @@
 #include "include_internal/ten_runtime/app/migration.h"
 #include "include_internal/ten_runtime/app/predefined_graph.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
 #include "include_internal/ten_runtime/metadata/metadata.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/schema_store/store.h"

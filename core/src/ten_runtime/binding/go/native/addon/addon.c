@@ -17,7 +17,6 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/addon/extension_group/extension_group.h"
@@ -29,6 +28,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 void tenGoAddonOnInit(ten_go_handle_t go_addon, ten_go_handle_t go_ten);
 
@@ -72,14 +72,12 @@ void ten_go_addon_unregister(uintptr_t bridge_addr) {
   switch (addon_bridge->type) {
     case TEN_ADDON_TYPE_EXTENSION:
       ten_addon_unregister_extension(
-          ten_string_get_raw_str(&addon_bridge->addon_name),
-          &addon_bridge->c_addon);
+          ten_string_get_raw_str(&addon_bridge->addon_name));
       break;
 
     case TEN_ADDON_TYPE_EXTENSION_GROUP:
       ten_addon_unregister_extension_group(
-          ten_string_get_raw_str(&addon_bridge->addon_name),
-          &addon_bridge->c_addon);
+          ten_string_get_raw_str(&addon_bridge->addon_name));
       break;
 
     default:

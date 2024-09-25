@@ -15,7 +15,6 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uri.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_object.h"
@@ -28,13 +27,10 @@ static ten_addon_store_t g_protocol_store = {
 
 ten_addon_store_t *ten_protocol_get_store(void) { return &g_protocol_store; }
 
-void ten_addon_unregister_protocol(const char *name,
-                                   TEN_UNUSED ten_addon_t *addon) {
+ten_addon_t *ten_addon_unregister_protocol(const char *name) {
   TEN_ASSERT(name, "Should not happen.");
 
-  TEN_LOGV("Unregistered protocol '%s'", name);
-
-  ten_addon_store_del(ten_protocol_get_store(), name);
+  return ten_addon_unregister(ten_protocol_get_store(), name);
 }
 
 void ten_addon_register_protocol(const char *name, ten_addon_t *addon) {
