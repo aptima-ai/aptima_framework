@@ -11,11 +11,6 @@
       "version": "0.1.0"
     },
     {
-      "type": "extension_group",
-      "name": "default_extension_group",
-      "version": "0.1.0"
-    },
-    {
       "type": "extension",
       "name": "default_extension_go",
       "version": "0.1.0"

@@ -22,11 +22,6 @@
       "type": "extension",
       "name": "addon_2",
       "version": "0.1.0"
-    },
-    {
-      "type": "extension_group",
-      "name": "default_extension_group",
-      "version": "0.1.0"
     }
   ]
 }

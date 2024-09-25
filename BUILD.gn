@@ -20,7 +20,6 @@ group("ten_framework_all") {
     "//core/src/ten_runtime",
     "//core/src/ten_rust",
     "//packages/core_apps",
-    "//packages/core_extension_groups",
     "//packages/core_extensions",
     "//packages/core_protocols",
     "//packages/example_apps",

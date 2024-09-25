@@ -109,7 +109,6 @@ static ten_addon_t msgpack_protocol_factory = {
     NULL,
     NULL,
     NULL,
-    NULL,
 };
 
 TEN_REGISTER_ADDON_AS_PROTOCOL(msgpack, &msgpack_protocol_factory);

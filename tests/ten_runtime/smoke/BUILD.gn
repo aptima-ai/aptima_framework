@@ -43,7 +43,6 @@ ten_executable("ten_runtime_smoke_test") {
     ":ten_runtime_smoke_tests",
     "//core/src/ten_runtime",
     "//core/src/ten_utils:ten_utils_shared",
-    "//packages/core_extension_groups/default_extension_group:default_extension_group_files",
     "//packages/core_protocols/msgpack:msgpack_files",
     "//tests/ten_runtime:copy_libraries_for_test",
     "//third_party/nlohmann_json",

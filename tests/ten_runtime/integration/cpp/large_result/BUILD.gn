@@ -22,7 +22,6 @@ ten_package_test_prepare_app("large_result_http") {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
-      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
       "//packages/core_extensions/default_extension_cpp:upload_default_extension_cpp_to_server",
       "//packages/example_extensions/simple_http_server_cpp:upload_simple_http_server_cpp_to_server",
     ]

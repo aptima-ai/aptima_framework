@@ -24,7 +24,6 @@ ten_package_test_prepare_app("go_app_partially_cythonize_app") {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_go:upload_default_app_go_to_server",
-      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
       "//packages/core_extensions/default_extension_go:upload_default_extension_go_to_server",
       "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
       "//packages/core_extensions/py_init_extension_cpp:upload_py_init_extension_cpp_to_server",

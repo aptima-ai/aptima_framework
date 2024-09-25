@@ -27,7 +27,6 @@ ten_package_test_prepare_app("cpp_app_multi_process_python_app") {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
-      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
       "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
       "//packages/core_extensions/py_init_extension_cpp:upload_py_init_extension_cpp_to_server",
       "//packages/example_extensions/simple_echo_cpp:upload_simple_echo_cpp_to_server",

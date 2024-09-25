@@ -151,4 +151,3 @@
 #define TEN_STR_UNDERLINE_TEN "_ten"
 
 #define TEN_STR_DEFAULT_EXTENSION_GROUP "default_extension_group"
-#define TEN_STR_BUILTIN_EXTENSION_GROUP "ten:builtin_extension_group"

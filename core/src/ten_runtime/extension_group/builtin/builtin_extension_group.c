@@ -166,7 +166,7 @@ void ten_builtin_extension_group_addon_on_init(TEN_UNUSED ten_addon_t *addon,
                                                 // clang-format off
                             "{\
                               \"type\": \"extension_group\",\
-                              \"name\": \"ten:builtin_extension_group\",\
+                              \"name\": \"default_extension_group\",\
                               \"version\": \"1.0.0\"\
                              }",
                                                 // clang-format on
@@ -213,18 +213,13 @@ static ten_addon_t builtin_extension_group_addon = {
     ten_builtin_extension_group_addon_create_instance,
     ten_builtin_extension_group_addon_destroy_instance,
     NULL,
-    NULL,
 };
 
-// Because the name registered by this `builtin_extension_group` is a special
-// name (`ten:builtin_extension_group`), with a `:` in the middle, we can't use
-// the convenient macro `TEN_REGISTER_ADDON_AS_EXTENSION_GROUP`. We have to use
-// an inner register method instead. However, the meaning is exactly the same.
 void ten_builtin_extension_group_addon_register(void) {
-  ten_addon_register_extension_group(TEN_STR_BUILTIN_EXTENSION_GROUP,
+  ten_addon_register_extension_group(TEN_STR_DEFAULT_EXTENSION_GROUP,
                                      &builtin_extension_group_addon);
 }
 
 void ten_builtin_extension_group_addon_unregister(void) {
-  ten_addon_unregister_extension_group(TEN_STR_BUILTIN_EXTENSION_GROUP);
+  ten_addon_unregister_extension_group(TEN_STR_DEFAULT_EXTENSION_GROUP);
 }

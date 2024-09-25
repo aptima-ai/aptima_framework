@@ -9,11 +9,11 @@
 #include <stdlib.h>
 
 #include "include_internal/ten_runtime/common/loc.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 bool ten_extension_group_info_check_integrity(

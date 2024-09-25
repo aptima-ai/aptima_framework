@@ -23,7 +23,6 @@ ten_package_test_prepare_app("handle_error_go_app") {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_go:upload_default_app_go_to_server",
-      "//packages/core_extension_groups/default_extension_group:upload_default_extension_group_to_server",
       "//packages/core_extensions/default_extension_go:upload_default_extension_go_to_server",
       "//packages/core_protocols/msgpack:upload_protocol_msgpack_to_server",
     ]

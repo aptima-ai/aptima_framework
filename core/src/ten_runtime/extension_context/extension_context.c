@@ -567,12 +567,9 @@ static void ten_extension_context_create_extension_group_done(
   extension_group->extension_context = extension_context;
 
   if (ten_string_is_equal_c_str(&addon_host->name,
-                                TEN_STR_DEFAULT_EXTENSION_GROUP) ||
-      ten_string_is_equal_c_str(&addon_host->name,
-                                TEN_STR_BUILTIN_EXTENSION_GROUP)) {
-    // default_extension_group & ten:builtin_extension_group are 2 special
-    // group, it needs the 'start_graph' command to fill some important
-    // information.
+                                TEN_STR_DEFAULT_EXTENSION_GROUP)) {
+    // default_extension_group is a special group, it needs the 'start_graph'
+    // command to fill some important information.
 
     TEN_ASSERT(
         requester_cmd &&
@@ -688,6 +685,8 @@ bool ten_extension_context_start_extension_group(
     TEN_ASSERT(ten_extension_group_info_check_integrity(extension_group_info),
                "Invalid use of extension_info %p.", extension_group_info);
 
+    // Check whether the current `extension_group` is located within the current
+    // `app`.
     if (ten_string_is_equal(&extension_group_info->loc.app_uri,
                             &self->engine->app->uri)) {
       bool res = ten_addon_extension_group_create(
