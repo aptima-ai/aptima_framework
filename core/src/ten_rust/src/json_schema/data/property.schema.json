@@ -88,10 +88,10 @@
           "$ref": "#/$defs/notEmptyString"
         },
         "extension_group": {
-          "$ref": "#/$defs/addonInstance"
+          "$ref": "#/$defs/notEmptyString"
         },
         "extension": {
-          "$ref": "#/$defs/addonInstance"
+          "$ref": "#/$defs/notEmptyString"
         },
         "msg_conversion": {
           "type": "object",
@@ -165,10 +165,10 @@
           "$ref": "#/$defs/notEmptyString"
         },
         "extension_group": {
-          "$ref": "#/$defs/addonInstance"
+          "$ref": "#/$defs/notEmptyString"
         },
         "extension": {
-          "$ref": "#/$defs/addonInstance"
+          "$ref": "#/$defs/notEmptyString"
         },
         "msg_conversion": {
           "$ref": "#/$defs/msgConversion"
@@ -194,7 +194,7 @@
           "$ref": "#/$defs/notEmptyString"
         },
         "addon": {
-          "$ref": "#/$defs/notEmptyString"
+          "$ref": "#/$defs/alphanumericCharacters"
         },
         "app": {
           "$ref": "#/$defs/notEmptyString"
@@ -375,29 +375,6 @@
       "items": {
         "$ref": "#/$defs/dataDest"
       }
-    },
-    "addonInstance": {
-      "oneOf": [
-        {
-          "$ref": "#/$defs/notEmptyString"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "addon",
-            "name"
-          ],
-          "properties": {
-            "addon": {
-              "$ref": "#/$defs/notEmptyString"
-            },
-            "name": {
-              "$ref": "#/$defs/notEmptyString"
-            }
-          }
-        }
-      ]
     },
     "validPropertyObject": {
       "type": "object",

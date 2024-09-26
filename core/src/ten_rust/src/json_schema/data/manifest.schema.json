@@ -81,7 +81,7 @@
             "$ref": "#/$defs/packageType"
           },
           "name": {
-            "$ref": "#/$defs/notEmptyString"
+            "$ref": "#/$defs/alphanumericCharacters"
           },
           "version": {
             "$ref": "#/$defs/versionRequirement"
@@ -383,7 +383,7 @@
       "$ref": "#/$defs/packageType"
     },
     "name": {
-      "$ref": "#/$defs/notEmptyString"
+      "$ref": "#/$defs/alphanumericCharacters"
     },
     "version": {
       "$ref": "#/$defs/version"
