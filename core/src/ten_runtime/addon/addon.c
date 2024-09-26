@@ -166,9 +166,8 @@ static void ten_addon_load_metadata(ten_addon_host_t *self, ten_env_t *ten_env,
  *
  *   register -> on_init --> on_init_done --> add to the addon store
  *
- * The default behavior in the 'on_init' stage is to loading the metadata of the
- * 'addon'. However, the developer could override the 'on_init' function to
- * perform user-defined operations the addon needs.
+ * Developers could override the 'on_init' function to perform user-defined
+ * operations the addon needs.
  */
 void ten_addon_register(ten_addon_store_t *addon_store,
                         ten_addon_host_t *addon_host, const char *name,

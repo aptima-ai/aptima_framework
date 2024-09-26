@@ -35,17 +35,46 @@ static void ten_addon_remove_from_store(ten_addon_host_t *addon) {
   ten_ref_dec_ref(&addon->ref);
 }
 
-void ten_addon_store_add(ten_addon_store_t *store, ten_addon_host_t *addon) {
+static ten_addon_host_t *ten_addon_store_find_internal(ten_addon_store_t *store,
+                                                       const char *name) {
+  TEN_ASSERT(store, "Invalid argument.");
+  TEN_ASSERT(name, "Invalid argument.");
+
+  ten_addon_host_t *result = NULL;
+
+  ten_list_foreach (&store->store, iter) {
+    ten_addon_host_t *addon = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(addon, "Should not happen.");
+
+    if (ten_string_is_equal_c_str(&addon->name, name)) {
+      result = addon;
+      break;
+    }
+  }
+
+  return result;
+}
+
+bool ten_addon_store_add(ten_addon_store_t *store, ten_addon_host_t *addon) {
   TEN_ASSERT(store, "Invalid argument.");
   TEN_ASSERT(addon, "Invalid argument.");
 
   ten_mutex_lock(store->lock);
+
+  // Check if there is an addon with the same name in the addon store. If there
+  // is, it is considered an error.
+  if (ten_addon_store_find_internal(store,
+                                    ten_string_get_raw_str(&addon->name))) {
+    return false;
+  }
 
   ten_list_push_ptr_back(
       &store->store, addon,
       (ten_ptr_listnode_destroy_func_t)ten_addon_remove_from_store);
 
   ten_mutex_unlock(store->lock);
+
+  return true;
 }
 
 ten_addon_t *ten_addon_store_del(ten_addon_store_t *store, const char *name) {
@@ -80,17 +109,7 @@ ten_addon_host_t *ten_addon_store_find(ten_addon_store_t *store,
   ten_addon_host_t *result = NULL;
 
   ten_mutex_lock(store->lock);
-
-  ten_list_foreach (&store->store, iter) {
-    ten_addon_host_t *addon = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(addon, "Should not happen.");
-
-    if (ten_string_is_equal_c_str(&addon->name, name)) {
-      result = addon;
-      break;
-    }
-  }
-
+  result = ten_addon_store_find_internal(store, name);
   ten_mutex_unlock(store->lock);
 
   return result;

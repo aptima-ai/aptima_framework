@@ -6,6 +6,8 @@
 //
 #include "include_internal/ten_runtime/addon/ten_env/on_xxx.h"
 
+#include <stdlib.h>
+
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
@@ -71,14 +73,12 @@ void ten_addon_on_init_done(ten_env_t *self) {
           "the manifest.",
           ten_string_get_raw_str(&addon_host->name), manifest_name);
 
-      // TODO(Wei): Enable the following checking. Get 'name' from manifest, and
-      // check the consistency between the name specified in the argument, and
-      // the name specified in the manifest.
+      // Get 'name' from manifest, and check the consistency between the name
+      // specified in the argument, and the name specified in the manifest.
       //
       // The name in the manifest could be checked by the TEN store to ensure
       // the uniqueness of the name.
-      //
-      // TEN_ASSERT(0 && "Should not happen.")
+      TEN_ASSERT(0, "Should not happen.");
     }
 
     // If an extension defines an extension name in its manifest file, TEN
@@ -90,7 +90,11 @@ void ten_addon_on_init_done(ten_env_t *self) {
     }
   }
 
-  ten_addon_store_add(addon_host->store, addon_host);
+  rc = ten_addon_store_add(addon_host->store, addon_host);
+  if (!rc) {
+    TEN_ASSERT(0, "Should not happen.");
+    exit(EXIT_FAILURE);
+  }
 }
 
 void ten_addon_on_deinit_done(ten_env_t *self) {
