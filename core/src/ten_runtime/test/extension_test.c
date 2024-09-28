@@ -237,10 +237,10 @@ ten_extension_test_t *ten_extension_test_create(
   ten_list_push_ptr_back(&self->pre_created_extensions, test_extension, NULL);
   ten_list_push_ptr_back(&self->pre_created_extensions, target_extension, NULL);
 
-  ten_extension_direct_all_msg_to_another_extension(test_extension,
-                                                    target_extension);
-  ten_extension_direct_all_msg_to_another_extension(test_extension,
-                                                    target_extension);
+  // ten_extension_direct_all_msg_to_another_extension(test_extension,
+  //                                                   target_extension);
+  // ten_extension_direct_all_msg_to_another_extension(test_extension,
+  //                                                   target_extension);
 
   self->test_thread =
       ten_thread_create("extension thread", ten_extension_thread_main, self);

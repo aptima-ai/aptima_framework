@@ -130,6 +130,7 @@ void ten_engine_on_extension_thread_initted(void *self_, void *arg) {
                  "Should not happen.");
     }
 
+    // =-=-= 还需要嘛?
     // All the extension threads requested by this command have been completed,
     // return the result for this command.
     //

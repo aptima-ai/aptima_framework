@@ -24,14 +24,14 @@
 //   }
 // }]
 // ------------------------
-ten_shared_ptr_t *ten_msg_dest_static_info_from_value(
+ten_shared_ptr_t *ten_msg_dest_info_from_value(
     ten_value_t *value, ten_list_t *extensions_info,
     ten_extension_info_t *src_extension_info, ten_error_t *err) {
   TEN_ASSERT(value && extensions_info, "Should not happen.");
   TEN_ASSERT(src_extension_info,
              "src_extension must be specified in this case.");
 
-  ten_msg_dest_static_info_t *self = NULL;
+  ten_msg_dest_info_t *self = NULL;
 
   // "name": "...",
   ten_value_t *name_value = ten_value_object_peek(value, TEN_STR_NAME);
@@ -41,7 +41,7 @@ ten_shared_ptr_t *ten_msg_dest_static_info_from_value(
     name = ten_value_peek_c_str(name_value);
   }
 
-  self = ten_msg_dest_static_info_create(name);
+  self = ten_msg_dest_info_create(name);
   TEN_ASSERT(self, "Should not happen.");
 
   // "dest": [{
@@ -82,13 +82,13 @@ ten_shared_ptr_t *ten_msg_dest_static_info_from_value(
 
 error:
   if (!self) {
-    ten_msg_dest_static_info_destroy(self);
+    ten_msg_dest_info_destroy(self);
     self = NULL;
   }
 
 done:
   if (self) {
-    return ten_shared_ptr_create(self, ten_msg_dest_static_info_destroy);
+    return ten_shared_ptr_create(self, ten_msg_dest_info_destroy);
   } else {
     return NULL;
   }

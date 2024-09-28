@@ -17,7 +17,6 @@
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/engine/internal/thread.h"
 #include "include_internal/ten_runtime/extension/extension.h"
-#include "include_internal/ten_runtime/extension/extension_hdr.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
@@ -269,64 +268,6 @@ void ten_extension_context_set_on_closed(
   self->on_closed_data = on_closed_data;
 }
 
-static ten_extension_t *ten_extension_context_find_extension(
-    ten_extension_context_t *self, const char *extension_group_name,
-    const char *extension_name) {
-  TEN_ASSERT(self, "Invalid argument.");
-
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: This function will be called in the extension thread,
-  // however, the graph would not be changed after the extension system is
-  // starting, so it's safe to access the graph information in the extension
-  // thead.
-  //
-  // However, for the strict thread safety, it's possible to modify the logic
-  // here to use asynchronous operations (i.e., add a task to the
-  // extension_context, and add a task to the extension_thread when the result
-  // is found) here.
-  TEN_ASSERT(ten_extension_context_check_integrity(self, false),
-             "Invalid use of extension_context %p.", self);
-
-  TEN_ASSERT(extension_group_name && extension_name, "Should not happen.");
-
-  // TODO(Wei): check extension group, too. Therefore, there could be extensions
-  // with same name in different extension groups.
-  ten_extension_t *result = ten_extension_store_find_extension(
-      self->extension_store, extension_group_name, extension_name, false,
-      false);
-
-  return result;
-}
-
-static ten_extension_t *ten_extension_context_get_extension_by_name(
-    ten_extension_context_t *self, const char *app_uri,
-    const char *extension_group_name, const char *extension_name) {
-  TEN_ASSERT(self, "Invalid argument.");
-
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: This function will be called in the extension thread,
-  // however, the graph would not be changed after the extension system is
-  // starting, so it's safe to access the graph information in the extension
-  // thead.
-  //
-  // However, for the strict thread safety, it's possible to modify the logic
-  // here to use asynchronous operations (i.e., add a task to the
-  // extension_context, and add a task to the extension_thread when the result
-  // is found) here.
-  TEN_ASSERT(ten_extension_context_check_integrity(self, false),
-             "Invalid use of extension_context %p.", self);
-
-  TEN_ASSERT(app_uri && extension_group_name && extension_name,
-             "Should not happen.");
-
-  if (ten_c_string_is_equal(app_uri, ten_string_get_raw_str(
-                                         ten_app_get_uri(self->engine->app)))) {
-    return ten_extension_context_find_extension(self, extension_group_name,
-                                                extension_name);
-  }
-  return NULL;
-}
-
 ten_extension_info_t *ten_extension_context_get_extension_info_by_name(
     ten_extension_context_t *self, const char *app_uri, const char *graph_name,
     const char *extension_group_name, const char *extension_name) {
@@ -449,64 +390,6 @@ static void ten_extension_context_add_extension_groups_info_from_graph(
              "Should not happen.");
 
   ten_list_swap(&self->extension_groups_info_from_graph, extension_groups_info);
-}
-
-ten_list_t ten_extension_context_resolve_extensions_info_to_extensions(
-    ten_extension_context_t *self, ten_list_t *dests) {
-  TEN_ASSERT(self, "Invalid argument.");
-
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: This function will be called in the extension thread,
-  // however, the graph would not be changed after the extension system is
-  // starting, so it's safe to access the graph information in the extension
-  // thead.
-  //
-  // However, for the strict thread safety, it's possible to modify the logic
-  // here to use asynchronous operations (i.e., add a task to the
-  // extension_context, and add a task to the extension_thread when the result
-  // is found) here.
-  TEN_ASSERT(ten_extension_context_check_integrity(self, false),
-             "Invalid use of extension_context %p.", self);
-
-  TEN_ASSERT(dests, "Should not happen.");
-
-  ten_list_t result = TEN_LIST_INIT_VAL;
-
-  ten_list_foreach (dests, iter) {
-    ten_weak_ptr_t *shared_dest_extension_info =
-        ten_smart_ptr_listnode_get(iter.node);
-    ten_extension_info_t *dest_extension_info =
-        ten_extension_info_from_smart_ptr(shared_dest_extension_info);
-
-    ten_extension_t *dest_extension =
-        ten_extension_context_get_extension_by_name(
-            self, ten_string_get_raw_str(&dest_extension_info->loc.app_uri),
-            ten_string_get_raw_str(
-                &dest_extension_info->loc.extension_group_name),
-            ten_string_get_raw_str(&dest_extension_info->loc.extension_name));
-    if (dest_extension) {
-      // The extension group from user codes should be responsible for deleting
-      // the extension.
-      ten_extensionhdr_t *extensionhdr =
-          ten_extensionhdr_create_for_extension(dest_extension);
-
-      ten_list_push_ptr_back(
-          &result, extensionhdr,
-          (ten_ptr_listnode_destroy_func_t)ten_extensionhdr_destroy);
-    } else {
-      // The destination extension doesn't belongs to this TEN app (process).
-
-      ten_extensionhdr_t *extensionhdr =
-          ten_extensionhdr_create_for_extension_info(
-              ten_weak_ptr_clone(shared_dest_extension_info));
-
-      ten_list_push_ptr_back(
-          &result, extensionhdr,
-          (ten_ptr_listnode_destroy_func_t)ten_extensionhdr_destroy);
-    }
-  }
-
-  return result;
 }
 
 static void destroy_extension_group_by_addon(

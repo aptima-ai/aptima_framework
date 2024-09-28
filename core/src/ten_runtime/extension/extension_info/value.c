@@ -44,7 +44,7 @@ static bool parse_msg_dest_value(ten_value_t *value,
       return false;
     }
 
-    ten_shared_ptr_t *msg_dest = ten_msg_dest_static_info_from_value(
+    ten_shared_ptr_t *msg_dest = ten_msg_dest_info_from_value(
         item_value, extensions_info, src_extension_info, err);
     if (!msg_dest) {
       return false;
@@ -150,7 +150,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
   ten_value_t *cmds_value = ten_value_object_peek(value, TEN_STR_CMD);
   if (cmds_value) {
     if (!parse_msg_dest_value(cmds_value, extensions_info,
-                              &extension_info->msg_dest_static_info.cmd,
+                              &extension_info->msg_dest_info.cmd,
                               extension_info, err)) {
       return NULL;
     }
@@ -160,7 +160,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
   ten_value_t *data_value = ten_value_object_peek(value, TEN_STR_DATA);
   if (data_value) {
     if (!parse_msg_dest_value(data_value, extensions_info,
-                              &extension_info->msg_dest_static_info.data,
+                              &extension_info->msg_dest_info.data,
                               extension_info, err)) {
       TEN_ASSERT(0, "Should not happen.");
       return NULL;
@@ -172,7 +172,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
       ten_value_object_peek(value, TEN_STR_VIDEO_FRAME);
   if (video_frame_value) {
     if (!parse_msg_dest_value(video_frame_value, extensions_info,
-                              &extension_info->msg_dest_static_info.video_frame,
+                              &extension_info->msg_dest_info.video_frame,
                               extension_info, err)) {
       TEN_ASSERT(0, "Should not happen.");
       return NULL;
@@ -184,7 +184,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
       ten_value_object_peek(value, TEN_STR_AUDIO_FRAME);
   if (audio_frame_value) {
     if (!parse_msg_dest_value(audio_frame_value, extensions_info,
-                              &extension_info->msg_dest_static_info.audio_frame,
+                              &extension_info->msg_dest_info.audio_frame,
                               extension_info, err)) {
       TEN_ASSERT(0, "Should not happen.");
       return NULL;
@@ -196,7 +196,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
       ten_value_object_peek(value, TEN_STR_INTERFACE);
   if (interface_value) {
     if (!parse_msg_dest_value(interface_value, extensions_info,
-                              &extension_info->msg_dest_static_info.interface,
+                              &extension_info->msg_dest_info.interface,
                               extension_info, err)) {
       TEN_ASSERT(0, "Should not happen.");
       return NULL;

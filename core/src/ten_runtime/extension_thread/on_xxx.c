@@ -431,13 +431,15 @@ void ten_extension_thread_on_all_extensions_in_all_extension_threads_added_to_en
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
              "Should not happen.");
 
-  // The extension has just been created, the `on_init()` of the extension has
-  // not been called yet. This function needs to be called before `on_init()` of
-  // extensions, as the `extension::extension_info` field is used during the
-  // `on_init()` stage, refer to `ten_extension_merge_properties_from_graph()`.
-  // However, we can not parse `interface` info here, as the `interface_in` and
-  // `interface_out` are defined in the manifest of extensions, which means that
-  // the `interface` info is not available until `Extension::on_init_done()`.
+  // =-=-=
+  // The extension has just been created, the `on_configure()` of the extension
+  // has not been called yet. This function needs to be called before
+  // `on_configure()` of extensions, as the `extension::extension_info` field is
+  // used during the `on_init()` stage, refer to
+  // `ten_extension_merge_properties_from_graph()`. However, we can not parse
+  // `interface` info here, as the `interface_in` and `interface_out` are
+  // defined in the manifest of extensions, which means that the `interface`
+  // info is not available until `Extension::on_configure_done()`.
   ten_extension_thread_determine_all_extension_dest_from_graph(self);
 
   // Notify the engine that the extension thread is initted.

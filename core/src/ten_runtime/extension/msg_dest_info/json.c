@@ -14,25 +14,25 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_and_result_conversion_operation.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
-ten_json_t *ten_msg_dest_static_info_to_json(
-    ten_msg_dest_static_info_t *self, ten_extension_info_t *src_extension_info,
-    ten_error_t *err) {
-  TEN_ASSERT(self && ten_msg_dest_static_info_check_integrity(self),
+ten_json_t *ten_msg_dest_info_to_json(ten_msg_dest_info_t *self,
+                                      ten_extension_info_t *src_extension_info,
+                                      ten_error_t *err) {
+  TEN_ASSERT(self && ten_msg_dest_info_check_integrity(self),
              "Should not happen.");
 
   ten_json_t *json = ten_json_create_object();
   TEN_ASSERT(json, "Should not happen.");
   ten_json_object_set_new(
       json, TEN_STR_NAME,
-      ten_json_create_string(ten_string_get_raw_str(&self->msg_name)));
+      ten_json_create_string(ten_string_get_raw_str(&self->name)));
 
   ten_json_t *dests_json = ten_json_create_array();
   TEN_ASSERT(dests_json, "Should not happen.");
@@ -75,7 +75,7 @@ ten_json_t *ten_msg_dest_static_info_to_json(
 
       if (ten_loc_is_equal(&src_extension_info->loc,
                            &msg_conversion->src_loc) &&
-          ten_string_is_equal(&msg_conversion->msg_name, &self->msg_name)) {
+          ten_string_is_equal(&msg_conversion->msg_name, &self->name)) {
         ten_json_t *msg_and_result_json =
             ten_msg_and_result_conversion_operation_to_json(
                 msg_conversion->msg_and_result_conversion_operation, err);
@@ -96,7 +96,7 @@ ten_json_t *ten_msg_dest_static_info_to_json(
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-ten_shared_ptr_t *ten_msg_dest_static_info_from_json(
+ten_shared_ptr_t *ten_msg_dest_info_from_json(
     ten_json_t *json, ten_list_t *extensions_info,
     ten_extension_info_t *src_extension_info) {
   TEN_ASSERT(json && extensions_info, "Should not happen.");
@@ -106,7 +106,7 @@ ten_shared_ptr_t *ten_msg_dest_static_info_from_json(
     msg_name = "";
   }
 
-  ten_msg_dest_static_info_t *self = ten_msg_dest_static_info_create(msg_name);
+  ten_msg_dest_info_t *self = ten_msg_dest_info_create(msg_name);
 
   ten_json_t *dests_json = ten_json_object_peek(json, TEN_STR_DEST);
   TEN_ASSERT(ten_json_is_array(dests_json), "Should not happen.");
@@ -121,7 +121,7 @@ ten_shared_ptr_t *ten_msg_dest_static_info_from_json(
           ten_extension_info_parse_connection_dest_part_from_json(
               dest_json, extensions_info, src_extension_info, msg_name, NULL);
       if (!dest) {
-        ten_msg_dest_static_info_destroy(self);
+        ten_msg_dest_info_destroy(self);
         return NULL;
       }
 
@@ -133,5 +133,5 @@ ten_shared_ptr_t *ten_msg_dest_static_info_from_json(
     }
   }
 
-  return ten_shared_ptr_create(self, ten_msg_dest_static_info_destroy);
+  return ten_shared_ptr_create(self, ten_msg_dest_info_destroy);
 }

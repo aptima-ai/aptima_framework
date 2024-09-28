@@ -245,34 +245,32 @@ static void ten_cmd_start_graph_get_next_list_per_extension_info(
                  app && next,
              "Should not happen.");
 
-  ten_list_foreach (&extension_info->msg_dest_static_info.cmd, iter_cmd) {
-    ten_msg_dest_static_info_t *cmd_dest =
+  ten_list_foreach (&extension_info->msg_dest_info.cmd, iter_cmd) {
+    ten_msg_dest_info_t *cmd_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
     ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
                                                     &cmd_dest->dest, next,
                                                     from_src_point_of_view);
   }
 
-  ten_list_foreach (&extension_info->msg_dest_static_info.video_frame,
-                    iter_cmd) {
-    ten_msg_dest_static_info_t *data_dest =
+  ten_list_foreach (&extension_info->msg_dest_info.video_frame, iter_cmd) {
+    ten_msg_dest_info_t *data_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
     ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
                                                     &data_dest->dest, next,
                                                     from_src_point_of_view);
   }
 
-  ten_list_foreach (&extension_info->msg_dest_static_info.audio_frame,
-                    iter_cmd) {
-    ten_msg_dest_static_info_t *data_dest =
+  ten_list_foreach (&extension_info->msg_dest_info.audio_frame, iter_cmd) {
+    ten_msg_dest_info_t *data_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
     ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
                                                     &data_dest->dest, next,
                                                     from_src_point_of_view);
   }
 
-  ten_list_foreach (&extension_info->msg_dest_static_info.data, iter_cmd) {
-    ten_msg_dest_static_info_t *data_dest =
+  ten_list_foreach (&extension_info->msg_dest_info.data, iter_cmd) {
+    ten_msg_dest_info_t *data_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
     ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
                                                     &data_dest->dest, next,

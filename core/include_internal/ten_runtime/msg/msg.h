@@ -18,7 +18,6 @@
 
 typedef struct ten_app_t ten_app_t;
 typedef struct ten_extension_t ten_extension_t;
-typedef struct ten_extensionhdr_t ten_extensionhdr_t;
 typedef struct ten_error_t ten_error_t;
 typedef struct ten_engine_t ten_engine_t;
 typedef struct ten_extension_group_t ten_extension_group_t;

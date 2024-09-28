@@ -14,6 +14,6 @@
 
 typedef struct ten_extension_info_t ten_extension_info_t;
 
-TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_msg_dest_static_info_from_value(
+TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_msg_dest_info_from_value(
     ten_value_t *value, ten_list_t *extensions_info,
     ten_extension_info_t *src_extension_info, ten_error_t *err);

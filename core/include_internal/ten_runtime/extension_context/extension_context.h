@@ -24,7 +24,6 @@
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_engine_t ten_engine_t;
 typedef struct ten_extension_t ten_extension_t;
-typedef struct ten_extensionhdr_t ten_extensionhdr_t;
 typedef struct ten_extension_info_t ten_extension_info_t;
 typedef struct ten_extension_store_t ten_extension_store_t;
 typedef struct ten_extension_context_t ten_extension_context_t;
@@ -85,10 +84,6 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_context_set_on_closed(
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_context_on_close(
     ten_extension_context_t *self);
-
-TEN_RUNTIME_PRIVATE_API ten_list_t
-ten_extension_context_resolve_extensions_info_to_extensions(
-    ten_extension_context_t *self, ten_list_t *dests);
 
 TEN_RUNTIME_PRIVATE_API ten_extension_info_t *
 ten_extension_context_get_extension_info_by_name(

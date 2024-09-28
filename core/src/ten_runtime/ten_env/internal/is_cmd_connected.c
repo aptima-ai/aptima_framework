@@ -6,6 +6,7 @@
 //
 #include "include_internal/ten_runtime/app/ten_env/metadata.h"
 #include "include_internal/ten_runtime/extension/extension.h"
+#include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/metadata.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/extension/ten_env/metadata.h"
@@ -15,7 +16,6 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/extension/extension.h"
@@ -23,6 +23,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 typedef struct ten_is_cmd_connected_context_t {
@@ -64,8 +65,9 @@ bool ten_env_is_cmd_connected(ten_env_t *self, const char *cmd_name,
 
   if (!ten_c_string_is_empty(cmd_name)) {
     ten_listnode_t *cmd_dest_node = ten_list_find_shared_ptr_custom(
-        &ten_env_get_attached_extension(self)->msg_dest_runtime_info.cmd,
-        cmd_name, ten_msg_dest_runtime_info_qualified);
+        &ten_env_get_attached_extension(self)
+             ->extension_info->msg_dest_info.cmd,
+        cmd_name, ten_msg_dest_info_qualified);
     if (cmd_dest_node) {
       return true;
     }

@@ -36,11 +36,13 @@ ten_extension_info_t *ten_extension_info_create(void) {
   ten_string_init(&self->extension_addon_name);
 
   ten_loc_init_empty(&self->loc);
+  self->extension = NULL;
+
   self->property = ten_value_create_object_with_move(NULL);
 
   ten_list_init(&self->msg_conversions);
 
-  ten_all_msg_type_dest_static_info_init(&self->msg_dest_static_info);
+  ten_all_msg_type_dest_info_init(&self->msg_dest_info);
 
   return self;
 }
@@ -107,7 +109,7 @@ static void ten_extension_info_destroy(ten_extension_info_t *self) {
   ten_sanitizer_thread_check_deinit(&self->thread_check);
   ten_signature_set(&self->signature, 0);
 
-  ten_all_msg_type_dest_static_info_deinit(&self->msg_dest_static_info);
+  ten_all_msg_type_dest_info_deinit(&self->msg_dest_info);
 
   ten_string_deinit(&self->extension_addon_name);
 
@@ -225,8 +227,8 @@ static bool copy_msg_dest(ten_list_t *to_static_info,
     ten_shared_ptr_t *msg_dest_static_info =
         ten_smart_ptr_listnode_get(iter.node);
 
-    ten_shared_ptr_t *new_msg_dest_static_info = ten_msg_dest_static_info_clone(
-        msg_dest_static_info, extensions_info, err);
+    ten_shared_ptr_t *new_msg_dest_static_info =
+        ten_msg_dest_info_clone(msg_dest_static_info, extensions_info, err);
     if (!new_msg_dest_static_info) {
       return false;
     }
@@ -282,32 +284,30 @@ ten_shared_ptr_t *ten_extension_info_clone(ten_extension_info_t *self,
       TEN_ASSERT(rc, "Should not happen.");
     }
 
-    if (!copy_msg_dest(&new_extension_info->msg_dest_static_info.cmd,
-                       &self->msg_dest_static_info.cmd, extensions_info, err)) {
+    if (!copy_msg_dest(&new_extension_info->msg_dest_info.cmd,
+                       &self->msg_dest_info.cmd, extensions_info, err)) {
       return NULL;
     }
 
-    if (!copy_msg_dest(&new_extension_info->msg_dest_static_info.data,
-                       &self->msg_dest_static_info.data, extensions_info,
+    if (!copy_msg_dest(&new_extension_info->msg_dest_info.data,
+                       &self->msg_dest_info.data, extensions_info, err)) {
+      return NULL;
+    }
+
+    if (!copy_msg_dest(&new_extension_info->msg_dest_info.audio_frame,
+                       &self->msg_dest_info.audio_frame, extensions_info,
                        err)) {
       return NULL;
     }
 
-    if (!copy_msg_dest(&new_extension_info->msg_dest_static_info.audio_frame,
-                       &self->msg_dest_static_info.audio_frame, extensions_info,
+    if (!copy_msg_dest(&new_extension_info->msg_dest_info.video_frame,
+                       &self->msg_dest_info.video_frame, extensions_info,
                        err)) {
       return NULL;
     }
 
-    if (!copy_msg_dest(&new_extension_info->msg_dest_static_info.video_frame,
-                       &self->msg_dest_static_info.video_frame, extensions_info,
-                       err)) {
-      return NULL;
-    }
-
-    if (!copy_msg_dest(&new_extension_info->msg_dest_static_info.interface,
-                       &self->msg_dest_static_info.interface, extensions_info,
-                       err)) {
+    if (!copy_msg_dest(&new_extension_info->msg_dest_info.interface,
+                       &self->msg_dest_info.interface, extensions_info, err)) {
       return NULL;
     }
   }
@@ -450,8 +450,8 @@ void ten_extensions_info_fill_loc_info(ten_list_t *extensions_info,
     ten_extension_info_t *extension_info =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
 
-    ten_list_foreach (&extension_info->msg_dest_static_info.cmd, iter_cmd) {
-      ten_msg_dest_static_info_t *dest_info =
+    ten_list_foreach (&extension_info->msg_dest_info.cmd, iter_cmd) {
+      ten_msg_dest_info_t *dest_info =
           ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
       ten_list_foreach (&dest_info->dest, dest_iter) {
         ten_extension_info_t *dest_extension_info =
