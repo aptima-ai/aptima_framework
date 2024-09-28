@@ -177,6 +177,14 @@ void ten_extension_group_create_extensions(ten_extension_group_t *self) {
 
   TEN_LOGD("[%s] create_extensions.", ten_extension_group_get_name(self));
 
+  ten_extension_thread_t *extension_thread = self->extension_thread;
+  TEN_ASSERT(extension_thread, "Should not happen.");
+  TEN_ASSERT(ten_extension_thread_check_integrity(extension_thread, true),
+             "Should not happen.");
+
+  ten_extension_thread_set_state(
+      extension_thread, TEN_EXTENSION_THREAD_STATE_CREATING_EXTENSIONS);
+
   self->on_create_extensions(self, self->ten_env);
 }
 

@@ -39,7 +39,12 @@ typedef struct ten_notify_data_t {
 TEN_RUNTIME_API bool ten_env_proxy_check_integrity(ten_env_proxy_t *self);
 
 TEN_RUNTIME_API size_t ten_env_proxy_get_thread_cnt(ten_env_proxy_t *self,
-                                                  ten_error_t *err);
+                                                    ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API bool ten_env_proxy_acquire(ten_env_proxy_t *self,
-                                                 ten_error_t *err);
+                                                   ten_error_t *err);
+
+TEN_RUNTIME_API bool ten_env_proxy_notify_async(ten_env_proxy_t *self,
+                                                ten_notify_func_t notify_func,
+                                                void *user_data,
+                                                ten_error_t *err);

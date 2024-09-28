@@ -43,22 +43,20 @@ typedef struct ten_timer_t ten_timer_t;
 // The relationship between several lifecycle stages and their connection to
 // sending messages:
 //
-// - on_init ~ on_init_done: Handles its own initialization; cannot send or
-//   receive messages.
+// - on_configure ~ on_configure_done + on_init ~ on_init_done: Handles its own
+//   initialization; cannot send or receive messages. The reason for this is
+//   that, before `on_init_done`, the extension may not be ready to handle
+//   external requests, so the received messages need to be temporarily stored.
 //
-// [ After everyone has completed on_init_done, they will collectively move
-//   into on_start ]
+// - ~ on_start: The messages received before on_start() will be temporarily
+//   stored, and only after on_start() is called will they be sent to the
+//   extension. The reason for this is developers generally expect `on_start` to
+//   occur before any `on_cmd` events.
 //
-// - on_start ~ on_start_done: Can send messages and receive the results
-//   of sent messages, but cannot receive other messages. Since properties are
-//   initialized within on_start, you can perform initialization actions that
-//   depend on these properties being set up. However, as it's still in the
-//   initializing phase, it won't receive messages initiated by others, avoiding
-//   the need for various checks. You can actively send messages out, though.
-//
-// - After on_start_done ~ on_stop_done: Normal sending and receiving of all
+// - on_start ~ on_stop_done: Normal sending and receiving of all
 //   messages and results.
 //
+// TODO(WEi): Does it still needs to be considered?
 // [ After everyone has completed on_stop_done, they will collectively move into
 //   on_deinit. ]
 //
@@ -66,13 +64,27 @@ typedef struct ten_timer_t ten_timer_t;
 //   or receive messages.
 typedef enum TEN_EXTENSION_STATE {
   TEN_EXTENSION_STATE_INIT,
-  TEN_EXTENSION_STATE_CONFIGURED,  // on_configure_done is completed.
-  TEN_EXTENSION_STATE_INITTED,     // on_init_done() is completed.
-  TEN_EXTENSION_STATE_STARTED,     // on_start_done() is completed.
-  TEN_EXTENSION_STATE_CLOSING,  // on_stop_done() is completed and could proceed
-                                // to be closed.
-  TEN_EXTENSION_STATE_DEINITING,  // on_deinit() is started.
-  TEN_EXTENSION_STATE_DEINITTED,  // on_deinit_done() is called.
+
+  // on_configure_done() is completed.
+  TEN_EXTENSION_STATE_ON_CONFIGURE_DONE,
+
+  // on_init_done() is completed.
+  TEN_EXTENSION_STATE_ON_INIT_DONE,
+
+  // on_start() is called.
+  TEN_EXTENSION_STATE_ON_START,
+
+  // on_start_done() is completed.
+  TEN_EXTENSION_STATE_ON_START_DONE,
+
+  // on_stop_done() is completed and could proceed to be closed.
+  TEN_EXTENSION_STATE_CLOSING,
+
+  // on_deinit() is called.
+  TEN_EXTENSION_STATE_ON_DEINIT,
+
+  // on_deinit_done() is called.
+  TEN_EXTENSION_STATE_ON_DEINIT_DONE,
 } TEN_EXTENSION_STATE;
 
 struct ten_extension_t {
@@ -213,9 +225,6 @@ struct ten_extension_t {
   ten_path_timeout_info path_timeout_info;
   // @}
 };
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_set_state(ten_extension_t *self,
-                                                     TEN_EXTENSION_STATE state);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_determine_all_dest_extension(
     ten_extension_t *self, ten_extension_context_t *extension_context);

@@ -13,11 +13,11 @@
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/engine/engine.h"
-#include "include_internal/ten_runtime/extension/extension_cb_default.h"
 #include "include_internal/ten_runtime/extension/extension_hdr.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/json.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
+#include "include_internal/ten_runtime/extension/msg_handling.h"
 #include "include_internal/ten_runtime/extension/on_xxx.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
@@ -354,7 +354,7 @@ bool ten_extension_determine_and_merge_all_interface_dest_extension(
     ten_extension_t *self) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
              "Invalid argument.");
-  TEN_ASSERT(self->state == TEN_EXTENSION_STATE_CONFIGURED,
+  TEN_ASSERT(self->state == TEN_EXTENSION_STATE_ON_CONFIGURE_DONE,
              "Extension should be on_configure_done.");
 
   if (!self->extension_info) {
@@ -914,6 +914,43 @@ void ten_extension_on_init(ten_env_t *ten_env) {
   }
 }
 
+static void ten_extension_flush_all_pending_msgs(ten_extension_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_check_integrity(self, true),
+             "Invalid use of extension %p.", self);
+
+  // The developer expects that on_start() will execute before all on_cmd()
+  // events. Therefore, after on_start() has been executed, there is no need
+  // to wait for on_start_done() before sending all previously buffered
+  // messages into the extension.
+
+  // Flush the previously got messages, which are received before
+  // on_start_done(), into the extension.
+  ten_extension_thread_t *extension_thread = self->extension_thread;
+  ten_list_foreach (&extension_thread->pending_msgs, iter) {
+    ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
+    TEN_ASSERT(msg, "Should not happen.");
+
+    ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
+    TEN_ASSERT(dest_loc, "Should not happen.");
+
+    if (ten_string_is_equal(&dest_loc->extension_name, &self->name)) {
+      ten_extension_handle_in_msg(self, msg);
+      ten_list_remove_node(&extension_thread->pending_msgs, iter.node);
+    }
+  }
+
+  // Flush the previously got messages, which are received before
+  // on_start_done(), into the extension.
+  ten_list_foreach (&self->pending_msgs, iter) {
+    ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
+    TEN_ASSERT(msg, "Should not happen.");
+
+    ten_extension_handle_in_msg(self, msg);
+  }
+  ten_list_clear(&self->pending_msgs);
+}
+
 void ten_extension_on_start(ten_extension_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_check_integrity(self, true),
@@ -921,10 +958,16 @@ void ten_extension_on_start(ten_extension_t *self) {
 
   TEN_LOGI("[%s] on_start().", ten_extension_get_name(self));
 
+  self->state = TEN_EXTENSION_STATE_ON_START;
+
   if (self->on_start) {
     self->on_start(self, self->ten_env);
+
+    ten_extension_flush_all_pending_msgs(self);
   } else {
-    ten_extension_on_start_default(self, self->ten_env);
+    ten_extension_flush_all_pending_msgs(self);
+
+    ten_extension_on_start_done(self->ten_env);
   }
 }
 
@@ -938,7 +981,7 @@ void ten_extension_on_stop(ten_extension_t *self) {
   if (self->on_stop) {
     self->on_stop(self, self->ten_env);
   } else {
-    ten_extension_on_stop_default(self, self->ten_env);
+    ten_extension_on_stop_done(self->ten_env);
   }
 }
 
@@ -949,12 +992,12 @@ void ten_extension_on_deinit(ten_extension_t *self) {
 
   TEN_LOGD("[%s] on_deinit().", ten_extension_get_name(self));
 
-  ten_extension_set_state(self, TEN_EXTENSION_STATE_DEINITING);
+  self->state = TEN_EXTENSION_STATE_ON_DEINIT;
 
   if (self->on_deinit) {
     self->on_deinit(self, self->ten_env);
   } else {
-    ten_extension_on_deinit_default(self, self->ten_env);
+    ten_extension_on_deinit_done(self->ten_env);
   }
 }
 
@@ -969,7 +1012,12 @@ void ten_extension_on_cmd(ten_extension_t *self, ten_shared_ptr_t *msg) {
   if (self->on_cmd) {
     self->on_cmd(self, self->ten_env, msg);
   } else {
-    ten_extension_on_cmd_default(self, self->ten_env, msg);
+    // The default behavior of 'on_cmd' is to _not_ forward this command out,
+    // and return an 'OK' result to the previous stage.
+    ten_shared_ptr_t *cmd_result =
+        ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_OK, msg);
+    ten_env_return_result(self->ten_env, cmd_result, msg, NULL);
+    ten_shared_ptr_destroy(cmd_result);
   }
 }
 
@@ -984,7 +1032,8 @@ void ten_extension_on_data(ten_extension_t *self, ten_shared_ptr_t *msg) {
   if (self->on_data) {
     self->on_data(self, self->ten_env, msg);
   } else {
-    ten_extension_on_data_default(self, self->ten_env, msg);
+    // Bypass the data.
+    ten_env_send_data(self->ten_env, msg, NULL);
   }
 }
 
@@ -1000,7 +1049,8 @@ void ten_extension_on_video_frame(ten_extension_t *self,
   if (self->on_video_frame) {
     self->on_video_frame(self, self->ten_env, msg);
   } else {
-    ten_extension_on_video_frame_default(self, self->ten_env, msg);
+    // Bypass the video frame.
+    ten_env_send_video_frame(self->ten_env, msg, NULL);
   }
 }
 
@@ -1016,7 +1066,8 @@ void ten_extension_on_audio_frame(ten_extension_t *self,
   if (self->on_audio_frame) {
     self->on_audio_frame(self, self->ten_env, msg);
   } else {
-    ten_extension_on_audio_frame_default(self, self->ten_env, msg);
+    // Bypass the audio frame.
+    ten_env_send_audio_frame(self->ten_env, msg, NULL);
   }
 }
 
@@ -1139,13 +1190,6 @@ ten_string_t *ten_extension_get_base_dir(ten_extension_t *self) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
              "Invalid argument.");
   return &self->base_dir;
-}
-
-void ten_extension_set_state(ten_extension_t *self, TEN_EXTENSION_STATE state) {
-  TEN_ASSERT(self && ten_extension_check_integrity(self, true),
-             "Invalid argument.");
-
-  self->state = state;
 }
 
 bool ten_extension_validate_msg_schema(ten_extension_t *self,

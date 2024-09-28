@@ -28,8 +28,6 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
 
-  void on_start(ten::ten_env_t &ten_env) override { ten_env.on_start_done(); }
-
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     nlohmann::json json = nlohmann::json::parse(cmd->to_json());
@@ -62,16 +60,15 @@ class test_extension_2 : public ten::extension_t {
     ten_env.on_configure_done();
   }
 
-  void on_start(ten::ten_env_t &ten_env) override {
+  void on_init(ten::ten_env_t &ten_env) override {
     auto *ten_env_proxy = ten::ten_env_proxy_t::create(ten_env);
 
     fetch_property_thread_ = std::thread(
         [this](ten::ten_env_proxy_t *ten_env_proxy) {
           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-          ten_env_proxy->notify([this](ten::ten_env_t &ten_env) {
-            this->get_property_from_outer_thread(ten_env);
-          });
+          ten_env_proxy->notify(
+              [this](ten::ten_env_t &ten_env) { this->get_property(ten_env); });
 
           delete ten_env_proxy;
         },
@@ -100,7 +97,7 @@ class test_extension_2 : public ten::extension_t {
   std::string greeting_;
   std::thread fetch_property_thread_;
 
-  void get_property_from_outer_thread(ten::ten_env_t &ten_env) {
+  void get_property(ten::ten_env_t &ten_env) {
     ten_env.get_property_string_async(
         EXTENSION_PROP_NAME_GREETING,
         [this](ten::ten_env_t &ten_env, const std::string &result,
@@ -115,7 +112,7 @@ class test_extension_2 : public ten::extension_t {
                 auto name = cmd_result->get_property_string("detail");
                 greeting_ += name;
 
-                ten_env.on_start_done();
+                ten_env.on_init_done();
                 return true;
               },
               nullptr);

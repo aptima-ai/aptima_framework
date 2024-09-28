@@ -91,7 +91,6 @@ ten_extension_context_t *ten_extension_context_create(ten_engine_t *engine) {
 
   self->extension_threads_cnt_of_initted = 0;
   self->extension_threads_cnt_of_all_extensions_added_to_engine = 0;
-  self->extension_threads_cnt_of_all_extensions_initted = 0;
   self->extension_threads_cnt_of_all_extensions_stopped = 0;
   self->extension_threads_cnt_of_closing_flag_is_set = 0;
   self->extension_threads_cnt_of_closed = 0;

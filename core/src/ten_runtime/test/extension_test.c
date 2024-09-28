@@ -18,6 +18,7 @@
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
+#include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
@@ -25,7 +26,9 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/event.h"
+#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
@@ -50,30 +53,6 @@ static void *ten_extension_thread_main(void *self_) {
 }
 
 static void test_ten_app_on_configure(ten_app_t *app, ten_env_t *ten_env) {
-#if 0
-  const char *property_json =
-      "{\
-         \"_ten\": {\
-           \"predefined_graphs\": [{\
-              \"name\": \"0\",\
-              \"auto_start\": false,\
-              \"nodes\": [{\
-                \"type\": \"extension_group\",\
-                \"name\": \"test_extension_group\",\
-                \"addon\": \"test_extension_group\"\
-              },{\
-                \"type\": \"extension\",\
-                \"name\": \"...\",\
-                \"addon\": \"...\",\
-                \"extension_group\": \"test_extension_group\"\
-              }]\
-           }]\
-         }\
-       }";
-  bool rc = ten_env_init_property_from_json(ten_env, property_json, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-#endif
-
   bool rc = ten_env_on_configure_done(ten_env, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 }
@@ -128,6 +107,7 @@ ten_extension_test_new_t *ten_extension_test_create_new(void) {
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   self->test_app_ten_env_proxy = NULL;
+  ten_string_init(&self->test_extension_addon_name);
   self->test_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
 
   self->test_app_thread =
@@ -136,6 +116,14 @@ ten_extension_test_new_t *ten_extension_test_create_new(void) {
   ten_event_wait(self->test_app_ten_env_proxy_create_completed, -1);
 
   return self;
+}
+
+void ten_extension_test_add_addon(ten_extension_test_new_t *self,
+                                  const char *addon_name) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(addon_name, "Invalid argument.");
+
+  ten_string_set_formatted(&self->test_extension_addon_name, "%s", addon_name);
 }
 
 static void ten_env_proxy_notify_close_app(ten_env_t *ten_env,
@@ -159,6 +147,57 @@ static void ten_env_proxy_notify_close_app(ten_env_t *ten_env,
   TEN_ASSERT(rc, "Should not happen.");
 }
 
+static void ten_env_proxy_notify_start(ten_env_t *ten_env, void *user_data) {
+  TEN_ASSERT(
+      ten_env &&
+          ten_env_check_integrity(
+              ten_env,
+              ten_env->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+      "Should not happen.");
+
+  ten_extension_test_new_t *test_info = user_data;
+  TEN_ASSERT(test_info, "Should not happen.");
+
+  ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
+  TEN_ASSERT(start_graph_cmd, "Should not happen.");
+
+  // Set the destination so that the recipient is the app itself.
+  bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
+                                       NULL, NULL, NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+
+  ten_string_t start_graph_cmd_json_str;
+  ten_string_init_formatted(
+      &start_graph_cmd_json_str,
+      "{\
+           \"_ten\": {\
+             \"type\": \"start_graph\",\
+             \"nodes\": [{\
+                \"type\": \"extension\",\
+                \"name\": \"%s\",\
+                \"addon\": \"%s\",\
+                \"extension_group\": \"default_extension_group\",\
+                \"app\": \"localhost\"\
+             }]\
+           }\
+         }",
+      ten_string_get_raw_str(&test_info->test_extension_addon_name),
+      ten_string_get_raw_str(&test_info->test_extension_addon_name));
+
+  ten_json_t *start_graph_cmd_json = ten_json_from_string(
+      ten_string_get_raw_str(&start_graph_cmd_json_str), NULL);
+
+  ten_string_deinit(&start_graph_cmd_json_str);
+
+  rc = ten_msg_from_json(start_graph_cmd, start_graph_cmd_json, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+
+  ten_json_destroy(start_graph_cmd_json);
+
+  rc = ten_env_send_cmd(ten_env, start_graph_cmd, NULL, NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
 void ten_extension_test_destroy_new(ten_extension_test_new_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
@@ -171,7 +210,18 @@ void ten_extension_test_destroy_new(ten_extension_test_new_t *self) {
   TEN_ASSERT(self->test_app_ten_env_proxy == NULL, "Should not happen.");
   ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
 
+  ten_string_deinit(&self->test_extension_addon_name);
+
   TEN_FREE(self);
+}
+
+void ten_extension_test_start_new(ten_extension_test_new_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
+
+  bool rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
+                                 ten_env_proxy_notify_start, self, false, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
 }
 
 ten_extension_test_t *ten_extension_test_create(

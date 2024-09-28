@@ -31,7 +31,7 @@ static void ten_extension_do_close(ten_extension_t *self) {
                  ten_extension_thread_check_integrity(extension_thread, true),
              "Should not happen.");
 
-  ten_extension_set_state(self, TEN_EXTENSION_STATE_CLOSING);
+  self->state = TEN_EXTENSION_STATE_CLOSING;
 
   ten_runloop_post_task_tail(ten_extension_get_attached_runloop(self),
                              ten_extension_thread_on_extension_set_closing_flag,

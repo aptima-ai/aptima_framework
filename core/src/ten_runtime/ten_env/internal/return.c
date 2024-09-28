@@ -51,16 +51,16 @@ static bool ten_env_return_result_internal(ten_env_t *self,
 
   bool result = true;
 
-  if (extension->state < TEN_EXTENSION_STATE_INITTED) {
-    TEN_LOGE("Cannot return results before on_init_done.");
+  if (extension->state < TEN_EXTENSION_STATE_ON_CONFIGURE_DONE) {
+    TEN_LOGE("Cannot return results before on_configure_done.");
     ten_error_set(err, TEN_ERRNO_GENERIC,
-                  "Cannot return results before on_init_done.");
+                  "Cannot return results before on_configure_done.");
     result = false;
     goto done;
   }
 
   if (extension->state >= TEN_EXTENSION_STATE_CLOSING) {
-    TEN_LOGE("Cannot return results after on_stop_done.");
+    TEN_LOGW("Cannot return results after on_stop_done.");
     ten_error_set(err, TEN_ERRNO_GENERIC,
                   "Cannot return results after on_stop_done.");
     result = false;

@@ -39,9 +39,8 @@ PyObject *ten_py_ten_env_on_stop_done(PyObject *self,
   ten_error_t err;
   ten_error_init(&err);
 
-  TEN_UNUSED bool rc = ten_env_proxy_notify(py_ten->c_ten_env_proxy,
-                                            ten_env_proxy_notify_on_stop_done,
-                                            NULL, false, &err);
+  TEN_UNUSED bool rc = ten_env_proxy_notify_async(
+      py_ten->c_ten_env_proxy, ten_env_proxy_notify_on_stop_done, NULL, &err);
 
   ten_error_deinit(&err);
 

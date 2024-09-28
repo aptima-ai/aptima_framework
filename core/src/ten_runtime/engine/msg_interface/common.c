@@ -24,7 +24,6 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg_info.h"
 #include "include_internal/ten_runtime/remote/remote.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
@@ -32,6 +31,7 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 static void ten_engine_prepend_to_in_msgs_queue(ten_engine_t *self,
@@ -124,23 +124,6 @@ static void ten_engine_handle_in_msgs_sync(ten_engine_t *self) {
                                                  ten_msg_get_src_app_uri(msg));
           }
         }
-      } else {
-        // The cmd's 'origin_connection' will be NULL in the following two
-        // cases.
-        //
-        // 1) When the engine is the predefined graph engine, and the cmd is fed
-        //    directly by the TEN app to this engine, so there is no
-        //    'connection' for this cmd.
-        //
-        // 2) The engine receives a cmd whose receiver is expected to be another
-        //    engine in the same app, but the receiver (engine) does _not_
-        //    exist. In this case, the app would create an error cmd result
-        //    as the result, and send back to the original engine, so the cmd
-        //    in this case would be a cmd result returned from the app. Refer to
-        //    'ten_app_on_msg_default_handler()'.
-        TEN_ASSERT(ten_list_size(&self->app->predefined_graph_infos) ||
-                       ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT,
-                   "Should not happen.");
       }
     }
 
@@ -322,7 +305,7 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
                                   &dest_loc->extension_group_name)) {
             // Find the correct extension thread, ask it to handle the message.
             found = true;
-            ten_extension_thread_handle_msg_async(
+            ten_extension_thread_handle_in_msg_async(
                 extension_group->extension_thread, msg);
             break;
           }

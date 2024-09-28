@@ -218,3 +218,82 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
   TEN_ASSERT(result, "Should not happen.");
   return result;
 }
+
+bool ten_env_proxy_notify_async(ten_env_proxy_t *self,
+                                ten_notify_func_t notify_func, void *user_data,
+                                ten_error_t *err) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(notify_func, "Invalid argument.");
+
+  if (!self || !notify_func || !ten_env_proxy_check_integrity(self)) {
+    const char *err_msg = "Invalid argument.";
+    TEN_ASSERT(0, "%s", err_msg);
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_INVALID_ARGUMENT, err_msg);
+    }
+    return false;
+  }
+
+  bool result = true;
+
+  ten_env_t *ten_env = self->ten_env;
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: This function is intended to be called in any threads.
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, false),
+             "Should not happen.");
+
+  switch (ten_env->attach_to) {
+    case TEN_ENV_ATTACH_TO_EXTENSION: {
+      ten_extension_t *extension = ten_env->attached_target.extension;
+      TEN_ASSERT(extension, "Invalid argument.");
+      // TEN_NOLINTNEXTLINE(thread-check)
+      // thread-check: This function is intended to be called in any threads,
+      // and the use of extension instance is thread safe here.
+      TEN_ASSERT(ten_extension_check_integrity(extension, false),
+                 "Invalid argument.");
+
+      ten_runloop_post_task_tail(
+          ten_extension_get_attached_runloop(extension),
+          ten_notify_to_extension_task, extension,
+          ten_notify_data_create(notify_func, user_data));
+      break;
+    }
+
+    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
+      ten_extension_group_t *extension_group =
+          ten_env->attached_target.extension_group;
+      TEN_ASSERT(extension_group, "Invalid argument.");
+      // TEN_NOLINTNEXTLINE(thread-check)
+      // thread-check: This function is intended to be called in any threads,
+      // and the use of extension instance is thread safe here.
+      TEN_ASSERT(ten_extension_group_check_integrity(extension_group, false),
+                 "Invalid argument.");
+
+      ten_runloop_post_task_tail(
+          ten_extension_group_get_attached_runloop(extension_group),
+          ten_notify_to_extension_group_task, extension_group,
+          ten_notify_data_create(notify_func, user_data));
+      break;
+    }
+
+    case TEN_ENV_ATTACH_TO_APP: {
+      ten_app_t *app = ten_env->attached_target.app;
+      TEN_ASSERT(app, "Invalid argument.");
+      // TEN_NOLINTNEXTLINE(thread-check)
+      // thread-check: This function is intended to be called in any threads.
+      TEN_ASSERT(ten_app_check_integrity(app, false), "Invalid argument.");
+
+      ten_runloop_post_task_tail(
+          ten_app_get_attached_runloop(app), ten_notify_to_app_task, app,
+          ten_notify_data_create(notify_func, user_data));
+      break;
+    }
+
+    default:
+      TEN_ASSERT(0, "Handle more types: %d", ten_env->attach_to);
+      break;
+  }
+
+  TEN_ASSERT(result, "Should not happen.");
+  return result;
+}

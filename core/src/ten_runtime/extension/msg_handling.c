@@ -82,9 +82,8 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
   // command sent by this extension in on_start() can be delivered to this
   // extension before its on_start_done().
 
-  if (!(self->state == TEN_EXTENSION_STATE_STARTED) &&
-      !(ten_msg_is_cmd_result(msg) &&
-        ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT)) {
+  if (self->state < TEN_EXTENSION_STATE_ON_START &&
+      !ten_msg_is_cmd_result(msg)) {
     // The extension is not started, and the msg is not a cmd result, so
     // cache the msg to the pending list.
     ten_list_push_smart_ptr_back(&self->pending_msgs, msg);

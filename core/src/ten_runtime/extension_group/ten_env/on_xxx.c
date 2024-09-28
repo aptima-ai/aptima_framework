@@ -142,12 +142,26 @@ void ten_extension_group_on_create_extensions_done(ten_extension_group_t *self,
                  ten_extension_thread_check_integrity(extension_thread, true),
              "Should not happen.");
 
-  ten_list_t *arg = ten_list_create();
-  ten_list_swap(arg, extensions);
+  ten_list_swap(&extension_thread->extensions, extensions);
 
-  ten_runloop_post_task_tail(ten_extension_group_get_attached_runloop(self),
-                             ten_extension_thread_on_all_extensions_created,
-                             extension_thread, arg);
+  ten_list_foreach (&extension_thread->extensions, iter) {
+    ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(extension, "Invalid argument.");
+
+    ten_extension_inherit_thread_ownership(extension, extension_thread);
+    TEN_ASSERT(ten_extension_check_integrity(extension, true),
+               "Invalid use of extension %p.", extension);
+  }
+
+  ten_extension_thread_set_state(extension_thread,
+                                 TEN_EXTENSION_THREAD_STATE_NORMAL);
+
+  if (extension_thread->is_close_triggered) {
+    return;
+  }
+
+  ten_extension_thread_start_to_add_all_created_extension_to_engine(
+      extension_thread);
 }
 
 void ten_extension_group_on_destroy_extensions_done(

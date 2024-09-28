@@ -91,10 +91,10 @@ static bool ten_send_msg_internal(
       ten_extension_t *extension = ten_env_get_attached_extension(self);
       TEN_ASSERT(extension, "Should not happen.");
 
-      if (extension->state < TEN_EXTENSION_STATE_INITTED) {
-        TEN_LOGE("Cannot send messages before on_init_done.");
+      if (extension->state < TEN_EXTENSION_STATE_ON_CONFIGURE_DONE) {
+        TEN_LOGE("Cannot send messages before on_configure_done.");
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Cannot send messages before on_init_done.");
+                      "Cannot send messages before on_configure_done.");
         result = false;
         goto done;
       }

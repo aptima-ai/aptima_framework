@@ -11,22 +11,6 @@
 #include "ten_runtime/ten_env/ten_env.h"
 
 /**
- * @brief Indicate that extension on_configure is completed.
- */
-typedef struct ten_extension_on_configure_done_t {
-  // Indicates which extension's on_configure ends.
-  ten_extension_t *extension;
-} ten_extension_on_configure_done_t;
-
-/**
- * @brief Indicate that extension on_init is completed.
- */
-typedef struct ten_extension_on_init_done_t {
-  // Indicates which extension's on_init ends.
-  ten_extension_t *extension;
-} ten_extension_on_init_done_t;
-
-/**
  * @brief Indicate that extension on_start/on_stop/on_deinit is completed.
  */
 typedef struct ten_extension_on_start_stop_deinit_done_t {
@@ -49,9 +33,3 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_on_start_done(ten_env_t *self);
 TEN_RUNTIME_PRIVATE_API void ten_extension_on_stop_done(ten_env_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_on_deinit_done(ten_env_t *self);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_on_configure_done_destroy(
-    ten_extension_on_configure_done_t *self);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_on_init_done_destroy(
-    ten_extension_on_init_done_t *self);

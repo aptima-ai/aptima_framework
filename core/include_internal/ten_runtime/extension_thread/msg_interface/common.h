@@ -14,7 +14,7 @@
 
 typedef struct ten_extension_thread_t ten_extension_thread_t;
 
-TEN_RUNTIME_PRIVATE_API void ten_extension_thread_handle_msg_async(
+TEN_RUNTIME_PRIVATE_API void ten_extension_thread_handle_in_msg_async(
     ten_extension_thread_t *self, ten_shared_ptr_t *msg);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_thread_dispatch_msg(

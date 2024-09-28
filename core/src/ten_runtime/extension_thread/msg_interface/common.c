@@ -21,17 +21,15 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value.h"
 #include "ten_runtime/app/app.h"
-#include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/io/runloop.h"
-#include "ten_utils/lib/error.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 void ten_extension_thread_handle_start_msg_task(void *self_,
@@ -121,67 +119,51 @@ static void ten_extension_thread_handle_msg_task(void *self_, void *arg) {
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
   TEN_ASSERT(ten_msg_get_dest_cnt(msg) == 1, "Should not happen.");
 
-  switch (ten_msg_get_type(msg)) {
-    case TEN_MSG_TYPE_CMD_RESULT:
-      switch (ten_extension_thread_get_state(self)) {
-        case TEN_EXTENSION_THREAD_STATE_INIT:
-        case TEN_EXTENSION_THREAD_STATE_NORMAL:
-        case TEN_EXTENSION_THREAD_STATE_ALL_STARTED:
-        case TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE:
-          ten_extension_thread_handle_msg_sync(self, msg);
-          break;
-
-        case TEN_EXTENSION_THREAD_STATE_CLOSING:
-        case TEN_EXTENSION_THREAD_STATE_CLOSED:
-          // Discard this cmd result.
-          break;
-
-        default:
-          TEN_ASSERT(0, "Should not happen.");
-          break;
-      }
-      break;
-
-    default:
-      switch (ten_extension_thread_get_state(self)) {
-        case TEN_EXTENSION_THREAD_STATE_INIT: {
+  if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {
+    if (ten_extension_thread_get_state(self) <=
+        TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE) {
+      // The receipt of a result is definitely because some extension of this
+      // extension thread previously sent out a command. As long as the
+      // extension can issue a command, the corresponding result must be
+      // delivered to and processed by the respective extension.
+      ten_extension_thread_handle_msg_sync(self, msg);
+    } else {
+      // Discard this cmd result.
+    }
+  } else {
+    switch (ten_extension_thread_get_state(self)) {
+      case TEN_EXTENSION_THREAD_STATE_INIT:
+      case TEN_EXTENSION_THREAD_STATE_CREATING_EXTENSIONS: {
 #if defined(_DEBUG)
-          ten_msg_dump(msg, NULL,
-                       "A message (^m) comes when extension thread (%p) is in "
-                       "state (%d)",
-                       self, ten_extension_thread_get_state(self));
+        ten_msg_dump(msg, NULL,
+                     "A message (^m) comes when extension thread (%p) is in "
+                     "state (%d)",
+                     self, ten_extension_thread_get_state(self));
 #endif
 
-          // When a TEN app is started, clients will start to send messages into
-          // the TEN app. At this time, extensions in the TEN app might not
-          // complete its on_init() (i.e., on_init_done()) and its on_start()
-          // (i.e., on_start_done()), so we must put these messages into a
-          // 'pending_msgs' list first, then after an extension complete its
-          // on_start() (i.e., on_start_done()), these messages will be sent to
-          // the extension.
-
-          // Push those messages into 'pending_msgs' list, so that we could
-          // flush them out when the extension thread enters its normal state.
-          ten_list_push_smart_ptr_back(&self->pending_msgs, msg);
-          break;
-        }
-
-        case TEN_EXTENSION_THREAD_STATE_NORMAL:
-        case TEN_EXTENSION_THREAD_STATE_ALL_STARTED:
-        case TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE:
-          ten_extension_thread_handle_msg_sync(self, msg);
-          break;
-
-        case TEN_EXTENSION_THREAD_STATE_CLOSING:
-        case TEN_EXTENSION_THREAD_STATE_CLOSED:
-          // Discard all uninterested messages directly.
-          break;
-
-        default:
-          TEN_ASSERT(0, "Should not happen.");
-          break;
+        // At this stage, the extensions have not been created yet, so any
+        // received messages are placed into a `pending_msgs` list. Once the
+        // extensions are created, the messages will be delivered to the
+        // corresponding extensions.
+        ten_list_push_smart_ptr_back(&self->pending_msgs, msg);
+        break;
       }
-      break;
+
+      case TEN_EXTENSION_THREAD_STATE_NORMAL:
+      case TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE:
+        ten_extension_thread_handle_msg_sync(self, msg);
+        break;
+
+      case TEN_EXTENSION_THREAD_STATE_CLOSING:
+      case TEN_EXTENSION_THREAD_STATE_CLOSED:
+        // All the extensions of the extension thread have been closed, so
+        // discard all received messages directly.
+        break;
+
+      default:
+        TEN_ASSERT(0, "Should not happen.");
+        break;
+    }
   }
 
   ten_shared_ptr_destroy(msg);
@@ -216,40 +198,30 @@ void ten_extension_thread_process_acquire_lock_mode_task(void *self_,
       (ten_acquire_lock_mode_result_t *)arg;
   TEN_ASSERT(acquire_result, "Invalid argument.");
 
-  if (ten_extension_thread_get_state(self) <
-      TEN_EXTENSION_THREAD_STATE_ALL_STARTED) {
-    // The 'acquire_lock_mode' action can only be successful after the
-    // corresponding extension thread has reached the ALL_STARTED state. This
-    // implies that all extensions within the thread must be started prior to
-    // the successful execution of 'acquire_lock_mode'.
-    ten_error_set(&acquire_result->err, TEN_ERRNO_GENERIC,
-                  "Try to acquire lock_mode before its ALL_STARTED state.");
-  } else {
-    // Because the extension thread is about to acquire the lock mode lock to
-    // prevent the outer thread from directly using the TEN world, a task to
-    // release the lock mode is inserted, allowing the extension thread to exit
-    // this mode and giving the outer thread a chance to acquire the lock mode
-    // lock.
-    int rc = ten_runloop_post_task_tail(
-        self->runloop, ten_extension_thread_process_release_lock_mode_task,
-        self, NULL);
-    TEN_ASSERT(!rc, "Should not happen.");
+  // Because the extension thread is about to acquire the lock mode lock to
+  // prevent the outer thread from directly using the TEN world, a task to
+  // release the lock mode is inserted, allowing the extension thread to exit
+  // this mode and giving the outer thread a chance to acquire the lock mode
+  // lock.
+  int rc = ten_runloop_post_task_tail(
+      self->runloop, ten_extension_thread_process_release_lock_mode_task, self,
+      NULL);
+  TEN_ASSERT(!rc, "Should not happen.");
 
-    // Set `in_lock_mode` to reflect the effect of the below `ten_mutex_lock`
-    // blocking the extension thread.
-    self->in_lock_mode = true;
+  // Set `in_lock_mode` to reflect the effect of the below `ten_mutex_lock`
+  // blocking the extension thread.
+  self->in_lock_mode = true;
 
-    // Inform the outer thread that the extension thread has also entered the
-    // lock mode.
-    ten_event_set(acquire_result->completed);
+  // Inform the outer thread that the extension thread has also entered the
+  // lock mode.
+  ten_event_set(acquire_result->completed);
 
-    rc = ten_mutex_lock(self->lock_mode_lock);
-    TEN_ASSERT(!rc, "Should not happen.");
-  }
+  rc = ten_mutex_lock(self->lock_mode_lock);
+  TEN_ASSERT(!rc, "Should not happen.");
 }
 
-void ten_extension_thread_handle_msg_async(ten_extension_thread_t *self,
-                                           ten_shared_ptr_t *msg) {
+void ten_extension_thread_handle_in_msg_async(ten_extension_thread_t *self,
+                                              ten_shared_ptr_t *msg) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_thread_check_integrity(self, false),
              "Invalid use of extension %p.", self);
@@ -322,8 +294,8 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
       ten_extension_handle_in_msg(dest_extension, msg);
     } else {
       // Put the msg into the message queue of the destination extension thread.
-      ten_extension_thread_handle_msg_async(dest_extension->extension_thread,
-                                            msg);
+      ten_extension_thread_handle_in_msg_async(dest_extension->extension_thread,
+                                               msg);
     }
   } else {
     // Slow path.
@@ -360,7 +332,7 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
                 ten_extension_context_find_extension_group_by_name(
                     engine->extension_context, &dest_loc->extension_group_name);
             if (extension_group_) {
-              ten_extension_thread_handle_msg_async(
+              ten_extension_thread_handle_in_msg_async(
                   extension_group_->extension_thread, msg);
             } else {
               ten_string_t loc_str;
@@ -388,7 +360,7 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
               // result to the message queue of the extension thread, and TEN
               // runtime would later route the result to the correct extension
               // or client which sends the original command.
-              ten_extension_thread_handle_msg_async(self, cmd_result);
+              ten_extension_thread_handle_in_msg_async(self, cmd_result);
 
               ten_shared_ptr_destroy(cmd_result);
             }
@@ -396,7 +368,7 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
             // The message should be handled in the current extension thread, so
             // dispatch the message to the current extension thread.
 
-            ten_extension_thread_handle_msg_async(self, msg);
+            ten_extension_thread_handle_in_msg_async(self, msg);
           }
         }
       }
