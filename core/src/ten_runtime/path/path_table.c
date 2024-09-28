@@ -224,23 +224,11 @@ ten_path_in_t *ten_path_table_add_in_path(
   TEN_ASSERT(!old_node,
              "There should be no two commands with the same command ID.");
 
-  ten_string_t *graph_name = ten_path_table_get_graph_name(self);
-
-  // We should not cache the pointer of the extension if the extension is
-  // not in the same graph of the path table because the extension in different
-  // graph might be destroyed before the path is removed from the path table.
-
   ten_loc_t src_loc;
   ten_loc_init_from_loc(&src_loc, ten_msg_get_src_loc(cmd));
-  if (!ten_string_is_equal(&src_loc.graph_name, graph_name)) {
-    src_loc.extension = NULL;
-  }
 
   ten_loc_t dest_loc;
   ten_loc_init_from_loc(&dest_loc, ten_msg_get_first_dest_loc(cmd));
-  if (!ten_string_is_equal(&dest_loc.graph_name, graph_name)) {
-    dest_loc.extension = NULL;
-  }
 
   ten_path_in_t *in_path = ten_path_in_create(
       self, ten_msg_get_name(cmd), ten_cmd_base_get_parent_cmd_id(cmd),
@@ -278,23 +266,11 @@ ten_path_out_t *ten_path_table_add_out_path(ten_path_table_t *self,
                  ten_msg_get_dest_cnt(cmd) == 1,
              "Should not happen.");
 
-  ten_string_t *graph_name = ten_path_table_get_graph_name(self);
-
-  // We should not cache the pointer of the extension if the extension is
-  // not in the same graph of the path table because the extension in different
-  // graph might be destroyed before the path is removed from the path table.
-
   ten_loc_t src_loc;
   ten_loc_init_from_loc(&src_loc, ten_msg_get_src_loc(cmd));
-  if (!ten_string_is_equal(&src_loc.graph_name, graph_name)) {
-    src_loc.extension = NULL;
-  }
 
   ten_loc_t dest_loc;
   ten_loc_init_from_loc(&dest_loc, ten_msg_get_first_dest_loc(cmd));
-  if (!ten_string_is_equal(&dest_loc.graph_name, graph_name)) {
-    dest_loc.extension = NULL;
-  }
 
   // Create a path.
   ten_path_out_t *out_path = ten_path_out_create(

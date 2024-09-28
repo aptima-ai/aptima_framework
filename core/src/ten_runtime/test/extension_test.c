@@ -140,7 +140,7 @@ static void ten_env_proxy_notify_close_app(ten_env_t *ten_env,
 
   // Set the destination so that the recipient is the app itself.
   bool rc = ten_msg_clear_and_set_dest(close_app_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL, NULL);
+                                       NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   rc = ten_env_send_cmd(ten_env, close_app_cmd, NULL, NULL, NULL);
@@ -163,7 +163,7 @@ static void ten_env_proxy_notify_start(ten_env_t *ten_env, void *user_data) {
 
   // Set the destination so that the recipient is the app itself.
   bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL, NULL);
+                                       NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_string_t start_graph_cmd_json_str;

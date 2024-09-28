@@ -10,10 +10,10 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension/extension.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 bool ten_loc_check_integrity(ten_loc_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -42,12 +42,10 @@ ten_loc_t *ten_loc_create_empty(void) {
 
 ten_loc_t *ten_loc_create(const char *app_uri, const char *graph_name,
                           const char *extension_group_name,
-                          const char *extension_name,
-                          ten_extension_t *extension) {
+                          const char *extension_name) {
   ten_loc_t *self = ten_loc_create_empty();
 
-  ten_loc_set(self, app_uri, graph_name, extension_group_name, extension_name,
-              extension);
+  ten_loc_set(self, app_uri, graph_name, extension_group_name, extension_name);
   TEN_ASSERT(ten_loc_check_integrity(self), "Should not happen.");
 
   return self;
@@ -56,11 +54,11 @@ ten_loc_t *ten_loc_create(const char *app_uri, const char *graph_name,
 ten_loc_t *ten_loc_clone(ten_loc_t *src) {
   TEN_ASSERT(src && ten_loc_check_integrity(src), "Should not happen.");
 
-  ten_loc_t *self = ten_loc_create(
-      ten_string_get_raw_str(&src->app_uri),
-      ten_string_get_raw_str(&src->graph_name),
-      ten_string_get_raw_str(&src->extension_group_name),
-      ten_string_get_raw_str(&src->extension_name), src->extension);
+  ten_loc_t *self =
+      ten_loc_create(ten_string_get_raw_str(&src->app_uri),
+                     ten_string_get_raw_str(&src->graph_name),
+                     ten_string_get_raw_str(&src->extension_group_name),
+                     ten_string_get_raw_str(&src->extension_name));
 
   TEN_ASSERT(ten_loc_check_integrity(self), "Should not happen.");
 
@@ -90,8 +88,6 @@ void ten_loc_init_empty(ten_loc_t *self) {
   ten_string_init(&self->graph_name);
   ten_string_init(&self->extension_group_name);
   ten_string_init(&self->extension_name);
-
-  self->extension = NULL;
 }
 
 void ten_loc_init_from_loc(ten_loc_t *self, ten_loc_t *src) {
@@ -101,7 +97,7 @@ void ten_loc_init_from_loc(ten_loc_t *self, ten_loc_t *src) {
   ten_loc_set(self, ten_string_get_raw_str(&src->app_uri),
               ten_string_get_raw_str(&src->graph_name),
               ten_string_get_raw_str(&src->extension_group_name),
-              ten_string_get_raw_str(&src->extension_name), src->extension);
+              ten_string_get_raw_str(&src->extension_name));
 
   TEN_ASSERT(ten_loc_check_integrity(self), "Should not happen.");
 }
@@ -115,17 +111,11 @@ void ten_loc_deinit(ten_loc_t *self) {
   ten_string_deinit(&self->graph_name);
   ten_string_deinit(&self->extension_group_name);
   ten_string_deinit(&self->extension_name);
-
-  self->extension = NULL;
 }
 
 void ten_loc_set(ten_loc_t *self, const char *app_uri, const char *graph_name,
-                 const char *extension_group_name, const char *extension_name,
-                 ten_extension_t *extension) {
-  TEN_ASSERT(self && (extension ? ten_string_is_equal_c_str(&extension->name,
-                                                            extension_name)
-                                : true),
-             "Should not happen.");
+                 const char *extension_group_name, const char *extension_name) {
+  TEN_ASSERT(self, "Should not happen.");
 
   ten_string_init_formatted(&self->app_uri, "%s", app_uri ? app_uri : "");
   ten_string_init_formatted(&self->graph_name, "%s",
@@ -134,8 +124,6 @@ void ten_loc_set(ten_loc_t *self, const char *app_uri, const char *graph_name,
                             extension_group_name ? extension_group_name : "");
   ten_string_init_formatted(&self->extension_name, "%s",
                             extension_name ? extension_name : "");
-
-  self->extension = extension;
 
   TEN_ASSERT(ten_loc_check_integrity(self), "Should not happen.");
 }
@@ -159,8 +147,6 @@ void ten_loc_clear(ten_loc_t *self) {
   ten_string_clear(&self->graph_name);
   ten_string_clear(&self->extension_group_name);
   ten_string_clear(&self->extension_name);
-
-  self->extension = NULL;
 }
 
 bool ten_loc_is_equal(ten_loc_t *self, ten_loc_t *other) {

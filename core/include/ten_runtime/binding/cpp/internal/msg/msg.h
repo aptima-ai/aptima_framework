@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lang/cpp/lib/error.h"
@@ -18,6 +17,7 @@
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_json.h"
@@ -96,7 +96,7 @@ class msg_t {
     }
 
     return ten_msg_clear_and_set_dest(
-        c_msg_, uri, graph, extension_group_name, extension_name, nullptr,
+        c_msg_, uri, graph, extension_group_name, extension_name,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 

@@ -13,7 +13,6 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_ptr.h"
@@ -22,6 +21,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 ten_extension_info_t *ten_extension_info_create(void) {
@@ -196,7 +196,7 @@ ten_shared_ptr_t *get_extension_info_in_extensions_info(
   ten_extension_info_t *self = ten_extension_info_create();
 
   ten_loc_set(&self->loc, app_uri, graph_name, extension_group_name,
-              extension_instance_name, NULL);
+              extension_instance_name);
 
   // Add the extension addon name if we know it now.
   if (extension_addon_name && strlen(extension_addon_name)) {

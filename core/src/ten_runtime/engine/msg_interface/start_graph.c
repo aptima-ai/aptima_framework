@@ -19,12 +19,12 @@
 #include "include_internal/ten_runtime/path/path_group.h"
 #include "include_internal/ten_runtime/remote/remote.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 
 void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
                                        ten_shared_ptr_t *cmd,
@@ -82,7 +82,7 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
         // Correct the destination information of the 'start_graph' command.
         ten_msg_clear_and_set_dest(child_cmd, dest_uri_c_str,
                                    ten_string_get_raw_str(&self->graph_name),
-                                   NULL, NULL, NULL, err);
+                                   NULL, NULL, err);
 
         ten_path_t *out_path = (ten_path_t *)ten_path_table_add_out_path(
             self->path_table, child_cmd);

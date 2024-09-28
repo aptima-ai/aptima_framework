@@ -722,15 +722,13 @@ bool ten_extension_handle_out_msg(ten_extension_t *self, ten_shared_ptr_t *msg,
   const bool msg_is_cmd = ten_msg_is_cmd_base(msg);
   bool msg_is_cmd_result = false;
 
-  if (msg_is_cmd) {
-    if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {
-      msg_is_cmd_result = true;
+  if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {
+    msg_is_cmd_result = true;
 
-      // The backward path should strictly follow the information recorded
-      // in the path table, therefore, users should not 'override' the
-      // destination location in this case.
-      ten_msg_clear_dest(msg);
-    }
+    // The backward path should strictly follow the information recorded
+    // in the path table, therefore, users should not 'override' the
+    // destination location in this case.
+    ten_msg_clear_dest(msg);
   }
 
   ten_msg_correct_dest(msg, self->extension_context->engine);

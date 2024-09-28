@@ -11,16 +11,15 @@
 
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/hash_table.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
-#include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
-TEN_UNUSED static bool ten_extension_store_check_integrity(
-    ten_extension_store_t *self, bool check_thread) {
+static bool ten_extension_store_check_integrity(ten_extension_store_t *self,
+                                                bool check_thread) {
   TEN_ASSERT(self, "Invalid argument.");
 
   if (ten_signature_get(&self->signature) !=

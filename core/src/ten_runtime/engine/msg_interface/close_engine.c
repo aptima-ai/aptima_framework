@@ -13,9 +13,9 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/stop_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/remote/remote.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 void ten_engine_handle_cmd_stop_graph(ten_engine_t *self, ten_shared_ptr_t *cmd,
@@ -31,12 +31,6 @@ void ten_engine_handle_cmd_stop_graph(ten_engine_t *self, ten_shared_ptr_t *cmd,
     // Suicide. Store the stop_graph command temporarily, so that it can be
     // used to return the cmd_result when the engine is shut down later.
     self->cmd_stop_graph = ten_shared_ptr_clone(cmd);
-
-    // Engine should not cache any pointers to the src extension.
-    ten_loc_t *src_loc = ten_msg_get_src_loc(self->cmd_stop_graph);
-    TEN_ASSERT(src_loc && ten_loc_check_integrity(src_loc),
-               "Should not happen");
-    src_loc->extension = NULL;
 
     ten_engine_close_async(self);
   } else {

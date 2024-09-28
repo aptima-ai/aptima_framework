@@ -10,9 +10,9 @@
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 // Set dest information of msg from JSON content if there are any.
@@ -45,7 +45,7 @@ bool ten_raw_msg_dest_from_json(ten_msg_t *self, ten_json_t *json,
           self, ten_json_object_peek_string(dest_json, TEN_STR_APP),
           ten_json_object_peek_string(dest_json, TEN_STR_GRAPH),
           ten_json_object_peek_string(dest_json, TEN_STR_EXTENSION_GROUP),
-          ten_json_object_peek_string(dest_json, TEN_STR_EXTENSION), NULL);
+          ten_json_object_peek_string(dest_json, TEN_STR_EXTENSION));
     }
   }
 

@@ -120,7 +120,7 @@ ten_list_t ten_msgpack_loc_list_deserialize(msgpack_unpacker *unpacker,
     if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_POSITIVE_INTEGER) {
       size_t loc_cnt = MSGPACK_DATA_I64;
       for (size_t i = 0; i < loc_cnt; i++) {
-        ten_loc_t *loc = ten_loc_create(NULL, NULL, NULL, NULL, NULL);
+        ten_loc_t *loc = ten_loc_create(NULL, NULL, NULL, NULL);
         ten_msgpack_loc_deserialize(loc, unpacker, unpacked);
         ten_list_push_ptr_back(
             &result, loc, (ten_ptr_listnode_destroy_func_t)ten_loc_destroy);

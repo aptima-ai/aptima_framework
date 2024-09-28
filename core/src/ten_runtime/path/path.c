@@ -121,8 +121,11 @@ void ten_path_set_result(ten_path_t *path, ten_shared_ptr_t *cmd_result) {
     //    extension might modify the cmd result (ex: add more properties),
     //    so we must replace the original cached cmd result here.
 
-    ten_msg_dump(path->cached_cmd_result, NULL,
-                 "The original cached cmd result: ^m");
+    // NOTE: We cannot access the contents of `cached_cmd_result` here because
+    // it might already be in the `in path_table` of another extension in
+    // another extension thread. Accessing `cached_cmd_result` here could lead
+    // to a thread safety issue.
+
     ten_msg_dump(cmd_result, NULL, "The new cached cmd result: ^m");
 
     ten_shared_ptr_destroy(path->cached_cmd_result);
