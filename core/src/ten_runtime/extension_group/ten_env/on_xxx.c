@@ -160,8 +160,7 @@ void ten_extension_group_on_create_extensions_done(ten_extension_group_t *self,
     return;
   }
 
-  ten_extension_thread_start_to_add_all_created_extension_to_engine(
-      extension_thread);
+  ten_extension_thread_add_all_created_extensions(extension_thread);
 }
 
 void ten_extension_group_on_destroy_extensions_done(

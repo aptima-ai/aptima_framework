@@ -60,7 +60,6 @@ typedef struct ten_extension_thread_t {
   ten_list_t pending_msgs;
 
   ten_list_t extensions;  // ten_extension_t*
-  size_t extensions_cnt_of_added_to_engine;
   size_t extensions_cnt_of_deleted_from_engine;
   size_t extensions_cnt_of_on_stop_done;
   size_t extensions_cnt_of_set_closing_flag;
@@ -117,15 +116,10 @@ ten_extension_thread_get_state(ten_extension_thread_t *self);
 TEN_RUNTIME_PRIVATE_API void ten_extension_thread_set_state(
     ten_extension_thread_t *self, TEN_EXTENSION_THREAD_STATE state);
 
-TEN_RUNTIME_PRIVATE_API void
-ten_extension_thread_determine_all_extension_dest_from_graph(
-    ten_extension_thread_t *self);
-
 TEN_RUNTIME_PRIVATE_API void ten_extension_thread_call_all_extension_on_start(
     ten_extension_thread_t *self);
 
-TEN_RUNTIME_PRIVATE_API void
-ten_extension_thread_start_to_add_all_created_extension_to_engine(
+TEN_RUNTIME_PRIVATE_API void ten_extension_thread_add_all_created_extensions(
     ten_extension_thread_t *self);
 
 TEN_RUNTIME_PRIVATE_API ten_runloop_t *

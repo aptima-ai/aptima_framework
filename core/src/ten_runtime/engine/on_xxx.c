@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/engine/on_xxx.h"
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/engine/msg_interface/common.h"
 #include "include_internal/ten_runtime/extension/extension.h"
@@ -26,88 +27,10 @@
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
-void ten_engine_on_all_extensions_added(void *self_, void *arg) {
-  ten_engine_t *self = self_;
+static void ten_engine_on_extension_thread_is_ready(
+    ten_engine_t *self, ten_extension_thread_t *extension_thread) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
-
-  TEN_UNUSED ten_extension_thread_t *extension_thread = arg;
-  TEN_ASSERT(
-      extension_thread &&
-          // TEN_NOLINTNEXTLINE(thread-check)
-          // thread-check: this function does not access this extension_thread,
-          // we just check if the arg is an ten_extension_thread_t.
-          ten_extension_thread_check_integrity(extension_thread, false),
-      "Should not happen.");
-
-  self->extension_context
-      ->extension_threads_cnt_of_all_extensions_added_to_engine++;
-  if (self->extension_context
-          ->extension_threads_cnt_of_all_extensions_added_to_engine ==
-      ten_list_size(&self->extension_context->extension_threads)) {
-    TEN_LOGD("[%s] All extension threads has added all extensions to engine.",
-             ten_engine_get_name(self));
-
-    ten_list_foreach (&self->extension_context->extension_threads, iter) {
-      ten_extension_thread_t *extension_thread =
-          ten_ptr_listnode_get(iter.node);
-      TEN_ASSERT(extension_thread && ten_extension_thread_check_integrity(
-                                         extension_thread, false),
-                 "Should not happen.");
-
-      ten_runloop_post_task_tail(
-          ten_extension_thread_get_attached_runloop(extension_thread),
-          ten_extension_thread_on_all_extensions_in_all_extension_threads_added_to_engine,
-          extension_thread, NULL);
-    }
-  }
-}
-
-void ten_engine_on_extension_thread_closed(void *self_, void *arg) {
-  ten_engine_t *self = self_;
-  TEN_ASSERT(self && ten_engine_check_integrity(self, true),
-             "Should not happen.");
-
-  ten_extension_thread_t *extension_thread = arg;
-  TEN_ASSERT(
-      extension_thread &&
-          // TEN_NOLINTNEXTLINE(thread-check)
-          // thread-check: this function does not access this extension_thread,
-          // we just check if the arg is an ten_extension_thread_t.
-          ten_extension_thread_check_integrity(extension_thread, false),
-      "Should not happen.");
-
-  TEN_LOGD("[%s] Waiting for extension thread (%p) be reclaimed.",
-           ten_engine_get_name(self), extension_thread);
-  TEN_UNUSED int rc =
-      ten_thread_join(ten_sanitizer_thread_check_get_belonging_thread(
-                          &extension_thread->thread_check),
-                      -1);
-  TEN_ASSERT(!rc, "Should not happen.");
-  TEN_LOGD("[%s] Extension thread (%p) is reclaimed.",
-           ten_engine_get_name(self), extension_thread);
-
-  // Extension thread is disappear, so we migrate the extension_group and
-  // extension_thread to the engine thread now.
-  ten_sanitizer_thread_check_inherit_from(&extension_thread->thread_check,
-                                          &self->thread_check);
-  ten_sanitizer_thread_check_inherit_from(
-      &extension_thread->extension_group->thread_check, &self->thread_check);
-  ten_sanitizer_thread_check_inherit_from(
-      &extension_thread->extension_group->ten_env->thread_check,
-      &self->thread_check);
-
-  self->extension_context->extension_threads_cnt_of_closed++;
-
-  ten_extension_context_on_close(self->extension_context);
-}
-
-void ten_engine_on_extension_thread_initted(void *self_, void *arg) {
-  ten_engine_t *self = self_;
-  TEN_ASSERT(self && ten_engine_check_integrity(self, true),
-             "Should not happen.");
-
-  ten_extension_thread_t *extension_thread = arg;
   TEN_ASSERT(
       extension_thread &&
           // TEN_NOLINTNEXTLINE(thread-check)
@@ -122,15 +45,6 @@ void ten_engine_on_extension_thread_initted(void *self_, void *arg) {
     TEN_LOGD("[%s] All extension threads are initted.",
              ten_engine_get_name(self));
 
-    ten_list_foreach (&self->extension_context->extension_threads, iter) {
-      ten_extension_thread_t *extension_thread =
-          ten_ptr_listnode_get(iter.node);
-      TEN_ASSERT(extension_thread && ten_extension_thread_check_integrity(
-                                         extension_thread, false),
-                 "Should not happen.");
-    }
-
-    // =-=-= 还需要嘛?
     // All the extension threads requested by this command have been completed,
     // return the result for this command.
     //
@@ -193,6 +107,93 @@ void ten_engine_on_extension_thread_initted(void *self_, void *arg) {
     // the engine to handle any external messages if any.
     ten_engine_handle_in_msgs_async(self);
   }
+}
+
+void ten_engine_find_extension_info_for_all_extensions_of_extension_thread(
+    void *self_, void *arg) {
+  ten_engine_t *self = self_;
+  TEN_ASSERT(self && ten_engine_check_integrity(self, true),
+             "Should not happen.");
+
+  ten_extension_context_t *extension_context = self->extension_context;
+  TEN_ASSERT(extension_context &&
+                 ten_extension_context_check_integrity(extension_context, true),
+             "Should not happen.");
+
+  TEN_UNUSED ten_extension_thread_t *extension_thread = arg;
+  TEN_ASSERT(
+      extension_thread &&
+          // TEN_NOLINTNEXTLINE(thread-check)
+          // thread-check: this function does not access this extension_thread,
+          // we just check if the arg is an ten_extension_thread_t.
+          ten_extension_thread_check_integrity(extension_thread, false),
+      "Should not happen.");
+
+  ten_list_foreach (&extension_thread->extensions, iter) {
+    ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(ten_extension_check_integrity(extension, false),
+               "Should not happen.");
+
+    // Setup 'extension_context' field, this is the most important field when
+    // extension is initiating.
+    extension->extension_context = extension_context;
+
+    // Find the extension_info of the specified 'extension'.
+    extension->extension_info =
+        ten_extension_context_get_extension_info_by_name(
+            extension_context,
+            ten_string_get_raw_str(
+                ten_app_get_uri(extension_context->engine->app)),
+            ten_string_get_raw_str(&extension_context->engine->graph_name),
+            ten_string_get_raw_str(&extension_thread->extension_group->name),
+            ten_string_get_raw_str(&extension->name));
+  }
+
+  ten_engine_on_extension_thread_is_ready(self, extension_thread);
+
+  ten_runloop_post_task_tail(
+      ten_extension_thread_get_attached_runloop(extension_thread),
+      ten_extension_thread_start_life_cycle_of_all_extensions, extension_thread,
+      NULL);
+}
+
+void ten_engine_on_extension_thread_closed(void *self_, void *arg) {
+  ten_engine_t *self = self_;
+  TEN_ASSERT(self && ten_engine_check_integrity(self, true),
+             "Should not happen.");
+
+  ten_extension_thread_t *extension_thread = arg;
+  TEN_ASSERT(
+      extension_thread &&
+          // TEN_NOLINTNEXTLINE(thread-check)
+          // thread-check: this function does not access this extension_thread,
+          // we just check if the arg is an ten_extension_thread_t.
+          ten_extension_thread_check_integrity(extension_thread, false),
+      "Should not happen.");
+
+  TEN_LOGD("[%s] Waiting for extension thread (%p) be reclaimed.",
+           ten_engine_get_name(self), extension_thread);
+  TEN_UNUSED int rc =
+      ten_thread_join(ten_sanitizer_thread_check_get_belonging_thread(
+                          &extension_thread->thread_check),
+                      -1);
+  TEN_ASSERT(!rc, "Should not happen.");
+  TEN_LOGD("[%s] Extension thread (%p) is reclaimed.",
+           ten_engine_get_name(self), extension_thread);
+
+  // Extension thread is disappear, so we migrate the extension_group and
+  // extension_thread to the engine thread now.
+  ten_sanitizer_thread_check_inherit_from(&extension_thread->thread_check,
+                                          &self->thread_check);
+  ten_sanitizer_thread_check_inherit_from(
+      &extension_thread->extension_group->thread_check, &self->thread_check);
+  ten_sanitizer_thread_check_inherit_from(
+      &extension_thread->extension_group->ten_env->thread_check,
+      &self->thread_check);
+
+  self->extension_context->extension_threads_cnt_of_closed++;
+
+  ten_extension_context_on_close(self->extension_context);
 }
 
 void ten_engine_on_addon_create_extension_group_done(void *self_, void *arg) {

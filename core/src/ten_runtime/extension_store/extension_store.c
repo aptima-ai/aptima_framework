@@ -83,8 +83,7 @@ void ten_extension_store_destroy(ten_extension_store_t *self) {
 }
 
 bool ten_extension_store_add_extension(ten_extension_store_t *self,
-                                       ten_extension_t *extension,
-                                       bool of_extension_thread) {
+                                       ten_extension_t *extension) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_store_check_integrity(self, true),
              "Invalid use of extension_store %p.", self);
@@ -109,10 +108,7 @@ bool ten_extension_store_add_extension(ten_extension_store_t *self,
   }
 
   ten_hashtable_add_string(
-      &self->hash_table,
-      of_extension_thread == true
-          ? &extension->hh_in_extension_thread_extension_store
-          : &extension->hh_in_extension_context_extension_store,
+      &self->hash_table, &extension->hh_in_extension_store,
       ten_string_get_raw_str(&extension->unique_name_in_graph), NULL);
 
 done:
@@ -120,8 +116,7 @@ done:
 }
 
 void ten_extension_store_del_extension(ten_extension_store_t *self,
-                                       ten_extension_t *extension,
-                                       bool of_extension_thread) {
+                                       ten_extension_t *extension) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_store_check_integrity(self, true),
              "Invalid use of extension_store %p.", self);
@@ -130,10 +125,7 @@ void ten_extension_store_del_extension(ten_extension_store_t *self,
   TEN_ASSERT(ten_extension_check_integrity(extension, true),
              "Invalid use of extension %p.", extension);
 
-  ten_hashtable_del(&self->hash_table,
-                    of_extension_thread == true
-                        ? &extension->hh_in_extension_thread_extension_store
-                        : &extension->hh_in_extension_context_extension_store);
+  ten_hashtable_del(&self->hash_table, &extension->hh_in_extension_store);
 }
 
 ten_extension_t *ten_extension_store_find_extension(
@@ -157,11 +149,11 @@ ten_extension_t *ten_extension_store_find_extension(
       ten_string_get_raw_str(&extension_unique_name_in_graph));
   if (hh) {
     if (of_extension_thread) {
-      extension = CONTAINER_OF_FROM_FIELD(
-          hh, ten_extension_t, hh_in_extension_thread_extension_store);
+      extension =
+          CONTAINER_OF_FROM_FIELD(hh, ten_extension_t, hh_in_extension_store);
     } else {
-      extension = CONTAINER_OF_FROM_FIELD(
-          hh, ten_extension_t, hh_in_extension_context_extension_store);
+      extension =
+          CONTAINER_OF_FROM_FIELD(hh, ten_extension_t, hh_in_extension_store);
     }
 
     return extension;

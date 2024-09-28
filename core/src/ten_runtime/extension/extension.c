@@ -767,27 +767,6 @@ ten_runloop_t *ten_extension_get_attached_runloop(ten_extension_t *self) {
   return self->extension_thread->runloop;
 }
 
-void ten_extension_link_its_ten_to_extension_context(
-    ten_extension_t *self, ten_extension_context_t *extension_context) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_check_integrity(self, true),
-             "Invalid use of extension %p.", self);
-
-  TEN_ASSERT(
-      extension_context &&
-          // TEN_NOLINTNEXTLINE(thread-check)
-          // thread-check: We are in the extension thread, and throughout the
-          // entire lifecycle of the extension, the extension_context where the
-          // extension resides remains unchanged. Even in the closing flow, the
-          // extension_context is closed later than the extension itself.
-          // Therefore, using a pointer to the extension_context within the
-          // extension thread is thread-safe.
-          ten_extension_context_check_integrity(extension_context, false),
-      "Should not happen.");
-
-  self->extension_context = extension_context;
-}
-
 static void ten_extension_on_configure(ten_env_t *ten_env) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");

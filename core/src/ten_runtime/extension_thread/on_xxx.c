@@ -19,7 +19,6 @@
 #include "include_internal/ten_runtime/extension/on_xxx.h"
 #include "include_internal/ten_runtime/extension/path_timer.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
-#include "include_internal/ten_runtime/extension_context/internal/del_extension.h"
 #include "include_internal/ten_runtime/extension_context/internal/extension_group_is_stopped.h"
 #include "include_internal/ten_runtime/extension_context/internal/extension_thread_is_closing.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
@@ -67,73 +66,6 @@ void ten_extension_inherit_thread_ownership(
                                           &extension_thread->thread_check);
   ten_sanitizer_thread_check_inherit_from(&self->ten_env->thread_check,
                                           &extension_thread->thread_check);
-}
-
-void ten_extension_thread_on_extension_added_to_engine(void *self_, void *arg) {
-  ten_extension_thread_t *self = self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  ten_extension_t *extension = arg;
-  TEN_ASSERT(extension, "Invalid argument.");
-
-  ten_extension_inherit_thread_ownership(extension, self);
-  TEN_ASSERT(ten_extension_check_integrity(extension, true),
-             "Invalid use of extension %p.", extension);
-
-  self->extensions_cnt_of_added_to_engine++;
-  if (self->extensions_cnt_of_added_to_engine ==
-      ten_list_size(&self->extensions)) {
-    TEN_LOGD(
-        "[%s] All extensions of extension group has been added to engine, "
-        "notify engine about this.",
-        ten_string_get_raw_str(
-            &extension->extension_thread->extension_group->name));
-
-    ten_engine_t *engine = self->extension_context->engine;
-    // TEN_NOLINTNEXTLINE(thread-check)
-    // thread-check: The runloop of the engine will not be changed during the
-    // whole lifetime of the extension thread, so it's thread safe to access it
-    // here.
-    TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
-               "Should not happen.");
-
-    // All Extensions are added to the engine, notify the engine this fact.
-    ten_runloop_post_task_tail(ten_engine_get_attached_runloop(engine),
-                               ten_engine_on_all_extensions_added, engine,
-                               extension->extension_thread);
-  }
-}
-
-void ten_extension_thread_on_extension_deleted_from_engine(void *self_,
-                                                           void *arg) {
-  ten_extension_thread_t *self = self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  ten_extension_t *extension = arg;
-  TEN_ASSERT(extension, "Invalid argument.");
-
-  ten_extension_inherit_thread_ownership(extension, self);
-  TEN_ASSERT(ten_extension_check_integrity(extension, true),
-             "Invalid use of extension %p.", extension);
-
-  TEN_LOGD("[%s] Deleted from extension thread (%s).",
-           ten_extension_get_name(extension),
-           ten_string_get_raw_str(&self->extension_group->name));
-
-  // Delete the extension from the extension store of the extension thread, so
-  // that no more messages could be routed to this extension in the future.
-  ten_extension_store_del_extension(self->extension_store, extension, true);
-
-  self->extensions_cnt_of_deleted_from_engine++;
-  if (self->extensions_cnt_of_deleted_from_engine ==
-      ten_list_size(&self->extensions)) {
-    ten_extension_group_destroy_extensions(self->extension_group,
-                                           self->extensions);
-  }
 }
 
 void ten_extension_thread_on_extension_group_on_init_done(
@@ -373,88 +305,11 @@ void ten_extension_thread_call_all_extensions_on_deinit(void *self_,
   }
 }
 
-void ten_extension_thread_on_extension_on_deinit_done(void *self_, void *arg) {
-  ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  ten_extension_on_start_stop_deinit_done_t *on_deinit_done = arg;
-  TEN_ASSERT(on_deinit_done, "Should not happen.");
-
-  ten_extension_t *deinit_extension = on_deinit_done->extension;
-  TEN_ASSERT(
-      deinit_extension && ten_extension_check_integrity(deinit_extension, true),
-      "Should not happen.");
-  TEN_ASSERT(deinit_extension->extension_thread == self, "Should not happen.");
-
-  // Notify the 'ten' object of this extension that we are closing.
-  TEN_ASSERT(deinit_extension->ten_env &&
-                 ten_env_check_integrity(deinit_extension->ten_env, true),
-             "Should not happen.");
-  ten_env_close(deinit_extension->ten_env);
-
-  ten_extension_context_t *extension_context = self->extension_context;
-  TEN_ASSERT(extension_context, "Invalid argument.");
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: This function will be called in the extension thread,
-  // however, the extension_context would not be changed after the extension
-  // system is starting, so it's safe to access the extension_context
-  // information in the extension thead.
-  //
-  // However, for the strict thread safety, it's possible to modify the logic
-  // here to use asynchronous operations (i.e., add a task to the
-  // extension_context, and add a task to the extension_thread when the result
-  // is found) here.
-  TEN_ASSERT(ten_extension_context_check_integrity(extension_context, false),
-             "Invalid use of extension_context %p.", extension_context);
-
-  ten_engine_t *engine = extension_context->engine;
-  TEN_ASSERT(engine, "Invalid argument.");
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: The runloop of the engine will not be changed during the
-  // whole lifetime of the extension thread, so it's thread safe to access it
-  // here.
-  TEN_ASSERT(ten_engine_check_integrity(engine, false),
-             "Invalid use of engine %p.", engine);
-
-  ten_runloop_post_task_tail(ten_engine_get_attached_runloop(engine),
-                             ten_extension_context_delete_extension,
-                             extension_context, deinit_extension);
-
-  ten_extension_on_start_stop_deinit_done_destroy(on_deinit_done);
-}
-
-void ten_extension_thread_on_all_extensions_in_all_extension_threads_added_to_engine(
+void ten_extension_thread_start_life_cycle_of_all_extensions(
     void *self_, TEN_UNUSED void *arg) {
   ten_extension_thread_t *self = self_;
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
              "Should not happen.");
-
-  // =-=-=
-  // The extension has just been created, the `on_configure()` of the extension
-  // has not been called yet. This function needs to be called before
-  // `on_configure()` of extensions, as the `extension::extension_info` field is
-  // used during the `on_init()` stage, refer to
-  // `ten_extension_merge_properties_from_graph()`. However, we can not parse
-  // `interface` info here, as the `interface_in` and `interface_out` are
-  // defined in the manifest of extensions, which means that the `interface`
-  // info is not available until `Extension::on_configure_done()`.
-  ten_extension_thread_determine_all_extension_dest_from_graph(self);
-
-  // Notify the engine that the extension thread is initted.
-  ten_engine_t *engine = self->extension_context->engine;
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: The runloop of the engine will not be changed during the
-  // whole lifetime of the extension thread, so it's thread safe to access it
-  // here.
-  TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
-             "Should not happen.");
-
-  // TEN_NOLINTNEXTLINE(thread-check)
-  ten_runloop_post_task_tail(ten_engine_get_attached_runloop(engine),
-                             ten_engine_on_extension_thread_initted, engine,
-                             self);
 
   if (self->is_close_triggered) {
     return;

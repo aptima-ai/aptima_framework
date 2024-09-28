@@ -77,11 +77,6 @@ ten_extension_context_t *ten_extension_context_create(ten_engine_t *engine) {
 
   self->ten_env = ten_env_create_for_engine(engine);
 
-  self->extension_store = ten_extension_store_create(
-      offsetof(ten_extension_t, hh_in_extension_context_extension_store));
-  ten_sanitizer_thread_check_inherit_from(&self->extension_store->thread_check,
-                                          &self->thread_check);
-
   ten_list_init(&self->extension_groups_info_from_graph);
   ten_list_init(&self->extensions_info_from_graph);
 
@@ -89,7 +84,6 @@ ten_extension_context_t *ten_extension_context_create(ten_engine_t *engine) {
   ten_list_init(&self->extension_threads);
 
   self->extension_threads_cnt_of_initted = 0;
-  self->extension_threads_cnt_of_all_extensions_added_to_engine = 0;
   self->extension_threads_cnt_of_all_extensions_stopped = 0;
   self->extension_threads_cnt_of_closing_flag_is_set = 0;
   self->extension_threads_cnt_of_closed = 0;
@@ -109,8 +103,6 @@ static void ten_extension_context_destroy(ten_extension_context_t *self) {
   TEN_ASSERT((ten_list_size(&self->extension_threads) == 0),
              "Should not happen.");
   TEN_ASSERT(ten_list_size(&self->extension_groups) == 0, "Should not happen.");
-
-  ten_extension_store_destroy(self->extension_store);
 
   ten_list_clear(&self->extension_groups_info_from_graph);
   ten_list_clear(&self->extensions_info_from_graph);

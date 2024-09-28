@@ -10,6 +10,8 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/metadata.h"
 #include "include_internal/ten_runtime/extension/path_timer.h"
+#include "include_internal/ten_runtime/extension_group/extension_group.h"
+#include "include_internal/ten_runtime/extension_store/extension_store.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/extension_thread/msg_interface/common.h"
 #include "include_internal/ten_runtime/extension_thread/on_xxx.h"
@@ -226,6 +228,52 @@ void ten_extension_on_stop_done(ten_env_t *self) {
                              extension->extension_thread, on_stop_done);
 }
 
+static void ten_extension_thread_del_extension(ten_extension_thread_t *self,
+                                               ten_extension_t *extension) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
+             "Invalid use of extension_thread %p.", self);
+  TEN_ASSERT(extension, "Invalid argument.");
+
+  ten_extension_inherit_thread_ownership(extension, self);
+  TEN_ASSERT(ten_extension_check_integrity(extension, true),
+             "Invalid use of extension %p.", extension);
+
+  TEN_LOGD("[%s] Deleted from extension thread (%s).",
+           ten_extension_get_name(extension),
+           ten_string_get_raw_str(&self->extension_group->name));
+
+  // Delete the extension from the extension store of the extension thread, so
+  // that no more messages could be routed to this extension in the future.
+  ten_extension_store_del_extension(self->extension_store, extension);
+
+  self->extensions_cnt_of_deleted_from_engine++;
+  if (self->extensions_cnt_of_deleted_from_engine ==
+      ten_list_size(&self->extensions)) {
+    ten_extension_group_destroy_extensions(self->extension_group,
+                                           self->extensions);
+  }
+}
+
+static void ten_extension_thread_on_extension_on_deinit_done(
+    ten_extension_thread_t *self, ten_extension_t *deinit_extension) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
+             "Invalid use of extension_thread %p.", self);
+  TEN_ASSERT(
+      deinit_extension && ten_extension_check_integrity(deinit_extension, true),
+      "Should not happen.");
+  TEN_ASSERT(deinit_extension->extension_thread == self, "Should not happen.");
+
+  // Notify the 'ten' object of this extension that we are closing.
+  TEN_ASSERT(deinit_extension->ten_env &&
+                 ten_env_check_integrity(deinit_extension->ten_env, true),
+             "Should not happen.");
+  ten_env_close(deinit_extension->ten_env);
+
+  ten_extension_thread_del_extension(self, deinit_extension);
+}
+
 void ten_extension_on_deinit_done(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_env_check_integrity(self, true), "Invalid use of ten_env %p.",
@@ -256,12 +304,8 @@ void ten_extension_on_deinit_done(ten_env_t *self) {
 
   TEN_LOGD("[%s] on_deinit() done.", ten_extension_get_name(extension));
 
-  ten_extension_on_start_stop_deinit_done_t *on_deinit_done =
-      ten_extension_on_start_stop_deinit_done_create(extension);
-
-  ten_runloop_post_task_tail(ten_extension_get_attached_runloop(extension),
-                             ten_extension_thread_on_extension_on_deinit_done,
-                             extension->extension_thread, on_deinit_done);
+  ten_extension_thread_on_extension_on_deinit_done(extension->extension_thread,
+                                                   extension);
 }
 
 ten_extension_on_start_stop_deinit_done_t *
