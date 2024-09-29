@@ -39,22 +39,22 @@ docker compose up
 Once the command is entered, you should see output similar to this:
 
 <pre class="language-bash" data-title=">_ Terminal"><code class="lang-bash">....
-Attaching to astra_agents_dev, astra_graph_designer, astra_playground
-astra_agents_dev      | >> run graph designer server
-astra_agents_dev      | cd agents &#x26;&#x26; tman dev-server
-<strong>astra_agents_dev      | :-)  Starting server at http://0.0.0.0:49483
-</strong>astra_graph_designer  |   ▲ Next.js 14.2.4
-<strong>astra_graph_designer  |   - Local:        http://localhost:3000
-</strong>astra_graph_designer  |   - Network:      http://0.0.0.0:3000
-astra_graph_designer  |
-astra_graph_designer  |  ✓ Starting...
-astra_playground      |   ▲ Next.js 14.2.4
-<strong>astra_playground      |   - Local:        http://localhost:3000
-</strong>astra_playground      |   - Network:      http://0.0.0.0:3000
-astra_playground      |
-astra_playground      |  ✓ Starting...
-astra_graph_designer  |  ✓ Ready in 293ms
-astra_playground      |  ✓ Ready in 293ms
+Attaching to astra_agents_dev, astra_playground, ten_graph_designer
+astra_agents_dev    | >> run graph designer server
+astra_agents_dev    | cd agents && tman dev-server
+astra_agents_dev    | :-)  Starting server at http://0.0.0.0:49483
+astra_playground    |   ▲ Next.js 14.2.4
+astra_playground    |   - Local:        http://localhost:3000
+astra_playground    |   - Network:      http://0.0.0.0:3000
+astra_playground    |
+astra_playground    |  ✓ Starting...
+ten_graph_designer  |   ▲ Next.js 14.2.4
+ten_graph_designer  |   - Local:        http://localhost:3000
+ten_graph_designer  |   - Network:      http://0.0.0.0:3000
+ten_graph_designer  |
+ten_graph_designer  |  ✓ Starting...
+astra_playground    |  ✓ Ready in 394ms
+ten_graph_designer  |  ✓ Ready in 387ms
 ...
 </code></pre>
 
@@ -64,7 +64,7 @@ Now, we’ve got the following services running:
 
 • `astra_playground` at `http://localhost:3000` (the frontend of TEN Agent)
 
-• `astra_graph_designer` at `http://localhost:3001` (the frontend of Graph Designer)
+• `ten_graph_designer` at `http://localhost:3001` (the frontend of Graph Designer)
 
 ## 2. Enter the docker container
 
@@ -184,7 +184,3 @@ You see the green and red color indicting the possible routes of node connecting
 <figure><img src="../assets/gif/hello_world_python.gif" alt=""><figcaption><p>hello_world extension</p></figcaption></figure>
 
 Congratulations! You’ve successfully created your first `hello_world` extension, and it’s working seamlessly within the Graph Designer canvas.
-
-## 8. Check the network requests
-
-Open Chrome DevTools, navigate to the Network panel, and monitor the requests. You should see the status codes returning as 200, indicating that the changes have been successfully processed.

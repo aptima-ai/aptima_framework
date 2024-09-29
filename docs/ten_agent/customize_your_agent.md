@@ -15,10 +15,18 @@ layout:
 # Customize your agent
 
 
-## Using the power of graph designer
+## Using the power of TEN Graph Designer(Beta)
 
 <figure><img src="../assets/gif/graph_designer.gif" alt=""><figcaption></figcaption></figure>
 
-The Graph Designer is a user-friendly, visual tool that allows you to create and modify the behavior and responses of the TEN Agent without needing to write code. This approach is highly recommended for its ease of use and efficiency. By leveraging the Graph Designer, you can quickly design complex interactions and workflows through a graphical interface, making it accessible even for those with limited programming experience.
+TEN Graph Designer is a powerful tool that allows you to customize the behavior and responses of the TEN Agent without needing to write code. This approach is recommended for its ease of use.
 
-WIP
+In the canvas, you can design your flow by dragging and dropping nodes and connecting them with lines.
+
+Since the TEN Graph Designer is in Beta now, there are some limitations. For example, the graph you are working on needs to match the graph you are testing with. Otherwise, the changes you make will not be reflected in the results.
+
+## Changing the code yourself
+
+If you feel comfortable editing the code yourself, you are more than welcome to do so. In `agents/property.json`, find the corresponding graph and manipulate any values you want.
+
+After making changes, simply refresh the page and connect to the agent, and the changes will take effect.

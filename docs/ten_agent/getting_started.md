@@ -16,8 +16,6 @@ layout:
 
 In this chapter, we’ll build the TEN Agent together. For additional help, check out the YouTube video tutorial at the end.
 
-<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/features.gif?raw=true" alt=""><figcaption>TEN Agent Features</figcaption></figure>
-
 ## Prerequisites
 
 {% tabs %}

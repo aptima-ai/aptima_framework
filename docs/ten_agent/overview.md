@@ -2,7 +2,11 @@
 
 ## About TEN Agent
 
-The TEN Agent project, built on the TEN framework, is an open-source AI agent project. It also serves as a boilerplate for using the TEN framework, offering a great way to fully understand how to use the framework by diving into TEN Agent.
+<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/features.gif?raw=true" alt=""><figcaption>TEN Agent Features: Voice Vision and RAG</figcaption></figure>
+
+The TEN Agent, built on the TEN framework, is an open-source AI agent project. It can speak, see and access to a knowledge base.
+
+It also serves as a boilerplate for using the TEN framework, offering a great way to fully understand how to use the framework by diving into TEN Agent.
 
 ## How TEN Agent Works
 
@@ -30,7 +34,7 @@ The application’s metadata and required extensions are specified here. Please 
 
 ### property.json
 
-All graph information is stored in property.json. We recommend using the Graph Editor to create and edit the graphs instead of directly modifying property.json. Each graph consists of a list of nodes and connections:
+All graph information is stored in property.json. We recommend using the Graph Designer to create and edit the graphs instead of directly modifying `property.json`. Each graph consists of a list of nodes and connections:
 
 - In each node section, specify which extension will be used in the node, along with all required environment variables.
 - In each connection section, specify how the data is passed. Data should flow from an extension to one or more destination extensions. The data format must be one of the four formats defined by TEN: Command, Data, Video Frame, or Audio Frame.
@@ -61,7 +65,8 @@ Starts an agent with the given graph and overridden properties. The started agen
 
 Example:
 
-```shell
+{% code title=">_ Terminal" %}
+```bash
 curl 'http://localhost:8080/start' \
 -H 'Content-Type: application/json' \
 --data-raw '{
@@ -76,6 +81,7 @@ curl 'http://localhost:8080/start' \
   }
 }'
 ```
+{% endcode %}
 
 ### Stop
 
@@ -88,7 +94,8 @@ Stops the agent that was previously started.
 
 Example:
 
-```shell
+{% code title=">_ Terminal" %}
+```bash
 curl 'http://localhost:8080/stop' \
 -H 'Content-Type: application/json' \
 --data-raw '{
@@ -96,6 +103,7 @@ curl 'http://localhost:8080/stop' \
   "channel_name": "test"
 }'
 ```
+{% endcode %}
 
 ### Ping
 
@@ -103,7 +111,8 @@ Sends a ping to the server to indicate the connection is still alive. This is un
 
 Example:
 
-```shell
+{% code title=">_ Terminal" %}
+```bash
 curl 'http://localhost:8080/ping' \
 -H 'Content-Type: application/json' \
 --data-raw '{
@@ -111,6 +120,7 @@ curl 'http://localhost:8080/ping' \
   "channel_name": "test"
 }'
 ```
+{% endcode %}
 
 ### Playground
 
@@ -120,7 +130,8 @@ The code to handle audio input/output and transcribed text is in src/manager/rtc
 
 Example of joining a channel:
 
-```shell
+{% code title=">_ Terminal" %}
+```bash
 async join({ channel, userId }: { channel: string; userId: number }) {
   if (!this._joined) {
     const res = await apiGenAgoraData({ channel, userId });
@@ -134,10 +145,12 @@ async join({ channel, userId }: { channel: string; userId: number }) {
   }
 }
 ```
+{% endcode %}
 
 The text message is transmitted from the agent server to the web app via the Stream Message callback:
 
-```shell
+{% code title=">_ Terminal" %}
+```bash
 const onStreamMessage = (message: any) => {
   const { text } = message;
   if (text) {
@@ -145,3 +158,4 @@ const onStreamMessage = (message: any) => {
   }
 };
 ```
+{% endcode %}
