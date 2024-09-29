@@ -593,32 +593,3 @@ bool ten_extension_context_start_extension_group(
 done:
   return result;
 }
-
-ten_extension_group_t *ten_extension_context_find_extension_group_by_name(
-    ten_extension_context_t *self, ten_string_t *name) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(
-      ten_extension_context_check_integrity(
-          self,
-          // TEN_NOLINTNEXTLINE(thread-check)
-          // thread-check: The graph info is read only, so it's thread-safe.
-          false),
-      "Invalid use of extension_context %p.", self);
-
-  ten_list_foreach (&self->extension_groups, iter) {
-    ten_extension_group_t *extension_group = ten_ptr_listnode_get(iter.node);
-    // TEN_NOLINTNEXTLINE(thread-check)
-    // thread-check: The target-extension-group and the
-    // current-extension-group are different, so the extension threads
-    // are different, too. Because the name of the extension group can
-    // not be changed after they are created, so it's thread-safe.
-    TEN_ASSERT(extension_group &&
-                   ten_extension_group_check_integrity(extension_group, false),
-               "Should not happen.");
-
-    if (ten_string_is_equal(&extension_group->name, name)) {
-      return extension_group;
-    }
-  }
-  return NULL;
-}

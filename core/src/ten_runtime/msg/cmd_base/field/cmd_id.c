@@ -36,7 +36,7 @@ bool ten_cmd_base_put_cmd_id_to_json(ten_msg_t *self, ten_json_t *json,
 bool ten_cmd_base_get_cmd_id_from_json(ten_msg_t *self, ten_json_t *json,
                                        TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) &&
-                 ten_raw_msg_is_cmd_base(self),
+                 ten_raw_msg_is_cmd_and_result(self),
              "Should not happen.");
   TEN_ASSERT(ten_json_check_integrity(json), "Should not happen.");
 

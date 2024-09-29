@@ -49,8 +49,9 @@ static void ten_extension_thread_handle_in_msg_sync(
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
              "Invalid use of extension_thread %p.", self);
-
-  TEN_ASSERT(ten_msg_get_dest_cnt(msg) == 1, "Should not happen.");
+  TEN_ASSERT(ten_msg_get_dest_cnt(msg) == 1,
+             "When this function is executed, there should be only one "
+             "destination remaining in the message's dest.");
 
   // Find the extension according to 'loc'.
   ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
@@ -63,7 +64,7 @@ static void ten_extension_thread_handle_in_msg_sync(
                  ten_string_get_raw_str(&dest_loc->extension_name),
                  ten_string_get_raw_str(&self->extension_group->name));
 
-    // Return a result, so that the client can know what's going on.
+    // Return a result, so that the sender can know what's going on.
     if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD) {
       ten_shared_ptr_t *status =
           ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_ERROR, msg);
@@ -84,18 +85,14 @@ static void ten_extension_thread_handle_in_msg_sync(
     }
 
     return;
-  }
+  } else {
+    if (extension->extension_thread != self) {
+      ten_msg_dump(msg, NULL, "Unexpected msg ^m for extension %s",
+                   ten_string_get_raw_str(&extension->name));
 
-  TEN_ASSERT(extension, "The 'extension' pointer should not be NULL.");
+      TEN_ASSERT(0, "Should not happen.");
+    }
 
-  if (extension->extension_thread != self) {
-    ten_msg_dump(msg, NULL, "Unexpected msg ^m for extension %s",
-                 ten_string_get_raw_str(&extension->name));
-
-    TEN_ASSERT(0, "Should not happen.");
-  }
-
-  if (extension) {
     ten_extension_handle_in_msg(extension, msg);
   }
 }
@@ -201,17 +198,19 @@ void ten_extension_thread_handle_in_msg_async(ten_extension_thread_t *self,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_thread_check_integrity(self, false),
              "Invalid use of extension %p.", self);
+  TEN_ASSERT(msg && (ten_msg_get_dest_cnt(msg) == 1),
+             "When this function is executed, there should be only one "
+             "destination remaining in the message's dest.");
 
-  TEN_ASSERT(msg && (ten_msg_get_dest_cnt(msg) == 1), "Invalid argument.");
-
-  // This function would be called from threads other than the extension thread.
-  // However, because the runloop relevant functions called in this function
-  // have thread-safety protection of mutex in them, we do not need to use any
-  // further locking mechanisms in this function to do any protection.
+  // This function would be called from threads other than the specified
+  // extension thread. However, because the runloop relevant functions called in
+  // this function have thread-safety protection of mutex in them, we do not
+  // need to use any further locking mechanisms in this function to do any
+  // protection.
 
   if (ten_runloop_task_queue_size(self->runloop) >=
       EXTENSION_THREAD_QUEUE_SIZE) {
-    if (!ten_msg_is_cmd_base(msg)) {
+    if (!ten_msg_is_cmd_and_result(msg)) {
       TEN_LOGW(
           "Discard a data-like message (%s) because extension thread input "
           "buffer is full.",
@@ -231,12 +230,12 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
              "Invalid use of extension_thread %p.", self);
-
-  TEN_ASSERT(msg && (ten_msg_get_dest_cnt(msg) == 1), "Should not happen.");
+  TEN_ASSERT(msg && (ten_msg_get_dest_cnt(msg) == 1),
+             "When this function is executed, there should be only one "
+             "destination remaining in the message's dest.");
 
   ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
-  TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc) &&
-                 ten_msg_get_dest_cnt(msg) == 1,
+  TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc),
              "Should not happen.");
 
   ten_extension_group_t *extension_group = self->extension_group;
@@ -260,7 +259,7 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
     ten_engine_push_to_extension_msgs_queue(engine, msg);
   } else {
     if (
-        // It means asking the app to do something.
+        // It means asking the current app to do something.
         ten_string_is_empty(&dest_loc->graph_name) ||
         // It means asking another engine in the same app to do something.
         !ten_string_is_equal(&dest_loc->graph_name, &engine->graph_name)) {
@@ -270,53 +269,16 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
       ten_app_push_to_in_msgs_queue(app, msg);
     } else {
       if (ten_string_is_empty(&dest_loc->extension_group_name)) {
-        // Because the destination is the engine, so ask the engine to handle
-        // this message.
+        // Because the destination is the current engine, so ask the engine to
+        // handle this message.
 
         ten_engine_push_to_extension_msgs_queue(engine, msg);
       } else {
         if (!ten_string_is_equal(&dest_loc->extension_group_name,
                                  &extension_group->name)) {
           // Find the correct extension thread to handle this message.
-          //
-          // TODO(Wei): Should push to engine's extension_msgs queue to enable
-          // engine to find the correct extension thread.
-          ten_extension_group_t *extension_group_ =
-              ten_extension_context_find_extension_group_by_name(
-                  engine->extension_context, &dest_loc->extension_group_name);
-          if (extension_group_) {
-            ten_extension_thread_handle_in_msg_async(
-                extension_group_->extension_thread, msg);
-          } else {
-            ten_string_t loc_str;
-            ten_string_init(&loc_str);
-            ten_loc_to_string(dest_loc, &loc_str);
-            TEN_LOGW(
-                "Failed to find the destination extension thread %s for "
-                "message %s.",
-                ten_string_get_raw_str(&loc_str), ten_msg_get_name(msg));
-            ten_string_deinit(&loc_str);
 
-            // We should find the destination of a cmd result in all
-            // cases.
-            TEN_ASSERT(ten_msg_get_type(msg) != TEN_MSG_TYPE_CMD_RESULT,
-                       "Should not happen.");
-
-            ten_shared_ptr_t *cmd_result =
-                ten_extension_group_create_invalid_dest_status(
-                    msg, &dest_loc->extension_group_name);
-            TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
-                       "Should not happen.");
-
-            // We are in the extension thread, so the original message should
-            // be already added into the path table, and we can add the
-            // result to the message queue of the extension thread, and TEN
-            // runtime would later route the result to the correct extension
-            // or client which sends the original command.
-            ten_extension_thread_handle_in_msg_async(self, cmd_result);
-
-            ten_shared_ptr_destroy(cmd_result);
-          }
+          ten_engine_push_to_extension_msgs_queue(engine, msg);
         } else {
           // The message should be handled in the current extension thread, so
           // dispatch the message to the current extension thread.

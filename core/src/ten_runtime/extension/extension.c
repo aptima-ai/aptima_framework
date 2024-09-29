@@ -350,7 +350,7 @@ static ten_list_t *ten_extension_get_msg_dests_from_graph(
   TEN_ASSERT(self && ten_extension_check_integrity(self, true) && msg,
              "Should not happen.");
 
-  if (ten_msg_is_cmd_base(msg)) {
+  if (ten_msg_is_cmd_and_result(msg)) {
     return ten_extension_get_msg_dests_from_graph_internal(
         &self->extension_info->msg_dest_info.cmd, msg);
   } else {
@@ -493,7 +493,7 @@ static bool ten_extension_determine_out_msg_dest_from_graph(
                     "Failed to find destination of a message (%s) from graph.",
                     msg_name);
     } else {
-      if (ten_msg_is_cmd_base(msg)) {
+      if (ten_msg_is_cmd_and_result(msg)) {
         TEN_LOGE("Failed to find destination of a command (%s) from graph.",
                  msg_name);
       } else {
@@ -551,7 +551,7 @@ static TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT ten_extension_determine_out_msgs(
     // Need to find the destinations from 2 databases:
     // - graph: all messages without the cmd results.
     // - IN path table: cmd results only.
-    if (ten_msg_is_cmd_base(msg)) {
+    if (ten_msg_is_cmd_and_result(msg)) {
       if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {
         // Find the destinations of a cmd result from the path table.
         if (!in_path) {
@@ -620,7 +620,7 @@ bool ten_extension_handle_out_msg(ten_extension_t *self, ten_shared_ptr_t *msg,
   ten_msg_set_src_to_extension(msg, self);
 
   bool result = true;
-  const bool msg_is_cmd = ten_msg_is_cmd_base(msg);
+  const bool msg_is_cmd = ten_msg_is_cmd_and_result(msg);
   bool msg_is_cmd_result = false;
 
   if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {

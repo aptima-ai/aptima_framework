@@ -35,7 +35,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_basic__test_extension_1,
 
 }  // namespace
 
-TEST(StandaloneTest, DISABLED_Basic) {  // NOLINT
+TEST(StandaloneTest, Basic) {  // NOLINT
   ten_extension_test_t *test = ten_extension_test_create();
   ten_extension_test_add_addon(test, "standalone_test_basic__test_extension_1");
   ten_extension_test_start(test);

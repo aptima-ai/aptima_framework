@@ -8,7 +8,6 @@
 
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 
-// =-=-= 改名
 typedef struct ten_extension_test_t {
   ten_thread_t *test_app_thread;
   ten_string_t test_extension_addon_name;

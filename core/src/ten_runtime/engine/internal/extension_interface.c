@@ -88,41 +88,43 @@ static void ten_engine_on_extension_msgs(ten_engine_t *self) {
 
   ten_list_foreach (&extension_msgs_, iter) {
     ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
+    TEN_ASSERT(msg && ten_msg_get_dest_cnt(msg) == 1,
+               "When this function is executed, there should be only one "
+               "destination remaining in the message's dest.");
 
     if (ten_engine_is_closing(self) &&
         !ten_msg_type_to_handle_when_closing(msg)) {
       // Except some special messages, do not handle the message if the engine
       // is closing.
-
       continue;
     }
 
     ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
-    TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc) &&
-                   ten_msg_get_dest_cnt(msg) == 1,
+    TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc),
                "Should not happen.");
 
     if (!ten_string_is_equal(&dest_loc->app_uri, ten_app_get_uri(self->app))) {
       TEN_ASSERT(!ten_string_is_empty(&dest_loc->app_uri),
                  "Should not happen.");
 
-      // Because the engine could add/remove remotes at runtime, so extension
-      // system would deliver those messages with remote destination to the
-      // engine. Therefore, we need to determine if this is the case, and route
-      // those messages to the specified remote.
+      // Since the engine dynamically adds/removes remotes, when the extension
+      // system needs to deliver a message to a remote, it requests the engine
+      // to handle it in order to avoid race conditions. Therefore, this is
+      // where we check if such a situation is occurring.
 
       ten_engine_route_msg_to_remote(self, msg);
     } else {
       // Otherwise, enable the engine to handle the message.
 
-      ten_engine_handle_msg(self, msg);
+      ten_engine_dispatch_msg(self, msg);
     }
   }
 
   ten_list_clear(&extension_msgs_);
 }
 
-static void ten_engine_on_extension_msgs_(void *engine_, TEN_UNUSED void *arg) {
+static void ten_engine_on_extension_msgs_task(void *engine_,
+                                              TEN_UNUSED void *arg) {
   ten_engine_t *engine = (ten_engine_t *)engine_;
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
              "Should not happen.");
@@ -139,7 +141,7 @@ static void ten_engine_on_extension_msgs_async(ten_engine_t *self) {
              "Should not happen.");
 
   ten_runloop_post_task_tail(ten_engine_get_attached_runloop(self),
-                             ten_engine_on_extension_msgs_, self, NULL);
+                             ten_engine_on_extension_msgs_task, self, NULL);
 }
 
 void ten_engine_push_to_extension_msgs_queue(ten_engine_t *self,

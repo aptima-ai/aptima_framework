@@ -82,8 +82,9 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
   // command sent by this extension in any time can be delivered to this
   // extension before its on_start().
 
-  if (self->state < TEN_EXTENSION_STATE_ON_START &&
-      !ten_msg_is_cmd_result(msg)) {
+  bool msg_is_cmd_result = ten_msg_is_cmd_result(msg);
+
+  if (self->state < TEN_EXTENSION_STATE_ON_START && !msg_is_cmd_result) {
     // The extension is not initialized, and the msg is not a cmd result, so
     // cache the msg to the pending list.
     ten_list_push_smart_ptr_back(&self->pending_msgs, msg);
@@ -96,14 +97,10 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
     goto done;
   }
 
-  bool msg_is_cmd_result = false;
-
   // Because 'commands' has 'results', TEN will perform some bookkeeping for
   // 'commands' before sending it to the extension.
 
-  if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {
-    msg_is_cmd_result = true;
-
+  if (msg_is_cmd_result) {
     // Set the cmd result to the corresponding OUT path to indicate that
     // there has been a cmd result flow through that OUT path.
     ten_path_t *out_path =

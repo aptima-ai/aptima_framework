@@ -31,7 +31,16 @@
 #include "ten_utils/macro/memory.h"
 
 static void test_ten_app_on_configure(ten_app_t *app, ten_env_t *ten_env) {
-  bool rc = ten_env_on_configure_done(ten_env, NULL);
+  bool rc = ten_env_init_property_from_json(ten_env,
+                                            "{\
+                                               \"_ten\": {\
+                                                 \"log_level\": 2\
+                                               }\
+                                             }",
+                                            NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+
+  rc = ten_env_on_configure_done(ten_env, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 }
 

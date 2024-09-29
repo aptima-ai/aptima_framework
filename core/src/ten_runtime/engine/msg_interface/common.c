@@ -76,7 +76,7 @@ static void ten_engine_handle_in_msgs_sync(ten_engine_t *self) {
     TEN_ASSERT(!ten_msg_src_is_empty(msg),
                "The message source should have been set.");
 
-    if (ten_msg_is_cmd_base(msg)) {
+    if (ten_msg_is_cmd_and_result(msg)) {
       ten_connection_t *connection = ten_cmd_base_get_original_connection(msg);
       if (connection) {
         // If 'connection' is non-NULL, it means the command is from externally
@@ -187,7 +187,7 @@ void ten_engine_append_to_in_msgs_queue(ten_engine_t *self,
   TEN_ASSERT(ten_engine_check_integrity(self, false),
              "Invalid use of engine %p.", self);
 
-  TEN_ASSERT(cmd && ten_msg_is_cmd_base(cmd), "Should not happen.");
+  TEN_ASSERT(cmd && ten_msg_is_cmd_and_result(cmd), "Should not happen.");
 
   ten_mutex_lock(self->in_msgs_lock);
   ten_list_push_smart_ptr_back(&self->in_msgs, cmd);
@@ -208,7 +208,7 @@ void ten_engine_handle_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
     return;
   }
 
-  if (ten_msg_is_cmd_base(msg)) {
+  if (ten_msg_is_cmd_and_result(msg)) {
     // Because the command ID is a critical information which is necessary for
     // the correct handling of all command-type messages, we need to assign a
     // command ID to messages which don't have one.
@@ -231,6 +231,9 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Should not happen.");
+  TEN_ASSERT(ten_msg_get_dest_cnt(msg) == 1,
+             "When this function is executed, there should be only one "
+             "destination remaining in the message's dest.");
 
   if (ten_engine_is_closing(self)) {
     // Do not dispatch the message if the engine is closing.
@@ -238,8 +241,7 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
   }
 
   ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
-  TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc) &&
-                 ten_msg_get_dest_cnt(msg) == 1,
+  TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc),
              "Should not happen.");
 
   ten_app_t *app = self->app;
@@ -259,7 +261,7 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
                "The uri of the app should not be empty.");
 
     // The message is _not_ for the current TEN app, so route the message to the
-    // correct TEN app.
+    // correct TEN app through the correct remote.
     ten_engine_route_msg_to_remote(self, msg);
   } else {
     // The destination of the message is the current TEN app.

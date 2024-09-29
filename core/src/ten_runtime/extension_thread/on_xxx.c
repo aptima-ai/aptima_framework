@@ -103,7 +103,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
   ten_extension_group_create_extensions(self->extension_group);
 }
 
-void ten_extension_thread_start_life_cycle_of_all_extensions(
+void ten_extension_thread_start_life_cycle_of_all_extensions_task(
     void *self_, TEN_UNUSED void *arg) {
   ten_extension_thread_t *self = self_;
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
@@ -120,6 +120,34 @@ void ten_extension_thread_start_life_cycle_of_all_extensions(
 
     ten_extension_load_metadata(extension);
   }
+}
+
+void ten_extension_thread_stop_life_cycle_of_all_extensions(
+    ten_extension_thread_t *self) {
+  TEN_ASSERT(self && ten_extension_thread_check_integrity(self, true),
+             "Invalid argument.");
+
+  ten_extension_thread_set_state(self,
+                                 TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE);
+
+  // Loop for all the containing extensions, and call their on_stop().
+  ten_list_foreach (&self->extensions, iter) {
+    ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(ten_extension_check_integrity(extension, true),
+               "Should not happen.");
+
+    ten_extension_on_stop(extension);
+  }
+}
+
+void ten_extension_thread_stop_life_cycle_of_all_extensions_task(
+    void *self, TEN_UNUSED void *arg) {
+  ten_extension_thread_t *extension_thread = self;
+  TEN_ASSERT(extension_thread &&
+                 ten_extension_thread_check_integrity(extension_thread, true),
+             "Invalid argument.");
+
+  ten_extension_thread_stop_life_cycle_of_all_extensions(extension_thread);
 }
 
 void ten_extension_thread_on_extension_group_on_deinit_done(

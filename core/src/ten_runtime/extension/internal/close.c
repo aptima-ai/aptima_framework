@@ -121,9 +121,9 @@ void ten_extension_on_timer_closed(ten_timer_t *timer, void *on_closed_data) {
 }
 
 void ten_extension_do_pre_close_action(ten_extension_t *self) {
-  TEN_ASSERT(self && ten_extension_check_integrity(self, true) &&
-                 self->extension_thread,
-             "Should not happen.");
+  TEN_ASSERT(self, "Should not happen.");
+  TEN_ASSERT(ten_extension_check_integrity(self, true), "Should not happen.");
+  TEN_ASSERT(self->extension_thread, "Should not happen.");
 
   // Close the timers of the path tables.
   ten_list_foreach (&self->path_timers, iter) {

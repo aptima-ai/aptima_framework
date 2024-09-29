@@ -30,7 +30,12 @@ TEN_RUNTIME_PRIVATE_API void
 ten_extension_thread_on_extension_group_on_init_done(void *self_, void *arg);
 
 TEN_RUNTIME_PRIVATE_API void
-ten_extension_thread_start_life_cycle_of_all_extensions(void *self_, void *arg);
+ten_extension_thread_start_life_cycle_of_all_extensions_task(void *self_,
+                                                             void *arg);
+
+TEN_RUNTIME_PRIVATE_API void
+ten_extension_thread_stop_life_cycle_of_all_extensions_task(void *self,
+                                                            void *arg);
 
 TEN_RUNTIME_PRIVATE_API void
 ten_extension_thread_on_extension_group_on_deinit_done(void *self_, void *arg);

@@ -15,11 +15,11 @@
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/remote/remote.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uuid.h"
+#include "ten_utils/macro/check.h"
 
 bool ten_raw_cmd_base_check_integrity(ten_cmd_base_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -29,7 +29,7 @@ bool ten_raw_cmd_base_check_integrity(ten_cmd_base_t *self) {
     return false;
   }
 
-  if (!ten_raw_msg_is_cmd_base(&self->msg_hdr)) {
+  if (!ten_raw_msg_is_cmd_and_result(&self->msg_hdr)) {
     return false;
   }
 
@@ -165,7 +165,7 @@ static ten_string_t *ten_raw_cmd_base_gen_cmd_id_if_empty(
 }
 
 ten_string_t *ten_cmd_base_gen_cmd_id_if_empty(ten_shared_ptr_t *self) {
-  TEN_ASSERT(self && ten_msg_is_cmd_base(self), "Should not happen.");
+  TEN_ASSERT(self && ten_msg_is_cmd_and_result(self), "Should not happen.");
   return ten_raw_cmd_base_gen_cmd_id_if_empty(
       ten_cmd_base_get_raw_cmd_base(self));
 }
@@ -181,7 +181,7 @@ const char *ten_raw_cmd_base_gen_new_cmd_id_forcibly(ten_cmd_base_t *self) {
 }
 
 const char *ten_cmd_base_gen_new_cmd_id_forcibly(ten_shared_ptr_t *self) {
-  TEN_ASSERT(self && ten_msg_is_cmd_base(self), "Should not happen.");
+  TEN_ASSERT(self && ten_msg_is_cmd_and_result(self), "Should not happen.");
   return ten_raw_cmd_base_gen_new_cmd_id_forcibly(
       ten_cmd_base_get_raw_cmd_base(self));
 }
@@ -206,7 +206,7 @@ void ten_raw_cmd_base_save_cmd_id_to_parent_cmd_id(ten_cmd_base_t *self) {
 }
 
 void ten_cmd_base_save_cmd_id_to_parent_cmd_id(ten_shared_ptr_t *self) {
-  TEN_ASSERT(self && ten_msg_is_cmd_base(self), "Should not happen.");
+  TEN_ASSERT(self && ten_msg_is_cmd_and_result(self), "Should not happen.");
   ten_raw_cmd_base_save_cmd_id_to_parent_cmd_id(
       ten_cmd_base_get_raw_cmd_base(self));
 }
@@ -368,8 +368,9 @@ void ten_cmd_base_set_result_handler(
 }
 
 bool ten_cmd_base_comes_from_client_outside(ten_shared_ptr_t *self) {
-  TEN_ASSERT(self && ten_msg_check_integrity(self) && ten_msg_is_cmd_base(self),
-             "Invalid argument.");
+  TEN_ASSERT(
+      self && ten_msg_check_integrity(self) && ten_msg_is_cmd_and_result(self),
+      "Invalid argument.");
 
   const char *src_uri = ten_msg_get_src_app_uri(self);
   const char *cmd_id = ten_cmd_base_get_cmd_id(self);

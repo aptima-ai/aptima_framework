@@ -225,7 +225,7 @@ void ten_extension_group_set_addon(ten_extension_group_t *self,
 
 ten_shared_ptr_t *ten_extension_group_create_invalid_dest_status(
     ten_shared_ptr_t *origin_cmd, ten_string_t *target_group_name) {
-  TEN_ASSERT(origin_cmd && ten_msg_is_cmd_base(origin_cmd),
+  TEN_ASSERT(origin_cmd && ten_msg_is_cmd_and_result(origin_cmd),
              "Should not happen.");
   TEN_ASSERT(target_group_name, "Should not happen.");
 

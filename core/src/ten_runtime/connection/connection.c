@@ -348,7 +348,7 @@ void ten_connection_on_msgs(ten_connection_t *self, ten_list_t *msgs) {
   ten_list_foreach (msgs, iter) {
     ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
 
-    if (ten_msg_is_cmd_base(msg)) {
+    if (ten_msg_is_cmd_and_result(msg)) {
       // For a command message, remember which connection this command is coming
       // from.
       ten_cmd_base_set_original_connection(msg, self);

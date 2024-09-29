@@ -724,7 +724,7 @@ ten_shared_ptr_t *ten_msg_clone(ten_shared_ptr_t *self,
     if (raw_result) {
       result = ten_shared_ptr_create(raw_result, ten_raw_msg_destroy);
 
-      if (ten_msg_is_cmd_base(self)) {
+      if (ten_msg_is_cmd_and_result(self)) {
         // Create a relationship between the newly generated message and the
         // original message.
         ten_raw_cmd_base_save_cmd_id_to_parent_cmd_id(
@@ -1193,7 +1193,7 @@ bool ten_raw_msg_validate_schema(ten_msg_t *self,
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
 
   const char *msg_name = ten_raw_msg_get_name(self);
-  if (ten_raw_msg_is_cmd_base(self)) {
+  if (ten_raw_msg_is_cmd_and_result(self)) {
     TEN_ASSERT(msg_name && strlen(msg_name), "Should not happen.");
   }
 

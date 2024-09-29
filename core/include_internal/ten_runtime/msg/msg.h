@@ -165,7 +165,7 @@ TEN_RUNTIME_PRIVATE_API void ten_msg_clear_and_set_dest_to_extension(
 TEN_RUNTIME_PRIVATE_API void ten_msg_correct_dest(ten_shared_ptr_t *msg,
                                                   ten_engine_t *engine);
 
-inline bool ten_raw_msg_is_cmd_base(ten_msg_t *self) {
+inline bool ten_raw_msg_is_cmd_and_result(ten_msg_t *self) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
 
   switch (self->type) {
@@ -342,9 +342,9 @@ inline ten_msg_t *ten_msg_get_raw_msg(ten_shared_ptr_t *self) {
   return (ten_msg_t *)ten_shared_ptr_get_data(self);
 }
 
-inline bool ten_msg_is_cmd_base(ten_shared_ptr_t *self) {
+inline bool ten_msg_is_cmd_and_result(ten_shared_ptr_t *self) {
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
-  return ten_raw_msg_is_cmd_base(ten_msg_get_raw_msg(self));
+  return ten_raw_msg_is_cmd_and_result(ten_msg_get_raw_msg(self));
 }
 
 inline bool ten_msg_is_cmd(ten_shared_ptr_t *self) {
