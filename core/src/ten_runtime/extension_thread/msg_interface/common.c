@@ -55,9 +55,7 @@ static void ten_extension_thread_handle_in_msg_sync(
   // Find the extension according to 'loc'.
   ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
   ten_extension_t *extension = ten_extension_store_find_extension(
-      self->extension_store,
-      ten_string_get_raw_str(&dest_loc->extension_group_name),
-      ten_string_get_raw_str(&dest_loc->extension_name), true,
+      self->extension_store, ten_string_get_raw_str(&dest_loc->extension_name),
       self->in_lock_mode ? false : true);
   if (!extension) {
     ten_msg_dump(msg, NULL,
@@ -112,51 +110,36 @@ static void ten_extension_thread_handle_in_msg_task(void *self_, void *arg) {
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
   TEN_ASSERT(ten_msg_get_dest_cnt(msg) == 1, "Should not happen.");
 
-  if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_RESULT) {
-    if (ten_extension_thread_get_state(self) <=
-        TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE) {
-      // The receipt of a result is definitely because some extension of this
-      // extension thread previously sent out a command. As long as the
-      // extension can issue a command, the corresponding result must be
-      // delivered to and processed by the respective extension.
-      ten_extension_thread_handle_in_msg_sync(self, msg);
-    } else {
-      // Discard this cmd result.
-    }
-  } else {
-    switch (ten_extension_thread_get_state(self)) {
-      case TEN_EXTENSION_THREAD_STATE_INIT:
-      case TEN_EXTENSION_THREAD_STATE_CREATING_EXTENSIONS: {
+  switch (ten_extension_thread_get_state(self)) {
+    case TEN_EXTENSION_THREAD_STATE_INIT:
+    case TEN_EXTENSION_THREAD_STATE_CREATING_EXTENSIONS:
 #if defined(_DEBUG)
-        ten_msg_dump(msg, NULL,
-                     "A message (^m) comes when extension thread (%p) is in "
-                     "state (%d)",
-                     self, ten_extension_thread_get_state(self));
+      ten_msg_dump(msg, NULL,
+                   "A message (^m) comes when extension thread (%p) is in "
+                   "state (%d)",
+                   self, ten_extension_thread_get_state(self));
 #endif
 
-        // At this stage, the extensions have not been created yet, so any
-        // received messages are placed into a `pending_msgs` list. Once the
-        // extensions are created, the messages will be delivered to the
-        // corresponding extensions.
-        ten_list_push_smart_ptr_back(&self->pending_msgs, msg);
-        break;
-      }
+      // At this stage, the extensions have not been created yet, so any
+      // received messages are placed into a `pending_msgs` list. Once the
+      // extensions are created, the messages will be delivered to the
+      // corresponding extensions.
+      ten_list_push_smart_ptr_back(&self->pending_msgs, msg);
+      break;
 
-      case TEN_EXTENSION_THREAD_STATE_NORMAL:
-      case TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE:
-        ten_extension_thread_handle_in_msg_sync(self, msg);
-        break;
+    case TEN_EXTENSION_THREAD_STATE_NORMAL:
+    case TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE:
+      ten_extension_thread_handle_in_msg_sync(self, msg);
+      break;
 
-      case TEN_EXTENSION_THREAD_STATE_CLOSING:
-      case TEN_EXTENSION_THREAD_STATE_CLOSED:
-        // All the extensions of the extension thread have been closed, so
-        // discard all received messages directly.
-        break;
+    case TEN_EXTENSION_THREAD_STATE_CLOSED:
+      // All extensions are removed from this extension thread, so the only
+      // thing we can do is to discard this cmd result.
+      break;
 
-      default:
-        TEN_ASSERT(0, "Should not happen.");
-        break;
-    }
+    default:
+      TEN_ASSERT(0, "Should not happen.");
+      break;
   }
 
   ten_shared_ptr_destroy(msg);
@@ -295,6 +278,9 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
         if (!ten_string_is_equal(&dest_loc->extension_group_name,
                                  &extension_group->name)) {
           // Find the correct extension thread to handle this message.
+          //
+          // TODO(Wei): Should push to engine's extension_msgs queue to enable
+          // engine to find the correct extension thread.
           ten_extension_group_t *extension_group_ =
               ten_extension_context_find_extension_group_by_name(
                   engine->extension_context, &dest_loc->extension_group_name);

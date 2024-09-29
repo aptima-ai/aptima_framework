@@ -39,34 +39,24 @@ static void ten_engine_on_extension_thread_is_ready(
           ten_extension_thread_check_integrity(extension_thread, false),
       "Should not happen.");
 
-  self->extension_context->extension_threads_cnt_of_initted++;
-  if (self->extension_context->extension_threads_cnt_of_initted ==
-      ten_list_size(&self->extension_context->extension_threads)) {
+  ten_extension_context_t *extension_context = self->extension_context;
+  TEN_ASSERT(extension_context &&
+                 ten_extension_context_check_integrity(extension_context, true),
+             "Should not happen.");
+
+  extension_context->extension_threads_cnt_of_initted++;
+  if (extension_context->extension_threads_cnt_of_initted ==
+      ten_list_size(&extension_context->extension_threads)) {
     TEN_LOGD("[%s] All extension threads are initted.",
              ten_engine_get_name(self));
 
     // All the extension threads requested by this command have been completed,
     // return the result for this command.
     //
-    // We cannot notify the engine that this thread is started completely
-    // _before_ this line. Because the codes of previous states would modify
-    // some data structures (i.e., to add the extension information to the
-    // extension store, etc.), and when the main (I/O) thread (ex: the app
-    // thread or the engine thread) receives messages from remote apps, the main
-    // thread would 'search/read' those data structures to find the correct
-    // extension to dispatch those received messages.
-    //
     // After notifying the engine, the engine would send a 'OK' status back
     // to the previous graph stage, and finally notifying the client that
     // the whole graph is built-up successfully, so that the client will
     // start to send commands into the graph.
-    //
-    // So if we notify the engine too early (before this line), that would
-    // cause a very seldom timing issue that when the extension thread is
-    // still modifying those data structures, and the main (I/O) thread (ex: the
-    // app thread or the engine thread) is started to receive messages, and the
-    // main (I/O) thread will fail to find the correct destination extension
-    // (Because the extension doesn't register itself to the extension store).
 
     ten_string_t *graph_name = &self->graph_name;
 
@@ -75,7 +65,7 @@ static void ten_engine_on_extension_thread_is_ready(
                                : ten_string_get_raw_str(graph_name);
 
     ten_shared_ptr_t *state_requester_cmd =
-        extension_thread->extension_context->state_requester_cmd;
+        extension_context->state_requester_cmd;
 
     ten_shared_ptr_t *returned_cmd =
         ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_OK, state_requester_cmd);
@@ -85,7 +75,7 @@ static void ten_engine_on_extension_thread_is_ready(
     // We have sent the result for the original state_requester_cmd, so it is
     // useless now, destroy it.
     ten_shared_ptr_destroy(state_requester_cmd);
-    extension_thread->extension_context->state_requester_cmd = NULL;
+    extension_context->state_requester_cmd = NULL;
 
 #if defined(_DEBUG)
     ten_msg_dump(

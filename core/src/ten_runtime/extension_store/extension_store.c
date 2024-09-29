@@ -92,14 +92,9 @@ bool ten_extension_store_add_extension(ten_extension_store_t *self,
   TEN_ASSERT(ten_extension_check_integrity(extension, true),
              "Invalid use of extension %p.", extension);
 
-  if (ten_string_is_empty(&extension->unique_name_in_graph)) {
-    ten_extension_set_unique_name_in_graph(extension);
-  }
-
   bool result = true;
   ten_hashhandle_t *found = ten_hashtable_find_string(
-      &self->hash_table,
-      ten_string_get_raw_str(&extension->unique_name_in_graph));
+      &self->hash_table, ten_string_get_raw_str(&extension->name));
   if (found) {
     TEN_LOGE("Failed to have extension with name: %s",
              ten_extension_get_name(extension));
@@ -107,9 +102,8 @@ bool ten_extension_store_add_extension(ten_extension_store_t *self,
     goto done;
   }
 
-  ten_hashtable_add_string(
-      &self->hash_table, &extension->hh_in_extension_store,
-      ten_string_get_raw_str(&extension->unique_name_in_graph), NULL);
+  ten_hashtable_add_string(&self->hash_table, &extension->hh_in_extension_store,
+                           ten_string_get_raw_str(&extension->name), NULL);
 
 done:
   return result;
@@ -128,38 +122,25 @@ void ten_extension_store_del_extension(ten_extension_store_t *self,
   ten_hashtable_del(&self->hash_table, &extension->hh_in_extension_store);
 }
 
-ten_extension_t *ten_extension_store_find_extension(
-    ten_extension_store_t *self, const char *extension_group_name,
-    const char *extension_name, bool of_extension_thread, bool check_thread) {
+ten_extension_t *ten_extension_store_find_extension(ten_extension_store_t *self,
+                                                    const char *extension_name,
+                                                    bool check_thread) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_store_check_integrity(self, check_thread),
              "Invalid use of extension_store %p.", self);
 
-  TEN_ASSERT(extension_group_name && extension_name, "Should not happen.");
-
-  ten_string_t extension_unique_name_in_graph;
-  ten_string_init_formatted(&extension_unique_name_in_graph,
-                            TEN_EXTENSION_UNIQUE_NAME_IN_GRAPH_PATTERN,
-                            extension_group_name, extension_name);
+  TEN_ASSERT(extension_name, "Should not happen.");
 
   ten_extension_t *extension = NULL;
 
-  ten_hashhandle_t *hh = ten_hashtable_find_string(
-      &self->hash_table,
-      ten_string_get_raw_str(&extension_unique_name_in_graph));
+  ten_hashhandle_t *hh =
+      ten_hashtable_find_string(&self->hash_table, extension_name);
   if (hh) {
-    if (of_extension_thread) {
-      extension =
-          CONTAINER_OF_FROM_FIELD(hh, ten_extension_t, hh_in_extension_store);
-    } else {
-      extension =
-          CONTAINER_OF_FROM_FIELD(hh, ten_extension_t, hh_in_extension_store);
-    }
+    extension =
+        CONTAINER_OF_FROM_FIELD(hh, ten_extension_t, hh_in_extension_store);
 
     return extension;
   }
-
-  ten_string_deinit(&extension_unique_name_in_graph);
 
   return extension;
 }

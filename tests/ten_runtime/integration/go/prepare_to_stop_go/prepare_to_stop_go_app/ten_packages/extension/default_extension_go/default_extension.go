@@ -30,10 +30,10 @@ func (p *addonImpl) OnCreateInstance(
 		ext := &aExtension{name: name, isStopped: false}
 		tenEnv.OnCreateInstanceDone(ten.WrapExtension(ext, "A"), context)
 	case "B":
-		ext := &bExtension{}
+		ext := NewBExtension()
 		tenEnv.OnCreateInstanceDone(ten.WrapExtension(ext, "B"), context)
 	case "C":
-		ext := &cExtension{}
+		ext := NewCExtension()
 		tenEnv.OnCreateInstanceDone(ten.WrapExtension(ext, "C"), context)
 	default:
 		panic("Should not happen.")
@@ -75,7 +75,8 @@ func (p *aExtension) OnCmd(
 
 func (p *aExtension) OnStop(tenEnv ten.TenEnv) {
 	go func() {
-		fmt.Println("aExtension onStop ")
+		tenEnv.LogDebug("onStop ")
+
 		cmd, _ := ten.NewCmd("stop")
 		respChan := make(chan ten.CmdResult, 1)
 
@@ -98,6 +99,13 @@ func (p *aExtension) OnStop(tenEnv ten.TenEnv) {
 
 type bExtension struct {
 	ten.DefaultExtension
+	stopChan chan struct{}
+}
+
+func NewBExtension() *bExtension {
+	return &bExtension{
+		stopChan: make(chan struct{}),
+	}
 }
 
 func (p *bExtension) OnCmd(
@@ -106,9 +114,9 @@ func (p *bExtension) OnCmd(
 ) {
 	go func() {
 		cmdName, _ := cmd.GetName()
-		fmt.Println(
-			"bExtension receive  command: ",
-			cmdName,
+		tenEnv.LogInfo(
+			"receive command: " +
+				cmdName,
 		)
 		if cmdName == "start" {
 			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult) {
@@ -117,6 +125,9 @@ func (p *bExtension) OnCmd(
 		} else if cmdName == "stop" {
 			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult) {
 				r.ReturnResultDirectly(cs)
+
+				close(p.stopChan)
+				tenEnv.LogInfo("Stop command is processed.")
 			})
 		} else {
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
@@ -126,8 +137,27 @@ func (p *bExtension) OnCmd(
 	}()
 }
 
+func (p *bExtension) OnStop(tenEnv ten.TenEnv) {
+	go func() {
+		tenEnv.LogDebug("OnStop")
+
+		// Wait until the stop command is received and processed.
+		<-p.stopChan
+
+		tenEnv.LogInfo("Stop command processed. Now calling OnStopDone.")
+		tenEnv.OnStopDone()
+	}()
+}
+
 type cExtension struct {
 	ten.DefaultExtension
+	stopChan chan struct{}
+}
+
+func NewCExtension() *cExtension {
+	return &cExtension{
+		stopChan: make(chan struct{}),
+	}
 }
 
 func (p *cExtension) OnCmd(
@@ -136,9 +166,9 @@ func (p *cExtension) OnCmd(
 ) {
 	go func() {
 		cmdName, _ := cmd.GetName()
-		fmt.Println(
-			"cExtension receive  command: ",
-			cmdName,
+		tenEnv.LogInfo(
+			"receive command: " +
+				cmdName,
 		)
 		if cmdName == "start" {
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
@@ -150,12 +180,27 @@ func (p *cExtension) OnCmd(
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 				cmdResult.SetPropertyString("detail", "done")
 				tenEnv.ReturnResult(cmdResult, cmd)
+
+				close(p.stopChan)
+				tenEnv.LogInfo("Stop command is processed.")
 			}()
 		} else {
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 			cmdResult.SetPropertyString("detail", "unknown cmd")
 			tenEnv.ReturnResult(cmdResult, cmd)
 		}
+	}()
+}
+
+func (p *cExtension) OnStop(tenEnv ten.TenEnv) {
+	go func() {
+		tenEnv.LogDebug("OnStop")
+
+		// Wait until the stop command is received and processed.
+		<-p.stopChan
+
+		tenEnv.LogInfo("Stop command processed. Now calling OnStopDone.")
+		tenEnv.OnStopDone()
 	}()
 }
 

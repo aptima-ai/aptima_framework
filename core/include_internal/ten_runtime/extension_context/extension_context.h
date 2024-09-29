@@ -46,8 +46,6 @@ struct ten_extension_context_t {
   ten_list_t extension_threads;
 
   size_t extension_threads_cnt_of_initted;
-  size_t extension_threads_cnt_of_all_extensions_stopped;
-  size_t extension_threads_cnt_of_closing_flag_is_set;
   size_t extension_threads_cnt_of_closed;
 
   ten_list_t extension_groups_info_from_graph;

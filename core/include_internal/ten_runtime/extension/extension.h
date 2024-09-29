@@ -25,7 +25,6 @@
 #include "ten_utils/value/value.h"
 
 #define TEN_EXTENSION_SIGNATURE 0xE1627776E09A723CU
-#define TEN_EXTENSION_UNIQUE_NAME_IN_GRAPH_PATTERN "%s::%s"
 
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_extension_t ten_extension_t;
@@ -56,12 +55,8 @@ typedef struct ten_timer_t ten_timer_t;
 // - on_start ~ on_stop_done: Normal sending and receiving of all
 //   messages and results.
 //
-// TODO(WEi): Does it still needs to be considered?
-// [ After everyone has completed on_stop_done, they will collectively move into
-//   on_deinit. ]
-//
-// - on_deinit ~ on_deinit_done: Handles its own de-initialization; cannot send
-//   or receive messages.
+// - on_deinit ~ on_deinit_done: Handles its own de-initialization; cannot
+//   receive messages.
 typedef enum TEN_EXTENSION_STATE {
   TEN_EXTENSION_STATE_INIT,
 
@@ -77,8 +72,8 @@ typedef enum TEN_EXTENSION_STATE {
   // on_start_done() is completed.
   TEN_EXTENSION_STATE_ON_START_DONE,
 
-  // on_stop_done() is completed and could proceed to be closed.
-  TEN_EXTENSION_STATE_CLOSING,
+  // on_stop_done() is completed.
+  TEN_EXTENSION_STATE_ON_STOP_DONE,
 
   // on_deinit() is called.
   TEN_EXTENSION_STATE_ON_DEINIT,
@@ -158,12 +153,6 @@ struct ten_extension_t {
 
   ten_addon_host_t *addon_host;
   ten_string_t name;
-
-  // The extension name is unique in the extension group to which it belongs,
-  // and may not be unique in the graph to which it belongs. But in some
-  // contexts, a unique name in a graph is needed. The pattern of the unique
-  // extension name in a graph is '${extension_group_name}::${extension_name}'.
-  ten_string_t unique_name_in_graph;
 
   ten_string_t base_dir;
 
@@ -256,9 +245,6 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_set_addon(
 TEN_RUNTIME_PRIVATE_API ten_path_in_t *
 ten_extension_get_cmd_return_path_from_itself(ten_extension_t *self,
                                               const char *cmd_id);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_set_unique_name_in_graph(
-    ten_extension_t *self);
 
 TEN_RUNTIME_PRIVATE_API bool ten_extension_handle_out_msg(
     ten_extension_t *extension, ten_shared_ptr_t *msg, ten_error_t *err);

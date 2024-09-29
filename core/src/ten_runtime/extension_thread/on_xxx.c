@@ -10,17 +10,13 @@
 
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/common/loc.h"
-#include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/engine/on_xxx.h"
 #include "include_internal/ten_runtime/extension/close.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/metadata.h"
 #include "include_internal/ten_runtime/extension/msg_handling.h"
-#include "include_internal/ten_runtime/extension/on_xxx.h"
 #include "include_internal/ten_runtime/extension/path_timer.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
-#include "include_internal/ten_runtime/extension_context/internal/extension_group_is_stopped.h"
-#include "include_internal/ten_runtime/extension_context/internal/extension_thread_is_closing.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/metadata.h"
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
@@ -29,23 +25,18 @@
 #include "include_internal/ten_runtime/extension_thread/msg_interface/common.h"
 #include "include_internal/ten_runtime/metadata/metadata.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
-#include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_table.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/extension/extension.h"
-#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_ptr.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
-#include "ten_utils/value/value.h"
 
 void ten_extension_inherit_thread_ownership(
     ten_extension_t *self, ten_extension_thread_t *extension_thread) {
@@ -110,199 +101,6 @@ void ten_extension_thread_on_extension_group_on_init_done(
   ten_error_deinit(&err);
 
   ten_extension_group_create_extensions(self->extension_group);
-}
-
-static void ten_extension_thread_process_remaining_paths(
-    ten_extension_t *extension) {
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
-
-  ten_path_table_t *path_table = extension->path_table;
-  TEN_ASSERT(path_table, "Should not happen.");
-
-  ten_list_t *in_paths = &path_table->in_paths;
-  TEN_ASSERT(in_paths && ten_list_check_integrity(in_paths),
-             "Should not happen.");
-
-  // Clear the _IN_ paths of the extension.
-  ten_list_clear(in_paths);
-
-  ten_list_t *out_paths = &path_table->out_paths;
-  TEN_ASSERT(out_paths && ten_list_check_integrity(out_paths),
-             "Should not happen.");
-
-  size_t out_paths_cnt = ten_list_size(out_paths);
-  if (out_paths_cnt) {
-    // Call ten_extension_handle_in_msg to consume cmd results, so that the
-    // _OUT_paths can be removed.
-    TEN_LOGD("[%s] Flushing %zu remaining out paths.",
-             ten_extension_get_name(extension), out_paths_cnt);
-
-    ten_list_t cmd_result_list = TEN_LIST_INIT_VAL;
-    ten_list_foreach (out_paths, iter) {
-      ten_path_t *path = (ten_path_t *)ten_ptr_listnode_get(iter.node);
-      TEN_ASSERT(path && ten_path_check_integrity(path, true),
-                 "Should not happen.");
-
-      ten_shared_ptr_t *cmd_result =
-          ten_cmd_result_create(TEN_STATUS_CODE_ERROR);
-      TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
-                 "Should not happen.");
-
-      ten_msg_set_property(
-          cmd_result, "detail",
-          ten_value_create_string(ten_string_get_raw_str(&path->cmd_id)), NULL);
-      ten_cmd_base_set_cmd_id(cmd_result,
-                              ten_string_get_raw_str(&path->cmd_id));
-      ten_list_push_smart_ptr_back(&cmd_result_list, cmd_result);
-      ten_shared_ptr_destroy(cmd_result);
-    }
-
-    ten_list_foreach (&cmd_result_list, iter) {
-      ten_shared_ptr_t *cmd_result = ten_smart_ptr_listnode_get(iter.node);
-      TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
-                 "Should not happen.");
-
-      ten_extension_handle_in_msg(extension, cmd_result);
-    }
-
-    ten_list_clear(&cmd_result_list);
-  }
-}
-
-void ten_extension_thread_on_extension_on_stop_done(void *self_, void *arg) {
-  ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  ten_extension_on_start_stop_deinit_done_t *on_stop_done = arg;
-  TEN_ASSERT(on_stop_done, "Should not happen.");
-
-  ten_extension_t *stopped_extension = on_stop_done->extension;
-  TEN_ASSERT(stopped_extension &&
-                 ten_extension_check_integrity(stopped_extension, true),
-             "Should not happen.");
-  TEN_ASSERT(stopped_extension->extension_thread == self, "Should not happen.");
-
-  self->extensions_cnt_of_on_stop_done++;
-
-  if (self->extensions_cnt_of_on_stop_done ==
-      ten_list_size(&self->extensions)) {
-    // All extensions in this extension group/thread have been stopped.
-
-    ten_extension_context_t *extension_context = self->extension_context;
-    TEN_ASSERT(extension_context, "Invalid argument.");
-    // TEN_NOLINTNEXTLINE(thread-check)
-    // thread-check: This function will be called in the extension thread,
-    // however, the extension_context would not be changed after the extension
-    // system is starting, so it's safe to access the extension_context
-    // information in the extension thead.
-    //
-    // However, for the strict thread safety, it's possible to modify the logic
-    // here to use asynchronous operations (i.e., add a task to the
-    // extension_context, and add a task to the extension_thread when the result
-    // is found) here.
-    TEN_ASSERT(ten_extension_context_check_integrity(extension_context, false),
-               "Invalid use of extension_context %p.", extension_context);
-
-    ten_engine_t *engine = extension_context->engine;
-    TEN_ASSERT(engine, "Invalid argument.");
-    // TEN_NOLINTNEXTLINE(thread-check)
-    // thread-check: The runloop of the engine will not be changed during the
-    // whole lifetime of the extension thread, so it's thread safe to access it
-    // here.
-    TEN_ASSERT(ten_engine_check_integrity(engine, false),
-               "Invalid use of engine %p.", engine);
-
-    ten_runloop_post_task_tail(
-        ten_engine_get_attached_runloop(engine),
-        ten_extension_context_on_all_extensions_in_extension_group_are_stopped,
-        extension_context, self->extension_group);
-  }
-
-  ten_extension_on_start_stop_deinit_done_destroy(on_stop_done);
-}
-
-void ten_extension_thread_pre_close(void *self_, TEN_UNUSED void *arg) {
-  ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  ten_list_foreach (&self->extensions, iter) {
-    ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-               "Should not happen.");
-
-    ten_extension_do_pre_close_action(extension);
-  }
-}
-
-void ten_extension_thread_on_extension_set_closing_flag(void *self_,
-                                                        void *arg) {
-  ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  ten_extension_t *extension = (ten_extension_t *)arg;
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
-
-  self->extensions_cnt_of_set_closing_flag++;
-
-  if (self->extensions_cnt_of_set_closing_flag ==
-      ten_list_size(&self->extensions)) {
-    // Important: All the registered result handlers have to be called.
-    //
-    // Ex: If there are still some _IN_ or _OUT_ paths remaining in the path
-    // table of extensions, in order to prevent memory leaks such as the
-    // result handler in C++ binding, we need to create the corresponding
-    // cmd results and send them into the original source extension.
-    ten_list_foreach (&self->extensions, iter) {
-      ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
-      TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-                 "Should not happen.");
-
-      ten_extension_thread_process_remaining_paths(extension);
-    }
-
-    ten_extension_thread_set_state(self, TEN_EXTENSION_THREAD_STATE_CLOSING);
-
-    // Even after this point in time, if other extension threads send messages
-    // to this extension, because the state of this extension is already
-    // CLOSING, the extension thread will not forward the messages to the
-    // extensions it belongs to. Therefore, for those extensions, they can
-    // safely begin the deinit and final destroy actions.
-
-    ten_runloop_post_task_tail(
-        ten_engine_get_attached_runloop(self->extension_context->engine),
-        ten_extension_context_on_extension_thread_closing_flag_is_set,
-        self->extension_context, self->extension_group);
-  }
-}
-
-void ten_extension_thread_call_all_extensions_on_deinit(void *self_,
-                                                        TEN_UNUSED void *arg) {
-  ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
-             "Invalid use of extension_thread %p.", self);
-
-  TEN_ASSERT(ten_extension_thread_get_state(self) ==
-                 TEN_EXTENSION_THREAD_STATE_CLOSING,
-             "Extension thread is not closing: %d",
-             ten_extension_thread_get_state(self));
-
-  // Call on_deinit() of each containing extensions.
-  ten_list_foreach (&self->extensions, iter) {
-    ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-               "Should not happen.");
-
-    ten_extension_on_deinit(extension);
-  }
 }
 
 void ten_extension_thread_start_life_cycle_of_all_extensions(

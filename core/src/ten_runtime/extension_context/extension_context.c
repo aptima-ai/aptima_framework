@@ -20,7 +20,6 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
-#include "include_internal/ten_runtime/extension_store/extension_store.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
@@ -84,8 +83,6 @@ ten_extension_context_t *ten_extension_context_create(ten_engine_t *engine) {
   ten_list_init(&self->extension_threads);
 
   self->extension_threads_cnt_of_initted = 0;
-  self->extension_threads_cnt_of_all_extensions_stopped = 0;
-  self->extension_threads_cnt_of_closing_flag_is_set = 0;
   self->extension_threads_cnt_of_closed = 0;
 
   self->extension_groups_cnt_of_being_destroyed = 0;

@@ -29,18 +29,6 @@ TEN_RUNTIME_API void ten_extension_inherit_thread_ownership(
 TEN_RUNTIME_PRIVATE_API void
 ten_extension_thread_on_extension_group_on_init_done(void *self_, void *arg);
 
-TEN_RUNTIME_PRIVATE_API void ten_extension_thread_on_extension_on_stop_done(
-    void *self_, void *arg);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_thread_call_all_extensions_on_deinit(
-    void *self_, void *arg);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_thread_pre_close(void *self_,
-                                                            void *arg);
-
-TEN_RUNTIME_PRIVATE_API void ten_extension_thread_on_extension_set_closing_flag(
-    void *self_, void *arg);
-
 TEN_RUNTIME_PRIVATE_API void
 ten_extension_thread_start_life_cycle_of_all_extensions(void *self_, void *arg);
 

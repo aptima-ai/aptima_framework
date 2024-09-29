@@ -91,14 +91,6 @@ static bool ten_send_msg_internal(
       ten_extension_t *extension = ten_env_get_attached_extension(self);
       TEN_ASSERT(extension, "Should not happen.");
 
-      if (extension->state >= TEN_EXTENSION_STATE_CLOSING) {
-        TEN_LOGE("Cannot send messages after on_stop_done.");
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Cannot send messages after on_stop_done.");
-        result = false;
-        goto done;
-      }
-
       result = ten_extension_handle_out_msg(extension, msg, err);
       break;
     }

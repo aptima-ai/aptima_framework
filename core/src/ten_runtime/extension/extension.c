@@ -90,7 +90,6 @@ ten_extension_t *ten_extension_create(
   self->addon_host = NULL;
   ten_string_init_formatted(&self->name, "%s", name);
 
-  ten_string_init(&self->unique_name_in_graph);
   ten_string_init(&self->base_dir);
 
   self->ten_env = NULL;
@@ -170,7 +169,6 @@ void ten_extension_destroy(ten_extension_t *self) {
 
   ten_env_destroy(self->ten_env);
   ten_string_deinit(&self->name);
-  ten_string_deinit(&self->unique_name_in_graph);
 
   ten_value_deinit(&self->manifest);
   ten_value_deinit(&self->property);
@@ -541,14 +539,6 @@ static TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT ten_extension_determine_out_msgs(
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Should not happen.");
   TEN_ASSERT(result_msgs, "Should not happen.");
 
-  {
-    TEN_UNUSED ten_extension_thread_t *extension_thread =
-        self->extension_thread;
-    TEN_ASSERT(extension_thread, "Invalid argument.");
-    TEN_ASSERT(ten_extension_thread_check_integrity(extension_thread, true),
-               "Invalid use of extension_thread %p.", extension_thread);
-  }
-
   if (ten_msg_get_dest_cnt(msg) > 0) {
     // Because the messages has already had destinations, no matter it is a
     // backward path or a forward path, dispatch the message according to the
@@ -625,16 +615,6 @@ bool ten_extension_handle_out_msg(ten_extension_t *self, ten_shared_ptr_t *msg,
              "Should not happen.");
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Should not happen.");
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
-
-  if (ten_extension_thread_get_state(self->extension_thread) >=
-      TEN_EXTENSION_THREAD_STATE_CLOSING) {
-    // We should not handle anymore messages, because when the extension thread
-    // enters its 'closing' stage, it means the graph relevant
-    // resources/structures (i.e., ten_all_msg_type_dest_info_t) might
-    // have already been destroyed. Therefore, it's unsafe to continue to handle
-    // messages.
-    return false;
-  }
 
   // The source of the out message is the current extension.
   ten_msg_set_src_to_extension(msg, self);
@@ -817,13 +797,8 @@ static void ten_extension_flush_all_pending_msgs(ten_extension_t *self) {
   TEN_ASSERT(ten_extension_check_integrity(self, true),
              "Invalid use of extension %p.", self);
 
-  // The developer expects that on_start() will execute before all on_cmd()
-  // events. Therefore, after on_start() has been executed, there is no need
-  // to wait for on_start_done() before sending all previously buffered
-  // messages into the extension.
-
   // Flush the previously got messages, which are received before
-  // on_start_done(), into the extension.
+  // on_init_done(), into the extension.
   ten_extension_thread_t *extension_thread = self->extension_thread;
   ten_list_foreach (&extension_thread->pending_msgs, iter) {
     ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
@@ -839,7 +814,7 @@ static void ten_extension_flush_all_pending_msgs(ten_extension_t *self) {
   }
 
   // Flush the previously got messages, which are received before
-  // on_start_done(), into the extension.
+  // on_init_done(), into the extension.
   ten_list_foreach (&self->pending_msgs, iter) {
     ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
     TEN_ASSERT(msg, "Should not happen.");
@@ -860,6 +835,11 @@ void ten_extension_on_start(ten_extension_t *self) {
 
   if (self->on_start) {
     self->on_start(self, self->ten_env);
+
+    // The developer expects that on_start() will execute before all on_cmd()
+    // events. Therefore, after on_start() has been executed, there is no need
+    // to wait for on_start_done() before sending all previously buffered
+    // messages into the extension.
 
     ten_extension_flush_all_pending_msgs(self);
   } else {
@@ -1065,23 +1045,6 @@ ten_path_in_t *ten_extension_get_cmd_return_path_from_itself(
   }
 
   return ten_ptr_listnode_get(returned_node);
-}
-
-void ten_extension_set_unique_name_in_graph(ten_extension_t *self) {
-  TEN_ASSERT(self && ten_extension_check_integrity(self, true) &&
-                 self->extension_thread,
-             "Should not happen.");
-
-  ten_extension_group_t *extension_group =
-      self->extension_thread->extension_group;
-  TEN_ASSERT(extension_group &&
-                 ten_extension_group_check_integrity(extension_group, true),
-             "Should not happen.");
-
-  ten_string_set_formatted(&self->unique_name_in_graph,
-                           TEN_EXTENSION_UNIQUE_NAME_IN_GRAPH_PATTERN,
-                           ten_string_get_raw_str(&extension_group->name),
-                           ten_string_get_raw_str(&self->name));
 }
 
 ten_string_t *ten_extension_get_base_dir(ten_extension_t *self) {

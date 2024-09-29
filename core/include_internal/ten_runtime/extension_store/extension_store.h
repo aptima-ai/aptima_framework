@@ -39,5 +39,4 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_store_del_extension(
     ten_extension_store_t *self, ten_extension_t *extension);
 
 TEN_RUNTIME_PRIVATE_API ten_extension_t *ten_extension_store_find_extension(
-    ten_extension_store_t *self, const char *extension_group_name,
-    const char *extension_name, bool of_extension_thread, bool check_thread);
+    ten_extension_store_t *self, const char *extension_name, bool check_thread);

@@ -90,9 +90,7 @@ ten_extension_thread_t *ten_extension_thread_create(void) {
       offsetof(ten_extension_t, hh_in_extension_store));
 
   ten_list_init(&self->extensions);
-  self->extensions_cnt_of_deleted_from_engine = 0;
-  self->extensions_cnt_of_on_stop_done = 0;
-  self->extensions_cnt_of_set_closing_flag = 0;
+  self->extensions_cnt_of_deleted = 0;
 
   ten_list_init(&self->pending_msgs);
 
@@ -344,7 +342,6 @@ static void ten_extension_thread_on_triggering_close(void *self_,
       break;
 
     case TEN_EXTENSION_THREAD_STATE_PREPARE_TO_CLOSE:
-    case TEN_EXTENSION_THREAD_STATE_CLOSING:
     case TEN_EXTENSION_THREAD_STATE_CLOSED:
     default:
       TEN_ASSERT(0, "Should not happen.");

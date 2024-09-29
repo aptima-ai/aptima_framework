@@ -49,19 +49,8 @@ static bool ten_env_return_result_internal(ten_env_t *self,
   TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
              "Invalid use of extension %p.", extension);
 
-  bool result = true;
+  bool result = ten_extension_handle_out_msg(extension, result_cmd, err);
 
-  if (extension->state >= TEN_EXTENSION_STATE_CLOSING) {
-    TEN_LOGW("Cannot return results after on_stop_done.");
-    ten_error_set(err, TEN_ERRNO_GENERIC,
-                  "Cannot return results after on_stop_done.");
-    result = false;
-    goto done;
-  }
-
-  result = ten_extension_handle_out_msg(extension, result_cmd, err);
-
-done:
   if (err_new_created) {
     ten_error_destroy(err);
   }

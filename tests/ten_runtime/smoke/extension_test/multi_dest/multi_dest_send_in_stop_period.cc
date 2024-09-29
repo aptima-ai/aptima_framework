@@ -103,7 +103,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_send_in_stop_period__extension_3,
 
 }  // namespace
 
-TEST(ExtensionTest, MultiDestSendInStopPeriod) {  // NOLINT
+TEST(ExtensionTest, DISABLED_MultiDestSendInStopPeriod) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);

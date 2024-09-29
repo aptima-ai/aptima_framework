@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/extension/on_xxx.h"
 
 #include "include_internal/ten_runtime/common/loc.h"
+#include "include_internal/ten_runtime/extension/close.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/metadata.h"
 #include "include_internal/ten_runtime/extension/path_timer.h"
@@ -215,17 +216,9 @@ void ten_extension_on_stop_done(ten_env_t *self) {
 
   TEN_LOGI("[%s] on_stop() done.", ten_extension_get_name(extension));
 
-  // When we reach here, it means the extension has been stopped completely.
-  // Notify the extension thread about this fact.
+  extension->state = TEN_EXTENSION_STATE_ON_STOP_DONE;
 
-  ten_extension_on_start_stop_deinit_done_t *on_stop_done =
-      ten_extension_on_start_stop_deinit_done_create(extension);
-
-  // Use the runloop task mechanism to ensure the operations afterwards will be
-  // executed in the extension thread.
-  ten_runloop_post_task_tail(ten_extension_get_attached_runloop(extension),
-                             ten_extension_thread_on_extension_on_stop_done,
-                             extension->extension_thread, on_stop_done);
+  ten_extension_do_pre_close_action(extension);
 }
 
 static void ten_extension_thread_del_extension(ten_extension_thread_t *self,
@@ -247,9 +240,8 @@ static void ten_extension_thread_del_extension(ten_extension_thread_t *self,
   // that no more messages could be routed to this extension in the future.
   ten_extension_store_del_extension(self->extension_store, extension);
 
-  self->extensions_cnt_of_deleted_from_engine++;
-  if (self->extensions_cnt_of_deleted_from_engine ==
-      ten_list_size(&self->extensions)) {
+  self->extensions_cnt_of_deleted++;
+  if (self->extensions_cnt_of_deleted == ten_list_size(&self->extensions)) {
     ten_extension_group_destroy_extensions(self->extension_group,
                                            self->extensions);
   }
@@ -306,25 +298,4 @@ void ten_extension_on_deinit_done(ten_env_t *self) {
 
   ten_extension_thread_on_extension_on_deinit_done(extension->extension_thread,
                                                    extension);
-}
-
-ten_extension_on_start_stop_deinit_done_t *
-ten_extension_on_start_stop_deinit_done_create(ten_extension_t *extension) {
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
-
-  ten_extension_on_start_stop_deinit_done_t *self =
-      TEN_MALLOC(sizeof(ten_extension_on_start_stop_deinit_done_t));
-  TEN_ASSERT(self, "Failed to allocate memory.");
-
-  self->extension = extension;
-
-  return self;
-}
-
-void ten_extension_on_start_stop_deinit_done_destroy(
-    ten_extension_on_start_stop_deinit_done_t *self) {
-  TEN_ASSERT(self, "Should not happen.");
-
-  TEN_FREE(self);
 }
