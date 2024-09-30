@@ -28,8 +28,8 @@
  */
 static bool ten_send_msg_internal(
     ten_env_t *self, ten_shared_ptr_t *msg,
-    ten_env_cmd_result_handler_func_t result_handler, void *result_handler_data,
-    ten_error_t *err) {
+    ten_env_cmd_result_handler_func_t result_handler,
+    void *result_handler_user_data, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_env_check_integrity(self, true), "Invalid use of ten_env %p.",
              self);
@@ -71,7 +71,8 @@ static bool ten_send_msg_internal(
 
   if (msg_is_cmd) {
     // 'command' has the mechanism of 'result'.
-    ten_cmd_base_set_result_handler(msg, result_handler, result_handler_data);
+    ten_cmd_base_set_result_handler(msg, result_handler,
+                                    result_handler_user_data);
 
     // @{
     // All commands sent from an extension will eventually go to this function,
@@ -118,20 +119,20 @@ done:
 
 bool ten_env_send_cmd(ten_env_t *self, ten_shared_ptr_t *cmd,
                       ten_env_cmd_result_handler_func_t result_handler,
-                      void *result_handler_data, ten_error_t *err) {
+                      void *result_handler_user_data, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_env_check_integrity(self, true), "Invalid use of ten_env %p.",
              self);
   TEN_ASSERT(cmd, "Should not happen.");
 
-  return ten_send_msg_internal(self, cmd, result_handler, result_handler_data,
-                               err);
+  return ten_send_msg_internal(self, cmd, result_handler,
+                               result_handler_user_data, err);
 }
 
 static bool ten_env_send_json_internal(
     ten_env_t *self, ten_json_t *json,
-    ten_env_cmd_result_handler_func_t result_handler, void *result_handler_data,
-    ten_error_t *err) {
+    ten_env_cmd_result_handler_func_t result_handler,
+    void *result_handler_user_data, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_env_check_integrity(self, true), "Invalid use of ten_env %p.",
              self);
@@ -142,7 +143,7 @@ static bool ten_env_send_json_internal(
   ten_shared_ptr_t *cmd = ten_msg_create_from_json(json, err);
   if (cmd) {
     success = ten_send_msg_internal(self, cmd, result_handler,
-                                    result_handler_data, err);
+                                    result_handler_user_data, err);
     ten_shared_ptr_destroy(cmd);
   }
 
@@ -151,14 +152,14 @@ static bool ten_env_send_json_internal(
 
 bool ten_env_send_json(ten_env_t *self, ten_json_t *json,
                        ten_env_cmd_result_handler_func_t result_handler,
-                       void *result_handler_data, ten_error_t *err) {
+                       void *result_handler_user_data, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_env_check_integrity(self, true), "Invalid use of ten_env %p.",
              self);
   TEN_ASSERT(json, "Should not happen.");
 
   return ten_env_send_json_internal(self, json, result_handler,
-                                    result_handler_data, err);
+                                    result_handler_user_data, err);
 }
 
 bool ten_env_send_data(ten_env_t *self, ten_shared_ptr_t *data,

@@ -8,6 +8,7 @@
 #include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
 #include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
+#include "include_internal/ten_runtime/test/test_extension.h"
 #include "include_internal/ten_utils/backtrace/backtrace.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "ten_utils/macro/ctor.h"
@@ -39,9 +40,11 @@ TEN_CONSTRUCTOR(ten_runtime_on_load) {
   // multiple apps within a single process, they are registered in the global
   // addon store.
   ten_builtin_extension_group_addon_register();
+  ten_builtin_test_extension_addon_register();
 }
 
 TEN_DESTRUCTOR(ten_runtime_on_unload) {
+  ten_builtin_test_extension_addon_unregister();
   ten_builtin_extension_group_addon_unregister();
 
   ten_global_deinit();

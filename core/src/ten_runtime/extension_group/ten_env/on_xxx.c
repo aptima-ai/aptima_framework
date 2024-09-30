@@ -153,9 +153,6 @@ void ten_extension_group_on_create_extensions_done(ten_extension_group_t *self,
                "Invalid use of extension %p.", extension);
   }
 
-  ten_extension_thread_set_state(extension_thread,
-                                 TEN_EXTENSION_THREAD_STATE_NORMAL);
-
   ten_extension_thread_add_all_created_extensions(extension_thread);
 }
 

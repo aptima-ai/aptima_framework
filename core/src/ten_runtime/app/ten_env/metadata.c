@@ -8,10 +8,10 @@
 
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value_object.h"
 
 bool ten_app_set_property(ten_app_t *app, const char *name, ten_value_t *value,
@@ -19,7 +19,6 @@ bool ten_app_set_property(ten_app_t *app, const char *name, ten_value_t *value,
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
   TEN_ASSERT(name && value && ten_value_check_integrity(value),
              "Invalid argument.");
-  TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
 
   if (!ten_schema_store_adjust_property_kv(&app->schema_store, name, value,
                                            err)) {

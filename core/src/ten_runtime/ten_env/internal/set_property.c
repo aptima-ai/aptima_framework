@@ -396,16 +396,10 @@ bool ten_env_set_property(ten_env_t *self, const char *path, ten_value_t *value,
 
       switch (level) {
         case TEN_METADATA_LEVEL_APP: {
-          if (true) {
-            result = false;
-            if (err) {
-              ten_error_set(err, TEN_ERRNO_GENERIC,
-                            "The set property of app is currently not "
-                            "supported; use init_property_from_json instead.");
-            }
-            TEN_ASSERT(0, "Should not happen.");
-          } else {
+          if (ten_app_thread_call_by_me(app)) {
             result = ten_app_set_property(app, path, value, err);
+          } else {
+            TEN_ASSERT(0, "Do we really need this?");
           }
           break;
         }

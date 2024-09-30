@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 
+#include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/extension_info/json.h"
 #include "ten_utils/container/list_node_smart_ptr.h"
@@ -109,6 +110,11 @@ bool ten_msg_dest_info_qualified(ten_msg_dest_info_t *self,
              "Should not happen.");
 
   if (ten_c_string_is_equal(ten_string_get_raw_str(&self->name), msg_name)) {
+    return true;
+  }
+
+  // "*" is a special rule that matches all names.
+  if (ten_string_is_equal_c_str(&self->name, TEN_STR_STAR)) {
     return true;
   }
 

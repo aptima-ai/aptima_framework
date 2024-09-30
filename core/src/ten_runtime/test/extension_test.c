@@ -8,15 +8,18 @@
 
 #include <string.h>
 
-#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
+#include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_runtime/test/test_app.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
 #include "ten_runtime/msg/cmd/start_graph/cmd.h"
+#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
@@ -27,78 +30,21 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
-
-static void test_ten_app_on_configure(ten_app_t *app, ten_env_t *ten_env) {
-  bool rc = ten_env_init_property_from_json(ten_env,
-                                            "{\
-                                               \"_ten\": {\
-                                                 \"log_level\": 2\
-                                               }\
-                                             }",
-                                            NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  rc = ten_env_on_configure_done(ten_env, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-}
-
-static void test_ten_app_on_init(ten_app_t *app, ten_env_t *ten_env) {
-  ten_extension_test_t *test_info = app->user_data;
-  TEN_ASSERT(test_info, "Should not happen.");
-
-  test_info->test_app_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
-  TEN_ASSERT(test_info->test_app_ten_env_proxy, "Should not happen.");
-
-  ten_event_set(test_info->test_app_ten_env_proxy_create_completed);
-
-  ten_env_on_init_done(ten_env, NULL);
-}
-
-static void test_ten_app_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
-  ten_extension_test_t *test_info = app->user_data;
-  TEN_ASSERT(test_info, "Should not happen.");
-
-  bool rc = ten_env_proxy_release(test_info->test_app_ten_env_proxy, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  test_info->test_app_ten_env_proxy = NULL;
-
-  ten_env_on_deinit_done(ten_env, NULL);
-}
-
-void *test_app_thread_main(void *args) {
-  ten_error_t err;
-  ten_error_init(&err);
-
-  ten_extension_test_t *test_info = args;
-
-  ten_app_t *test_app =
-      ten_app_create(test_ten_app_on_configure, test_ten_app_on_init,
-                     test_ten_app_on_deinit, &err);
-  TEN_ASSERT(test_app, "Failed to create app.");
-
-  test_app->user_data = test_info;
-
-  bool rc = ten_app_run(test_app, false, &err);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  ten_app_destroy(test_app);
-
-  return NULL;
-}
 
 ten_extension_test_t *ten_extension_test_create(void) {
   ten_extension_test_t *self = TEN_MALLOC(sizeof(ten_extension_test_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
-  self->test_app_ten_env_proxy = NULL;
-  ten_string_init(&self->test_extension_addon_name);
-  self->test_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
+  ten_string_init(&self->target_extension_addon_name);
 
-  self->test_app_thread =
-      ten_thread_create("test app thread", test_app_thread_main, self);
+  self->test_app_ten_env_proxy = NULL;
+  self->test_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
+  self->test_app_thread = ten_thread_create(
+      "test app thread", ten_extension_test_app_thread_main, self);
+
+  self->test_extension_ten_env_proxy = NULL;
+  self->test_extension_ten_env_proxy_create_completed = ten_event_create(0, 1);
 
   ten_event_wait(self->test_app_ten_env_proxy_create_completed, -1);
 
@@ -110,17 +56,40 @@ void ten_extension_test_add_addon(ten_extension_test_t *self,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(addon_name, "Invalid argument.");
 
-  ten_string_set_formatted(&self->test_extension_addon_name, "%s", addon_name);
+  ten_string_set_formatted(&self->target_extension_addon_name, "%s",
+                           addon_name);
 }
 
-static void ten_env_proxy_notify_close_app(ten_env_t *ten_env,
-                                           TEN_UNUSED void *user_data) {
-  TEN_ASSERT(
-      ten_env &&
-          ten_env_check_integrity(
-              ten_env,
-              ten_env->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
-      "Should not happen.");
+static void send_cmd_to_app_callback(ten_extension_t *extension,
+                                     ten_env_t *ten_env,
+                                     ten_shared_ptr_t *cmd_result,
+                                     TEN_UNUSED void *callback_info) {
+  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
+             "Should not happen.");
+
+  TEN_STATUS_CODE status_code = ten_cmd_result_get_status_code(cmd_result);
+  TEN_ASSERT(status_code == TEN_STATUS_CODE_OK, "Should not happen.");
+}
+
+static void test_app_ten_env_send_cmd(ten_env_t *ten_env, void *user_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_shared_ptr_t *cmd = user_data;
+  TEN_ASSERT(cmd && ten_msg_check_integrity(cmd), "Should not happen.");
+
+  bool rc =
+      ten_env_send_cmd(ten_env, cmd, send_cmd_to_app_callback, NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
+void ten_extension_test_destroy(ten_extension_test_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
 
   ten_shared_ptr_t *close_app_cmd = ten_cmd_close_app_create();
   TEN_ASSERT(close_app_cmd, "Should not happen.");
@@ -130,20 +99,25 @@ static void ten_env_proxy_notify_close_app(ten_env_t *ten_env,
                                        NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
-  rc = ten_env_send_cmd(ten_env, close_app_cmd, NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+  ten_env_proxy_notify(self->test_app_ten_env_proxy, test_app_ten_env_send_cmd,
+                       close_app_cmd, false, NULL);
+
+  ten_thread_join(self->test_app_thread, -1);
+
+  TEN_ASSERT(self->test_app_ten_env_proxy == NULL, "Should not happen.");
+  ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
+
+  TEN_ASSERT(self->test_extension_ten_env_proxy == NULL, "Should not happen.");
+  ten_event_destroy(self->test_extension_ten_env_proxy_create_completed);
+
+  ten_string_deinit(&self->target_extension_addon_name);
+
+  TEN_FREE(self);
 }
 
-static void ten_env_proxy_notify_start(ten_env_t *ten_env, void *user_data) {
-  TEN_ASSERT(
-      ten_env &&
-          ten_env_check_integrity(
-              ten_env,
-              ten_env->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
-      "Should not happen.");
-
-  ten_extension_test_t *test_info = user_data;
-  TEN_ASSERT(test_info, "Should not happen.");
+void ten_extension_test_start(ten_extension_test_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
 
   ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
   TEN_ASSERT(start_graph_cmd, "Should not happen.");
@@ -157,19 +131,103 @@ static void ten_env_proxy_notify_start(ten_env_t *ten_env, void *user_data) {
   ten_string_init_formatted(
       &start_graph_cmd_json_str,
       "{\
-           \"_ten\": {\
-             \"type\": \"start_graph\",\
-             \"nodes\": [{\
-                \"type\": \"extension\",\
-                \"name\": \"%s\",\
-                \"addon\": \"%s\",\
-                \"extension_group\": \"default_extension_group\",\
-                \"app\": \"localhost\"\
+         \"_ten\": {\
+           \"type\": \"start_graph\",\
+           \"nodes\": [{\
+              \"type\": \"extension\",\
+              \"name\": \"test_extension\",\
+              \"addon\": \"ten:test_extension\",\
+              \"extension_group\": \"test_extension_group_1\",\
+              \"app\": \"localhost\"\
+           },{\
+              \"type\": \"extension\",\
+              \"name\": \"%s\",\
+              \"addon\": \"%s\",\
+              \"extension_group\": \"test_extension_group_2\",\
+              \"app\": \"localhost\"\
+           }],\
+           \"connections\": [{\
+             \"app\": \"localhost\",\
+             \"extension_group\": \"test_extension_group_1\",\
+             \"extension\": \"test_extension\",\
+             \"cmd\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_2\",\
+                  \"extension\": \"%s\"\
+               }]\
+             }],\
+             \"data\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_2\",\
+                  \"extension\": \"%s\"\
+               }]\
+             }],\
+             \"video_frame\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_2\",\
+                  \"extension\": \"%s\"\
+               }]\
+             }],\
+             \"audio_frame\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_2\",\
+                  \"extension\": \"%s\"\
+               }]\
              }]\
-           }\
-         }",
-      ten_string_get_raw_str(&test_info->test_extension_addon_name),
-      ten_string_get_raw_str(&test_info->test_extension_addon_name));
+           },{\
+             \"app\": \"localhost\",\
+             \"extension_group\": \"test_extension_group_2\",\
+             \"extension\": \"%s\",\
+             \"cmd\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_1\",\
+                  \"extension\": \"test_extension\"\
+               }]\
+             }],\
+             \"data\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_1\",\
+                  \"extension\": \"test_extension\"\
+               }]\
+             }],\
+             \"video_frame\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_1\",\
+                  \"extension\": \"test_extension\"\
+               }]\
+             }],\
+             \"audio_frame\": [{\
+               \"name\": \"*\",\
+               \"dest\": [{\
+                  \"app\": \"localhost\",\
+                  \"extension_group\": \"test_extension_group_1\",\
+                  \"extension\": \"test_extension\"\
+               }]\
+             }]\
+           }]\
+         }\
+       }",
+      ten_string_get_raw_str(&self->target_extension_addon_name),
+      ten_string_get_raw_str(&self->target_extension_addon_name),
+      ten_string_get_raw_str(&self->target_extension_addon_name),
+      ten_string_get_raw_str(&self->target_extension_addon_name),
+      ten_string_get_raw_str(&self->target_extension_addon_name),
+      ten_string_get_raw_str(&self->target_extension_addon_name),
+      ten_string_get_raw_str(&self->target_extension_addon_name));
 
   ten_json_t *start_graph_cmd_json = ten_json_from_string(
       ten_string_get_raw_str(&start_graph_cmd_json_str), NULL);
@@ -181,32 +239,91 @@ static void ten_env_proxy_notify_start(ten_env_t *ten_env, void *user_data) {
 
   ten_json_destroy(start_graph_cmd_json);
 
-  rc = ten_env_send_cmd(ten_env, start_graph_cmd, NULL, NULL, NULL);
+  rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
+                            test_app_ten_env_send_cmd, start_graph_cmd, false,
+                            NULL);
   TEN_ASSERT(rc, "Should not happen.");
+
+  ten_event_wait(self->test_extension_ten_env_proxy_create_completed, -1);
 }
 
-void ten_extension_test_destroy(ten_extension_test_t *self) {
+typedef struct ten_extension_test_send_cmd_info_t {
+  ten_shared_ptr_t *cmd;
+  ten_extension_test_cmd_result_handler_func_t handler;
+  void *handler_user_data;
+} ten_extension_test_send_cmd_info_t;
+
+static ten_extension_test_send_cmd_info_t *
+ten_extension_test_send_cmd_info_create(
+    ten_shared_ptr_t *cmd, ten_extension_test_cmd_result_handler_func_t handler,
+    void *handler_user_data) {
+  ten_extension_test_send_cmd_info_t *self =
+      TEN_MALLOC(sizeof(ten_extension_test_send_cmd_info_t));
+  TEN_ASSERT(self, "Failed to allocate memory.");
+
+  self->cmd = cmd;
+  self->handler = handler;
+  self->handler_user_data = handler_user_data;
+
+  return self;
+}
+
+static void ten_extension_test_send_cmd_info_destroy(
+    ten_extension_test_send_cmd_info_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
-
-  ten_env_proxy_notify(self->test_app_ten_env_proxy,
-                       ten_env_proxy_notify_close_app, NULL, false, NULL);
-
-  ten_thread_join(self->test_app_thread, -1);
-
-  TEN_ASSERT(self->test_app_ten_env_proxy == NULL, "Should not happen.");
-  ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
-
-  ten_string_deinit(&self->test_extension_addon_name);
 
   TEN_FREE(self);
 }
 
-void ten_extension_test_start(ten_extension_test_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
+static void send_cmd_to_extension_callback(ten_extension_t *extension,
+                                           ten_env_t *ten_env,
+                                           ten_shared_ptr_t *cmd_result,
+                                           void *callback_user_data) {
+  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
+             "Should not happen.");
 
-  bool rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
-                                 ten_env_proxy_notify_start, self, false, NULL);
+  ten_extension_test_send_cmd_info_t *send_cmd_info = callback_user_data;
+  TEN_ASSERT(send_cmd_info, "Invalid argument.");
+
+  if (send_cmd_info->handler) {
+    send_cmd_info->handler(cmd_result, send_cmd_info->handler_user_data);
+  }
+
+  ten_extension_test_send_cmd_info_destroy(send_cmd_info);
+}
+
+static void test_extension_ten_env_send_cmd(ten_env_t *ten_env,
+                                            void *user_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_extension_test_send_cmd_info_t *send_cmd_info = user_data;
+  TEN_ASSERT(send_cmd_info, "Invalid argument.");
+  TEN_ASSERT(send_cmd_info->cmd && ten_msg_check_integrity(send_cmd_info->cmd),
+             "Should not happen.");
+
+  bool rc =
+      ten_env_send_cmd(ten_env, send_cmd_info->cmd,
+                       send_cmd_to_extension_callback, send_cmd_info, NULL);
   TEN_ASSERT(rc, "Should not happen.");
+
+  ten_shared_ptr_destroy(send_cmd_info->cmd);
+}
+
+void ten_extension_test_send_cmd(
+    ten_extension_test_t *self, ten_shared_ptr_t *cmd,
+    ten_extension_test_cmd_result_handler_func_t handler, void *user_data) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->test_extension_ten_env_proxy, "Invalid argument.");
+
+  ten_extension_test_send_cmd_info_t *send_cmd_info =
+      ten_extension_test_send_cmd_info_create(cmd, handler, user_data);
+
+  ten_env_proxy_notify(self->test_extension_ten_env_proxy,
+                       test_extension_ten_env_send_cmd, send_cmd_info, false,
+                       NULL);
 }

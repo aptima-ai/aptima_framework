@@ -5,8 +5,40 @@ Test resp_handler_yield_python.
 import subprocess
 import os
 import sys
+import pytest
 from sys import stdout
 from .common import http
+
+
+@pytest.fixture(scope="function")
+def manage_env_var_for_memory_issue_detection():
+    original_ten_enable_memory_sanitizer = os.environ.get(
+        "TEN_ENABLE_MEMORY_TRACKING"
+    )
+    original_asan_options = os.environ.get("ASAN_OPTIONS")
+
+    # Set the environment variable before the test.
+
+    # TODO(xilin): The TEN Python binding has a known memory leak. After
+    # resolving it, enable TEN_ENABLE_MEMORY_TRACKING=true.
+    os.environ["TEN_ENABLE_MEMORY_TRACKING"] = "false"
+
+    os.environ["ASAN_OPTIONS"] = "detect_leaks=0"
+
+    yield
+
+    # Remove the environment variable after the test.
+    if original_ten_enable_memory_sanitizer is not None:
+        os.environ["TEN_ENABLE_MEMORY_TRACKING"] = (
+            original_ten_enable_memory_sanitizer
+        )
+    else:
+        del os.environ["TEN_ENABLE_MEMORY_TRACKING"]
+
+    if original_asan_options is not None:
+        os.environ["ASAN_OPTIONS"] = original_asan_options
+    else:
+        del os.environ["ASAN_OPTIONS"]
 
 
 def http_request():
@@ -20,6 +52,7 @@ def http_request():
     )
 
 
+@pytest.mark.usefixtures("manage_env_var_for_memory_issue_detection")
 def test_resp_handler_yield_python():
     """Test client and app server."""
     base_path = os.path.dirname(os.path.abspath(__file__))

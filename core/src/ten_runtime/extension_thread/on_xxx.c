@@ -113,6 +113,8 @@ void ten_extension_thread_start_life_cycle_of_all_extensions_task(
     return;
   }
 
+  ten_extension_thread_set_state(self, TEN_EXTENSION_THREAD_STATE_NORMAL);
+
   ten_list_foreach (&self->extensions, iter) {
     ten_extension_t *extension = ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
