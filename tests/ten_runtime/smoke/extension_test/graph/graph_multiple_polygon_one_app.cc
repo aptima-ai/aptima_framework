@@ -55,8 +55,8 @@ class test_extension : public ten::extension_t {
       ten_env.send_cmd(
           std::move(cmd),
           [this, edges](ten::ten_env_t &ten_env,
-                        std::unique_ptr<ten::cmd_result_t> status) {
-            nlohmann::json json = nlohmann::json::parse(status->to_json());
+                        std::unique_ptr<ten::cmd_result_t> result) {
+            nlohmann::json json = nlohmann::json::parse(result->to_json());
             nlohmann::json detail = json["detail"];
             if (detail.type() == nlohmann::json::value_t::string) {
               detail = nlohmann::json::parse(json.value("detail", "{}"));
@@ -90,9 +90,9 @@ class test_extension : public ten::extension_t {
 
             detail["return_from"] = name_;
 
-            status->set_property_from_json("detail", detail.dump().c_str());
+            result->set_property_from_json("detail", detail.dump().c_str());
 
-            ten_env.return_result_directly(std::move(status));
+            ten_env.return_result_directly(std::move(result));
           });
     }
   }

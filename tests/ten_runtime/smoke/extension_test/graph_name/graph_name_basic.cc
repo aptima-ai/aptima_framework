@@ -40,8 +40,8 @@ class test_extension : public ten::extension_t {
     } else {
       ten_env.send_cmd(std::move(cmd),
                        [](ten::ten_env_t &ten_env,
-                          std::unique_ptr<ten::cmd_result_t> status) {
-                         ten_env.return_result_directly(std::move(status));
+                          std::unique_ptr<ten::cmd_result_t> result) {
+                         ten_env.return_result_directly(std::move(result));
                        });
     }
   }

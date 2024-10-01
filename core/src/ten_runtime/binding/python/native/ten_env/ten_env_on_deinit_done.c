@@ -6,10 +6,10 @@
 //
 #include <string.h>
 
+#include "include_internal/ten_runtime/binding/python/common.h"
 #include "include_internal/ten_runtime/binding/python/common/common.h"
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_runtime/binding/python/common.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/macro/mark.h"

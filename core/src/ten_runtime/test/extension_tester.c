@@ -4,8 +4,9 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/test/extension_test.h"
+#include "include_internal/ten_runtime/test/extension_tester.h"
 
+#include <inttypes.h>
 #include <string.h>
 
 #include "include_internal/ten_runtime/common/constant_str.h"
@@ -14,46 +15,82 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_runtime/test/env_tester.h"
 #include "include_internal/ten_runtime/test/test_app.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
-#include "ten_runtime/msg/cmd/close_app/cmd.h"
 #include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
-ten_extension_test_t *ten_extension_test_create(void) {
-  ten_extension_test_t *self = TEN_MALLOC(sizeof(ten_extension_test_t));
+bool ten_extension_tester_check_integrity(ten_extension_tester_t *self,
+                                          bool check_thread) {
+  TEN_ASSERT(self, "Should not happen.");
+
+  if (ten_signature_get(&self->signature) !=
+      (ten_signature_t)TEN_EXTENSION_TESTER_SIGNATURE) {
+    TEN_ASSERT(0,
+               "Failed to pass extension_thread signature checking: %" PRId64,
+               self->signature);
+    return false;
+  }
+
+  if (check_thread &&
+      !ten_sanitizer_thread_check_do_check(&self->thread_check)) {
+    return false;
+  }
+
+  return true;
+}
+
+ten_extension_tester_t *ten_extension_tester_create(
+    ten_extension_tester_on_start_func_t on_start,
+    ten_extension_tester_on_cmd_func_t on_cmd) {
+  ten_extension_tester_t *self = TEN_MALLOC(sizeof(ten_extension_tester_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
+
+  self->binding_handle.me_in_target_lang = self;
+
+  ten_signature_set(&self->signature, TEN_EXTENSION_TESTER_SIGNATURE);
+  ten_sanitizer_thread_check_init_with_current_thread(&self->thread_check);
 
   ten_string_init(&self->target_extension_addon_name);
 
-  self->test_app_ten_env_proxy = NULL;
-  self->test_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
-  self->test_app_thread = ten_thread_create(
-      "test app thread", ten_extension_test_app_thread_main, self);
+  self->on_start = on_start;
+  self->on_cmd = on_cmd;
 
-  self->test_extension_ten_env_proxy = NULL;
-  self->test_extension_ten_env_proxy_create_completed = ten_event_create(0, 1);
+  self->ten_env_tester = ten_env_tester_create(self);
+  self->tester_runloop = ten_runloop_create(NULL);
 
-  ten_event_wait(self->test_app_ten_env_proxy_create_completed, -1);
+  self->tester_extension_ten_env_proxy = NULL;
+  self->tester_extension_ten_env_proxy_create_completed =
+      ten_event_create(0, 1);
+
+  self->tester_app_ten_env_proxy = NULL;
+  self->tester_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
+
+  self->tester_app_thread = NULL;
+  self->user_data = NULL;
 
   return self;
 }
 
-void ten_extension_test_add_addon(ten_extension_test_t *self,
-                                  const char *addon_name) {
-  TEN_ASSERT(self, "Invalid argument.");
+void ten_extension_tester_add_addon(ten_extension_tester_t *self,
+                                    const char *addon_name) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
   TEN_ASSERT(addon_name, "Invalid argument.");
 
   ten_string_set_formatted(&self->target_extension_addon_name, "%s",
@@ -75,7 +112,7 @@ static void send_cmd_to_app_callback(ten_extension_t *extension,
   TEN_ASSERT(status_code == TEN_STATUS_CODE_OK, "Should not happen.");
 }
 
-static void test_app_ten_env_send_cmd(ten_env_t *ten_env, void *user_data) {
+void test_app_ten_env_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
@@ -87,37 +124,39 @@ static void test_app_ten_env_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(rc, "Should not happen.");
 }
 
-void ten_extension_test_destroy(ten_extension_test_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
+void ten_extension_tester_destroy(ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
 
-  ten_shared_ptr_t *close_app_cmd = ten_cmd_close_app_create();
-  TEN_ASSERT(close_app_cmd, "Should not happen.");
+  TEN_ASSERT(self->tester_app_ten_env_proxy == NULL,
+             "The `ten_env_proxy` of `tester_app` should be released in the "
+             "tester task triggered by the `deinit` of `tester_app`.");
+  if (self->tester_app_ten_env_proxy_create_completed) {
+    ten_event_destroy(self->tester_app_ten_env_proxy_create_completed);
+  }
 
-  // Set the destination so that the recipient is the app itself.
-  bool rc = ten_msg_clear_and_set_dest(close_app_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+  TEN_ASSERT(
+      self->tester_extension_ten_env_proxy == NULL,
+      "The `ten_env_proxy` of `tester_extension` should be released in the "
+      "tester task triggered by the `deinit` of `tester_extension`.");
+  if (self->tester_extension_ten_env_proxy_create_completed) {
+    ten_event_destroy(self->tester_extension_ten_env_proxy_create_completed);
+  }
 
-  ten_env_proxy_notify(self->test_app_ten_env_proxy, test_app_ten_env_send_cmd,
-                       close_app_cmd, false, NULL);
-
-  ten_thread_join(self->test_app_thread, -1);
-
-  TEN_ASSERT(self->test_app_ten_env_proxy == NULL, "Should not happen.");
-  ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
-
-  TEN_ASSERT(self->test_extension_ten_env_proxy == NULL, "Should not happen.");
-  ten_event_destroy(self->test_extension_ten_env_proxy_create_completed);
+  ten_thread_join(self->tester_app_thread, -1);
 
   ten_string_deinit(&self->target_extension_addon_name);
+  ten_env_tester_destroy(self->ten_env_tester);
+  ten_sanitizer_thread_check_deinit(&self->thread_check);
+  ten_runloop_destroy(self->tester_runloop);
 
   TEN_FREE(self);
 }
 
-void ten_extension_test_start(ten_extension_test_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid argument.");
+static void ten_extension_tester_create_and_start_graph(
+    ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
 
   ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
   TEN_ASSERT(start_graph_cmd, "Should not happen.");
@@ -239,91 +278,66 @@ void ten_extension_test_start(ten_extension_test_t *self) {
 
   ten_json_destroy(start_graph_cmd_json);
 
-  rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
+  rc = ten_env_proxy_notify(self->tester_app_ten_env_proxy,
                             test_app_ten_env_send_cmd, start_graph_cmd, false,
                             NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
-  ten_event_wait(self->test_extension_ten_env_proxy_create_completed, -1);
+  // Wait for the tester extension to create the `ten_env_proxy`.
+  ten_event_wait(self->tester_extension_ten_env_proxy_create_completed, -1);
+
+  ten_event_destroy(self->tester_extension_ten_env_proxy_create_completed);
+  self->tester_extension_ten_env_proxy_create_completed = NULL;
 }
 
-typedef struct ten_extension_test_send_cmd_info_t {
-  ten_shared_ptr_t *cmd;
-  ten_extension_test_cmd_result_handler_func_t handler;
-  void *handler_user_data;
-} ten_extension_test_send_cmd_info_t;
+static void ten_extension_tester_create_and_run_app(
+    ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
 
-static ten_extension_test_send_cmd_info_t *
-ten_extension_test_send_cmd_info_create(
-    ten_shared_ptr_t *cmd, ten_extension_test_cmd_result_handler_func_t handler,
-    void *handler_user_data) {
-  ten_extension_test_send_cmd_info_t *self =
-      TEN_MALLOC(sizeof(ten_extension_test_send_cmd_info_t));
-  TEN_ASSERT(self, "Failed to allocate memory.");
+  // Create the tester app.
+  self->tester_app_thread = ten_thread_create(
+      "test app thread", ten_builtin_tester_app_thread_main, self);
 
-  self->cmd = cmd;
-  self->handler = handler;
-  self->handler_user_data = handler_user_data;
+  // Wait until the tester app is started successfully.
+  ten_event_wait(self->tester_app_ten_env_proxy_create_completed, -1);
 
-  return self;
+  ten_event_destroy(self->tester_app_ten_env_proxy_create_completed);
+  self->tester_app_ten_env_proxy_create_completed = NULL;
+
+  TEN_ASSERT(self->tester_app_ten_env_proxy,
+             "tester_app should have been created its ten_env_proxy.");
 }
 
-static void ten_extension_test_send_cmd_info_destroy(
-    ten_extension_test_send_cmd_info_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
+static void ten_extension_tester_on_start_task(void *self_,
+                                               TEN_UNUSED void *arg) {
+  ten_extension_tester_t *self = (ten_extension_tester_t *)self_;
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
 
-  TEN_FREE(self);
-}
+  ten_extension_tester_create_and_run_app(self);
+  ten_extension_tester_create_and_start_graph(self);
 
-static void send_cmd_to_extension_callback(ten_extension_t *extension,
-                                           ten_env_t *ten_env,
-                                           ten_shared_ptr_t *cmd_result,
-                                           void *callback_user_data) {
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-  TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
-             "Should not happen.");
-
-  ten_extension_test_send_cmd_info_t *send_cmd_info = callback_user_data;
-  TEN_ASSERT(send_cmd_info, "Invalid argument.");
-
-  if (send_cmd_info->handler) {
-    send_cmd_info->handler(cmd_result, send_cmd_info->handler_user_data);
+  if (self->on_start) {
+    self->on_start(self, self->ten_env_tester);
   }
-
-  ten_extension_test_send_cmd_info_destroy(send_cmd_info);
 }
 
-static void test_extension_ten_env_send_cmd(ten_env_t *ten_env,
-                                            void *user_data) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
+void ten_extension_tester_run(ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
 
-  ten_extension_test_send_cmd_info_t *send_cmd_info = user_data;
-  TEN_ASSERT(send_cmd_info, "Invalid argument.");
-  TEN_ASSERT(send_cmd_info->cmd && ten_msg_check_integrity(send_cmd_info->cmd),
-             "Should not happen.");
+  ten_runloop_post_task_tail(self->tester_runloop,
+                             ten_extension_tester_on_start_task, self, NULL);
 
-  bool rc =
-      ten_env_send_cmd(ten_env, send_cmd_info->cmd,
-                       send_cmd_to_extension_callback, send_cmd_info, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  ten_shared_ptr_destroy(send_cmd_info->cmd);
+  // Start the runloop of tester.
+  ten_runloop_run(self->tester_runloop);
 }
 
-void ten_extension_test_send_cmd(
-    ten_extension_test_t *self, ten_shared_ptr_t *cmd,
-    ten_extension_test_cmd_result_handler_func_t handler, void *user_data) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->test_extension_ten_env_proxy, "Invalid argument.");
+ten_env_tester_t *ten_extension_tester_get_ten_env_tester(
+    ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
 
-  ten_extension_test_send_cmd_info_t *send_cmd_info =
-      ten_extension_test_send_cmd_info_create(cmd, handler, user_data);
-
-  ten_env_proxy_notify(self->test_extension_ten_env_proxy,
-                       test_extension_ten_env_send_cmd, send_cmd_info, false,
-                       NULL);
+  return self->ten_env_tester;
 }

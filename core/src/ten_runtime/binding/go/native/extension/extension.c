@@ -104,7 +104,7 @@ static void proxy_on_configure(ten_extension_t *self, ten_env_t *ten_env) {
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -123,7 +123,7 @@ static void proxy_on_init(ten_extension_t *self, ten_env_t *ten_env) {
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -141,7 +141,7 @@ static void proxy_on_start(ten_extension_t *self, ten_env_t *ten_env) {
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -159,7 +159,7 @@ static void proxy_on_stop(ten_extension_t *self, ten_env_t *ten_env) {
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -177,7 +177,7 @@ static void proxy_on_deinit(ten_extension_t *self, ten_env_t *ten_env) {
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -196,7 +196,7 @@ static void proxy_on_cmd(ten_extension_t *self, ten_env_t *ten_env,
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
   TEN_ASSERT(cmd && ten_cmd_check_integrity(cmd), "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
@@ -222,7 +222,7 @@ static void proxy_on_data(ten_extension_t *self, ten_env_t *ten_env,
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -243,7 +243,7 @@ static void proxy_on_video_frame(ten_extension_t *self, ten_env_t *ten_env,
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
@@ -270,7 +270,7 @@ static void proxy_on_audio_frame(ten_extension_t *self, ten_env_t *ten_env,
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(ten_extension_get_ten(self) == ten_env, "Should not happen.");
+  TEN_ASSERT(ten_extension_get_ten_env(self) == ten_env, "Should not happen.");
 
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);

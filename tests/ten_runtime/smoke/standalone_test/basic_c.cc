@@ -8,9 +8,11 @@
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "include_internal/ten_runtime/test/env_tester.h"
 #include "include_internal/ten_runtime/test/extension_tester.h"
-#include "ten_runtime/binding/cpp/internal/extension.h"
 #include "ten_runtime/common/status_code.h"
+#include "ten_runtime/msg/cmd/cmd.h"
+#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lang/cpp/lib/value.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
 namespace {
@@ -33,36 +35,44 @@ class test_extension_1 : public ten::extension_t {
   }
 };
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_basic__test_extension_1,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_basic_c__test_extension_1,
                                     test_extension_1);
 
 }  // namespace
 
 namespace {
 
-class extension_tester_1 : public ten::extension_tester_t {
- public:
-  void on_start(ten::ten_env_tester_t &ten_env) override {
-    // Send the first command to the extension.
-    auto new_cmd = ten::cmd_t::create("hello_world");
-
-    ten_env.send_cmd(std::move(new_cmd),
-                     [](ten::ten_env_tester_t &ten_env,
-                        std::unique_ptr<ten::cmd_result_t> result) {
-                       if (result->get_status_code() == TEN_STATUS_CODE_OK) {
-                         ten_env.stop_test();
-                       }
-                     });
+void hello_world_cmd_result_handler(ten_env_tester_t *ten_env,
+                                    ten_shared_ptr_t *cmd_result,
+                                    TEN_UNUSED void *user_data) {
+  if (ten_cmd_result_get_status_code(cmd_result) == TEN_STATUS_CODE_OK) {
+    ten_env_tester_stop_test(ten_env);
   }
-};
+}
+
+void ten_extension_tester_on_start(TEN_UNUSED ten_extension_tester_t *tester,
+                                   ten_env_tester_t *ten_env) {
+  // Send the first command to the extension.
+  ten_shared_ptr_t *hello_world_cmd = ten_cmd_create("hello_world", nullptr);
+  TEN_ASSERT(hello_world_cmd, "Should not happen.");
+
+  bool rc = ten_env_tester_send_cmd(ten_env, hello_world_cmd,
+                                    hello_world_cmd_result_handler, nullptr);
+
+  if (rc) {
+    ten_shared_ptr_destroy(hello_world_cmd);
+  }
+}
 
 }  // namespace
 
-TEST(StandaloneTest, Basic) {  // NOLINT
-  auto *tester = new extension_tester_1();
-  tester->add_addon("standalone_test_basic__test_extension_1");
+TEST(StandaloneTest, BasicC) {  // NOLINT
+  ten_extension_tester_t *tester =
+      ten_extension_tester_create(ten_extension_tester_on_start, nullptr);
+  ten_extension_tester_add_addon(tester,
+                                 "standalone_test_basic_c__test_extension_1");
 
-  tester->run();
+  ten_extension_tester_run(tester);
 
-  delete tester;
+  ten_extension_tester_destroy(tester);
 }

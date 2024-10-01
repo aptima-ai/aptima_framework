@@ -23,21 +23,21 @@ namespace ten {
 class app_t {
  public:
   app_t()
-      : app_(ten_app_create(cpp_app_on_configure_cb_wrapper,
-                            cpp_app_on_init_cb_wrapper, nullptr, nullptr)),
-        ten_(new ten_env_t(ten_app_get_ten_env(app_))) {
-    TEN_ASSERT(ten_, "Should not happen.");
+      : c_app(ten_app_create(cpp_app_on_configure_cb_wrapper,
+                             cpp_app_on_init_cb_wrapper, nullptr, nullptr)),
+        cpp_ten_env(new ten_env_t(ten_app_get_ten_env(c_app))) {
+    TEN_ASSERT(cpp_ten_env, "Should not happen.");
     ten_binding_handle_set_me_in_target_lang(
-        reinterpret_cast<ten_binding_handle_t *>(app_),
+        reinterpret_cast<ten_binding_handle_t *>(c_app),
         static_cast<void *>(this));
   }
 
   virtual ~app_t() {
-    ten_app_destroy(app_);
-    app_ = nullptr;
+    ten_app_destroy(c_app);
+    c_app = nullptr;
 
-    TEN_ASSERT(ten_, "Should not happen.");
-    delete ten_;
+    TEN_ASSERT(cpp_ten_env, "Should not happen.");
+    delete cpp_ten_env;
   }
 
   // @{
@@ -47,25 +47,24 @@ class app_t {
   app_t &operator=(app_t &&) = delete;
   // @}
 
-  // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
   bool run(bool run_in_background = false, error_t *err = nullptr) {
-    if (app_ == nullptr) {
+    if (c_app == nullptr) {
       return false;
     }
 
     return ten_app_run(
-        app_, run_in_background,
+        c_app, run_in_background,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
   bool close(error_t *err = nullptr) {
     return ten_app_close(
-        app_, err != nullptr ? err->get_internal_representation() : nullptr);
+        c_app, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
   bool wait(error_t *err = nullptr) {
     return ten_app_wait(
-        app_, err != nullptr ? err->get_internal_representation() : nullptr);
+        c_app, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
  protected:
@@ -180,8 +179,8 @@ class app_t {
     }
   }
 
-  ::ten_app_t *app_ = nullptr;
-  ten_env_t *ten_;
+  ::ten_app_t *c_app = nullptr;
+  ten_env_t *cpp_ten_env;
 };
 
 }  // namespace ten

@@ -29,11 +29,16 @@ class test_extension_1 : public ten::extension_t {
       cmd_result->set_property("detail", "hello world, too");
       bool rc = ten_env.return_result(std::move(cmd_result), std::move(cmd));
       EXPECT_EQ(rc, true);
+
+      // Send out an ack command.
+      auto ack_cmd = ten::cmd_t::create("ack", nullptr);
+      rc = ten_env.send_cmd(std::move(ack_cmd), nullptr);
+      EXPECT_EQ(rc, true);
     }
   }
 };
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_basic__test_extension_1,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_on_cmd__test_extension_1,
                                     test_extension_1);
 
 }  // namespace
@@ -41,26 +46,41 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_basic__test_extension_1,
 namespace {
 
 class extension_tester_1 : public ten::extension_tester_t {
- public:
+ protected:
   void on_start(ten::ten_env_tester_t &ten_env) override {
     // Send the first command to the extension.
     auto new_cmd = ten::cmd_t::create("hello_world");
 
     ten_env.send_cmd(std::move(new_cmd),
-                     [](ten::ten_env_tester_t &ten_env,
-                        std::unique_ptr<ten::cmd_result_t> result) {
+                     [this](ten::ten_env_tester_t &ten_env,
+                            std::unique_ptr<ten::cmd_result_t> result) {
                        if (result->get_status_code() == TEN_STATUS_CODE_OK) {
-                         ten_env.stop_test();
+                         hello_world_cmd_success = true;
                        }
                      });
   }
+
+  void on_cmd(ten::ten_env_tester_t &ten_env,
+              std::unique_ptr<ten::cmd_t> cmd) override {
+    if (std::string(cmd->get_name()) == "ack") {
+      ack_cmd_success = true;
+    }
+
+    if (ack_cmd_success && hello_world_cmd_success) {
+      ten_env.stop_test();
+    }
+  }
+
+ private:
+  bool hello_world_cmd_success = false;
+  bool ack_cmd_success = false;
 };
 
 }  // namespace
 
-TEST(StandaloneTest, Basic) {  // NOLINT
+TEST(StandaloneTest, OnCmd) {  // NOLINT
   auto *tester = new extension_tester_1();
-  tester->add_addon("standalone_test_basic__test_extension_1");
+  tester->add_addon("standalone_test_on_cmd__test_extension_1");
 
   tester->run();
 

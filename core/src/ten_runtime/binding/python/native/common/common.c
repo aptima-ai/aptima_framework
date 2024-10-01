@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "ten_runtime/binding/python/common.h"
+#include "include_internal/ten_runtime/binding/python/common.h"
 
 #include "include_internal/ten_runtime/binding/python/common/common.h"
 #include "include_internal/ten_runtime/binding/python/common/python_stuff.h"

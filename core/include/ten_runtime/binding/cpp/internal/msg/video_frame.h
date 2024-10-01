@@ -70,53 +70,53 @@ class video_frame_t : public msg_t {
   ~video_frame_t() override = default;
 
   int32_t get_width(error_t *err = nullptr) const {
-    return ten_video_frame_get_width(c_msg_);
+    return ten_video_frame_get_width(c_msg);
   }
   bool set_width(int32_t width, error_t *err = nullptr) {
-    return ten_video_frame_set_width(c_msg_, width);
+    return ten_video_frame_set_width(c_msg, width);
   }
 
   int32_t get_height(error_t *err = nullptr) const {
-    return ten_video_frame_get_height(c_msg_);
+    return ten_video_frame_get_height(c_msg);
   }
   bool set_height(int32_t height, error_t *err = nullptr) const {
-    return ten_video_frame_set_height(c_msg_, height);
+    return ten_video_frame_set_height(c_msg, height);
   }
 
   int64_t get_timestamp(error_t *err = nullptr) const {
-    return ten_video_frame_get_timestamp(c_msg_);
+    return ten_video_frame_get_timestamp(c_msg);
   }
   bool set_timestamp(int64_t timestamp, error_t *err = nullptr) const {
-    return ten_video_frame_set_timestamp(c_msg_, timestamp);
+    return ten_video_frame_set_timestamp(c_msg, timestamp);
   }
 
   TEN_PIXEL_FMT get_pixel_fmt(error_t *err = nullptr) const {
-    return ten_video_frame_get_pixel_fmt(c_msg_);
+    return ten_video_frame_get_pixel_fmt(c_msg);
   }
   bool set_pixel_fmt(TEN_PIXEL_FMT pixel_fmt, error_t *err = nullptr) const {
-    return ten_video_frame_set_pixel_fmt(c_msg_, pixel_fmt);
+    return ten_video_frame_set_pixel_fmt(c_msg, pixel_fmt);
   }
 
   bool is_eof(error_t *err = nullptr) const {
-    return ten_video_frame_is_eof(c_msg_);
+    return ten_video_frame_is_eof(c_msg);
   }
   bool set_is_eof(bool is_eof, error_t *err = nullptr) {
-    return ten_video_frame_set_is_eof(c_msg_, is_eof);
+    return ten_video_frame_set_is_eof(c_msg, is_eof);
   }
 
   bool alloc_buf(size_t size, error_t *err = nullptr) {
-    return ten_video_frame_alloc_data(c_msg_, size) != nullptr;
+    return ten_video_frame_alloc_data(c_msg, size) != nullptr;
   }
 
   buf_t lock_buf(error_t *err = nullptr) const {
     if (!ten_msg_add_locked_res_buf(
-            c_msg_, ten_video_frame_peek_data(c_msg_)->data,
+            c_msg, ten_video_frame_peek_data(c_msg)->data,
             err != nullptr ? err->get_internal_representation() : nullptr)) {
       return buf_t{};
     }
 
-    buf_t result{ten_video_frame_peek_data(c_msg_)->data,
-                 ten_video_frame_peek_data(c_msg_)->size};
+    buf_t result{ten_video_frame_peek_data(c_msg)->data,
+                 ten_video_frame_peek_data(c_msg)->size};
 
     return result;
   }
@@ -124,7 +124,7 @@ class video_frame_t : public msg_t {
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     const uint8_t *data = buf.data();
     if (!ten_msg_remove_locked_res_buf(
-            c_msg_, data,
+            c_msg, data,
             err != nullptr ? err->get_internal_representation() : nullptr)) {
       return false;
     }

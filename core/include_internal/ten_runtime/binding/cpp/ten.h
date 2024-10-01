@@ -25,6 +25,7 @@
 #include "ten_runtime/binding/cpp/internal/msg/data.h" // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/msg/video_frame.h" // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/msg/audio_frame.h" // IWYU pragma: export
+#include "ten_runtime/binding/cpp/internal/test/extension_tester.h" // IWYU pragma: export
 // 'extension.h' must be in front of 'addon.h'
 #include "ten_runtime/binding/cpp/internal/extension.h" // IWYU pragma: export
 // clang-format on

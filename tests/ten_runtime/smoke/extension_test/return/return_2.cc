@@ -24,12 +24,12 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world") {
       ten_env.send_cmd(
           std::move(cmd), [this](ten::ten_env_t &ten_env,
-                                 std::unique_ptr<ten::cmd_result_t> status) {
+                                 std::unique_ptr<ten::cmd_result_t> result) {
             EXPECT_EQ(received_cmd_results_cnt, static_cast<size_t>(1));
             received_cmd_results_cnt--;
 
-            status->set_property("detail", "return from extension 1");
-            ten_env.return_result_directly(std::move(status));
+            result->set_property("detail", "return from extension 1");
+            ten_env.return_result_directly(std::move(result));
           });
       return;
     }

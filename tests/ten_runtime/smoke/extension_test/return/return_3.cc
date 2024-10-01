@@ -33,7 +33,7 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world") {
       ten_env.send_cmd(
           std::move(cmd), [this](ten::ten_env_t &ten_env,
-                                 std::unique_ptr<ten::cmd_result_t> status) {
+                                 std::unique_ptr<ten::cmd_result_t> result) {
             EXPECT_EQ(received_cmd_results_cnt, static_cast<size_t>(1));
             received_cmd_results_cnt--;
 
@@ -41,7 +41,7 @@ class test_extension_1 : public ten::extension_t {
 
             outer_thread =
                 new std::thread(&test_extension_1::outer_thread_main, this,
-                                status.release(), ten_env_proxy);
+                                result.release(), ten_env_proxy);
           });
       return;
     }

@@ -70,78 +70,78 @@ class audio_frame_t : public msg_t {
   ~audio_frame_t() override = default;
 
   int64_t get_timestamp(error_t *err = nullptr) const {
-    return ten_audio_frame_get_timestamp(c_msg_);
+    return ten_audio_frame_get_timestamp(c_msg);
   }
   bool set_timestamp(int64_t timestamp, error_t *err = nullptr) {
-    return ten_audio_frame_set_timestamp(c_msg_, timestamp);
+    return ten_audio_frame_set_timestamp(c_msg, timestamp);
   }
 
   int32_t get_sample_rate(error_t *err = nullptr) const {
-    return ten_audio_frame_get_sample_rate(c_msg_);
+    return ten_audio_frame_get_sample_rate(c_msg);
   }
   bool set_sample_rate(int32_t sample_rate, error_t *err = nullptr) {
-    return ten_audio_frame_set_sample_rate(c_msg_, sample_rate);
+    return ten_audio_frame_set_sample_rate(c_msg, sample_rate);
   }
 
   uint64_t get_channel_layout(error_t *err = nullptr) const {
-    return ten_audio_frame_get_channel_layout(c_msg_);
+    return ten_audio_frame_get_channel_layout(c_msg);
   }
   bool set_channel_layout(uint64_t channel_layout, error_t *err = nullptr) {
-    return ten_audio_frame_set_channel_layout(c_msg_, channel_layout);
+    return ten_audio_frame_set_channel_layout(c_msg, channel_layout);
   }
 
   int32_t get_samples_per_channel(error_t *err = nullptr) const {
-    return ten_audio_frame_get_samples_per_channel(c_msg_);
+    return ten_audio_frame_get_samples_per_channel(c_msg);
   }
   bool set_samples_per_channel(int32_t samples_per_channel,
                                error_t *err = nullptr) {
-    return ten_audio_frame_set_samples_per_channel(c_msg_, samples_per_channel);
+    return ten_audio_frame_set_samples_per_channel(c_msg, samples_per_channel);
   }
 
   int32_t get_bytes_per_sample(error_t *err = nullptr) const {
-    return ten_audio_frame_get_bytes_per_sample(c_msg_);
+    return ten_audio_frame_get_bytes_per_sample(c_msg);
   }
   bool set_bytes_per_sample(int32_t size, error_t *err = nullptr) {
-    return ten_audio_frame_set_bytes_per_sample(c_msg_, size);
+    return ten_audio_frame_set_bytes_per_sample(c_msg, size);
   }
 
   int32_t get_number_of_channels(error_t *err = nullptr) const {
-    return ten_audio_frame_get_number_of_channel(c_msg_);
+    return ten_audio_frame_get_number_of_channel(c_msg);
   }
   bool set_number_of_channels(int32_t number, error_t *err = nullptr) {
-    return ten_audio_frame_set_number_of_channel(c_msg_, number);
+    return ten_audio_frame_set_number_of_channel(c_msg, number);
   }
 
   TEN_AUDIO_FRAME_DATA_FMT get_data_fmt(error_t *err = nullptr) const {
-    return ten_audio_frame_get_data_fmt(c_msg_);
+    return ten_audio_frame_get_data_fmt(c_msg);
   }
   bool set_data_fmt(TEN_AUDIO_FRAME_DATA_FMT format, error_t *err = nullptr) {
-    return ten_audio_frame_set_data_fmt(c_msg_, format);
+    return ten_audio_frame_set_data_fmt(c_msg, format);
   }
 
   int32_t get_line_size(error_t *err = nullptr) const {
-    return ten_audio_frame_get_line_size(c_msg_);
+    return ten_audio_frame_get_line_size(c_msg);
   }
   bool set_line_size(int32_t line_size, error_t *err = nullptr) {
-    return ten_audio_frame_set_line_size(c_msg_, line_size);
+    return ten_audio_frame_set_line_size(c_msg, line_size);
   }
 
   bool is_eof(error_t *err = nullptr) const {
-    return ten_audio_frame_is_eof(c_msg_);
+    return ten_audio_frame_is_eof(c_msg);
   }
   bool set_is_eof(bool is_eof, error_t *err = nullptr) {
-    return ten_audio_frame_set_is_eof(c_msg_, is_eof);
+    return ten_audio_frame_set_is_eof(c_msg, is_eof);
   }
 
   bool alloc_buf(size_t size, error_t *err = nullptr) {
-    return ten_audio_frame_alloc_data(c_msg_, size) != nullptr;
+    return ten_audio_frame_alloc_data(c_msg, size) != nullptr;
   }
 
   buf_t lock_buf(error_t *err = nullptr) const {
-    ten_buf_t *data = ten_audio_frame_peek_data(c_msg_);
+    ten_buf_t *data = ten_audio_frame_peek_data(c_msg);
 
     if (!ten_msg_add_locked_res_buf(
-            c_msg_, data->data,
+            c_msg, data->data,
             err != nullptr ? err->get_internal_representation() : nullptr)) {
       return buf_t{};
     }
@@ -154,7 +154,7 @@ class audio_frame_t : public msg_t {
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     const uint8_t *data = buf.data();
     if (!ten_msg_remove_locked_res_buf(
-            c_msg_, data,
+            c_msg, data,
             err != nullptr ? err->get_internal_representation() : nullptr)) {
       return false;
     }

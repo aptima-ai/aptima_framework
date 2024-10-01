@@ -54,10 +54,10 @@ class msg_t {
   msg_t &operator=(msg_t &&other) noexcept = delete;
   // @}
 
-  explicit operator bool() const { return c_msg_ != nullptr; }
+  explicit operator bool() const { return c_msg != nullptr; }
 
   TEN_MSG_TYPE get_type(error_t *err = nullptr) const {
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(),
                       TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
@@ -65,13 +65,13 @@ class msg_t {
       return TEN_MSG_TYPE_INVALID;
     }
 
-    return ten_msg_get_type(c_msg_);
+    return ten_msg_get_type(c_msg);
   }
 
   const char *get_name(error_t *err = nullptr) const {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
@@ -79,15 +79,15 @@ class msg_t {
       return "";
     }
 
-    return ten_msg_get_name(c_msg_);
+    return ten_msg_get_name(c_msg);
   }
 
   bool set_dest(const char *uri, const char *graph,
                 const char *extension_group_name, const char *extension_name,
                 error_t *err = nullptr) const {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(),
                       TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
@@ -96,14 +96,14 @@ class msg_t {
     }
 
     return ten_msg_clear_and_set_dest(
-        c_msg_, uri, graph, extension_group_name, extension_name,
+        c_msg, uri, graph, extension_group_name, extension_name,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
   std::string to_json(error_t *err = nullptr) const {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
@@ -112,7 +112,7 @@ class msg_t {
     }
 
     ten_json_t *c_json = ten_msg_to_json(
-        c_msg_, err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
     TEN_ASSERT(c_json, "Failed to get json from TEN C message.");
     if (c_json == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
@@ -136,9 +136,9 @@ class msg_t {
   }
 
   bool from_json(const char *json_str, error_t *err = nullptr) {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
@@ -157,7 +157,7 @@ class msg_t {
     }
 
     result = ten_msg_from_json(
-        c_msg_, c_json,
+        c_msg, c_json,
         err != nullptr ? err->get_internal_representation() : nullptr);
     if (!result) {
       TEN_LOGW("Failed to set message content.");
@@ -172,10 +172,10 @@ class msg_t {
   }
 
   bool is_property_exist(const char *path, error_t *err = nullptr) {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
     TEN_ASSERT(path && strlen(path), "path should not be empty.");
 
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(),
                       TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
@@ -184,7 +184,7 @@ class msg_t {
     }
 
     return ten_msg_is_property_exist(
-        c_msg_, path,
+        c_msg, path,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
@@ -379,7 +379,7 @@ class msg_t {
                                    error_t *err = nullptr) const {
     TEN_ASSERT(path && strlen(path), "path should not be empty.");
 
-    if (c_msg_ == nullptr) {
+    if (c_msg == nullptr) {
       if (err != nullptr && err->get_internal_representation() != nullptr) {
         ten_error_set(err->get_internal_representation(),
                       TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
@@ -561,7 +561,7 @@ class msg_t {
 
   bool set_property_from_json(const char *path, const char *json,
                               error_t *err = nullptr) {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
     ten_json_t *c_json = ten_json_from_string(
         json, err != nullptr ? err->get_internal_representation() : nullptr);
@@ -576,7 +576,7 @@ class msg_t {
   }
 
   // Internal use only.
-  ten_shared_ptr_t *get_underlying_msg() const { return c_msg_; }
+  ten_shared_ptr_t *get_underlying_msg() const { return c_msg; }
 
  protected:
   friend class ten_env_t;
@@ -586,7 +586,7 @@ class msg_t {
   // Used by the constructor of the real command class to create a base command
   // first.
   msg_t() = default;
-  explicit msg_t(ten_shared_ptr_t *msg) : c_msg_(msg) {}
+  explicit msg_t(ten_shared_ptr_t *msg) : c_msg(msg) {}
   // @}
 
   /**
@@ -595,10 +595,10 @@ class msg_t {
    */
   bool set_property_impl(const char *path, ten_value_t *value,
                          error_t *err = nullptr) {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
     bool rc = ten_msg_set_property(
-        c_msg_, path, value,
+        c_msg, path, value,
         err != nullptr ? err->get_internal_representation() : nullptr);
 
     if (!rc) {
@@ -608,20 +608,20 @@ class msg_t {
   }
 
   void relinquish_underlying_msg() {
-    if (c_msg_ != nullptr) {
-      ten_shared_ptr_destroy(c_msg_);
-      c_msg_ = nullptr;
+    if (c_msg != nullptr) {
+      ten_shared_ptr_destroy(c_msg);
+      c_msg = nullptr;
     }
   }
 
-  ten_shared_ptr_t *c_msg_ = nullptr;  // NOLINT
+  ten_shared_ptr_t *c_msg = nullptr;  // NOLINT
 
  private:
   ten_value_t *peek_property_value(const char *path, error_t *err) const {
-    TEN_ASSERT(c_msg_, "Should not happen.");
+    TEN_ASSERT(c_msg, "Should not happen.");
 
     return ten_msg_peek_property(
-        c_msg_, path,
+        c_msg, path,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 };

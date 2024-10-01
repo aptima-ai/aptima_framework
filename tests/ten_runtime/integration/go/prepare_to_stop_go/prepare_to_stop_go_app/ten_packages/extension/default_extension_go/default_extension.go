@@ -49,7 +49,7 @@ type aExtension struct {
 func (p *aExtension) OnDeinit(tenEnv ten.TenEnv) {
 	defer tenEnv.OnDeinitDone()
 
-	fmt.Println("aExtension onDeinit")
+	tenEnv.LogDebug("onDeinit")
 	if !p.isStopped {
 		panic("should not happen.")
 	}
@@ -61,9 +61,8 @@ func (p *aExtension) OnCmd(
 ) {
 	go func() {
 		cmdName, _ := cmd.GetName()
-		fmt.Println(
-			"aExtension receive command: ",
-			cmdName,
+		tenEnv.LogInfo(
+			"receive command: " + cmdName,
 		)
 		if cmdName == "start" {
 			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult) {
@@ -181,8 +180,9 @@ func (p *cExtension) OnCmd(
 				cmdResult.SetPropertyString("detail", "done")
 				tenEnv.ReturnResult(cmdResult, cmd)
 
-				close(p.stopChan)
 				tenEnv.LogInfo("Stop command is processed.")
+
+				close(p.stopChan)
 			}()
 		} else {
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)

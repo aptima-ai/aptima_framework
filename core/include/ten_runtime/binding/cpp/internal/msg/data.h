@@ -70,25 +70,25 @@ class data_t : public msg_t {
   ~data_t() override = default;
 
   bool alloc_buf(size_t size, error_t *err = nullptr) {
-    return ten_data_alloc_buf(c_msg_, size) != nullptr;
+    return ten_data_alloc_buf(c_msg, size) != nullptr;
   }
 
   buf_t lock_buf(error_t *err = nullptr) {
     if (!ten_msg_add_locked_res_buf(
-            c_msg_, ten_data_peek_buf(c_msg_)->data,
+            c_msg, ten_data_peek_buf(c_msg)->data,
             err != nullptr ? err->get_internal_representation() : nullptr)) {
       return {};
     }
 
-    buf_t result{ten_data_peek_buf(c_msg_)->data,
-                 ten_data_peek_buf(c_msg_)->size};
+    buf_t result{ten_data_peek_buf(c_msg)->data,
+                 ten_data_peek_buf(c_msg)->size};
 
     return result;
   }
 
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     if (!ten_msg_remove_locked_res_buf(
-            c_msg_, buf.data(),
+            c_msg, buf.data(),
             err != nullptr ? err->get_internal_representation() : nullptr)) {
       return false;
     }
@@ -103,11 +103,11 @@ class data_t : public msg_t {
 
   // Pay attention to its copy semantics.
   buf_t get_buf(error_t *err = nullptr) const {
-    size_t data_size = ten_data_peek_buf(c_msg_)->size;
+    size_t data_size = ten_data_peek_buf(c_msg)->size;
 
     buf_t buf{data_size};
     if (data_size != 0) {
-      memcpy(buf.data(), ten_data_peek_buf(c_msg_)->data, data_size);
+      memcpy(buf.data(), ten_data_peek_buf(c_msg)->data, data_size);
     }
     return buf;
   }

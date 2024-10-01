@@ -42,7 +42,7 @@ class cmd_timeout_t : public cmd_t {
   ~cmd_timeout_t() override = default;
 
   uint32_t get_timer_id(error_t *err = nullptr) const {
-    return ten_cmd_timeout_get_timer_id(c_msg_);
+    return ten_cmd_timeout_get_timer_id(c_msg);
   }
 
   // @{

@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/cpp/internal/msg/msg.h"
 #include "ten_runtime/msg/cmd/cmd.h"
 #include "ten_runtime/msg/msg.h"
@@ -19,11 +18,10 @@
 namespace ten {
 
 class extension_t;
+class extension_tester_t;
 
 class cmd_t : public msg_t {
  private:
-  friend extension_t;
-
   // Passkey Idiom.
   struct ctor_passkey_t {
    private:
@@ -74,11 +72,14 @@ class cmd_t : public msg_t {
   // @}
 
  private:
+  friend extension_t;
+  friend extension_tester_t;
+
   void clone_internal(const cmd_t &cmd) noexcept {
-    if (cmd.c_msg_ != nullptr) {
-      c_msg_ = ten_msg_clone(cmd.c_msg_, nullptr);
+    if (cmd.c_msg != nullptr) {
+      c_msg = ten_msg_clone(cmd.c_msg, nullptr);
     } else {
-      c_msg_ = nullptr;
+      c_msg = nullptr;
     }
   }
 };

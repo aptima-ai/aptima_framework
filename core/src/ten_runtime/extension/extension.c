@@ -119,6 +119,8 @@ ten_extension_t *ten_extension_create(
 
   self->ten_env = ten_env_create_for_extension(self);
 
+  self->user_data = user_data;
+
   return self;
 }
 
@@ -988,7 +990,7 @@ void ten_extension_set_me_in_target_lang(ten_extension_t *self,
   self->binding_handle.me_in_target_lang = me_in_target_lang;
 }
 
-ten_env_t *ten_extension_get_ten(ten_extension_t *self) {
+ten_env_t *ten_extension_get_ten_env(ten_extension_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: Need to pay attention to the thread safety of the using side

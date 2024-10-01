@@ -66,11 +66,11 @@ class test_extension_1 : public ten::extension_t {
     if (json["_ten"]["name"] == "hello_world") {
       ten_env.send_cmd(
           std::move(cmd), [this](ten::ten_env_t &ten_env,
-                                 std::unique_ptr<ten::cmd_result_t> status) {
+                                 std::unique_ptr<ten::cmd_result_t> result) {
             pending_resp_num--;
             if (pending_resp_num == 0) {
-              status->set_property("detail", "return from extension 1");
-              ten_env.return_result_directly(std::move(status));
+              result->set_property("detail", "return from extension 1");
+              ten_env.return_result_directly(std::move(result));
             }
           });
       return;

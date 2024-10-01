@@ -26,8 +26,8 @@ class app_t;
 class extension_group_t {
  public:
   virtual ~extension_group_t() {
-    TEN_ASSERT(c_extension_group_, "Should not happen.");
-    ten_extension_group_destroy(c_extension_group_);
+    TEN_ASSERT(c_extension_group, "Should not happen.");
+    ten_extension_group_destroy(c_extension_group);
 
     TEN_ASSERT(cpp_ten_env, "Should not happen.");
     delete cpp_ten_env;
@@ -43,19 +43,19 @@ class extension_group_t {
   // @{
   // Internal use only.
   ::ten_extension_group_t *get_c_extension_group() const {
-    return c_extension_group_;
+    return c_extension_group;
   }
   // @}
 
  protected:
   explicit extension_group_t(const std::string &name)
-      : c_extension_group_(ten_extension_group_create(
+      : c_extension_group(ten_extension_group_create(
             name.c_str(), proxy_on_configure, proxy_on_init, proxy_on_deinit,
             proxy_on_create_extensions, proxy_on_destroy_extensions)),
-        cpp_ten_env(new ten_env_t(
-            ten_extension_group_get_ten_env(c_extension_group_))) {
+        cpp_ten_env(
+            new ten_env_t(ten_extension_group_get_ten_env(c_extension_group))) {
     ten_binding_handle_set_me_in_target_lang(
-        reinterpret_cast<ten_binding_handle_t *>(c_extension_group_), this);
+        reinterpret_cast<ten_binding_handle_t *>(c_extension_group), this);
 
     TEN_ASSERT(cpp_ten_env, "Should not happen.");
   }
@@ -205,7 +205,7 @@ class extension_group_t {
     cpp_extension_group->on_destroy_extensions(*cpp_ten_env, extensions_vector);
   }
 
-  ::ten_extension_group_t *c_extension_group_;
+  ::ten_extension_group_t *c_extension_group;
   ten_env_t *cpp_ten_env;
 };
 

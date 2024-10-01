@@ -18,12 +18,10 @@
 namespace ten {
 
 class extension_t;
+class ten_env_tester_t;
 
 class cmd_result_t : public msg_t {
  private:
-  friend extension_t;
-  friend ten_env_t;
-
   // Passkey Idiom.
   struct ctor_passkey_t {
    private:
@@ -46,17 +44,17 @@ class cmd_result_t : public msg_t {
   ~cmd_result_t() override = default;
 
   TEN_STATUS_CODE get_status_code(error_t *err = nullptr) const {
-    return ten_cmd_result_get_status_code(c_msg_);
+    return ten_cmd_result_get_status_code(c_msg);
   }
 
   bool get_is_final(error_t *err = nullptr) const {
     return ten_cmd_result_get_is_final(
-        c_msg_, err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
   bool set_is_final(bool is_final, error_t *err = nullptr) {
     return ten_cmd_result_set_is_final(
-        c_msg_, is_final,
+        c_msg, is_final,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
@@ -68,6 +66,10 @@ class cmd_result_t : public msg_t {
   // @}
 
  private:
+  friend extension_t;
+  friend ten_env_tester_t;
+  friend ten_env_t;
+
   static std::unique_ptr<cmd_result_t> create(ten_shared_ptr_t *cmd,
                                               error_t *err = nullptr) {
     return std::make_unique<cmd_result_t>(cmd, ctor_passkey_t());

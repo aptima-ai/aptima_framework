@@ -22,7 +22,7 @@ namespace ten {
 inline void extension_t::proxy_on_cmd_internal(
     ten_extension_t *extension, ::ten_env_t *ten_env, ten_shared_ptr_t *cmd,
     cpp_extension_on_cmd_func_t on_cmd_func) {
-  TEN_ASSERT(extension && ten_env, "Should not happen.");
+  TEN_ASSERT(extension && ten_env && cmd, "Should not happen.");
 
   auto *cpp_extension =
       static_cast<extension_t *>(ten_binding_handle_get_me_in_target_lang(

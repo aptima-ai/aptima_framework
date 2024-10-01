@@ -7,9 +7,9 @@
 #include <string>
 
 #include "include_internal/ten_runtime/app/base_dir.h"
+#include "include_internal/ten_runtime/binding/python/common.h"
 #include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_runtime/binding/cpp/ten.h"
-#include "ten_runtime/binding/python/common.h"
 #include "ten_utils/container/list_str.h"
 #include "ten_utils/lib/module.h"
 #include "ten_utils/lib/path.h"

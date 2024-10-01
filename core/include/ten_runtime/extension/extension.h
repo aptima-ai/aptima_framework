@@ -62,4 +62,4 @@ TEN_RUNTIME_API ten_extension_t *ten_extension_create(
 
 TEN_RUNTIME_API void ten_extension_destroy(ten_extension_t *self);
 
-TEN_RUNTIME_API ten_env_t *ten_extension_get_ten(ten_extension_t *self);
+TEN_RUNTIME_API ten_env_t *ten_extension_get_ten_env(ten_extension_t *self);

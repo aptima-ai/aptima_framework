@@ -211,6 +211,8 @@ struct ten_extension_t {
   // out_path.
   ten_path_timeout_info path_timeout_info;
   // @}
+
+  void *user_data;
 };
 
 TEN_RUNTIME_PRIVATE_API bool
