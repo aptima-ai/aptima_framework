@@ -10,7 +10,7 @@
 
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
-#include "ten_runtime/binding/cpp/internal/test/ten_env_tester.h"
+#include "ten_runtime/binding/cpp/internal/test/env_tester.h"
 #include "ten_runtime/test/extension_tester.h"
 #include "ten_utils/macro/check.h"
 

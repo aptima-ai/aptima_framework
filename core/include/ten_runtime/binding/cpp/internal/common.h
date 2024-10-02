@@ -7,7 +7,7 @@
 #pragma once
 
 #if !defined(_WIN32)
-  #include <cxxabi.h>
+#include <cxxabi.h>
 #endif
 
 #include <string>
