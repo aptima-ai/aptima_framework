@@ -72,7 +72,7 @@ void ten_extension_group_on_init_done(ten_env_t *self) {
              "Should not happen.");
 
   TEN_LOGD("[%s] on_init() done.",
-           ten_extension_group_get_name(extension_group));
+           ten_extension_group_get_name(extension_group, true));
 
   ten_extension_thread_t *extension_thread = extension_group->extension_thread;
   TEN_ASSERT(extension_thread &&
@@ -103,7 +103,7 @@ void ten_extension_group_on_deinit_done(ten_env_t *self) {
     // cannot continue.
     TEN_LOGI(
         "[%s] Failed to on_deinit_done() because of existed ten_env_proxy.",
-        ten_extension_group_get_name(extension_group));
+        ten_extension_group_get_name(extension_group, true));
     return;
   }
 
@@ -113,7 +113,7 @@ void ten_extension_group_on_deinit_done(ten_env_t *self) {
   extension_group->state = TEN_EXTENSION_GROUP_STATE_DEINITTED;
 
   TEN_LOGD("[%s] on_deinit() done.",
-           ten_extension_group_get_name(extension_group));
+           ten_extension_group_get_name(extension_group, true));
 
   ten_extension_thread_t *extension_thread = extension_group->extension_thread;
   TEN_ASSERT(extension_thread &&
@@ -234,9 +234,10 @@ void ten_extension_group_on_addon_destroy_extension_done(
   ten_addon_context_destroy(addon_context);
 }
 
-const char *ten_extension_group_get_name(ten_extension_group_t *self) {
+const char *ten_extension_group_get_name(ten_extension_group_t *self,
+                                         bool check_thread) {
   TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_group_check_integrity(self, true),
+  TEN_ASSERT(ten_extension_group_check_integrity(self, check_thread),
              "Invalid use of extension group %p.", self);
 
   return ten_string_get_raw_str(&self->name);

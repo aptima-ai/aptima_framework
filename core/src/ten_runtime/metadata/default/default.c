@@ -5,6 +5,8 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/metadata/metadata.h"
+#include "include_internal/ten_runtime/metadata/metadata_info.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/path.h"
 #include "ten_utils/macro/mark.h"
@@ -15,6 +17,12 @@ void ten_set_default_manifest_info(const char *base_dir,
   TEN_ASSERT(manifest, "Should not happen.");
 
   if (!base_dir || !strlen(base_dir)) {
+    const char *instance_name =
+        ten_env_get_attached_instance_name(manifest->belonging_to, true);
+    TEN_LOGI(
+        "Skip the loading of manifest.json because the base_dir of %s is "
+        "missing.",
+        instance_name);
     return;
   }
 
@@ -35,6 +43,12 @@ void ten_set_default_property_info(const char *base_dir,
   TEN_ASSERT(property, "Should not happen.");
 
   if (!base_dir || !strlen(base_dir)) {
+    const char *instance_name =
+        ten_env_get_attached_instance_name(property->belonging_to, true);
+    TEN_LOGI(
+        "Skip the loading of property.json because the base_dir of %s is "
+        "missing.",
+        instance_name);
     return;
   }
 

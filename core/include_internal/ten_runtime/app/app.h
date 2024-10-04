@@ -102,6 +102,8 @@ typedef struct ten_app_t {
   ten_schema_store_t schema_store;
   ten_string_t base_dir;
 
+  ten_list_t ten_package_base_dirs;
+
   void *user_data;
 } ten_app_t;
 
@@ -119,14 +121,12 @@ TEN_RUNTIME_PRIVATE_API void ten_app_start(ten_app_t *self);
 TEN_RUNTIME_API ten_sanitizer_thread_check_t *ten_app_get_thread_check(
     ten_app_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_app_get_base_dir(ten_app_t *self);
-
 TEN_RUNTIME_PRIVATE_API bool ten_app_thread_call_by_me(ten_app_t *self);
 
 TEN_RUNTIME_PRIVATE_API ten_runloop_t *ten_app_get_attached_runloop(
     ten_app_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_app_get_uri(ten_app_t *self);
+TEN_RUNTIME_PRIVATE_API const char *ten_app_get_uri(ten_app_t *self);
 
 TEN_RUNTIME_PRIVATE_API ten_protocol_context_store_t *
 ten_app_get_protocol_context_store(ten_app_t *self);

@@ -15,7 +15,7 @@ typedef struct ten_addon_host_t ten_addon_host_t;
   TEN_ADDON_REGISTER(extension_group, NAME, ADDON)
 
 TEN_RUNTIME_API ten_addon_host_t *ten_addon_register_extension_group(
-    const char *name, ten_addon_t *addon);
+    const char *name, const char *base_dir, ten_addon_t *addon);
 
 TEN_RUNTIME_API ten_addon_t *ten_addon_unregister_extension_group(
     const char *name);

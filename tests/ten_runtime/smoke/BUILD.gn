@@ -19,27 +19,10 @@ glob("ten_runtime_smoke_tests") {
   include_dirs = [ "//core/include" ]
 }
 
-# TEN runtime requires an app's manifest.json to determine which parent folder
-# is the app folder.
-action("copy_fake_manifest_json_for_smoke_test") {
-  script = "//.gnfiles/build/scripts/copy_fs_entry.py"
-
-  inputs = [ "//tests/ten_runtime/smoke/fake_manifest.json" ]
-  outputs = [ "${root_out_dir}/tests/standalone/manifest.json" ]
-
-  args = [
-    "--source",
-    rebase_path(inputs[0]),
-    "--destination",
-    rebase_path(outputs[0]),
-  ]
-}
-
 ten_executable("ten_runtime_smoke_test") {
   output_dir = "${root_out_dir}/tests/standalone"
 
   deps = [
-    ":copy_fake_manifest_json_for_smoke_test",
     ":ten_runtime_smoke_tests",
     "//core/src/ten_runtime",
     "//core/src/ten_utils:ten_utils_shared",
@@ -82,11 +65,10 @@ ten_executable("ten_runtime_smoke_test") {
     }
   }
 
-  sources = [ "//third_party/googletest/src/gtest_main.cc" ]
-
   public_deps = [
     "//third_party/googlemock",
     "//third_party/googletest",
+    "//third_party/googletest:gtest_main",
   ]
 }
 

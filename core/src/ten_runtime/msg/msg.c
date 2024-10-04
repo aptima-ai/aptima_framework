@@ -17,6 +17,7 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
+#include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/extension_store/extension_store.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
@@ -217,8 +218,7 @@ void ten_msg_set_src_to_app(ten_shared_ptr_t *self, ten_app_t *app) {
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
   TEN_ASSERT(app && ten_app_check_integrity(app, false), "Should not happen.");
 
-  ten_msg_set_src(self, ten_string_get_raw_str(ten_app_get_uri(app)), NULL,
-                  NULL, NULL);
+  ten_msg_set_src(self, ten_app_get_uri(app), NULL, NULL, NULL);
 }
 
 void ten_msg_set_src_to_engine(ten_shared_ptr_t *self, ten_engine_t *engine) {
@@ -226,8 +226,8 @@ void ten_msg_set_src_to_engine(ten_shared_ptr_t *self, ten_engine_t *engine) {
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
              "Should not happen.");
 
-  ten_msg_set_src(self, ten_string_get_raw_str(ten_app_get_uri(engine->app)),
-                  ten_string_get_raw_str(&engine->graph_name), NULL, NULL);
+  ten_msg_set_src(self, ten_app_get_uri(engine->app),
+                  ten_engine_get_name(engine, true), NULL, NULL);
 }
 
 void ten_msg_set_src_to_extension(ten_shared_ptr_t *self,
@@ -256,10 +256,10 @@ void ten_msg_set_src_to_extension(ten_shared_ptr_t *self,
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
              "Should not happen.");
 
-  ten_msg_set_src(self, ten_string_get_raw_str(ten_app_get_uri(engine->app)),
-                  ten_string_get_raw_str(&engine->graph_name),
-                  ten_string_get_raw_str(&extension_group->name),
-                  ten_string_get_raw_str(&extension->name));
+  ten_msg_set_src(self, ten_app_get_uri(engine->app),
+                  ten_engine_get_name(engine, false),
+                  ten_extension_group_get_name(extension_group, true),
+                  ten_extension_get_name(extension, true));
 }
 
 void ten_msg_set_src_to_extension_group(
@@ -274,9 +274,9 @@ void ten_msg_set_src_to_extension_group(
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
              "Should not happen.");
 
-  ten_msg_set_src(self, ten_string_get_raw_str(ten_app_get_uri(engine->app)),
-                  ten_string_get_raw_str(&engine->graph_name),
-                  ten_string_get_raw_str(&extension_group->name), NULL);
+  ten_msg_set_src(self, ten_app_get_uri(engine->app),
+                  ten_engine_get_name(engine, true),
+                  ten_extension_group_get_name(extension_group, true), NULL);
 }
 
 bool ten_msg_src_uri_is_empty(ten_shared_ptr_t *self) {
@@ -419,13 +419,11 @@ void ten_msg_clear_and_set_dest_to_extension(ten_shared_ptr_t *self,
              "Invalid use of extension %p.", extension);
 
   ten_msg_clear_and_set_dest(
-      self,
-      ten_string_get_raw_str(
-          ten_app_get_uri(extension->extension_context->engine->app)),
-      ten_string_get_raw_str(&extension->extension_context->engine->graph_name),
-      ten_string_get_raw_str(
-          &extension->extension_thread->extension_group->name),
-      ten_string_get_raw_str(&extension->name), NULL);
+      self, ten_app_get_uri(extension->extension_context->engine->app),
+      ten_engine_get_name(extension->extension_context->engine, true),
+      ten_extension_group_get_name(extension->extension_thread->extension_group,
+                                   true),
+      ten_extension_get_name(extension, true), NULL);
 }
 
 void ten_msg_clear_and_set_dest_from_extension_info(
@@ -788,7 +786,7 @@ void ten_msg_correct_dest(ten_shared_ptr_t *msg, ten_engine_t *engine) {
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
              "Should not happen.");
 
-  ten_string_t *app_uri = ten_app_get_uri(engine->app);
+  const char *app_uri = ten_app_get_uri(engine->app);
 
   ten_msg_t *raw_msg = ten_msg_get_raw_msg(msg);
   ten_list_foreach (&raw_msg->dest_loc, iter) {
@@ -796,7 +794,7 @@ void ten_msg_correct_dest(ten_shared_ptr_t *msg, ten_engine_t *engine) {
 
     bool is_local_app = false;
 
-    if (ten_string_is_equal(&dest_loc->app_uri, app_uri)) {
+    if (ten_string_is_equal_c_str(&dest_loc->app_uri, app_uri)) {
       is_local_app = true;
     } else if (ten_string_is_equal_c_str(&dest_loc->app_uri,
                                          TEN_STR_LOCALHOST)) {
@@ -805,7 +803,7 @@ void ten_msg_correct_dest(ten_shared_ptr_t *msg, ten_engine_t *engine) {
       // 'correct' the real destination location from 'localhost' to the real
       // URI of the app.
 
-      ten_string_copy(&dest_loc->app_uri, app_uri);
+      ten_string_init_from_c_str(&dest_loc->app_uri, app_uri, strlen(app_uri));
       is_local_app = true;
     }
 
@@ -837,8 +835,8 @@ void ten_msg_correct_dest(ten_shared_ptr_t *msg, ten_engine_t *engine) {
     ten_list_foreach (extensions_info, iter) {
       ten_extension_info_t *extension_info =
           ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
-      ten_extension_info_translate_localhost_to_app_uri(
-          extension_info, ten_string_get_raw_str(app_uri));
+      ten_extension_info_translate_localhost_to_app_uri(extension_info,
+                                                        app_uri);
     }
   }
 }

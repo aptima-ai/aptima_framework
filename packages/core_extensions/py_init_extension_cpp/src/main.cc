@@ -6,8 +6,9 @@
 #include <cstring>
 #include <string>
 
-#include "include_internal/ten_runtime/app/base_dir.h"
 #include "include_internal/ten_runtime/binding/python/common.h"
+#include "include_internal/ten_runtime/common/base_dir.h"
+#include "include_internal/ten_runtime/common/constant_str.h"
 #include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/container/list_str.h"
@@ -207,7 +208,8 @@ class py_init_addon_t : public ten::addon_t {
         ten_path_get_module_path(reinterpret_cast<const void *>(foo));
     TEN_ASSERT(module_path, "Failed to get module path.");
 
-    ten_app_find_base_dir(module_path, &app_base_dir);
+    app_base_dir = ten_find_base_dir(ten_string_get_raw_str(module_path),
+                                     TEN_STR_APP, nullptr);
     ten_string_destroy(module_path);
   }
 
@@ -215,6 +217,12 @@ class py_init_addon_t : public ten::addon_t {
   // <app_root>/ten_packages/system/ten_runtime_python/lib
   // <app_root>/ten_packages/system/ten_runtime_python/interface
   // <app_root>
+  //
+  // The reason for adding `<app_root>` to `sys.path` is that when using
+  // `PyImport_Import` to load Python packages under `ten_packages/`, the module
+  // name used will be in the form of `ten_packages.extensions.xxx`. Therefore,
+  // `<app_root>` must be in `sys.path` to ensure that `ten_packages` can be
+  // located.
   void complete_sys_path() {
     ten_list_t paths;
     ten_list_init(&paths);
@@ -328,8 +336,8 @@ class py_init_addon_t : public ten::addon_t {
             ten_string_is_equal_c_str(short_name, ".."))) {
         // The full module name is "ten_packages.extension.<short_name>"
         ten_string_t *full_module_name = ten_string_create_formatted(
-            "ten_packages.extension.%s", short_name->buf);
-        ten_py_import_module(full_module_name->buf);
+            "ten_packages.extension.%s", ten_string_get_raw_str(short_name));
+        ten_py_import_module(ten_string_get_raw_str(full_module_name));
         ten_string_destroy(full_module_name);
       }
 
@@ -363,7 +371,7 @@ static ten::addon_t *g_py_init_default_extension_addon = nullptr;
 TEN_CONSTRUCTOR(____ctor_ten_declare_py_init_extension_addon____) {
   g_py_init_default_extension_addon = new py_init_addon_t();
   ten_addon_register_extension(
-      "py_init_extension_cpp",
+      "py_init_extension_cpp", nullptr,
       g_py_init_default_extension_addon->get_c_addon());
 }
 

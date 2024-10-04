@@ -21,7 +21,7 @@ typedef struct ten_extension_t ten_extension_t;
 typedef struct ten_addon_host_t ten_addon_host_t;
 
 TEN_RUNTIME_API ten_addon_host_t *ten_addon_register_extension(
-    const char *name, ten_addon_t *addon);
+    const char *name, const char *base_dir, ten_addon_t *addon);
 
 TEN_RUNTIME_API ten_addon_t *ten_addon_unregister_extension(const char *name);
 

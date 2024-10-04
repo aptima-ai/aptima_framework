@@ -5,6 +5,7 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/feature/ten_package.gni")
+import("//build/feature/ten_package_test.gni")
 
 ten_package("default_extension_cpp") {
   package_kind = "extension"
@@ -19,24 +20,13 @@ ten_package("default_extension_cpp") {
   include_dirs = [ "//core/include" ]
 }
 
-executable("default_extension_cpp_test") {
-  output_dir = "${root_out_dir}/tests/standalone"
+ten_package_test("default_extension_cpp_test") {
+  package_kind = "extension"
 
-  sources = [
-    "//third_party/googletest/src/gtest_main.cc",
-    "test/test.cc",
-  ]
+  sources = [ "test/basic.cc" ]
 
-  public_deps = [ "//third_party/googletest" ]
-
-  include_dirs = [
-    ".ten/app/ten_packages/system/ten_runtime/include",
-    "//third_party/googletest/include",
-  ]
-
-  lib_dirs = [ ".ten/app/ten_packages/system/ten_runtime/lib" ]
-  libs = [
-    "ten_runtime",
-    "ten_utils",
+  public_deps = [
+    "//third_party/googletest",
+    "//third_party/googletest:gtest_main",
   ]
 }

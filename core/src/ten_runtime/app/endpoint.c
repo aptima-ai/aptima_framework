@@ -25,8 +25,7 @@ static ten_connection_t *create_connection_when_client_accepted(
   ten_app_t *app = protocol->attached_target.app;
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
 
-  TEN_LOGD("[%s] A client is connected.",
-           ten_string_get_raw_str(ten_app_get_uri(app)));
+  TEN_LOGD("[%s] A client is connected.", ten_app_get_uri(app));
 
   // Create a connection to represent it.
   ten_connection_t *connection = ten_connection_create(protocol);

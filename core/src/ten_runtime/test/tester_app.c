@@ -7,6 +7,8 @@
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/test/extension_tester.h"
 #include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/container/list.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/mark.h"
 
 static void tester_app_on_configure(TEN_UNUSED ten_app_t *app,
@@ -119,6 +121,14 @@ void *ten_builtin_tester_app_thread_main(void *args) {
              "Invalid argument.");
 
   test_app->user_data = tester;
+
+  ten_list_foreach (&tester->addon_base_dirs, iter) {
+    ten_string_t *addon_base_dir = ten_str_listnode_get(iter.node);
+    TEN_ASSERT(addon_base_dir, "Should not happen.");
+
+    ten_app_add_ten_package_base_dir(test_app,
+                                     ten_string_get_raw_str(addon_base_dir));
+  }
 
   bool rc = ten_app_run(test_app, false, &err);
   TEN_ASSERT(rc, "Should not happen.");

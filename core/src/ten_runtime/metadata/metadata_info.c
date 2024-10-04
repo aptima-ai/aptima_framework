@@ -10,7 +10,10 @@
 
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/app/app.h"
+#include "include_internal/ten_runtime/app/base_dir.h"
+#include "include_internal/ten_runtime/extension/base_dir.h"
 #include "include_internal/ten_runtime/extension/extension.h"
+#include "include_internal/ten_runtime/extension_group/base_dir.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/metadata/default/default.h"
@@ -93,30 +96,40 @@ static ten_string_t *ten_metadata_info_filename_to_absolute_path(
   ten_string_t *path = NULL;
   switch (ten_env_get_attach_to(self->belonging_to)) {
     case TEN_ENV_ATTACH_TO_APP: {
-      ten_string_t *base_dir =
+      const char *base_dir =
           ten_app_get_base_dir(ten_env_get_attached_app(self->belonging_to));
-      path = ten_string_clone(base_dir);
+      if (base_dir) {
+        path = ten_string_create_from_c_str(base_dir, strlen(base_dir));
+      }
       break;
     }
 
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
-      ten_string_t *base_dir = ten_extension_group_get_base_dir(
+      const char *base_dir = ten_extension_group_get_base_dir(
           ten_env_get_attached_extension_group(self->belonging_to));
-      path = ten_string_clone(base_dir);
+      if (base_dir) {
+        path = ten_string_create_from_c_str(base_dir, strlen(base_dir));
+      }
       break;
     }
 
     case TEN_ENV_ATTACH_TO_EXTENSION: {
-      ten_string_t *base_dir = ten_extension_get_base_dir(
+      const char *base_dir = ten_extension_get_base_dir(
           ten_env_get_attached_extension(self->belonging_to));
-      path = ten_string_clone(base_dir);
+      if (base_dir) {
+        path = ten_string_create_from_c_str(base_dir, strlen(base_dir));
+      }
       break;
     }
 
-    case TEN_ENV_ATTACH_TO_ADDON:
-      path = ten_addon_host_get_base_dir(
+    case TEN_ENV_ATTACH_TO_ADDON: {
+      const char *base_dir = ten_addon_host_get_base_dir(
           ten_env_get_attached_addon(self->belonging_to));
+      if (base_dir) {
+        path = ten_string_create_from_c_str(base_dir, strlen(base_dir));
+      }
       break;
+    }
 
     default:
       TEN_ASSERT(0, "Should not happen.");
@@ -160,9 +173,9 @@ static void ten_metadata_info_get_debug_display(ten_metadata_info_t *self,
       break;
 
     case TEN_ENV_ATTACH_TO_APP: {
-      ten_string_t *uri =
+      const char *uri =
           ten_app_get_uri(ten_env_get_attached_app(self->belonging_to));
-      ten_string_set_formatted(display, "app(%s)", ten_string_get_raw_str(uri));
+      ten_string_set_formatted(display, "app(%s)", uri);
       break;
     }
 
@@ -170,14 +183,14 @@ static void ten_metadata_info_get_debug_display(ten_metadata_info_t *self,
       ten_string_set_formatted(
           display, "extension_group(%s)",
           ten_extension_group_get_name(
-              ten_env_get_attached_extension_group(self->belonging_to)));
+              ten_env_get_attached_extension_group(self->belonging_to), true));
       break;
 
     case TEN_ENV_ATTACH_TO_EXTENSION:
       ten_string_set_formatted(
           display, "extension(%s)",
           ten_extension_get_name(
-              ten_env_get_attached_extension(self->belonging_to)));
+              ten_env_get_attached_extension(self->belonging_to), true));
       break;
 
     default:
@@ -300,7 +313,6 @@ bool ten_handle_manifest_info_when_on_configure_done(ten_metadata_info_t **self,
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
     case TEN_ENV_ATTACH_TO_EXTENSION:
       if ((*self)->type == TEN_METADATA_INVALID) {
-        TEN_ASSERT(base_dir, "Invalid argument.");
         ten_set_default_manifest_info(base_dir, (*self), err);
       }
       break;
@@ -336,7 +348,6 @@ bool ten_handle_property_info_when_on_configure_done(ten_metadata_info_t **self,
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
     case TEN_ENV_ATTACH_TO_EXTENSION:
       if ((*self)->type == TEN_METADATA_INVALID) {
-        TEN_ASSERT(base_dir, "Invalid argument.");
         ten_set_default_property_info(base_dir, (*self), NULL);
       }
       break;

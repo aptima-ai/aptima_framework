@@ -17,13 +17,13 @@
 #include "include_internal/ten_runtime/schema_store/cmd.h"
 #include "include_internal/ten_runtime/schema_store/msg.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 static bool ten_raw_cmd_result_check_integrity(ten_cmd_result_t *self) {
@@ -427,8 +427,8 @@ static void ten_raw_cmd_result_set_original_cmd_name(
   TEN_ASSERT(original_cmd_name && strlen(original_cmd_name),
              "Invalid argument.");
 
-  ten_string_copy_c_str(&self->original_cmd_name, original_cmd_name,
-                        strlen(original_cmd_name));
+  ten_string_init_from_c_str(&self->original_cmd_name, original_cmd_name,
+                             strlen(original_cmd_name));
 }
 
 void ten_cmd_result_set_original_cmd_name(ten_shared_ptr_t *self,

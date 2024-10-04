@@ -8,4 +8,7 @@
 
 #include "ten_runtime/ten_config.h"
 
-#define DEFAULT_LOG_OUTPUT_LEVEL TEN_LOG_LEVEL_DEBUG
+typedef struct ten_extension_group_t ten_extension_group_t;
+
+TEN_RUNTIME_PRIVATE_API const char *ten_extension_group_get_base_dir(
+    ten_extension_group_t *self);

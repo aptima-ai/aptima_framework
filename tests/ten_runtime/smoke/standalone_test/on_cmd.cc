@@ -80,9 +80,10 @@ class extension_tester_1 : public ten::extension_tester_t {
 
 TEST(StandaloneTest, OnCmd) {  // NOLINT
   auto *tester = new extension_tester_1();
-  tester->add_addon("standalone_test_on_cmd__test_extension_1");
+  tester->add_addon_name("standalone_test_on_cmd__test_extension_1");
 
-  tester->run();
+  bool rc = tester->run();
+  TEN_ASSERT(rc, "Should not happen.");
 
   delete tester;
 }

@@ -12,6 +12,8 @@ import "C"
 
 import (
 	"fmt"
+	"path/filepath"
+	"runtime"
 	"unsafe"
 )
 
@@ -98,6 +100,21 @@ func RegisterAddonAsExtension(addonName string, instance Addon) error {
 		)
 	}
 
+	_, file, _, ok := runtime.Caller(1)
+	if !ok {
+		return newTenError(ErrnoGeneric, "Failed to get the caller information")
+	}
+
+	baseDir := filepath.Dir(file)
+
+	absBaseDir, err := filepath.Abs(baseDir)
+	if err != nil {
+		return newTenError(
+			ErrnoGeneric,
+			fmt.Sprintf("Failed to get the absolute file path: %v", err),
+		)
+	}
+
 	addonWrapper := &addon{
 		Addon: instance,
 	}
@@ -108,6 +125,8 @@ func RegisterAddonAsExtension(addonName string, instance Addon) error {
 	status := C.ten_go_addon_register_extension(
 		unsafe.Pointer(unsafe.StringData(addonName)),
 		C.int(len(addonName)),
+		unsafe.Pointer(unsafe.StringData(absBaseDir)),
+		C.int(len(absBaseDir)),
 		cHandle(addonID),
 		&bridge,
 	)
@@ -131,6 +150,22 @@ func RegisterAddonAsExtensionGroup(addonName string, instance Addon) error {
 		)
 	}
 
+	_, file, _, ok := runtime.Caller(1)
+	if !ok {
+		return newTenError(ErrnoGeneric, "Failed to get the caller information")
+	}
+
+	baseDir := filepath.Dir(file)
+
+	absBaseDir, err := filepath.Abs(baseDir)
+	if err != nil {
+		return newTenError(
+			ErrnoGeneric,
+			fmt.Sprintf("Failed to get the absolute file path: %v",
+				err),
+		)
+	}
+
 	addonWrapper := &addon{
 		Addon: instance,
 	}
@@ -141,6 +176,8 @@ func RegisterAddonAsExtensionGroup(addonName string, instance Addon) error {
 	status := C.ten_go_addon_register_extension_group(
 		unsafe.Pointer(unsafe.StringData(addonName)),
 		C.int(len(addonName)),
+		unsafe.Pointer(unsafe.StringData(absBaseDir)),
+		C.int(len(absBaseDir)),
 		cHandle(addonID),
 		&bridge,
 	)

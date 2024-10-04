@@ -5,11 +5,12 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/app/app.h"
+#include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
+#include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/lib/string.h"
 
 const char *ten_env_get_attached_instance_name(ten_env_t *self,
                                                bool check_thread) {
@@ -17,19 +18,27 @@ const char *ten_env_get_attached_instance_name(ten_env_t *self,
              "Invalid argument.");
 
   switch (self->attach_to) {
-    case TEN_ENV_ATTACH_TO_EXTENSION:
-      return ten_string_get_raw_str(&self->attached_target.extension->name);
-
-    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
-      return ten_string_get_raw_str(
-          &self->attached_target.extension_group->name);
-
-    case TEN_ENV_ATTACH_TO_APP:
-      return ten_string_get_raw_str(&self->attached_target.app->uri);
-
-    case TEN_ENV_ATTACH_TO_ADDON:
-      return ten_string_get_raw_str(&self->attached_target.addon_host->name);
-
+    case TEN_ENV_ATTACH_TO_EXTENSION: {
+      ten_extension_t *extension = ten_env_get_attached_extension(self);
+      return ten_extension_get_name(extension, true);
+    }
+    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
+      ten_extension_group_t *extension_group =
+          ten_env_get_attached_extension_group(self);
+      return ten_extension_group_get_name(extension_group, true);
+    }
+    case TEN_ENV_ATTACH_TO_ENGINE: {
+      ten_engine_t *engine = ten_env_get_attached_engine(self);
+      return ten_engine_get_name(engine, true);
+    }
+    case TEN_ENV_ATTACH_TO_APP: {
+      ten_app_t *app = ten_env_get_attached_app(self);
+      return ten_app_get_uri(app);
+    }
+    case TEN_ENV_ATTACH_TO_ADDON: {
+      ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
+      return ten_addon_host_get_name(addon_host);
+    }
     default:
       TEN_ASSERT(0, "Handle more types: %d", self->attach_to);
       return NULL;

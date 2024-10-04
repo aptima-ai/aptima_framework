@@ -13,8 +13,8 @@
 #include <stdlib.h>
 #include <winbase.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 ten_string_t *ten_path_get_cwd() {
   char *buf = NULL;
@@ -111,7 +111,7 @@ error:
   return NULL;
 }
 
-ten_string_t *ten_path_get_executable_path() {
+ten_string_t *ten_path_get_executable_path(void) {
   return ten_path_get_binary_path(NULL);
 }
 
@@ -219,7 +219,7 @@ int ten_path_create_temp_dir(const char *base_path,
                              ten_string_t *tmp_dir_path) {
   TEN_ASSERT(base_path && tmp_dir_path, "Invalid argument.");
 
-  ten_string_copy_c_str(tmp_dir_path, base_path, strlen(base_path));
+  ten_string_init_from_c_str(tmp_dir_path, base_path, strlen(base_path));
   ten_path_join_c_str(tmp_dir_path, "tmpdir.XXXXXX");
 
   _mktemp_s(ten_string_get_raw_str(tmp_dir_path),

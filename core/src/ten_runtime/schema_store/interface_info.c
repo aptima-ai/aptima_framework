@@ -22,7 +22,6 @@ ten_value_t *ten_interface_schema_info_resolve(
                  ten_value_check_integrity(unresolved_interface_schema_def),
              "Invalid argument.");
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
-  TEN_ASSERT(base_dir, "Invalid argument.");
 
   if (!ten_value_is_array(unresolved_interface_schema_def)) {
     ten_error_set(err, TEN_ERRNO_GENERIC,

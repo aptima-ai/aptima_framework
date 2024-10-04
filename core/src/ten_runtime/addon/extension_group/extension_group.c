@@ -25,6 +25,7 @@ ten_addon_store_t *ten_extension_group_get_store(void) {
 }
 
 ten_addon_host_t *ten_addon_register_extension_group(const char *name,
+                                                     const char *base_dir,
                                                      ten_addon_t *addon) {
   if (!name || strlen(name) == 0) {
     TEN_LOGE("The addon name is required.");
@@ -37,9 +38,8 @@ ten_addon_host_t *ten_addon_register_extension_group(const char *name,
       ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION_GROUP);
   TEN_ASSERT(addon_host, "Should not happen.");
 
-  ten_addon_register(ten_extension_group_get_store(), addon_host, name, addon);
-  TEN_LOGI("Registered addon '%s' as extension group",
-           ten_string_get_raw_str(&addon_host->name));
+  ten_addon_register(ten_extension_group_get_store(), addon_host, name,
+                     base_dir, addon);
 
   return addon_host;
 }

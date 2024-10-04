@@ -256,7 +256,7 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
   TEN_ASSERT(ten_app_check_integrity(app, false), "Invalid use of app %p.",
              app);
 
-  if (!ten_string_is_equal(&dest_loc->app_uri, ten_app_get_uri(app))) {
+  if (!ten_string_is_equal_c_str(&dest_loc->app_uri, ten_app_get_uri(app))) {
     TEN_ASSERT(!ten_string_is_empty(&dest_loc->app_uri),
                "The uri of the app should not be empty.");
 

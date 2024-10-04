@@ -110,8 +110,7 @@ void ten_engine_add_remote(ten_engine_t *self, ten_remote_t *remote) {
   TEN_ASSERT(ten_remote_check_integrity(remote, true),
              "Invalid use of remote %p.", remote);
 
-  TEN_LOGD("[%s] Add %s (%p) as remote.",
-           ten_string_get_raw_str(ten_app_get_uri(self->app)),
+  TEN_LOGD("[%s] Add %s (%p) as remote.", ten_app_get_uri(self->app),
            ten_string_get_raw_str(&remote->uri), remote);
 
   ten_hashtable_add_string(&self->remotes, &remote->hh_in_remote_table,
@@ -128,8 +127,7 @@ void ten_engine_add_weak_remote(ten_engine_t *self, ten_remote_t *remote) {
   TEN_ASSERT(ten_remote_check_integrity(remote, true),
              "Invalid use of remote %p.", remote);
 
-  TEN_LOGD("[%s] Add %s (%p) as weak remote.",
-           ten_string_get_raw_str(ten_app_get_uri(self->app)),
+  TEN_LOGD("[%s] Add %s (%p) as weak remote.", ten_app_get_uri(self->app),
            ten_string_get_raw_str(&remote->uri), remote);
 
   TEN_UNUSED ten_listnode_t *found = ten_list_find_ptr_custom(
@@ -405,8 +403,7 @@ bool ten_engine_check_remote_is_duplicated(ten_engine_t *self,
   if (remote) {
     TEN_LOGW("Found a remote %s (%p), checking duplication...", uri, remote);
 
-    if (ten_c_string_is_equal_or_smaller(
-            uri, ten_string_get_raw_str(ten_app_get_uri(self->app)))) {
+    if (ten_c_string_is_equal_or_smaller(uri, ten_app_get_uri(self->app))) {
       TEN_LOGW(" > Remote %s (%p) is smaller, this channel is duplicated.", uri,
                remote);
       return true;

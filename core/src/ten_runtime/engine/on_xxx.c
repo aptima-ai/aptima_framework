@@ -14,6 +14,7 @@
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_context/ten_env/on_xxx.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
+#include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/extension_thread/on_xxx.h"
 #include "include_internal/ten_runtime/msg/msg.h"
@@ -48,7 +49,7 @@ static void ten_engine_on_extension_thread_is_ready(
   if (extension_context->extension_threads_cnt_of_initted ==
       ten_list_size(&extension_context->extension_threads)) {
     TEN_LOGD("[%s] All extension threads are initted.",
-             ten_engine_get_name(self));
+             ten_engine_get_name(self, true));
 
     // All the extension threads requested by this command have been completed,
     // return the result for this command.
@@ -91,7 +92,7 @@ static void ten_engine_on_extension_thread_is_ready(
     self->is_ready_to_handle_msg = true;
 
     TEN_LOGD("[%s] Engine is ready to handle messages.",
-             ten_engine_get_name(self));
+             ten_engine_get_name(self, true));
 
     // Because the engine is just ready to handle messages, hence, we trigger
     // the engine to handle any external messages if any.
@@ -131,12 +132,11 @@ void ten_engine_find_extension_info_for_all_extensions_of_extension_thread(
     // Find the extension_info of the specified 'extension'.
     extension->extension_info =
         ten_extension_context_get_extension_info_by_name(
-            extension_context,
-            ten_string_get_raw_str(
-                ten_app_get_uri(extension_context->engine->app)),
-            ten_string_get_raw_str(&extension_context->engine->graph_name),
-            ten_string_get_raw_str(&extension_thread->extension_group->name),
-            ten_string_get_raw_str(&extension->name));
+            extension_context, ten_app_get_uri(extension_context->engine->app),
+            ten_engine_get_name(extension_context->engine, true),
+            ten_extension_group_get_name(extension_thread->extension_group,
+                                         false),
+            ten_extension_get_name(extension, false));
   }
 
   if (extension_thread->is_close_triggered) {
@@ -169,14 +169,14 @@ void ten_engine_on_extension_thread_closed(void *self_, void *arg) {
              "Should not happen.");
 
   TEN_LOGD("[%s] Waiting for extension thread (%p) be reclaimed.",
-           ten_engine_get_name(self), extension_thread);
+           ten_engine_get_name(self, true), extension_thread);
   TEN_UNUSED int rc =
       ten_thread_join(ten_sanitizer_thread_check_get_belonging_thread(
                           &extension_thread->thread_check),
                       -1);
   TEN_ASSERT(!rc, "Should not happen.");
   TEN_LOGD("[%s] Extension thread (%p) is reclaimed.",
-           ten_engine_get_name(self), extension_thread);
+           ten_engine_get_name(self, true), extension_thread);
 
   // Extension thread is disappear, so we migrate the extension_group and
   // extension_thread to the engine thread now.

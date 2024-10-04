@@ -38,7 +38,7 @@ void test_app_on_configure(TEN_UNUSED ten_app_t *self, ten_env_t *ten_env) {
                                                 "{\
                           \"_ten\": {\
                           \"uri\": \"msgpack://127.0.0.1:8001/\",\
-                          \"log_level\": 1\
+                          \"log_level\": 2\
                           }\
                          }",
                                                 nullptr);

@@ -15,6 +15,7 @@
 #include "ten_runtime/binding/cpp/internal/common.h"
 #include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/lib/path.h"  // IWYU pragma: export
 
 namespace ten {
 
@@ -60,7 +61,7 @@ class addon_t {
 
  private:
   ten_addon_t *c_addon;
-  ten_env_t *cpp_ten_env;
+  ten_env_t *cpp_ten_env{};
 
   virtual void on_create_instance_impl(ten_env_t &ten_env, const char *name,
                                        void *context) = 0;
@@ -237,8 +238,12 @@ class extension_addon_t : public addon_t {
   TEN_CONSTRUCTOR(____ctor_ten_declare_##NAME##_extension_group_addon____) { \
     g_##NAME##_default_extension_group_addon =                               \
         new NAME##_default_extension_group_addon_t();                        \
+    ten_string_t *base_dir = ten_path_get_module_path(                       \
+        (void *)____ctor_ten_declare_##NAME##_extension_group_addon____);    \
     ten_addon_register_extension_group(                                      \
-        #NAME, g_##NAME##_default_extension_group_addon->get_c_addon());     \
+        #NAME, ten_string_get_raw_str(base_dir),                             \
+        g_##NAME##_default_extension_group_addon->get_c_addon());            \
+    ten_string_destroy(base_dir);                                            \
   }                                                                          \
   TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_##TYPE##_addon____) {         \
     ten_addon_unregister_extension_group(#NAME);                             \
@@ -263,8 +268,12 @@ class extension_addon_t : public addon_t {
   TEN_CONSTRUCTOR(____ctor_ten_declare_##NAME##_extension_addon____) {     \
     g_##NAME##_default_extension_addon =                                   \
         new NAME##_default_extension_addon_t();                            \
+    ten_string_t *base_dir = ten_path_get_module_path(                     \
+        (void *)____ctor_ten_declare_##NAME##_extension_addon____);        \
     ten_addon_register_extension(                                          \
-        #NAME, g_##NAME##_default_extension_addon->get_c_addon());         \
+        #NAME, ten_string_get_raw_str(base_dir),                           \
+        g_##NAME##_default_extension_addon->get_c_addon());                \
+    ten_string_destroy(base_dir);                                          \
   }                                                                        \
   TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_##TYPE##_addon____) {       \
     ten_addon_unregister_extension(#NAME);                                 \

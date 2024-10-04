@@ -20,11 +20,11 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
+#include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "include_internal/ten_utils/log/log.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/ten_env/ten_env.h"
@@ -58,7 +58,7 @@ ten_extension_context_t *ten_extension_context_create(ten_engine_t *engine) {
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
              "Should not happen.");
 
-  TEN_LOGD("[%s] Create Extension context.", ten_engine_get_name(engine));
+  TEN_LOGD("[%s] Create Extension context.", ten_engine_get_name(engine, true));
 
   ten_extension_context_t *self =
       (ten_extension_context_t *)TEN_MALLOC(sizeof(ten_extension_context_t));
@@ -152,12 +152,12 @@ void ten_extension_context_close(ten_extension_context_t *self) {
 
   if (!ten_atomic_bool_compare_swap(&self->is_closing, 0, 1)) {
     TEN_LOGW("[%s] Extension context has already been signaled to close.",
-             ten_engine_get_name(self->engine));
+             ten_engine_get_name(self->engine, true));
     return;
   }
 
   TEN_LOGD("[%s] Try to close extension context.",
-           ten_engine_get_name(self->engine));
+           ten_engine_get_name(self->engine, true));
 
   if (ten_list_size(&self->extension_threads)) {
     ten_list_foreach (&self->extension_threads, iter) {
@@ -238,10 +238,11 @@ void ten_extension_context_on_close(ten_extension_context_t *self) {
 
   if (!ten_extension_context_could_be_close(self)) {
     TEN_LOGD("[%s] Could not close alive extension context.",
-             ten_engine_get_name(self->engine));
+             ten_engine_get_name(self->engine, true));
     return;
   }
-  TEN_LOGD("[%s] Close extension context.", ten_engine_get_name(self->engine));
+  TEN_LOGD("[%s] Close extension context.",
+           ten_engine_get_name(self->engine, true));
 
   ten_extension_context_do_close(self);
 }
@@ -502,10 +503,8 @@ static void ten_extension_context_create_extension_group_done(
 
     extension_group->extension_group_info =
         ten_extension_context_get_extension_group_info_by_name(
-            extension_context,
-            ten_string_get_raw_str(
-                ten_app_get_uri(extension_context->engine->app)),
-            ten_string_get_raw_str(&extension_group->name));
+            extension_context, ten_app_get_uri(extension_context->engine->app),
+            ten_extension_group_get_name(extension_group, true));
     TEN_ASSERT(extension_group->extension_group_info, "Should not happen.");
 
     ten_extension_context_start(extension_context);
@@ -574,7 +573,7 @@ bool ten_extension_context_start_extension_group(
         TEN_LOGE(
             "[%s] Failed to start the extension group, because unable to find "
             "the specified extension group addon: %s",
-            ten_engine_get_name(self->engine),
+            ten_engine_get_name(self->engine, true),
             ten_string_get_raw_str(
                 &extension_group_info->extension_group_addon_name));
 

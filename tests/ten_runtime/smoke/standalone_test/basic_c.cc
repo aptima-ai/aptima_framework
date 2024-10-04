@@ -69,10 +69,11 @@ void ten_extension_tester_on_start(TEN_UNUSED ten_extension_tester_t *tester,
 TEST(StandaloneTest, BasicC) {  // NOLINT
   ten_extension_tester_t *tester =
       ten_extension_tester_create(ten_extension_tester_on_start, nullptr);
-  ten_extension_tester_add_addon(tester,
-                                 "standalone_test_basic_c__test_extension_1");
+  ten_extension_tester_add_addon_name(
+      tester, "standalone_test_basic_c__test_extension_1");
 
-  ten_extension_tester_run(tester);
+  bool rc = ten_extension_tester_run(tester);
+  TEN_ASSERT(rc, "Should not happen.");
 
   ten_extension_tester_destroy(tester);
 }

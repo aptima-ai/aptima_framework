@@ -13,7 +13,7 @@ from .extension import DefaultExtension
 from .log import logger
 
 
-@register_addon_as_extension("default_extension_python")
+@register_addon_as_extension("default_extension_python", __file__)
 class DefaultExtensionAddon(Addon):
 
     def on_create_instance(self, ten_env: TenEnv, name: str, context) -> None:

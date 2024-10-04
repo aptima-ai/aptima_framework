@@ -89,7 +89,7 @@ static void ten_extension_out_path_timer_on_triggered(ten_timer_t *self,
   }
 
   if (!ten_list_is_empty(&timeout_cmd_result_list)) {
-    TEN_LOGE("[%s] %zu paths timeout.", ten_extension_get_name(extension),
+    TEN_LOGE("[%s] %zu paths timeout.", ten_extension_get_name(extension, true),
              ten_list_size(&timeout_cmd_result_list));
   }
 

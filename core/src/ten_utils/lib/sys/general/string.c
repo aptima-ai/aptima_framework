@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/signature.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -34,7 +34,7 @@ ten_string_t *ten_string_create_from_c_str(const char *str, size_t size) {
   TEN_ASSERT(str, "Invalid argument.");
 
   ten_string_t *result = ten_string_create();
-  ten_string_copy_c_str(result, str, size);
+  ten_string_init_from_c_str(result, str, size);
 
   return result;
 }
@@ -110,6 +110,14 @@ void ten_string_init_from_va_list(ten_string_t *self, const char *fmt,
   ten_string_append_from_va_list(self, fmt, ap);
 }
 
+void ten_string_copy(ten_string_t *self, ten_string_t *other) {
+  TEN_ASSERT(self && other && ten_string_check_integrity(other) &&
+                 ten_string_get_raw_str(other),
+             "Invalid argument.");
+
+  ten_string_init_formatted(self, "%s", ten_string_get_raw_str(other));
+}
+
 void ten_string_init_formatted(ten_string_t *self, const char *fmt, ...) {
   TEN_ASSERT(self, "Invalid argument.");
 
@@ -119,15 +127,8 @@ void ten_string_init_formatted(ten_string_t *self, const char *fmt, ...) {
   va_end(ap);
 }
 
-void ten_string_copy(ten_string_t *self, ten_string_t *other) {
-  TEN_ASSERT(self && other && ten_string_check_integrity(other) &&
-                 ten_string_get_raw_str(other),
-             "Invalid argument.");
-
-  ten_string_init_formatted(self, "%s", ten_string_get_raw_str(other));
-}
-
-void ten_string_copy_c_str(ten_string_t *self, const char *other, size_t size) {
+void ten_string_init_from_c_str(ten_string_t *self, const char *other,
+                                size_t size) {
   TEN_ASSERT(self && other, "Invalid argument.");
 
   ten_string_init(self);

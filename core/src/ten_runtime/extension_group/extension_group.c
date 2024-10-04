@@ -94,8 +94,6 @@ ten_extension_group_t *ten_extension_group_create_internal(
   self->manifest_info = NULL;
   self->property_info = NULL;
 
-  ten_string_init(&self->base_dir);
-
   self->app = NULL;
   self->extension_context = NULL;
   self->state = TEN_EXTENSION_GROUP_STATE_INIT;
@@ -153,8 +151,6 @@ void ten_extension_group_destroy(ten_extension_group_t *self) {
 
   ten_string_deinit(&self->name);
 
-  ten_string_deinit(&self->base_dir);
-
   if (self->addon_host) {
     // Since the extension has already been destroyed, there is no need to
     // release its resources through the corresponding addon anymore. Therefore,
@@ -175,7 +171,7 @@ void ten_extension_group_create_extensions(ten_extension_group_t *self) {
   TEN_ASSERT(self->ten_env && ten_env_check_integrity(self->ten_env, true),
              "Should not happen.");
 
-  TEN_LOGD("[%s] create_extensions.", ten_extension_group_get_name(self));
+  TEN_LOGD("[%s] create_extensions.", ten_extension_group_get_name(self, true));
 
   ten_extension_thread_t *extension_thread = self->extension_thread;
   TEN_ASSERT(extension_thread, "Should not happen.");
@@ -196,7 +192,8 @@ void ten_extension_group_destroy_extensions(ten_extension_group_t *self,
   TEN_ASSERT(self->ten_env && ten_env_check_integrity(self->ten_env, true),
              "Should not happen.");
 
-  TEN_LOGD("[%s] destroy_extensions.", ten_extension_group_get_name(self));
+  TEN_LOGD("[%s] destroy_extensions.",
+           ten_extension_group_get_name(self, true));
 
   self->on_destroy_extensions(self, self->ten_env, extensions);
 }
@@ -297,10 +294,4 @@ size_t ten_extension_group_decrement_extension_cnt_of_being_destroyed(
              "Should not happen.");
 
   return --self->extensions_cnt_of_being_destroyed;
-}
-
-ten_string_t *ten_extension_group_get_base_dir(ten_extension_group_t *self) {
-  TEN_ASSERT(self && ten_extension_group_check_integrity(self, true),
-             "Invalid argument.");
-  return &self->base_dir;
 }

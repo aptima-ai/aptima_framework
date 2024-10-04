@@ -17,6 +17,7 @@
 #include "include_internal/ten_runtime/extension/msg_handling.h"
 #include "include_internal/ten_runtime/extension/path_timer.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
+#include "include_internal/ten_runtime/extension_group/base_dir.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/metadata.h"
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
@@ -82,7 +83,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
 
   bool rc = ten_handle_manifest_info_when_on_configure_done(
       &extension_group->manifest_info,
-      ten_string_get_raw_str(ten_extension_group_get_base_dir(extension_group)),
+      ten_extension_group_get_base_dir(extension_group),
       &extension_group->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load extension group manifest data, FATAL ERROR.");
@@ -91,7 +92,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
 
   rc = ten_handle_property_info_when_on_configure_done(
       &extension_group->property_info,
-      ten_string_get_raw_str(ten_extension_group_get_base_dir(extension_group)),
+      ten_extension_group_get_base_dir(extension_group),
       &extension_group->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load extension group property data, FATAL ERROR.");

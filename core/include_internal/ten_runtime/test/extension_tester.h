@@ -30,7 +30,8 @@ struct ten_extension_tester_t {
   ten_env_proxy_t *tester_extension_ten_env_proxy;
   ten_event_t *tester_extension_ten_env_proxy_create_completed;
 
-  ten_string_t target_extension_addon_name;
+  ten_list_t addon_names;
+  ten_list_t addon_base_dirs;
 
   ten_extension_tester_on_start_func_t on_start;
   ten_extension_tester_on_cmd_func_t on_cmd;

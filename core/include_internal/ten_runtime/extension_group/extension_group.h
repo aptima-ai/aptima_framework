@@ -77,8 +77,6 @@ typedef struct ten_extension_group_t {
   ten_metadata_info_t *property_info;
 
   size_t extensions_cnt_of_being_destroyed;
-
-  ten_string_t base_dir;
 } ten_extension_group_t;
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_group_create_extensions(
@@ -103,9 +101,6 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_group_on_deinit_done(
     ten_env_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_group_on_destroy_extensions_done(
-    ten_extension_group_t *self);
-
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_extension_group_get_base_dir(
     ten_extension_group_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_extension_group_on_create_extensions_done(

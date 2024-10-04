@@ -103,7 +103,8 @@ static void ten_engine_on_extension_msgs(ten_engine_t *self) {
     TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc),
                "Should not happen.");
 
-    if (!ten_string_is_equal(&dest_loc->app_uri, ten_app_get_uri(self->app))) {
+    if (!ten_string_is_equal_c_str(&dest_loc->app_uri,
+                                   ten_app_get_uri(self->app))) {
       TEN_ASSERT(!ten_string_is_empty(&dest_loc->app_uri),
                  "Should not happen.");
 

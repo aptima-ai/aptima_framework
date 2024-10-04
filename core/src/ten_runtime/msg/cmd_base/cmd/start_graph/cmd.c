@@ -217,8 +217,8 @@ static void ten_cmd_start_graph_get_next_list_through_dests(
     ten_extension_info_t *dest_extension_info =
         ten_extension_info_from_smart_ptr(shared_dest_extension_info);
 
-    const bool equal = ten_string_is_equal(&dest_extension_info->loc.app_uri,
-                                           ten_app_get_uri(app));
+    const bool equal = ten_string_is_equal_c_str(
+        &dest_extension_info->loc.app_uri, ten_app_get_uri(app));
     const bool expected_equality = (from_src_point_of_view ? false : true);
 
     if (equal == expected_equality) {
@@ -290,8 +290,8 @@ void ten_cmd_start_graph_get_next_list(ten_shared_ptr_t *self, ten_app_t *app,
     ten_extension_info_t *extension_info =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
 
-    if (ten_string_is_equal(&extension_info->loc.app_uri,
-                            ten_app_get_uri(app))) {
+    if (ten_string_is_equal_c_str(&extension_info->loc.app_uri,
+                                  ten_app_get_uri(app))) {
       ten_cmd_start_graph_get_next_list_per_extension_info(
           self, app, extension_info, next, true);
     } else {

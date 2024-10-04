@@ -8,4 +8,8 @@
 
 #include "ten_runtime/ten_config.h"
 
-#define DEFAULT_LOG_OUTPUT_LEVEL TEN_LOG_LEVEL_DEBUG
+#include "ten_utils/lib/string.h"
+
+TEN_RUNTIME_API ten_string_t *ten_find_base_dir(const char *start_path,
+                                                const char *type,
+                                                const char *name);

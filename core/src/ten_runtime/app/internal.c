@@ -10,20 +10,19 @@
 #include <string.h>
 
 #include "include_internal/ten_runtime/app/app.h"
+#include "include_internal/ten_runtime/app/base_dir.h"
 #include "include_internal/ten_runtime/app/close.h"
 #include "include_internal/ten_runtime/app/engine_interface.h"
 #include "include_internal/ten_runtime/app/metadata.h"
 #include "include_internal/ten_runtime/app/msg_interface/common.h"
 #include "include_internal/ten_runtime/app/predefined_graph.h"
-#include "include_internal/ten_runtime/common/home.h"
 #include "include_internal/ten_runtime/connection/connection.h"
 #include "include_internal/ten_runtime/engine/engine.h"
-#include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 bool ten_app_check_integrity(ten_app_t *self, bool check_thread) {
@@ -42,19 +41,6 @@ bool ten_app_check_integrity(ten_app_t *self, bool check_thread) {
   return true;
 }
 
-static void ten_app_set_base_dir(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  ten_string_t *app_base_dir = ten_get_app_base_dir();
-  if (app_base_dir) {
-    ten_string_copy(&self->base_dir, app_base_dir);
-    ten_string_destroy(app_base_dir);
-  } else {
-    TEN_LOGE("Failed to determine app base directory.");
-    exit(EXIT_FAILURE);
-  }
-}
-
 static void ten_app_handle_metadata_task(void *self_, void *arg) {
   ten_app_t *self = (ten_app_t *)self_;
   TEN_ASSERT(self, "Invalid argument.");
@@ -67,7 +53,7 @@ static void ten_app_handle_metadata_task(void *self_, void *arg) {
 void ten_app_start(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
-  ten_app_set_base_dir(self);
+  ten_app_find_and_set_base_dir(self);
 
   // Add the first task of app.
   ten_runloop_post_task_tail(self->loop, ten_app_handle_metadata_task, self,
@@ -85,7 +71,7 @@ void ten_app_add_orphan_connection(ten_app_t *self,
              "Should not happen.");
 
   TEN_LOGD("[%s] Add a orphan connection %p (total cnt %zu)",
-           ten_string_get_raw_str(ten_app_get_uri(self)), connection,
+           ten_app_get_uri(self), connection,
            ten_list_size(&self->orphan_connections));
 
   ten_connection_set_on_closed(connection, ten_app_on_orphan_connection_closed,
@@ -110,8 +96,8 @@ void ten_app_del_orphan_connection(ten_app_t *self,
   TEN_ASSERT(connection && ten_connection_check_integrity(connection, false),
              "Should not happen.");
 
-  TEN_LOGD("[%s] Remove a orphan connection %p",
-           ten_string_get_raw_str(ten_app_get_uri(self)), connection);
+  TEN_LOGD("[%s] Remove a orphan connection %p", ten_app_get_uri(self),
+           connection);
 
   TEN_UNUSED bool rc =
       ten_list_remove_ptr(&self->orphan_connections, connection);
@@ -143,14 +129,14 @@ ten_runloop_t *ten_app_get_attached_runloop(ten_app_t *self) {
   return self->loop;
 }
 
-ten_string_t *ten_app_get_uri(ten_app_t *self) {
+const char *ten_app_get_uri(ten_app_t *self) {
   TEN_ASSERT(self &&
                  // The app uri should be read-only after it has been set
                  // initially, so it's safe to read it from any other threads.
                  ten_app_check_integrity(self, false),
              "Should not happen.");
 
-  return &self->uri;
+  return ten_string_get_raw_str(&self->uri);
 }
 
 ten_env_t *ten_app_get_ten_env(ten_app_t *self) {

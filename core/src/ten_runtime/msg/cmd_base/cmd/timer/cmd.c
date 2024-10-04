@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timer/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_path.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
@@ -20,6 +19,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_is.h"
 
@@ -240,8 +240,9 @@ bool ten_raw_cmd_timer_set_ten_property(ten_msg_t *self, ten_list_t *paths,
         } else if (!strcmp(TEN_STR_NAME,
                            ten_string_get_raw_str(&item->obj_item_str))) {
           if (ten_value_is_string(value)) {
-            ten_string_copy_c_str(&self->name, ten_value_peek_string(value),
-                                  strlen(ten_value_peek_string(value)));
+            ten_string_init_from_c_str(&self->name,
+                                       ten_value_peek_string(value),
+                                       strlen(ten_value_peek_string(value)));
             success = true;
           } else {
             success = false;

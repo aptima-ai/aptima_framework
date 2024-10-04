@@ -161,7 +161,7 @@ static ten_addon_t ten_builtin_tester_extension_addon = {
 };
 
 void ten_builtin_tester_extension_addon_register(void) {
-  ten_addon_register_extension(TEN_STR_TEN_TEST_EXTENSION,
+  ten_addon_register_extension(TEN_STR_TEN_TEST_EXTENSION, NULL,
                                &ten_builtin_tester_extension_addon);
 }
 

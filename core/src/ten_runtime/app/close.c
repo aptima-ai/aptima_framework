@@ -52,11 +52,10 @@ static void ten_app_proceed_to_close(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
   if (!ten_app_could_be_close(self)) {
-    TEN_LOGD("[%s] Could not close alive app.",
-             ten_string_get_raw_str(ten_app_get_uri(self)));
+    TEN_LOGD("[%s] Could not close alive app.", ten_app_get_uri(self));
     return;
   }
-  TEN_LOGD("[%s] Close app.", ten_string_get_raw_str(ten_app_get_uri(self)));
+  TEN_LOGD("[%s] Close app.", ten_app_get_uri(self));
 
   ten_app_on_deinit(self);
 }
@@ -64,8 +63,7 @@ static void ten_app_proceed_to_close(ten_app_t *self) {
 static void ten_app_close_sync(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
-  TEN_LOGD("[%s] Try to close app.",
-           ten_string_get_raw_str(ten_app_get_uri(self)));
+  TEN_LOGD("[%s] Try to close app.", ten_app_get_uri(self));
 
   ten_list_foreach (&self->engines, iter) {
     ten_engine_close_async(ten_ptr_listnode_get(iter.node));
@@ -101,13 +99,11 @@ bool ten_app_close(ten_app_t *self, TEN_UNUSED ten_error_t *err) {
   ten_mutex_lock(self->state_lock);
 
   if (self->state >= TEN_APP_STATE_CLOSING) {
-    TEN_LOGD("[%s] App has been signaled to close.",
-             ten_string_get_raw_str(ten_app_get_uri(self)));
+    TEN_LOGD("[%s] App has been signaled to close.", ten_app_get_uri(self));
     goto done;
   }
 
-  TEN_LOGD("[%s] Try to close app.",
-           ten_string_get_raw_str(ten_app_get_uri(self)));
+  TEN_LOGD("[%s] Try to close app.", ten_app_get_uri(self));
 
   self->state = TEN_APP_STATE_CLOSING;
 
@@ -179,7 +175,7 @@ void ten_app_check_termination_when_engine_closed(ten_app_t *self,
 
   if (self->long_running_mode) {
     TEN_LOGD("[%s] Don't close App due to it's in long running mode.",
-             ten_string_get_raw_str(ten_app_get_uri(self)));
+             ten_app_get_uri(self));
   }
 
   // If we don't want to close/clean the app just because there is no
@@ -208,8 +204,8 @@ void ten_app_on_orphan_connection_closed(ten_connection_t *connection,
   ten_app_t *self = connection->attached_target.app;
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
-  TEN_LOGD("[%s] Orphan connection %p closed",
-           ten_string_get_raw_str(ten_app_get_uri(self)), connection);
+  TEN_LOGD("[%s] Orphan connection %p closed", ten_app_get_uri(self),
+           connection);
 
   ten_app_del_orphan_connection(self, connection);
   ten_connection_destroy(connection);
@@ -217,7 +213,7 @@ void ten_app_on_orphan_connection_closed(ten_connection_t *connection,
   // Check if the app is in the closing phase.
   if (ten_app_is_closing(self)) {
     TEN_LOGD("[%s] App is closing, check to see if it could proceed.",
-             ten_string_get_raw_str(ten_app_get_uri(self)));
+             ten_app_get_uri(self));
     ten_app_proceed_to_close(self);
   } else {
     // If 'connection' is an orphan connection, it means the connection is not

@@ -339,7 +339,7 @@ void ten_extension_info_translate_localhost_to_app_uri(
 
   if (ten_string_is_equal_c_str(&self->loc.app_uri, TEN_STR_LOCALHOST) ||
       ten_string_is_empty(&self->loc.app_uri)) {
-    ten_string_copy_c_str(&self->loc.app_uri, uri, strlen(uri));
+    ten_string_init_from_c_str(&self->loc.app_uri, uri, strlen(uri));
   }
 }
 

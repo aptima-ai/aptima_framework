@@ -11,7 +11,6 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/msg_handling.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
-#include "include_internal/ten_runtime/extension_thread/on_xxx.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_table.h"
@@ -50,7 +49,7 @@ static void ten_extension_thread_process_remaining_paths(
     // Call ten_extension_handle_in_msg to consume cmd results, so that the
     // _OUT_paths can be removed.
     TEN_LOGD("[%s] Flushing %zu remaining out paths.",
-             ten_extension_get_name(extension), out_paths_cnt);
+             ten_extension_get_name(extension, true), out_paths_cnt);
 
     ten_list_t cmd_result_list = TEN_LIST_INIT_VAL;
     ten_list_foreach (out_paths, iter) {

@@ -6,6 +6,7 @@
 //
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
 #include "include_internal/ten_runtime/app/app.h"
+#include "include_internal/ten_runtime/app/base_dir.h"
 #include "include_internal/ten_runtime/app/close.h"
 #include "include_internal/ten_runtime/app/endpoint.h"
 #include "include_internal/ten_runtime/app/engine_interface.h"
@@ -61,16 +62,14 @@ static void ten_app_on_configure_done_internal(ten_app_t *self) {
   ten_error_init(&err);
 
   bool rc = ten_handle_manifest_info_when_on_configure_done(
-      &self->manifest_info, ten_string_get_raw_str(ten_app_get_base_dir(self)),
-      &self->manifest, &err);
+      &self->manifest_info, ten_app_get_base_dir(self), &self->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load app manifest data, FATAL ERROR.");
     exit(EXIT_FAILURE);
   }
 
   rc = ten_handle_property_info_when_on_configure_done(
-      &self->property_info, ten_string_get_raw_str(ten_app_get_base_dir(self)),
-      &self->property, &err);
+      &self->property_info, ten_app_get_base_dir(self), &self->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load app property data, FATAL ERROR.");
     exit(EXIT_FAILURE);
@@ -84,11 +83,12 @@ static void ten_app_on_configure_done_internal(ten_app_t *self) {
   ten_app_adjust_and_validate_property_on_configure_done(self);
 
   if (ten_string_is_empty(&self->uri)) {
-    ten_string_copy_c_str(&self->uri, TEN_STR_LOCALHOST,
-                          strlen(TEN_STR_LOCALHOST));
+    ten_string_init_from_c_str(&self->uri, TEN_STR_LOCALHOST,
+                               strlen(TEN_STR_LOCALHOST));
   }
 
-  ten_addon_load_all(&err);
+  ten_addon_load_all_from_app_base_dir(self, &err);
+  ten_addon_load_all_from_ten_package_base_dirs(self, &err);
 
   if (!ten_app_get_predefined_graphs_from_property(self)) {
     return;

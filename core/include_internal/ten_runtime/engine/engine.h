@@ -105,4 +105,5 @@ TEN_RUNTIME_PRIVATE_API ten_runloop_t *ten_engine_get_attached_runloop(
 TEN_RUNTIME_PRIVATE_API bool ten_engine_is_ready_to_handle_msg(
     ten_engine_t *self);
 
-TEN_RUNTIME_PRIVATE_API const char *ten_engine_get_name(ten_engine_t *self);
+TEN_RUNTIME_PRIVATE_API const char *ten_engine_get_name(ten_engine_t *self,
+                                                        bool check_thread);

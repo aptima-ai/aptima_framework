@@ -9,7 +9,6 @@
 #include <stdlib.h>
 
 #include "include_internal/ten_runtime/common/constant_str.h"
-#include "include_internal/ten_runtime/extension/extension.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
@@ -308,14 +307,14 @@ void ten_loc_init_from_value(ten_loc_t *self, ten_value_t *value) {
     const char *app_str =
         ten_value_peek_string(ten_value_object_peek(value, TEN_STR_APP));
 
-    ten_string_copy_c_str(&self->app_uri, app_str, strlen(app_str));
+    ten_string_init_from_c_str(&self->app_uri, app_str, strlen(app_str));
   }
 
   if (ten_value_object_peek(value, TEN_STR_GRAPH)) {
     const char *graph_str =
         ten_value_peek_string(ten_value_object_peek(value, TEN_STR_GRAPH));
 
-    ten_string_copy_c_str(&self->graph_name, graph_str, strlen(graph_str));
+    ten_string_init_from_c_str(&self->graph_name, graph_str, strlen(graph_str));
   }
 
   ten_value_t *extension_group_value =
@@ -330,13 +329,13 @@ void ten_loc_init_from_value(ten_loc_t *self, ten_value_t *value) {
       const char *group_name_str =
           ten_value_peek_string(extension_group_name_value);
 
-      ten_string_copy_c_str(&self->extension_group_name, group_name_str,
-                            strlen(group_name_str));
+      ten_string_init_from_c_str(&self->extension_group_name, group_name_str,
+                                 strlen(group_name_str));
     } else if (ten_value_is_string(extension_group_value)) {
       const char *group_name_str = ten_value_peek_string(extension_group_value);
 
-      ten_string_copy_c_str(&self->extension_group_name, group_name_str,
-                            strlen(group_name_str));
+      ten_string_init_from_c_str(&self->extension_group_name, group_name_str,
+                                 strlen(group_name_str));
     } else {
       TEN_ASSERT(0, "extension_group must be an object or a string.");
     }
@@ -354,13 +353,13 @@ void ten_loc_init_from_value(ten_loc_t *self, ten_value_t *value) {
       const char *extension_name_str =
           ten_value_peek_string(extension_name_value);
 
-      ten_string_copy_c_str(&self->extension_name, extension_name_str,
-                            strlen(extension_name_str));
+      ten_string_init_from_c_str(&self->extension_name, extension_name_str,
+                                 strlen(extension_name_str));
     } else if (ten_value_is_string(extension_value)) {
       const char *extension_name_str = ten_value_peek_string(extension_value);
 
-      ten_string_copy_c_str(&self->extension_name, extension_name_str,
-                            strlen(extension_name_str));
+      ten_string_init_from_c_str(&self->extension_name, extension_name_str,
+                                 strlen(extension_name_str));
     } else {
       TEN_ASSERT(0, "extension must be an object or a string.");
     }

@@ -40,7 +40,7 @@ static void ten_extension_cache_cmd_result_to_in_path_for_auto_return(
   TEN_LOGV(
       "[%s] Receives a cmd result (%p) for '%s', and will cache it to do some "
       "post processing later.",
-      ten_extension_get_name(extension), ten_shared_ptr_get_data(cmd),
+      ten_extension_get_name(extension, true), ten_shared_ptr_get_data(cmd),
       ten_msg_type_to_string(ten_cmd_result_get_original_cmd_type(cmd)));
 
   ten_msg_dump(cmd, NULL, "The received cmd result: ^m");
@@ -182,7 +182,7 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
     ten_error_init(&err);
     if (!ten_extension_convert_msg(self, msg, &converted_msgs, &err)) {
       TEN_LOGE("[%s] Failed to convert msg %s: %s",
-               ten_extension_get_name(self), ten_msg_get_name(msg),
+               ten_extension_get_name(self, true), ten_msg_get_name(msg),
                ten_error_errmsg(&err));
     }
     ten_error_deinit(&err);

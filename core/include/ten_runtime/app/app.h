@@ -39,3 +39,6 @@ TEN_RUNTIME_API bool ten_app_check_integrity(ten_app_t *self,
                                              bool check_thread);
 
 TEN_RUNTIME_API ten_env_t *ten_app_get_ten_env(ten_app_t *self);
+
+TEN_RUNTIME_API void ten_app_add_ten_package_base_dir(ten_app_t *self,
+                                                      const char *base_dir);

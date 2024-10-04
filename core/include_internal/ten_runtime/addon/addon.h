@@ -68,6 +68,7 @@ typedef struct ten_addon_host_t {
   ten_signature_t signature;
 
   ten_string_t name;  // The name of the addon.
+  ten_string_t base_dir;
 
   ten_value_t manifest;
   ten_value_t property;
@@ -114,6 +115,7 @@ TEN_RUNTIME_API void ten_addon_host_destroy(ten_addon_host_t *self);
 TEN_RUNTIME_PRIVATE_API void ten_addon_register(ten_addon_store_t *addon_store,
                                                 ten_addon_host_t *addon_host,
                                                 const char *name,
+                                                const char *base_dir,
                                                 ten_addon_t *addon);
 
 TEN_RUNTIME_PRIVATE_API ten_addon_t *ten_addon_unregister(
@@ -160,16 +162,19 @@ TEN_RUNTIME_PRIVATE_API bool ten_addon_host_destroy_instance_async(
 TEN_RUNTIME_PRIVATE_API bool ten_addon_host_destroy_instance(
     ten_addon_host_t *self, ten_env_t *ten_env, void *instance);
 
-TEN_RUNTIME_PRIVATE_API void ten_addon_host_set_base_dir(
-    ten_addon_host_t *self, ten_app_t *app, ten_string_t *base_dir);
-
 /**
  * @brief The base directory of the loaded addon. This function can be called
  * before any TEN app starts. Note that the returned string must be destroyed by
  * users.
  */
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_addon_host_get_base_dir(
+TEN_RUNTIME_PRIVATE_API const char *ten_addon_host_get_base_dir(
     ten_addon_host_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_addon_context_destroy(
     ten_addon_context_t *self);
+
+TEN_RUNTIME_PRIVATE_API ten_string_t *ten_addon_find_base_dir_from_app(
+    const char *addon_type, const char *addon_name);
+
+TEN_RUNTIME_PRIVATE_API void ten_addon_find_and_set_base_dir(
+    ten_addon_host_t *self, const char *path);

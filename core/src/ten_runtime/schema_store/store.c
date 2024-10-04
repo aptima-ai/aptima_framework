@@ -241,7 +241,6 @@ static void ten_schemas_parse_interface_part(
   TEN_ASSERT(interface_schema_value &&
                  ten_value_check_integrity(interface_schema_value),
              "Invalid argument.");
-  TEN_ASSERT(base_dir, "Invalid argument.");
 
   if (!ten_value_is_array(interface_schema_value)) {
     TEN_ASSERT(0, "The schema should be an array.");
@@ -331,6 +330,11 @@ static bool ten_schema_store_merge_interface_schemas_into_msg_schemas(
   return true;
 }
 
+/**
+ * @param base_dir The base directory of the addon. If the interface definition
+ * is a file reference, it is used to resolve the file reference based on the
+ * base_dir.
+ */
 bool ten_schema_store_set_interface_schema_definition(ten_schema_store_t *self,
                                                       ten_value_t *schema_def,
                                                       const char *base_dir,
@@ -340,7 +344,6 @@ bool ten_schema_store_set_interface_schema_definition(ten_schema_store_t *self,
   TEN_ASSERT(schema_def && ten_value_check_integrity(schema_def),
              "Invalid argument.");
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
-  TEN_ASSERT(base_dir, "Invalid argument.");
 
   if (!ten_value_is_object(schema_def)) {
     ten_error_set(err, TEN_ERRNO_GENERIC,

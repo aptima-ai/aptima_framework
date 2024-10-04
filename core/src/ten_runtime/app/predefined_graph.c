@@ -19,13 +19,13 @@
 #include "include_internal/ten_runtime/extension_group/extension_group_info/json.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/value.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value_get.h"
 
 ten_predefined_graph_info_t *ten_predefined_graph_info_create(void) {
@@ -58,7 +58,7 @@ static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Invalid argument.");
   TEN_ASSERT(predefined_graph_info, "Invalid argument.");
 
-  const char *app_uri = ten_string_get_raw_str(ten_app_get_uri(self));
+  const char *app_uri = ten_app_get_uri(self);
 
   ten_json_t *start_graph_cmd_json = ten_json_create_object();
   TEN_ASSERT(start_graph_cmd_json, "Should not happen.");
@@ -297,7 +297,7 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
       result = false;
       goto done;
     }
-    ten_string_copy_c_str(
+    ten_string_init_from_c_str(
         &predefined_graph_info->name,
         ten_value_peek_string(predefined_graph_info_name_value),
         strlen(ten_value_peek_string(predefined_graph_info_name_value)));

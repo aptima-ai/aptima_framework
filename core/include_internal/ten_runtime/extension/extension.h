@@ -154,8 +154,6 @@ struct ten_extension_t {
   ten_addon_host_t *addon_host;
   ten_string_t name;
 
-  ten_string_t base_dir;
-
   ten_env_t *ten_env;
 
   ten_extension_thread_t *extension_thread;
@@ -255,10 +253,7 @@ TEN_RUNTIME_PRIVATE_API ten_runloop_t *ten_extension_get_attached_runloop(
     ten_extension_t *self);
 
 TEN_RUNTIME_PRIVATE_API const char *ten_extension_get_name(
-    ten_extension_t *self);
-
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_extension_get_base_dir(
-    ten_extension_t *self);
+    ten_extension_t *self, bool check_thread);
 
 TEN_RUNTIME_API ten_addon_host_t *ten_extension_get_addon(
     ten_extension_t *self);

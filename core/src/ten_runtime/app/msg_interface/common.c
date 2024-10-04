@@ -283,7 +283,7 @@ bool ten_app_handle_out_msg(ten_app_t *self, ten_shared_ptr_t *msg,
   TEN_ASSERT(!ten_string_is_empty(&dest_loc->app_uri),
              "App URI should not be empty.");
 
-  if (!ten_string_is_equal(&dest_loc->app_uri, ten_app_get_uri(self))) {
+  if (!ten_string_is_equal_c_str(&dest_loc->app_uri, ten_app_get_uri(self))) {
     TEN_ASSERT(0, "Handle this condition.");
   } else {
     if (ten_string_is_empty(&dest_loc->graph_name)) {

@@ -19,7 +19,6 @@
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/remote/remote.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/container/hash_table.h"
 #include "ten_utils/container/list.h"
@@ -29,6 +28,7 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uuid.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
 bool ten_engine_check_integrity(ten_engine_t *self, bool check_thread) {
@@ -145,9 +145,8 @@ static void ten_engine_set_graph_name(ten_engine_t *self,
 
   // Got graph_name, update the graph_name field of all the extensions_info that
   // this start_graph command has.
-  ten_cmd_start_graph_fill_loc_info(
-      cmd, ten_string_get_raw_str(ten_app_get_uri(self->app)),
-      ten_engine_get_name(self));
+  ten_cmd_start_graph_fill_loc_info(cmd, ten_app_get_uri(self->app),
+                                    ten_engine_get_name(self, true));
 }
 
 bool ten_engine_is_ready_to_handle_msg(ten_engine_t *self) {
@@ -240,8 +239,8 @@ ten_runloop_t *ten_engine_get_attached_runloop(ten_engine_t *self) {
   }
 }
 
-const char *ten_engine_get_name(ten_engine_t *self) {
-  TEN_ASSERT(self && ten_engine_check_integrity(self, true),
+const char *ten_engine_get_name(ten_engine_t *self, bool check_thread) {
+  TEN_ASSERT(self && ten_engine_check_integrity(self, check_thread),
              "Should not happen.");
 
   return ten_string_get_raw_str(&self->graph_name);

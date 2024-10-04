@@ -12,9 +12,9 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/signature.h"
+#include "ten_utils/macro/check.h"
 
 #define TEN_STRING_SIGNATURE 0x178445C0402E320DU
 #define TEN_STRING_PRE_BUF_SIZE 256
@@ -92,8 +92,8 @@ TEN_UTILS_API void ten_string_copy(ten_string_t *self, ten_string_t *other);
  * @param other The other string object.
  * @param size the max size, copy all if size <= 0
  */
-TEN_UTILS_API void ten_string_copy_c_str(ten_string_t *self, const char *other,
-                                         size_t size);
+TEN_UTILS_API void ten_string_init_from_c_str(ten_string_t *self,
+                                              const char *other, size_t size);
 
 /**
  * @brief Destroy a string object and release the memory.

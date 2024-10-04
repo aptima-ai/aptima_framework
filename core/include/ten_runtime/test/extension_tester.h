@@ -24,10 +24,13 @@ TEN_RUNTIME_API ten_extension_tester_t *ten_extension_tester_create(
 
 TEN_RUNTIME_API void ten_extension_tester_destroy(ten_extension_tester_t *self);
 
-TEN_RUNTIME_API void ten_extension_tester_add_addon(
+TEN_RUNTIME_API void ten_extension_tester_add_addon_name(
     ten_extension_tester_t *self, const char *addon_name);
 
-TEN_RUNTIME_API void ten_extension_tester_run(ten_extension_tester_t *self);
+TEN_RUNTIME_API void ten_extension_tester_add_addon_base_dir(
+    ten_extension_tester_t *self, const char *addon_base_dir);
+
+TEN_RUNTIME_API bool ten_extension_tester_run(ten_extension_tester_t *self);
 
 TEN_RUNTIME_API ten_env_tester_t *ten_extension_tester_get_ten_env_tester(
     ten_extension_tester_t *self);

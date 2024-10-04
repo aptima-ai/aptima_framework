@@ -6,74 +6,75 @@
 //
 #include "ten_runtime/ten_config.h"
 
+#include "include_internal/ten_runtime/common/base_dir.h"
+
+#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/file.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/path.h"
 #include "ten_utils/lib/string.h"
-#include "ten_utils/macro/memory.h"
+#include "ten_utils/macro/check.h"
 
-// Find the parent folder containing "manifest.json" with "type": "app"
-void ten_app_find_base_dir(ten_string_t *start_path, ten_string_t **app_path) {
-  TEN_ASSERT(start_path && app_path, "Invalid argument.");
+ten_string_t *ten_find_app_base_dir(void) {
+  ten_string_t *app_base_dir = NULL;
 
-  ten_string_t *parent_path = ten_string_clone(start_path);
-  if (!parent_path) {
-    TEN_LOGE("Failed to clone string: %s", start_path->buf);
-    TEN_ASSERT(0, "Should not happen.");
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
+  const char *ten_app_base_dir_env_var = getenv("TEN_APP_BASE_DIR");
+  if (ten_app_base_dir_env_var && strlen(ten_app_base_dir_env_var) > 0) {
+    app_base_dir = ten_string_create_formatted("%s", ten_app_base_dir_env_var);
+    ten_path_to_system_flavor(app_base_dir);
+  } else {
+    // The following `ten_path_get_module_path()` function returns the base
+    // directory of `libten_runtime.so`.
+    //
+    // Note that we can not use `ten_path_get_executable_path()` here, as the
+    // actually executable in some language is not the TEN app. Ex: the
+    // `ten_path_get_executable_path()` returns `/usr/bin` if we start a python
+    // APP with `python3 bin/main.py`. In this case, the `/usr/bin` is the
+    // location of `python3`.
+    ten_string_t *module_path =
+        ten_path_get_module_path((void *)ten_find_app_base_dir);
+    if (!module_path) {
+      TEN_LOGE(
+          "Could not get app base dir from module path, using TEN_APP_BASE_DIR "
+          "instead.");
+      return NULL;
+    }
+
+    app_base_dir = ten_find_base_dir(ten_string_get_raw_str(module_path),
+                                     TEN_STR_APP, NULL);
+    ten_string_destroy(module_path);
+  }
+
+  if (!app_base_dir || ten_string_is_empty(app_base_dir)) {
+    TEN_LOGW(
+        "Could not get app home from module path, using TEN_APP_BASE_DIR "
+        "instead.");
+    return NULL;
+  }
+
+  return app_base_dir;
+}
+
+void ten_app_find_and_set_base_dir(ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  ten_string_t *app_base_dir = ten_find_app_base_dir();
+  if (!app_base_dir) {
+    TEN_LOGW("Failed to determine app base directory.");
     return;
   }
 
-  while (ten_path_is_dir(parent_path)) {
-    ten_string_t *manifest_path = ten_string_clone(parent_path);
-    ten_string_append_formatted(manifest_path, "/manifest.json");
+  ten_string_copy(&self->base_dir, app_base_dir);
+  ten_string_destroy(app_base_dir);
+}
 
-    if (ten_path_exists(ten_string_get_raw_str(manifest_path))) {
-      // Read manifest.json, and check if there is a top-level "type" field with
-      // "app" value.
-      const char *manifest_content =
-          ten_file_read(ten_string_get_raw_str(manifest_path));
-      if (manifest_content) {
-        ten_json_t *json = ten_json_from_string(manifest_content, NULL);
-        if (json) {
-          const char *type = ten_json_object_peek_string(json, TEN_STR_TYPE);
-          if (type && strcmp(type, TEN_STR_APP) == 0) {
-            *app_path = ten_path_realpath(parent_path);
+const char *ten_app_get_base_dir(ten_app_t *self) {
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: This function might be called from other threads, ex: the
+  // extension thread. And the `base_dir` is only set when starting the app, so
+  // it's thread safe to read after app starts.
+  TEN_ASSERT(self && ten_app_check_integrity(self, false), "Invalid argument.");
 
-            ten_json_destroy(json);
-            TEN_FREE(manifest_content);
-            ten_string_destroy(manifest_path);
-            ten_string_destroy(parent_path);
-            break;
-          }
-
-          ten_json_destroy(json);
-        }
-
-        TEN_FREE(manifest_content);
-      }
-    }
-
-    ten_string_destroy(manifest_path);
-
-    ten_string_t *next_parent = ten_path_get_dirname(parent_path);
-    if (ten_string_is_equal(parent_path, next_parent)) {
-      // No more parent folders.
-      ten_string_destroy(parent_path);
-      return;
-    }
-
-    ten_string_destroy(parent_path);
-    parent_path = next_parent;
-
-    if (!parent_path || ten_string_is_empty(parent_path)) {
-      TEN_LOGE("Failed to find the app path");
-      TEN_ASSERT(0, "Should not happen.");
-      if (parent_path) {
-        ten_string_destroy(parent_path);
-      }
-      return;
-    }
-  }
+  return ten_string_get_raw_str(&self->base_dir);
 }

@@ -33,17 +33,19 @@ class extension_tester_t {
   extension_tester_t &operator=(const extension_tester_t &&) = delete;
   // @}
 
-  void add_addon(const char *addon_name) {
+  void add_addon_name(const char *addon_name) {
     TEN_ASSERT(addon_name, "Invalid argument.");
-    ten_extension_tester_add_addon(c_extension_tester, addon_name);
+    ten_extension_tester_add_addon_name(c_extension_tester, addon_name);
   }
 
-  void run(error_t *err = nullptr) {
-    if (c_extension_tester == nullptr) {
-      return;
-    }
+  void add_addon_base_dir(const char *addon_path) {
+    TEN_ASSERT(addon_path, "Invalid argument.");
+    ten_extension_tester_add_addon_base_dir(c_extension_tester, addon_path);
+  }
 
-    ten_extension_tester_run(c_extension_tester);
+  bool run(error_t *err = nullptr) {
+    TEN_ASSERT(c_extension_tester, "Should not happen.");
+    return ten_extension_tester_run(c_extension_tester);
   }
 
  protected:

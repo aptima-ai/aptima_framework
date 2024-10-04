@@ -15,7 +15,6 @@
 #include "ten_runtime/app/app.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/event.h"
-#include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
@@ -33,8 +32,7 @@ static void *ten_engine_thread_main(void *self_) {
   TEN_ASSERT(ten_engine_check_integrity(self, true), "Should not happen.");
 
   TEN_LOGD(
-      "[%s] Engine thread %p is started.",
-      ten_string_get_raw_str(ten_app_get_uri(self->app)),
+      "[%s] Engine thread %p is started.", ten_app_get_uri(self->app),
       ten_sanitizer_thread_check_get_belonging_thread(&self->thread_check));
 
   // Because the path table is created in the original thread (ex: the app
@@ -42,8 +40,7 @@ static void *ten_engine_thread_main(void *self_) {
   ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
       &self->path_table->thread_check);
 
-  TEN_LOGD("[%s] Engine thread is started.",
-           ten_string_get_raw_str(ten_app_get_uri(self->app)));
+  TEN_LOGD("[%s] Engine thread is started.", ten_app_get_uri(self->app));
 
   // Create an eventloop dedicated to the engine.
   self->loop = ten_runloop_create(NULL);
@@ -61,8 +58,7 @@ static void *ten_engine_thread_main(void *self_) {
     self->on_closed(self, self->on_closed_data);
   }
 
-  TEN_LOGD("[%s] Engine thread is stopped",
-           ten_string_get_raw_str(ten_app_get_uri(self->app)));
+  TEN_LOGD("[%s] Engine thread is stopped", ten_app_get_uri(self->app));
 
   return NULL;
 }

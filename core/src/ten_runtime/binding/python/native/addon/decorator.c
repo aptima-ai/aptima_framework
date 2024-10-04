@@ -26,6 +26,7 @@ static PyObject *ten_py_decorator_register_addon_create(
   }
 
   ten_string_init(&py_decorator->addon_name);
+  ten_string_init(&py_decorator->base_dir);
 
   return (PyObject *)py_decorator;
 }
@@ -36,11 +37,17 @@ static int ten_py_decorator_register_addon_init(PyObject *self, PyObject *args,
       (ten_py_decorator_register_addon_t *)self;
 
   const char *name = NULL;
-  if (!PyArg_ParseTuple(args, "s", &name)) {
+  const char *base_dir = NULL;
+
+  if (!PyArg_ParseTuple(args, "s|z", &name, &base_dir)) {
     return -1;
   }
 
   ten_string_set_formatted(&py_decorator->addon_name, "%s", name);
+
+  if (base_dir) {
+    ten_string_set_formatted(&py_decorator->base_dir, "%s", base_dir);
+  }
 
   return 0;
 }
@@ -52,6 +59,7 @@ static void ten_py_decorator_register_addon_destroy(PyObject *self) {
   TEN_ASSERT(py_decorator, "Invalid argument.");
 
   ten_string_deinit(&py_decorator->addon_name);
+  ten_string_deinit(&py_decorator->base_dir);
 
   Py_TYPE(self)->tp_free(self);
 }
@@ -59,6 +67,7 @@ static void ten_py_decorator_register_addon_destroy(PyObject *self) {
 static PyObject *ten_py_decorator_register_addon_call(
     ten_py_decorator_register_addon_t *self, PyObject *args,
     ten_addon_host_t *(*ten_addon_register)(const char *name,
+                                            const char *base_dir,
                                             ten_addon_t *addon)) {
   PyTypeObject *py_addon_type_object = NULL;
 
@@ -90,7 +99,8 @@ static PyObject *ten_py_decorator_register_addon_call(
   // TEN world.
   ten_py_addon_t *py_addon = (ten_py_addon_t *)py_addon_object;
   ten_addon_host_t *c_addon_host = ten_addon_register(
-      ten_string_get_raw_str(&self->addon_name), &py_addon->c_addon);
+      ten_string_get_raw_str(&self->addon_name),
+      ten_string_get_raw_str(&self->base_dir), &py_addon->c_addon);
   TEN_ASSERT(c_addon_host, "Should not happen.");
 
   py_addon->c_addon_host = c_addon_host;

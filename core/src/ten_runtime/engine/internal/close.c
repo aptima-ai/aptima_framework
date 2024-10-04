@@ -21,7 +21,6 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/atomic.h"
-#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/macro/mark.h"
@@ -30,8 +29,7 @@ static void ten_engine_close_sync(ten_engine_t *self) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
 
-  TEN_LOGD("[%s] Try to close engine.",
-           ten_string_get_raw_str(ten_app_get_uri(self->app)));
+  TEN_LOGD("[%s] Try to close engine.", ten_app_get_uri(self->app));
 
   bool nothing_to_do = true;
 
@@ -195,7 +193,7 @@ static bool ten_engine_could_be_close(ten_engine_t *self) {
   TEN_LOGD(
       "[%s] engine liveness: %zu remotes, %zu timers, "
       "extension_context %p",
-      ten_string_get_raw_str(ten_app_get_uri(self->app)), unclosed_remotes,
+      ten_app_get_uri(self->app), unclosed_remotes,
       ten_list_size(&self->timers), self->extension_context);
 
   if (unclosed_remotes == 0 && ten_list_is_empty(&self->timers) &&
