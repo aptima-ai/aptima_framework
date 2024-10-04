@@ -33,9 +33,9 @@ class extension_tester_t {
   extension_tester_t &operator=(const extension_tester_t &&) = delete;
   // @}
 
-  void add_addon_name(const char *addon_name) {
+  void set_test_mode_single(const char *addon_name) {
     TEN_ASSERT(addon_name, "Invalid argument.");
-    ten_extension_tester_add_addon_name(c_extension_tester, addon_name);
+    ten_extension_tester_set_test_mode_single(c_extension_tester, addon_name);
   }
 
   void add_addon_base_dir(const char *addon_path) {

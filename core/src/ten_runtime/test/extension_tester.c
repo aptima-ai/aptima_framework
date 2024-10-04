@@ -92,8 +92,8 @@ ten_extension_tester_t *ten_extension_tester_create(
   return self;
 }
 
-void ten_extension_tester_add_addon_name(ten_extension_tester_t *self,
-                                         const char *addon_name) {
+void ten_extension_tester_set_test_mode_single(ten_extension_tester_t *self,
+                                               const char *addon_name) {
   TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
              "Invalid argument.");
   TEN_ASSERT(addon_name, "Invalid argument.");

@@ -60,7 +60,7 @@ class extension_tester_1 : public ten::extension_tester_t {
 
 TEST(StandaloneTest, Basic) {  // NOLINT
   auto *tester = new extension_tester_1();
-  tester->add_addon_name("standalone_test_basic__test_extension_1");
+  tester->set_test_mode_single("standalone_test_basic__test_extension_1");
 
   bool rc = tester->run();
   TEN_ASSERT(rc, "Should not happen.");

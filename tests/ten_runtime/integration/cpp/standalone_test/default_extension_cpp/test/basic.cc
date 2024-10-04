@@ -39,7 +39,7 @@ TEST(Test, Basic) {  // NOLINT
 
   ten_string_destroy(path);
 
-  tester->add_addon_name("default_extension_cpp");
+  tester->set_test_mode_single("default_extension_cpp");
 
   tester->run();
 

@@ -24,7 +24,10 @@ TEN_RUNTIME_API ten_extension_tester_t *ten_extension_tester_create(
 
 TEN_RUNTIME_API void ten_extension_tester_destroy(ten_extension_tester_t *self);
 
-TEN_RUNTIME_API void ten_extension_tester_add_addon_name(
+// Testing a single extension, all messages input by the tester will be directed
+// to this extension, and all outputs from the extension will be sent back to
+// the tester.
+TEN_RUNTIME_API void ten_extension_tester_set_test_mode_single(
     ten_extension_tester_t *self, const char *addon_name);
 
 TEN_RUNTIME_API void ten_extension_tester_add_addon_base_dir(
