@@ -8,8 +8,8 @@
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
 
 PyObject *ten_py_ten_env_is_cmd_connected(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 1) {
@@ -27,7 +27,7 @@ PyObject *ten_py_ten_env_is_cmd_connected(PyObject *self, PyObject *args) {
   ten_error_init(&err);
 
   bool is_connected =
-      ten_env_is_cmd_connected(py_ten->c_ten_env, cmd_name, &err);
+      ten_env_is_cmd_connected(py_ten_env->c_ten_env, cmd_name, &err);
   if (!ten_error_is_success(&err)) {
     ten_error_deinit(&err);
 

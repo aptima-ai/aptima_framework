@@ -20,7 +20,7 @@
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/macro/memory.h"
 
-static bool ten_env_tester_check_integrity(ten_env_tester_t *self) {
+bool ten_env_tester_check_integrity(ten_env_tester_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   if (ten_signature_get(&self->signature) !=
@@ -44,17 +44,22 @@ ten_env_tester_t *ten_env_tester_create(ten_extension_tester_t *tester) {
   ten_env_tester_t *self = TEN_MALLOC(sizeof(ten_env_tester_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
-  self->binding_handle.me_in_target_lang = self;
+  self->binding_handle.me_in_target_lang = NULL;
 
   ten_signature_set(&self->signature, TEN_ENV_TESTER_SIGNATURE);
 
   self->tester = tester;
+  self->destroy_handler = NULL;
 
   return self;
 }
 
 void ten_env_tester_destroy(ten_env_tester_t *self) {
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
+
+  if (self->destroy_handler && self->binding_handle.me_in_target_lang) {
+    self->destroy_handler(self->binding_handle.me_in_target_lang);
+  }
 
   TEN_FREE(self);
 }
@@ -191,4 +196,14 @@ bool ten_env_tester_on_start_done(ten_env_tester_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
 
   return true;
+}
+
+void ten_env_tester_set_destroy_handler_in_target_lang(
+    ten_env_tester_t *self,
+    ten_env_tester_destroy_handler_in_target_lang_func_t destroy_handler) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_env_tester_check_integrity(self),
+             "Invalid use of ten_env_tester %p.", self);
+
+  self->destroy_handler = destroy_handler;
 }

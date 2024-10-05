@@ -96,8 +96,8 @@ done:
 
 PyObject *ten_py_ten_env_set_property_from_json(PyObject *self,
                                                 PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 2) {
@@ -126,14 +126,14 @@ PyObject *ten_py_ten_env_set_property_from_json(PyObject *self,
 
   ten_json_destroy(json);
 
-  ten_py_ten_env_set_property(py_ten, path, value);
+  ten_py_ten_env_set_property(py_ten_env, path, value);
 
   Py_RETURN_NONE;
 }
 
 PyObject *ten_py_ten_env_set_property_int(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 2) {
@@ -154,14 +154,14 @@ PyObject *ten_py_ten_env_set_property_int(PyObject *self, PyObject *args) {
         "Failed to create value when ten_env.set_property_int.");
   }
 
-  ten_py_ten_env_set_property(py_ten, path, c_value);
+  ten_py_ten_env_set_property(py_ten_env, path, c_value);
 
   Py_RETURN_NONE;
 }
 
 PyObject *ten_py_ten_env_set_property_string(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 2) {
@@ -182,14 +182,14 @@ PyObject *ten_py_ten_env_set_property_string(PyObject *self, PyObject *args) {
         "Failed to create value when ten_env.set_property_string.");
   }
 
-  ten_py_ten_env_set_property(py_ten, path, c_value);
+  ten_py_ten_env_set_property(py_ten_env, path, c_value);
 
   Py_RETURN_NONE;
 }
 
 PyObject *ten_py_ten_env_set_property_bool(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 2) {
@@ -210,14 +210,14 @@ PyObject *ten_py_ten_env_set_property_bool(PyObject *self, PyObject *args) {
         "Failed to create value when ten_env.set_property_bool.");
   }
 
-  ten_py_ten_env_set_property(py_ten, path, c_value);
+  ten_py_ten_env_set_property(py_ten_env, path, c_value);
 
   Py_RETURN_NONE;
 }
 
 PyObject *ten_py_ten_env_set_property_float(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 2) {
@@ -238,7 +238,7 @@ PyObject *ten_py_ten_env_set_property_float(PyObject *self, PyObject *args) {
         "Failed to create value when ten_env.set_property_float.");
   }
 
-  ten_py_ten_env_set_property(py_ten, path, c_value);
+  ten_py_ten_env_set_property(py_ten_env, path, c_value);
 
   Py_RETURN_NONE;
 }

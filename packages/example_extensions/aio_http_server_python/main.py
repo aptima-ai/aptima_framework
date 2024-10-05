@@ -114,7 +114,7 @@ class HttpServerExtension(Extension):
         q = asyncio.Queue(1)
         ten_env.send_cmd(
             cmd,
-            lambda ten, result: asyncio.run_coroutine_threadsafe(
+            lambda ten_env, result: asyncio.run_coroutine_threadsafe(
                 q.put(result), self.loop
             ),  # type: ignore
         )

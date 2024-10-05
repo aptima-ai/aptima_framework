@@ -32,15 +32,16 @@ static void ten_env_proxy_notify_on_stop_done(ten_env_t *ten_env,
 
 PyObject *ten_py_ten_env_on_stop_done(PyObject *self,
                                       TEN_UNUSED PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   ten_error_t err;
   ten_error_init(&err);
 
-  TEN_UNUSED bool rc = ten_env_proxy_notify_async(
-      py_ten->c_ten_env_proxy, ten_env_proxy_notify_on_stop_done, NULL, &err);
+  TEN_UNUSED bool rc =
+      ten_env_proxy_notify_async(py_ten_env->c_ten_env_proxy,
+                                 ten_env_proxy_notify_on_stop_done, NULL, &err);
 
   ten_error_deinit(&err);
 

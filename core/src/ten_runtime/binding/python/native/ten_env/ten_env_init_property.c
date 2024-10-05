@@ -61,8 +61,8 @@ static void ten_env_proxy_notify_init_property_from_json(ten_env_t *ten_env,
 
 PyObject *ten_py_ten_env_init_property_from_json(PyObject *self,
                                                  PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 1) {
@@ -83,7 +83,7 @@ PyObject *ten_py_ten_env_init_property_from_json(PyObject *self,
   ten_env_notify_init_property_info_t *info =
       ten_env_notify_init_property_info_create(json_str, strlen(json_str));
 
-  if (!ten_env_proxy_notify(py_ten->c_ten_env_proxy,
+  if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_init_property_from_json, info,
                             false, NULL)) {
     goto done;

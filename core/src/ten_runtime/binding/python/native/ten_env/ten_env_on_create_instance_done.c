@@ -15,8 +15,8 @@
 
 PyObject *ten_py_ten_env_on_create_instance_done(PyObject *self,
                                                  TEN_UNUSED PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   ten_error_t err;
@@ -32,7 +32,7 @@ PyObject *ten_py_ten_env_on_create_instance_done(PyObject *self,
   }
 
   bool rc = ten_env_on_create_instance_done(
-      py_ten->c_ten_env, extension->c_extension, context, &err);
+      py_ten_env->c_ten_env, extension->c_extension, context, &err);
   TEN_ASSERT(rc, "Should not happen.");
 
   // It's necessary to keep the reference of the extension object to

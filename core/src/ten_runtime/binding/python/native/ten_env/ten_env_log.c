@@ -62,8 +62,8 @@ static void ten_env_proxy_notify_log(ten_env_t *ten_env, void *user_data) {
 }
 
 PyObject *ten_py_ten_env_log(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 5) {
@@ -88,19 +88,19 @@ PyObject *ten_py_ten_env_log(PyObject *self, PyObject *args) {
   ten_env_notify_log_info_t *info =
       ten_env_notify_log_info_create(level, func_name, file_name, line_no, msg);
 
-  if (py_ten->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
+  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
     // TODO(Wei): This function is currently specifically designed for the addon
     // because the addon currently does not have a main thread, so it's unable
     // to check thread safety. Once the main thread for the addon is determined
     // in the future, these hacks made specifically for the addon can be
     // completely removed, and comprehensive thread safety checking can be
     // implemented.
-    ten_env_log_without_check_thread(py_ten->c_ten_env, info->level,
+    ten_env_log_without_check_thread(py_ten_env->c_ten_env, info->level,
                                      info->func_name, info->file_name,
                                      info->line_no, info->msg);
   } else {
-    if (!ten_env_proxy_notify(py_ten->c_ten_env_proxy, ten_env_proxy_notify_log,
-                              info, false, &err)) {
+    if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
+                              ten_env_proxy_notify_log, info, false, &err)) {
       goto done;
     }
 

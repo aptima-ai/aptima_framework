@@ -49,7 +49,7 @@ class DefaultExtension(Extension):
         q = queue.Queue(maxsize=1)
 
         def task():
-            ten_env.send_cmd(cmd, lambda ten, result: q.put(result))
+            ten_env.send_cmd(cmd, lambda ten_env, result: q.put(result))
 
         t = threading.Thread(target=task)
         t.start()

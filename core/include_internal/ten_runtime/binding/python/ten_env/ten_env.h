@@ -13,7 +13,7 @@
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_runtime/ten_env/ten_env.h"
 
-#define TEN_PY_TEN_SIGNATURE 0xCCCC1DD4BB4CA743U
+#define TEN_PY_TEN_ENV_SIGNATURE 0xCCCC1DD4BB4CA743U
 
 typedef struct ten_py_ten_env_t {
   PyObject_HEAD
@@ -33,7 +33,8 @@ TEN_RUNTIME_PRIVATE_API bool ten_py_ten_env_check_integrity(
 
 TEN_RUNTIME_PRIVATE_API PyTypeObject *ten_py_ten_env_type(void);
 
-TEN_RUNTIME_PRIVATE_API ten_py_ten_env_t *ten_py_ten_wrap(ten_env_t *ten_env);
+TEN_RUNTIME_PRIVATE_API ten_py_ten_env_t *ten_py_ten_env_wrap(
+    ten_env_t *ten_env);
 
 TEN_RUNTIME_PRIVATE_API void ten_py_ten_env_invalidate(
     ten_py_ten_env_t *py_ten);

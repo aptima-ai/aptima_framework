@@ -22,7 +22,7 @@ typedef struct ten_py_extension_t {
   ten_signature_t signature;
   ten_extension_t *c_extension;
 
-  // Companion TEN object, the actual type is ten_py_ten_env_t.
+  // Companion ten_env object, the actual type is ten_py_ten_env_t.
   PyObject *py_ten_env;
 } ten_py_extension_t;
 

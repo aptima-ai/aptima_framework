@@ -119,6 +119,7 @@ static void tester_extension_on_deinit(ten_extension_t *self,
       tester->tester_runloop,
       ten_extension_tester_on_tester_extension_deinit_task, tester, NULL);
 
+  // =-=-= 这里会有 race condition???
   bool rc = ten_env_on_deinit_done(ten_env, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 }

@@ -215,7 +215,7 @@ void ten_env_set_close_handler_in_target_lang(
 
 void ten_env_set_destroy_handler_in_target_lang(
     ten_env_t *self,
-    ten_destroy_handler_in_target_lang_func_t destroy_handler) {
+    ten_env_destroy_handler_in_target_lang_func_t destroy_handler) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: This function is intended to be called in any threads.

@@ -6,6 +6,7 @@
 #
 import("//build/feature/ten_package.gni")
 import("//build/feature/ten_package_test.gni")
+import("//build/options.gni")
 
 ten_package("default_extension_cpp") {
   package_kind = "extension"
@@ -20,13 +21,15 @@ ten_package("default_extension_cpp") {
   include_dirs = [ "//core/include" ]
 }
 
-ten_package_test("default_extension_cpp_test") {
-  package_kind = "extension"
+if (ten_enable_standalone_test) {
+  ten_package_test("default_extension_cpp_test") {
+    package_kind = "extension"
 
-  sources = [ "test/basic.cc" ]
+    sources = [ "test/basic.cc" ]
 
-  public_deps = [
-    "//third_party/googletest",
-    "//third_party/googletest:gtest_main",
-  ]
+    public_deps = [
+      "third_party/googletest",
+      "third_party/googletest:gtest_main",
+    ]
+  }
 }

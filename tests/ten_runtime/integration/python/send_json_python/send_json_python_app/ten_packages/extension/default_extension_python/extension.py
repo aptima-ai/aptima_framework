@@ -59,5 +59,6 @@ class DefaultExtension(Extension):
         json_str = """{"_ten": {"name": "hello"}}"""
 
         ten_env.send_json(
-            json_str, lambda ten, result: self.check_hello(ten, result, cmd)
+            json_str,
+            lambda ten_env, result: self.check_hello(ten_env, result, cmd),
         )

@@ -17,6 +17,8 @@
 #include "include_internal/ten_runtime/binding/python/msg/msg.h"
 #include "include_internal/ten_runtime/binding/python/msg/video_frame.h"
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
+#include "include_internal/ten_runtime/binding/python/test/env_tester.h"
+#include "include_internal/ten_runtime/binding/python/test/extension_tester.h"
 
 // Note on memory leaks of Python VM.
 //
@@ -120,6 +122,16 @@ PyMODINIT_FUNC PyInit_libten_runtime_python(void) {
   }
 
   if (!ten_py_buf_init_for_module(module)) {
+    Py_DECREF(module);
+    return NULL;
+  }
+
+  if (!ten_py_extension_tester_init_for_module(module)) {
+    Py_DECREF(module);
+    return NULL;
+  }
+
+  if (!ten_py_ten_env_tester_init_for_module(module)) {
     Py_DECREF(module);
     return NULL;
   }

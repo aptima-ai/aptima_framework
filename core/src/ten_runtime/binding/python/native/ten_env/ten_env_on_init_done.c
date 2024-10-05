@@ -34,8 +34,8 @@ static void ten_env_proxy_notify_on_init_done(ten_env_t *ten_env,
 }
 
 PyObject *ten_py_ten_env_on_init_done(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   ten_error_t err;
@@ -43,11 +43,12 @@ PyObject *ten_py_ten_env_on_init_done(PyObject *self, PyObject *args) {
 
   bool rc = true;
 
-  if (py_ten->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
-    rc = ten_env_on_init_done(py_ten->c_ten_env, &err);
+  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
+    rc = ten_env_on_init_done(py_ten_env->c_ten_env, &err);
   } else {
-    rc = ten_env_proxy_notify_async(
-        py_ten->c_ten_env_proxy, ten_env_proxy_notify_on_init_done, NULL, &err);
+    rc = ten_env_proxy_notify_async(py_ten_env->c_ten_env_proxy,
+                                    ten_env_proxy_notify_on_init_done, NULL,
+                                    &err);
   }
 
   if (!rc) {

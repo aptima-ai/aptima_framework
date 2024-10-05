@@ -37,6 +37,3 @@ TEN_RUNTIME_PRIVATE_API PyGILState_STATE ten_py_gil_state_ensure(void);
 TEN_RUNTIME_PRIVATE_API void ten_py_gil_state_release(PyGILState_STATE state);
 
 TEN_RUNTIME_PRIVATE_API bool ten_py_is_holding_gil(void);
-
-TEN_RUNTIME_PRIVATE_API PyThreadState *ten_py_gil_state_get_this_thread_state(
-    void);

@@ -70,7 +70,7 @@ class DefaultExtension(Extension):
         new_cmd = Cmd.create("greeting")
         ten_env.send_cmd(
             new_cmd,
-            lambda ten, result: self.check_greeting(ten, result, receivedCmd),
+            lambda ten_env, result: self.check_greeting(ten_env, result, receivedCmd),
         )
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
@@ -86,5 +86,6 @@ class DefaultExtension(Extension):
 
         # Send command to a cpp extension.
         ten_env.send_cmd(
-            new_cmd, lambda ten, result: self.check_hello(ten, result, cmd)
+            new_cmd,
+            lambda ten_env, result: self.check_hello(ten_env, result, cmd)
         )

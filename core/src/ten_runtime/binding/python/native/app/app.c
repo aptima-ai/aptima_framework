@@ -37,6 +37,9 @@ static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
 
   TEN_LOGI("proxy_on_configure");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
   // The current state may be PyGILState_LOCKED or PyGILState_UNLOCKED which
   // depends on whether the app is running in the Python thread or native
   // thread.
@@ -47,9 +50,10 @@ static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(py_app && ten_py_app_check_integrity(py_app, true),
              "Should not happen.");
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   py_ten_env->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
 
+  // Call python function.
   PyObject *py_res = PyObject_CallMethod((PyObject *)py_app, "on_configure",
                                          "O", py_ten_env->actual_py_ten_env);
   Py_XDECREF(py_res);
@@ -58,7 +62,18 @@ static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
   if (prev_state == PyGILState_UNLOCKED) {
-    // Release the GIL but not release the thread state.
+    // Since the original environment did not hold the GIL, we release the gil
+    // here. However, an optimization has been made to avoid releasing the
+    // thread state, allowing it to be reused later.
+    //
+    // The effect of not calling PyGILState_Release here is that, since the
+    // number of calls to PyGILState_Ensure and PyGILState_Release are not
+    // equal, the Python thread state will not be released, only the gil will be
+    // released. It is not until on_deinit_done is reached that the
+    // corresponding PyGILState_Release for PyGILState_Ensure is called,
+    // achieving numerical consistency between PyGILState_Ensure and
+    // PyGILState_Release, and only then will the Python thread state be
+    // released.
     ten_py_eval_save_thread();
   } else {
     // No need to release the GIL.
@@ -76,9 +91,8 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
 
   TEN_LOGI("proxy_on_init");
 
-  // The current state may be PyGILState_LOCKED or PyGILState_UNLOCKED which
-  // depends on whether the app is running in the Python thread or native
-  // thread.
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
   ten_py_app_t *py_app =
@@ -86,7 +100,7 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(py_app && ten_py_app_check_integrity(py_app, true),
              "Should not happen.");
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
 
   PyObject *py_res = PyObject_CallMethod((PyObject *)py_app, "on_init", "O",
                                          py_ten_env->actual_py_ten_env);
@@ -107,6 +121,8 @@ static void proxy_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
 
   TEN_LOGI("proxy_on_deinit");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
   ten_py_app_t *py_app =
@@ -114,7 +130,7 @@ static void proxy_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
   TEN_ASSERT(py_app && ten_py_app_check_integrity(py_app, true),
              "Should not happen.");
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res = PyObject_CallMethod((PyObject *)py_app, "on_deinit", "O",

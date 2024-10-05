@@ -14,8 +14,7 @@ group("cpp") {
     "hello_world",
     "http_basic",
     "large_result",
-
-    # "standalone_test",
+    "standalone_test",
   ]
 
   if (ten_enable_ffmpeg_extensions) {

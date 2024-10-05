@@ -4,6 +4,8 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+#pragma once
+
 #include "ten_runtime/ten_config.h"
 
 #include "include_internal/ten_runtime/binding/common.h"
@@ -42,7 +44,7 @@ struct ten_extension_tester_t {
   void *user_data;
 };
 
-TEN_RUNTIME_PRIVATE_API bool ten_extension_tester_check_integrity(
+TEN_RUNTIME_API bool ten_extension_tester_check_integrity(
     ten_extension_tester_t *self, bool check_thread);
 
 TEN_RUNTIME_PRIVATE_API void test_app_ten_env_send_cmd(ten_env_t *ten_env,

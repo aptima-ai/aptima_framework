@@ -52,8 +52,8 @@ static void ten_env_proxy_notify_send_video_frame(ten_env_t *ten_env,
 }
 
 PyObject *ten_py_ten_env_send_video_frame(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   bool success = true;
@@ -75,7 +75,7 @@ PyObject *ten_py_ten_env_send_video_frame(PyObject *self, PyObject *args) {
   ten_env_notify_send_video_frame_info_t *notify_info =
       ten_env_notify_send_video_frame_info_create(cloned_frame);
 
-  if (!ten_env_proxy_notify(py_ten->c_ten_env_proxy,
+  if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_video_frame, notify_info,
                             false, &err)) {
     ten_env_notify_send_video_frame_info_destroy(notify_info);

@@ -58,9 +58,11 @@ static void proxy_on_init(ten_addon_t *addon, ten_env_t *ten_env) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Invalid argument.");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
     TEN_ASSERT(0, "Failed to wrap ten.");
     goto done;
@@ -97,9 +99,11 @@ static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Invalid argument.");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
     TEN_ASSERT(0, "Failed to wrap ten.");
     goto done;
@@ -143,6 +147,8 @@ static void proxy_on_create_instance_async(ten_addon_t *addon,
   TEN_ASSERT(py_addon && ten_py_addon_check_integrity(py_addon),
              "Should not happen.");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
   if (!py_addon || !name || !strlen(name)) {
@@ -153,7 +159,7 @@ static void proxy_on_create_instance_async(ten_addon_t *addon,
     goto done;
   }
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
     TEN_ASSERT(0, "Failed to wrap ten.");
     goto done;
@@ -191,6 +197,8 @@ static void proxy_on_destroy_instance_async(ten_addon_t *addon,
   TEN_ASSERT(py_addon && ten_py_addon_check_integrity(py_addon),
              "Should not happen.");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
   switch (py_addon->type) {

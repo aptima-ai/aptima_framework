@@ -18,6 +18,7 @@ from .video_frame import VideoFrame, PixelFmt
 from .audio_frame import AudioFrame, AudioFrameDataFmt
 from .data import Data
 from .log_level import LogLevel
+from .test import ExtensionTester, TenEnvTester
 
 # Specify what should be imported when a user imports * from the
 # ten_runtime_python package.
@@ -37,4 +38,6 @@ __all__ = [
     "PixelFmt",
     "AudioFrameDataFmt",
     "LogLevel",
+    "ExtensionTester",
+    "TenEnvTester",
 ]

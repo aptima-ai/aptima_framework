@@ -53,10 +53,13 @@ static void proxy_send_xxx_callback(ten_extension_t *extension,
              "Should not happen.");
   TEN_ASSERT(callback_info, "Should not happen.");
 
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
   // Allows C codes to work safely with Python objects.
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
-  ten_py_ten_env_t *py_ten_env = ten_py_ten_wrap(ten_env);
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   ten_py_cmd_result_t *cmd_result_bridge = ten_py_cmd_result_wrap(cmd_result);
 
   PyObject *cb_func = callback_info;
@@ -119,8 +122,8 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
 }
 
 PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
-  ten_py_ten_env_t *py_ten = (ten_py_ten_env_t *)self;
-  TEN_ASSERT(py_ten && ten_py_ten_env_check_integrity(py_ten),
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
   if (PyTuple_GET_SIZE(args) != 2) {
@@ -152,7 +155,7 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
   ten_env_notify_send_cmd_info_t *notify_info =
       ten_env_notify_send_cmd_info_create(cloned_cmd, cb_func);
 
-  if (!ten_env_proxy_notify(py_ten->c_ten_env_proxy,
+  if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_cmd, notify_info, false,
                             &err)) {
     ten_env_notify_send_cmd_info_destroy(notify_info);
