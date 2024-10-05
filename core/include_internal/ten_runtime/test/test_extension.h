@@ -8,7 +8,6 @@
 
 #include "ten_runtime/ten_config.h"
 
-TEN_RUNTIME_PRIVATE_API void ten_builtin_tester_extension_addon_register(void);
+TEN_RUNTIME_PRIVATE_API void ten_builtin_test_extension_addon_register(void);
 
-TEN_RUNTIME_PRIVATE_API void ten_builtin_tester_extension_addon_unregister(
-    void);
+TEN_RUNTIME_PRIVATE_API void ten_builtin_test_extension_addon_unregister(void);

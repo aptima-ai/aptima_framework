@@ -79,14 +79,13 @@ ten_extension_tester_t *ten_extension_tester_create(
   self->ten_env_tester = ten_env_tester_create(self);
   self->tester_runloop = ten_runloop_create(NULL);
 
-  self->tester_extension_ten_env_proxy = NULL;
-  self->tester_extension_ten_env_proxy_create_completed =
-      ten_event_create(0, 1);
+  self->test_extension_ten_env_proxy = NULL;
+  self->test_extension_ten_env_proxy_create_completed = ten_event_create(0, 1);
 
-  self->tester_app_ten_env_proxy = NULL;
-  self->tester_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
+  self->test_app_ten_env_proxy = NULL;
+  self->test_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
 
-  self->tester_app_thread = NULL;
+  self->test_app_thread = NULL;
   self->user_data = NULL;
 
   return self;
@@ -141,29 +140,31 @@ void ten_extension_tester_destroy(ten_extension_tester_t *self) {
   TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
              "Invalid argument.");
 
-  TEN_ASSERT(self->tester_app_ten_env_proxy == NULL,
-             "The `ten_env_proxy` of `tester_app` should be released in the "
-             "tester task triggered by the `deinit` of `tester_app`.");
-  if (self->tester_app_ten_env_proxy_create_completed) {
-    ten_event_destroy(self->tester_app_ten_env_proxy_create_completed);
+  TEN_ASSERT(self->test_app_ten_env_proxy == NULL,
+             "The `ten_env_proxy` of `test_app` should be released in the "
+             "tester task triggered by the `deinit` of `test_app`.");
+  if (self->test_app_ten_env_proxy_create_completed) {
+    ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
   }
 
   TEN_ASSERT(
-      self->tester_extension_ten_env_proxy == NULL,
-      "The `ten_env_proxy` of `tester_extension` should be released in the "
-      "tester task triggered by the `deinit` of `tester_extension`.");
-  if (self->tester_extension_ten_env_proxy_create_completed) {
-    ten_event_destroy(self->tester_extension_ten_env_proxy_create_completed);
+      self->test_extension_ten_env_proxy == NULL,
+      "The `ten_env_proxy` of `test_extension` should be released in the "
+      "tester task triggered by the `deinit` of `test_extension`.");
+  if (self->test_extension_ten_env_proxy_create_completed) {
+    ten_event_destroy(self->test_extension_ten_env_proxy_create_completed);
   }
 
-  ten_thread_join(self->tester_app_thread, -1);
+  ten_thread_join(self->test_app_thread, -1);
 
   ten_list_clear(&self->addon_names);
   ten_list_clear(&self->addon_base_dirs);
 
   ten_env_tester_destroy(self->ten_env_tester);
   ten_sanitizer_thread_check_deinit(&self->thread_check);
+
   ten_runloop_destroy(self->tester_runloop);
+  self->tester_runloop = NULL;
 
   TEN_FREE(self);
 }
@@ -301,16 +302,16 @@ static void ten_extension_tester_create_and_start_graph(
 
   ten_json_destroy(start_graph_cmd_json);
 
-  rc = ten_env_proxy_notify(self->tester_app_ten_env_proxy,
+  rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
                             test_app_ten_env_send_cmd, start_graph_cmd, false,
                             NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   // Wait for the tester extension to create the `ten_env_proxy`.
-  ten_event_wait(self->tester_extension_ten_env_proxy_create_completed, -1);
+  ten_event_wait(self->test_extension_ten_env_proxy_create_completed, -1);
 
-  ten_event_destroy(self->tester_extension_ten_env_proxy_create_completed);
-  self->tester_extension_ten_env_proxy_create_completed = NULL;
+  ten_event_destroy(self->test_extension_ten_env_proxy_create_completed);
+  self->test_extension_ten_env_proxy_create_completed = NULL;
 }
 
 static void ten_extension_tester_create_and_run_app(
@@ -319,17 +320,17 @@ static void ten_extension_tester_create_and_run_app(
              "Invalid argument.");
 
   // Create the tester app.
-  self->tester_app_thread = ten_thread_create(
-      "test app thread", ten_builtin_tester_app_thread_main, self);
+  self->test_app_thread = ten_thread_create(
+      "test app thread", ten_builtin_test_app_thread_main, self);
 
   // Wait until the tester app is started successfully.
-  ten_event_wait(self->tester_app_ten_env_proxy_create_completed, -1);
+  ten_event_wait(self->test_app_ten_env_proxy_create_completed, -1);
 
-  ten_event_destroy(self->tester_app_ten_env_proxy_create_completed);
-  self->tester_app_ten_env_proxy_create_completed = NULL;
+  ten_event_destroy(self->test_app_ten_env_proxy_create_completed);
+  self->test_app_ten_env_proxy_create_completed = NULL;
 
-  TEN_ASSERT(self->tester_app_ten_env_proxy,
-             "tester_app should have been created its ten_env_proxy.");
+  TEN_ASSERT(self->test_app_ten_env_proxy,
+             "test_app should have been created its ten_env_proxy.");
 }
 
 static void ten_extension_tester_on_start_task(void *self_,
@@ -366,6 +367,9 @@ bool ten_extension_tester_run(ten_extension_tester_t *self) {
     return false;
   }
 
+  // Inject the task that calls on_start into the runloop of extension_tester,
+  // ensuring that on_start is called within the extension_tester thread to
+  // guarantee thread safety.
   ten_runloop_post_task_tail(self->tester_runloop,
                              ten_extension_tester_on_start_task, self, NULL);
 

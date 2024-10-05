@@ -25,12 +25,12 @@ struct ten_extension_tester_t {
   ten_signature_t signature;
   ten_sanitizer_thread_check_t thread_check;
 
-  ten_thread_t *tester_app_thread;
-  ten_env_proxy_t *tester_app_ten_env_proxy;
-  ten_event_t *tester_app_ten_env_proxy_create_completed;
+  ten_thread_t *test_app_thread;
+  ten_env_proxy_t *test_app_ten_env_proxy;
+  ten_event_t *test_app_ten_env_proxy_create_completed;
 
-  ten_env_proxy_t *tester_extension_ten_env_proxy;
-  ten_event_t *tester_extension_ten_env_proxy_create_completed;
+  ten_env_proxy_t *test_extension_ten_env_proxy;
+  ten_event_t *test_extension_ten_env_proxy_create_completed;
 
   ten_list_t addon_names;
   ten_list_t addon_base_dirs;

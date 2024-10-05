@@ -11,8 +11,8 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/mark.h"
 
-static void tester_app_on_configure(TEN_UNUSED ten_app_t *app,
-                                    ten_env_t *ten_env) {
+static void test_app_on_configure(TEN_UNUSED ten_app_t *app,
+                                  ten_env_t *ten_env) {
   bool rc = ten_env_init_property_from_json(ten_env,
                                             "{\
                                                \"_ten\": {\
@@ -52,17 +52,17 @@ static void create_ten_env_proxy_for_tester(ten_extension_tester_t *tester,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Invalid argument.");
 
-  tester->tester_app_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
-  TEN_ASSERT(tester->tester_app_ten_env_proxy, "Should not happen.");
+  tester->test_app_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+  TEN_ASSERT(tester->test_app_ten_env_proxy, "Should not happen.");
 
-  ten_event_set(tester->tester_app_ten_env_proxy_create_completed);
+  ten_event_set(tester->test_app_ten_env_proxy_create_completed);
 }
 
-static void tester_app_on_init(ten_app_t *app, ten_env_t *ten_env) {
+static void test_app_on_init(ten_app_t *app, ten_env_t *ten_env) {
   ten_extension_tester_t *tester = app->user_data;
 
   // Since the tester will wait for the
-  // `tester_app_ten_env_proxy_create_completed` event after the app starts,
+  // `test_app_ten_env_proxy_create_completed` event after the app starts,
   // using the tester here is thread-safe.
   TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, false),
              "Should not happen.");
@@ -73,47 +73,47 @@ static void tester_app_on_init(ten_app_t *app, ten_env_t *ten_env) {
   ten_env_on_init_done(ten_env, NULL);
 }
 
-static void ten_extension_tester_on_tester_app_deinit_task(
-    void *self_, TEN_UNUSED void *arg) {
+static void ten_extension_tester_on_test_app_deinit_task(void *self_,
+                                                         TEN_UNUSED void *arg) {
   ten_extension_tester_t *tester = self_;
   TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
              "Invalid argument.");
 
   // Since the tester uses the app's `ten_env_proxy` to interact with
-  // `tester_app`, it is necessary to release the app's `ten_env_proxy` within
+  // `test_app`, it is necessary to release the app's `ten_env_proxy` within
   // the tester thread to ensure thread safety.
   //
   // Releasing the app's `ten_env_proxy` within the tester thread also
-  // guarantees that `tester_app` is still active at that time (As long as the
+  // guarantees that `test_app` is still active at that time (As long as the
   // `ten_env_proxy` exists, the app will not be destroyed.), ensuring that all
   // operations using the app's `ten_env_proxy` before the releasing of
   // ten_env_proxy are valid.
-  bool rc = ten_env_proxy_release(tester->tester_app_ten_env_proxy, NULL);
+  bool rc = ten_env_proxy_release(tester->test_app_ten_env_proxy, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
-  tester->tester_app_ten_env_proxy = NULL;
+  tester->test_app_ten_env_proxy = NULL;
 
   ten_runloop_stop(tester->tester_runloop);
 }
 
-static void tester_app_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
+static void test_app_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
   ten_extension_tester_t *tester = app->user_data;
   TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, false),
              "Should not happen.");
 
   ten_runloop_post_task_tail(tester->tester_runloop,
-                             ten_extension_tester_on_tester_app_deinit_task,
+                             ten_extension_tester_on_test_app_deinit_task,
                              tester, NULL);
 
   ten_env_on_deinit_done(ten_env, NULL);
 }
 
-void *ten_builtin_tester_app_thread_main(void *args) {
+void *ten_builtin_test_app_thread_main(void *args) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_app_t *test_app = ten_app_create(
-      tester_app_on_configure, tester_app_on_init, tester_app_on_deinit, &err);
+  ten_app_t *test_app = ten_app_create(test_app_on_configure, test_app_on_init,
+                                       test_app_on_deinit, &err);
   TEN_ASSERT(test_app, "Failed to create app.");
 
   ten_extension_tester_t *tester = args;

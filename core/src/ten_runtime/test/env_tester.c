@@ -30,6 +30,9 @@ bool ten_env_tester_check_integrity(ten_env_tester_t *self) {
     return false;
   }
 
+  // TODO(Wei): Currently, all calls to ten_env_tester must be made within the
+  // tester thread. If we need to call the ten_env_tester API from a non-tester
+  // thread, a mechanism similar to ten_env_tester_proxy must be created.
   if (!ten_sanitizer_thread_check_do_check(&self->tester->thread_check)) {
     return false;
   }
@@ -136,6 +139,8 @@ static void send_cmd_callback(ten_extension_t *extension, ten_env_t *ten_env,
   if (send_cmd_info->handler) {
     send_cmd_info->cmd_result = ten_shared_ptr_clone(cmd_result);
 
+    // Inject cmd result into the extension_tester thread to ensure thread
+    // safety.
     ten_runloop_post_task_tail(
         send_cmd_info->tester->tester_runloop,
         ten_extension_tester_execute_cmd_result_handler_task,
@@ -145,8 +150,8 @@ static void send_cmd_callback(ten_extension_t *extension, ten_env_t *ten_env,
   }
 }
 
-static void tester_extension_ten_env_send_cmd(ten_env_t *ten_env,
-                                              void *user_data) {
+static void test_extension_ten_env_send_cmd(ten_env_t *ten_env,
+                                            void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
@@ -171,9 +176,9 @@ bool ten_env_tester_send_cmd(ten_env_tester_t *self, ten_shared_ptr_t *cmd,
       ten_extension_tester_send_cmd_info_create(
           self->tester, ten_shared_ptr_clone(cmd), handler, user_data);
 
-  TEN_ASSERT(self->tester->tester_extension_ten_env_proxy, "Invalid argument.");
-  return ten_env_proxy_notify(self->tester->tester_extension_ten_env_proxy,
-                              tester_extension_ten_env_send_cmd, send_cmd_info,
+  TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
+  return ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
+                              test_extension_ten_env_send_cmd, send_cmd_info,
                               false, NULL);
 }
 
@@ -188,7 +193,7 @@ void ten_env_tester_stop_test(ten_env_tester_t *self) {
                                        NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
-  ten_env_proxy_notify(self->tester->tester_app_ten_env_proxy,
+  ten_env_proxy_notify(self->tester->test_app_ten_env_proxy,
                        test_app_ten_env_send_cmd, close_app_cmd, false, NULL);
 }
 

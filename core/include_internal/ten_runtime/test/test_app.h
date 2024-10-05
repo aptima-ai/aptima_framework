@@ -8,4 +8,4 @@
 
 #include "ten_runtime/ten_config.h"
 
-TEN_RUNTIME_PRIVATE_API void *ten_builtin_tester_app_thread_main(void *args);
+TEN_RUNTIME_PRIVATE_API void *ten_builtin_test_app_thread_main(void *args);

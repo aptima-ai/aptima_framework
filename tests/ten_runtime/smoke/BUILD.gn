@@ -37,7 +37,6 @@ ten_executable("ten_runtime_smoke_test") {
     "cmd_result_test",
     "data_test",
     "extension_test",
-    "go_standalone_test",
     "graph_test",
     "interface_test",
     "msg_test",

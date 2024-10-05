@@ -40,11 +40,11 @@ TEN_CONSTRUCTOR(ten_runtime_on_load) {
   // multiple apps within a single process, they are registered in the global
   // addon store.
   ten_builtin_extension_group_addon_register();
-  ten_builtin_tester_extension_addon_register();
+  ten_builtin_test_extension_addon_register();
 }
 
 TEN_DESTRUCTOR(ten_runtime_on_unload) {
-  ten_builtin_tester_extension_addon_unregister();
+  ten_builtin_test_extension_addon_unregister();
   ten_builtin_extension_group_addon_unregister();
 
   ten_global_deinit();
