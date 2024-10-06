@@ -74,7 +74,11 @@ def test_hello_world_app():
                 my_env["LD_PRELOAD"] = libasan_path
 
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8001, 10)

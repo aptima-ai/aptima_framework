@@ -18,18 +18,11 @@
 
 typedef struct ten_engine_t ten_engine_t;
 
-typedef void (*ten_close_handler_in_target_lang_func_t)(
+typedef void (*ten_env_close_handler_in_target_lang_func_t)(
     void *me_in_target_lang);
 
 typedef void (*ten_env_destroy_handler_in_target_lang_func_t)(
     void *me_in_target_lang);
-
-typedef enum TEN_CATEGORY {
-  TEN_CATEGORY_INVALID,
-
-  TEN_CATEGORY_NORMAL,
-  TEN_CATEGORY_MOCK,
-} TEN_CATEGORY;
 
 typedef enum TEN_ENV_ATTACH_TO {
   TEN_ENV_ATTACH_TO_INVALID,
@@ -46,8 +39,6 @@ typedef struct ten_env_t {
 
   ten_signature_t signature;
   ten_sanitizer_thread_check_t thread_check;
-
-  TEN_CATEGORY category;
 
   TEN_ENV_ATTACH_TO attach_to;
 
@@ -68,7 +59,9 @@ typedef struct ten_env_t {
     ten_engine_t *engine;
   } attached_target;
 
-  ten_close_handler_in_target_lang_func_t close_handler;
+  // TODO(Wei): Do we need this close_handler?
+  ten_env_close_handler_in_target_lang_func_t close_handler;
+
   ten_env_destroy_handler_in_target_lang_func_t destroy_handler;
 
   ten_list_t ten_proxy_list;
@@ -93,7 +86,7 @@ TEN_RUNTIME_PRIVATE_API void ten_env_close(ten_env_t *self);
 TEN_RUNTIME_PRIVATE_API ten_env_t *ten_env_create(void);
 
 TEN_RUNTIME_API void ten_env_set_close_handler_in_target_lang(
-    ten_env_t *self, ten_close_handler_in_target_lang_func_t handler);
+    ten_env_t *self, ten_env_close_handler_in_target_lang_func_t handler);
 
 TEN_RUNTIME_API void ten_env_set_destroy_handler_in_target_lang(
     ten_env_t *self, ten_env_destroy_handler_in_target_lang_func_t handler);

@@ -93,7 +93,11 @@ def test_send_json_python():
     server_cmd = os.path.join(base_path, "send_json_python_app/bin/start")
 
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started = http.is_app_started("127.0.0.1", 8002, 30)

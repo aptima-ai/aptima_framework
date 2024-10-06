@@ -17,6 +17,7 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/test/env_tester.h"
 #include "include_internal/ten_runtime/test/test_app.h"
+#include "include_internal/ten_runtime/test/test_extension.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd/start_graph/cmd.h"
@@ -333,7 +334,53 @@ static void ten_extension_tester_create_and_run_app(
              "test_app should have been created its ten_env_proxy.");
 }
 
-static void ten_extension_tester_on_start_task(void *self_,
+void ten_extension_tester_on_start_done(ten_extension_tester_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_tester_check_integrity(self, true),
+             "Invalid use of extension_tester %p.", self);
+
+  TEN_LOGI("tester on_start() done.");
+
+  bool rc = ten_env_proxy_notify(
+      self->test_extension_ten_env_proxy,
+      ten_builtin_test_extension_ten_env_notify_on_start_done, NULL, false,
+      NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
+void ten_extension_tester_on_test_extension_start(
+    ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
+
+  if (self->on_start) {
+    self->on_start(self, self->ten_env_tester);
+  } else {
+    ten_extension_tester_on_start_done(self);
+  }
+}
+
+void ten_extension_tester_on_test_extension_deinit(
+    ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
+
+  // Since the tester uses the extension's `ten_env_proxy` to interact with
+  // `test_extension`, it is necessary to release the extension's
+  // `ten_env_proxy` within the tester thread to ensure thread safety.
+  //
+  // Releasing the extension's `ten_env_proxy` within the tester thread also
+  // guarantees that `test_extension` is still active at that time (As long as
+  // the `ten_env_proxy` exists, the extension will not be destroyed.), ensuring
+  // that all operations using the extension's `ten_env_proxy` before the
+  // releasing of ten_env_proxy are valid.
+  bool rc = ten_env_proxy_release(self->test_extension_ten_env_proxy, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+
+  self->test_extension_ten_env_proxy = NULL;
+}
+
+static void ten_extension_tester_on_first_task(void *self_,
                                                TEN_UNUSED void *arg) {
   ten_extension_tester_t *self = (ten_extension_tester_t *)self_;
   TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
@@ -341,10 +388,6 @@ static void ten_extension_tester_on_start_task(void *self_,
 
   ten_extension_tester_create_and_run_app(self);
   ten_extension_tester_create_and_start_graph(self);
-
-  if (self->on_start) {
-    self->on_start(self, self->ten_env_tester);
-  }
 }
 
 bool ten_extension_tester_run(ten_extension_tester_t *self) {
@@ -367,11 +410,11 @@ bool ten_extension_tester_run(ten_extension_tester_t *self) {
     return false;
   }
 
-  // Inject the task that calls on_start into the runloop of extension_tester,
-  // ensuring that on_start is called within the extension_tester thread to
-  // guarantee thread safety.
+  // Inject the task that calls the first task into the runloop of
+  // extension_tester, ensuring that the first task is called within the
+  // extension_tester thread to guarantee thread safety.
   ten_runloop_post_task_tail(self->tester_runloop,
-                             ten_extension_tester_on_start_task, self, NULL);
+                             ten_extension_tester_on_first_task, self, NULL);
 
   // Start the runloop of tester.
   ten_runloop_run(self->tester_runloop);

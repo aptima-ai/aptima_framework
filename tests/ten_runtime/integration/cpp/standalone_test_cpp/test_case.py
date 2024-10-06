@@ -1,15 +1,14 @@
 """
-Test standalone_test.
+Test standalone_test_cpp.
 """
 
 import subprocess
 import os
-import sys
 from sys import stdout
 from .common import build_config
 
 
-def test_standalone_test():
+def test_standalone_test_cpp():
     base_path = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.join(base_path, "../../../../../")
 
@@ -93,7 +92,7 @@ def test_standalone_test():
 
     # Step 4:
     #
-    # Execute tgn build to build the extension and its test cases.
+    # Run standalone test cases.
     tester_cmd = [
         os.path.join(
             extension_root_path,

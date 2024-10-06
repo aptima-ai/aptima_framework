@@ -52,6 +52,8 @@ ten_env_tester_t *ten_env_tester_create(ten_extension_tester_t *tester) {
   ten_signature_set(&self->signature, TEN_ENV_TESTER_SIGNATURE);
 
   self->tester = tester;
+
+  self->close_handler = NULL;
   self->destroy_handler = NULL;
 
   return self;
@@ -200,7 +202,19 @@ void ten_env_tester_stop_test(ten_env_tester_t *self) {
 bool ten_env_tester_on_start_done(ten_env_tester_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
 
+  ten_extension_tester_on_start_done(self->tester);
+
   return true;
+}
+
+void ten_env_tester_set_close_handler_in_target_lang(
+    ten_env_tester_t *self,
+    ten_env_tester_close_handler_in_target_lang_func_t close_handler) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_env_tester_check_integrity(self),
+             "Invalid use of ten_env_tester %p.", self);
+
+  self->close_handler = close_handler;
 }
 
 void ten_env_tester_set_destroy_handler_in_target_lang(

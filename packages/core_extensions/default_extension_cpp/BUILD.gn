@@ -25,7 +25,7 @@ ten_package("default_extension_cpp") {
     "property.json",
     "src/main.cc",
     "src/main.cc.tent",
-    "test",
+    "tests",
     "third_party",
   ]
 

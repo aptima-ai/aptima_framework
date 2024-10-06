@@ -126,7 +126,7 @@ func tenGoAppOnConfigure(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -155,7 +155,7 @@ func tenGoAppOnInit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -180,7 +180,7 @@ func tenGoAppOnDeinit(appID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)

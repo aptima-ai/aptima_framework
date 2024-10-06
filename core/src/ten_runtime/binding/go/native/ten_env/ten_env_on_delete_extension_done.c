@@ -36,7 +36,7 @@ void ten_go_ten_env_on_destroy_extensions_done(uintptr_t bridge_addr) {
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, {});
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, {});
 
   ten_error_t err;
   ten_error_init(&err);
@@ -48,7 +48,7 @@ void ten_go_ten_env_on_destroy_extensions_done(uintptr_t bridge_addr) {
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return;
 }

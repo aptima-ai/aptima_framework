@@ -791,38 +791,6 @@ void ten_extension_on_init(ten_env_t *ten_env) {
   }
 }
 
-static void ten_extension_flush_all_pending_msgs(ten_extension_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(ten_extension_check_integrity(self, true),
-             "Invalid use of extension %p.", self);
-
-  // Flush the previously got messages, which are received before
-  // on_init_done(), into the extension.
-  ten_extension_thread_t *extension_thread = self->extension_thread;
-  ten_list_foreach (&extension_thread->pending_msgs, iter) {
-    ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
-    TEN_ASSERT(msg, "Should not happen.");
-
-    ten_loc_t *dest_loc = ten_msg_get_first_dest_loc(msg);
-    TEN_ASSERT(dest_loc, "Should not happen.");
-
-    if (ten_string_is_equal(&dest_loc->extension_name, &self->name)) {
-      ten_extension_handle_in_msg(self, msg);
-      ten_list_remove_node(&extension_thread->pending_msgs, iter.node);
-    }
-  }
-
-  // Flush the previously got messages, which are received before
-  // on_init_done(), into the extension.
-  ten_list_foreach (&self->pending_msgs, iter) {
-    ten_shared_ptr_t *msg = ten_smart_ptr_listnode_get(iter.node);
-    TEN_ASSERT(msg, "Should not happen.");
-
-    ten_extension_handle_in_msg(self, msg);
-  }
-  ten_list_clear(&self->pending_msgs);
-}
-
 void ten_extension_on_start(ten_extension_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_check_integrity(self, true),
@@ -834,16 +802,7 @@ void ten_extension_on_start(ten_extension_t *self) {
 
   if (self->on_start) {
     self->on_start(self, self->ten_env);
-
-    // The developer expects that on_start() will execute before all on_cmd()
-    // events. Therefore, after on_start() has been executed, there is no need
-    // to wait for on_start_done() before sending all previously buffered
-    // messages into the extension.
-
-    ten_extension_flush_all_pending_msgs(self);
   } else {
-    ten_extension_flush_all_pending_msgs(self);
-
     ten_extension_on_start_done(self->ten_env);
   }
 }

@@ -164,31 +164,6 @@ void ten_py_extension_tester_destroy(PyObject *self) {
   Py_TYPE(self)->tp_free(self);
 }
 
-static PyObject *ten_py_extension_tester_add_addon_base_dir(PyObject *self,
-                                                            PyObject *args) {
-  ten_py_extension_tester_t *py_extension_tester =
-      (ten_py_extension_tester_t *)self;
-  TEN_ASSERT(py_extension_tester &&
-                 ten_py_extension_tester_check_integrity(py_extension_tester),
-             "Invalid argument.");
-
-  if (PyTuple_GET_SIZE(args) != 1) {
-    return ten_py_raise_py_value_error_exception(
-        "Invalid argument count when extension_tester.add_addon_base_dir.");
-  }
-
-  const char *addon_base_dir = NULL;
-  if (!PyArg_ParseTuple(args, "s", &addon_base_dir)) {
-    return ten_py_raise_py_value_error_exception(
-        "Failed to parse arguments when extension_tester.add_addon_base_dir.");
-  }
-
-  ten_extension_tester_add_addon_base_dir(
-      py_extension_tester->c_extension_tester, addon_base_dir);
-
-  Py_RETURN_NONE;
-}
-
 static PyObject *ten_py_extension_tester_set_test_mode_single(PyObject *self,
                                                               PyObject *args) {
   ten_py_extension_tester_t *py_extension_tester =
@@ -247,8 +222,6 @@ static PyObject *ten_py_extension_tester_run(PyObject *self, PyObject *args) {
 
 PyTypeObject *ten_py_extension_tester_py_type(void) {
   static PyMethodDef py_methods[] = {
-      {"add_addon_base_dir", ten_py_extension_tester_add_addon_base_dir,
-       METH_VARARGS, NULL},
       {"set_test_mode_single", ten_py_extension_tester_set_test_mode_single,
        METH_VARARGS, NULL},
       {"run", ten_py_extension_tester_run, METH_VARARGS, NULL},

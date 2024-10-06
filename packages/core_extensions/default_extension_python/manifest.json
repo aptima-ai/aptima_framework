@@ -16,7 +16,8 @@
       "BUILD.gn",
       "**.tent",
       "**.py",
-      "README.md"
+      "README.md",
+      "tests/**"
     ]
   },
   "api": {}

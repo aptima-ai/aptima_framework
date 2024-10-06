@@ -76,7 +76,7 @@ bool ten_go_ten_env_send_audio_frame(uintptr_t bridge_addr,
              "Should not happen.");
 
   bool result = true;
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, result = false;);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, result = false;);
 
   ten_error_t err;
   ten_error_init(&err);
@@ -93,7 +93,7 @@ bool ten_go_ten_env_send_audio_frame(uintptr_t bridge_addr,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return result;
 }

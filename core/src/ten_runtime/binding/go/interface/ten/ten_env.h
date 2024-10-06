@@ -12,7 +12,7 @@
 #include "common.h"
 
 #define TEN_GO_NO_RESPONSE_HANDLER 0
-#define TEN_GO_TEN_SIGNATURE 0xCCCC1DD4BB4CA743U
+#define TEN_GO_TEN_ENV_SIGNATURE 0xCCCC1DD4BB4CA743U
 
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_go_extension_t ten_go_extension_t;

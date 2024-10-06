@@ -57,13 +57,14 @@ static void proxy_get_property_callback(ten_env_t *ten_env, ten_value_t *res,
   TEN_ASSERT(get_property_info, "Should not happen.");
 
   ten_go_handle_t handler_id = get_property_info->info->callback_id;
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
   ten_go_handle_t value = 0;
   if (res != NULL) {
     value = ten_go_wrap_value(res, true);
   }
 
-  tenGoGetPropertyCallback(ten_bridge->bridge.go_instance, handler_id, value);
+  tenGoGetPropertyCallback(ten_env_bridge->bridge.go_instance, handler_id,
+                           value);
 
   ten_env_notify_get_property_info_destroy(get_property_info);
 }
@@ -98,7 +99,7 @@ bool ten_go_ten_env_get_property_async(uintptr_t bridge_addr, const char *path,
   bool result = true;
   ten_env_notify_get_property_info_t *get_property_info = NULL;
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, result = false;);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, result = false;);
 
   ten_error_t err;
   ten_error_init(&err);
@@ -116,7 +117,7 @@ bool ten_go_ten_env_get_property_async(uintptr_t bridge_addr, const char *path,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return result;
 }

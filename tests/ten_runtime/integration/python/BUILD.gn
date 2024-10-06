@@ -4,7 +4,13 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+import("//build/ten_runtime/feature/test.gni")
 import("//build/ten_runtime/options.gni")
+
+copy("copy_pytest_ini_for_ten_runtime_python_integration_test") {
+  sources = [ "//tests/ten_runtime/integration/pytest.ini" ]
+  outputs = [ "${root_out_dir}/tests/ten_runtime/integration/pytest.ini" ]
+}
 
 group("python") {
   deps = []
@@ -26,8 +32,7 @@ group("python") {
       "send_json_python",
       "send_recv_image_python",
       "send_recv_pcm_python",
-
-      # "standalone_test",
+      "standalone_test_python",
     ]
 
     if (ten_enable_python_binding && ten_enable_go_binding) {
@@ -39,4 +44,6 @@ group("python") {
       ]
     }
   }
+
+  deps += [ "//tests/ten_runtime/integration/python:copy_pytest_ini_for_ten_runtime_python_integration_test" ]
 }

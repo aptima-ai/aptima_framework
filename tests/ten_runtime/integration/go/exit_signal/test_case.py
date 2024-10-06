@@ -60,7 +60,11 @@ def start_app():
 
     server_cmd = os.path.join(base_path, "exit_signal_app/bin/start")
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     # Wait for the extensions to start.

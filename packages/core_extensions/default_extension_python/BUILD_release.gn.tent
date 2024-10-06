@@ -15,5 +15,6 @@ ten_package("{{package_name}}") {
     "log.py",
     "manifest.json",
     "property.json",
+    "tests",
   ]
 }

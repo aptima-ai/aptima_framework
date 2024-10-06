@@ -37,3 +37,12 @@ TEN_RUNTIME_API bool ten_extension_tester_run(ten_extension_tester_t *self);
 
 TEN_RUNTIME_API ten_env_tester_t *ten_extension_tester_get_ten_env_tester(
     ten_extension_tester_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_test_extension_start(
+    ten_extension_tester_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_test_extension_deinit(
+    ten_extension_tester_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_start_done(
+    ten_extension_tester_t *self);

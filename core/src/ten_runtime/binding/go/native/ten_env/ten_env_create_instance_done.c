@@ -10,9 +10,9 @@
 #include "include_internal/ten_runtime/binding/go/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
 #include "ten_runtime/ten.h"
+#include "ten_utils/macro/check.h"
 
 void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
                                             bool is_extension,
@@ -40,7 +40,7 @@ void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
         ten_go_extension_group_c_extension_group(extension_group_bridge);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, {});
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, {});
 
   ten_error_t err;
   ten_error_init(&err);
@@ -52,7 +52,7 @@ void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
 
   ten_error_deinit(&err);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return;

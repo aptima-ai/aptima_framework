@@ -76,7 +76,7 @@ ten_go_status_t ten_go_ten_env_init_property_from_json_bytes(
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, {
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, {
     ten_go_status_init_with_errno(&status, TEN_ERRNO_TEN_IS_CLOSED);
     return status;
   });
@@ -96,7 +96,7 @@ ten_go_status_t ten_go_ten_env_init_property_from_json_bytes(
 done:
   ten_go_status_from_error(&status, &info->err);
   ten_env_notify_init_property_info_destroy(info);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;

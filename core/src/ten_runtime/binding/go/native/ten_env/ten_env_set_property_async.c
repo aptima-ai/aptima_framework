@@ -62,9 +62,9 @@ static void proxy_set_property_callback(ten_env_t *ten_env, bool res,
   TEN_ASSERT(set_property_info, "Should not happen.");
 
   ten_go_handle_t handler_id = set_property_info->info->callback_id;
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
-  tenGoSetPropertyCallback(ten_bridge->bridge.go_instance, handler_id, res);
+  tenGoSetPropertyCallback(ten_env_bridge->bridge.go_instance, handler_id, res);
 
   ten_env_notify_set_property_info_destroy(set_property_info, false);
 }
@@ -100,7 +100,7 @@ bool ten_go_ten_env_set_property_async(uintptr_t bridge_addr, const char *name,
              "Should not happen.");
 
   bool result = true;
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, result = false;);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, result = false;);
 
   ten_error_t err;
   ten_error_init(&err);
@@ -119,7 +119,7 @@ bool ten_go_ten_env_set_property_async(uintptr_t bridge_addr, const char *name,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return result;
 }

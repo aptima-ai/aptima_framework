@@ -66,7 +66,11 @@ def test_large_result_http():
     tman_install_process.wait()
 
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started = http.is_app_started("127.0.0.1", 8001, 30)

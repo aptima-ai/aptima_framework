@@ -27,7 +27,7 @@ if (ten_enable_standalone_test) {
   ten_package_test("default_extension_cpp_test") {
     package_kind = "extension"
 
-    sources = [ "test/basic.cc" ]
+    sources = [ "tests/basic.cc" ]
 
     public_deps = [
       "third_party/googletest",

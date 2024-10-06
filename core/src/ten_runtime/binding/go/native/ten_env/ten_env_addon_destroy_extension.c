@@ -69,9 +69,9 @@ static void proxy_addon_destroy_extension_done(ten_env_t *ten_env,
   ten_go_callback_info_t *callback_info = info->callback_info;
   TEN_ASSERT(callback_info, "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
-  tenGoOnAddonDestroyExtensionDone(ten_bridge->bridge.go_instance,
+  tenGoOnAddonDestroyExtensionDone(ten_env_bridge->bridge.go_instance,
                                    callback_info->callback_id);
 
   ten_env_notify_addon_destroy_extension_info_destroy(info);
@@ -113,7 +113,7 @@ void ten_go_ten_env_addon_destroy_extension(uintptr_t bridge_addr,
       extension_bridge && ten_go_extension_check_integrity(extension_bridge),
       "Should not happen.");
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, {});
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, {});
 
   ten_error_t err;
   ten_error_init(&err);
@@ -133,7 +133,7 @@ void ten_go_ten_env_addon_destroy_extension(uintptr_t bridge_addr,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return;
 }

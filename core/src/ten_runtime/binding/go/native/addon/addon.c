@@ -31,12 +31,13 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 
-void tenGoAddonOnInit(ten_go_handle_t go_addon, ten_go_handle_t go_ten);
+void tenGoAddonOnInit(ten_go_handle_t go_addon, ten_go_handle_t go_ten_env);
 
-void tenGoAddonOnDeinit(ten_go_handle_t go_addon, ten_go_handle_t go_ten);
+void tenGoAddonOnDeinit(ten_go_handle_t go_addon, ten_go_handle_t go_ten_env);
 
-void tenGoAddonCreateInstance(ten_go_handle_t go_addon, ten_go_handle_t go_ten,
-                              const char *name, void *context);
+void tenGoAddonCreateInstance(ten_go_handle_t go_addon,
+                              ten_go_handle_t go_ten_env, const char *name,
+                              void *context);
 
 void tenGoAddonDestroyInstance(ten_go_handle_t go_instance);
 
@@ -105,10 +106,10 @@ static void ten_go_addon_on_init_helper(ten_addon_t *addon,
   TEN_ASSERT(addon_bridge && ten_go_addon_check_integrity(addon_bridge),
              "Invalid argument.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoAddonOnInit(ten_go_addon_go_handle(addon_bridge),
-                   ten_go_ten_env_go_handle(ten_bridge));
+                   ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void ten_go_addon_on_deinit_helper(ten_addon_t *addon,
@@ -125,9 +126,9 @@ static void ten_go_addon_on_deinit_helper(ten_addon_t *addon,
   TEN_ASSERT(addon_bridge && ten_go_addon_check_integrity(addon_bridge),
              "Invalid argument.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
   tenGoAddonOnDeinit(ten_go_addon_go_handle(addon_bridge),
-                     ten_go_ten_env_go_handle(ten_bridge));
+                     ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void ten_go_addon_create_extension_async_helper(ten_addon_t *addon,
@@ -144,12 +145,13 @@ static void ten_go_addon_create_extension_async_helper(ten_addon_t *addon,
   TEN_ASSERT(addon_bridge && ten_go_addon_check_integrity(addon_bridge),
              "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
-  TEN_ASSERT(ten_bridge && ten_go_ten_env_check_integrity(ten_bridge),
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
+  TEN_ASSERT(ten_env_bridge && ten_go_ten_env_check_integrity(ten_env_bridge),
              "Invalid argument.");
 
   tenGoAddonCreateInstance(ten_go_addon_go_handle(addon_bridge),
-                           ten_go_ten_env_go_handle(ten_bridge), name, context);
+                           ten_go_ten_env_go_handle(ten_env_bridge), name,
+                           context);
 }
 
 static void ten_go_addon_create_extension_group_async_helper(ten_addon_t *addon,
@@ -166,12 +168,13 @@ static void ten_go_addon_create_extension_group_async_helper(ten_addon_t *addon,
   TEN_ASSERT(addon_bridge && ten_go_addon_check_integrity(addon_bridge),
              "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
-  TEN_ASSERT(ten_bridge && ten_go_ten_env_check_integrity(ten_bridge),
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
+  TEN_ASSERT(ten_env_bridge && ten_go_ten_env_check_integrity(ten_env_bridge),
              "Invalid argument.");
 
   tenGoAddonCreateInstance(ten_go_addon_go_handle(addon_bridge),
-                           ten_go_ten_env_go_handle(ten_bridge), name, context);
+                           ten_go_ten_env_go_handle(ten_env_bridge), name,
+                           context);
 }
 
 static void ten_go_addon_destroy_instance_helper(ten_addon_t *addon,

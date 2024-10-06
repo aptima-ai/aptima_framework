@@ -12,7 +12,6 @@
 // clang-format off
 #include "ten_runtime/binding/cpp/internal/common.h"   // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/ten_env.h"      // IWYU pragma: export
-#include "ten_runtime/binding/cpp/internal/ten_env_mock.h" // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/ten_env_proxy.h" // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/msg/msg.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h" // IWYU pragma: export

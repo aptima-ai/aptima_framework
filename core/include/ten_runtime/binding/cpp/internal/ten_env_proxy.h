@@ -86,7 +86,7 @@ class ten_env_proxy_t {
   explicit ten_env_proxy_t(ten_env_t &ten_env, ctor_passkey_t /*unused*/)
       : c_ten_env_proxy(ten_env_proxy_create(ten_env.c_ten_env, 1, nullptr)) {}
 
-  virtual ~ten_env_proxy_t() {
+  ~ten_env_proxy_t() {
     if (c_ten_env_proxy == nullptr) {
       TEN_ASSERT(0, "Invalid argument.");
     }
@@ -102,7 +102,7 @@ class ten_env_proxy_t {
   ten_env_proxy_t &operator=(ten_env_proxy_t &&other) = delete;
   // @}
 
-  virtual bool acquire_lock_mode(error_t *err) {
+  bool acquire_lock_mode(error_t *err) {
     if (c_ten_env_proxy == nullptr) {
       TEN_ASSERT(0, "Invalid argument.");
       return false;
@@ -115,7 +115,7 @@ class ten_env_proxy_t {
 
   bool acquire_lock_mode() { return acquire_lock_mode(nullptr); }
 
-  virtual bool release_lock_mode(error_t *err) {
+  bool release_lock_mode(error_t *err) {
     if (c_ten_env_proxy == nullptr) {
       TEN_ASSERT(0, "Invalid argument.");
       return false;
@@ -128,8 +128,7 @@ class ten_env_proxy_t {
 
   bool release_lock_mode() { return release_lock_mode(nullptr); }
 
-  virtual bool notify(notify_std_func_t &&notify_func, bool sync,
-                      error_t *err) {
+  bool notify(notify_std_func_t &&notify_func, bool sync, error_t *err) {
     auto *info = new proxy_notify_info_t(std::move(notify_func));
 
     auto rc = ten_env_proxy_notify(
@@ -154,8 +153,8 @@ class ten_env_proxy_t {
     return notify(std::move(notify_func), false, nullptr);
   }
 
-  virtual bool notify(notify_std_with_user_data_func_t &&notify_func,
-                      void *user_data, bool sync, error_t *err) {
+  bool notify(notify_std_with_user_data_func_t &&notify_func, void *user_data,
+              bool sync, error_t *err) {
     auto *info = new proxy_notify_info_t(std::move(notify_func), user_data);
 
     auto rc = ten_env_proxy_notify(

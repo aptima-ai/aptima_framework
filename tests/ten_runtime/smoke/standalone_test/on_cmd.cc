@@ -6,8 +6,6 @@
 //
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "include_internal/ten_runtime/test/env_tester.h"
-#include "include_internal/ten_runtime/test/extension_tester.h"
 #include "ten_runtime/binding/cpp/internal/extension.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lang/cpp/lib/value.h"
@@ -58,6 +56,8 @@ class extension_tester_1 : public ten::extension_tester_t {
                          hello_world_cmd_success = true;
                        }
                      });
+
+    ten_env.on_start_done();
   }
 
   void on_cmd(ten::ten_env_tester_t &ten_env,

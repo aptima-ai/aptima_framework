@@ -67,7 +67,7 @@ bool ten_go_ten_env_is_cmd_connected(uintptr_t bridge_addr, const char *name) {
 
   bool result = true;
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, result = false;);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, result = false;);
 
   ten_error_t err;
   ten_error_init(&err);
@@ -88,7 +88,7 @@ bool ten_go_ten_env_is_cmd_connected(uintptr_t bridge_addr, const char *name) {
 done:
   ten_error_deinit(&err);
   ten_env_notify_is_cmd_connected_info_destroy(info);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return result;
 }

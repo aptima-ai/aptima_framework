@@ -27,16 +27,16 @@
 #include "ten_utils/macro/check.h"
 
 void tenGoExtensionGroupOnInit(ten_go_handle_t go_extension_group,
-                               ten_go_handle_t go_ten);
+                               ten_go_handle_t go_ten_env);
 
 void tenGoExtensionGroupOnDeinit(ten_go_handle_t go_extension_group,
-                                 ten_go_handle_t go_ten);
+                                 ten_go_handle_t go_ten_env);
 
 void tenGoExtensionGroupOnCreateExtensions(ten_go_handle_t go_extension_group,
-                                           ten_go_handle_t go_ten);
+                                           ten_go_handle_t go_ten_env);
 
 void tenGoExtensionGroupOnDestroyExtensions(
-    ten_go_handle_t go_extension_group, ten_go_handle_t go_ten,
+    ten_go_handle_t go_extension_group, ten_go_handle_t go_ten_env,
     ten_go_handle_array_t *extension_array);
 
 bool ten_go_extension_group_check_integrity(ten_go_extension_group_t *self) {
@@ -100,11 +100,11 @@ static void proxy_on_init(ten_extension_group_t *self, ten_env_t *ten_env) {
   TEN_ASSERT(ten_go_extension_group_check_integrity(extension_group_bridge),
              "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
-  ten_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_env_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
 
   tenGoExtensionGroupOnInit(extension_group_bridge->bridge.go_instance,
-                            ten_go_ten_env_go_handle(ten_bridge));
+                            ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void proxy_on_deinit(ten_extension_group_t *self, ten_env_t *ten_env) {
@@ -119,10 +119,10 @@ static void proxy_on_deinit(ten_extension_group_t *self, ten_env_t *ten_env) {
   TEN_ASSERT(ten_go_extension_group_check_integrity(extension_group_bridge),
              "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoExtensionGroupOnDeinit(extension_group_bridge->bridge.go_instance,
-                              ten_go_ten_env_go_handle(ten_bridge));
+                              ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void proxy_on_create_extensions(ten_extension_group_t *self,
@@ -138,11 +138,11 @@ static void proxy_on_create_extensions(ten_extension_group_t *self,
   TEN_ASSERT(ten_go_extension_group_check_integrity(extension_group_bridge),
              "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoExtensionGroupOnCreateExtensions(
       extension_group_bridge->bridge.go_instance,
-      ten_go_ten_env_go_handle(ten_bridge));
+      ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void proxy_on_destroy_extensions(ten_extension_group_t *self,
@@ -159,7 +159,7 @@ static void proxy_on_destroy_extensions(ten_extension_group_t *self,
   TEN_ASSERT(ten_go_extension_group_check_integrity(extension_group_bridge),
              "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
   ten_go_handle_array_t *extensions_array =
       ten_go_handle_array_create(ten_list_size(&extensions));
@@ -183,7 +183,7 @@ static void proxy_on_destroy_extensions(ten_extension_group_t *self,
 
   tenGoExtensionGroupOnDestroyExtensions(
       extension_group_bridge->bridge.go_instance,
-      ten_go_ten_env_go_handle(ten_bridge), extensions_array);
+      ten_go_ten_env_go_handle(ten_env_bridge), extensions_array);
 
   ten_go_handle_array_destroy(extensions_array);
 }

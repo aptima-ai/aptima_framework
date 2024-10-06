@@ -160,7 +160,11 @@ def test_go_app_cythonize():
     server_cmd = os.path.join(base_path, "go_app_cythonize_app/bin/start")
 
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started = http.is_app_started("127.0.0.1", 8002, 30)

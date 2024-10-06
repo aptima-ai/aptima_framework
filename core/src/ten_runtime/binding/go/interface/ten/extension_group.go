@@ -141,7 +141,7 @@ func tenGoExtensionGroupOnInit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -180,7 +180,7 @@ func tenGoExtensionGroupOnDeinit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -209,7 +209,7 @@ func tenGoExtensionGroupOnCreateExtensions(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -248,7 +248,7 @@ func tenGoExtensionGroupOnDestroyExtensions(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)

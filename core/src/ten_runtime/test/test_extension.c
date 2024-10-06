@@ -56,6 +56,39 @@ static void test_extension_on_configure(ten_extension_t *self,
   TEN_ASSERT(rc, "Should not happen.");
 }
 
+static void ten_extension_tester_on_test_extension_start_task(
+    void *self_, TEN_UNUSED void *arg) {
+  ten_extension_tester_t *tester = self_;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
+             "Invalid argument.");
+
+  ten_extension_tester_on_test_extension_start(tester);
+}
+
+static void test_extension_on_start(ten_extension_t *self, ten_env_t *ten_env) {
+  TEN_ASSERT(self && ten_env, "Invalid argument.");
+
+  // The tester framework needs to ensure that the tester's environment is
+  // always destroyed later than the test_extension, so calling the tester
+  // within the test_extension is always valid.
+  ten_extension_tester_t *tester =
+      test_extension_get_extension_tester_ptr(ten_env);
+  self->user_data = tester;
+
+  ten_runloop_post_task_tail(tester->tester_runloop,
+                             ten_extension_tester_on_test_extension_start_task,
+                             tester, NULL);
+}
+
+void ten_builtin_test_extension_ten_env_notify_on_start_done(
+    ten_env_t *ten_env, TEN_UNUSED void *user_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  bool rc = ten_env_on_start_done(ten_env, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
 static void ten_extension_tester_on_test_extension_cmd_task(void *self_,
                                                             void *arg) {
   ten_extension_tester_t *tester = self_;
@@ -92,19 +125,7 @@ static void ten_extension_tester_on_test_extension_deinit_task(
   TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
              "Invalid argument.");
 
-  // Since the tester uses the extension's `ten_env_proxy` to interact with
-  // `test_extension`, it is necessary to release the extension's
-  // `ten_env_proxy` within the tester thread to ensure thread safety.
-  //
-  // Releasing the extension's `ten_env_proxy` within the tester thread also
-  // guarantees that `test_extension` is still active at that time (As long as
-  // the `ten_env_proxy` exists, the extension will not be destroyed.), ensuring
-  // that all operations using the extension's `ten_env_proxy` before the
-  // releasing of ten_env_proxy are valid.
-  bool rc = ten_env_proxy_release(tester->test_extension_ten_env_proxy, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  tester->test_extension_ten_env_proxy = NULL;
+  ten_extension_tester_on_test_extension_deinit(tester);
 }
 
 static void test_extension_on_deinit(ten_extension_t *self,
@@ -138,7 +159,7 @@ static void test_extension_addon_create_instance(ten_addon_t *addon,
   TEN_ASSERT(addon && name, "Invalid argument.");
 
   ten_extension_t *extension = ten_extension_create(
-      name, test_extension_on_configure, NULL, NULL, NULL,
+      name, test_extension_on_configure, NULL, test_extension_on_start, NULL,
       test_extension_on_deinit, test_extension_on_cmd, NULL, NULL, NULL, NULL);
 
   ten_env_on_create_instance_done(ten_env, extension, context, NULL);

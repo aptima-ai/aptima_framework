@@ -91,13 +91,13 @@ static void proxy_addon_create_extension_done(ten_env_t *ten_env,
   ten_go_callback_info_t *callback_info = cb_data;
   TEN_ASSERT(callback_info, "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
   ten_go_extension_t *extension_bridge =
       ten_binding_handle_get_me_in_target_lang(
           (ten_binding_handle_t *)extension);
 
   tenGoOnAddonCreateExtensionDone(
-      ten_bridge->bridge.go_instance, ten_go_addon_go_handle(addon_bridge),
+      ten_env_bridge->bridge.go_instance, ten_go_addon_go_handle(addon_bridge),
       ten_go_extension_go_handle(extension_bridge), callback_info->callback_id);
 
   ten_go_callback_info_destroy(callback_info);
@@ -140,7 +140,7 @@ bool ten_go_ten_env_addon_create_extension(uintptr_t bridge_addr,
 
   bool result = true;
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, result = false;);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, result = false;);
 
   ten_error_t err;
   ten_error_init(&err);
@@ -161,7 +161,7 @@ bool ten_go_ten_env_addon_create_extension(uintptr_t bridge_addr,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return result;
 }

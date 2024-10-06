@@ -141,89 +141,55 @@ static void ten_addon_extension_on_create_instance_done(ten_env_t *self,
   TEN_ASSERT(addon_context->addon_on_create_instance_async_cb,
              "Should not happen.");
 
-  switch (caller_ten->category) {
-    case TEN_CATEGORY_MOCK:
-      switch (caller_ten->attach_to) {
-        case TEN_ENV_ATTACH_TO_EXTENSION: {
-          ten_extension_t *extension = instance;
+  switch (caller_ten->attach_to) {
+    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
+      ten_extension_t *extension = instance;
+      // TEN_NOLINTNEXTLINE(thread-check)
+      // thread-check: Maybe in the thread other than the extension thread
+      // (ex: JS main thread), and all the function calls in this case are
+      // thread safe.
+      TEN_ASSERT(extension && ten_extension_check_integrity(extension, false),
+                 "Should not happen.");
 
-          ten_extension_set_addon(extension, addon_host);
-          break;
-        }
+      ten_extension_set_addon(extension, addon_host);
 
-        default:
-          TEN_ASSERT(0, "Handle more types.");
-          break;
-      }
+      ten_extension_group_t *extension_group =
+          ten_env_get_attached_extension_group(caller_ten);
+      TEN_ASSERT(
+          extension_group &&
+              // TEN_NOLINTNEXTLINE(thread-check)
+              // thread-check: Maybe in the thread other than the extension
+              // thread (ex: JS main thread), and all the function calls in
+              // this case are thread safe.
+              ten_extension_group_check_integrity(extension_group, false),
+          "Invalid argument.");
 
-      ten_env_set_attach_to(caller_ten, caller_ten->attach_to, instance);
+      ten_extension_thread_t *extension_thread =
+          extension_group->extension_thread;
+      TEN_ASSERT(
+          extension_thread &&
+              // TEN_NOLINTNEXTLINE(thread-check)
+              // thread-check: Maybe in the thread other than the extension
+              // thread (ex: JS main thread), and all the function calls in
+              // this case are thread safe.
+              ten_extension_thread_check_integrity(extension_thread, false),
+          "Should not happen.");
 
-      addon_context->addon_on_create_instance_async_cb(
-          caller_ten, instance,
-          addon_context->addon_on_create_instance_async_cb_data);
+      ten_extension_thread_on_addon_create_extension_done_info_t *info =
+          ten_extension_thread_on_addon_create_extension_done_info_create();
 
-      if (addon_context) {
-        ten_addon_context_destroy(addon_context);
-      }
-      break;
+      info->extension = extension;
+      info->addon_context = addon_context;
 
-    case TEN_CATEGORY_NORMAL: {
-      switch (caller_ten->attach_to) {
-        case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
-          ten_extension_t *extension = instance;
-          // TEN_NOLINTNEXTLINE(thread-check)
-          // thread-check: Maybe in the thread other than the extension thread
-          // (ex: JS main thread), and all the function calls in this case are
-          // thread safe.
-          TEN_ASSERT(
-              extension && ten_extension_check_integrity(extension, false),
-              "Should not happen.");
-
-          ten_extension_set_addon(extension, addon_host);
-
-          ten_extension_group_t *extension_group =
-              ten_env_get_attached_extension_group(caller_ten);
-          TEN_ASSERT(
-              extension_group &&
-                  // TEN_NOLINTNEXTLINE(thread-check)
-                  // thread-check: Maybe in the thread other than the extension
-                  // thread (ex: JS main thread), and all the function calls in
-                  // this case are thread safe.
-                  ten_extension_group_check_integrity(extension_group, false),
-              "Invalid argument.");
-
-          ten_extension_thread_t *extension_thread =
-              extension_group->extension_thread;
-          TEN_ASSERT(
-              extension_thread &&
-                  // TEN_NOLINTNEXTLINE(thread-check)
-                  // thread-check: Maybe in the thread other than the extension
-                  // thread (ex: JS main thread), and all the function calls in
-                  // this case are thread safe.
-                  ten_extension_thread_check_integrity(extension_thread, false),
-              "Should not happen.");
-
-          ten_extension_thread_on_addon_create_extension_done_info_t *info =
-              ten_extension_thread_on_addon_create_extension_done_info_create();
-
-          info->extension = extension;
-          info->addon_context = addon_context;
-
-          ten_runloop_post_task_tail(
-              ten_extension_group_get_attached_runloop(extension_group),
-              ten_extension_thread_on_addon_create_extension_done,
-              extension_thread, info);
-          break;
-        }
-
-        default:
-          TEN_ASSERT(0, "Should not happen.");
-          break;
-      }
+      ten_runloop_post_task_tail(
+          ten_extension_group_get_attached_runloop(extension_group),
+          ten_extension_thread_on_addon_create_extension_done, extension_thread,
+          info);
       break;
     }
 
     default:
+      TEN_ASSERT(0, "Should not happen.");
       break;
   }
 }
@@ -371,70 +337,53 @@ void ten_addon_on_destroy_instance_done(ten_env_t *self, void *context) {
   TEN_ASSERT(addon_context->addon_on_destroy_instance_async_cb,
              "Should not happen.");
 
-  switch (caller_ten->category) {
-    case TEN_CATEGORY_MOCK:
-      addon_context->addon_on_destroy_instance_async_cb(
-          caller_ten, addon_context->addon_on_destroy_instance_async_cb_data);
+  switch (caller_ten->attach_to) {
+    case TEN_ENV_ATTACH_TO_ENGINE: {
+      ten_engine_t *engine = ten_env_get_attached_engine(caller_ten);
+      TEN_ASSERT(engine &&
+                     // TEN_NOLINTNEXTLINE(thread-check)
+                     // thread-check: Maybe in the thread other than the
+                     // engine thread (ex: JS main thread), and all the
+                     // function calls in this case are thread safe.
+                     ten_engine_check_integrity(engine, false),
+                 "Should not happen.");
 
-      if (context) {
-        ten_addon_context_destroy(context);
-      }
+      ten_runloop_post_task_tail(
+          ten_engine_get_attached_runloop(engine),
+          ten_engine_on_addon_destroy_extension_group_done, engine,
+          addon_context);
       break;
+    }
 
-    case TEN_CATEGORY_NORMAL:
-      switch (caller_ten->attach_to) {
-        case TEN_ENV_ATTACH_TO_ENGINE: {
-          ten_engine_t *engine = ten_env_get_attached_engine(caller_ten);
-          TEN_ASSERT(engine &&
-                         // TEN_NOLINTNEXTLINE(thread-check)
-                         // thread-check: Maybe in the thread other than the
-                         // engine thread (ex: JS main thread), and all the
-                         // function calls in this case are thread safe.
-                         ten_engine_check_integrity(engine, false),
-                     "Should not happen.");
+    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
+      ten_extension_group_t *extension_group =
+          ten_env_get_attached_extension_group(caller_ten);
+      TEN_ASSERT(
+          extension_group &&
+              // TEN_NOLINTNEXTLINE(thread-check)
+              // thread-check: Maybe in the thread other than the engine
+              // thread (ex: JS main thread), and all the function calls in
+              // this case are thread safe.
+              ten_extension_group_check_integrity(extension_group, false),
+          "Should not happen.");
 
-          ten_runloop_post_task_tail(
-              ten_engine_get_attached_runloop(engine),
-              ten_engine_on_addon_destroy_extension_group_done, engine,
-              addon_context);
-          break;
-        }
+      ten_extension_thread_t *extension_thread =
+          extension_group->extension_thread;
+      TEN_ASSERT(
+          extension_thread &&
+              // TEN_NOLINTNEXTLINE(thread-check)
+              // thread-check: Maybe in the thread other than the engine
+              // thread (ex: JS main thread), and all the function calls in
+              // this case are thread safe.
+              ten_extension_thread_check_integrity(extension_thread, false),
+          "Should not happen.");
 
-        case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
-          ten_extension_group_t *extension_group =
-              ten_env_get_attached_extension_group(caller_ten);
-          TEN_ASSERT(
-              extension_group &&
-                  // TEN_NOLINTNEXTLINE(thread-check)
-                  // thread-check: Maybe in the thread other than the engine
-                  // thread (ex: JS main thread), and all the function calls in
-                  // this case are thread safe.
-                  ten_extension_group_check_integrity(extension_group, false),
-              "Should not happen.");
-
-          ten_extension_thread_t *extension_thread =
-              extension_group->extension_thread;
-          TEN_ASSERT(
-              extension_thread &&
-                  // TEN_NOLINTNEXTLINE(thread-check)
-                  // thread-check: Maybe in the thread other than the engine
-                  // thread (ex: JS main thread), and all the function calls in
-                  // this case are thread safe.
-                  ten_extension_thread_check_integrity(extension_thread, false),
-              "Should not happen.");
-
-          ten_runloop_post_task_tail(
-              ten_extension_group_get_attached_runloop(extension_group),
-              ten_extension_thread_on_addon_destroy_extension_done,
-              extension_thread, addon_context);
-          break;
-        }
-
-        default:
-          TEN_ASSERT(0, "Should not happen.");
-          break;
-      }
+      ten_runloop_post_task_tail(
+          ten_extension_group_get_attached_runloop(extension_group),
+          ten_extension_thread_on_addon_destroy_extension_done,
+          extension_thread, addon_context);
       break;
+    }
 
     default:
       TEN_ASSERT(0, "Should not happen.");

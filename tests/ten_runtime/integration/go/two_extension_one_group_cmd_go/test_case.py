@@ -67,7 +67,11 @@ def test_two_extension_on_group_cmd_go():
         base_path, "two_extension_one_group_cmd_go_app_client"
     )
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8007, 10)

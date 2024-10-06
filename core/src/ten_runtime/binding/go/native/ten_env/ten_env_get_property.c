@@ -165,7 +165,7 @@ ten_go_status_t ten_go_ten_env_get_property_type_and_size(
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -196,7 +196,7 @@ ten_go_status_t ten_go_ten_env_get_property_type_and_size(
     *value_addr = (uintptr_t)c_value;
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -214,7 +214,7 @@ ten_go_status_t ten_go_ten_env_get_property_int8(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -232,7 +232,7 @@ ten_go_status_t ten_go_ten_env_get_property_int8(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -251,7 +251,7 @@ ten_go_status_t ten_go_ten_env_get_property_int16(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -269,7 +269,7 @@ ten_go_status_t ten_go_ten_env_get_property_int16(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -288,7 +288,7 @@ ten_go_status_t ten_go_ten_env_get_property_int32(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -306,7 +306,7 @@ ten_go_status_t ten_go_ten_env_get_property_int32(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -325,7 +325,7 @@ ten_go_status_t ten_go_ten_env_get_property_int64(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -343,7 +343,7 @@ ten_go_status_t ten_go_ten_env_get_property_int64(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -362,7 +362,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint8(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -380,7 +380,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint8(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -399,7 +399,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint16(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -417,7 +417,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint16(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -436,7 +436,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint32(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -454,7 +454,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint32(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -473,7 +473,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint64(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -491,7 +491,7 @@ ten_go_status_t ten_go_ten_env_get_property_uint64(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -510,7 +510,7 @@ ten_go_status_t ten_go_ten_env_get_property_float32(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -528,7 +528,7 @@ ten_go_status_t ten_go_ten_env_get_property_float32(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -547,7 +547,7 @@ ten_go_status_t ten_go_ten_env_get_property_float64(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -565,7 +565,7 @@ ten_go_status_t ten_go_ten_env_get_property_float64(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -583,7 +583,7 @@ ten_go_status_t ten_go_ten_env_get_property_bool(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -601,7 +601,7 @@ ten_go_status_t ten_go_ten_env_get_property_bool(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -619,7 +619,7 @@ ten_go_status_t ten_go_ten_env_get_property_ptr(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *c_value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -631,7 +631,7 @@ ten_go_status_t ten_go_ten_env_get_property_ptr(uintptr_t bridge_addr,
     ten_value_destroy(c_value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;
@@ -649,7 +649,7 @@ ten_go_status_t ten_go_ten_env_get_property_json_and_size(
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_value_t *value = ten_go_ten_env_get_property_and_check_if_exists(
@@ -661,7 +661,7 @@ ten_go_status_t ten_go_ten_env_get_property_json_and_size(
     ten_value_destroy(value);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;

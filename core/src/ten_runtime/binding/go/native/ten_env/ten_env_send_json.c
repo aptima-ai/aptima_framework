@@ -91,7 +91,7 @@ ten_go_status_t ten_go_ten_env_send_json(uintptr_t bridge_addr,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_json_t *json = ten_go_json_loads(json_bytes, json_bytes_len, &status);
@@ -114,7 +114,7 @@ ten_go_status_t ten_go_ten_env_send_json(uintptr_t bridge_addr,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return status;

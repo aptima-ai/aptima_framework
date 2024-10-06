@@ -80,7 +80,11 @@ def test_graph_env_var_1_app():
     my_env["TEST_ENV_VAR"] = "set_from_real_env_var"
 
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8001, 10)

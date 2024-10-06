@@ -51,5 +51,6 @@ group("send_recv_image_python") {
   deps = [
     ":send_recv_image_python_app",
     ":send_recv_image_python_test_files",
+    "//tests/ten_runtime/integration/python:copy_pytest_ini_for_ten_runtime_python_integration_test",
   ]
 }

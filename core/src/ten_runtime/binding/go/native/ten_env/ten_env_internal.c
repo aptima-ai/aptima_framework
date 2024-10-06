@@ -16,7 +16,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/macro/check.h"
 
-extern void tenGoOnCmdResult(ten_go_handle_t ten_bridge,
+extern void tenGoOnCmdResult(ten_go_handle_t ten_env_bridge,
                              ten_go_handle_t cmd_bridge,
                              ten_go_handle_t result_handler);
 
@@ -48,7 +48,7 @@ void proxy_send_xxx_callback(ten_extension_t *extension, ten_env_t *ten_env,
              "Should not happen.");
   TEN_ASSERT(callback_info, "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
   ten_go_handle_t handler_id =
       ((ten_go_callback_info_t *)callback_info)->callback_id;
 
@@ -58,7 +58,8 @@ void proxy_send_xxx_callback(ten_extension_t *extension, ten_env_t *ten_env,
   ten_go_msg_t *cmd_bridge = ten_go_msg_create(cmd_result);
   uintptr_t cmd_bridge_addr = (uintptr_t)cmd_bridge;
 
-  tenGoOnCmdResult(ten_bridge->bridge.go_instance, cmd_bridge_addr, handler_id);
+  tenGoOnCmdResult(ten_env_bridge->bridge.go_instance, cmd_bridge_addr,
+                   handler_id);
 
   ten_go_callback_info_destroy(callback_info);
 }

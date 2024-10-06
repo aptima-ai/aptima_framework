@@ -223,7 +223,7 @@ func tenGoAddonOnInit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -249,7 +249,7 @@ func tenGoAddonOnDeinit(addonID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -280,7 +280,7 @@ func tenGoAddonCreateInstance(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten from handle map, id: %d.",
+				"Failed to get ten env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)

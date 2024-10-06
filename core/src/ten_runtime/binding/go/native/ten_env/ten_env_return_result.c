@@ -105,7 +105,7 @@ ten_go_status_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
 
   ten_go_status_t api_status;
   ten_go_status_init_with_errno(&api_status, TEN_ERRNO_OK);
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&api_status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_error_t err;
@@ -123,7 +123,7 @@ ten_go_status_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return api_status;
@@ -142,7 +142,7 @@ ten_go_status_t ten_go_ten_env_return_result_directly(
   ten_go_status_t api_status;
   ten_go_status_init_with_errno(&api_status, TEN_ERRNO_OK);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(&api_status, TEN_ERRNO_TEN_IS_CLOSED); });
   ten_error_t err;
   ten_error_init(&err);
@@ -159,7 +159,7 @@ ten_go_status_t ten_go_ten_env_return_result_directly(
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
   return api_status;
@@ -183,7 +183,7 @@ bool ten_go_ten_return_status_value(ten_go_ten_env_t *self, ten_go_msg_t *cmd,
 
   ten_shared_ptr_t *cmd_result = ten_cmd_result_create(status_code);
 
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
       self, { ten_go_status_set_errno(api_status, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_env_notify_return_result_info_t *return_result_info =
@@ -197,7 +197,7 @@ bool ten_go_ten_return_status_value(ten_go_ten_env_t *self, ten_go_msg_t *cmd,
     ten_go_status_from_error(api_status, &err);
   }
 
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
   ten_error_deinit(&err);
 

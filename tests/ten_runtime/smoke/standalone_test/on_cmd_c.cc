@@ -11,6 +11,7 @@
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd/cmd.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
+#include "ten_runtime/test/env_tester.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
@@ -80,6 +81,8 @@ void ten_extension_tester_on_start(TEN_UNUSED ten_extension_tester_t *tester,
   if (rc) {
     ten_shared_ptr_destroy(hello_world_cmd);
   }
+
+  ten_env_tester_on_start_done(ten_env, nullptr);
 }
 
 void ten_extension_tester_on_cmd(TEN_UNUSED ten_extension_tester_t *tester,

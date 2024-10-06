@@ -87,7 +87,7 @@ void ten_go_ten_env_on_create_extensions_done(
   }
 
 done:
-  TEN_GO_TEN_IS_ALIVE_REGION_BEGIN(self, {});
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, {});
 
   ten_error_t err;
   ten_error_init(&err);
@@ -106,7 +106,7 @@ done:
   }
 
   ten_error_deinit(&err);
-  TEN_GO_TEN_IS_ALIVE_REGION_END(self);
+  TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
   return;
 }

@@ -38,6 +38,4 @@ TEN_RUNTIME_API bool ten_env_is_cmd_connected(ten_env_t *self,
 
 TEN_RUNTIME_API void *ten_env_get_attached_target(ten_env_t *self);
 
-TEN_RUNTIME_API ten_env_t *ten_env_mock_create(void);
-
 TEN_RUNTIME_API void ten_env_destroy(ten_env_t *self);

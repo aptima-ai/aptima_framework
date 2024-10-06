@@ -61,7 +61,11 @@ def test_prepare_to_stop_go():
     server_cmd = os.path.join(base_path, "prepare_to_stop_go_app/bin/start")
     client_cmd = os.path.join(base_path, "prepare_to_stop_go_app_client")
     server = subprocess.Popen(
-        server_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
+        server_cmd,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        env=my_env,
+        cwd=app_root_path,
     )
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8007, 10)

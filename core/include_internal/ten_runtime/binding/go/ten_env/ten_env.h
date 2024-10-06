@@ -18,7 +18,8 @@ TEN_RUNTIME_PRIVATE_API bool ten_go_ten_env_check_integrity(
 TEN_RUNTIME_PRIVATE_API ten_go_ten_env_t *ten_go_ten_env_reinterpret(
     uintptr_t bridge_addr);
 
-TEN_RUNTIME_PRIVATE_API ten_go_ten_env_t *ten_go_ten_env_wrap(ten_env_t *c_ten);
+TEN_RUNTIME_PRIVATE_API ten_go_ten_env_t *ten_go_ten_env_wrap(
+    ten_env_t *c_ten_env);
 
 TEN_RUNTIME_PRIVATE_API ten_go_handle_t
 ten_go_ten_env_go_handle(ten_go_ten_env_t *self);

@@ -21,11 +21,11 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 
-void tenGoAppOnConfigure(ten_go_handle_t go_app, ten_go_handle_t go_ten);
+void tenGoAppOnConfigure(ten_go_handle_t go_app, ten_go_handle_t go_ten_env);
 
-void tenGoAppOnInit(ten_go_handle_t go_app, ten_go_handle_t go_ten);
+void tenGoAppOnInit(ten_go_handle_t go_app, ten_go_handle_t go_ten_env);
 
-void tenGoAppOnDeinit(ten_go_handle_t go_app, ten_go_handle_t go_ten);
+void tenGoAppOnDeinit(ten_go_handle_t go_app, ten_go_handle_t go_ten_env);
 
 bool ten_go_app_check_integrity(ten_go_app_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -47,11 +47,11 @@ static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
   TEN_ASSERT(app_bridge, "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
-  ten_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_env_bridge->c_ten_env_proxy = ten_env_proxy_create(ten_env, 1, NULL);
 
   tenGoAppOnConfigure(app_bridge->bridge.go_instance,
-                      ten_go_ten_env_go_handle(ten_bridge));
+                      ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
@@ -64,10 +64,10 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
   TEN_ASSERT(app_bridge, "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoAppOnInit(app_bridge->bridge.go_instance,
-                 ten_go_ten_env_go_handle(ten_bridge));
+                 ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void proxy_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
@@ -77,10 +77,10 @@ static void proxy_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
   TEN_ASSERT(app_bridge, "Should not happen.");
 
-  ten_go_ten_env_t *ten_bridge = ten_go_ten_env_wrap(ten_env);
+  ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
   tenGoAppOnDeinit(app_bridge->bridge.go_instance,
-                   ten_go_ten_env_go_handle(ten_bridge));
+                   ten_go_ten_env_go_handle(ten_env_bridge));
 }
 
 static void ten_go_app_destroy(ten_go_app_t *self) {

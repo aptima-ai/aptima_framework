@@ -13,7 +13,6 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
@@ -22,11 +21,12 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 
 bool ten_go_ten_env_check_integrity(ten_go_ten_env_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
-  if (ten_signature_get(&self->signature) != TEN_GO_TEN_SIGNATURE) {
+  if (ten_signature_get(&self->signature) != TEN_GO_TEN_ENV_SIGNATURE) {
     return false;
   }
 
@@ -52,62 +52,62 @@ static void ten_go_ten_env_destroy(ten_go_ten_env_t *self) {
   TEN_FREE(self);
 }
 
-static void ten_go_ten_env_destroy_c_part(void *ten_bridge_) {
-  ten_go_ten_env_t *ten_bridge = (ten_go_ten_env_t *)ten_bridge_;
-  TEN_ASSERT(ten_bridge && ten_go_ten_env_check_integrity(ten_bridge),
+static void ten_go_ten_env_destroy_c_part(void *ten_env_bridge_) {
+  ten_go_ten_env_t *ten_env_bridge = (ten_go_ten_env_t *)ten_env_bridge_;
+  TEN_ASSERT(ten_env_bridge && ten_go_ten_env_check_integrity(ten_env_bridge),
              "Should not happen.");
-  ten_bridge->c_ten_env = NULL;
-  ten_go_bridge_destroy_c_part(&ten_bridge->bridge);
+  ten_env_bridge->c_ten_env = NULL;
+  ten_go_bridge_destroy_c_part(&ten_env_bridge->bridge);
 
   // Remove the Go ten object from the global map.
-  tenGoDestroyTen(ten_bridge->bridge.go_instance);
+  tenGoDestroyTenEnv(ten_env_bridge->bridge.go_instance);
 }
 
-static void ten_go_ten_env_close(void *ten_bridge_) {
-  ten_go_ten_env_t *ten_bridge = (ten_go_ten_env_t *)ten_bridge_;
-  TEN_ASSERT(ten_bridge && ten_go_ten_env_check_integrity(ten_bridge),
+static void ten_go_ten_env_close(void *ten_env_bridge_) {
+  ten_go_ten_env_t *ten_env_bridge = (ten_go_ten_env_t *)ten_env_bridge_;
+  TEN_ASSERT(ten_env_bridge && ten_go_ten_env_check_integrity(ten_env_bridge),
              "Should not happen.");
 
-  ten_rwlock_lock(ten_bridge->lock, 0);
-  ten_bridge->c_ten_env = NULL;
-  ten_rwlock_unlock(ten_bridge->lock, 0);
+  ten_rwlock_lock(ten_env_bridge->lock, 0);
+  ten_env_bridge->c_ten_env = NULL;
+  ten_rwlock_unlock(ten_env_bridge->lock, 0);
 }
 
-ten_go_ten_env_t *ten_go_ten_env_wrap(ten_env_t *c_ten) {
-  ten_go_ten_env_t *ten_bridge =
-      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)c_ten);
-  if (ten_bridge) {
-    return ten_bridge;
+ten_go_ten_env_t *ten_go_ten_env_wrap(ten_env_t *c_ten_env) {
+  ten_go_ten_env_t *ten_env_bridge = ten_binding_handle_get_me_in_target_lang(
+      (ten_binding_handle_t *)c_ten_env);
+  if (ten_env_bridge) {
+    return ten_env_bridge;
   }
 
-  ten_bridge = (ten_go_ten_env_t *)TEN_MALLOC(sizeof(ten_go_ten_env_t));
-  TEN_ASSERT(ten_bridge, "Failed to allocate memory.");
+  ten_env_bridge = (ten_go_ten_env_t *)TEN_MALLOC(sizeof(ten_go_ten_env_t));
+  TEN_ASSERT(ten_env_bridge, "Failed to allocate memory.");
 
-  ten_signature_set(&ten_bridge->signature, TEN_GO_TEN_SIGNATURE);
+  ten_signature_set(&ten_env_bridge->signature, TEN_GO_TEN_ENV_SIGNATURE);
 
-  uintptr_t bridge_addr = (uintptr_t)ten_bridge;
+  uintptr_t bridge_addr = (uintptr_t)ten_env_bridge;
   TEN_ASSERT(bridge_addr > 0, "Should not happen.");
 
-  ten_bridge->bridge.go_instance = tenGoCreateTen(bridge_addr);
+  ten_env_bridge->bridge.go_instance = tenGoCreateTenEnv(bridge_addr);
 
   // C ten hold one reference of ten bridge.
-  ten_bridge->bridge.sp_ref_by_c =
-      ten_shared_ptr_create(ten_bridge, ten_go_ten_env_destroy);
-  ten_bridge->bridge.sp_ref_by_go =
-      ten_shared_ptr_clone(ten_bridge->bridge.sp_ref_by_c);
+  ten_env_bridge->bridge.sp_ref_by_c =
+      ten_shared_ptr_create(ten_env_bridge, ten_go_ten_env_destroy);
+  ten_env_bridge->bridge.sp_ref_by_go =
+      ten_shared_ptr_clone(ten_env_bridge->bridge.sp_ref_by_c);
 
-  ten_bridge->c_ten_env = c_ten;
-  ten_bridge->c_ten_env_proxy = NULL;
+  ten_env_bridge->c_ten_env = c_ten_env;
+  ten_env_bridge->c_ten_env_proxy = NULL;
 
-  ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)c_ten,
-                                           ten_bridge);
-  ten_env_set_destroy_handler_in_target_lang(c_ten,
+  ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)c_ten_env,
+                                           ten_env_bridge);
+  ten_env_set_destroy_handler_in_target_lang(c_ten_env,
                                              ten_go_ten_env_destroy_c_part);
-  ten_env_set_close_handler_in_target_lang(c_ten, ten_go_ten_env_close);
+  ten_env_set_close_handler_in_target_lang(c_ten_env, ten_go_ten_env_close);
 
-  ten_bridge->lock = ten_rwlock_create(TEN_RW_DEFAULT_FAIRNESS);
+  ten_env_bridge->lock = ten_rwlock_create(TEN_RW_DEFAULT_FAIRNESS);
 
-  return ten_bridge;
+  return ten_env_bridge;
 }
 
 ten_go_handle_t ten_go_ten_env_go_handle(ten_go_ten_env_t *self) {

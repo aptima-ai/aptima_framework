@@ -4,6 +4,7 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+from pathlib import Path
 from ten import ExtensionTester, TenEnvTester, Cmd, CmdResult, StatusCode
 
 
@@ -30,6 +31,6 @@ class ExtensionTesterBasic(ExtensionTester):
 
 def test_basic():
     tester = ExtensionTesterBasic()
-    tester.add_addon_base_dir("../")
+    tester.add_addon_base_dir(str(Path(__file__).resolve().parent.parent))
     tester.set_test_mode_single("default_extension_python")
     tester.run()
