@@ -16,6 +16,7 @@
 ## TEN framework
 
 * [Overview](ten_framework/concept_overview.md)
+* [Development Process](ten_framework/development_process.md)
 * [Preparation](ten_framework/preparation.md)
 * [Version System](ten_framework/version_system.md)
 * [Metadata System](ten_framework/metadata_system.md)

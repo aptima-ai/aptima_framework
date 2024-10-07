@@ -2,7 +2,7 @@
 
 ## For Users of the TEN Framework
 
-(To be added.)
+### Standalone Testing of Extension
 
 ## For Developers of the TEN Framework
 
