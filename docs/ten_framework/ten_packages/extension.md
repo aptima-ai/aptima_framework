@@ -99,6 +99,8 @@ sequenceDiagram
   Note over A: on_init_done
 ```
 
+Basically, in all other life cycle stages, if you want to implement the order of different extensions, you can achieve it using the same method.
+
 ## Interface with TEN Runtime
 
 Extensions interact with the TEN runtime primarily through three interfaces:
