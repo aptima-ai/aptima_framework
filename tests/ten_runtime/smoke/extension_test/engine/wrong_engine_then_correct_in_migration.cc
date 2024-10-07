@@ -69,7 +69,7 @@ class test_app : public ten::app_t {
                         "one_event_loop_per_engine": true,
                         "log_level": 2,
                         "predefined_graphs": [{
-                          "name": "0",
+                          "name": "default",
                           "auto_start": true,
                           "nodes": [{
                             "type": "extension_group",
@@ -134,7 +134,7 @@ TEST(ExtensionTest, WrongEngineThenCorrectInMigration) {  // NOLINT
              "seq_id": "2",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
+               "graph": "default",
                "extension_group": "migration_group",
                "extension": "migration"
              }]

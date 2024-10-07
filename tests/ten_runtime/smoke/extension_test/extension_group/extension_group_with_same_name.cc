@@ -83,13 +83,13 @@ TEST(ExtensionTest, ExtensionGroupWithSameName) {
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "extension_group_with_same_name__extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_group_with_same_name"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "extension_group_with_same_name__extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_group_with_same_name"
@@ -107,7 +107,7 @@ TEST(ExtensionTest, ExtensionGroupWithSameName) {
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_group_with_same_name",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

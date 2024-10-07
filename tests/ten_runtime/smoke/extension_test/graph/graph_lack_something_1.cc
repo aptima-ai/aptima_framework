@@ -53,8 +53,8 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test extension 1"));
-    extensions.push_back(new test_extension_2("test extension 2"));
+    extensions.push_back(new test_extension_1("test_extension_1"));
+    extensions.push_back(new test_extension_2("test_extension_2"));
     ten_env.on_create_extensions_done(extensions);
   }
 
@@ -122,25 +122,25 @@ TEST(ExtensionTest, GraphLackSomething1) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension 1",
+                "name": "test_extension_1",
                 "extension_group": "graph_lack_something_1",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension 2",
+                "name": "test_extension_2",
                 "extension_group": "graph_lack_something_1",
                 "app": "msgpack://127.0.0.1:8001/"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "graph_lack_something_1",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "graph_lack_something_1",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              }]
@@ -157,7 +157,7 @@ TEST(ExtensionTest, GraphLackSomething1) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "graph_lack_something_1",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

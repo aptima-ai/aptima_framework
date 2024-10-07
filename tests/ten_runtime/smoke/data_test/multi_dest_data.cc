@@ -171,7 +171,7 @@ TEST(DataTest, MultiDestData) {  // NOLINT
              "seq_id": "55",
              "nodes": [{
                "type": "extension_group",
-               "name": "test extension group",
+               "name": "test_extension_group",
                "addon": "default_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
@@ -179,33 +179,33 @@ TEST(DataTest, MultiDestData) {  // NOLINT
                "name": "extension 1",
                "addon": "multi_dest_data__extension_1",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group"
+               "extension_group": "test_extension_group"
              },{
                "type": "extension",
                "name": "extension 2",
                "addon": "multi_dest_data__extension_2",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group"
+               "extension_group": "test_extension_group"
              },{
                "type": "extension",
                "name": "extension 3",
                "addon": "multi_dest_data__extension_3",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group"
+               "extension_group": "test_extension_group"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
+               "extension_group": "test_extension_group",
                "extension": "extension 1",
                "data": [{
                  "name": "data",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group",
+                   "extension_group": "test_extension_group",
                    "extension": "extension 2"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group",
+                   "extension_group": "test_extension_group",
                    "extension": "extension 3"
                  }]
                }]
@@ -222,7 +222,7 @@ TEST(DataTest, MultiDestData) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
+               "extension_group": "test_extension_group",
                "extension": "extension 1"
              }]
            }
@@ -236,7 +236,7 @@ TEST(DataTest, MultiDestData) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
+               "extension_group": "test_extension_group",
                "extension": "extension 2"
              }]
            }
@@ -251,7 +251,7 @@ TEST(DataTest, MultiDestData) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
+               "extension_group": "test_extension_group",
                "extension": "extension 3"
              }]
            }

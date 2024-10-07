@@ -20,15 +20,15 @@ int main(int argc, char **argv) {
              "seq_id": "55",
              "nodes": [{
                "type": "extension_group",
-               "name": "test extension group",
+               "name": "test_extension_group",
                "addon": "default_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension",
+               "name": "test_extension",
                "addon": "default_extension_cpp",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
+               "extension_group": "test_extension_group",
                "property": {
                  "prop": "${env:TEST_ENV_VAR}"
                }
@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
-               "extension": "test extension"
+               "extension_group": "test_extension_group",
+               "extension": "test_extension"
              }]
            }
        })"_json);

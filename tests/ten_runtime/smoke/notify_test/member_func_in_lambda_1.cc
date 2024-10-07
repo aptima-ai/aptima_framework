@@ -133,7 +133,7 @@ TEST(NotifyTest, MemberFuncInLambda1) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension",
+               "name": "test_extension",
                "addon": "notify_test_member_func_basic_in_lambda_1__test_extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
@@ -151,7 +151,7 @@ TEST(NotifyTest, MemberFuncInLambda1) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension"
+               "extension": "test_extension"
              }]
            }
          })"_json);

@@ -225,7 +225,7 @@ Example type definitions:
     "seq_id": "123",
     "dest": [{
       "app": "msgpack://127.0.0.1:8001/",
-      "graph": "0",
+      "graph": "default",
       "extension_group": "group_a",
       "extension": "extension_b"
     }]

@@ -57,7 +57,7 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("test extension"));
+    extensions.push_back(new test_extension("test_extension"));
     ten_env.on_create_extensions_done(extensions);
   }
 
@@ -129,7 +129,7 @@ TEST(DataTest, Basic) {  // NOLINT
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
 
   const char *str = DATA;
-  client->send_data("", "data_basic", "test extension", (void *)str,
+  client->send_data("", "data_basic", "test_extension", (void *)str,
                     strlen(str) + 1);
 
   resp = client->send_json_and_recv_resp_in_json(
@@ -140,7 +140,7 @@ TEST(DataTest, Basic) {  // NOLINT
              "dest":[{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "data_basic",
-               "extension": "test extension"
+               "extension": "test_extension"
              }]
            }
          })"_json);

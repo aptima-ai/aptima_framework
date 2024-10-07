@@ -180,7 +180,7 @@ class test_app : public ten::app_t {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "log_level": 2,
                         "predefined_graphs": [{
-                          "name": "0",
+                          "name": "default",
                           "auto_start": false,
                           "nodes": [{
                             "type": "extension_group",
@@ -231,7 +231,7 @@ TEST(ExtensionTest, PredefinedGraphBasic2) {  // NOLINT
              "seq_id": "111",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
+               "graph": "default",
                "extension_group": "predefined_graph_group",
                "extension": "predefined_graph"
              }]

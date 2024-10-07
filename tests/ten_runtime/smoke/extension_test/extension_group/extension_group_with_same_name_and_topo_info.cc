@@ -83,13 +83,13 @@ TEST(ExtensionTest, ExtensionGroupWithSameNameAndGraphInfo) {
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "extension_group_with_same_name_and_graph_info__extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "same_name_extension_group"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "extension_group_with_same_name_and_graph_info__extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "same_name_extension_group"
@@ -97,13 +97,13 @@ TEST(ExtensionTest, ExtensionGroupWithSameNameAndGraphInfo) {
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "same_name_extension_group",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "cmd_1",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "same_name_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              }]
@@ -120,7 +120,7 @@ TEST(ExtensionTest, ExtensionGroupWithSameNameAndGraphInfo) {
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "same_name_extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

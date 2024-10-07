@@ -68,41 +68,41 @@ class test_app_1 : public ten::app_t {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "log_level": 2,
                         "predefined_graphs": [{
-                           "name": "0",
+                           "name": "default",
                            "auto_start": false,
                            "nodes": [{
                               "type": "extension_group",
                               "app": "msgpack://127.0.0.1:8001/",
                               "addon": "default_extension_group",
-                              "name": "predefined graph group"
+                              "name": "predefined_graph_group"
                            }, {
                               "type": "extension",
                               "app": "msgpack://127.0.0.1:8001/",
-                              "extension_group": "predefined graph group",
+                              "extension_group": "predefined_graph_group",
                               "addon": "predefined_graph_multi_app__extension_1",
-                              "name": "test extension 1"
+                              "name": "test_extension_1"
                            }, {
                               "type": "extension_group",
                               "app": "msgpack://127.0.0.1:8002/",
                               "addon": "default_extension_group",
-                              "name": "predefined graph group"
+                              "name": "predefined_graph_group"
                            }, {
                               "type": "extension",
                               "app": "msgpack://127.0.0.1:8002/",
-                              "extension_group": "predefined graph group",
+                              "extension_group": "predefined_graph_group",
                               "addon": "predefined_graph_multi_app__extension_2",
-                              "name": "test extension 2"
+                              "name": "test_extension_2"
                            }],
                            "connections": [{
                              "app": "msgpack://127.0.0.1:8001/",
-                             "extension_group": "predefined graph group",
-                             "extension": "test extension 1",
+                             "extension_group": "predefined_graph_group",
+                             "extension": "test_extension_1",
                              "cmd": [{
                                "name": "hello_world",
                                "dest": [{
                                  "app": "msgpack://127.0.0.1:8002/",
-                                 "extension_group": "predefined graph group",
-                                 "extension": "test extension 2"
+                                 "extension_group": "predefined_graph_group",
+                                 "extension": "test_extension_2"
                                }]
                              }]
                            }]
@@ -122,10 +122,10 @@ class test_app_2 : public ten::app_t {
   void on_configure(ten::ten_env_t &ten_env) override {
     ten_env.init_property_from_json(
         R"({
-                      "_ten": {
-                        "uri": "msgpack://127.0.0.1:8002/"
-                      }
-                     })");
+             "_ten": {
+               "uri": "msgpack://127.0.0.1:8002/"
+             }
+           })");
     ten_env.on_configure_done();
   }
 };
@@ -173,9 +173,9 @@ TEST(ExtensionTest, PredefinedGraphMultiApp) {  // NOLINT
            "seq_id": "137",
            "dest": [{
              "app": "msgpack://127.0.0.1:8001/",
-             "graph": "0",
-             "extension_group": "predefined graph group",
-             "extension": "test extension 1"
+             "graph": "default",
+             "extension_group": "predefined_graph_group",
+             "extension": "test_extension_1"
            }]
          }
        })"_json);

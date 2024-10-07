@@ -91,25 +91,25 @@ TEST(ExtensionTest, BasicTwoStandaloneExtension2) {  // NOLINT
              "seq_id": "55",
              "nodes": [{
                "type": "extension_group",
-               "name": "test extension group 1",
+               "name": "test_extension_group 1",
                "addon": "default_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension 1",
+                "name": "test_extension_1",
                 "addon": "basic_two_standalone_extension_2__test_extension_1",
-                "extension_group": "test extension group 1",
+                "extension_group": "test_extension_group 1",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension_group",
-               "name": "test extension group 2",
+               "name": "test_extension_group 2",
                "addon": "default_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension 2",
+                "name": "test_extension_2",
                 "addon": "basic_two_standalone_extension_2__test_extension_2",
-                "extension_group": "test extension group 2",
+                "extension_group": "test_extension_group 2",
                 "app": "msgpack://127.0.0.1:8001/"
              }]
            }
@@ -124,8 +124,8 @@ TEST(ExtensionTest, BasicTwoStandaloneExtension2) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 1",
-               "extension": "test extension 1"
+               "extension_group": "test_extension_group 1",
+               "extension": "test_extension_1"
              }]
            }
          })"_json);
@@ -139,8 +139,8 @@ TEST(ExtensionTest, BasicTwoStandaloneExtension2) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 2",
-               "extension": "test extension 2"
+               "extension_group": "test_extension_group 2",
+               "extension": "test_extension_2"
              }]
            }
          })"_json);

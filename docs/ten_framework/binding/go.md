@@ -35,7 +35,7 @@ Now, we'll modify the `property.json` file of the TEN app to include a graph dec
 ```json
 "predefined_graphs": [
   {
-    "name": "0",
+    "name": "default",
     "auto_start": true,
     "nodes": [
       {

@@ -196,13 +196,13 @@ TEST(ExtensionTest, SuspendResume1) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "suspend_resume_1__test_extension_1",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "suspend_resume_1__test_extension_2",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
@@ -210,13 +210,13 @@ TEST(ExtensionTest, SuspendResume1) {  // NOLINT
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }],
                "data": [{
@@ -224,7 +224,7 @@ TEST(ExtensionTest, SuspendResume1) {  // NOLINT
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              }]
@@ -241,7 +241,7 @@ TEST(ExtensionTest, SuspendResume1) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

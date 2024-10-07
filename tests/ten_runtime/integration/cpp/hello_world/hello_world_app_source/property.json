@@ -3,7 +3,7 @@
     "uri": "msgpack://127.0.0.1:8001/",
     "predefined_graphs": [
       {
-        "name": "0",
+        "name": "default",
         "auto_start": false,
         "nodes": [
           {

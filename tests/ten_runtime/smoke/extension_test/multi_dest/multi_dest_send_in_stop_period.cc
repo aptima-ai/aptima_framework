@@ -122,33 +122,33 @@ TEST(ExtensionTest, MultiDestSendInStopPeriod) {  // NOLINT
                "name": "extension 1",
                "addon": "multi_dest_send_in_stop_period__extension_1",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group1"
+               "extension_group": "test_extension_group1"
              },{
                "type": "extension",
                "name": "extension 2",
                "addon": "multi_dest_send_in_stop_period__extension_2",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group2"
+               "extension_group": "test_extension_group2"
              },{
                "type": "extension",
                "name": "extension 3",
                "addon": "multi_dest_send_in_stop_period__extension_3",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group3"
+               "extension_group": "test_extension_group3"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group1",
+               "extension_group": "test_extension_group1",
                "extension": "extension 1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group2",
+                   "extension_group": "test_extension_group2",
                    "extension": "extension 2"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group3",
+                   "extension_group": "test_extension_group3",
                    "extension": "extension 3"
                  }]
                }]
@@ -165,7 +165,7 @@ TEST(ExtensionTest, MultiDestSendInStopPeriod) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group1",
+               "extension_group": "test_extension_group1",
                "extension": "extension 1"
              }]
            }

@@ -145,47 +145,47 @@ TEST(ExtensionTest, Return3) {  // NOLINT
              "seq_id": "55",
              "nodes": [{
                "type": "extension_group",
-               "name": "test extension group 1",
+               "name": "test_extension_group 1",
                "addon": "default_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "return_3__extension_1",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 1"
+               "extension_group": "test_extension_group 1"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "return_3__extension_2",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 1"
+               "extension_group": "test_extension_group 1"
              },{
                "type": "extension_group",
-               "name": "test extension group 2",
+               "name": "test_extension_group 2",
                "addon": "default_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 3",
+               "name": "test_extension_3",
                "addon": "return_3__extension_3",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 2"
+               "extension_group": "test_extension_group 2"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 1",
-               "extension": "test extension 1",
+               "extension_group": "test_extension_group 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group 1",
-                   "extension": "test extension 2"
+                   "extension_group": "test_extension_group 1",
+                   "extension": "test_extension_2"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group 2",
-                   "extension": "test extension 3"
+                   "extension_group": "test_extension_group 2",
+                   "extension": "test_extension_3"
                  }]
                }]
              }]
@@ -201,8 +201,8 @@ TEST(ExtensionTest, Return3) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group 1",
-               "extension": "test extension 1"
+               "extension_group": "test_extension_group 1",
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

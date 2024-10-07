@@ -18,7 +18,7 @@
           },
           {
             "type": "extension",
-            "name": "test extension",
+            "name": "test_extension",
             "addon": "simple_echo_cpp",
             "extension_group": "default_extension_group"
           }
@@ -33,7 +33,7 @@
                 "dest": [
                   {
                     "extension_group": "default_extension_group",
-                    "extension": "test extension"
+                    "extension": "test_extension"
                   }
                 ]
               }

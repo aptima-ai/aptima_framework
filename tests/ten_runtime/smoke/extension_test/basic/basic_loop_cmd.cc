@@ -95,8 +95,8 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test extension 1"));
-    extensions.push_back(new test_extension_2("test extension 2"));
+    extensions.push_back(new test_extension_1("test_extension_1"));
+    extensions.push_back(new test_extension_2("test_extension_2"));
     ten_env.on_create_extensions_done(extensions);
   }
 
@@ -158,32 +158,32 @@ TEST(ExtensionTest, BasicLoopCmd) {  // NOLINT
              "seq_id": "55",
              "nodes": [{
                "type": "extension_group",
-               "name": "test extension group",
+               "name": "test_extension_group",
                "addon": "basic_loop_cmd__extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
-               "extension": "test extension 1",
+               "extension_group": "test_extension_group",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world_1",
                  "dest": [{
                     "app": "msgpack://127.0.0.1:8001/",
-                    "extension_group": "test extension group",
-                    "extension": "test extension 2"
+                    "extension_group": "test_extension_group",
+                    "extension": "test_extension_2"
                  }]
                 }]
               },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
-               "extension": "test extension 2",
+               "extension_group": "test_extension_group",
+               "extension": "test_extension_2",
                "cmd": [{
                   "name": "hello_world_2",
                   "dest": [{
                      "app": "msgpack://127.0.0.1:8001/",
-                     "extension_group": "test extension group",
-                     "extension": "test extension 1"
+                     "extension_group": "test_extension_group",
+                     "extension": "test_extension_1"
                   }]
                 }]
               }]
@@ -199,8 +199,8 @@ TEST(ExtensionTest, BasicLoopCmd) {  // NOLINT
              "seq_id": "137",
              "dest":[{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
-               "extension": "test extension 1"
+               "extension_group": "test_extension_group",
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

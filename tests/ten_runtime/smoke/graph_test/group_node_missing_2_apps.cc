@@ -163,26 +163,26 @@ TEST(GraphTest, GroupNodeMissing2Apps) {  // NOLINT
                  "nodes": [{
                    "type": "extension",
                    "addon": "group_node_missing_2_apps__extension_1",
-                   "name": "test extension 1",
-                   "extension_group": "test extension group 1",
+                   "name": "test_extension_1",
+                   "extension_group": "test_extension_group 1",
                    "app": "msgpack://127.0.0.1:8001/"
                  },{
                    "type": "extension",
                    "addon": "group_node_missing_2_apps__extension_2",
-                   "name": "test extension 2",
-                   "extension_group": "test extension group 2",
+                   "name": "test_extension_2",
+                   "extension_group": "test_extension_group 2",
                    "app": "msgpack://127.0.0.1:8002/"
                  }],
                  "connections": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test extension group 1",
-                   "extension": "test extension 1",
+                   "extension_group": "test_extension_group 1",
+                   "extension": "test_extension_1",
                    "cmd": [{
                      "name": "hello_world",
                      "dest": [{
                        "app": "msgpack://127.0.0.1:8002/",
-                       "extension_group": "test extension group 2",
-                       "extension": "test extension 2"
+                       "extension_group": "test_extension_group 2",
+                       "extension": "test_extension_2"
                      }]
                    }]
                  }]
@@ -210,8 +210,8 @@ TEST(GraphTest, GroupNodeMissing2Apps) {  // NOLINT
                "seq_id": "137",
                "dest": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "test extension group 1",
-                 "extension": "test extension 1"
+                 "extension_group": "test_extension_group 1",
+                 "extension": "test_extension_1"
                }]
              }
            })"_json);

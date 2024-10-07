@@ -51,7 +51,7 @@ The `name` of an interface is primarily used in graphs to specify routing. In th
 ```json
 {
   "predefined_graphs": [{
-    "name": "0",
+    "name": "default",
     "auto_start": true,
     "nodes": [
       {

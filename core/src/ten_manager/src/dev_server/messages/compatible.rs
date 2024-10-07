@@ -357,7 +357,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -437,7 +437,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "default_extension_group",
           "extension": "default_extension_cpp",
           "msg_type": "data",
@@ -499,7 +499,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -579,7 +579,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -660,7 +660,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -752,7 +752,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -834,7 +834,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -905,7 +905,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "cmd",
@@ -986,7 +986,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "data",
@@ -1069,7 +1069,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "data",
@@ -1140,7 +1140,7 @@ mod tests {
         // Define input data.
         let input_data = json!({
           "app": "localhost",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "extension_group_1",
           "extension": "extension_1",
           "msg_type": "video_frame",

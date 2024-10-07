@@ -191,7 +191,7 @@
           ]
         },
         "name": {
-          "$ref": "#/$defs/notEmptyString"
+          "$ref": "#/$defs/alphanumericCharacters"
         },
         "addon": {
           "$ref": "#/$defs/alphanumericCharacters"
@@ -200,7 +200,7 @@
           "$ref": "#/$defs/notEmptyString"
         },
         "extension_group": {
-          "$ref": "#/$defs/notEmptyString"
+          "$ref": "#/$defs/alphanumericCharacters"
         },
         "property": {
           "type": "object",
@@ -489,7 +489,7 @@
             ],
             "properties": {
               "name": {
-                "$ref": "#/$defs/notEmptyString"
+                "$ref": "#/$defs/alphanumericCharacters"
               },
               "auto_start": {
                 "type": "boolean",

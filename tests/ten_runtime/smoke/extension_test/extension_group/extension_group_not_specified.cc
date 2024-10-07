@@ -78,13 +78,13 @@ TEST(ExtensionTest, ExtensionGroupNotSpecified) {
              "seq_id": "55",
              "nodes": [{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "extension_group_not_specified__extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_group_not_specified"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "extension_group_not_specified__extension",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_group_not_specified"
@@ -102,7 +102,7 @@ TEST(ExtensionTest, ExtensionGroupNotSpecified) {
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_group_not_specified",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

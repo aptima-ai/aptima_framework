@@ -223,7 +223,7 @@ mod tests {
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/0/connections")
+            .uri("/api/dev-server/v1/graphs/default/connections")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -303,7 +303,7 @@ mod tests {
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/0/connections")
+            .uri("/api/dev-server/v1/graphs/default/connections")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

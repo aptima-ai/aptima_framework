@@ -83,8 +83,8 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test extension 1"));
-    extensions.push_back(new test_extension_2("test extension 2"));
+    extensions.push_back(new test_extension_1("test_extension_1"));
+    extensions.push_back(new test_extension_2("test_extension_2"));
     ten_env.on_create_extensions_done(extensions);
   }
 
@@ -120,7 +120,7 @@ class test_app : public ten::app_t {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "log_level": 2,
                         "predefined_graphs": [{
-                          "name": "0",
+                          "name": "default",
                           "auto_start": false,
                           "nodes": [{
                             "type": "extension_group",
@@ -130,13 +130,13 @@ class test_app : public ten::app_t {
                           "connections": [{
                             "app": "msgpack://127.0.0.1:8001/",
                             "extension_group": "cmd_mapping_graph_extension_1",
-                            "extension": "test extension 1",
+                            "extension": "test_extension_1",
                             "data": [{
                               "name": "aaa",
                               "dest": [{
                                 "app": "msgpack://127.0.0.1:8001/",
                                 "extension_group": "cmd_mapping_graph_extension_1",
-                                "extension": "test extension 2",
+                                "extension": "test_extension_2",
                                 "msg_conversion": {
                                   "type": "per_property",
                                   "rules": [{
@@ -201,9 +201,9 @@ TEST(CmdConversionTest, CmdConversionData) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
+               "graph": "default",
                "extension_group": "cmd_mapping_graph_extension_1",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);
@@ -217,9 +217,9 @@ TEST(CmdConversionTest, CmdConversionData) {  // NOLINT
              "seq_id": "138",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
+               "graph": "default",
                "extension_group": "cmd_mapping_graph_extension_1",
-               "extension": "test extension 2"
+               "extension": "test_extension_2"
              }]
            }
          })"_json);

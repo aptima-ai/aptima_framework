@@ -406,7 +406,7 @@ mod tests {
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/0/nodes")
+            .uri("/api/dev-server/v1/graphs/default/nodes")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

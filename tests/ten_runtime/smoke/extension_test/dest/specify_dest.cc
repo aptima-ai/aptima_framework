@@ -66,7 +66,7 @@ class business_extension : public ten::extension_t {
     auto cmd_to_plugin_1 = ten::cmd_t::create("plugin_1_cmd");
 
     // Explicitly specify to interact with plugin_1.
-    cmd_to_plugin_1->set_dest("localhost", "0", "specify_dest_group",
+    cmd_to_plugin_1->set_dest("localhost", "default", "specify_dest_group",
                               "plugin_extension_1");
 
     // This is the method to pass unique_ptr through the lambda capture list in
@@ -96,7 +96,7 @@ class business_extension : public ten::extension_t {
     auto cmd_to_plugin_2 = ten::cmd_t::create("plugin_2_cmd");
 
     // Explicitly specify to interact with plugin_2.
-    cmd_to_plugin_2->set_dest("localhost", "0", "specify_dest_group",
+    cmd_to_plugin_2->set_dest("localhost", "default", "specify_dest_group",
                               "plugin_extension_2");
 
     // This is the method to pass unique_ptr through the lambda capture list in
@@ -189,7 +189,7 @@ class business_app : public ten::app_t {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "log_level": 2,
                         "predefined_graphs": [{
-                          "name": "0",
+                          "name": "default",
                           "auto_start": true,
                           "nodes": [{
                             "type": "extension_group",
@@ -255,7 +255,7 @@ TEST(ExtensionTest, SpecifyDest) {  // NOLINT
              "seq_id": "111",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
+               "graph": "default",
                "extension_group": "specify_dest_group",
                "extension": "business_extension"
              }]

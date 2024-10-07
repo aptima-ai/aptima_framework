@@ -69,7 +69,7 @@ class test_app : public ten::app_t {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "log_level": 2,
                         "predefined_graphs": [{
-                          "name": "0",
+                          "name": "default",
                           "auto_start": false,
                           "nodes": [{
                             "type": "extension_group",
@@ -77,25 +77,25 @@ class test_app : public ten::app_t {
                             "addon": "default_extension_group"
                           },{
                             "type": "extension",
-                            "name": "test extension 1",
+                            "name": "test_extension_1",
                             "addon": "cmd_mapping_path_keep_original__test_extension_1",
                             "extension_group": "cmd_mapping_path_keep_original__extension_group"
                           },{
                             "type": "extension",
-                            "name": "test extension 2",
+                            "name": "test_extension_2",
                             "addon": "cmd_mapping_path_keep_original__test_extension_2",
                             "extension_group": "cmd_mapping_path_keep_original__extension_group"
                           }],
                           "connections": [{
                             "app": "msgpack://127.0.0.1:8001/",
                             "extension_group": "cmd_mapping_path_keep_original__extension_group",
-                            "extension": "test extension 1",
+                            "extension": "test_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
                                 "app": "msgpack://127.0.0.1:8001/",
                                 "extension_group": "cmd_mapping_path_keep_original__extension_group",
-                                "extension": "test extension 2",
+                                "extension": "test_extension_2",
                                 "msg_conversion": {
                                   "type": "per_property",
                                   "keep_original": true,
@@ -154,9 +154,9 @@ TEST(CmdConversionTest, CmdConversionPathKeepOriginal) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
+               "graph": "default",
                "extension_group": "cmd_mapping_path_keep_original__extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            },
            "test_property": 32,

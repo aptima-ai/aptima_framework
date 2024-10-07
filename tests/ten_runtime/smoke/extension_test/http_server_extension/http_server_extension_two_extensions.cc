@@ -57,31 +57,31 @@ class test_app : public ten::app_t {
                       "_ten": {
                         "log_level": 2,
                         "predefined_graphs": [{
-                          "name": "0",
+                          "name": "default",
                           "auto_start": true,
                           "nodes": [{
                             "type": "extension_group",
-                            "name": "test extension group",
+                            "name": "test_extension_group",
                             "addon": "default_extension_group"
                           },{
                             "type": "extension",
                             "name": "simple_http_server_cpp",
                             "addon": "simple_http_server_cpp",
-                            "extension_group": "test extension group"
+                            "extension_group": "test_extension_group"
                           },{
                             "type": "extension",
-                            "name": "test extension",
+                            "name": "test_extension",
                             "addon": "http_server_extension_two_extensions__test_extension",
-                            "extension_group": "test extension group"
+                            "extension_group": "test_extension_group"
                           }],
                           "connections": [{
-                            "extension_group": "test extension group",
+                            "extension_group": "test_extension_group",
                             "extension": "simple_http_server_cpp",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
-                                "extension_group": "test extension group",
-                                "extension": "test extension"
+                                "extension_group": "test_extension_group",
+                                "extension": "test_extension"
                               }]
                             }]
                           }]

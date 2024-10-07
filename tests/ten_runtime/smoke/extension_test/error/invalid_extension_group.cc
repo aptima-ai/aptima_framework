@@ -60,15 +60,15 @@ TEST(ExtensionTest, InvalidExtensionGroup) {  // NOLINT
              "seq_id": "55",
              "nodes": [{
                "type": "extension_group",
-               "name": "test extension group",
+               "name": "test_extension_group",
                "addon": "invalid_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension",
+               "name": "test_extension",
                "addon": "invalid_extension_group__test_extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group"
+               "extension_group": "test_extension_group"
              }]
            }
          })"_json);

@@ -67,31 +67,31 @@ class test_app : public ten::app_t {
                         "uri": "msgpack://127.0.0.1:8001/",
                         "log_level": 2,
                         "predefined_graphs": [{
-                           "name": "0",
+                           "name": "default",
                            "auto_start": false,
                            "nodes": [{
                              "type": "extension_group",
-                             "name": "predefined graph group",
+                             "name": "predefined_graph_group",
                              "addon": "default_extension_group"
                            },{
                              "type": "extension",
-                             "name": "test extension 1",
+                             "name": "test_extension_1",
                              "addon": "predefined_graph_multi_extension_3__extension_1",
-                             "extension_group": "predefined graph group"
+                             "extension_group": "predefined_graph_group"
                            },{
                              "type": "extension",
-                             "name": "test extension 2",
+                             "name": "test_extension_2",
                              "addon": "predefined_graph_multi_extension_3__extension_2",
-                             "extension_group": "predefined graph group"
+                             "extension_group": "predefined_graph_group"
                            }],
                            "connections": [{
-                             "extension_group": "predefined graph group",
-                             "extension": "test extension 1",
+                             "extension_group": "predefined_graph_group",
+                             "extension": "test_extension_1",
                              "cmd": [{
                                "name": "hello_world",
                                "dest": [{
-                                 "extension_group": "predefined graph group",
-                                 "extension": "test extension 2"
+                                 "extension_group": "predefined_graph_group",
+                                 "extension": "test_extension_2"
                                }]
                              }]
                            }]
@@ -137,9 +137,9 @@ TEST(ExtensionTest, PredefinedGraphMultiExtension3) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "graph": "0",
-               "extension_group": "predefined graph group",
-               "extension": "test extension 1"
+               "graph": "default",
+               "extension_group": "predefined_graph_group",
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

@@ -126,13 +126,13 @@ TEST(ExtensionTest, PathTimeout) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "path_timeout__test_extension_1",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "path_timeout__test_extension_2",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
@@ -140,20 +140,20 @@ TEST(ExtensionTest, PathTimeout) {  // NOLINT
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                },{
                  "name": "hello_world2",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              }]
@@ -169,7 +169,7 @@ TEST(ExtensionTest, PathTimeout) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);
@@ -184,7 +184,7 @@ TEST(ExtensionTest, PathTimeout) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

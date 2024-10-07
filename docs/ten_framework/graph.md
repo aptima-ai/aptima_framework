@@ -184,7 +184,7 @@ Essentially, you place the complete graph definition above under the `predefined
 ```json
 "predefined_graphs": [
   {
-    "name": "0",
+    "name": "default",
     "auto_start": true,
     // Place the complete graph definition here.
   }
@@ -196,7 +196,7 @@ So it looks like this:
 ```json
 "predefined_graphs": [
   {
-    "name": "0",
+    "name": "default",
     "auto_start": true,
     "nodes": [
       {

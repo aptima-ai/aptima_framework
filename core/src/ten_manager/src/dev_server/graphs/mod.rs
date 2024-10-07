@@ -148,7 +148,7 @@ mod tests {
 
         let expected_graphs = vec![
             RespGraph {
-                name: "0".to_string(),
+                name: "default".to_string(),
                 auto_start: true,
             },
             RespGraph {

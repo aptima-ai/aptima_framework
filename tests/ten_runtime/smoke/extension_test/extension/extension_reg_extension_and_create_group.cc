@@ -42,7 +42,7 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     ten_env.addon_create_extension_async(
-        "extension_reg_extension_and_create_group__extension", "test extension",
+        "extension_reg_extension_and_create_group__extension", "test_extension",
         [](ten::ten_env_t &ten_env, ten::extension_t &extension) {
           std::vector<ten::extension_t *> extensions = {&extension};
           ten_env.on_create_extensions_done(extensions);
@@ -133,7 +133,7 @@ TEST(ExtensionTest, ExtensionRegExtensionAndCreateGroup) {  // NOLINT
              "dest":[{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "extension_reg_extension_and_create_group__extension_group",
-               "extension": "test extension"
+               "extension": "test_extension"
              }]
            }
          })"_json);

@@ -193,14 +193,14 @@ TEST(SchemaTest, SetExtensionProperty) {  // NOLINT
              "seq_id": "55",
              "nodes": [{
                 "type": "extension_group",
-                "name": "test extension group",
+                "name": "test_extension_group",
                 "addon": "default_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension",
+                "name": "test_extension",
                 "addon": "schema_set_extension_prop__test_extension",
-                "extension_group": "test extension group",
+                "extension_group": "test_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
              }]
            }
@@ -215,8 +215,8 @@ TEST(SchemaTest, SetExtensionProperty) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test extension group",
-               "extension": "test extension"
+               "extension_group": "test_extension_group",
+               "extension": "test_extension"
              }]
            }
          })"_json);

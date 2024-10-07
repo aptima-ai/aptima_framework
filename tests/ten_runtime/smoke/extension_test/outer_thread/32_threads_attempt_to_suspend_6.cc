@@ -508,13 +508,13 @@ TEST(ExtensionTest, ThirtyTwoThreadsAttemptToSuspend6) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "thirty_two_threads_attempt_to_suspend_6__test_extension_1",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "thirty_two_threads_attempt_to_suspend_6__test_extension_2",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
@@ -522,13 +522,13 @@ TEST(ExtensionTest, ThirtyTwoThreadsAttemptToSuspend6) {  // NOLINT
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "start_to_send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }],
                "data": [{
@@ -536,19 +536,19 @@ TEST(ExtensionTest, ThirtyTwoThreadsAttemptToSuspend6) {  // NOLINT
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 2",
+               "extension": "test_extension_2",
                "cmd": [{
                  "name": "from_extension_2",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 1"
+                   "extension": "test_extension_1"
                  }]
                }]
              }]
@@ -565,7 +565,7 @@ TEST(ExtensionTest, ThirtyTwoThreadsAttemptToSuspend6) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 2"
+               "extension": "test_extension_2"
              }]
            }
          })"_json);

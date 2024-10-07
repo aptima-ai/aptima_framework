@@ -45,7 +45,7 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("test extension"));
+    extensions.push_back(new test_extension("test_extension"));
     ten_env.on_create_extensions_done(extensions);
   }
 
@@ -125,7 +125,7 @@ TEST(ExtensionTest, PropertyNotExist) {  // NOLINT
              "dest":[{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "property_not_exist__extension_group",
-               "extension": "test extension"
+               "extension": "test_extension"
              }]
            }
          })"_json);

@@ -177,7 +177,7 @@ mod tests {
         .unwrap();
 
         let req = test::TestRequest::put()
-            .uri("/api/dev-server/v1/graphs/0")
+            .uri("/api/dev-server/v1/graphs/default")
             .set_json(input_data)
             .to_request();
         let resp = test::call_service(&app, req).await;
@@ -193,8 +193,10 @@ mod tests {
 
                 let predefined_graphs =
                     app_pkg.get_predefined_graphs().unwrap();
-                let predefined_graph =
-                    predefined_graphs.iter().find(|g| g.name == "0").unwrap();
+                let predefined_graph = predefined_graphs
+                    .iter()
+                    .find(|g| g.name == "default")
+                    .unwrap();
 
                 assert!(!predefined_graph.auto_start.unwrap());
                 assert_eq!(predefined_graph.graph.nodes.len(), 2);
@@ -213,7 +215,7 @@ mod tests {
                     .unwrap();
                 let property_predefined_graph = property_predefined_graphs
                     .iter()
-                    .find(|g| g.name == "0")
+                    .find(|g| g.name == "default")
                     .unwrap();
 
                 assert_eq!(property_predefined_graph.auto_start, Some(false));

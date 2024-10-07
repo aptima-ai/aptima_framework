@@ -66,7 +66,7 @@ class test_extension_group : public ten::extension_group_t {
 
   void on_create_extensions(ten::ten_env_t &ten_env) override {
     std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("test extension"));
+    extensions.push_back(new test_extension("test_extension"));
     ten_env.on_create_extensions_done(extensions);
   }
 
@@ -125,7 +125,7 @@ TEST(MsgTest, Msg5) {
                "name": "msg_5__extension_group",
                "addon": "msg_5__extension_group",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension": "test extension"
+               "extension": "test_extension"
              }]
            }
          })"_json);
@@ -140,7 +140,7 @@ TEST(MsgTest, Msg5) {
              "dest":[{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "msg_5__extension_group",
-               "extension": "test extension"
+               "extension": "test_extension"
              }]
            }
          })"_json);

@@ -19,7 +19,7 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
         "seq_id": "111",
         "dest": [{
           "app": "msgpack://127.0.0.1:8007/",
-          "graph": "0",
+          "graph": "default",
           "extension_group": "nodetest",
           "extension": "A"
         }]

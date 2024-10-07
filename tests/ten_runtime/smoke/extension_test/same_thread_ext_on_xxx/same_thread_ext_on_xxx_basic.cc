@@ -132,13 +132,13 @@ TEST(ExtensionTest, SameThreadExtOnXxxBasic) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
-               "name": "test extension 1",
+               "name": "test_extension_1",
                "addon": "same_thread_ext_on_xxx_basic__test_extension_1",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
              },{
                "type": "extension",
-               "name": "test extension 2",
+               "name": "test_extension_2",
                "addon": "same_thread_ext_on_xxx_basic__test_extension_2",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group"
@@ -146,13 +146,13 @@ TEST(ExtensionTest, SameThreadExtOnXxxBasic) {  // NOLINT
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              }]
@@ -169,7 +169,7 @@ TEST(ExtensionTest, SameThreadExtOnXxxBasic) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);

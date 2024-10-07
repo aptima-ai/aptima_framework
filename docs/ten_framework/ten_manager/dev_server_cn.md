@@ -15,9 +15,11 @@ If the `base-dir` is not specified, the current working directory will be used b
 The server starts on port 49483 by default, and you can interact with the dev-server using the following URL:
 
 {% code title="https" %}
+
 ```text
 http://127.0.0.1:49483/api/dev-server/v1/
 ```
+
 {% endcode %}
 
 If the requested endpoint URL is not found, the client will receive a `404 Not Found` response, with the response body containing `Endpoint '\' not found` to prevent any confusion.
@@ -32,11 +34,13 @@ Retrieve the version of the dev-server.
 You will receive a `200 OK` response, with the body containing a JSON object like this:
 
 {% code title=".json" %}
+
 ```json
 {
   "version": "0.1.0"
 }
 ```
+
   {% endcode %}
 
 ## Installed Extension Addons
@@ -49,6 +53,7 @@ Retrieve all installed extension addons recognized by the dev-server under the b
 You will receive a `200 OK` response, with the body containing a JSON array like this:
 
 {% code title=".json" %}
+
 ```json
 [
   {
@@ -59,8 +64,8 @@ You will receive a `200 OK` response, with the body containing a JSON array like
   }
 ]
 ```
-  {% endcode %}
 
+  {% endcode %}
 
 ## Available Graphs
 
@@ -72,6 +77,7 @@ Retrieve a list of available graphs.
 You will receive a `200 OK` response, with the body containing a JSON array like this:
 
 {% code title=".json" %}
+
 ```json
 [
   {
@@ -80,6 +86,7 @@ You will receive a `200 OK` response, with the body containing a JSON array like
   }
 ]
 ```
+
   {% endcode %}
 
 If an error occurs, such as when the App package is not found, you will receive a `400 Bad Request` response with the body containing `Failed to find any app packages`.
@@ -103,6 +110,7 @@ Retrieve the list of connections within a specified graph.
 You will receive a `200 OK` response, with the body containing a JSON array like this:
 
 {% code title=".json" %}
+
 ```json
 [
   {
@@ -124,8 +132,8 @@ You will receive a `200 OK` response, with the body containing a JSON array like
   }
 ]
 ```
-{% endcode %}
 
+{% endcode %}
 
 ## Retrieve Compatible Messages for a Selected Extension
 
@@ -137,10 +145,11 @@ Select a message from an extension and retrieve all other messages from differen
 The input body is a JSON object that represents a request to find compatible pins (connections) for an output command from a specific extension within a specified graph.
 
 {% code title=".json" %}
+
 ```json
 {
   "app": "localhost",
-  "graph": "0",
+  "graph": "default",
   "extension_group": "extension_group_1",
   "extension": "extension_1",
   "msg_type": "cmd",
@@ -148,12 +157,13 @@ The input body is a JSON object that represents a request to find compatible pin
   "msg_name": "test_cmd"
 }
 ```
-  {% endcode %}
 
+  {% endcode %}
 
 You will receive a `200 OK` response, with the body containing a JSON array like this:
 
 {% code title=".json" %}
+
 ```json
 [
   {
@@ -174,8 +184,8 @@ You will receive a `200 OK` response, with the body containing a JSON array like
   }
 ]
 ```
-  {% endcode %}
 
+  {% endcode %}
 
 ## Update a Graph
 
@@ -187,6 +197,7 @@ Update the specified graph.
 Input data (body):
 
 {% code title=".json" %}
+
 ```json
 {
   "auto_start": false,
@@ -228,8 +239,8 @@ Input data (body):
   ]
 }
 ```
-{% endcode %}
 
+{% endcode %}
 
 If successful, the client will receive a `200 OK` response; otherwise, a `40x` error code will be returned.
 

@@ -122,13 +122,13 @@ TEST(VideoFrameTest, FromJson) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension 1",
+                "name": "test_extension_1",
                 "addon": "video_frame_from_json__test_extension_1",
                 "extension_group": "basic_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
-                "name": "test extension 2",
+                "name": "test_extension_2",
                 "addon": "video_frame_from_json__test_extension_2",
                 "extension_group": "basic_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
@@ -136,25 +136,25 @@ TEST(VideoFrameTest, FromJson) {  // NOLINT
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1",
+               "extension": "test_extension_1",
                "video_frame": [{
                  "name": "video_frame",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 2"
+                   "extension": "test_extension_2"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 2",
+               "extension": "test_extension_2",
                "cmd": [{
                  "name": "video_frame_ack",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",
-                   "extension": "test extension 1"
+                   "extension": "test_extension_1"
                  }]
                }]
              }]
@@ -171,7 +171,7 @@ TEST(VideoFrameTest, FromJson) {  // NOLINT
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "basic_extension_group",
-               "extension": "test extension 1"
+               "extension": "test_extension_1"
              }]
            }
          })"_json);
