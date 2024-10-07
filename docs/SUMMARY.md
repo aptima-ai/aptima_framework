@@ -18,6 +18,7 @@
 * [Overview](ten_framework/concept_overview.md)
 * [Development Process](ten_framework/development_process.md)
 * [Preparation](ten_framework/preparation.md)
+* [Addon System](ten_framework/addon_system.md)
 * [Version System](ten_framework/version_system.md)
 * [Metadata System](ten_framework/metadata_system.md)
 * [Message System](ten_framework/message_system.md)
