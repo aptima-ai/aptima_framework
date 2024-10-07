@@ -24,12 +24,16 @@
 * [Type System](ten_framework/type_system.md)
 * [Schema System](ten_framework/schema_system.md)
 * [Build System](ten_framework/build_system.md)
-* [Test System](ten_framework/test_system.md)
 * [Graph](ten_framework/graph.md)
 * [Cloud Store](ten_framework/cloud_store.md)
 * [Debugging](ten_framework/debugging.md)
 * [Profiling](ten_framework/profiling.md)
 * [Dependencies](ten_framework/dependencies.md)
+
+### TEN Testing System
+
+* [For Users of TEN framework](ten_framework/ten_testing/for_users_of_ten_framework.md)
+* [For Developers of TEN framework](ten_framework/ten_testing/for_developers_of_ten_framework.md)
 
 ### Binding
 
