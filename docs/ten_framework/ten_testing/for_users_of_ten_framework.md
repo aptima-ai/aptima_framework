@@ -14,12 +14,20 @@ The standalone testing framework for TEN extensions follows two key principles:
 
    The exact same extension code used in runtime can be fully tested using this standalone testing framework.
 
+3. The standalone testing flow for extensions developed in different languages follows the same design principles and usage methods.
+
+   This ensures that once you learn the standalone testing concepts and methods for one language, you can quickly grasp the standalone testing concepts and methods for TEN extensions in other languages.
+
 For users, the TEN extension standalone testing framework introduces two main concepts:
 
 1. **extension_tester**
 2. **ten_env_tester**
 
 The role of **extension_tester** is similar to a testing driver, responsible for setting up and executing the entire testing process. **ten_env_tester**, on the other hand, behaves like a typical TEN extension's `ten_env` instance, enabling users to invoke functionalities within the standalone testing framework from the callback of `extension_tester`, such as sending messages to the extension under test and receiving messages from the extension.
+
+From the API design of **extension_tester** and **ten_env_tester**, you can see that they are very similar to **TEN extension** and **ten_env**, and this is by design. The main purpose is to allow users familiar with extension development to quickly get accustomed to the standalone testing framework and then develop standalone test cases for the extension itself.
+
+However, for testing purposes, there are inevitably APIs and features dedicated specifically to testing. To prevent these test-specific functionalities and APIs, which are not needed during actual runtime, from polluting the runtime API set, the standalone testing framework is designed not to directly use or extend the API sets of **extension** and **ten_env**. Instead, it introduces types and API sets that are exclusive to standalone testing. This separation ensures that the types and API sets used in actual runtime and those used during testing do not interfere with each other, avoiding any negative side effects.
 
 ## Standalone Testing Framework Internal
 
@@ -31,12 +39,23 @@ sequenceDiagram
   participant testing as Extension Testing
   participant tested as Extension Tested
 
-  tester->>testing
-  testing->>tested
+  tester->>testing: send messages
+  testing->>tested: send messages
 
-  tested-->>testing
-  testing-->>tester
+  tested-->>testing: send results
+  testing-->>tester: send results
 ```
+
+Basically, you can think of this testing extension hidden within the testing framework as a proxy between the extension being tested and the tester. It acts as a proxy extension within the TEN graph, facilitating the exchange of messages between the tested extension and the tester using the language of the TEN environment.
+
+## Basic Testing Process
+
+The basic testing process and logic are as follows:
+
+1. Create an extension tester to manage the entire standalone testing process.
+2. Inform the standalone testing framework of the folder containing the extension to be tested.
+3. Set a testing mode, such as a mode for testing a single extension.
+4. Start the testing.
 
 ## C++
 
@@ -58,8 +77,10 @@ class extension_tester_basic : public ten::extension_tester_t {
 };
 
 TEST(Test, Basic) {
+  // 1. Create an extension tester to manage the entire standalone testing process.
   auto *tester = new extension_tester_basic();
 
+  // 2. Inform the standalone testing framework of the folder containing the extension to be tested.
   ten_string_t *path = ten_path_get_executable_path();
   ten_path_join_c_str(path, "../ten_packages/extension/default_extension_cpp/");
 
@@ -67,8 +88,12 @@ TEST(Test, Basic) {
 
   ten_string_destroy(path);
 
+  // 3. Set a testing mode, such as a mode for testing a single extension.
   tester->set_test_mode_single("default_extension_cpp");
+
+  // 4. Start the testing.
   tester->run();
+
   delete tester;
 }
 ```
@@ -102,8 +127,15 @@ class ExtensionTesterBasic(ExtensionTester):
 
 
 def test_basic():
+    # 1. Create an extension tester to manage the entire standalone testing process.
     tester = ExtensionTesterBasic()
+
+    # 2. Inform the standalone testing framework of the folder containing the extension to be tested.
     tester.add_addon_base_dir(str(Path(__file__).resolve().parent.parent))
+
+    # 3. Set a testing mode, such as a mode for testing a single extension.
     tester.set_test_mode_single("default_extension_python")
+
+    # 4. Start the testing.
     tester.run()
 ```
