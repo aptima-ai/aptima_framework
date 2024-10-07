@@ -12,13 +12,13 @@
 
 typedef struct ten_cmd_stop_graph_t {
   ten_cmd_t cmd_hdr;
-  ten_string_t graph_name;  // The target engine to be shut down.
+  ten_string_t graph_id;  // The target engine ID to be shut down.
 } ten_cmd_stop_graph_t;
 
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_raw_cmd_stop_graph_get_graph_name(
+TEN_RUNTIME_PRIVATE_API ten_string_t *ten_raw_cmd_stop_graph_get_graph_id(
     ten_cmd_stop_graph_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_string_t *ten_cmd_stop_graph_get_graph_name(
+TEN_RUNTIME_PRIVATE_API ten_string_t *ten_cmd_stop_graph_get_graph_id(
     ten_shared_ptr_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_stop_graph_as_msg_destroy(

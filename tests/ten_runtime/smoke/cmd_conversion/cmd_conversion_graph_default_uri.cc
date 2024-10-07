@@ -91,6 +91,7 @@ class test_app : public ten::app_t {
                         "predefined_graphs": [{
                           "name": "default",
                           "auto_start": true,
+                          "singleton": true,
                           "nodes": [{
                             "type": "extension_group",
                             "name": "cmd_mapping_graph_default_uri_extension_1",

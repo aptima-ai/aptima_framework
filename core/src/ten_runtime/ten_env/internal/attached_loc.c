@@ -29,7 +29,7 @@ const char *ten_env_get_attached_instance_name(ten_env_t *self,
     }
     case TEN_ENV_ATTACH_TO_ENGINE: {
       ten_engine_t *engine = ten_env_get_attached_engine(self);
-      return ten_engine_get_name(engine, true);
+      return ten_engine_get_id(engine, true);
     }
     case TEN_ENV_ATTACH_TO_APP: {
       ten_app_t *app = ten_env_get_attached_app(self);

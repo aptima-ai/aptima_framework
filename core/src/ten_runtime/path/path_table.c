@@ -575,7 +575,7 @@ ten_path_t *ten_path_table_set_result(ten_path_table_t *self,
   return path;
 }
 
-ten_string_t *ten_path_table_get_graph_name(ten_path_table_t *self) {
+ten_string_t *ten_path_table_get_graph_id(ten_path_table_t *self) {
   TEN_ASSERT(self && ten_path_table_check_integrity(self, true),
              "Invalid argument.");
   if (self->attach_to == TEN_PATH_TABLE_ATTACH_TO_EXTENSION) {
@@ -599,11 +599,11 @@ ten_string_t *ten_path_table_get_graph_name(ten_path_table_t *self) {
             ten_engine_check_integrity(engine, false),
         "Invalid argument.");
 
-    return &engine->graph_name;
+    return &engine->graph_id;
   } else {
     ten_engine_t *engine = self->attached_target.engine;
     TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
                "Invalid argument.");
-    return &engine->graph_name;
+    return &engine->graph_id;
   }
 }

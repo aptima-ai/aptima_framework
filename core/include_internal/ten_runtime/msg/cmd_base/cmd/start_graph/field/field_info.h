@@ -19,8 +19,8 @@
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 
 #ifdef __cplusplus
-  #error \
-      "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
+#error \
+    "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
 #endif
 
 static const ten_msg_field_info_t ten_cmd_start_graph_fields_info[] = {

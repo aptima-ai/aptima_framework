@@ -95,14 +95,14 @@ TEN_RUNTIME_PRIVATE_API void ten_msg_clear_and_set_dest_from_msg_src(
     ten_shared_ptr_t *self, ten_shared_ptr_t *cmd);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_msg_add_dest(
-    ten_msg_t *self, const char *app_uri, const char *graph_name,
+    ten_msg_t *self, const char *app_uri, const char *graph_id,
     const char *extension_group_name, const char *extension_name);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_msg_clear_dest(ten_msg_t *self);
 
 TEN_RUNTIME_PRIVATE_API bool ten_msg_src_is_empty(ten_shared_ptr_t *self);
 
-TEN_RUNTIME_PRIVATE_API const char *ten_msg_get_src_graph_name(
+TEN_RUNTIME_PRIVATE_API const char *ten_msg_get_src_graph_id(
     ten_shared_ptr_t *self);
 
 TEN_RUNTIME_PRIVATE_API const char *ten_msg_get_first_dest_uri(
@@ -117,12 +117,12 @@ TEN_RUNTIME_PRIVATE_API ten_loc_t *ten_raw_msg_get_first_dest_loc(
     ten_msg_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_msg_set_src(
-    ten_msg_t *self, const char *app_uri, const char *graph_name,
+    ten_msg_t *self, const char *app_uri, const char *graph_id,
     const char *extension_group_name, const char *extension_name);
 
 TEN_RUNTIME_PRIVATE_API void ten_msg_set_src(ten_shared_ptr_t *self,
                                              const char *app_uri,
-                                             const char *graph_name,
+                                             const char *graph_id,
                                              const char *extension_group_name,
                                              const char *extension_name);
 
@@ -131,7 +131,7 @@ TEN_RUNTIME_PRIVATE_API void ten_msg_set_src_uri(ten_shared_ptr_t *self,
 
 TEN_RUNTIME_PRIVATE_API bool ten_msg_src_uri_is_empty(ten_shared_ptr_t *self);
 
-TEN_RUNTIME_PRIVATE_API bool ten_msg_src_graph_name_is_empty(
+TEN_RUNTIME_PRIVATE_API bool ten_msg_src_graph_id_is_empty(
     ten_shared_ptr_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_msg_set_src_uri_if_empty(
@@ -320,7 +320,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_msg_set_name(ten_msg_t *self,
                                                   ten_error_t *err);
 
 /**
- * @brief Set the 'graph_name' in the dest loc to the specified value.
+ * @brief Set the 'graph_id' in the dest loc to the specified value.
  */
 TEN_RUNTIME_PRIVATE_API void
 ten_msg_set_dest_engine_if_unspecified_or_predefined_graph_name(

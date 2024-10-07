@@ -258,9 +258,9 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
   } else {
     if (
         // It means asking the current app to do something.
-        ten_string_is_empty(&dest_loc->graph_name) ||
+        ten_string_is_empty(&dest_loc->graph_id) ||
         // It means asking another engine in the same app to do something.
-        !ten_string_is_equal(&dest_loc->graph_name, &engine->graph_name)) {
+        !ten_string_is_equal(&dest_loc->graph_id, &engine->graph_id)) {
       // The message should not be handled in this engine, so ask the app to
       // handle this message.
 

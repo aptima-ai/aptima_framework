@@ -91,7 +91,7 @@ void ten_engine_destroy(ten_engine_t *self) {
     self->cmd_stop_graph = NULL;
   }
 
-  ten_string_deinit(&self->graph_name);
+  ten_string_deinit(&self->graph_id);
 
   ten_path_table_destroy(self->path_table);
 
@@ -100,53 +100,53 @@ void ten_engine_destroy(ten_engine_t *self) {
   TEN_FREE(self);
 }
 
-// graph_name is the identify of one graph, so the graph_name in all related
-// engines MUST be the same. graph_name will be generated in the first app, and
+// graph_id is the identify of one graph, so the graph_id in all related
+// engines MUST be the same. graph_id will be generated in the first app, and
 // will transfer with the message to the next app.
-static void ten_engine_set_graph_name(ten_engine_t *self,
-                                      ten_shared_ptr_t *cmd) {
+static void ten_engine_set_graph_id(ten_engine_t *self, ten_shared_ptr_t *cmd) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
   TEN_ASSERT(cmd && ten_msg_get_type(cmd) == TEN_MSG_TYPE_CMD_START_GRAPH,
              "Should not happen.");
 
   const ten_string_t *src_uri = &ten_msg_get_src_loc(cmd)->app_uri;
-  const ten_string_t *src_graph_name = &ten_msg_get_src_loc(cmd)->graph_name;
+  const ten_string_t *src_graph_id = &ten_msg_get_src_loc(cmd)->graph_id;
 
-  // One app could not have two engines with the same graph_name, so only when
-  // the command is from another app, we can use the graph_name attached in that
-  // command to be the graph_name of the newly created engine.
+  // One app could not have two engines with the same graph_id, so only when
+  // the command is from another app, we can use the graph_id attached in that
+  // command to be the graph_id of the newly created engine.
   if (!ten_string_is_equal(src_uri, &self->app->uri) &&
-      !ten_string_is_empty(src_graph_name)) {
+      !ten_string_is_empty(src_graph_id)) {
     TEN_LOGD("[%s] Inherit engine's name from previous node.",
-             ten_string_get_raw_str(src_graph_name));
-    ten_string_init_formatted(&self->graph_name, "%s",
-                              ten_string_get_raw_str(src_graph_name));
+             ten_string_get_raw_str(src_graph_id));
+    ten_string_init_formatted(&self->graph_id, "%s",
+                              ten_string_get_raw_str(src_graph_id));
   } else {
-    ten_string_t graph_name_str;
-    ten_string_init(&graph_name_str);
-    ten_uuid4_gen_string(&graph_name_str);
+    ten_string_t graph_id_str;
+    ten_string_init(&graph_id_str);
+    ten_uuid4_gen_string(&graph_id_str);
 
-    // Set the newly created graph_name to the engine.
-    ten_string_init_formatted(&self->graph_name, "%s",
-                              ten_string_get_raw_str(&graph_name_str));
+    // Set the newly created graph_id to the engine.
+    ten_string_init_formatted(&self->graph_id, "%s",
+                              ten_string_get_raw_str(&graph_id_str));
 
-    // Set the newly created graph_name to the 'start_graph' command.
+    // Set the newly created graph_id to the 'start_graph' command.
     ten_list_foreach (ten_msg_get_dest(cmd), iter) {
       ten_loc_t *dest_loc = ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc),
                  "Should not happen.");
-      ten_string_set_formatted(&dest_loc->graph_name, "%s",
-                               ten_string_get_raw_str(&graph_name_str));
+
+      ten_string_set_formatted(&dest_loc->graph_id, "%s",
+                               ten_string_get_raw_str(&graph_id_str));
     }
 
-    ten_string_deinit(&graph_name_str);
+    ten_string_deinit(&graph_id_str);
   }
 
-  // Got graph_name, update the graph_name field of all the extensions_info that
+  // Got graph_id, update the graph_id field of all the extensions_info that
   // this start_graph command has.
   ten_cmd_start_graph_fill_loc_info(cmd, ten_app_get_uri(self->app),
-                                    ten_engine_get_name(self, true));
+                                    ten_engine_get_id(self, true));
 }
 
 bool ten_engine_is_ready_to_handle_msg(ten_engine_t *self) {
@@ -214,7 +214,7 @@ ten_engine_t *ten_engine_create(ten_app_t *app, ten_shared_ptr_t *cmd) {
     }
   }
 
-  ten_engine_set_graph_name(self, cmd);
+  ten_engine_set_graph_id(self, cmd);
 
   ten_engine_init_individual_eventloop_relevant_vars(self, app);
   if (self->has_own_loop) {
@@ -239,9 +239,9 @@ ten_runloop_t *ten_engine_get_attached_runloop(ten_engine_t *self) {
   }
 }
 
-const char *ten_engine_get_name(ten_engine_t *self, bool check_thread) {
+const char *ten_engine_get_id(ten_engine_t *self, bool check_thread) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, check_thread),
              "Should not happen.");
 
-  return ten_string_get_raw_str(&self->graph_name);
+  return ten_string_get_raw_str(&self->graph_id);
 }

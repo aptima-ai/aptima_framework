@@ -133,7 +133,13 @@
   "__special_cmd_for_serialization__"
 #define TEN_STR_MSGPACK_SERIALIZATION_HACK "msgpack_serialization_hack"
 
+// Graph.
 #define TEN_STR_AUTO_START "auto_start"
+#define TEN_STR_SINGLETON "singleton"
+#define TEN_STR_GRAPH "graph"
+#define TEN_STR_GRAPH_NAME "graph_name"
+#define TEN_STR_GRAPH_ID "graph_id"
+
 #define TEN_STR_CASCADE_CLOSE_UPWARD "cascade_close_upward"
 #define TEN_STR_DUPLICATE "duplicate"
 #define TEN_STR_ADDON "addon"
@@ -143,8 +149,6 @@
 #define TEN_STR_LOG_FILE "log_file"
 #define TEN_STR_PROPERTIES "properties"
 #define TEN_STR_LONG_RUNNING_MODE "long_running_mode"
-#define TEN_STR_GRAPH "graph"
-#define TEN_STR_GRAPH_NAME "graph_name"
 #define TEN_STR_TYPE "type"
 #define TEN_STR_APP "app"
 #define TEN_STR_NAME "name"

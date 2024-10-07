@@ -69,10 +69,10 @@ ten_json_t *ten_extension_info_node_to_json(ten_extension_info_t *self) {
   TEN_ASSERT(extension_group_name, "Should not happen.");
   ten_json_object_set_new(info, TEN_STR_EXTENSION_GROUP, extension_group_name);
 
-  ten_json_t *graph_name =
-      ten_json_create_string(ten_string_get_raw_str(&self->loc.graph_name));
-  TEN_ASSERT(graph_name, "Should not happen.");
-  ten_json_object_set_new(info, TEN_STR_GRAPH, graph_name);
+  ten_json_t *graph_id =
+      ten_json_create_string(ten_string_get_raw_str(&self->loc.graph_id));
+  TEN_ASSERT(graph_id, "Should not happen.");
+  ten_json_object_set_new(info, TEN_STR_GRAPH, graph_id);
 
   ten_json_t *app_uri =
       ten_json_create_string(ten_string_get_raw_str(&self->loc.app_uri));
@@ -117,10 +117,10 @@ bool ten_extension_info_connections_to_json(ten_extension_info_t *self,
   TEN_ASSERT(app_uri, "Should not happen.");
   ten_json_object_set_new(info, TEN_STR_APP, app_uri);
 
-  ten_json_t *graph_name =
-      ten_json_create_string(ten_string_get_raw_str(&self->loc.graph_name));
-  TEN_ASSERT(graph_name, "Should not happen.");
-  ten_json_object_set_new(info, TEN_STR_GRAPH, graph_name);
+  ten_json_t *graph_id =
+      ten_json_create_string(ten_string_get_raw_str(&self->loc.graph_id));
+  TEN_ASSERT(graph_id, "Should not happen.");
+  ten_json_object_set_new(info, TEN_STR_GRAPH, graph_id);
 
   ten_json_t *extension_group_json = ten_json_create_string(
       ten_string_get_raw_str(&self->loc.extension_group_name));
@@ -243,7 +243,7 @@ ten_shared_ptr_t *ten_extension_info_nodes_from_json(
     return NULL;
   }
 
-  const char *graph_name = ten_json_object_peek_string(json, TEN_STR_GRAPH);
+  const char *graph_id = ten_json_object_peek_string(json, TEN_STR_GRAPH);
 
   const char *extension_group_name =
       ten_json_object_peek_string(json, TEN_STR_EXTENSION_GROUP);
@@ -260,7 +260,7 @@ ten_shared_ptr_t *ten_extension_info_nodes_from_json(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_name, extension_group_name, addon_name,
+      extensions_info, app_uri, graph_id, extension_group_name, addon_name,
       instance_name, NULL, err);
   if (!self) {
     return NULL;
@@ -294,7 +294,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_json(
              "Should not happen.");
 
   const char *app_uri = ten_json_object_peek_string(json, TEN_STR_APP);
-  const char *graph_name = ten_json_object_peek_string(json, TEN_STR_GRAPH);
+  const char *graph_id = ten_json_object_peek_string(json, TEN_STR_GRAPH);
 
   const char *extension_group_name =
       ten_json_object_peek_string(json, TEN_STR_EXTENSION_GROUP);
@@ -311,7 +311,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_json(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_name, extension_group_name, NULL,
+      extensions_info, app_uri, graph_id, extension_group_name, NULL,
       extension_name, NULL, err);
   if (!self) {
     return NULL;
@@ -385,7 +385,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_json(
              "Should not happen.");
 
   const char *app_uri = ten_json_object_peek_string(json, TEN_STR_APP);
-  const char *graph_name = ten_json_object_peek_string(json, TEN_STR_GRAPH);
+  const char *graph_id = ten_json_object_peek_string(json, TEN_STR_GRAPH);
 
   const char *extension_group_name =
       ten_json_object_peek_string(json, TEN_STR_EXTENSION_GROUP);
@@ -402,7 +402,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_json(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_name, extension_group_name, NULL,
+      extensions_info, app_uri, graph_id, extension_group_name, NULL,
       extension_name, NULL, err);
   if (!self) {
     return NULL;

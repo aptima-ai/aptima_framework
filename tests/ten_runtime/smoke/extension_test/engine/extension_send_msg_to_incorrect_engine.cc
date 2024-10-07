@@ -34,7 +34,7 @@ class test_extension : public ten::extension_t {
                    "name": "test",
                    "dest":[{
                      "app": "msgpack://127.0.0.1:8001/",
-                     "graph": "incorrect_graph_name",
+                     "graph": "incorrect_graph_id",
                      "extension_group": "extension_send_msg_to_incorrect_engine",
                      "extension": "test_extension"
                    }]

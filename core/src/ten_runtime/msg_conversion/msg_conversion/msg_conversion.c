@@ -94,9 +94,9 @@ static bool ten_msg_conversion_can_match_msg(ten_msg_conversion_t *self,
   // know the graph ID at that time, so the graph ID in 'msg_conversions'
   // will be empty, so we need to update the correct graph ID here, so
   // that the following 'ten_loc_is_equal' could success.
-  if (ten_string_is_empty(&self->src_loc.graph_name)) {
-    ten_string_copy(&self->src_loc.graph_name,
-                    &ten_msg_get_src_loc(msg)->graph_name);
+  if (ten_string_is_empty(&self->src_loc.graph_id)) {
+    ten_string_copy(&self->src_loc.graph_id,
+                    &ten_msg_get_src_loc(msg)->graph_id);
   }
   // @}
 

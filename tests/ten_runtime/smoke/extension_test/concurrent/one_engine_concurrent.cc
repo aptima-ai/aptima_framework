@@ -99,7 +99,7 @@ void *app_thread_2_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-std::string graph_name;
+std::string graph_id;
 
 void *client_thread_main(TEN_UNUSED void *args) {
   auto seq_id = (size_t)args;
@@ -108,7 +108,7 @@ void *client_thread_main(TEN_UNUSED void *args) {
 
   auto seq_id_str = std::to_string(seq_id);
 
-  // connect again, send request with graph_name directly
+  // Connect again, send request with graph_id directly.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   std::string client_ip;
@@ -128,7 +128,7 @@ void *client_thread_main(TEN_UNUSED void *args) {
                                   }]
                                 }
                               })"_json;
-  request["_ten"]["dest"][0]["graph"] = graph_name;
+  request["_ten"]["dest"][0]["graph"] = graph_id;
   request["_ten"]["seq_id"] = seq_id_str;
 
   nlohmann::json resp = client->send_json_and_recv_resp_in_json(request);
@@ -213,7 +213,7 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
 
     if (!resp.empty()) {
       ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-      graph_name = resp.value("detail", "");
+      graph_id = resp.value("detail", "");
 
       break;
     } else {

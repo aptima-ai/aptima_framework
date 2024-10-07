@@ -25,9 +25,8 @@ void ten_msgpack_loc_serialize(ten_loc_t *self, msgpack_packer *pck) {
                                  ten_string_len(&self->app_uri));
   TEN_ASSERT(rc == 0, "Should not happen.");
 
-  rc =
-      msgpack_pack_str_with_body(pck, ten_string_get_raw_str(&self->graph_name),
-                                 ten_string_len(&self->graph_name));
+  rc = msgpack_pack_str_with_body(pck, ten_string_get_raw_str(&self->graph_id),
+                                  ten_string_len(&self->graph_id));
   TEN_ASSERT(rc == 0, "Should not happen.");
 
   rc = msgpack_pack_str_with_body(
@@ -60,7 +59,7 @@ void ten_msgpack_loc_deserialize(ten_loc_t *self, msgpack_unpacker *unpacker,
   rc = msgpack_unpacker_next(unpacker, unpacked);
   if (rc == MSGPACK_UNPACK_SUCCESS) {
     if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_STR) {
-      ten_string_set_formatted(&self->graph_name, "%.*s", MSGPACK_DATA_STR_SIZE,
+      ten_string_set_formatted(&self->graph_id, "%.*s", MSGPACK_DATA_STR_SIZE,
                                MSGPACK_DATA_STR_PTR);
     } else {
       TEN_ASSERT(0, "Should not happen.");

@@ -158,9 +158,9 @@ void *app_thread_2_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(graph_name_basic__extension_group_1,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(graph_id_basic__extension_group_1,
                                           test_extension_group_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(graph_name_basic__extension_group_2,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(graph_id_basic__extension_group_2,
                                           test_extension_group_2);
 
 }  // namespace
@@ -175,7 +175,7 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
 
   // extension1(app1) --> extension3(app2) --> extension2(app1) --> return
   ten::msgpack_tcp_client_t *client = nullptr;
-  std::string graph_name;
+  std::string graph_id;
 
   for (size_t i = 0; i < MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES;
        ++i) {
@@ -191,36 +191,36 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
                }],
                "nodes": [{
                  "type": "extension_group",
-                 "name": "graph_name_basic__extension_group_1",
-                 "addon": "graph_name_basic__extension_group_1",
+                 "name": "graph_id_basic__extension_group_1",
+                 "addon": "graph_id_basic__extension_group_1",
                  "app": "msgpack://127.0.0.1:8001/"
                },{
                  "type": "extension_group",
-                 "name": "graph_name_basic__extension_group_2",
-                 "addon": "graph_name_basic__extension_group_2",
+                 "name": "graph_id_basic__extension_group_2",
+                 "addon": "graph_id_basic__extension_group_2",
                  "app": "msgpack://127.0.0.1:8002/"
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_name_basic__extension_group_1",
+                 "extension_group": "graph_id_basic__extension_group_1",
                  "extension": "extension1",
                  "cmd": [{
                    "name": "send_message",
                    "dest": [{
                      "app": "msgpack://127.0.0.1:8002/",
-                     "extension_group": "graph_name_basic__extension_group_2",
+                     "extension_group": "graph_id_basic__extension_group_2",
                      "extension": "extension3"
                    }]
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_name_basic__extension_group_2",
+                 "extension_group": "graph_id_basic__extension_group_2",
                  "extension": "extension3",
                  "cmd": [{
                    "name": "send_message",
                    "dest": [{
                      "app": "msgpack://127.0.0.1:8001/",
-                     "extension_group": "graph_name_basic__extension_group_1",
+                     "extension_group": "graph_id_basic__extension_group_1",
                      "extension": "extension2"
                    }]
                  }]
@@ -230,7 +230,7 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
 
     if (!resp.empty()) {
       ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-      graph_name = resp["detail"].get<std::string>();
+      graph_id = resp["detail"].get<std::string>();
 
       break;
     } else {
@@ -252,7 +252,7 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
              "name": "send_message",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_name_basic__extension_group_1",
+               "extension_group": "graph_id_basic__extension_group_1",
                "extension": "extension1"
              }]
            }
@@ -269,12 +269,12 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
              "name": "send_message",
              "dest": [{
                "app": "msgpack://127.0.0.1:8002/",
-               "extension_group": "graph_name_basic__extension_group_2",
+               "extension_group": "graph_id_basic__extension_group_2",
                "extension": "extension3"
              }]
            }
          })"_json;
-  command_2["_ten"]["dest"][0]["graph"] = graph_name;
+  command_2["_ten"]["dest"][0]["graph"] = graph_id;
 
   // It must be sent directly to 127.0.0.1:8002, not 127.0.0.1:8001
   resp = client2->send_json_and_recv_resp_in_json(command_2);
@@ -287,12 +287,12 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
              "name": "send_message",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_name_basic__extension_group_1",
+               "extension_group": "graph_id_basic__extension_group_1",
                "extension": "extension2"
              }]
            }
          })"_json;
-  command_3["_ten"]["dest"][0]["graph"] = graph_name;
+  command_3["_ten"]["dest"][0]["graph"] = graph_id;
   resp = client->send_json_and_recv_resp_in_json(command_3);
   ten_test::check_detail_is(resp, R"({"id": 1, "name": "aa"})");
 

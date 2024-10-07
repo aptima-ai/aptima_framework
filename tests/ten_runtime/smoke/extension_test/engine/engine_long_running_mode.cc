@@ -164,7 +164,7 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
 
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;
-  std::string graph_name;
+  std::string graph_id;
 
   for (size_t i = 0; i < MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES;
        ++i) {
@@ -206,7 +206,7 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
 
     if (!resp.empty()) {
       ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-      graph_name = resp.value("detail", "");
+      graph_id = resp.value("detail", "");
 
       break;
     } else {
@@ -223,7 +223,7 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
   // now close connection
   delete client;
 
-  // connect again, send request with graph_name directly
+  // connect again, send request with graph_id directly
   client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send a user-defined 'hello world' command.
@@ -239,7 +239,7 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
              }]
            }
          })"_json;
-  request["_ten"]["dest"][0]["graph"] = graph_name;
+  request["_ten"]["dest"][0]["graph"] = graph_id;
 
   nlohmann::json resp = client->send_json_and_recv_resp_in_json(request);
   ten_test::check_result_is(resp, "137", TEN_STATUS_CODE_OK, R"({"a": "b"})");

@@ -100,7 +100,7 @@ TEN_RUNTIME_API ten_value_t *ten_msg_peek_property(ten_shared_ptr_t *self,
                                                    ten_error_t *err);
 
 TEN_RUNTIME_API bool ten_msg_clear_and_set_dest(
-    ten_shared_ptr_t *self, const char *app_uri, const char *graph_name,
+    ten_shared_ptr_t *self, const char *app_uri, const char *graph_id,
     const char *extension_group_name, const char *extension_name,
     ten_error_t *err);
 

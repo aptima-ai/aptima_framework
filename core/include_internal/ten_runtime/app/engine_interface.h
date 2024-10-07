@@ -18,12 +18,12 @@ TEN_RUNTIME_PRIVATE_API ten_engine_t *ten_app_create_engine(
     ten_app_t *self, ten_shared_ptr_t *cmd);
 
 TEN_RUNTIME_PRIVATE_API void ten_app_del_engine(ten_app_t *self,
-                                              ten_engine_t *engine);
+                                                ten_engine_t *engine);
 
 TEN_RUNTIME_PRIVATE_API ten_predefined_graph_info_t *
-ten_app_get_predefined_graph_info_based_on_dest_graph_name_from_msg(
+ten_app_get_singleton_predefined_graph_info_based_on_dest_graph_id_from_msg(
     ten_app_t *self, ten_shared_ptr_t *msg);
 
 TEN_RUNTIME_PRIVATE_API ten_engine_t *
-ten_app_get_engine_based_on_dest_graph_name_from_msg(ten_app_t *self,
-                                                     ten_shared_ptr_t *msg);
+ten_app_get_engine_based_on_dest_graph_id_from_msg(ten_app_t *self,
+                                                   ten_shared_ptr_t *msg);

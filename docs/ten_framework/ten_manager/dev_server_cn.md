@@ -95,7 +95,7 @@ If an error occurs, such as when the App package is not found, you will receive 
 
 Retrieve the list of extensions within a specified graph.
 
-- **Endpoint:** `/api/dev-server/v1/graphs/{graph_name}/nodes`
+- **Endpoint:** `/api/dev-server/v1/graphs/{graph_id}/nodes`
 - **Verb:** GET
 
 You will receive a `200 OK` response, with the body containing a JSON array.
@@ -104,7 +104,7 @@ You will receive a `200 OK` response, with the body containing a JSON array.
 
 Retrieve the list of connections within a specified graph.
 
-- **Endpoint:** `/api/dev-server/v1/graphs/{graph_name}/connections`
+- **Endpoint:** `/api/dev-server/v1/graphs/{graph_id}/connections`
 - **Verb:** GET
 
 You will receive a `200 OK` response, with the body containing a JSON array like this:
@@ -191,7 +191,7 @@ You will receive a `200 OK` response, with the body containing a JSON array like
 
 Update the specified graph.
 
-- **Endpoint:** `/api/dev-server/v1/graphs/{graph_name}`
+- **Endpoint:** `/api/dev-server/v1/graphs/{graph_id}`
 - **Verb:** PUT
 
 Input data (body):

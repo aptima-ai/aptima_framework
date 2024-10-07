@@ -82,7 +82,7 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_context_on_close(
 
 TEN_RUNTIME_PRIVATE_API ten_extension_info_t *
 ten_extension_context_get_extension_info_by_name(
-    ten_extension_context_t *self, const char *app_uri, const char *graph_name,
+    ten_extension_context_t *self, const char *app_uri, const char *graph_id,
     const char *extension_group_name, const char *extension_name);
 
 TEN_RUNTIME_PRIVATE_API bool ten_extension_context_start_extension_group(

@@ -18,13 +18,13 @@ ten_shared_ptr_t *ten_extension_group_info_from_value(
   TEN_ASSERT(value && extension_groups_info, "Should not happen.");
 
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
-  const char *graph_name = ten_value_object_peek_string(value, TEN_STR_GRAPH);
+  const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
   const char *addon_name = ten_value_object_peek_string(value, TEN_STR_ADDON);
   const char *instance_name = ten_value_object_peek_string(value, TEN_STR_NAME);
 
   ten_shared_ptr_t *self = get_extension_group_info_in_extension_groups_info(
-      extension_groups_info, app_uri, graph_name, addon_name, instance_name,
-      NULL, err);
+      extension_groups_info, app_uri, graph_id, addon_name, instance_name, NULL,
+      err);
   if (!self) {
     return NULL;
   }

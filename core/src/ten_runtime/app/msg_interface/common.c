@@ -70,9 +70,9 @@ static bool ten_app_handle_msg_default_handler(ten_app_t *self,
       "Should not happen.");
 
   bool result = true;
-  ten_string_t *dest_graph_name = &ten_msg_get_first_dest_loc(msg)->graph_name;
+  ten_string_t *dest_graph_id = &ten_msg_get_first_dest_loc(msg)->graph_id;
 
-  if (ten_string_is_empty(dest_graph_name)) {
+  if (ten_string_is_empty(dest_graph_id)) {
     // This means the destination is the app, however, currently, app doesn't
     // need to do anything, so just return.
     return true;
@@ -80,13 +80,14 @@ static bool ten_app_handle_msg_default_handler(ten_app_t *self,
 
   // Determine which engine the message should go to.
   ten_engine_t *engine =
-      ten_app_get_engine_based_on_dest_graph_name_from_msg(self, msg);
+      ten_app_get_engine_based_on_dest_graph_id_from_msg(self, msg);
 
   if (!engine) {
-    // Check to see if the requested engine is a prebuilt-graph engine.
+    // Failed to find the engine, check to see if the requested engine is a
+    // _singleton_ prebuilt-graph engine, and start it.
 
     ten_predefined_graph_info_t *predefined_graph_info =
-        ten_app_get_predefined_graph_info_based_on_dest_graph_name_from_msg(
+        ten_app_get_singleton_predefined_graph_info_based_on_dest_graph_id_from_msg(
             self, msg);
 
     if (predefined_graph_info) {
@@ -105,7 +106,7 @@ static bool ten_app_handle_msg_default_handler(ten_app_t *self,
     // The target engine is determined, enable that engine to handle this
     // message.
 
-    // Correct the 'graph_name' from prebuilt-graph-name to engine-graph-id.
+    // Correct the 'graph_id' from prebuilt-graph-name to engine-graph-id.
     ten_msg_set_dest_engine_if_unspecified_or_predefined_graph_name(
         msg, engine, &self->predefined_graph_infos);
 
@@ -225,23 +226,23 @@ static bool ten_app_handle_stop_graph_cmd(ten_app_t *self,
              "Should not happen.");
   TEN_ASSERT(ten_msg_get_dest_cnt(cmd) == 1, "Should not happen.");
 
-  ten_string_t *dest_graph_name = ten_cmd_stop_graph_get_graph_name(cmd);
-  TEN_ASSERT(!ten_string_is_empty(dest_graph_name), "Should not happen.");
+  ten_string_t *dest_graph_id = ten_cmd_stop_graph_get_graph_id(cmd);
+  TEN_ASSERT(!ten_string_is_empty(dest_graph_id), "Should not happen.");
 
   ten_engine_t *dest_engine = NULL;
 
-  // Find the engine based on the 'dest_graph_name' in the 'cmd'.
+  // Find the engine based on the 'dest_graph_id' in the 'cmd'.
   ten_list_foreach (&self->engines, iter) {
     ten_engine_t *engine = ten_ptr_listnode_get(iter.node);
 
-    if (ten_string_is_equal(&engine->graph_name, dest_graph_name)) {
+    if (ten_string_is_equal(&engine->graph_id, dest_graph_id)) {
       dest_engine = engine;
       break;
     }
   }
 
   if (dest_engine == NULL) {
-    // Failed to find the engine by graph_name, send back an error message.
+    // Failed to find the engine by graph_id, send back an error message.
     ten_shared_ptr_t *ret_cmd =
         ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_ERROR, cmd);
     ten_msg_set_property(
@@ -255,15 +256,15 @@ static bool ten_app_handle_stop_graph_cmd(ten_app_t *self,
     return true;
   }
 
-  // The engine is found, set the graph_name to the dest loc and send the 'cmd'
+  // The engine is found, set the graph_id to the dest loc and send the 'cmd'
   // to the engine.
   ten_list_foreach (ten_msg_get_dest(cmd), iter) {
     ten_loc_t *dest_loc = ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(dest_loc && ten_loc_check_integrity(dest_loc),
                "Should not happen.");
 
-    ten_string_set_formatted(&dest_loc->graph_name, "%s",
-                             ten_string_get_raw_str(&dest_engine->graph_name));
+    ten_string_set_formatted(&dest_loc->graph_id, "%s",
+                             ten_string_get_raw_str(&dest_engine->graph_id));
   }
 
   ten_engine_append_to_in_msgs_queue(dest_engine, cmd);
@@ -286,7 +287,7 @@ bool ten_app_handle_out_msg(ten_app_t *self, ten_shared_ptr_t *msg,
   if (!ten_string_is_equal_c_str(&dest_loc->app_uri, ten_app_get_uri(self))) {
     TEN_ASSERT(0, "Handle this condition.");
   } else {
-    if (ten_string_is_empty(&dest_loc->graph_name)) {
+    if (ten_string_is_empty(&dest_loc->graph_id)) {
       // It means asking the app to do something.
 
       ten_app_push_to_in_msgs_queue(self, msg);
@@ -371,7 +372,7 @@ static void ten_app_handle_in_msgs_sync(ten_app_t *self) {
     //
     //   * If the 'cmd' is sent from the extension, the 'origin_connection' is
     //     NULL. Ex: send the following cmd from extension in engine whose
-    //     'graph_name' is A.
+    //     'graph_id' is A.
     //
     //     ten_env.send_json(
     //      {
@@ -380,18 +381,18 @@ static void ten_app_handle_in_msgs_sync(ten_app_t *self) {
     //          "dest": [
     //            {
     //              "app": "localhost",
-    //              "graph": "graph_name_of_another_engine"
+    //              "graph": "graph_id_of_another_engine"
     //            }
     //          ]
     //        }
     //      }
     //    )
     //
-    //   * If the 'cmd' is sent to another engine (whose 'graph_name' is B) from
+    //   * If the 'cmd' is sent to another engine (whose 'graph_id' is B) from
     //     the client side, after the physical connection between the client and
-    //     current engine (whose 'graph_name' is A) has been established, the
+    //     current engine (whose 'graph_id' is A) has been established, the
     //     'origin_connection' is not NULL. Ex: after the client sends the
-    //     'start_graph' cmd to the engine whose 'graph_name' is A with the
+    //     'start_graph' cmd to the engine whose 'graph_id' is A with the
     //     msgpack protocol, send a cmd to another engine, then the cmd will be
     //     received by engine A firstly.
     //

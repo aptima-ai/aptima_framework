@@ -159,11 +159,11 @@ class msgpack_tcp_client_t {
     return results;
   }
 
-  bool send_data(const std::string &graph_name,
+  bool send_data(const std::string &graph_id,
                  const std::string &extension_group_name,
                  const std::string &extension_name, void *data, size_t size) {
     return ten_test_msgpack_tcp_client_send_data(
-        c_client, graph_name.c_str(), extension_group_name.c_str(),
+        c_client, graph_id.c_str(), extension_group_name.c_str(),
         extension_name.c_str(), data, size);
   }
 

@@ -65,7 +65,7 @@ bool ten_app_handle_start_graph_cmd(ten_app_t *self,
       connection ? ten_app_has_orphan_connection(self, connection) : true,
       "Invalid argument.");
 
-  // If the start_graph command is aimed at initing from a predefined graph, we
+  // If the start_graph command is aimed at initting from a predefined graph, we
   // should append the extension info list of the predefined graph to the cmd.
   if (!ten_app_fill_start_graph_cmd_extensions_info_from_predefined_graph(
           self, cmd, err)) {
@@ -73,7 +73,7 @@ bool ten_app_handle_start_graph_cmd(ten_app_t *self,
   }
 
   ten_engine_t *engine =
-      ten_app_get_engine_based_on_dest_graph_name_from_msg(self, cmd);
+      ten_app_get_engine_based_on_dest_graph_id_from_msg(self, cmd);
   if (engine == NULL) {
     // The engine does not exist, create one, and send 'cmd' to the newly
     // created engine.

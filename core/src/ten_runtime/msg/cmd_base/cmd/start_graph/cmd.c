@@ -410,25 +410,25 @@ ten_string_t *ten_cmd_start_graph_get_predefined_graph_name(
 
 void ten_cmd_start_graph_fill_loc_info(ten_shared_ptr_t *self,
                                        const char *app_uri,
-                                       const char *graph_name) {
+                                       const char *graph_id) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self) &&
                  ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_START_GRAPH &&
-                 graph_name && strlen(graph_name),
+                 graph_id && strlen(graph_id),
              "Should not happen.");
 
   ten_extensions_info_fill_loc_info(
-      ten_cmd_start_graph_get_extensions_info(self), app_uri, graph_name);
-  ten_extension_groups_info_fill_graph_name(
-      ten_cmd_start_graph_get_extension_groups_info(self), graph_name);
+      ten_cmd_start_graph_get_extensions_info(self), app_uri, graph_id);
+  ten_extension_groups_info_fill_graph_id(
+      ten_cmd_start_graph_get_extension_groups_info(self), graph_id);
 }
 
 ten_list_t
 ten_cmd_start_graph_get_extension_addon_and_instance_name_pairs_of_specified_extension_group(
-    ten_shared_ptr_t *self, const char *app_uri, const char *graph_name,
+    ten_shared_ptr_t *self, const char *app_uri, const char *graph_id,
     const char *extension_group_name) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self) &&
                  ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_START_GRAPH &&
-                 app_uri && graph_name && extension_group_name,
+                 app_uri && graph_id && extension_group_name,
              "Should not happen.");
 
   ten_list_t result = TEN_LIST_INIT_VAL;
@@ -450,8 +450,7 @@ ten_cmd_start_graph_get_extension_addon_and_instance_name_pairs_of_specified_ext
                "Invalid use of extension_info %p.", extension_info);
 
     if (ten_string_is_equal_c_str(&extension_info->loc.app_uri, app_uri) &&
-        ten_string_is_equal_c_str(&extension_info->loc.graph_name,
-                                  graph_name) &&
+        ten_string_is_equal_c_str(&extension_info->loc.graph_id, graph_id) &&
         ten_string_is_equal_c_str(&extension_info->loc.extension_group_name,
                                   extension_group_name)) {
       ten_extension_addon_and_instance_name_pair_t *extension_name_info =

@@ -39,7 +39,7 @@ ten_test_msgpack_tcp_client_send_and_recv_msg(
     ten_test_msgpack_tcp_client_t *self, ten_shared_ptr_t *msg);
 
 TEN_RUNTIME_PRIVATE_API bool ten_test_msgpack_tcp_client_send_data(
-    ten_test_msgpack_tcp_client_t *self, const char *graph_name,
+    ten_test_msgpack_tcp_client_t *self, const char *graph_id,
     const char *extension_group_name, const char *extension_name, void *data,
     size_t size);
 

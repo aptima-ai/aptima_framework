@@ -268,9 +268,9 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
 
     if (
         // It means asking the current TEN app to do something.
-        ten_string_is_empty(&dest_loc->graph_name) ||
+        ten_string_is_empty(&dest_loc->graph_id) ||
         // It means asking another engine in the same app to do something.
-        !ten_string_is_equal(&dest_loc->graph_name, &self->graph_name)) {
+        !ten_string_is_equal(&dest_loc->graph_id, &self->graph_id)) {
       // Both of these 2 cases will need the current TEN app to dispatch the
       // message, and the threads of the TEN app and the current TEN engine
       // might be different, so push the message to the command queue of the

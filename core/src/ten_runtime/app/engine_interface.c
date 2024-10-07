@@ -103,16 +103,16 @@ void ten_app_del_engine(ten_app_t *self, ten_engine_t *engine) {
   ten_list_remove_ptr(&self->engines, engine);
 }
 
-static ten_engine_t *ten_app_get_engine_by_graph_name(ten_app_t *self,
-                                                      const char *graph_name) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true) && graph_name,
+static ten_engine_t *ten_app_get_engine_by_graph_id(ten_app_t *self,
+                                                    const char *graph_id) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true) && graph_id,
              "Should not happen.");
 
   ten_list_foreach (&self->engines, iter) {
     ten_engine_t *engine = ten_ptr_listnode_get(iter.node);
 
-    if (ten_c_string_is_equal(ten_string_get_raw_str(&engine->graph_name),
-                              graph_name)) {
+    if (ten_c_string_is_equal(ten_string_get_raw_str(&engine->graph_id),
+                              graph_id)) {
       return engine;
     }
   }
@@ -121,45 +121,47 @@ static ten_engine_t *ten_app_get_engine_by_graph_name(ten_app_t *self,
 }
 
 ten_predefined_graph_info_t *
-ten_app_get_predefined_graph_info_based_on_dest_graph_name_from_msg(
+ten_app_get_singleton_predefined_graph_info_based_on_dest_graph_id_from_msg(
     ten_app_t *self, ten_shared_ptr_t *msg) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-  TEN_ASSERT(msg && ten_cmd_base_check_integrity(msg) &&
-                 (ten_msg_get_dest_cnt(msg) == 1),
-             "Should not happen.");
+  TEN_ASSERT(msg && ten_cmd_base_check_integrity(msg), "Should not happen.");
+  TEN_ASSERT(ten_msg_get_dest_cnt(msg) == 1, "Should not happen.");
 
-  ten_string_t *dest_graph_name = &ten_msg_get_first_dest_loc(msg)->graph_name;
+  ten_string_t *dest_graph_id = &ten_msg_get_first_dest_loc(msg)->graph_id;
 
-  if (ten_string_is_empty(dest_graph_name)) {
+  if (ten_string_is_empty(dest_graph_id)) {
     // There are no destination information in the message, so we don't know
     // which engine this message should go.
     return NULL;
   }
 
-  return ten_app_get_predefined_graph_info_by_name(
-      self, ten_string_get_raw_str(dest_graph_name));
+  return ten_app_get_singleton_predefined_graph_info_by_name(
+      self, ten_string_get_raw_str(dest_graph_id));
 }
 
-ten_engine_t *ten_app_get_engine_based_on_dest_graph_name_from_msg(
+ten_engine_t *ten_app_get_engine_based_on_dest_graph_id_from_msg(
     ten_app_t *self, ten_shared_ptr_t *msg) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Invalid argument.");
   TEN_ASSERT(msg && ten_cmd_base_check_integrity(msg) &&
                  (ten_msg_get_dest_cnt(msg) == 1),
              "Invalid argument.");
 
-  ten_string_t *dest_graph_name = &ten_msg_get_first_dest_loc(msg)->graph_name;
+  ten_string_t *dest_graph_id = &ten_msg_get_first_dest_loc(msg)->graph_id;
 
-  if (ten_string_is_empty(dest_graph_name)) {
+  if (ten_string_is_empty(dest_graph_id)) {
     // There are no destination information in the message, so we don't know
     // which engine this message should go.
     return NULL;
   }
 
-  if (ten_string_is_uuid4(dest_graph_name)) {
-    return ten_app_get_engine_by_graph_name(
-        self, ten_string_get_raw_str(dest_graph_name));
+  if (ten_string_is_uuid4(dest_graph_id)) {
+    return ten_app_get_engine_by_graph_id(
+        self, ten_string_get_raw_str(dest_graph_id));
   }
 
-  return ten_app_get_predefined_graph_engine_by_name(
-      self, ten_string_get_raw_str(dest_graph_name));
+  // As a last resort, since there can only be one instance of a singleton graph
+  // within a process, the engine instance of the singleton graph can be found
+  // through the graph_name.
+  return ten_app_get_singleton_predefined_graph_engine_by_name(
+      self, ten_string_get_raw_str(dest_graph_id));
 }

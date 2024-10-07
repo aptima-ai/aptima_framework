@@ -274,12 +274,12 @@ ten_shared_ptr_t *ten_test_tcp_client_send_and_recv_msg(
 }
 
 bool ten_test_tcp_client_send_data(ten_test_tcp_client_t *self,
-                                   const char *graph_name,
+                                   const char *graph_id,
                                    const char *extension_group_name,
                                    const char *extension_name, void *data,
                                    size_t size) {
   TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(graph_name && extension_group_name && extension_name && data,
+  TEN_ASSERT(graph_id && extension_group_name && extension_name && data,
              "Invalid argument.");
 
   ten_shared_ptr_t *msg = ten_data_create();
@@ -289,7 +289,7 @@ bool ten_test_tcp_client_send_data(ten_test_tcp_client_t *self,
   ten_data_set_buf_with_move(msg, &buf);
 
   ten_msg_clear_and_set_dest(msg, ten_string_get_raw_str(&self->app_id),
-                             graph_name, extension_group_name, extension_name,
+                             graph_id, extension_group_name, extension_name,
                              NULL);
 
   bool rc = ten_test_tcp_client_send_msg(self, msg);

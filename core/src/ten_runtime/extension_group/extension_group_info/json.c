@@ -8,10 +8,10 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 // NOLINTNEXTLINE(misc-no-recursion)
 ten_json_t *ten_extension_group_info_to_json(ten_extension_group_info_t *self) {
@@ -63,13 +63,13 @@ ten_shared_ptr_t *ten_extension_group_info_from_json(
   }
 
   const char *app_uri = ten_json_object_peek_string(json, TEN_STR_APP);
-  const char *graph_name = ten_json_object_peek_string(json, TEN_STR_GRAPH);
+  const char *graph_id = ten_json_object_peek_string(json, TEN_STR_GRAPH);
   const char *addon_name = ten_json_object_peek_string(json, TEN_STR_ADDON);
   const char *instance_name = ten_json_object_peek_string(json, TEN_STR_NAME);
 
   ten_shared_ptr_t *self = get_extension_group_info_in_extension_groups_info(
-      extension_groups_info, app_uri, graph_name, addon_name, instance_name,
-      NULL, err);
+      extension_groups_info, app_uri, graph_id, addon_name, instance_name, NULL,
+      err);
   if (!self) {
     return NULL;
   }

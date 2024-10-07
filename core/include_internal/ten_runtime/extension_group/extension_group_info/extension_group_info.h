@@ -47,7 +47,7 @@ ten_extension_group_info_from_smart_ptr(
 TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *
 get_extension_group_info_in_extension_groups_info(
     ten_list_t *extension_groups_info, const char *app_uri,
-    const char *graph_name, const char *extension_group_addon_name,
+    const char *graph_id, const char *extension_group_addon_name,
     const char *extension_group_instance_name, bool *new_one_created,
     ten_error_t *err);
 
@@ -57,5 +57,5 @@ TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_extension_group_info_clone(
 TEN_RUNTIME_PRIVATE_API void ten_extension_groups_info_fill_app_uri(
     ten_list_t *extension_groups_info, const char *app_uri);
 
-TEN_RUNTIME_PRIVATE_API void ten_extension_groups_info_fill_graph_name(
-    ten_list_t *extension_groups_info, const char *graph_name);
+TEN_RUNTIME_PRIVATE_API void ten_extension_groups_info_fill_graph_id(
+    ten_list_t *extension_groups_info, const char *graph_id);

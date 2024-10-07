@@ -62,8 +62,8 @@ void ten_extension_group_info_destroy(ten_extension_group_info_t *self) {
 }
 
 static bool ten_extension_group_info_is_specified_extension_group(
-    ten_extension_group_info_t *self, const char *app_uri,
-    const char *graph_name, const char *extension_group_name) {
+    ten_extension_group_info_t *self, const char *app_uri, const char *graph_id,
+    const char *extension_group_name) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: The graph-related information of the extension group remains
@@ -78,8 +78,7 @@ static bool ten_extension_group_info_is_specified_extension_group(
     return false;
   }
 
-  if (graph_name &&
-      !ten_string_is_equal_c_str(&self->loc.graph_name, graph_name)) {
+  if (graph_id && !ten_string_is_equal_c_str(&self->loc.graph_id, graph_id)) {
     return false;
   }
 
@@ -100,7 +99,7 @@ ten_extension_group_info_t *ten_extension_group_info_from_smart_ptr(
 
 ten_shared_ptr_t *get_extension_group_info_in_extension_groups_info(
     ten_list_t *extension_groups_info, const char *app_uri,
-    const char *graph_name, const char *extension_group_addon_name,
+    const char *graph_id, const char *extension_group_addon_name,
     const char *extension_group_instance_name, bool *new_one_created,
     ten_error_t *err) {
   TEN_ASSERT(extension_groups_info, "Should not happen.");
@@ -115,7 +114,7 @@ ten_shared_ptr_t *get_extension_group_info_in_extension_groups_info(
   // different extension_group settings. This step is to find if there are any
   // other extension groups with different extension_group addon name.
   ten_listnode_t *extension_group_info_node = ten_list_find_shared_ptr_custom_3(
-      extension_groups_info, app_uri, graph_name, extension_group_instance_name,
+      extension_groups_info, app_uri, graph_id, extension_group_instance_name,
       ten_extension_group_info_is_specified_extension_group);
   if (extension_group_info_node) {
     extension_group_info = ten_shared_ptr_get_data(
@@ -169,7 +168,7 @@ ten_shared_ptr_t *get_extension_group_info_in_extension_groups_info(
 
   ten_extension_group_info_t *self = ten_extension_group_info_create();
 
-  ten_loc_set(&self->loc, app_uri, graph_name, extension_group_instance_name,
+  ten_loc_set(&self->loc, app_uri, graph_id, extension_group_instance_name,
               NULL);
 
   // Add the extension group addon name if we know it now.
@@ -206,7 +205,7 @@ ten_shared_ptr_t *ten_extension_group_info_clone(
   ten_shared_ptr_t *new_dest =
       get_extension_group_info_in_extension_groups_info(
           extension_groups_info, ten_string_get_raw_str(&self->loc.app_uri),
-          ten_string_get_raw_str(&self->loc.graph_name),
+          ten_string_get_raw_str(&self->loc.graph_id),
           ten_string_get_raw_str(&self->extension_group_addon_name),
           ten_string_get_raw_str(&self->loc.extension_group_name),
           &new_extension_group_info_created, NULL);
@@ -240,17 +239,17 @@ void ten_extension_groups_info_fill_app_uri(ten_list_t *extension_groups_info,
   }
 }
 
-static void ten_extension_group_info_fill_graph_name(
-    ten_extension_group_info_t *self, const char *graph_name) {
+static void ten_extension_group_info_fill_graph_id(
+    ten_extension_group_info_t *self, const char *graph_id) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_group_info_check_integrity(self),
              "Invalid use of extension_group_info %p.", self);
 
-  ten_string_set_formatted(&self->loc.graph_name, "%s", graph_name);
+  ten_string_set_formatted(&self->loc.graph_id, "%s", graph_id);
 }
 
-void ten_extension_groups_info_fill_graph_name(
-    ten_list_t *extension_groups_info, const char *graph_name) {
+void ten_extension_groups_info_fill_graph_id(ten_list_t *extension_groups_info,
+                                             const char *graph_id) {
   ten_list_foreach (extension_groups_info, iter) {
     ten_extension_group_info_t *extension_group_info =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
@@ -258,6 +257,6 @@ void ten_extension_groups_info_fill_graph_name(
                                            extension_group_info),
                "Invalid argument.");
 
-    ten_extension_group_info_fill_graph_name(extension_group_info, graph_name);
+    ten_extension_group_info_fill_graph_id(extension_group_info, graph_id);
   }
 }

@@ -52,7 +52,7 @@ class test_predefined_graph : public ten::extension_t {
             .c_str(),
         [this](ten::ten_env_t &ten_env,
                std::unique_ptr<ten::cmd_result_t> cmd) {
-          auto graph_name = cmd->get_property_string("detail");
+          auto graph_id = cmd->get_property_string("detail");
 
           nlohmann::json hello_cmd =
               R"({
@@ -66,7 +66,7 @@ class test_predefined_graph : public ten::extension_t {
                      }]
                    }
                  })"_json;
-          hello_cmd["_ten"]["dest"][0]["graph"] = graph_name;
+          hello_cmd["_ten"]["dest"][0]["graph"] = graph_id;
 
           ten_env.send_json(
               hello_cmd.dump().c_str(),
@@ -180,6 +180,7 @@ class test_app : public ten::app_t {
                         "predefined_graphs": [{
                           "name": "default",
                           "auto_start": false,
+                          "singleton": true,
                           "nodes": [{
                             "type": "extension_group",
                             "name": "start_graph_and_communication__predefined_graph_group",
@@ -220,7 +221,7 @@ TEST(ExtensionTest, StartGraphAndCommunication) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Do not need to send 'start_graph' command first.
-  // The 'graph_name' MUST be "0" (a special string) if we want to send the
+  // The 'graph_id' MUST be "default" (a special string) if we want to send the
   // request to predefined graph.
   nlohmann::json resp = client->send_json_and_recv_resp_in_json(
       R"({

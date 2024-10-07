@@ -80,14 +80,14 @@ ten_shared_ptr_t *ten_extension_info_node_from_value(
   TEN_ASSERT(value && extensions_info, "Should not happen.");
 
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
-  const char *graph_name = ten_value_object_peek_string(value, TEN_STR_GRAPH);
+  const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
   const char *extension_group_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
   const char *addon_name = ten_value_object_peek_string(value, TEN_STR_ADDON);
   const char *instance_name = ten_value_object_peek_string(value, TEN_STR_NAME);
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_name, extension_group_name, addon_name,
+      extensions_info, app_uri, graph_id, extension_group_name, addon_name,
       instance_name, NULL, err);
   if (!self) {
     return NULL;
@@ -119,7 +119,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
   TEN_ASSERT(value && extensions_info, "Should not happen.");
 
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
-  const char *graph_name = ten_value_object_peek_string(value, TEN_STR_GRAPH);
+  const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
 
   const char *extension_group_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
@@ -136,7 +136,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_name, extension_group_name, NULL,
+      extensions_info, app_uri, graph_id, extension_group_name, NULL,
       extension_name, NULL, err);
   if (!self) {
     return NULL;
@@ -213,7 +213,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_value(
   TEN_ASSERT(value && extensions_info, "Should not happen.");
 
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
-  const char *graph_name = ten_value_object_peek_string(value, TEN_STR_GRAPH);
+  const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
 
   const char *extension_group_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
@@ -230,7 +230,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_value(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_name, extension_group_name, NULL,
+      extensions_info, app_uri, graph_id, extension_group_name, NULL,
       extension_name, NULL, err);
   if (!self) {
     return NULL;

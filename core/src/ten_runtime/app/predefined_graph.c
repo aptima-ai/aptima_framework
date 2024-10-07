@@ -36,7 +36,9 @@ ten_predefined_graph_info_t *ten_predefined_graph_info_create(void) {
   ten_string_init(&self->name);
   ten_list_init(&self->extensions_info);
   ten_list_init(&self->extension_groups_info);
+
   self->auto_start = false;
+  self->singleton = false;
   self->engine = NULL;
 
   return self;
@@ -187,12 +189,11 @@ bool ten_app_start_auto_start_predefined_graph(ten_app_t *self,
   return true;
 }
 
-ten_predefined_graph_info_t *ten_app_get_predefined_graph_info_by_name(
-    ten_app_t *self, const char *name) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true) && name,
-             "Should not happen.");
+static ten_predefined_graph_info_t *ten_predefined_graph_infos_get_by_name(
+    ten_list_t *predefined_graph_infos, const char *name) {
+  TEN_ASSERT(predefined_graph_infos && name, "Invalid argument.");
 
-  ten_list_foreach (&self->predefined_graph_infos, iter) {
+  ten_list_foreach (predefined_graph_infos, iter) {
     ten_predefined_graph_info_t *predefined_graph_info =
         (ten_predefined_graph_info_t *)ten_ptr_listnode_get(iter.node);
 
@@ -202,6 +203,39 @@ ten_predefined_graph_info_t *ten_app_get_predefined_graph_info_by_name(
   }
 
   return NULL;
+}
+
+static ten_predefined_graph_info_t *ten_app_get_predefined_graph_info_by_name(
+    ten_app_t *self, const char *name) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true) && name,
+             "Should not happen.");
+
+  return ten_predefined_graph_infos_get_by_name(&self->predefined_graph_infos,
+                                                name);
+}
+
+ten_predefined_graph_info_t *ten_predefined_graph_infos_get_singleton_by_name(
+    ten_list_t *predefined_graph_infos, const char *name) {
+  TEN_ASSERT(predefined_graph_infos && name, "Invalid argument.");
+
+  ten_predefined_graph_info_t *result =
+      ten_predefined_graph_infos_get_by_name(predefined_graph_infos, name);
+
+  if (result && result->singleton) {
+    return result;
+  }
+
+  return NULL;
+}
+
+ten_predefined_graph_info_t *
+ten_app_get_singleton_predefined_graph_info_by_name(ten_app_t *self,
+                                                    const char *name) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true) && name,
+             "Should not happen.");
+
+  return ten_predefined_graph_infos_get_singleton_by_name(
+      &self->predefined_graph_infos, name);
 }
 
 bool ten_app_get_predefined_graph_extensions_and_groups_info_by_name(
@@ -235,13 +269,13 @@ bool ten_app_get_predefined_graph_extensions_and_groups_info_by_name(
   return true;
 }
 
-ten_engine_t *ten_app_get_predefined_graph_engine_by_name(ten_app_t *self,
-                                                          const char *name) {
+ten_engine_t *ten_app_get_singleton_predefined_graph_engine_by_name(
+    ten_app_t *self, const char *name) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true) && name,
              "Should not happen.");
 
   ten_predefined_graph_info_t *predefined_graph_info =
-      ten_app_get_predefined_graph_info_by_name(self, name);
+      ten_app_get_singleton_predefined_graph_info_by_name(self, name);
 
   if (predefined_graph_info) {
     return predefined_graph_info->engine;
@@ -308,6 +342,14 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
         ten_value_is_bool(predefined_graph_info_auto_start_value)) {
       predefined_graph_info->auto_start =
           ten_value_get_bool(predefined_graph_info_auto_start_value, &err);
+    }
+
+    ten_value_t *predefined_graph_info_singleton_value =
+        ten_value_object_peek(predefined_graph_info_value, TEN_STR_SINGLETON);
+    if (predefined_graph_info_singleton_value &&
+        ten_value_is_bool(predefined_graph_info_singleton_value)) {
+      predefined_graph_info->singleton =
+          ten_value_get_bool(predefined_graph_info_singleton_value, &err);
     }
 
     ten_value_t *predefined_graph_info_nodes_value =

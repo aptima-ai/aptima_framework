@@ -25,9 +25,9 @@ void ten_engine_handle_cmd_stop_graph(ten_engine_t *self, ten_shared_ptr_t *cmd,
   TEN_ASSERT(cmd && ten_msg_get_type(cmd) == TEN_MSG_TYPE_CMD_STOP_GRAPH,
              "Should not happen.");
 
-  ten_string_t *graph_name = ten_cmd_stop_graph_get_graph_name(cmd);
-  if (graph_name == NULL || ten_string_is_empty(graph_name) ||
-      ten_string_is_equal(graph_name, &self->graph_name)) {
+  ten_string_t *graph_id = ten_cmd_stop_graph_get_graph_id(cmd);
+  if (graph_id == NULL || ten_string_is_empty(graph_id) ||
+      ten_string_is_equal(graph_id, &self->graph_id)) {
     // Suicide. Store the stop_graph command temporarily, so that it can be
     // used to return the cmd_result when the engine is shut down later.
     self->cmd_stop_graph = ten_shared_ptr_clone(cmd);

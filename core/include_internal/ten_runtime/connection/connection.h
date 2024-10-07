@@ -114,11 +114,9 @@ typedef enum TEN_CONNECTION_MIGRATION_STATE {
   // depends on two conditions:
   //
   // - Whether the message will be sent to an TEN engine, not the TEN app. In
-  //   other words, the 'graph_name' field of the dest loc of the message is not
+  //   other words, the 'graph_id' field of the dest loc of the message is not
   //   empty, or the message is a 'start_graph' cmd (the 'start_graph' cmd
-  //   enables a
-  //   new
-  //   engine to be created).
+  //   enables a new engine to be created).
   //
   // - Whether the TEN engine runs in its own thread.
   //

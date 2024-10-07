@@ -157,7 +157,7 @@ void ten_env_close(ten_env_t *self) {
       break;
     case TEN_ENV_ATTACH_TO_ENGINE:
       TEN_LOGD("[%s] Close ten of engine.",
-               ten_engine_get_name(self->attached_target.engine, true));
+               ten_engine_get_id(self->attached_target.engine, true));
       break;
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
       TEN_LOGD(

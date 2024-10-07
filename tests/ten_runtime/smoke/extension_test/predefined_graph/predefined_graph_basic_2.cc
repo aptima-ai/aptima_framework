@@ -182,6 +182,7 @@ class test_app : public ten::app_t {
                         "predefined_graphs": [{
                           "name": "default",
                           "auto_start": false,
+                          "singleton": true,
                           "nodes": [{
                             "type": "extension_group",
                             "name": "predefined_graph_group",
@@ -222,7 +223,7 @@ TEST(ExtensionTest, PredefinedGraphBasic2) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Do not need to send 'start_graph' command first.
-  // The 'graph_name' MUST be "0" (a special string) if we want to send the
+  // The 'graph_id' MUST be "default" (a special string) if we want to send the
   // request to predefined graph.
   nlohmann::json const resp = client->send_json_and_recv_resp_in_json(
       R"({

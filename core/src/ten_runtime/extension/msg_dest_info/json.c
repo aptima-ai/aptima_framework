@@ -53,7 +53,7 @@ ten_json_t *ten_msg_dest_info_to_json(ten_msg_dest_info_t *self,
 
     ten_json_object_set_new(dest_json, TEN_STR_GRAPH,
                             ten_json_create_string(ten_string_get_raw_str(
-                                &extension_info->loc.graph_name)));
+                                &extension_info->loc.graph_id)));
 
     ten_json_t *extension_group_json = ten_json_create_string(
         ten_string_get_raw_str(&extension_info->loc.extension_group_name));

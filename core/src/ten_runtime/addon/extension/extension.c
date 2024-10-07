@@ -186,7 +186,12 @@ ten_addon_host_t *ten_addon_register_extension(const char *name,
   ten_addon_store_init(ten_extension_get_store());
 
   ten_addon_host_t *addon_host =
-      ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION);
+      ten_addon_store_find(ten_extension_get_store(), name);
+  if (addon_host) {
+    return addon_host;
+  }
+
+  addon_host = ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION);
   TEN_ASSERT(addon_host, "Should not happen.");
 
   ten_addon_register(ten_extension_get_store(), addon_host, name, base_dir,

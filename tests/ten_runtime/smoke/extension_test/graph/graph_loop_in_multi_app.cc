@@ -247,7 +247,7 @@ TEST(ExtensionTest, GraphLoopInMultiApp) {  // NOLINT
 
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;
-  std::string graph_name;
+  std::string graph_id;
 
   for (size_t i = 0; i < MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES;
        ++i) {
@@ -329,7 +329,7 @@ TEST(ExtensionTest, GraphLoopInMultiApp) {  // NOLINT
 
     if (!resp.empty()) {
       ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-      graph_name = resp["detail"];
+      graph_id = resp["detail"];
       break;
     } else {
       delete client;
@@ -374,7 +374,7 @@ TEST(ExtensionTest, GraphLoopInMultiApp) {  // NOLINT
             }]
           }
         })"_json;
-  request_2["_ten"]["dest"][0]["graph"] = graph_name;
+  request_2["_ten"]["dest"][0]["graph"] = graph_id;
   resp = client2->send_json_and_recv_resp_in_json(request_2);
 
   ten_test::check_result_is(resp, "138", TEN_STATUS_CODE_OK,

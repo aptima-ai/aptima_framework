@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/msg/cmd_base/cmd/stop_graph/field/graph_name.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd/stop_graph/field/graph_id.h"
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
@@ -16,9 +16,8 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
-bool ten_cmd_stop_graph_put_graph_name_to_json(ten_msg_t *self,
-                                               ten_json_t *json,
-                                               ten_error_t *err) {
+bool ten_cmd_stop_graph_put_graph_id_to_json(ten_msg_t *self, ten_json_t *json,
+                                             ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && json &&
                  ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD_STOP_GRAPH,
              "Should not happen.");
@@ -30,14 +29,14 @@ bool ten_cmd_stop_graph_put_graph_name_to_json(ten_msg_t *self,
   ten_cmd_stop_graph_t *cmd = (ten_cmd_stop_graph_t *)self;
   ten_json_object_set_new(ten_json, TEN_STR_GRAPH_NAME,
                           ten_json_create_string(ten_string_get_raw_str(
-                              ten_raw_cmd_stop_graph_get_graph_name(cmd))));
+                              ten_raw_cmd_stop_graph_get_graph_id(cmd))));
 
   return true;
 }
 
-bool ten_cmd_stop_graph_get_graph_name_from_json(ten_msg_t *self,
-                                                 ten_json_t *json,
-                                                 TEN_UNUSED ten_error_t *err) {
+bool ten_cmd_stop_graph_get_graph_id_from_json(ten_msg_t *self,
+                                               ten_json_t *json,
+                                               TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) &&
                  ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD_STOP_GRAPH,
              "Should not happen.");
@@ -49,30 +48,29 @@ bool ten_cmd_stop_graph_get_graph_name_from_json(ten_msg_t *self,
     return true;
   }
 
-  ten_json_t *graph_name_json =
-      ten_json_object_peek(ten_json, TEN_STR_GRAPH_NAME);
-  if (!graph_name_json) {
+  ten_json_t *graph_id_json = ten_json_object_peek(ten_json, TEN_STR_GRAPH_ID);
+  if (!graph_id_json) {
     return true;
   }
 
-  if (ten_json_is_string(graph_name_json)) {
+  if (ten_json_is_string(graph_id_json)) {
     ten_cmd_stop_graph_t *cmd = (ten_cmd_stop_graph_t *)self;
-    ten_string_init_formatted(&cmd->graph_name,
-                              ten_json_peek_string_value(graph_name_json));
+    ten_string_init_formatted(&cmd->graph_id,
+                              ten_json_peek_string_value(graph_id_json));
   } else {
-    TEN_LOGW("graph_name should be a string value.");
+    TEN_LOGW("graph_id should be a string value.");
   }
 
   return true;
 }
 
-void ten_cmd_stop_graph_copy_graph_name(
+void ten_cmd_stop_graph_copy_graph_id(
     ten_msg_t *self, ten_msg_t *src,
     TEN_UNUSED ten_list_t *excluded_field_ids) {
   TEN_ASSERT(self && src && ten_raw_cmd_check_integrity((ten_cmd_t *)src) &&
                  ten_raw_msg_get_type(src) == TEN_MSG_TYPE_CMD_STOP_GRAPH,
              "Should not happen.");
 
-  ten_string_copy(&((ten_cmd_stop_graph_t *)self)->graph_name,
-                  &((ten_cmd_stop_graph_t *)src)->graph_name);
+  ten_string_copy(&((ten_cmd_stop_graph_t *)self)->graph_id,
+                  &((ten_cmd_stop_graph_t *)src)->graph_id);
 }

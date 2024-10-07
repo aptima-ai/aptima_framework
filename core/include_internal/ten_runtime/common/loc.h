@@ -26,7 +26,7 @@ typedef struct ten_extension_t ten_extension_t;
 //   language, which is how to 'locate' the object instance.
 //   Therefore, the dynamic information of a extension is the information
 //   relevant to the location of a extension instance. Ex: the uri of the app,
-//   the graph_name of the engine, the name of the extension group and the
+//   the graph_id of the engine, the name of the extension group and the
 //   extension.
 //
 // - static information
@@ -39,7 +39,7 @@ typedef struct ten_loc_t {
   ten_signature_t signature;
 
   ten_string_t app_uri;
-  ten_string_t graph_name;
+  ten_string_t graph_id;
   ten_string_t extension_group_name;
   ten_string_t extension_name;
 } ten_loc_t;
@@ -59,7 +59,7 @@ TEN_RUNTIME_PRIVATE_API void ten_loc_init_from_value(ten_loc_t *self,
                                                      ten_value_t *value);
 
 TEN_RUNTIME_PRIVATE_API void ten_loc_set(ten_loc_t *self, const char *app_uri,
-                                         const char *graph_name,
+                                         const char *graph_id,
                                          const char *extension_group_name,
                                          const char *extension_name);
 
@@ -71,7 +71,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_loc_is_equal(ten_loc_t *self,
                                               ten_loc_t *other);
 
 TEN_RUNTIME_PRIVATE_API bool ten_loc_is_equal_with_value(
-    ten_loc_t *self, const char *app_uri, const char *graph_name,
+    ten_loc_t *self, const char *app_uri, const char *graph_id,
     const char *extension_group_name, const char *extension_name);
 
 TEN_RUNTIME_PRIVATE_API void ten_loc_to_string(ten_loc_t *self,
@@ -80,7 +80,7 @@ TEN_RUNTIME_PRIVATE_API void ten_loc_to_string(ten_loc_t *self,
 TEN_RUNTIME_PRIVATE_API ten_json_t *ten_loc_to_json(ten_loc_t *self);
 
 TEN_RUNTIME_API ten_loc_t *ten_loc_create(const char *app_uri,
-                                          const char *graph_name,
+                                          const char *graph_id,
                                           const char *extension_group_name,
                                           const char *extension_name);
 

@@ -70,6 +70,7 @@ class test_app_1 : public ten::app_t {
                         "predefined_graphs": [{
                            "name": "default",
                            "auto_start": false,
+                           "singleton": true,
                            "nodes": [{
                               "type": "extension_group",
                               "app": "msgpack://127.0.0.1:8001/",
