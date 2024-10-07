@@ -9,17 +9,25 @@ In the TEN framework, there are two types of graphs:
 |----|----|----|
 | Time to start the graph | When the TEN app receives the `start_graph` command. | When the TEN app starts, or when the TEN app receives the `start_graph` command. |
 | Graph content | Specified in the `start_graph` command. | Specified in the TEN app's properties. |
-| Graph name | A random UUID. | Specified in the TEN app's properties. |
+| Graph ID | A random UUID. |A random UUID|
 
 <figure><img src="../assets/png/two_types_of_graph.png" alt=""><figcaption><p>Two Types of Graph</p></figcaption></figure>
 
 For predefined graphs, there is an `auto_start` attribute that determines whether the predefined graph will start automatically when the TEN app starts.
 
+There is also another `singleton` attribute used to indicate whether the predefined graph can only generate *one* corresponding engine instance within the TEN app.
+
+## Graph ID and Graph Name
+
+For each graph instance generated from a graph definition, that is, an engine instance, within the TEN app, there is a unique UUID4 string representing each graph instance. This UUID4 string is called the **graph ID** of that graph.
+
+For each predefined graph, a meaningful or easy-to-remember name can be assigned, known as the **graph name** of the predefined graph. When specifying a particular predefined graph, the graph name can be used to represent it. If a predefined graph has the singleton attribute, it means that the graph instance generated from this predefined graph can only exist once within the TEN app. Therefore, the TEN runtime will use the graph name to uniquely identify the single graph instance generated from the singleton predefined graph.
+
 ## Flexible Graph
 
 When the TEN app receives the `start_graph` command and creates this type of graph, it will assign a random UUID value as the ID of the newly started graph. If other clients obtain this graph's ID, they can also connect to this graph.
 
-Example of a flexible graph name:
+Example of a flexible graph ID:
 
 `123e4567-e89b-12d3-a456-426614174000`
 
@@ -186,6 +194,7 @@ Essentially, you place the complete graph definition above under the `predefined
   {
     "name": "default",
     "auto_start": true,
+    "singleton": true,
     // Place the complete graph definition here.
   }
 ]
@@ -198,6 +207,7 @@ So it looks like this:
   {
     "name": "default",
     "auto_start": true,
+    "singleton": true,
     "nodes": [
       {
         "type": "extension_group",
@@ -281,6 +291,8 @@ Essentially, you place the complete graph definition above under the `ten` field
   }
 }
 ```
+
+The following is a complete definition of the `start_graph` command:
 
 ```json
 {
