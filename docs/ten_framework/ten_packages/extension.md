@@ -47,7 +47,21 @@ graph TD;
 
 ### on_configure
 
-Used to set the initial values of the extension's properties.
+Used to set the initial values of the extension's properties. This allows the `get_property` API from `ten_env` to be used in other lifecycle stages to retrieve properties set during the `on_configure()` stage. The `on_configure_done()` function is called to mark the end of the `on_configure` stage.
+
+```c++
+  void on_configure(ten::ten_env_t &ten_env) override {
+    // Set the initial values of the extension's properties.
+    ten_env.init_property_from_json(
+      R"({
+           "_ten": {
+             "uri": "msgpack://127.0.0.1:8001/",
+             "log_level": 2
+           }
+         })", nullptr);
+    ten_env.on_configure_done();
+  }
+```
 
 ### on_init
 
@@ -118,17 +132,13 @@ Extensions interact with the TEN runtime primarily through three interfaces:
 
 The different stages of the extension's lifecycle and their connection to message handling are as follows:
 
-- **on_init ~ on_init_done**: Handles the extension's own initialization. During this phase, it cannot send or receive messages.
+- **on_init ~ on_init_done**: Handles the extension's own initialization. At this stage, the extension can send messages and receive the results of commands it sends, but cannot receive messages actively sent by other extensions.
 
-  - Once all extensions have completed `on_init_done`, they collectively transition to `on_start`.
-
-- **on_start ~ on_start_done**: At this stage, the extension can send messages and receive responses to the messages it sends, but it cannot receive unsolicited messages. Since properties are initialized during `on_start`, you can perform actions that depend on these properties being set up. However, as this is still part of the initialization phase, the extension will not receive messages initiated by others, avoiding the need for various checks. Active message sending is allowed.
+- **on_start ~ on_start_done**: At this stage, the extension can send messages and receive the results of commands it sends, but cannot receive messages actively sent by other extensions. Since properties are initialized during `on_configure`, you can perform actions that depend on these properties being set up. However, as this is still part of the initialization phase, the extension will not receive messages initiated by others, avoiding the need for various checks. Active message sending is allowed.
 
 - **After on_start_done ~ on_stop_done**: During this phase, the extension can normally send and receive all types of messages and their results.
 
-  - Once all extensions have completed `on_stop_done`, they collectively transition to `on_deinit`.
-
-- **on_deinit ~ on_deinit_done**: Handles the extension's de-initialization. During this phase, it cannot send or receive messages.
+- **on_deinit ~ on_deinit_done**: Handles the extension's de-initialization. Similar to the `on_init` stage, at this stage, the extension can send messages and receive the results of commands it sends, but cannot receive messages actively sent by other extensions.
 
 ## Implementing Extensions in Different Languages
 
