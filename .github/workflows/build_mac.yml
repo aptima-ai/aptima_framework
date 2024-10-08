@@ -13,6 +13,14 @@ on:
       - "!.github/workflows/build_mac.yml"
       - "**.md"
   pull_request:
+    paths-ignore:
+      - "tools/**"
+      - "docs/**"
+      - ".vscode/**"
+      - ".devcontainer/**"
+      - ".github/**"
+      - "!.github/workflows/build_mac.yml"
+      - "**.md"
 
 jobs:
   build-arm64:

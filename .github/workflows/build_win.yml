@@ -13,6 +13,14 @@ on:
       - "!.github/workflows/build_win.yml"
       - "**.md"
   pull_request:
+    paths-ignore:
+      - "tools/**"
+      - "docs/**"
+      - ".vscode/**"
+      - ".devcontainer/**"
+      - ".github/**"
+      - "!.github/workflows/build_win.yml"
+      - "**.md"
 
 jobs:
   build:
