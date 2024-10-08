@@ -39,6 +39,11 @@ jobs:
           fetch-depth: "0"
           submodules: "true"
 
+      - name: Install cpulimit and taskset
+        run: |
+          apt-get update
+          apt-get install -y cpulimit util-linux
+
       - name: Build
         run: |
           export PATH=$(pwd)/core/ten_gn:$PATH
@@ -50,14 +55,34 @@ jobs:
           tgn build linux x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
+      - name: Create cmd_wrapper.sh
+        run: |
+          echo '#!/bin/sh' > cmd_wrapper.sh
+          echo 'echo "==========================================="' >> cmd_wrapper.sh
+          echo 'echo "cmd wrapper executes the following command:"' >> cmd_wrapper.sh
+          echo 'echo "$@"' >> cmd_wrapper.sh
+          echo 'echo "==========================================="' >> cmd_wrapper.sh
+          echo '"$@"' >> cmd_wrapper.sh
+          echo 'status=$?' >> cmd_wrapper.sh
+          echo 'echo $status >_cmd_wrapper_exit_status.txt' >> cmd_wrapper.sh
+          echo 'exit $status' >> cmd_wrapper.sh
+        shell: bash
+
       - name: Run Tests
         run: |
+          chmod +x cmd_wrapper.sh
           chmod +x out/linux/x64/tests/standalone/ten_utils_unit_test
           out/linux/x64/tests/standalone/ten_utils_unit_test
+          cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_utils_unit_test
+          cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_utils_unit_test
           chmod +x out/linux/x64/tests/standalone/ten_runtime_unit_test
           out/linux/x64/tests/standalone/ten_runtime_unit_test
+          cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_unit_test
+          cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_unit_test
           chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
           out/linux/x64/tests/standalone/ten_runtime_smoke_test
+          cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test
+          cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test
 
       - name: Upload tman
         uses: actions/upload-artifact@v4
