@@ -23,8 +23,10 @@ on:
       - "**.md"
 
 jobs:
-  build:
-    concurrency: ci-${{ github.ref }}
+  build-win-x64:
+    concurrency:
+      group: build-win-x64-${{ github.head_ref }}-${{ matrix.build_type }}
+      cancel-in-progress: true
     runs-on: windows-latest
     strategy:
       matrix:
@@ -57,5 +59,29 @@ jobs:
       - name: Build
         run: |
           $ENV:PATH += ";$PWD/core/ten_gn"
-          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_tests=false
+          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_package_manager_enable_tests=false
           tgn build win x64 ${{ matrix.build_type }}
+
+      - name: Run Tests (ten_utils_unit_test)
+        env:
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/win/x64/tests/standalone/ten_utils_unit_test
+          out/win/x64/tests/standalone/ten_utils_unit_test
+
+      # - name: Run Tests (ten_runtime_unit_test)
+      #   env:
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/win/x64/tests/standalone/ten_runtime_unit_test
+      #     out/win/x64/tests/standalone/ten_runtime_unit_test
+
+      # - name: Run Tests (ten_runtime_smoke_test)
+      #   env:
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/win/x64/tests/standalone/ten_runtime_smoke_test
+      #     out/win/x64/tests/standalone/ten_runtime_smoke_test

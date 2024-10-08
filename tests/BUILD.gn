@@ -30,13 +30,13 @@ group("tests") {
   }
 
   if (ten_enable_package_manager) {
-    deps += [
-      "local_registry:copy_local_registry",
-      "ten_manager",
-    ]
+    deps += [ "local_registry:copy_local_registry" ]
 
     if (ten_package_manager_enable_tests) {
-      deps += [ "//core/src/ten_manager:tman_test" ]
+      deps += [
+        "ten_manager",
+        "//core/src/ten_manager:tman_test",
+      ]
     }
   }
 }

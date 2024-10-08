@@ -365,7 +365,7 @@ $     endif
 $     if cparm .eqs. "HELP" then gosub bhelp
 $   endif
 $   i = i + 1
-$   goto orte_stackless_coro_loop
+$   goto opt_loop
 $ endif
 $ return
 $!------------------------------------------------------------------------------

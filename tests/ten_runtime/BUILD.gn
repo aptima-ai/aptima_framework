@@ -12,6 +12,7 @@ import("//third_party/curl/output_libs.gni")
 import("//third_party/jansson/output_libs.gni")
 import("//third_party/libwebsockets/output_libs.gni")
 import("//third_party/mbedtls/output_libs.gni")
+import("//third_party/zlib/output_libs.gni")
 
 # Because there is no 'rpath' mechanism in Windows, we need to copy all the
 # dependend libraries of 'smoke' to one folder, and setup 'PATH' before
@@ -29,6 +30,9 @@ copy("copy_libraries_for_test") {
   if (ten_enable_curl) {
     sources += curl_output_libs
     deps += [ "//third_party/curl" ]
+
+    sources += zlib_output_libs
+    deps += [ "//third_party/zlib" ]
   }
 
   if (ten_enable_libwebsockets) {

@@ -25,8 +25,10 @@ on:
       - "**.md"
 
 jobs:
-  build:
-    concurrency: ci-${{ github.ref }}
+  build-linux-ubuntu2204:
+    concurrency:
+      group: build-linux-ubuntu2204-${{ github.head_ref }}-${{ matrix.compiler }}-${{ matrix.build_type }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -69,20 +71,38 @@ jobs:
           echo 'exit $status' >> cmd_wrapper.sh
         shell: bash
 
-      - name: Run Tests
+      - name: Run Tests (ten_utils_unit_test)
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
           TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           chmod +x cmd_wrapper.sh
           chmod +x out/linux/x64/tests/standalone/ten_utils_unit_test
           out/linux/x64/tests/standalone/ten_utils_unit_test
           cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_utils_unit_test
           cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_utils_unit_test
+
+      - name: Run Tests (ten_runtime_unit_test)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
           chmod +x out/linux/x64/tests/standalone/ten_runtime_unit_test
           out/linux/x64/tests/standalone/ten_runtime_unit_test
           cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_unit_test
           cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_unit_test
+
+      - name: Run Tests (ten_runtime_smoke_test)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
           chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
           out/linux/x64/tests/standalone/ten_runtime_smoke_test
           cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test

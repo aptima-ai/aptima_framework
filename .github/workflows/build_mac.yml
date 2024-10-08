@@ -23,8 +23,10 @@ on:
       - "**.md"
 
 jobs:
-  build-arm64:
-    concurrency: ci-${{ github.ref }}
+  build-mac-arm64:
+    concurrency:
+      group: build-mac-arm64-${{ github.head_ref }}-${{ matrix.build_type }}
+      cancel-in-progress: true
     runs-on: macos-latest
     strategy:
       matrix:
@@ -71,12 +73,44 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_tests=false
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false
           tgn build mac arm64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
-  build-x64:
-    concurrency: ci-${{ github.ref }}
+      # - name: Run Tests (ten_utils_unit_test)
+      #   env:
+      #     ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+      #     MALLOC_CHECK_: 3
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/mac/arm64/tests/standalone/ten_utils_unit_test
+      #     out/mac/arm64/tests/standalone/ten_utils_unit_test
+
+      - name: Run Tests (ten_runtime_unit_test)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/mac/arm64/tests/standalone/ten_runtime_unit_test
+          out/mac/arm64/tests/standalone/ten_runtime_unit_test
+
+      # - name: Run Tests (ten_runtime_smoke_test)
+      #   env:
+      #     ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+      #     MALLOC_CHECK_: 3
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+      #     out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+
+  build-mac-x64:
+    concurrency:
+      group: build-mac-x64-${{ github.head_ref }}-${{ matrix.build_type }}
+      cancel-in-progress: true
     runs-on: macos-13
     strategy:
       matrix:
@@ -123,6 +157,36 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_tests=false
+          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_package_manager_enable_tests=false
           tgn build mac x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
+
+      - name: Run Tests (ten_utils_unit_test)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/mac/x64/tests/standalone/ten_utils_unit_test
+          out/mac/x64/tests/standalone/ten_utils_unit_test
+
+      - name: Run Tests (ten_runtime_unit_test)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/mac/x64/tests/standalone/ten_runtime_unit_test
+          out/mac/x64/tests/standalone/ten_runtime_unit_test
+
+      - name: Run Tests (ten_runtime_smoke_test)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/mac/x64/tests/standalone/ten_runtime_smoke_test
+          out/mac/x64/tests/standalone/ten_runtime_smoke_test
