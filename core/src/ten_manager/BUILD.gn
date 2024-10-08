@@ -6,6 +6,7 @@
 #
 import("//build/common/rust/rust.gni")
 import("//build/feature/ten_package.gni")
+import("//build/ten_manager/options.gni")
 import("//third_party/clingo/output_libs.gni")
 
 declare_args() {
@@ -13,7 +14,7 @@ declare_args() {
 }
 
 if (ten_enable_package_manager) {
-  if (is_linux || is_win || (is_mac && target_cpu == "x64")) {
+  if (ten_package_manager_enable_tests) {
     rust_test("tman_test") {
       project_path = "//core/src/ten_manager"
 
