@@ -32,7 +32,7 @@ group("ten_framework_all") {
     deps += [ "//core/src/ten_manager" ]
   }
 
-  if (ten_enable_test) {
+  if (ten_enable_tests) {
     deps += [ "//tests" ]
   }
 }

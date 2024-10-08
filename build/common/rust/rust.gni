@@ -5,6 +5,7 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/options.gni")
+import("//build/ten_rust/options.gni")
 
 template("rust_target") {
   assert(defined(invoker.project_path), "project_file is not defined")
@@ -43,7 +44,7 @@ template("rust_target") {
     }
 
     if (is_debug) {
-      if (ten_enable_rust_asan) {
+      if (ten_rust_enable_asan) {
         if (enable_sanitizer) {
           _rustflags = "${_rustflags} -Zsanitizer=address"
         }
@@ -209,7 +210,7 @@ template("rust_test") {
     }
 
     if (is_debug) {
-      if (ten_enable_rust_asan) {
+      if (ten_rust_enable_asan) {
         if (enable_sanitizer) {
           _rustflags = "${_rustflags} -Zsanitizer=address"
         }

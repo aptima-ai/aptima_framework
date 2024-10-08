@@ -41,7 +41,7 @@ ten_utils_test("ten_utils_unit_test") {
 }
 
 ten_utils_group("ten_utils") {
-  if (ten_utils_enable_tests) {
+  if (ten_utils_enable_tests && ten_utils_enable_unit_tests) {
     public_deps = [ ":ten_utils_unit_test" ]
   }
 }

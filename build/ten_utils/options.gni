@@ -21,5 +21,6 @@ declare_args() {
   ten_utils_enable_value = true
 
   # If set, including tests
-  ten_utils_enable_tests = is_linux
+  ten_utils_enable_tests = true
+  ten_utils_enable_unit_tests = is_linux
 }

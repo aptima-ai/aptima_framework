@@ -12,8 +12,8 @@ copy("ten_rust_test_data") {
   outputs = [ "${root_out_dir}/tests/standalone/ten_rust/tests/test_data" ]
 }
 
-if (enable_ten_rust) {
-  if (is_linux || is_win || (is_mac && target_cpu == "x64")) {
+if (ten_enable_ten_rust) {
+  if (ten_rust_enable_tests) {
     rust_test("ten_rust_test") {
       project_path = "//core/src/ten_rust"
       integration_test_output_name = "integration_test"
@@ -84,10 +84,10 @@ group("ten_rust") {
   deps = []
   public_deps = []
 
-  if (enable_ten_rust) {
+  if (ten_enable_ten_rust) {
     public_deps += [ ":ten_rust_binding" ]
 
-    if (is_linux || is_win || (is_mac && target_cpu == "x64")) {
+    if (ten_rust_enable_tests) {
       deps += [ ":ten_rust_test" ]
     }
   }

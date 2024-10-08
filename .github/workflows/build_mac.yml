@@ -70,7 +70,7 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_tests=false
           tgn build mac arm64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
@@ -121,6 +121,6 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_test=false
+          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_tests=false
           tgn build mac x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out

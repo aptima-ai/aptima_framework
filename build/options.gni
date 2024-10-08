@@ -9,15 +9,15 @@ declare_args() {
 }
 
 declare_args() {
-  ten_enable_test = true
-  ten_enable_private_tests = false
+  # The 'ten_rust' crate depends on the 'ten_utils' (C codes) static library.
+  # The C compiler supports AddressSanitizer on Linux x86, however the rustc
+  # does not. Therefore, the 'ten_rust' crate is disabled on x86.
+  #
+  # TODO(Liu): Add a gn target to compile the 'ten_utils' static without asan on
+  # x86.
+  ten_enable_ten_rust = !(enable_sanitizer && target_cpu == "x86")
 }
 
 declare_args() {
-  # Rust AddressSanitizer is supported on Linux x64 and macOS x64/arm64. Refer
-  # to: https://doc.rust-lang.org/stable/unstable-book/compiler-flags/sanitizer.html#addresssanitizer
-  #
-  # rustc finds the asan runtime library in ~/.rustup/toolchains/<target_cpu>/
-  # lib/rustlib/<target_cpu>/lib/librustc-nightly_rt.asan.a
-  ten_enable_rust_asan = is_mac || (is_linux && target_cpu == "x64")
+  ten_enable_package_manager = true
 }

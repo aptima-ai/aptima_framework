@@ -56,5 +56,5 @@ jobs:
       - name: Build
         run: |
           $ENV:PATH += ";$PWD/core/ten_gn"
-          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_test=false
+          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_tests=false
           tgn build win x64 ${{ matrix.build_type }}
