@@ -19,7 +19,7 @@ layout:
 
 This tutorial introduces how to develop an TEN extension using C++, as well as how to debug and deploy it to run in an TEN app. This tutorial covers the following topics:
 
-* How to create a C++ extension development project using arpm.
+* How to create a C++ extension development project using tman.
 * How to use TEN API to implement the functionality of the extension, such as sending and receiving messages.
 * How to write unit test cases and debug the code.
 * How to deploy the extension locally to an app and perform integration testing within the app.
@@ -31,71 +31,74 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
 
 ### Preparation
 
-* Download the latest arpm and configure the PATH. You can check if it is configured correctly with the following command:
+* Download the latest tman and configure the PATH. You can check if it is configured correctly with the following command:
 
     ```
-    $ arpm -h
+    $ tman -h
     ```
 
-    If the configuration is successful, it will display the help information for arpm as follows:
+    If the configuration is successful, it will display the help information for tman as follows:
 
     ```
-    Usage: arpm [OPTIONS] <COMMAND>
+    TEN manager
+
+    Usage: tman [OPTIONS] <COMMAND>
 
     Commands:
-    install     Install a package. For more detailed usage, run 'install -h'
-    publish     Publish a package. For more detailed usage, run 'publish -h'
-    dev-server  Install a package. For more detailed usage, run 'dev-server -h'
-    help        Print this message or the help of the given subcommand(s)
+      install     Install a package. For more detailed usage, run 'install -h'
+      uninstall   Uninstall a package. For more detailed usage, run 'uninstall -h'
+      package     Create a package file. For more detailed usage, run 'package -h'
+      publish     Publish a package. For more detailed usage, run 'publish -h'
+      dev-server  Install a package. For more detailed usage, run 'dev-server -h'
+      help        Print this message or the help of the given subcommand(s)
 
     Options:
-        --config-file <CONFIG_FILE>  The location of config.json
-    -h, --help                       Print help
-    -V, --version                    Print version
+      -c, --config-file <CONFIG_FILE>  The location of config.json
+          --user-token <USER_TOKEN>    The user token
+          --verbose                    Enable verbose output
+      -h, --help                       Print help
+      -V, --version                    Print version
     ```
 
-* Download the latest standalone\_gn and configure the PATH. For example:
+* Download the latest ten\_gn and configure the PATH. For example:
 
     Note
 
-    standalone\_gn is the C++ build system for the TEN platform. To facilitate developers, TEN provides a standalone\_gn toolchain for building C++ extension projects.
+    ten\_gn is the C++ build system for the TEN platform. To facilitate developers, TEN provides a ten\_gn toolchain for building C++ extension projects.
 
     ```
-    $ export PATH=/path/to/standalone_gn:$PATH
+    $ export PATH=/path/to/ten_gn:$PATH
     ```
 
     You can check if the configuration is successful with the following command:
 
     ```
-    $ ag -h
+    $ tgn -h
     ```
 
-    If the configuration is successful, it will display the help information for standalone\_gn as follows:
-
-    ```
-    usage: ag [-h] [-v] [--verbose | --no-verbose] [--out_file OUT_FILE] [--out_dir OUT_DIR] command target_OS target_CPU build_type
+    usage: tgn [-h] [-v] [--verbose] [--out-dir OUT_DIR] command target-OS target-CPU build-type
 
     An easy-to-use Google gn wrapper
 
     positional arguments:
-      command               possible commands are:
-                            gen         build        rebuild            refs    clean
-                            graph       uninstall    explain_build      desc    check
-                            show_deps   show_input   show_input_output  path    args
-      target_OS             possible OS values are:
-                            win   mac   ios   android   linux
-      target_CPU            possible values are:
-                            x64   x64   arm   arm64
-      build_type            possible values are:
-                            debug   release
+      command            possible commands are:
+                        gen         build        rebuild            refs    clean
+                        graph       uninstall    explain_build      desc    check
+                        show_deps   show_input   show_input_output  path    args
+      target-OS          possible OS values are:
+                        win   mac   linux
+      target-CPU         possible values are:
+                        x86   x64   arm   arm64
+      build-type         possible values are:
+                        debug   release
 
     options:
-      -h, --help            show this help message and exit
-      -v, --version         show program's version number and exit
-      --verbose, --no-verbose
-                            dump verbose outputs
-      --out_file OUT_FILE   dump command output to a file
-      --out_dir OUT_DIR     build output dir, default is 'out/'
+      -h, --help         show this help message and exit
+      -v, --version      show program's version number and exit
+      --verbose          dump verbose outputs
+      --out-dir OUT_DIR  build output dir, default is 'out/'
+
+    I recommend you to put /usr/local/ten_gn/.gnfiles into your PATH so that you can run tgn anywhere.
     ```
 
     Note
@@ -103,7 +106,7 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
   * gn depends on python3, please make sure that Python 3.10 or above is installed.
 * Install a C/C++ compiler, either clang/clang++ or gcc/g++.
 
-In addition, we provide a base compilation image where all of the above dependencies are already installed and configured. You can refer to the [ASTRA.ai](https://github.com/rte-design/ASTRA.ai) project on GitHub.
+In addition, we provide a base compilation image where all of the above dependencies are already installed and configured. You can refer to the [TEN-Agent](https://github.com/ten-framework/TEN-Agent) project on GitHub.
 
 ### Creating C++ extension project
 
@@ -112,7 +115,7 @@ In addition, we provide a base compilation image where all of the above dependen
 Assuming we want to create a project named first\_cxx\_extension, we can use the following command to create it:
 
 ```
-$ arpm install extension default_extension_cpp --template-mode --template-data package_name=first_cxx_extension
+$ tman install extension default_extension_cpp --template-mode --template-data package_name=first_cxx_extension
 ```
 
 Note
@@ -138,7 +141,7 @@ Where:
 
 * src/main.cc contains a simple implementation of the extension, including calls to the C++ API provided by TEN. We will discuss how to use the TEN API in the next section.
 * manifest.json and property.json are the standard configuration files for TEN extensions. In manifest.json, metadata information such as the version, dependencies, and schema definition of the extension are typically declared. property.json is used to declare the business configuration of the extension.
-* BUILD.gn is the configuration file for standalone\_gn, used to compile the C++ extension project.
+* BUILD.gn is the configuration file for ten\_gn, used to compile the C++ extension project.
 
 The property.json file is initially an empty JSON file, like this:
 
@@ -146,18 +149,17 @@ The property.json file is initially an empty JSON file, like this:
 {}
 ```
 
-The manifest.json file will include the rte\_runtime dependency by default, like this:
+The manifest.json file will include the ten\_runtime dependency by default, like this:
 
 ```
 {
   "type": "extension",
   "name": "first_cxx_extension",
   "version": "0.2.0",
-  "language": "cpp",
   "dependencies": [
   {
     "type": "system",
-    "name": "rte_runtime",
+    "name": "ten_runtime",
     "version": "0.2.0"
   }
   ],
@@ -168,8 +170,8 @@ The manifest.json file will include the rte\_runtime dependency by default, like
 Note
 
 * Please note that according to TEN's naming convention, the name should be alphanumeric. This is because when integrating the extension into an app, a directory will be created based on the extension name. TEN also provides the functionality to automatically load the manifest.json and property.json files from the extension directory.
-* Dependencies are used to declare the dependencies of the extension. When installing TEN packages, arpm will automatically download the dependencies based on the declarations in the dependencies section.
-* The api section is used to declare the schema of the extension. Refer to `usage of rte schema <usage_of_rte_schema_cn>`.
+* Dependencies are used to declare the dependencies of the extension. When installing TEN packages, tman will automatically download the dependencies based on the declarations in the dependencies section.
+* The api section is used to declare the schema of the extension. Refer to `usage of ten schema <usage_of_ten_schema_cn>`.
 
 #### Manual Creation
 
@@ -179,23 +181,23 @@ First, ensure that the project's output target is a shared library. Then, refer 
 
 * `type` must be `extension`.
 * `language` must be `cpp`.
-* `dependencies` should include `rte_runtime`.
+* `dependencies` should include `ten_runtime`.
 
-Finally, configure the build settings. The `default_extension_cpp` provided by TEN uses `standalone_gn` as the build toolchain. If developers are using a different build toolchain, they can refer to the configuration in `BUILD.gn` to set the compilation parameters. Since `BUILD.gn` contains the directory structure of the TEN package, we will discuss it in the next section (Downloading Dependencies).
+Finally, configure the build settings. The `default_extension_cpp` provided by TEN uses `ten_gn` as the build toolchain. If developers are using a different build toolchain, they can refer to the configuration in `BUILD.gn` to set the compilation parameters. Since `BUILD.gn` contains the directory structure of the TEN package, we will discuss it in the next section (Downloading Dependencies).
 
 ### Download Dependencies
 
 To download dependencies, execute the following command in the extension project directory:
 
 ```
-$ arpm install
+$ tman install
 ```
 
-After the command is executed successfully, a `.rte` directory will be generated in the current directory, which contains all the dependencies of the current extension.
+After the command is executed successfully, a `.ten` directory will be generated in the current directory, which contains all the dependencies of the current extension.
 
 Note
 
-* There are two modes for extensions: development mode and runtime mode. In development mode, the root directory is the source code directory of the extension. In runtime mode, the root directory is the app directory. Therefore, the placement path of dependencies is different in these two modes. The `.rte` directory mentioned here is the root directory of dependencies in development mode.
+* There are two modes for extensions: development mode and runtime mode. In development mode, the root directory is the source code directory of the extension. In runtime mode, the root directory is the app directory. Therefore, the placement path of dependencies is different in these two modes. The `.ten` directory mentioned here is the root directory of dependencies in development mode.
 
 The directory structure is as follows:
 
@@ -204,7 +206,7 @@ The directory structure is as follows:
 ├── BUILD.gn
 ├── manifest.json
 ├── property.json
-├── .rte
+├── .ten
 │   └── app
 │       ├── addon
 │       ├── include
@@ -215,8 +217,8 @@ The directory structure is as follows:
 
 Where:
 
-* `.rte/app/include` is the root directory for header files.
-* `.rte/app/lib` is the root directory for precompiled dynamic libraries of TEN runtime.
+* `.ten/app/include` is the root directory for header files.
+* `.ten/app/lib` is the root directory for precompiled dynamic libraries of TEN runtime.
 
 If it is in runtime mode, the extension will be placed in the `addon/extension` directory of the app, and the dynamic libraries will be placed in the `lib` directory of the app. The structure is as follows:
 
@@ -239,8 +241,8 @@ So far, an TEN C++ extension project has been created.
 The content of `BUILD.gn` for `default_extension_cpp` is as follows:
 
 ```
-import("//exts/rte/base_options.gni")
-import("//exts/rte/rte_package.gni")
+import("//exts/ten/base_options.gni")
+import("//exts/ten/ten_package.gni")
 
 config("common_config") {
   defines = common_defines
@@ -260,36 +262,36 @@ config("build_config") {
 
   # 1. The `include` refers to the `include` directory in current extension.
   # 2. The `//include` refers to the `include` directory in the base directory
-  #    of running `ag gen`.
-  # 3. The `.rte/app/include` is used in extension standalone building.
+  #    of running `tgn gen`.
+  # 3. The `.ten/app/include` is used in extension standalone building.
   include_dirs = [
   "include",
   "//core/include",
   "//include/nlohmann_json",
-  ".rte/app/include",
-  ".rte/app/include/nlohmann_json",
+  ".ten/app/include",
+  ".ten/app/include/nlohmann_json",
   ]
 
   lib_dirs = [
   "lib",
   "//lib",
-  ".rte/app/lib",
+  ".ten/app/lib",
   ]
 
   if (is_win) {
   libs = [
-    "rte_runtime.dll.lib",
+    "ten_runtime.dll.lib",
     "utils.dll.lib",
   ]
   } else {
   libs = [
-    "rte_runtime",
+    "ten_runtime",
     "utils",
   ]
   }
 }
 
-rte_package("first_cxx_extension") {
+ten_package("first_cxx_extension") {
   package_type = "develop"  # develop | release
   package_kind = "extension"
 
@@ -307,7 +309,7 @@ rte_package("first_cxx_extension") {
 }
 ```
 
-Let's first take a look at the `rte_package` target, which declares a build target for an TEN package.
+Let's first take a look at the `ten_package` target, which declares a build target for an TEN package.
 
 * The `package_kind` is set to `extension`, and the `build_type` is set to `shared_library`. This means that the expected output of the compilation is a shared library.
 * The `sources` field specifies the source file(s) to be compiled. If there are multiple source files, they need to be added to the `sources` field.
@@ -316,18 +318,18 @@ Let's first take a look at the `rte_package` target, which declares a build targ
 Next, let's look at the content of `build_config`.
 
 * The `include_dirs` field defines the search paths for header files.
-  * The difference between `include` and `//include` is that `include` refers to the `include` directory in the current extension directory, while `//include` is based on the working directory of the `ag gen` command. So, if the compilation is executed in the extension directory, it will be the same as `include`. But if it is executed in the app directory, it will be the `include` directory in the app.
-  * `.rte/app/include` is used for standalone development and compilation of the extension, which is the scenario being discussed in this tutorial. In other words, the default `build_config` is compatible with both development mode and runtime mode compilation.
+  * The difference between `include` and `//include` is that `include` refers to the `include` directory in the current extension directory, while `//include` is based on the working directory of the `tgn gen` command. So, if the compilation is executed in the extension directory, it will be the same as `include`. But if it is executed in the app directory, it will be the `include` directory in the app.
+  * `.ten/app/include` is used for standalone development and compilation of the extension, which is the scenario being discussed in this tutorial. In other words, the default `build_config` is compatible with both development mode and runtime mode compilation.
 * The `lib_dirs` field defines the search paths for dependency libraries. The difference between `lib` and `//lib` is similar to `include`.
-* The `libs` field defines the dependent libraries. `rte_runtime` and `utils` are libraries provided by TEN.
+* The `libs` field defines the dependent libraries. `ten_runtime` and `utils` are libraries provided by TEN.
 
 Therefore, if developers are using a different build toolchain, they can refer to the above configuration and set the compilation parameters in their own build toolchain. For example, if using g++ to compile:
 
 ```
-$ g++ -shared -fPIC -I.rte/app/include/ -L.rte/app/lib -lrte_runtime -lutils -Wl,-rpath=\$ORIGIN -Wl,-rpath=\$ORIGIN/../../../lib src/main.cc
+$ g++ -shared -fPIC -I.ten/app/include/ -L.ten/app/lib -lten_runtime -lutils -Wl,-rpath=\$ORIGIN -Wl,-rpath=\$ORIGIN/../../../lib src/main.cc
 ```
 
-The setting of `rpath` is also considered for the runtime mode, where the rte\_runtime dependency of the extension is placed in the `app/lib` directory.
+The setting of `rpath` is also considered for the runtime mode, where the ten\_runtime dependency of the extension is placed in the `app/lib` directory.
 
 ### Implementation of Extension Functionality
 
@@ -338,35 +340,35 @@ For developers, there are two things to do:
 
 #### Creating the Extension Class
 
-The extension created by developers needs to inherit the `rte::extension_t` class. The main definition of this class is as follows:
+The extension created by developers needs to inherit the `ten::extension_t` class. The main definition of this class is as follows:
 
 ```
 class extension_t {
 protected:
   explicit extension_t(const std::string &name) {...}
 
-  virtual void on_init(rte_t &rte, metadata_info_t &manifest,
+  virtual void on_init(ten_t &ten, metadata_info_t &manifest,
                      metadata_info_t &property) {
-    rte.on_init_done(manifest, property);
+    ten.on_init_done(manifest, property);
   }
 
-  virtual void on_start(rte_t &rte) { rte.on_start_done(); }
+  virtual void on_start(ten_t &ten) { ten.on_start_done(); }
 
-  virtual void on_stop(rte_t &rte) { rte.on_stop_done(); }
+  virtual void on_stop(ten_t &ten) { ten.on_stop_done(); }
 
-  virtual void on_deinit(rte_t &rte) { rte.on_deinit_done(); }
+  virtual void on_deinit(ten_t &ten) { ten.on_deinit_done(); }
 
-  virtual void on_cmd(rte_t &rte, std::unique_ptr<cmd_t> cmd) {
-    auto cmd_result = rte::cmd_result_t::create(RTE_STATUS_CODE_OK);
+  virtual void on_cmd(ten_t &ten, std::unique_ptr<cmd_t> cmd) {
+    auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
     cmd_result->set_property("detail", "default");
-    rte.return_result(std::move(cmd_result), std::move(cmd));
+    ten.return_result(std::move(cmd_result), std::move(cmd));
   }
 
-  virtual void on_data(rte_t &rte, std::unique_ptr<data_t> data) {}
+  virtual void on_data(ten_t &ten, std::unique_ptr<data_t> data) {}
 
-  virtual void on_pcm_frame(rte_t &rte, std::unique_ptr<pcm_frame_t> frame) {}
+  virtual void on_pcm_frame(ten_t &ten, std::unique_ptr<pcm_frame_t> frame) {}
 
-  virtual void on_image_frame(rte_t &rte,
+  virtual void on_image_frame(ten_t &ten,
                               std::unique_ptr<image_frame_t> frame) {}
 }
 ```
@@ -376,27 +378,27 @@ In the markdown content you provided, there are descriptions of the lifecycle fu
 Lifecycle Functions:
 
 * on\_init: Used to initialize the extension instance, such as setting the extension's configuration.
-* on\_start: Used to start the extension instance, such as establishing connections to external services. The extension will not receive messages until on\_start is completed. In on\_start, you can use the rte.get\_property API to retrieve the extension's configuration.
+* on\_start: Used to start the extension instance, such as establishing connections to external services. The extension will not receive messages until on\_start is completed. In on\_start, you can use the ten.get\_property API to retrieve the extension's configuration.
 * on\_stop: Used to stop the extension instance, such as closing connections to external services.
 * on\_deinit: Used to destroy the extension instance, such as releasing memory resources.
 
 Message Handling Functions:
 
-* on\_cmd/on\_data/on\_pcm\_frame/on\_image\_frame: These are callback methods used to receive messages of four different types. For more information on TEN message types, you can refer to the [message-type-and-name](https://github.com/rte-design/ASTRA.ai/blob/main/docs/message-type-and-name.md)
+* on\_cmd/on\_data/on\_pcm\_frame/on\_image\_frame: These are callback methods used to receive messages of four different types. For more information on TEN message types, you can refer to the [message-system](https://github.com/TEN-framework/ten_framework/blob/main/docs/ten_framework/message_system.md)
 
-The rte::extension\_t class provides default implementations for these functions, and developers can override them according to their needs.
+The ten::extension\_t class provides default implementations for these functions, and developers can override them according to their needs.
 
 #### Registering the Extension
 
 After defining the extension, it needs to be registered as an addon in the TEN runtime. For example, in the `first_cxx_extension/src/main.cc` file, the registration code is as follows:
 
 ```
-RTE_CPP_REGISTER_ADDON_AS_EXTENSION(first_cxx_extension, first_cxx_extension_extension_t);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(first_cxx_extension, first_cxx_extension_extension_t);
 ```
 
-* RTE\_CPP\_REGISTER\_ADDON\_AS\_EXTENSION is a macro provided by the TEN runtime for registering extension addons.
+* TEN\_CPP\_REGISTER\_ADDON\_AS\_EXTENSION is a macro provided by the TEN runtime for registering extension addons.
   * The first parameter is the name of the addon, which serves as a unique identifier for the addon. It will be used to define the extension in the graph using a declarative approach.
-  * The second parameter is the implementation class of the extension, which is the class that inherits from rte::extension\_t.
+  * The second parameter is the implementation class of the extension, which is the class that inherits from ten::extension\_t.
 
 Please note that the addon name must be unique because it is used as a unique index to find the implementation in the graph.
 
@@ -405,33 +407,33 @@ Please note that the addon name must be unique because it is used as a unique in
 Developers can set the extension's configuration in the on\_init() function, as shown in the example:
 
 ```
-void on_init(rte::rte_t& rte, rte::metadata_info_t& manifest,
-             rte::metadata_info_t& property) override {
-  property.set(RTE_METADATA_JSON_FILENAME, "customized_property.json");
-  rte.on_init_done(manifest, property);
+void on_init(ten::ten_t& ten, ten::metadata_info_t& manifest,
+             ten::metadata_info_t& property) override {
+  property.set(TEN_METADATA_JSON_FILENAME, "customized_property.json");
+  ten.on_init_done(manifest, property);
 }
 ```
 
-Both the property and manifest can be customized using the set() method. In the example, the first parameter RTE\_METADATA\_JSON\_FILENAME indicates that the custom property is stored as a local file, and the second parameter is the file path relative to the extension directory. So in this example, when the app loads the extension, it will load `<app>/addon/extension/first_cxx_extension/customized_property.json`.
+Both the property and manifest can be customized using the set() method. In the example, the first parameter TEN\_METADATA\_JSON\_FILENAME indicates that the custom property is stored as a local file, and the second parameter is the file path relative to the extension directory. So in this example, when the app loads the extension, it will load `<app>/addon/extension/first_cxx_extension/customized_property.json`.
 
 TEN's on\_init provides default logic for loading default configurations. If developers do not call property.set(), the property.json file in the extension directory will be loaded by default. Similarly, if manifest.set() is not called, the manifest.json file in the extension directory will be loaded by default. In the example, since property.set() is called, the property.json file will not be loaded by default.
 
-Please note that on\_init is an asynchronous method, and developers need to call rte.on\_init\_done() to inform the TEN runtime that on\_init has completed as expected.
+Please note that on\_init is an asynchronous method, and developers need to call ten.on\_init\_done() to inform the TEN runtime that on\_init has completed as expected.
 
 #### on\_start
 
 When on\_start is called, it means that on\_init\_done() has been executed and the extension's property has been loaded. From this point on, the extension can access the configuration. For example:
 
 ```
-void on_start(rte::rte_t& rte) override {
-  auto prop = rte.get_property_string("some_string");
+void on_start(ten::ten_t& ten) override {
+  auto prop = ten.get_property_string("some_string");
   // do something
 
-  rte.on_start_done();
+  ten.on_start_done();
 }
 ```
 
-rte.get\_property\_string() is used to retrieve a property of type string with the name "some\_string". If the property does not exist or the type does not match, an error will be returned. If the extension's configuration contains the following content:
+ten.get\_property\_string() is used to retrieve a property of type string with the name "some\_string". If the property does not exist or the type does not match, an error will be returned. If the extension's configuration contains the following content:
 
 ```
 {
@@ -441,25 +443,25 @@ rte.get\_property\_string() is used to retrieve a property of type string with t
 
 Then the value of prop will be "hello world".
 
-Similar to on\_init, on\_start is also an asynchronous method, and developers need to call rte.on\_start\_done() to inform the TEN runtime that on\_start has completed as expected.
+Similar to on\_init, on\_start is also an asynchronous method, and developers need to call ten.on\_start\_done() to inform the TEN runtime that on\_start has completed as expected.
 
-For more information, you can refer to the API documentation: rte api doc.
+For more information, you can refer to the API documentation: ten api doc.
 
 #### Error Handling
 
-As shown in the previous example, if "some\_string" does not exist or is not of type string, rte.get\_property\_string() will return an error. You can handle the error as follows:
+As shown in the previous example, if "some\_string" does not exist or is not of type string, ten.get\_property\_string() will return an error. You can handle the error as follows:
 
 ```C++
-void on_start(rte::rte_t& rte) override {
-  rte::error_t err;
-  auto prop = rte.get_property_string("some_string", &err);
+void on_start(ten::ten_t& ten) override {
+  ten::error_t err;
+  auto prop = ten.get_property_string("some_string", &err);
 
   // error handling
   if (!err.is_success()) {
-    RTE_LOGE("Failed to get property: %s", err.errmsg());
+    TEN_LOGE("Failed to get property: %s", err.errmsg());
   }
 
-  rte.on_start_done();
+  ten.on_start_done();
 }
 ```
 
@@ -514,7 +516,7 @@ The schema is defined in the `api` field of the `manifest.json` file. `cmd_in` d
 
 Note
 
-For the usage of schema, refer to: [rte-schema](https://github.com/rte-design/ASTRA.ai/blob/main/docs/rte-schema.md)
+For the usage of schema, refer to: [TEN Framework Schema System](https://github.com/TEN-framework/ten_framework/blob/main/docs/ten_framework/schema_system.md)
 
 Based on the above description, the content of `manifest.json` for `first_cxx_extension` is as follows:
 
@@ -523,11 +525,10 @@ Based on the above description, the content of `manifest.json` for `first_cxx_ex
   "type": "extension",
   "name": "first_cxx_extension",
   "version": "0.2.0",
-  "language": "cpp",
   "dependencies": [
     {
       "type": "system",
-      "name": "rte_runtime",
+      "name": "ten_runtime",
       "version": "0.2.0"
     }
   ],
@@ -686,14 +687,14 @@ To parse the request data, you can use the `get_property` API provided by TEN. H
 
 class request_t {
 public:
-  void from_cmd(rte::cmd_t &cmd);
+  void from_cmd(ten::cmd_t &cmd);
 
   // ...
 }
 
 // model.cc
 
-void request_t::from_cmd(rte::cmd_t &cmd) {
+void request_t::from_cmd(ten::cmd_t &cmd) {
   app_id = cmd.get_property_string("app_id");
   client_type = cmd.get_property_int8("client_type");
 
@@ -724,29 +725,29 @@ public:
 
 // main.cc
 
-void on_cmd(rte::rte_t &rte, std::unique_ptr<rte::cmd_t> cmd) override {
+void on_cmd(ten::ten_t &ten, std::unique_ptr<ten::cmd_t> cmd) override {
   request_t request;
   request.from_cmd(*cmd);
 
   std::string err_msg;
   if (!request.validate(&err_msg)) {
-    auto result = rte::cmd_result_t::create(RTE_STATUS_CODE_ERROR);
+    auto result = ten::cmd_result_t::create(TEN_STATUS_CODE_ERROR);
     result->set_property("err_no", 1);
     result->set_property("err_msg", err_msg.c_str());
 
-    rte.return_result(std::move(result), std::move(cmd));
+    ten.return_result(std::move(result), std::move(cmd));
   }
 }
 ```
 
-In the example above, `rte::cmd_result_t::create` is used to create a `cmd_result_t` object with an error code. `result.set_property` is used to set the properties of the `cmd_result_t` object. Finally, `rte.return_result` is called to return the `cmd_result_t` object to the requester.
+In the example above, `ten::cmd_result_t::create` is used to create a `cmd_result_t` object with an error code. `result.set_property` is used to set the properties of the `cmd_result_t` object. Finally, `ten.return_result` is called to return the `cmd_result_t` object to the requester.
 
 **Passing Requests to Downstream Extensions**
 
 If an extension needs to send a message to another extension, it can call the `send_cmd()` API. Here is an example:
 
 ```
-void on_cmd(rte::rte_t &rte, std::unique_ptr<rte::cmd_t> cmd) override {
+void on_cmd(ten::ten_t &ten, std::unique_ptr<ten::cmd_t> cmd) override {
   request_t request;
   request.from_cmd(*cmd);
 
@@ -754,7 +755,7 @@ void on_cmd(rte::rte_t &rte, std::unique_ptr<rte::cmd_t> cmd) override {
   if (!request.validate(&err_msg)) {
     // ...
   } else {
-    rte.send_cmd(std::move(cmd));
+    ten.send_cmd(std::move(cmd));
   }
 }
 ```
@@ -764,10 +765,10 @@ The first parameter in `send_cmd()` is the command of the request, and the secon
 Developers can also pass a response handler, like this:
 
 ```
-rte.send_cmd(
+ten.send_cmd(
     std::move(cmd),
-    [](rte::rte_t &rte, std::unique_ptr<rte::cmd_result_t> result) {
-      rte.return_result_directly(std::move(result));
+    [](ten::ten_t &ten, std::unique_ptr<ten::cmd_result_t> result) {
+      ten.return_result_directly(std::move(result));
     });
 ```
 
@@ -782,11 +783,11 @@ So far, an example of a simple command processing logic is complete. For other m
 
 ### Deploying Locally to an App for Integration Testing
 
-arpm provides the ability to publish to a local registry, allowing you to perform integration testing locally without uploading the extension to the central repository. Unlike GO extensions, for C++ extensions, there are no strict requirements on the app's programming language. It can be GO, C++, or Python.
+tman provides the ability to publish to a local registry, allowing you to perform integration testing locally without uploading the extension to the central repository. Unlike GO extensions, for C++ extensions, there are no strict requirements on the app's programming language. It can be GO, C++, or Python.
 
 The deployment process may vary for different apps. The specific steps are as follows:
 
-* Set up the arpm local registry.
+* Set up the tman local registry.
 * Upload the extension to the local registry.
 * Download the app from the central repository (default\_app\_cpp/default\_app\_go) for integration testing.
 * For C++ apps:
@@ -801,26 +802,28 @@ The deployment process may vary for different apps. The specific steps are as fo
 
 #### Uploading the Extension to the Local Registry
 
-First, create a temporary config.json file to set up the arpm local registry. For example, the contents of /tmp/code/config.json are as follows:
+First, create a temporary config.json file to set up the tman local registry. For example, the contents of /tmp/code/config.json are as follows:
 
 ```
 {
-  "registry": [
-    "file:///tmp/code/repository"
-  ]
+  "registry": {
+    "default": {
+      "index": "file:///tmp/code/repository"
+    }
+  }
 }
 ```
 
-This sets the local directory /tmp/code/repository as the arpm local registry.
+This sets the local directory `/tmp/code/repository` as the tman local registry.
 
 Note
 
-* Be careful not to place it in \~/.arpm/config.json, as it will affect the subsequent download of dependencies from the central repository.
+* Be careful not to place it in \~/.tman/config.json, as it will affect the subsequent download of dependencies from the central repository.
 
 Then, in the first\_cxx\_extension directory, execute the following command to upload the extension to the local registry:
 
 ```
-$ arpm --config-file /tmp/code/config.json publish
+$ tman --config-file /tmp/code/config.json publish
 ```
 
 After the command completes, the uploaded extension can be found in the /tmp/code/repository/extension/first\_cxx\_extension/0.1.0 directory.
@@ -830,7 +833,7 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 1. Install default\_app\_cpp as the test app in an empty directory.
 
 > ```
-> $ arpm install app default_app_cpp
+> $ tman install app default_app_cpp
 > ```
 >
 > After the command is successfully executed, there will be a directory named default\_app\_cpp in the current directory.
@@ -844,7 +847,7 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 > Execute the following command:
 >
 > ```
-> $ arpm --config-file /tmp/code/config.json install extension first_cxx_extension
+> $ tman --config-file /tmp/code/config.json install extension first_cxx_extension
 > ```
 >
 > After the command is completed, there will be a first\_cxx\_extension directory in the addon/extension directory.
@@ -860,7 +863,7 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 > First, create an http server extension based on default\_extension\_cpp. Execute the following command in the app directory:
 >
 > ```
-> $ arpm install extension default_extension_cpp --template-mode --template-data package_name=http_server
+> $ tman install extension default_extension_cpp --template-mode --template-data package_name=http_server
 > ```
 >
 > The main functionality of the http server is:
@@ -876,17 +879,17 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 > ```
 > #include "httplib.h"
 > #include "nlohmann/json.hpp"
-> #include "rte_runtime/binding/cpp/rte.h"
+> #include "ten_runtime/binding/cpp/ten.h"
 >
 > namespace http_server_extension {
 >
-> class http_server_extension_t : public rte::extension_t {
+> class http_server_extension_t : public ten::extension_t {
 > public:
 >   explicit http_server_extension_t(const std::string &name)
 >       : extension_t(name) {}
 >
->   void on_start(rte::rte_t &rte) override {
->     rte_proxy = rte::rte_proxy_t::create(rte);
+>   void on_start(ten::ten_t &ten) override {
+>     ten_proxy = ten::ten_proxy_t::create(ten);
 >     srv_thread = std::thread([this] {
 >       server.Get("/health",
 >                 [](const httplib::Request &req, httplib::Response &res) {
@@ -898,21 +901,21 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 >                                   httplib::Response &res) {
 >         // Receive json body.
 >         auto body = nlohmann::json::parse(req.body);
->         body["rte"]["name"] = "hello";
+>         body["ten"]["name"] = "hello";
 >
->         auto cmd = rte::cmd_t::create_from_json(body.dump().c_str());
+>         auto cmd = ten::cmd_t::create_from_json(body.dump().c_str());
 >         auto cmd_shared =
->             std::make_shared<std::unique_ptr<rte::cmd_t>>(std::move(cmd));
+>             std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 >
 >         std::condition_variable *cv = new std::condition_variable();
 >
 >         auto response_body = std::make_shared<std::string>();
 >
->         rte_proxy->notify([cmd_shared, response_body, cv](rte::rte_t &rte) {
->           rte.send_cmd(
+>         ten_proxy->notify([cmd_shared, response_body, cv](ten::ten_t &ten) {
+>           ten.send_cmd(
 >               std::move(*cmd_shared),
->               [response_body, cv](rte::rte_t &rte,
->                                   std::unique_ptr<rte::cmd_result_t> result) {
+>               [response_body, cv](ten::ten_t &ten,
+>                                   std::unique_ptr<ten::cmd_result_t> result) {
 >                 auto err_no = result->get_property_uint8("err_no");
 >                 if (err_no > 0) {
 >                   auto err_msg = result->get_property_string("err_msg");
@@ -935,34 +938,34 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 >       server.listen("0.0.0.0", 8001);
 >     });
 >
->     rte.on_start_done();
+>     ten.on_start_done();
 >   }
 >
->   void on_stop(rte::rte_t &rte) override {
+>   void on_stop(ten::ten_t &ten) override {
 >     // Extension stop.
 >
 >     server.stop();
 >     srv_thread.join();
->     delete rte_proxy;
+>     delete ten_proxy;
 >
->     rte.on_stop_done();
+>     ten.on_stop_done();
 >   }
 >
 > private:
 >   httplib::Server server;
 >   std::thread srv_thread;
->   rte::rte_proxy_t *rte_proxy{nullptr};
+>   ten::ten_proxy_t *ten_proxy{nullptr};
 >   std::mutex mtx;
 > };
 >
-> RTE_CPP_REGISTER_ADDON_AS_EXTENSION(http_server, http_server_extension_t);
+> TEN_CPP_REGISTER_ADDON_AS_EXTENSION(http_server, http_server_extension_t);
 >
 > } // namespace http_server_extension
 > ```
 
-Here, a new thread is created in `on_start()` to run the http server because we don't want to block the extension thread. This way, the converted cmd requests are generated and sent from `srv_thread`. In the TEN runtime, to ensure thread safety, we use `rte_proxy_t` to pass calls like `send_cmd()` from threads outside the extension thread.
+Here, a new thread is created in `on_start()` to run the http server because we don't want to block the extension thread. This way, the convetend cmd requests are generated and sent from `srv_thread`. In the TEN runtime, to ensure thread safety, we use `ten_proxy_t` to pass calls like `send_cmd()` from threads outside the extension thread.
 
-This code also demonstrates how to clean up external resources in `on_stop()`. For an extension, you should release the `rte_proxy_t` before `on_stop_done()`, which stops the external thread.
+This code also demonstrates how to clean up external resources in `on_stop()`. For an extension, you should release the `ten_proxy_t` before `on_stop_done()`, which stops the external thread.
 
 1. Configure the graph.
 
@@ -1018,8 +1021,8 @@ In the app's `manifest.json`, configure `predefined_graph` to specify that the `
 > Execute the following commands in the app directory:
 >
 > ```
-> $ ag gen linux x64 debug
-> $ ag build linux x64 debug
+> $ tgn gen linux x64 debug
+> $ tgn build linux x64 debug
 > ```
 >
 > After the compilation is complete, the compilation output for the app and extension will be generated in the directory out/linux/x64/app/default\_app\_cpp.
@@ -1037,7 +1040,7 @@ In the app's `manifest.json`, configure `predefined_graph` to specify that the `
 > Install the extension group.
 >
 > ```
-> $ arpm install extension_group default_extension_group
+> $ tman install extension_group default_extension_group
 > ```
 
 7. Start the app.
