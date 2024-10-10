@@ -113,7 +113,9 @@ jobs:
         with:
           name: ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}
           path: |
-            out/linux/x64/ten_packages/system
+            out/linux/x64/ten_packages/system/ten_runtime
+            out/linux/x64/ten_packages/system/ten_runtime_go
+            out/linux/x64/ten_packages/system/ten_runtime_python
             out/linux/x64/ten_packages/extension_group
             out/linux/x64/ten_packages/extension/default_extension_cpp
             out/linux/x64/ten_packages/extension/default_extension_go
@@ -125,7 +127,9 @@ jobs:
         run: |
           cd out/linux/x64
           zip -vr ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip \
-            ten_packages/system \
+            ten_packages/system/ten_runtime \
+            ten_packages/system/ten_runtime_go \
+            ten_packages/system/ten_runtime_python \
             ten_packages/extension_group \
             ten_packages/extension/default_extension_cpp \
             ten_packages/extension/default_extension_go \

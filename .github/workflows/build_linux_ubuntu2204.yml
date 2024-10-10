@@ -119,7 +119,9 @@ jobs:
         with:
           name: ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}
           path: |
-            out/linux/x64/ten_packages/system
+            out/linux/x64/ten_packages/system/ten_runtime
+            out/linux/x64/ten_packages/system/ten_runtime_go
+            out/linux/x64/ten_packages/system/ten_runtime_python
             out/linux/x64/ten_packages/extension_group
             out/linux/x64/ten_packages/extension/default_extension_cpp
             out/linux/x64/ten_packages/extension/default_extension_go
@@ -132,7 +134,9 @@ jobs:
           cd out/linux/x64
           zip -vr tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip ten_manager/bin/tman
           zip -vr ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip \
-            ten_packages/system \
+            ten_packages/system/ten_runtime \
+            ten_packages/system/ten_runtime_go \
+            ten_packages/system/ten_runtime_python \
             ten_packages/extension_group \
             ten_packages/extension/default_extension_cpp \
             ten_packages/extension/default_extension_go \
