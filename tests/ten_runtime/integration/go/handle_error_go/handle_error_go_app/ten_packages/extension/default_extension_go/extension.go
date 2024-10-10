@@ -1,17 +1,15 @@
+//
 // Copyright © 2024 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
 // information.
 //
-// Note that this is just an example extension written in the GO programming
-// language, so the package name does not equal to the containing directory
-// name. However, it is not common in Go.
-package defaultextension
+
+package default_extension_go
 
 import (
 	"fmt"
-	"time"
 
 	"ten_framework/ten"
 )
@@ -41,32 +39,32 @@ func (p *extensionA) OnCmd(
 
 		cmdB, _ := ten.NewCmd("B")
 		tenEnv.SendCmd(cmdB, func(r ten.TenEnv, cs ten.CmdResult) {
-			detail, err := cs.GetPropertyPtr("data")
+			detail, err := cs.GetPropertyString("detail")
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				tenEnv.ReturnResult(cmdResult, cmd)
-			} else {
-				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-				cmdResult.SetPropertyString("detail", detail.(*userData).name)
-				tenEnv.ReturnResult(cmdResult, cmd)
+				r.ReturnResult(cmdResult, cmd)
+				return
 			}
+
+			// Try to get nonexistent property.
+			_, err = tenEnv.GetPropertyString("agora")
+			if err != nil {
+				fmt.Println("getProp agora error, ", err)
+			}
+
+			_, err = tenEnv.GetPropertyString("agora")
+			if err == nil {
+				panic("should not happen")
+			}
+
+			fmt.Println("getPropertyAsync agora error, ", err)
+			statusCode, _ := cs.GetStatusCode()
+			cmdResult, _ := ten.NewCmdResult(statusCode)
+			cmdResult.SetPropertyString("detail", detail)
+			r.ReturnResult(cmdResult, cmd)
 		})
-
-		time.Sleep(time.Second * 3)
-		// Use the expired ten object.
-		err := tenEnv.SendCmd(cmdB, nil)
-		if err != nil {
-			fmt.Println("failed to use invalid ten object.")
-		} else {
-			panic("should not happen")
-		}
 	}()
-}
-
-type userData struct {
-	uid  int
-	name string
 }
 
 func (p *extensionB) OnCmd(
@@ -78,13 +76,19 @@ func (p *extensionB) OnCmd(
 
 		cmdName, _ := cmd.GetName()
 		if cmdName == "B" {
-			data := userData{uid: 1, name: "ten"}
-			cs, _ := ten.NewCmdResult(ten.StatusCodeOk)
-			cs.SetProperty("data", &data)
-			err := tenEnv.ReturnResult(cs, cmd)
+			// Try to get nonexistent property.
+			res, err := cmd.GetPropertyString("agora")
 			if err != nil {
-				panic(err)
+				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult.SetPropertyString("detail", err.Error())
+				tenEnv.ReturnResult(cmdResult, cmd)
+			} else {
+				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+				cmdResult.SetPropertyString("detail", res)
+				tenEnv.ReturnResult(cmdResult, cmd)
 			}
+
+		} else {
 		}
 	}()
 }

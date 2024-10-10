@@ -7,7 +7,7 @@
 // Note that this is just an example extension written in the GO programming
 // language, so the package name does not equal to the containing directory
 // name. However, it is not common in Go.
-package defaultextension
+package default_extension_go
 
 import (
 	"fmt"
@@ -31,11 +31,6 @@ func newExtensionB(name string) ten.Extension {
 	return &extensionB{}
 }
 
-type userData struct {
-	num int
-	str string
-}
-
 func (p *extensionA) OnCmd(
 	tenEnv ten.TenEnv,
 	cmd ten.Cmd,
@@ -44,32 +39,25 @@ func (p *extensionA) OnCmd(
 		fmt.Println("extensionA OnCmd")
 
 		cmdB, _ := ten.NewCmd("B")
-
-		strArray := []string{"hello", "world", "ten"}
-		cmdB.SetProperty("array", &strArray)
-
-		propMap := make(map[string]interface{})
-		propMap["paramA"] = "A"
-		cmdB.SetProperty("map", &propMap)
-
-		data := &userData{num: 2, str: "str"}
-		cmdB.SetProperty("struct", data)
-		data.num = 3
-
 		tenEnv.SendCmd(cmdB, func(r ten.TenEnv, cs ten.CmdResult) {
-			detail, err := cs.GetPropertyString("detail")
+			detail, err := cs.GetPropertyPtr("data")
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				r.ReturnResult(cmdResult, cmd)
+				tenEnv.ReturnResult(cmdResult, cmd)
 				return
 			}
 
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-			cmdResult.SetPropertyString("detail", detail)
-			r.ReturnResult(cmdResult, cmd)
+			cmdResult.SetPropertyString("detail", detail.(*userData).name)
+			tenEnv.ReturnResult(cmdResult, cmd)
 		})
 	}()
+}
+
+type userData struct {
+	uid  int
+	name string
 }
 
 func (p *extensionB) OnCmd(
@@ -81,44 +69,14 @@ func (p *extensionB) OnCmd(
 
 		cmdName, _ := cmd.GetName()
 		if cmdName == "B" {
-			strArrayPtr, err := cmd.GetPropertyPtr("array")
+			data := userData{uid: 1, name: "ten"}
+			cs, _ := ten.NewCmdResult(ten.StatusCodeOk)
+			cs.SetProperty("data", &data)
+			err := tenEnv.ReturnResult(cs, cmd)
 			if err != nil {
-				panic("failed to get prop: array")
+				panic(err)
 			}
-			strArray := *(strArrayPtr.(*[]string))
-
-			if len(strArray) != 3 || strArray[0] != "hello" ||
-				strArray[1] != "world" ||
-				strArray[2] != "ten" {
-				panic("should not happen")
-			}
-
-			mapPtr, err := cmd.GetPropertyPtr(
-				"map",
-			)
-			if err != nil {
-				panic("failed to get prop: map")
-			}
-			m := *(mapPtr.(*map[string]interface{}))
-
-			if m["paramA"] != "A" {
-				panic("should not happen")
-			}
-
-			structPtr, err := cmd.GetPropertyPtr("struct")
-			if err != nil {
-				panic("failed to get prop: struct")
-			}
-
-			structData := structPtr.(*userData)
-
-			if structData.num != 3 || structData.str != "str" {
-				panic("should not happen")
-			}
-
-			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-			cmdResult.SetPropertyString("detail", "ten")
-			tenEnv.ReturnResult(cmdResult, cmd)
+		} else {
 		}
 	}()
 }

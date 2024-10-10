@@ -22,7 +22,7 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
         "app": "msgpack://127.0.0.1:8007/",
         "graph": "default",
         "extension_group": "default_extension_group",
-        "extension": "default_extension"
+        "extension": "default_extension_go"
       }]
     }
   })"_json);

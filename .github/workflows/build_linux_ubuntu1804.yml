@@ -3,18 +3,8 @@ name: Build - linux ubuntu1804
 on:
   release:
     types: [created]
-  push:
-    branches:
-      - "**"
-    paths-ignore:
-      - "tools/**"
-      - "docs/**"
-      - ".vscode/**"
-      - ".devcontainer/**"
-      - ".github/**"
-      - "!.github/workflows/build_linux_ubuntu1804.yml"
-      - "**.md"
   pull_request:
+    types: [opened, synchronize, reopened]
     paths-ignore:
       - "tools/**"
       - "docs/**"

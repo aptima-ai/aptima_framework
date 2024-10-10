@@ -3,17 +3,17 @@
     {
       "type": "system",
       "name": "ten_runtime",
-      "version": "0.2.0"
+      "version": "0.3.0-alpha"
     },
     {
       "type": "system",
       "name": "ten_runtime_python",
-      "version": "0.1.0"
+      "version": "0.3.0-alpha"
     },
     {
       "type": "extension",
       "name": "default_extension_go",
-      "version": "0.1.0"
+      "version": "0.3.0-alpha"
     },
     {
       "type": "extension",
@@ -28,12 +28,12 @@
     {
       "type": "extension",
       "name": "default_extension_python",
-      "version": "0.1.0"
+      "version": "0.3.0-alpha"
     },
     {
       "type": "extension",
       "name": "py_init_extension_cpp",
-      "version": "0.1.0"
+      "version": "0.3.0-alpha"
     },
     {
       "type": "extension",

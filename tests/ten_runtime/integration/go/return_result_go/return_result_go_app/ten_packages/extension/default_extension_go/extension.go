@@ -7,7 +7,7 @@
 // Note that this is just an example extension written in the GO programming
 // language, so the package name does not equal to the containing directory
 // name. However, it is not common in Go.
-package defaultextension
+package default_extension_go
 
 import (
 	"fmt"
@@ -44,26 +44,28 @@ func (p *extensionA) OnCmd(
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				r.ReturnResult(cmdResult, cmd)
+				tenEnv.ReturnResult(cmdResult, cmd)
 				return
 			}
 
-			// Try to get nonexistent property.
-			_, err = tenEnv.GetPropertyString("agora")
+			if detail != "this is extensionB." {
+				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult.SetPropertyString("detail", "wrong detail")
+				tenEnv.ReturnResult(cmdResult, cmd)
+				return
+			}
+
+			password, err := cs.GetPropertyString("password")
 			if err != nil {
-				fmt.Println("getProp agora error, ", err)
+				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult.SetPropertyString("detail", err.Error())
+				tenEnv.ReturnResult(cmdResult, cmd)
+				return
 			}
 
-			_, err = tenEnv.GetPropertyString("agora")
-			if err == nil {
-				panic("should not happen")
-			}
-
-			fmt.Println("getPropertyAsync agora error, ", err)
-			statusCode, _ := cs.GetStatusCode()
-			cmdResult, _ := ten.NewCmdResult(statusCode)
-			cmdResult.SetPropertyString("detail", detail)
-			r.ReturnResult(cmdResult, cmd)
+			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+			cmdResult.SetPropertyString("detail", password)
+			tenEnv.ReturnResult(cmdResult, cmd)
 		})
 	}()
 }
@@ -77,19 +79,19 @@ func (p *extensionB) OnCmd(
 
 		cmdName, _ := cmd.GetName()
 		if cmdName == "B" {
-			// Try to get nonexistent property.
-			res, err := cmd.GetPropertyString("agora")
+			statusCmd, err := ten.NewCmdResult(
+				ten.StatusCodeOk,
+			)
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
 				tenEnv.ReturnResult(cmdResult, cmd)
-			} else {
-				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-				cmdResult.SetPropertyString("detail", res)
-				tenEnv.ReturnResult(cmdResult, cmd)
+				return
 			}
 
-		} else {
+			statusCmd.SetProperty("detail", "this is extensionB.")
+			statusCmd.SetProperty("password", "password")
+			tenEnv.ReturnResult(statusCmd, cmd)
 		}
 	}()
 }

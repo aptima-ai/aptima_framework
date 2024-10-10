@@ -23,6 +23,19 @@ class ArgumentInfo(argparse.Namespace):
         self.depfile_target: str
         self.log_level: int
         self.pkg_type: str
+        self.local_registry_path: str
+
+
+def get_pkgs_from_local_registry(
+    local_registry_path: str, pkg_type: str, pkg_name: str
+) -> list[str]:
+    # Find directories under <local_registry_path>/<pkg_type>/<pkg_name> and
+    # return their names.
+    pkg_dir = os.path.join(local_registry_path, pkg_type, pkg_name)
+    if not os.path.exists(pkg_dir):
+        return []
+
+    return os.listdir(pkg_dir)
 
 
 def process_possible_published_results(file_paths: list[str]) -> list[str]:
@@ -90,6 +103,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--log-level", type=int, required=True, help="specify log level"
     )
+    parser.add_argument(
+        "--local-registry-path",
+        type=str,
+        required=False,
+        help="Path to local registry",
+    )
 
     arg_info = ArgumentInfo()
     args = parser.parse_args(namespace=arg_info)
@@ -124,6 +143,17 @@ if __name__ == "__main__":
 
         if args.config_file is not None:
             list.append(cmd, "--config-file=" + args.config_file)
+
+        if args.local_registry_path is not None:
+            versions = get_pkgs_from_local_registry(
+                args.local_registry_path, args.pkg_type, args.src_pkg
+            )
+
+            if len(versions) == 1:
+                # If there is only one version, install using that specific
+                # version number to avoid installation failures due to it being
+                # a pre-release version.
+                args.src_pkg += f"@{versions[0]}"
 
         cmd += [
             "install",

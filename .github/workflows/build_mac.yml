@@ -1,18 +1,8 @@
 name: Build - mac
 
 on:
-  push:
-    branches:
-      - "**"
-    paths-ignore:
-      - "tools/**"
-      - "docs/**"
-      - ".vscode/**"
-      - ".devcontainer/**"
-      - ".github/**"
-      - "!.github/workflows/build_mac.yml"
-      - "**.md"
   pull_request:
+    types: [opened, synchronize, reopened]
     paths-ignore:
       - "tools/**"
       - "docs/**"

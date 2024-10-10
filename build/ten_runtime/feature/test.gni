@@ -69,6 +69,11 @@ template("ten_package_test_prepare_app") {
       "${log_level}",
     ]
 
+    args += [
+      "--local-registry-path",
+      rebase_path("${root_out_dir}/tests/local_registry"),
+    ]
+
     if (invoker.deps != []) {
       foreach(dep, invoker.deps) {
         args += [
@@ -572,6 +577,11 @@ template("ten_package_standalone_pkg") {
     args += [
       "--log-level",
       "${log_level}",
+    ]
+
+    args += [
+      "--local-registry-path",
+      rebase_path("${root_out_dir}/tests/local_registry"),
     ]
 
     if (invoker.deps != []) {

@@ -1,16 +1,16 @@
+//
 // Copyright © 2024 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
 // information.
 //
-// Note that this is just an example extension written in the GO programming
-// language, so the package name does not equal to the containing directory
-// name. However, it is not common in Go.
-package defaultextension
+
+package default_extension_go
 
 import (
 	"fmt"
+	"time"
 
 	"ten_framework/ten"
 )
@@ -45,13 +45,21 @@ func (p *extensionA) OnCmd(
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
 				tenEnv.ReturnResult(cmdResult, cmd)
-				return
+			} else {
+				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+				cmdResult.SetPropertyString("detail", detail.(*userData).name)
+				tenEnv.ReturnResult(cmdResult, cmd)
 			}
-
-			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-			cmdResult.SetPropertyString("detail", detail.(*userData).name)
-			tenEnv.ReturnResult(cmdResult, cmd)
 		})
+
+		time.Sleep(time.Second * 3)
+		// Use the expired ten object.
+		err := tenEnv.SendCmd(cmdB, nil)
+		if err != nil {
+			fmt.Println("failed to use invalid ten object.")
+		} else {
+			panic("should not happen")
+		}
 	}()
 }
 
@@ -76,7 +84,6 @@ func (p *extensionB) OnCmd(
 			if err != nil {
 				panic(err)
 			}
-		} else {
 		}
 	}()
 }

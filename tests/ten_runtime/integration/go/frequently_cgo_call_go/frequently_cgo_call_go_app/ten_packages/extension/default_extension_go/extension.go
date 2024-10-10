@@ -5,10 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-// Package defaultextension is just an example extension written in the GO
-// programming language, so the package name does not equal to the containing
-// directory name. However, it is not common in Go.
-package defaultextension
+package default_extension_go
 
 import (
 	"fmt"

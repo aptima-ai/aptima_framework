@@ -17,7 +17,9 @@ ten_package_test_prepare_app("exit_signal_app") {
     "exit_signal_app/property.json",
   ]
 
-  replace_files_after_install_all = [ "exit_signal_app/ten_packages/extension/default_extension_go/default_extension.go" ]
+  replace_files_after_install_all = [
+    "exit_signal_app/ten_packages/extension/default_extension_go/extension.go",
+  ]
 
   deps = [
     "//core/src/ten_manager",

@@ -1,13 +1,12 @@
+//
 // Copyright © 2024 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
 // information.
 //
-// Note that this is just an example extension written in the GO programming
-// language, so the package name does not equal to the containing directory
-// name. However, it is not common in Go.
-package defaultextension
+
+package default_extension_go
 
 import (
 	"fmt"

@@ -82,3 +82,6 @@ packages/private_extensions
 tests/private
 third_party/private
 build/private
+
+# zlib auto-generated files
+third_party/zlib/zconf.h.included
