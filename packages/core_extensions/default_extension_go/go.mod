@@ -1,4 +1,4 @@
-module extension
+module default_extension_go
 
 go 1.18
 

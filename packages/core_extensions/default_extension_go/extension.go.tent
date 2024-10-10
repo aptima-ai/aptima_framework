@@ -8,7 +8,7 @@
 // name. However, it is not common in Go.
 //
 
-package defaultextension
+package {{package_name}}
 
 import (
 	"fmt"
@@ -16,43 +16,42 @@ import (
 	"ten_framework/ten"
 )
 
-type defaultExtension struct {
+type {{class_name_prefix}}Extension struct {
 	ten.DefaultExtension
 }
 
-func newDefaultExtension(name string) ten.Extension {
-	return &defaultExtension{}
+func newExtension(name string) ten.Extension {
+	return &{{class_name_prefix}}Extension{}
 }
 
-func (p *defaultExtension) OnStart(tenEnv ten.TenEnv) {
+func (e *{{class_name_prefix}}Extension) OnStart(tenEnv ten.TenEnv) {
 	tenEnv.LogDebug("OnStart")
 
 	tenEnv.OnStartDone()
 }
 
-func (p *defaultExtension) OnStop(tenEnv ten.TenEnv) {
+func (e *{{class_name_prefix}}Extension) OnStop(tenEnv ten.TenEnv) {
 	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
 }
 
-func (p *defaultExtension) OnCmd(
+func (e *{{class_name_prefix}}Extension) OnCmd(
 	tenEnv ten.TenEnv,
 	cmd ten.Cmd,
 ) {
 	tenEnv.LogDebug("OnCmd")
 
 	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-	cmdResult.SetPropertyString("detail", "This is default go extension.")
 	tenEnv.ReturnResult(cmdResult, cmd)
 }
 
 func init() {
-	fmt.Println("defaultExtension init")
+	fmt.Println("{{package_name}} extension init")
 
 	// Register addon
 	ten.RegisterAddonAsExtension(
-		"default_extension_go",
-		ten.NewDefaultExtensionAddon(newDefaultExtension),
+		"{{package_name}}",
+		ten.NewDefaultExtensionAddon(newExtension),
 	)
 }
