@@ -15,11 +15,6 @@ ten_package("py_init_extension_cpp") {
   resources = [
     "manifest.json",
     "property.json",
-
-    # We want to pack the source code even in the 'release' package, then users
-    # could choose to use this extension directly as a 'release' package, or
-    # develop their own extension based on this.
-    "src",
   ]
 
   sources = [ "src/main.cc" ]
