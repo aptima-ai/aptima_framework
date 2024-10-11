@@ -75,6 +75,7 @@ package-lock.json
 core/src/ten_manager/target/
 core/src/ten_rust/src/schema/bindings.rs
 core/src/ten_rust/target/
+/.cargo
 
 # private modules
 packages/private_apps
