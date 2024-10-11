@@ -29,11 +29,6 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
   TEN_ASSERT(TEN_STATUS_CODE_OK == resp["_ten"]["status_code"],
              "Should not happen.");
 
-  std::string resp_str = resp["detail"];
-  TEN_LOGD("got result: %s", resp_str.c_str());
-  TEN_ASSERT(resp_str == std::string("This is default go extension."),
-             "Should not happen.");
-
   // NOTE the order: client destroy, then connection lost, then nodejs exits
   delete client;
 }

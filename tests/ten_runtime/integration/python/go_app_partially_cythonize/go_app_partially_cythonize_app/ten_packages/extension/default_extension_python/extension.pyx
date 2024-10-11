@@ -42,16 +42,13 @@ class DefaultExtension(Extension):
         self, ten_env: TenEnv, result: CmdResult, receivedCmd: Cmd
     ):
         statusCode = result.get_status_code()
-        detail = result.get_property_string("detail")
         print(
             "DefaultExtension check_greeting: status:"
             + str(statusCode)
-            + " detail:"
-            + detail
         )
 
         respCmd = CmdResult.create(StatusCode.OK)
-        respCmd.set_property_string("detail", detail + " nbnb")
+        respCmd.set_property_string("detail", "received response")
         print("DefaultExtension create respCmd")
 
         ten_env.return_result(respCmd, receivedCmd)
