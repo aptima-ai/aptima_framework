@@ -39,7 +39,7 @@ def touch(path):
 
 def get_latest_git_tag() -> str:
     result = subprocess.run(
-        ["git", "describe", "--tags", "--abbrev=0"],
+        ["git", "describe", "--tags", "--abbrev=0", "--always"],
         capture_output=True,
         text=True,
     )
