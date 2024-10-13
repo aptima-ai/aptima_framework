@@ -60,3 +60,4 @@
 ## Tutorials
 
 * [How to debug with logs](tutorials/how_to_debug_with_logs.md)
+* [How to run local AI model in Python extension](tutorials/how_to_run_local_model_in_python_extensions.md)
