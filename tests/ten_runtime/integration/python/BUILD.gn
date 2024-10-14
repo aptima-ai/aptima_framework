@@ -18,10 +18,12 @@ group("python") {
   if (ten_enable_python_binding) {
     deps += [
       "aio_http_server_python",
+      "async_extension_basic_python",
       "async_io_basic_python",
       "cpp_app_multi_process_python",
       "cpp_app_python",
       "get_set_prop_python",
+      "go_app_async_extension_python",
       "large_json_python",
       "multi_process_python",
       "multiple_results_python",
@@ -33,6 +35,8 @@ group("python") {
       "send_recv_image_python",
       "send_recv_pcm_python",
       "standalone_test_python",
+      "two_async_exts_one_group_python",
+      "two_async_exts_python",
     ]
 
     if (ten_enable_python_binding && ten_enable_go_binding) {

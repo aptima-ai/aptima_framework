@@ -51,6 +51,7 @@
 * [Overview](ten_framework/ten_packages/overview.md)
 * [App](ten_framework/ten_packages/app.md)
 * [Extension](ten_framework/ten_packages/extension.md)
+* [Python Async Extension](ten_framework/ten_packages/python_async_extension.md)
 
 ### TEN Manager
 

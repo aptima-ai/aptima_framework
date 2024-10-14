@@ -18,7 +18,17 @@ type defaultApp struct {
 func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
 	fmt.Println("DefaultApp onDeinit")
 
+	value, _ := tenEnv.GetPropertyString("key")
+	if value != "value" {
+		panic("failed to get property.")
+	}
+
 	tenEnv.OnDeinitDone()
+}
+
+func (p *defaultApp) OnInit(tenEnv ten.TenEnv) {
+	tenEnv.SetPropertyString("key", "value")
+	tenEnv.OnInitDone()
 }
 
 func appRoutine(app ten.App, stopped chan<- struct{}) {

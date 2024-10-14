@@ -14,6 +14,7 @@ group("core_extensions") {
 
   if (ten_enable_python_binding) {
     deps += [
+      "default_async_extension_python",
       "default_extension_python",
       "py_init_extension_cpp",
     ]

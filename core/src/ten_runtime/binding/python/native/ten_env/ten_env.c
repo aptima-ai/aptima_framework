@@ -95,6 +95,7 @@ ten_py_ten_env_t *ten_py_ten_env_wrap(ten_env_t *ten_env) {
   py_ten_env->c_ten_env = ten_env;
   py_ten_env->c_ten_env_proxy = NULL;
   py_ten_env->need_to_release_gil_state = false;
+  py_ten_env->py_thread_state = NULL;
 
   py_ten_env->actual_py_ten_env = create_actual_py_ten_env_instance(py_ten_env);
   if (!py_ten_env->actual_py_ten_env) {

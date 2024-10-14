@@ -74,7 +74,7 @@ static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
     // achieving numerical consistency between PyGILState_Ensure and
     // PyGILState_Release, and only then will the Python thread state be
     // released.
-    ten_py_eval_save_thread();
+    py_ten_env->py_thread_state = ten_py_eval_save_thread();
   } else {
     // No need to release the GIL.
   }

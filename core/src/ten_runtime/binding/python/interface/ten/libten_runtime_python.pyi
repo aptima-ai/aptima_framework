@@ -126,6 +126,10 @@ class _App:
         self,
         ten_env: _TenEnv,
     ) -> None: ...
+    def on_deinit(
+        self,
+        ten_env: _TenEnv,
+    ) -> None: ...
 
 class _Extension:
     def __init__(self, name: str): ...

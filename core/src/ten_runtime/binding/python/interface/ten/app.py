@@ -26,3 +26,6 @@ class App(_App):
 
     def on_init(self, ten_env: TenEnv) -> None:
         ten_env.on_init_done()
+
+    def on_deinit(self, ten_env: TenEnv) -> None:
+        ten_env.on_deinit_done()

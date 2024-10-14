@@ -47,7 +47,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/out/linux/x64/tests/standalone/ten_runtime_unit_test",
       "args": [
-        // "--gtest_filter=TenErrorTest.cpp_thread"
+        "--gtest_filter=TenErrorTest.cpp_thread"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/out/linux/x64/",
@@ -379,9 +379,10 @@
       "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
       "cwd": "${workspaceFolder}/out/linux/x64/",
       "args": [
+        "--verbose",
         "dev-server",
-        "--base-dir=/home/wei/MyData/Temp/ASTRA.ai/agents",
-        "--port=49484"
+        "--base-dir=/home/sunxilin/ten_framework_internal_base/ten_framework/out/linux/x64/tests/ten_runtime/integration/python/two_async_extensions_in_different_groups_python/two_async_extensions_in_different_groups_python_app",
+        "--port=49483"
       ],
     },
     {

@@ -26,6 +26,7 @@ typedef struct ten_py_ten_env_t {
 
   // Mark whether the gil state need to be released after 'on_deinit_done'.
   bool need_to_release_gil_state;
+  PyThreadState* py_thread_state;
 } ten_py_ten_env_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_py_ten_env_check_integrity(

@@ -82,7 +82,7 @@ static void proxy_on_configure(ten_extension_t *extension, ten_env_t *ten_env) {
   // We should release the GIL but not destroy the PyThreadState. The
   // PyThreadState will not be released until the last extension calls
   // 'on_deinit_done' in the group.
-  ten_py_eval_save_thread();
+  py_ten_env->py_thread_state = ten_py_eval_save_thread();
 
   py_ten_env->need_to_release_gil_state = true;
 }
@@ -112,7 +112,7 @@ static void proxy_on_init(ten_extension_t *extension, ten_env_t *ten_env) {
   TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_init", "O",
+      PyObject_CallMethod((PyObject *)py_extension, "_proxy_on_init", "O",
                           ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
@@ -145,7 +145,7 @@ static void proxy_on_start(ten_extension_t *extension, ten_env_t *ten_env) {
   TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_start", "O",
+      PyObject_CallMethod((PyObject *)py_extension, "_proxy_on_start", "O",
                           ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
@@ -178,7 +178,7 @@ static void proxy_on_stop(ten_extension_t *extension, ten_env_t *ten_env) {
   TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_stop", "O",
+      PyObject_CallMethod((PyObject *)py_extension, "_proxy_on_stop", "O",
                           ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
@@ -211,7 +211,7 @@ static void proxy_on_deinit(ten_extension_t *extension, ten_env_t *ten_env) {
   TEN_ASSERT(py_ten_env, "Should not happen.");
 
   PyObject *py_res =
-      PyObject_CallMethod((PyObject *)py_extension, "on_deinit", "O",
+      PyObject_CallMethod((PyObject *)py_extension, "_proxy_on_deinit", "O",
                           ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env);
   Py_XDECREF(py_res);
 
@@ -246,7 +246,7 @@ static void proxy_on_cmd(ten_extension_t *extension, ten_env_t *ten_env,
   ten_py_cmd_t *py_cmd = ten_py_cmd_wrap(cmd);
 
   PyObject *py_res = PyObject_CallMethod(
-      (PyObject *)py_extension, "on_cmd", "OO",
+      (PyObject *)py_extension, "_proxy_on_cmd", "OO",
       ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_cmd);
   Py_XDECREF(py_res);
 
@@ -283,7 +283,7 @@ static void proxy_on_data(ten_extension_t *extension, ten_env_t *ten_env,
   ten_py_data_t *py_data = ten_py_data_wrap(data);
 
   PyObject *py_res = PyObject_CallMethod(
-      (PyObject *)py_extension, "on_data", "OO",
+      (PyObject *)py_extension, "_proxy_on_data", "OO",
       ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_data);
   Py_XDECREF(py_res);
 
@@ -321,7 +321,7 @@ static void proxy_on_audio_frame(ten_extension_t *extension, ten_env_t *ten_env,
   ten_py_audio_frame_t *py_audio_frame = ten_py_audio_frame_wrap(audio_frame);
 
   PyObject *py_res = PyObject_CallMethod(
-      (PyObject *)py_extension, "on_audio_frame", "OO",
+      (PyObject *)py_extension, "_proxy_on_audio_frame", "OO",
       ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_audio_frame);
   Py_XDECREF(py_res);
 
@@ -352,7 +352,7 @@ static void proxy_on_video_frame(ten_extension_t *extension, ten_env_t *ten_env,
   ten_py_video_frame_t *py_video_frame = ten_py_video_frame_wrap(video_frame);
 
   PyObject *py_res = PyObject_CallMethod(
-      py_extension, "on_video_frame", "OO",
+      py_extension, "_proxy_on_video_frame", "OO",
       ((ten_py_ten_env_t *)py_ten_env)->actual_py_ten_env, py_video_frame);
   Py_XDECREF(py_res);
 

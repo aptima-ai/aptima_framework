@@ -6,6 +6,8 @@
 #
 from .app import App
 from .extension import Extension
+from .async_extension import AsyncExtension
+from .async_ten_env import AsyncTenEnv
 from .addon import Addon
 from .decorator import (
     register_addon_as_extension,
@@ -28,7 +30,9 @@ __all__ = [
     "register_addon_as_extension_group",
     "App",
     "Extension",
+    "AsyncExtension",
     "TenEnv",
+    "AsyncTenEnv",
     "Cmd",
     "StatusCode",
     "VideoFrame",
