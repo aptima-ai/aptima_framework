@@ -64,10 +64,12 @@ ten_mutex_t *ten_mutex_create(void) {
 }
 
 int ten_mutex_lock(ten_mutex_t *mutex) {
-  TEN_ASSERT(mutex && ten_mutex_check_integrity(mutex), "Invalid argument.");
+  TEN_ASSERT(mutex, "Invalid argument.");
   if (!mutex) {
     return -1;
   }
+
+  TEN_ASSERT(ten_mutex_check_integrity(mutex), "Invalid argument.");
 
   int rc = pthread_mutex_lock(&mutex->mutex);
   if (rc) {

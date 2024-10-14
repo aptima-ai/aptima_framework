@@ -52,6 +52,8 @@ static void ten_sanitizer_memory_record_check_enabled(void) {
 }
 
 void ten_sanitizer_memory_record_init(void) {
+#if defined(TEN_ENABLE_MEMORY_CHECK)
+
 #if defined(TEN_USE_ASAN)
   __lsan_disable();
 #endif
@@ -73,9 +75,15 @@ void ten_sanitizer_memory_record_init(void) {
 #if defined(TEN_USE_ASAN)
   __lsan_enable();
 #endif
+
+#else
+  TEN_LOGI("The memory check is disabled.");
+#endif
 }
 
 void ten_sanitizer_memory_record_deinit(void) {
+#if defined(TEN_ENABLE_MEMORY_CHECK)
+
 #if defined(TEN_USE_ASAN)
   __lsan_disable();
 #endif
@@ -88,6 +96,10 @@ void ten_sanitizer_memory_record_deinit(void) {
 
 #if defined(TEN_USE_ASAN)
   __lsan_enable();
+#endif
+
+#else
+  TEN_LOGI("The memory check is disabled.");
 #endif
 }
 

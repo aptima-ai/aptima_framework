@@ -54,24 +54,21 @@ jobs:
 
       - name: Run Tests (ten_utils_unit_test)
         env:
-          TEN_ENABLE_MEMORY_TRACKING: "true"
           TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           chmod +x out/win/x64/tests/standalone/ten_utils_unit_test
           out/win/x64/tests/standalone/ten_utils_unit_test
 
-      # - name: Run Tests (ten_runtime_unit_test)
-      #   env:
-      #     TEN_ENABLE_MEMORY_TRACKING: "true"
-      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
-      #   run: |
-      #     chmod +x out/win/x64/tests/standalone/ten_runtime_unit_test
-      #     out/win/x64/tests/standalone/ten_runtime_unit_test
+      - name: Run Tests (ten_runtime_unit_test)
+        env:
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/win/x64/tests/standalone/ten_runtime_unit_test
+          out/win/x64/tests/standalone/ten_runtime_unit_test
 
-      # - name: Run Tests (ten_runtime_smoke_test)
-      #   env:
-      #     TEN_ENABLE_MEMORY_TRACKING: "true"
-      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
-      #   run: |
-      #     chmod +x out/win/x64/tests/standalone/ten_runtime_smoke_test
-      #     out/win/x64/tests/standalone/ten_runtime_smoke_test
+      - name: Run Tests (ten_runtime_smoke_test)
+        env:
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/win/x64/tests/standalone/ten_runtime_smoke_test
+          out/win/x64/tests/standalone/ten_runtime_smoke_test
