@@ -18,6 +18,7 @@ class ArgumentInfo(argparse.Namespace):
         self.build_type: str
         self.config_file: str
         self.log_level: int
+        self.assume_yes: bool
 
 
 if __name__ == "__main__":
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--log-level", type=int, required=True, help="specify log level"
     )
+    parser.add_argument("--assume-yes", type=bool, default=False)
 
     arg_info = ArgumentInfo()
     args = parser.parse_args(namespace=arg_info)
@@ -73,6 +75,9 @@ if __name__ == "__main__":
 
         if args.config_file is not None:
             cmd += ["--config-file=" + args.config_file]
+
+        if args.assume_yes:
+            cmd += ["--yes"]
 
         cmd += ["install"]
 

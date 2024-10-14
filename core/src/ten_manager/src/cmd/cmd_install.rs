@@ -768,7 +768,7 @@ pub async fn execute_cmd(
             &all_existing_local_pkgs,
         );
 
-        if has_conflict {
+        if has_conflict && !tman_config.assume_yes {
             // "y" for continuing to install, "n" for stopping.
             let ans = Confirm::new(
                 "Warning!!! Some local packages will be overwritten, \

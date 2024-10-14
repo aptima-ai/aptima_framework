@@ -198,6 +198,11 @@ template("ten_package_test_prepare_app") {
     }
 
     args += [
+      "--assume-yes",
+      "True",
+    ]
+
+    args += [
       "--config-file",
       rebase_path("${root_out_dir}/tests/local_registry/config.json"),
     ]
@@ -648,6 +653,11 @@ template("ten_package_standalone_pkg") {
     } else {
       args += [ "release" ]
     }
+
+    args += [
+      "--assume-yes",
+      "True",
+    ]
 
     args += [
       "--config-file",

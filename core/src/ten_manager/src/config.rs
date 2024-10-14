@@ -35,6 +35,7 @@ pub struct TmanConfig {
 
     pub mi_mode: bool,
     pub verbose: bool,
+    pub assume_yes: bool,
 }
 
 // Determine the config file path based on the platform.
@@ -94,5 +95,6 @@ pub fn read_config(config_file_path: &Option<String>) -> TmanConfig {
         user_token: config_file_content.user_token,
         mi_mode: false,
         verbose: false,
+        assume_yes: false,
     }
 }
