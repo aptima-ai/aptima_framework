@@ -192,13 +192,16 @@ cmake.py will consider it as its own command line option."
                 self.sharedlinkerflags.append("--target=arm-linux-gnueabihf")
                 self.exelinkerflags.append("--target=arm-linux-gnueabihf")
             elif self.args.target_cpu == "arm64":
-                self.cflags.append("--target=aarch64-linux-gnu")
-                self.sharedlinkerflags.append("--target=aarch64-linux-gnu")
-                self.exelinkerflags.append("--target=aarch64-linux-gnu")
-                if self.args.use_clang:
-                    self.cflags.append("-fuse-ld=lld")
-                    self.sharedlinkerflags.append("-fuse-ld=lld")
-                    self.exelinkerflags.append("-fuse-ld=lld")
+                if os.uname().machine in ["arm64", "aarch64"]:
+                    pass
+                else:
+                    self.cflags.append("--target=aarch64-linux-gnu")
+                    self.sharedlinkerflags.append("--target=aarch64-linux-gnu")
+                    self.exelinkerflags.append("--target=aarch64-linux-gnu")
+                    if self.args.use_clang:
+                        self.cflags.append("-fuse-ld=lld")
+                        self.sharedlinkerflags.append("-fuse-ld=lld")
+                        self.exelinkerflags.append("-fuse-ld=lld")
             else:
                 raise Exception(
                     "Currently can not build Linux target with CPU arch"

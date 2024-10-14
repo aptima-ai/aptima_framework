@@ -52,7 +52,7 @@ def detect_mac_asan_lib(arch: str) -> str:
 
 
 def detect_linux_asan_lib(arch: str) -> str:
-    if arch == "x64":
+    if arch in ["x64", "arm64"]:
         out, _ = subprocess.Popen(
             "gcc -print-file-name=libasan.so",
             shell=True,
@@ -79,13 +79,21 @@ def detect_linux_asan_lib(arch: str) -> str:
 
 # Generally speaking, this function should not need to be called because Clang's
 # default ASan mechanism is static linking.
-def detect_linux_clang_asan_lib(_arch: str) -> str:
-    out, _ = subprocess.Popen(
-        "clang -print-file-name=libclang_rt.asan-x86_64.so",
-        shell=True,
-        stdout=subprocess.PIPE,
-        encoding="utf-8",
-    ).communicate()
+def detect_linux_clang_asan_lib(arch: str) -> str:
+    if arch == "x64":
+        out, _ = subprocess.Popen(
+            "clang -print-file-name=libclang_rt.asan-x86_64.so",
+            shell=True,
+            stdout=subprocess.PIPE,
+            encoding="utf-8",
+        ).communicate()
+    elif arch == "arm64":
+        out, _ = subprocess.Popen(
+            "clang -print-file-name=libclang_rt.asan-aarch64.so",
+            shell=True,
+            stdout=subprocess.PIPE,
+            encoding="utf-8",
+        ).communicate()
 
     libasan_path = out.strip()
 

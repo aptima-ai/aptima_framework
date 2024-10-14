@@ -149,9 +149,15 @@ class AutotoolProject:
 
             if sys.platform == "linux":
                 libs.extend(
-                    glob.glob(f"/usr/lib/x86_64-linux-gnu/lib{dep}.so.*")
+                    glob.glob(
+                        f"/usr/lib/{os.uname().machine}-linux-gnu/lib{dep}.so.*"
+                    )
                 )
-                libs.extend(glob.glob(f"/usr/lib/x86_64-linux-gnu/lib{dep}.so"))
+                libs.extend(
+                    glob.glob(
+                        f"/usr/lib/{os.uname().machine}-linux-gnu/lib{dep}.so"
+                    )
+                )
             else:
                 print("TODO: Add support for other platforms.")
                 sys.exit(1)

@@ -22,11 +22,13 @@ RUN apt-get clean && apt-get update && apt-get install -y --no-install-recommend
   tree \
   zip \
   unzip \
+  jq \
+  cpulimit \
+  util-linux \
   libasan5 \
   autoconf \
   libtool \
   uuid-dev \
-  g++-multilib \
   libmsgpack-dev \
   libmysqlclient-dev \
   libmysqlcppconn-dev \
@@ -53,6 +55,11 @@ RUN apt-get clean && apt-get update && apt-get install -y --no-install-recommend
   python3-dev \
   python3-pip \
   python3-venv
+
+RUN export ARCH=$(dpkg --print-architecture) && \
+  if [ ${ARCH} = "amd64" ]; then \
+  apt-get install -y --no-install-recommends g++-multilib; \
+  fi
 
 # =======================================
 # Installing Python deps
@@ -84,10 +91,7 @@ RUN wget --no-check-certificate -O - https://apt.llvm.org/llvm-snapshot.gpg.key 
   update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
   update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
   update-alternatives --install /usr/bin/clang-check clang-check /usr/bin/clang-check-18 100 && \
-  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-18 100 && \
-  mkdir -p /usr/lib/llvm-18/lib/x86_64-pc-linux-gnu && \
-  ln -sf $(clang -print-file-name=libc++.a) /usr/lib/llvm-18/lib/x86_64-pc-linux-gnu && \
-  ln -sf $(clang -print-file-name=libclang_rt.asan.so) $(dirname $(clang -print-file-name=libclang_rt.asan.so))/libclang_rt.asan-x86_64.so
+  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-18 100
 
 # =======================================
 # Install golang
@@ -97,8 +101,8 @@ ENV PATH="$PATH:/usr/local/go/bin:/root/go/bin"
 
 # TEN go binding needs to be compatible with GO 1.20, so we need to install GO
 # 1.20 to check the compatibility.
-RUN curl -OL https://go.dev/dl/go1.22.3.linux-amd64.tar.gz && \
-  rm -rf /usr/local/go && tar -C /usr/local -xvf go1.22.3.linux-amd64.tar.gz && rm go1.22.3.linux-amd64.tar.gz && \
+RUN export ARCH=$(dpkg --print-architecture) && curl -OL https://go.dev/dl/go1.22.3.linux-${ARCH}.tar.gz && \
+  rm -rf /usr/local/go && tar -C /usr/local -xvf go1.22.3.linux-${ARCH}.tar.gz && rm go1.22.3.linux-${ARCH}.tar.gz && \
   go install golang.org/dl/go1.20.12@latest && go1.20.12 download
 
 # =======================================
