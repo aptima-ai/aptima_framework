@@ -80,15 +80,15 @@ jobs:
           tgn build mac arm64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
-      # - name: Run Tests (ten_utils_unit_test)
-      #   env:
-      #     ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
-      #     MALLOC_CHECK_: 3
-      #     TEN_ENABLE_MEMORY_TRACKING: "true"
-      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
-      #   run: |
-      #     chmod +x out/mac/arm64/tests/standalone/ten_utils_unit_test
-      #     out/mac/arm64/tests/standalone/ten_utils_unit_test
+      - name: Run Tests (ten_utils_unit_test)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/mac/arm64/tests/standalone/ten_utils_unit_test
+          out/mac/arm64/tests/standalone/ten_utils_unit_test
 
       - name: Run Tests (ten_runtime_unit_test)
         env:
@@ -100,15 +100,15 @@ jobs:
           chmod +x out/mac/arm64/tests/standalone/ten_runtime_unit_test
           out/mac/arm64/tests/standalone/ten_runtime_unit_test
 
-      # - name: Run Tests (ten_runtime_smoke_test)
-      #   env:
-      #     ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
-      #     MALLOC_CHECK_: 3
-      #     TEN_ENABLE_MEMORY_TRACKING: "true"
-      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
-      #   run: |
-      #     chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
-      #     out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+      - name: Run Tests (ten_runtime_smoke_test)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+          out/mac/arm64/tests/standalone/ten_runtime_smoke_test
 
   build-mac-x64:
     concurrency:
