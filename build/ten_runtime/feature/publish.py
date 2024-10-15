@@ -115,7 +115,11 @@ if __name__ == "__main__":
     if args.enable_publish is False:
         sys.exit(0)
 
-    update_manifest(args.base_dir, args.os, args.cpu, args.log_level)
+    # The action of adding the `supports` field is currently handled within the
+    # GitHub CI flow. In the future, if there is a need to perform this in the
+    # GN flow, we can consider reopening this process.
+    #
+    # update_manifest(args.base_dir, args.os, args.cpu, args.log_level)
 
     # Use 'tman publish' to perform the uploading.
     origin_wd = os.getcwd()
