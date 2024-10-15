@@ -14,7 +14,6 @@
         ],
         "connections": [
           {
-            "app": "localhost",
             "extension": "some_extension",
             "extension_group": "producer",
             "cmd": [
@@ -22,7 +21,6 @@
                 "name": "hello",
                 "dest": [
                   {
-                    "app": "localhost",
                     "extension_group": "some_group",
                     "extension": "some_extension"
                   }
@@ -32,7 +30,6 @@
           }
         ]
       }
-    ],
-    "uri": "http://localhost:8001"
+    ]
   }
 }

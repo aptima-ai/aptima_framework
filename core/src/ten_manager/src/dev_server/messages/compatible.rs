@@ -50,7 +50,7 @@ pub struct DevServerCompatibleMsg {
 impl From<CompatibleExtensionAndMsg<'_>> for DevServerCompatibleMsg {
     fn from(compatible: CompatibleExtensionAndMsg) -> Self {
         DevServerCompatibleMsg {
-            app: compatible.extension.app.clone(),
+            app: compatible.extension.app.as_ref().unwrap().clone(),
             extension_group: compatible
                 .extension
                 .extension_group

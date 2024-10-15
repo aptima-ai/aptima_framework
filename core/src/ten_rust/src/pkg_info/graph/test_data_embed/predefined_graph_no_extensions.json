@@ -6,7 +6,6 @@
         "auto_start": false,
         "nodes": []
       }
-    ],
-    "uri": "http://localhost:8001"
+    ]
   }
 }

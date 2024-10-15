@@ -13,10 +13,16 @@ declare_args() {
   use_shared_lib = false
 }
 
+copy("ten_manager_test_data") {
+  sources = [ "//core/src/ten_manager/tests/test_data" ]
+  outputs = [ "${root_out_dir}/tests/standalone/ten_manager/tests/test_data" ]
+}
+
 if (ten_enable_package_manager) {
   if (ten_package_manager_enable_tests) {
     rust_test("tman_test") {
       project_path = "//core/src/ten_manager"
+      integration_test_output_name = "integration_test"
 
       clingo_lib_folder =
           rebase_path("${root_out_dir}/gen/cmake/clingo/install/lib")
@@ -37,6 +43,7 @@ if (ten_enable_package_manager) {
       test_output_dir = "${root_out_dir}/tests/standalone/ten_manager"
 
       deps = [
+        ":ten_manager_test_data",
         "//core/src/ten_rust:ten_rust_static_lib",
         "//third_party/clingo",
       ]

@@ -30,7 +30,7 @@ impl Graph {
             .find_map(|node| {
                 if node.node_type == PkgType::Extension
                     && node.name.as_str() == extension
-                    && node.app.as_str() == app
+                    && node.get_app_uri() == app
                 {
                     Some(node.addon.as_str())
                 } else {
@@ -56,12 +56,12 @@ impl Graph {
         let mut errors: Vec<String> = Vec::new();
         for dest in dests {
             let dest_addon = self.get_addon_name_of_extension(
-                dest.app.as_str(),
+                dest.get_app_uri(),
                 dest.extension.as_str(),
             );
             let dest_msg_schema = find_msg_schema_from_all_pkgs_info(
                 all_needed_pkgs,
-                dest.app.as_str(),
+                dest.get_app_uri(),
                 dest_addon,
                 msg_name,
                 msg_type,
@@ -92,12 +92,12 @@ impl Graph {
         let mut errors: Vec<String> = Vec::new();
         for dest in dests {
             let dest_addon = self.get_addon_name_of_extension(
-                dest.app.as_str(),
+                dest.get_app_uri(),
                 dest.extension.as_str(),
             );
             let dest_cmd_schema = find_cmd_schema_from_all_pkgs_info(
                 all_needed_pkgs,
-                dest.app.as_str(),
+                dest.get_app_uri(),
                 dest_addon,
                 cmd_name,
                 MsgDirection::In,
@@ -126,12 +126,12 @@ impl Graph {
         if let Some(cmd_flows) = &connection.cmd {
             for (flow_idx, flow) in cmd_flows.iter().enumerate() {
                 let src_addon = self.get_addon_name_of_extension(
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     connection.extension.as_str(),
                 );
                 let src_cmd_schema = find_cmd_schema_from_all_pkgs_info(
                     all_needed_pkgs,
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
                     MsgDirection::Out,
@@ -143,7 +143,7 @@ impl Graph {
                     src_cmd_schema,
                     &flow.dest,
                 ) {
-                    errors.push(format!("- cmd[{}]: \n  {}", flow_idx, e));
+                    errors.push(format!("- cmd[{}]:  {}", flow_idx, e));
                 }
             }
         }
@@ -151,12 +151,12 @@ impl Graph {
         if let Some(data_flows) = &connection.data {
             for (flow_idx, flow) in data_flows.iter().enumerate() {
                 let src_addon = self.get_addon_name_of_extension(
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     connection.extension.as_str(),
                 );
                 let src_msg_schema = find_msg_schema_from_all_pkgs_info(
                     all_needed_pkgs,
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
                     &MsgType::Data,
@@ -170,7 +170,7 @@ impl Graph {
                     src_msg_schema,
                     &flow.dest,
                 ) {
-                    errors.push(format!("- data[{}]: \n  {}", flow_idx, e));
+                    errors.push(format!("- data[{}]:  {}", flow_idx, e));
                 }
             }
         }
@@ -178,12 +178,12 @@ impl Graph {
         if let Some(video_frame_flows) = &connection.video_frame {
             for (flow_idx, flow) in video_frame_flows.iter().enumerate() {
                 let src_addon = self.get_addon_name_of_extension(
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     connection.extension.as_str(),
                 );
                 let src_msg_schema = find_msg_schema_from_all_pkgs_info(
                     all_needed_pkgs,
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
                     &MsgType::VideoFrame,
@@ -197,10 +197,7 @@ impl Graph {
                     src_msg_schema,
                     &flow.dest,
                 ) {
-                    errors.push(format!(
-                        "- video_frame[{}]: \n  {}",
-                        flow_idx, e
-                    ));
+                    errors.push(format!("- video_frame[{}]:  {}", flow_idx, e));
                 }
             }
         }
@@ -208,12 +205,12 @@ impl Graph {
         if let Some(audio_frame_flows) = &connection.audio_frame {
             for (flow_idx, flow) in audio_frame_flows.iter().enumerate() {
                 let src_addon = self.get_addon_name_of_extension(
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     connection.extension.as_str(),
                 );
                 let src_msg_schema = find_msg_schema_from_all_pkgs_info(
                     all_needed_pkgs,
-                    connection.app.as_str(),
+                    connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
                     &MsgType::AudioFrame,
@@ -227,10 +224,7 @@ impl Graph {
                     src_msg_schema,
                     &flow.dest,
                 ) {
-                    errors.push(format!(
-                        "- audio_frame[{}]: \n  {}",
-                        flow_idx, e
-                    ));
+                    errors.push(format!("- audio_frame[{}]:  {}", flow_idx, e));
                 }
             }
         }

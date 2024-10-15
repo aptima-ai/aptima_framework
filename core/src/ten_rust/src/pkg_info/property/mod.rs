@@ -21,6 +21,7 @@ use super::{
     constants::{PROPERTY_JSON_FILENAME, TEN_FIELD_IN_PROPERTY},
     utils::read_file_to_string,
 };
+use crate::pkg_info::graph::is_app_default_loc_or_none;
 use crate::{json_schema, pkg_info::default_app_loc};
 use predefined_graph::PropertyPredefinedGraph;
 
@@ -74,6 +75,16 @@ impl Property {
 
         Ok(())
     }
+
+    pub fn get_app_uri(&self) -> String {
+        if let Some(_ten) = &self._ten {
+            if let Some(uri) = &_ten.uri {
+                return uri.clone();
+            }
+        }
+
+        default_app_loc()
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -81,7 +92,7 @@ pub struct TenInProperty {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub predefined_graphs: Option<Vec<PropertyPredefinedGraph>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "is_app_default_loc_or_none")]
     pub uri: Option<String>,
 
     #[serde(flatten)]
@@ -271,5 +282,25 @@ mod tests {
             serde_json::from_str(json_data).unwrap();
 
         assert_eq!(saved_json, original_json);
+    }
+
+    #[test]
+    fn test_dump_property_without_localhost_app_in_graph() {
+        let json_data = include_str!("test_data_embed/property.json");
+        let property: Property = json_data.parse().unwrap();
+        assert!(property._ten.is_some());
+        let ten = property._ten.as_ref().unwrap();
+        let predefined_graphs = ten.predefined_graphs.as_ref().unwrap();
+        let nodes = &predefined_graphs.first().as_ref().unwrap().graph.nodes;
+        let node = nodes.first().unwrap();
+        assert_eq!(node.get_app_uri(), default_app_loc());
+
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("property.json");
+        property.dump_property_to_file(&file_path).unwrap();
+
+        let saved_content = fs::read_to_string(file_path).unwrap();
+        eprintln!("{}", saved_content);
+        assert_eq!(saved_content.find(default_app_loc().as_str()), None);
     }
 }

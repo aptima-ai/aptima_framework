@@ -90,7 +90,7 @@ pub fn get_extension<'a>(
         .iter()
         .find(|ext| {
             ext.node_type == PkgType::Extension
-                && &ext.app == app
+                && ext.get_app_uri() == app
                 && ext.extension_group.clone().unwrap_or("".to_string())
                     == *extension_group
                 && &ext.name == extension

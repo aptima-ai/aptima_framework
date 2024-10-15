@@ -19,7 +19,7 @@ impl Graph {
                 PkgType::Extension => {
                     let unique_ext_name = format!(
                         "{}:{}:{}",
-                        node.app.as_str(),
+                        node.get_app_uri(),
                         node.extension_group.as_ref().unwrap(),
                         node.name
                     );
@@ -35,7 +35,7 @@ impl Graph {
 
                     let ext_group = format!(
                         "{}:{}",
-                        node.app.as_str(),
+                        node.get_app_uri(),
                         node.extension_group.as_ref().unwrap()
                     );
 
@@ -46,7 +46,7 @@ impl Graph {
 
                 PkgType::ExtensionGroup => {
                     let unique_ext_group_name =
-                        format!("{}:{}", node.app.as_str(), node.name);
+                        format!("{}:{}", node.get_app_uri(), node.name);
 
                     if all_extension_groups.contains(&unique_ext_group_name) {
                         return Err(anyhow::anyhow!(

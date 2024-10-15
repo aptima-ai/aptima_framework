@@ -4,6 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+pub mod cmd_check;
 pub mod cmd_delete;
 pub mod cmd_dev_server;
 pub mod cmd_install;
@@ -22,6 +23,7 @@ pub enum CommandData {
     Publish(self::cmd_publish::PublishCommand),
     Delete(self::cmd_delete::DeleteCommand),
     DevServer(self::cmd_dev_server::DevServerCommand),
+    Check(self::cmd_check::CheckCommandData),
 }
 
 pub async fn execute_cmd(
@@ -46,6 +48,9 @@ pub async fn execute_cmd(
         }
         CommandData::DevServer(cmd) => {
             crate::cmd::cmd_dev_server::execute_cmd(tman_config, cmd).await
+        }
+        CommandData::Check(cmd) => {
+            crate::cmd::cmd_check::execute_cmd(tman_config, cmd).await
         }
     }
 }

@@ -22,7 +22,9 @@ impl Graph {
             for dest in &flow.dest {
                 let dest_extension = format!(
                     "{}:{}:{}",
-                    dest.app, dest.extension_group, dest.extension
+                    dest.get_app_uri(),
+                    dest.extension_group,
+                    dest.extension
                 );
 
                 if !all_extensions.contains(&dest_extension) {
@@ -53,7 +55,7 @@ impl Graph {
             if node.node_type == PkgType::Extension {
                 let unique_ext_name = format!(
                     "{}:{}:{}",
-                    node.app.as_str(),
+                    node.get_app_uri(),
                     node.extension_group.as_ref().unwrap(),
                     node.name
                 );
@@ -65,7 +67,7 @@ impl Graph {
         for (conn_idx, connection) in connections.iter().enumerate() {
             let src_extension = format!(
                 "{}:{}:{}",
-                connection.app,
+                connection.get_app_uri(),
                 connection.extension_group,
                 connection.extension
             );

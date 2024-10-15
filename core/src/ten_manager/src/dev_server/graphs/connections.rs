@@ -40,7 +40,7 @@ pub struct DevServerConnection {
 impl From<GraphConnection> for DevServerConnection {
     fn from(conn: GraphConnection) -> Self {
         DevServerConnection {
-            app: conn.app,
+            app: conn.get_app_uri().to_string(),
             extension_group: conn.extension_group,
             extension: conn.extension,
 
@@ -94,7 +94,7 @@ pub struct DevServerDestination {
 impl From<GraphDestination> for DevServerDestination {
     fn from(destination: GraphDestination) -> Self {
         DevServerDestination {
-            app: destination.app,
+            app: destination.get_app_uri().to_string(),
             extension_group: destination.extension_group,
             extension: destination.extension,
         }

@@ -165,7 +165,6 @@ TEN_RUNTIME_API bool ten_protocol_check_integrity(ten_protocol_t *self,
 
 /**
  * @param uri Server uri
- * @param tags Protocol tags, all of tags MUST match.
  */
 TEN_RUNTIME_API ten_protocol_t *ten_protocol_create(const char *uri,
                                                     TEN_PROTOCOL_ROLE role);

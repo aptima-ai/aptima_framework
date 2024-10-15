@@ -14,7 +14,7 @@ use ten_rust::pkg_info::graph::{
 impl From<DevServerConnection> for GraphConnection {
     fn from(dev_server_connection: DevServerConnection) -> Self {
         GraphConnection {
-            app: dev_server_connection.app,
+            app: Some(dev_server_connection.app),
             extension_group: dev_server_connection.extension_group,
             extension: dev_server_connection.extension,
 
@@ -56,7 +56,7 @@ impl From<DevServerMessageFlow> for GraphMessageFlow {
 impl From<DevServerDestination> for GraphDestination {
     fn from(dev_server_destination: DevServerDestination) -> Self {
         GraphDestination {
-            app: dev_server_destination.app,
+            app: Some(dev_server_destination.app),
             extension_group: dev_server_destination.extension_group,
             extension: dev_server_destination.extension,
         }

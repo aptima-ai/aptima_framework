@@ -259,7 +259,7 @@ pub async fn get_graph_nodes(
                 addon: extension.addon.clone(),
                 name: extension.name.clone(),
                 extension_group: extension.extension_group.clone().unwrap(),
-                app: extension.app.clone(),
+                app: extension.app.as_ref().unwrap().clone(),
                 api: pkg_info.api.as_ref().map(|api| DevServerApi {
                     property: if api.property.is_empty() {
                         None

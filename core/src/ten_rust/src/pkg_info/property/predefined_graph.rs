@@ -47,9 +47,7 @@ mod tests {
             .unwrap();
         assert!(predefined_graphs.len() == 1);
 
-        let mut predefined_graph = predefined_graphs.first().unwrap().clone();
-        assert!(predefined_graph.validate_and_complete().is_ok());
-
+        let predefined_graph = predefined_graphs.first().unwrap().clone();
         let property_json_value =
             serde_json::to_value(&predefined_graph).unwrap();
         assert_eq!(
