@@ -205,12 +205,9 @@ PyObject *ten_py_audio_frame_set_timestamp(PyObject *self, PyObject *args) {
              "Invalid argument.");
 
   int64_t timestamp = 0;
-
-  if (!PyLong_Check(args)) {
-    return NULL;
+  if (!PyArg_ParseTuple(args, "L", &timestamp)) {
+    return ten_py_raise_py_value_error_exception("Invalid timestamp.");
   }
-
-  timestamp = PyLong_AsLongLong(args);
 
   ten_audio_frame_set_timestamp(py_audio_frame->msg.c_msg, timestamp);
 

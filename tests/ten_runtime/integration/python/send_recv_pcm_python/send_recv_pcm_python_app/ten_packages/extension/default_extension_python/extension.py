@@ -4,6 +4,7 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+import time
 from ten import (
     Extension,
     TenEnv,
@@ -32,6 +33,8 @@ class DefaultExtension(Extension):
         )
         print("audio duration: ", len(self.audio))
 
+        self.start_time = int(time.time() * 1000)
+
         ten_env.on_start_done()
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
@@ -50,6 +53,10 @@ class DefaultExtension(Extension):
         audio_frame.set_sample_rate(16000)
         audio_frame.set_number_of_channels(1)
         audio_frame.set_samples_per_channel(160)
+
+        timestamp = int(time.time() * 1000)
+        audio_frame.set_timestamp(timestamp)
+
         audio_frame.alloc_buf(len(pcm_data))
         buf = audio_frame.lock_buf()
         buf[: len(pcm_data)] = pcm_data
@@ -63,6 +70,11 @@ class DefaultExtension(Extension):
         assert audio_frame.get_sample_rate() == 16000
         assert audio_frame.get_number_of_channels() == 1
         assert audio_frame.get_samples_per_channel() == 160
+
+        timestamp = audio_frame.get_timestamp()
+
+        current_time = int(time.time() * 1000)
+        assert current_time >= timestamp >= self.start_time
 
         buf = audio_frame.get_buf()
 
