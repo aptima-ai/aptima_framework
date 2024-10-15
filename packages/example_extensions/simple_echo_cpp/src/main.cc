@@ -62,7 +62,7 @@ class simple_echo_extension_t : public ten::extension_t {
     new_video_frame->set_height(video_frame->get_height());
     new_video_frame->set_pixel_fmt(video_frame->get_pixel_fmt());
     new_video_frame->set_timestamp(video_frame->get_timestamp());
-    new_video_frame->set_is_eof(video_frame->is_eof());
+    new_video_frame->set_eof(video_frame->is_eof());
 
     ten_env.send_video_frame(std::move(new_video_frame));
   }
@@ -89,7 +89,7 @@ class simple_echo_extension_t : public ten::extension_t {
     new_audio_frame->set_number_of_channels(
         audio_frame->get_number_of_channels());
     new_audio_frame->set_timestamp(audio_frame->get_timestamp());
-    new_audio_frame->set_is_eof(audio_frame->is_eof());
+    new_audio_frame->set_eof(audio_frame->is_eof());
     new_audio_frame->set_data_fmt(audio_frame->get_data_fmt());
     new_audio_frame->set_line_size(audio_frame->get_line_size());
 

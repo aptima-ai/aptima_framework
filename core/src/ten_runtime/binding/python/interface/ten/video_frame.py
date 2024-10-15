@@ -73,5 +73,5 @@ class VideoFrame(_VideoFrame):
     def is_eof(self) -> bool:
         return _VideoFrame.is_eof(self)
 
-    def set_is_eof(self, eof: bool) -> None:
-        return _VideoFrame.set_is_eof(self, eof)
+    def set_eof(self, eof: bool) -> None:
+        return _VideoFrame.set_eof(self, eof)

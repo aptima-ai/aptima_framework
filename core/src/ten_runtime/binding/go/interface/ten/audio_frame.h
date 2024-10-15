@@ -63,8 +63,7 @@ ten_go_status_t ten_go_audio_frame_set_line_size(uintptr_t bridge_addr,
 ten_go_status_t ten_go_audio_frame_get_line_size(uintptr_t bridge_addr,
                                                  int32_t *line_size);
 
-ten_go_status_t ten_go_audio_frame_set_is_eof(uintptr_t bridge_addr,
-                                              bool is_eof);
+ten_go_status_t ten_go_audio_frame_set_eof(uintptr_t bridge_addr, bool is_eof);
 
 ten_go_status_t ten_go_audio_frame_is_eof(uintptr_t bridge_addr, bool *is_eof);
 

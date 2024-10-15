@@ -148,7 +148,7 @@ bool demuxer_thread_t::create_demuxer() {
 // Called from the demuxer thread.
 void demuxer_thread_t::send_image_eof() {
   auto frame = ten::video_frame_t::create("video_frame");
-  frame->set_is_eof(true);
+  frame->set_eof(true);
 
   auto frame_shared =
       std::make_shared<std::unique_ptr<ten::video_frame_t>>(std::move(frame));
@@ -161,7 +161,7 @@ void demuxer_thread_t::send_image_eof() {
 // Called from the demuxer thread.
 void demuxer_thread_t::send_audio_eof() {
   auto frame = ten::audio_frame_t::create("audio_frame");
-  frame->set_is_eof(true);
+  frame->set_eof(true);
 
   auto frame_shared =
       std::make_shared<std::unique_ptr<ten::audio_frame_t>>(std::move(frame));

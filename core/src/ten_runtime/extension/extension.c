@@ -565,7 +565,7 @@ static TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT ten_extension_determine_out_msgs(
 
         msg = ten_path_table_determine_actual_cmd_result(
             self->path_table, TEN_PATH_IN, in_path,
-            ten_cmd_result_get_is_final(msg, NULL));
+            ten_cmd_result_is_final(msg, NULL));
         if (msg) {
           // The cmd result is resolved to be transmitted to the previous node.
 

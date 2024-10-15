@@ -172,8 +172,8 @@ TEN_STATUS_CODE ten_cmd_result_get_status_code(ten_shared_ptr_t *self) {
   return ten_raw_cmd_result_get_status_code(ten_shared_ptr_get_data(self));
 }
 
-bool ten_raw_cmd_result_set_is_final(ten_cmd_result_t *self, bool is_final,
-                                     TEN_UNUSED ten_error_t *err) {
+bool ten_raw_cmd_result_set_final(ten_cmd_result_t *self, bool is_final,
+                                  TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
@@ -183,17 +183,17 @@ bool ten_raw_cmd_result_set_is_final(ten_cmd_result_t *self, bool is_final,
   return true;
 }
 
-bool ten_cmd_result_set_is_final(ten_shared_ptr_t *self, bool is_final,
-                                 ten_error_t *err) {
+bool ten_cmd_result_set_final(ten_shared_ptr_t *self, bool is_final,
+                              ten_error_t *err) {
   TEN_ASSERT(self && ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
-  return ten_raw_cmd_result_set_is_final(
+  return ten_raw_cmd_result_set_final(
       (ten_cmd_result_t *)ten_msg_get_raw_msg(self), is_final, err);
 }
 
-bool ten_raw_cmd_result_get_is_final(ten_cmd_result_t *self,
-                                     TEN_UNUSED ten_error_t *err) {
+bool ten_raw_cmd_result_is_final(ten_cmd_result_t *self,
+                                 TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
@@ -201,11 +201,11 @@ bool ten_raw_cmd_result_get_is_final(ten_cmd_result_t *self,
   return self->is_final;
 }
 
-bool ten_cmd_result_get_is_final(ten_shared_ptr_t *self, ten_error_t *err) {
+bool ten_cmd_result_is_final(ten_shared_ptr_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
-  return ten_raw_cmd_result_get_is_final(
+  return ten_raw_cmd_result_is_final(
       (ten_cmd_result_t *)ten_msg_get_raw_msg(self), err);
 }
 

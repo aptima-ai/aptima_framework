@@ -40,7 +40,7 @@ bool ten_go_extension_tester_check_integrity(ten_go_extension_tester_t *self) {
 
 ten_go_extension_tester_t *ten_go_extension_tester_reinterpret(
     uintptr_t bridge_addr) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   // NOLINTNEXTLINE(performance-no-int-to-ptr)
   ten_go_extension_tester_t *self = (ten_go_extension_tester_t *)bridge_addr;

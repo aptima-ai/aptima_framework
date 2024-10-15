@@ -309,7 +309,7 @@ class ten_env_t {
         err != nullptr ? err->get_internal_representation() : nullptr);
 
     if (rc) {
-      if (cmd->get_is_final()) {
+      if (cmd->is_final()) {
         // Only when is_final is true does the ownership of target_cmd
         // transfer. Otherwise, target_cmd remains with the extension,
         // allowing the extension to return more results.
@@ -1184,7 +1184,7 @@ class ten_env_t {
 
     (*result_handler)(*cpp_ten_env, std::move(cmd_result));
 
-    if (ten_cmd_result_get_is_final(c_cmd_result, nullptr)) {
+    if (ten_cmd_result_is_final(c_cmd_result, nullptr)) {
       // Only when is_final is true should the result handler be cleared.
       // Otherwise, since more result handlers are expected, the result
       // handler should not be cleared.

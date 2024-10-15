@@ -20,8 +20,8 @@ void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
                                             uintptr_t context_addr) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self), "Invalid argument.");
-  TEN_ASSERT(instance_bridge_addr > 0, "Invalid argument.");
-  TEN_ASSERT(context_addr > 0, "Invalid argument.");
+  TEN_ASSERT(instance_bridge_addr, "Invalid argument.");
+  TEN_ASSERT(context_addr, "Invalid argument.");
 
   void *c_extension_or_extension_group = NULL;
   if (is_extension) {

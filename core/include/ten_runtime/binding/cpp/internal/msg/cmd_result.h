@@ -47,14 +47,14 @@ class cmd_result_t : public msg_t {
     return ten_cmd_result_get_status_code(c_msg);
   }
 
-  bool get_is_final(error_t *err = nullptr) const {
-    return ten_cmd_result_get_is_final(
+  bool is_final(error_t *err = nullptr) const {
+    return ten_cmd_result_is_final(
         c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool set_is_final(bool is_final, error_t *err = nullptr) {
-    return ten_cmd_result_set_is_final(
-        c_msg, is_final,
+  bool set_final(bool final, error_t *err = nullptr) {
+    return ten_cmd_result_set_final(
+        c_msg, final,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 

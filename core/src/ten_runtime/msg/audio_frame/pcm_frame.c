@@ -12,12 +12,12 @@
 #include "include_internal/ten_runtime/msg/audio_frame/audio_frame.h"
 #include "include_internal/ten_runtime/msg/audio_frame/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_path.h"
 #include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
@@ -106,7 +106,7 @@ bool ten_raw_audio_frame_set_channel_layout(ten_audio_frame_t *self,
   return ten_value_set_uint64(&self->channel_layout, channel_layout);
 }
 
-bool ten_raw_audio_frame_set_is_eof(ten_audio_frame_t *self, bool is_eof) {
+bool ten_raw_audio_frame_set_eof(ten_audio_frame_t *self, bool is_eof) {
   TEN_ASSERT(self, "Should not happen.");
   return ten_value_set_bool(&self->is_eof, is_eof);
 }
@@ -234,9 +234,9 @@ bool ten_audio_frame_is_eof(ten_shared_ptr_t *self) {
   return ten_raw_audio_frame_is_eof(ten_shared_ptr_get_data(self));
 }
 
-bool ten_audio_frame_set_is_eof(ten_shared_ptr_t *self, bool is_eof) {
+bool ten_audio_frame_set_eof(ten_shared_ptr_t *self, bool is_eof) {
   TEN_ASSERT(self, "Should not happen.");
-  return ten_raw_audio_frame_set_is_eof(ten_shared_ptr_get_data(self), is_eof);
+  return ten_raw_audio_frame_set_eof(ten_shared_ptr_get_data(self), is_eof);
 }
 
 int32_t ten_audio_frame_get_samples_per_channel(ten_shared_ptr_t *self) {

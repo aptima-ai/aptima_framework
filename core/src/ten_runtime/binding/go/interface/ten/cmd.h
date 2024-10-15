@@ -55,6 +55,12 @@ uintptr_t ten_go_cmd_create_cmd_result(int status_code);
 
 int ten_go_cmd_result_get_status_code(uintptr_t bridge_addr);
 
+ten_go_status_t ten_go_cmd_result_set_final(uintptr_t bridge_addr,
+                                            bool is_final);
+
+ten_go_status_t ten_go_cmd_result_is_final(uintptr_t bridge_addr,
+                                           bool *is_final);
+
 ten_go_handle_t ten_go_cmd_result_get_detail(uintptr_t bridge_addr);
 
 ten_go_status_t ten_go_cmd_result_get_detail_json_and_size(

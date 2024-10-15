@@ -53,7 +53,7 @@ type VideoFrame interface {
 	GetTimestamp() (int64, error)
 
 	IsEOF() (bool, error)
-	SetIsEOF(isEOF bool) error
+	SetEOF(isEOF bool) error
 
 	GetPixelFmt() (PixelFmt, error)
 	SetPixelFmt(pixelFmt PixelFmt) error
@@ -292,9 +292,9 @@ func (p *videoFrame) IsEOF() (bool, error) {
 	return bool(isEOF), nil
 }
 
-func (p *videoFrame) SetIsEOF(isEOF bool) error {
+func (p *videoFrame) SetEOF(isEOF bool) error {
 	return withCGOLimiter(func() error {
-		apiStatus := C.ten_go_video_frame_set_is_eof(
+		apiStatus := C.ten_go_video_frame_set_eof(
 			p.getCPtr(),
 			C.bool(isEOF),
 		)

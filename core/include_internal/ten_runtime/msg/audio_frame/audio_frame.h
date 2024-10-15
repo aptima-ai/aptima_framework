@@ -109,7 +109,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_sample_rate(
 TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_channel_layout(
     ten_audio_frame_t *self, uint64_t channel_layout);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_is_eof(
+TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_eof(
     ten_audio_frame_t *self, bool is_eof);
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_line_size(

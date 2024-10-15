@@ -45,8 +45,7 @@ ten_go_status_t ten_go_video_frame_set_timestamp(uintptr_t bridge_addr,
 ten_go_status_t ten_go_video_frame_get_timestamp(uintptr_t bridge_addr,
                                                  int64_t *timestamp);
 
-ten_go_status_t ten_go_video_frame_set_is_eof(uintptr_t bridge_addr,
-                                              bool is_eof);
+ten_go_status_t ten_go_video_frame_set_eof(uintptr_t bridge_addr, bool is_eof);
 
 ten_go_status_t ten_go_video_frame_is_eof(uintptr_t bridge_addr, bool *is_eof);
 

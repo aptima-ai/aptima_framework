@@ -129,8 +129,8 @@ class audio_frame_t : public msg_t {
   bool is_eof(error_t *err = nullptr) const {
     return ten_audio_frame_is_eof(c_msg);
   }
-  bool set_is_eof(bool is_eof, error_t *err = nullptr) {
-    return ten_audio_frame_set_is_eof(c_msg, is_eof);
+  bool set_eof(bool eof, error_t *err = nullptr) {
+    return ten_audio_frame_set_eof(c_msg, eof);
   }
 
   bool alloc_buf(size_t size, error_t *err = nullptr) {

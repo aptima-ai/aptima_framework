@@ -9,11 +9,11 @@
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/data/data.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 
 ten_go_status_t ten_go_data_create(const void *msg_name, int msg_name_len,
                                    uintptr_t *bridge) {
@@ -38,7 +38,7 @@ ten_go_status_t ten_go_data_create(const void *msg_name, int msg_name_len,
 }
 
 ten_go_status_t ten_go_data_alloc_buf(uintptr_t bridge_addr, int size) {
-  TEN_ASSERT(bridge_addr > 0 && size > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && size, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -58,7 +58,7 @@ ten_go_status_t ten_go_data_alloc_buf(uintptr_t bridge_addr, int size) {
 
 ten_go_status_t ten_go_data_lock_buf(uintptr_t bridge_addr, uint8_t **buf_addr,
                                      uint64_t *buf_size) {
-  TEN_ASSERT(bridge_addr > 0 && buf_size, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && buf_size, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -88,7 +88,7 @@ ten_go_status_t ten_go_data_lock_buf(uintptr_t bridge_addr, uint8_t **buf_addr,
 
 ten_go_status_t ten_go_data_unlock_buf(uintptr_t bridge_addr,
                                        const void *buf_addr) {
-  TEN_ASSERT(bridge_addr > 0 && buf_addr, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && buf_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -115,7 +115,7 @@ ten_go_status_t ten_go_data_unlock_buf(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_data_get_buf(uintptr_t bridge_addr, const void *buf_addr,
                                     int buf_size) {
-  TEN_ASSERT(bridge_addr > 0 && buf_addr && buf_size > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && buf_addr && buf_size > 0, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);

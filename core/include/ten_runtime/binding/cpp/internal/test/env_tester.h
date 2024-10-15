@@ -135,7 +135,7 @@ class ten_env_tester_t {
 
     (*result_handler)(*cpp_ten_env_tester, std::move(cmd_result));
 
-    if (ten_cmd_result_get_is_final(c_cmd_result, nullptr)) {
+    if (ten_cmd_result_is_final(c_cmd_result, nullptr)) {
       // Only when is_final is true should the result handler be cleared.
       // Otherwise, since more result handlers are expected, the result
       // handler should not be cleared.

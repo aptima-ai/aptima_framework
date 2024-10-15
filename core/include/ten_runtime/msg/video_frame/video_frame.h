@@ -49,8 +49,8 @@ TEN_RUNTIME_API bool ten_video_frame_set_timestamp(ten_shared_ptr_t *self,
                                                    int64_t timestamp);
 
 TEN_RUNTIME_API bool ten_video_frame_is_eof(ten_shared_ptr_t *self);
-TEN_RUNTIME_API bool ten_video_frame_set_is_eof(ten_shared_ptr_t *self,
-                                                bool is_eof);
+TEN_RUNTIME_API bool ten_video_frame_set_eof(ten_shared_ptr_t *self,
+                                             bool is_eof);
 
 TEN_RUNTIME_API TEN_PIXEL_FMT
 ten_video_frame_get_pixel_fmt(ten_shared_ptr_t *self);

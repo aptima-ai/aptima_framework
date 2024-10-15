@@ -38,6 +38,8 @@ func (s StatusCode) valid() bool {
 type CmdResult interface {
 	CmdBase
 	GetStatusCode() (StatusCode, error)
+	SetFinal(isFinal bool) error
+	IsFinal() (bool, error)
 }
 
 type cmdResult struct {
@@ -87,4 +89,31 @@ func tenGoCreateCmdResult(bridge C.uintptr_t) C.uintptr_t {
 	cmdStatusInstance.goObjID = id
 
 	return C.uintptr_t(id)
+}
+
+func (p *cmdResult) SetFinal(isFinal bool) error {
+	return withCGOLimiter(func() error {
+		apiStatus := C.ten_go_cmd_result_set_final(
+			p.getCPtr(),
+			C.bool(isFinal),
+		)
+		return withGoStatus(&apiStatus)
+	})
+}
+
+func (p *cmdResult) IsFinal() (bool, error) {
+	var isFinal C.bool
+	err := withCGOLimiter(func() error {
+		apiStatus := C.ten_go_cmd_result_is_final(
+			p.getCPtr(),
+			&isFinal,
+		)
+		return withGoStatus(&apiStatus)
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	return bool(isFinal), nil
 }

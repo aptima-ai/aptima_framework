@@ -81,7 +81,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_set_height(
 TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_set_timestamp(
     ten_video_frame_t *self, int64_t timestamp);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_set_is_eof(
+TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_set_eof(
     ten_video_frame_t *self, bool is_eof);
 
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_video_frame_as_msg_create_from_json(

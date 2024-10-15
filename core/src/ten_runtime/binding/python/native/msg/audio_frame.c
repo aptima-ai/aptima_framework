@@ -9,11 +9,11 @@
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "longobject.h"
 #include "object.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/msg.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 static ten_py_audio_frame_t *ten_py_audio_frame_create_internal(
@@ -389,7 +389,7 @@ PyObject *ten_py_audio_frame_is_eof(PyObject *self, PyObject *args) {
   return PyBool_FromLong(ten_audio_frame_is_eof(py_audio_frame->msg.c_msg));
 }
 
-PyObject *ten_py_audio_frame_set_is_eof(PyObject *self, PyObject *args) {
+PyObject *ten_py_audio_frame_set_eof(PyObject *self, PyObject *args) {
   ten_py_audio_frame_t *py_audio_frame = (ten_py_audio_frame_t *)self;
   TEN_ASSERT(py_audio_frame &&
                  ten_py_msg_check_integrity((ten_py_msg_t *)py_audio_frame),
@@ -400,7 +400,7 @@ PyObject *ten_py_audio_frame_set_is_eof(PyObject *self, PyObject *args) {
     return NULL;
   }
 
-  ten_audio_frame_set_is_eof(py_audio_frame->msg.c_msg, is_eof);
+  ten_audio_frame_set_eof(py_audio_frame->msg.c_msg, is_eof);
 
   Py_RETURN_NONE;
 }

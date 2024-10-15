@@ -31,11 +31,11 @@ class CmdResult(_CmdResult):
     def get_status_code(self) -> StatusCode:
         return StatusCode(_CmdResult.get_status_code(self))
 
-    def set_is_final(self, is_final: bool):
+    def set_final(self, is_final: bool):
         if is_final:
-            return _CmdResult.set_is_final(self, 1)
+            return _CmdResult.set_final(self, 1)
         else:
-            return _CmdResult.set_is_final(self, 0)
+            return _CmdResult.set_final(self, 0)
 
-    def get_is_final(self) -> bool:
-        return _CmdResult.get_is_final(self)
+    def is_final(self) -> bool:
+        return _CmdResult.is_final(self)

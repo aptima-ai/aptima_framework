@@ -28,10 +28,10 @@ class DefaultExtension(Extension):
         self.__counter += 1
 
         if self.__counter == 1:
-            assert result.get_is_final() is False
+            assert result.is_final() is False
             ten_env.log_info("receive 1 cmd result")
         elif self.__counter == 2:
-            assert result.get_is_final() is True
+            assert result.is_final() is True
             ten_env.log_info("receive 2 cmd result")
 
             respCmd = CmdResult.create(StatusCode.OK)
@@ -52,7 +52,7 @@ class DefaultExtension(Extension):
             ten_env.log_info("create respCmd 1")
             respCmd = CmdResult.create(StatusCode.OK)
             # The following line is the key.
-            respCmd.set_is_final(False)
+            respCmd.set_final(False)
             ten_env.return_result(respCmd, cmd)
 
             ten_env.log_info("create respCmd 2")

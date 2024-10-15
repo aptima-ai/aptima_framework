@@ -90,5 +90,5 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_audio_frame_set_line_size(
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_audio_frame_is_eof(PyObject *self,
                                                             PyObject *args);
 
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_audio_frame_set_is_eof(PyObject *self,
-                                                                PyObject *args);
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_audio_frame_set_eof(PyObject *self,
+                                                             PyObject *args);

@@ -76,8 +76,8 @@ PyTypeObject *ten_py_cmd_result_py_type(void) {
        NULL},
       {"set_status_code", ten_py_cmd_result_set_status_code, METH_VARARGS,
        NULL},
-      {"set_is_final", ten_py_cmd_result_set_is_final, METH_VARARGS, NULL},
-      {"get_is_final", ten_py_cmd_result_get_is_final, METH_VARARGS, NULL},
+      {"set_final", ten_py_cmd_result_set_final, METH_VARARGS, NULL},
+      {"is_final", ten_py_cmd_result_is_final, METH_VARARGS, NULL},
       {NULL, NULL, 0, NULL},
   };
 
@@ -138,7 +138,7 @@ PyTypeObject *ten_py_video_frame_py_type(void) {
       {"get_timestamp", ten_py_video_frame_get_timestamp, METH_VARARGS, NULL},
       {"set_timestamp", ten_py_video_frame_set_timestamp, METH_VARARGS, NULL},
       {"is_eof", ten_py_video_frame_is_eof, METH_VARARGS, NULL},
-      {"set_is_eof", ten_py_video_frame_set_is_eof, METH_VARARGS, NULL},
+      {"set_eof", ten_py_video_frame_set_eof, METH_VARARGS, NULL},
       {"get_pixel_fmt", ten_py_video_frame_get_pixel_fmt, METH_VARARGS, NULL},
       {"set_pixel_fmt", ten_py_video_frame_set_pixel_fmt, METH_VARARGS, NULL},
       {NULL, NULL, 0, NULL},
@@ -191,8 +191,8 @@ PyTypeObject *ten_py_audio_frame_py_type(void) {
       {"set_data_fmt", ten_py_audio_frame_set_data_fmt, METH_VARARGS, NULL},
       {"get_line_size", ten_py_audio_frame_get_line_size, METH_VARARGS, NULL},
       {"set_line_size", ten_py_audio_frame_set_line_size, METH_VARARGS, NULL},
-      {"get_is_eof", ten_py_audio_frame_is_eof, METH_VARARGS, NULL},
-      {"set_is_eof", ten_py_audio_frame_set_is_eof, METH_VARARGS, NULL},
+      {"is_eof", ten_py_audio_frame_is_eof, METH_VARARGS, NULL},
+      {"set_eof", ten_py_audio_frame_set_eof, METH_VARARGS, NULL},
       {NULL, NULL, 0, NULL},
   };
 

@@ -15,7 +15,6 @@
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
 #include "include_internal/ten_runtime/msg/field/properties.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
 #include "ten_runtime/common/errno.h"
@@ -26,6 +25,7 @@
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
@@ -830,7 +830,7 @@ void ten_go_msg_finalize(uintptr_t bridge_addr) {
 }
 
 ten_go_status_t ten_go_msg_get_name(uintptr_t bridge_addr, const char **name) {
-  TEN_ASSERT(bridge_addr > 0 && name, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && name, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);

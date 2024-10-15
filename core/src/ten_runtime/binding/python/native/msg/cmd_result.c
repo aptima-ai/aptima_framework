@@ -119,7 +119,7 @@ PyObject *ten_py_cmd_result_set_status_code(PyObject *self, PyObject *args) {
   Py_RETURN_NONE;
 }
 
-PyObject *ten_py_cmd_result_set_is_final(PyObject *self, PyObject *args) {
+PyObject *ten_py_cmd_result_set_final(PyObject *self, PyObject *args) {
   ten_py_cmd_result_t *py_cmd_result = (ten_py_cmd_result_t *)self;
 
   TEN_ASSERT(py_cmd_result &&
@@ -129,17 +129,17 @@ PyObject *ten_py_cmd_result_set_is_final(PyObject *self, PyObject *args) {
   int is_final_flag = 1;
   if (!PyArg_ParseTuple(args, "i", &is_final_flag)) {
     return ten_py_raise_py_value_error_exception(
-        "Failed to parse arguments when set_is_final.");
+        "Failed to parse arguments when set_final.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_cmd_result_set_is_final(py_cmd_result->msg.c_msg, is_final_flag,
-                                        &err);
+  bool rc =
+      ten_cmd_result_set_final(py_cmd_result->msg.c_msg, is_final_flag, &err);
   if (!rc) {
     ten_error_deinit(&err);
-    return ten_py_raise_py_runtime_error_exception("Failed to set_is_final.");
+    return ten_py_raise_py_runtime_error_exception("Failed to set_final.");
   }
 
   bool err_occurred = ten_py_check_and_clear_py_error();
@@ -154,7 +154,7 @@ PyObject *ten_py_cmd_result_set_is_final(PyObject *self, PyObject *args) {
   }
 }
 
-PyObject *ten_py_cmd_result_get_is_final(PyObject *self, PyObject *args) {
+PyObject *ten_py_cmd_result_is_final(PyObject *self, PyObject *args) {
   ten_py_cmd_result_t *py_cmd_result = (ten_py_cmd_result_t *)self;
 
   TEN_ASSERT(py_cmd_result &&
@@ -164,11 +164,11 @@ PyObject *ten_py_cmd_result_get_is_final(PyObject *self, PyObject *args) {
   ten_error_t err;
   ten_error_init(&err);
 
-  bool is_final = ten_cmd_result_get_is_final(py_cmd_result->msg.c_msg, &err);
+  bool is_final = ten_cmd_result_is_final(py_cmd_result->msg.c_msg, &err);
 
   if (!ten_error_is_success(&err)) {
     ten_error_deinit(&err);
-    return ten_py_raise_py_runtime_error_exception("Failed to get_is_final.");
+    return ten_py_raise_py_runtime_error_exception("Failed to is_final.");
   }
 
   ten_error_deinit(&err);

@@ -112,7 +112,7 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
     } else {
       TEN_ASSERT(ten_path_check_integrity(out_path, true), "Invalid argument.");
 
-      bool is_final_result = ten_cmd_result_get_is_final(msg, &err);
+      bool is_final_result = ten_cmd_result_is_final(msg, &err);
 
       // If a non-final result is received, it indicates the use of streaming
       // result mode. Currently, the TEN runtime does not support using

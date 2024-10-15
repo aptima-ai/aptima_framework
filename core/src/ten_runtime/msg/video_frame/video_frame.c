@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg/video_frame/field/field_info.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_path.h"
 #include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/common/errno.h"
@@ -21,6 +20,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 
@@ -97,7 +97,7 @@ bool ten_raw_video_frame_set_pixel_fmt(ten_video_frame_t *self,
   return ten_value_set_int32(&self->pixel_fmt, pixel_fmt);
 }
 
-bool ten_raw_video_frame_set_is_eof(ten_video_frame_t *self, bool is_eof) {
+bool ten_raw_video_frame_set_eof(ten_video_frame_t *self, bool is_eof) {
   TEN_ASSERT(self, "Should not happen.");
   return ten_value_set_bool(&self->is_eof, is_eof);
 }
@@ -207,9 +207,9 @@ bool ten_video_frame_is_eof(ten_shared_ptr_t *self) {
   return ten_raw_video_frame_is_eof(ten_shared_ptr_get_data(self));
 }
 
-bool ten_video_frame_set_is_eof(ten_shared_ptr_t *self, bool is_eof) {
+bool ten_video_frame_set_eof(ten_shared_ptr_t *self, bool is_eof) {
   TEN_ASSERT(self, "Should not happen.");
-  return ten_raw_video_frame_set_is_eof(ten_shared_ptr_get_data(self), is_eof);
+  return ten_raw_video_frame_set_eof(ten_shared_ptr_get_data(self), is_eof);
 }
 
 ten_msg_t *ten_raw_video_frame_as_msg_clone(ten_msg_t *self,

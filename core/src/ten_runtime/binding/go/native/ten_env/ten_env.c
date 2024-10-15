@@ -34,7 +34,7 @@ bool ten_go_ten_env_check_integrity(ten_go_ten_env_t *self) {
 }
 
 ten_go_ten_env_t *ten_go_ten_env_reinterpret(uintptr_t bridge_addr) {
-  TEN_ASSERT(bridge_addr > 0, "Should not happen.");
+  TEN_ASSERT(bridge_addr, "Should not happen.");
 
   // NOLINTNEXTLINE(performance-no-int-to-ptr)
   ten_go_ten_env_t *self = (ten_go_ten_env_t *)bridge_addr;
@@ -86,7 +86,7 @@ ten_go_ten_env_t *ten_go_ten_env_wrap(ten_env_t *c_ten_env) {
   ten_signature_set(&ten_env_bridge->signature, TEN_GO_TEN_ENV_SIGNATURE);
 
   uintptr_t bridge_addr = (uintptr_t)ten_env_bridge;
-  TEN_ASSERT(bridge_addr > 0, "Should not happen.");
+  TEN_ASSERT(bridge_addr, "Should not happen.");
 
   ten_env_bridge->bridge.go_instance = tenGoCreateTenEnv(bridge_addr);
 

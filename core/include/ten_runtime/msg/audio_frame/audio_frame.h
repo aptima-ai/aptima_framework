@@ -45,8 +45,8 @@ TEN_RUNTIME_API bool ten_audio_frame_set_channel_layout(
     ten_shared_ptr_t *self, uint64_t channel_layout);
 
 TEN_RUNTIME_API bool ten_audio_frame_is_eof(ten_shared_ptr_t *self);
-TEN_RUNTIME_API bool ten_audio_frame_set_is_eof(ten_shared_ptr_t *self,
-                                                bool is_eof);
+TEN_RUNTIME_API bool ten_audio_frame_set_eof(ten_shared_ptr_t *self,
+                                             bool is_eof);
 
 TEN_RUNTIME_API int32_t
 ten_audio_frame_get_samples_per_channel(ten_shared_ptr_t *self);

@@ -63,7 +63,7 @@ type AudioFrame interface {
 	GetLineSize() (int32, error)
 
 	IsEOF() (bool, error)
-	SetIsEOF(isEOF bool) error
+	SetEOF(isEOF bool) error
 }
 
 type audioFrame struct {
@@ -430,9 +430,9 @@ func (p *audioFrame) IsEOF() (bool, error) {
 	return bool(isEOF), nil
 }
 
-func (p *audioFrame) SetIsEOF(isEOF bool) error {
+func (p *audioFrame) SetEOF(isEOF bool) error {
 	return withCGOLimiter(func() error {
-		apiStatus := C.ten_go_audio_frame_set_is_eof(
+		apiStatus := C.ten_go_audio_frame_set_eof(
 			p.getCPtr(),
 			C.bool(isEOF),
 		)

@@ -82,8 +82,8 @@ class AudioFrame(_AudioFrame):
     def set_line_size(self, line_size: int) -> None:
         return _AudioFrame.set_line_size(self, line_size)
 
-    def get_is_eof(self) -> bool:
-        return _AudioFrame.get_is_eof(self)
+    def is_eof(self) -> bool:
+        return _AudioFrame.is_eof(self)
 
-    def set_is_eof(self, is_eof: bool) -> None:
-        return _AudioFrame.set_is_eof(self, is_eof)
+    def set_eof(self, is_eof: bool) -> None:
+        return _AudioFrame.set_eof(self, is_eof)

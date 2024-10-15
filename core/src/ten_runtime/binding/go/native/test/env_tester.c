@@ -17,7 +17,6 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 
 bool ten_go_ten_env_tester_check_integrity(ten_go_ten_env_tester_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -31,7 +30,7 @@ bool ten_go_ten_env_tester_check_integrity(ten_go_ten_env_tester_t *self) {
 
 ten_go_ten_env_tester_t *ten_go_ten_env_tester_reinterpret(
     uintptr_t bridge_addr) {
-  TEN_ASSERT(bridge_addr > 0, "Should not happen.");
+  TEN_ASSERT(bridge_addr, "Should not happen.");
 
   // NOLINTNEXTLINE(performance-no-int-to-ptr)
   ten_go_ten_env_tester_t *self = (ten_go_ten_env_tester_t *)bridge_addr;
@@ -88,7 +87,7 @@ ten_go_ten_env_tester_t *ten_go_ten_env_tester_wrap(
                     TEN_GO_TEN_ENV_TESTER_SIGNATURE);
 
   uintptr_t bridge_addr = (uintptr_t)ten_env_tester_bridge;
-  TEN_ASSERT(bridge_addr > 0, "Should not happen.");
+  TEN_ASSERT(bridge_addr, "Should not happen.");
 
   ten_env_tester_bridge->bridge.go_instance =
       tenGoCreateTenEnvTester(bridge_addr);

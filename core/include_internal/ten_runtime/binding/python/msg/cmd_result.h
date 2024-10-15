@@ -38,8 +38,8 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_cmd_result_get_status_code(
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_cmd_result_set_status_code(
     PyObject *self, PyObject *args);
 
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_cmd_result_set_is_final(
-    PyObject *self, PyObject *args);
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_cmd_result_set_final(PyObject *self,
+                                                              PyObject *args);
 
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_cmd_result_get_is_final(
-    PyObject *self, PyObject *args);
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_cmd_result_is_final(PyObject *self,
+                                                             PyObject *args);

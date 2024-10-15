@@ -65,7 +65,7 @@ static void ten_go_addon_destroy(ten_go_addon_t *self) {
 }
 
 void ten_go_addon_unregister(uintptr_t bridge_addr) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_addon_t *addon_bridge = (ten_go_addon_t *)bridge_addr;
   TEN_ASSERT(addon_bridge && ten_go_addon_check_integrity(addon_bridge),

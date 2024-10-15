@@ -14,7 +14,6 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/custom/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
 #include "ten_runtime/common/status_code.h"
@@ -22,6 +21,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 
 ten_go_handle_t tenGoCreateCmdResult(uintptr_t);
 
@@ -105,4 +105,62 @@ int ten_go_cmd_result_get_status_code(uintptr_t bridge_addr) {
   TEN_ASSERT(self && ten_go_msg_check_integrity(self), "Should not happen.");
 
   return ten_cmd_result_get_status_code(ten_go_msg_c_msg(self));
+}
+
+ten_go_status_t ten_go_cmd_result_set_final(uintptr_t bridge_addr,
+                                            bool is_final) {
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
+
+  ten_go_msg_t *msg_bridge = ten_go_msg_reinterpret(bridge_addr);
+  TEN_ASSERT(msg_bridge && ten_go_msg_check_integrity(msg_bridge),
+             "Should not happen.");
+
+  ten_shared_ptr_t *c_cmd = ten_go_msg_c_msg(msg_bridge);
+  TEN_ASSERT(c_cmd, "Should not happen.");
+
+  ten_go_status_t status;
+  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool success =
+      ten_cmd_result_set_final(ten_go_msg_c_msg(msg_bridge), is_final, &err);
+
+  if (!ten_error_is_success(&err)) {
+    TEN_ASSERT(!success, "Should not happen.");
+    ten_go_status_set(&status, ten_error_errno(&err), ten_error_errmsg(&err));
+  }
+
+  ten_error_deinit(&err);
+  return status;
+}
+
+ten_go_status_t ten_go_cmd_result_is_final(uintptr_t bridge_addr,
+                                           bool *is_final) {
+  TEN_ASSERT(bridge_addr && is_final, "Invalid argument.");
+
+  ten_go_msg_t *msg_bridge = ten_go_msg_reinterpret(bridge_addr);
+  TEN_ASSERT(msg_bridge && ten_go_msg_check_integrity(msg_bridge),
+             "Should not happen.");
+
+  ten_shared_ptr_t *c_cmd = ten_go_msg_c_msg(msg_bridge);
+  TEN_ASSERT(c_cmd, "Should not happen.");
+
+  ten_go_status_t status;
+  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool is_final_ = ten_cmd_result_is_final(ten_go_msg_c_msg(msg_bridge), &err);
+
+  if (!ten_error_is_success(&err)) {
+    ten_go_status_set(&status, ten_error_errno(&err), ten_error_errmsg(&err));
+  } else {
+    *is_final = is_final_;
+  }
+
+  ten_error_deinit(&err);
+  return status;
 }

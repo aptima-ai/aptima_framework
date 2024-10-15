@@ -39,7 +39,7 @@ ten_go_status_t ten_go_audio_frame_create(const void *msg_name,
 
 ten_go_status_t ten_go_audio_frame_set_timestamp(uintptr_t bridge_addr,
                                                  int64_t timestamp) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -55,7 +55,7 @@ ten_go_status_t ten_go_audio_frame_set_timestamp(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_get_timestamp(uintptr_t bridge_addr,
                                                  int64_t *timestamp) {
-  TEN_ASSERT(bridge_addr > 0 && timestamp, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && timestamp, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -71,7 +71,7 @@ ten_go_status_t ten_go_audio_frame_get_timestamp(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_set_sample_rate(uintptr_t bridge_addr,
                                                    int32_t sample_rate) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -87,7 +87,7 @@ ten_go_status_t ten_go_audio_frame_set_sample_rate(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_get_sample_rate(uintptr_t bridge_addr,
                                                    int32_t *sample_rate) {
-  TEN_ASSERT(bridge_addr > 0 && sample_rate, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && sample_rate, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -103,7 +103,7 @@ ten_go_status_t ten_go_audio_frame_get_sample_rate(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_set_channel_layout(uintptr_t bridge_addr,
                                                       uint64_t channel_layout) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -119,7 +119,7 @@ ten_go_status_t ten_go_audio_frame_set_channel_layout(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_get_channel_layout(
     uintptr_t bridge_addr, uint64_t *channel_layout) {
-  TEN_ASSERT(bridge_addr > 0 && channel_layout, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && channel_layout, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -135,7 +135,7 @@ ten_go_status_t ten_go_audio_frame_get_channel_layout(
 
 ten_go_status_t ten_go_audio_frame_set_samples_per_channel(
     uintptr_t bridge_addr, int32_t samples_per_channel) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -151,7 +151,7 @@ ten_go_status_t ten_go_audio_frame_set_samples_per_channel(
 
 ten_go_status_t ten_go_audio_frame_get_samples_per_channel(
     uintptr_t bridge_addr, int32_t *samples_per_channel) {
-  TEN_ASSERT(bridge_addr > 0 && samples_per_channel, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && samples_per_channel, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -167,7 +167,7 @@ ten_go_status_t ten_go_audio_frame_get_samples_per_channel(
 
 ten_go_status_t ten_go_audio_frame_set_bytes_per_sample(
     uintptr_t bridge_addr, int32_t bytes_per_sample) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -183,7 +183,7 @@ ten_go_status_t ten_go_audio_frame_set_bytes_per_sample(
 
 ten_go_status_t ten_go_audio_frame_get_bytes_per_sample(
     uintptr_t bridge_addr, int32_t *bytes_per_sample) {
-  TEN_ASSERT(bridge_addr > 0 && bytes_per_sample, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && bytes_per_sample, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -199,7 +199,7 @@ ten_go_status_t ten_go_audio_frame_get_bytes_per_sample(
 
 ten_go_status_t ten_go_audio_frame_set_number_of_channels(
     uintptr_t bridge_addr, int32_t number_of_channels) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -215,7 +215,7 @@ ten_go_status_t ten_go_audio_frame_set_number_of_channels(
 
 ten_go_status_t ten_go_audio_frame_get_number_of_channels(
     uintptr_t bridge_addr, int32_t *number_of_channels) {
-  TEN_ASSERT(bridge_addr > 0 && number_of_channels, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && number_of_channels, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -231,7 +231,7 @@ ten_go_status_t ten_go_audio_frame_get_number_of_channels(
 
 ten_go_status_t ten_go_audio_frame_set_data_fmt(uintptr_t bridge_addr,
                                                 uint32_t fmt) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -247,7 +247,7 @@ ten_go_status_t ten_go_audio_frame_set_data_fmt(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_get_data_fmt(uintptr_t bridge_addr,
                                                 uint32_t *fmt) {
-  TEN_ASSERT(bridge_addr > 0 && fmt, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && fmt, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -265,7 +265,7 @@ ten_go_status_t ten_go_audio_frame_get_data_fmt(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_set_line_size(uintptr_t bridge_addr,
                                                  int32_t line_size) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -281,7 +281,7 @@ ten_go_status_t ten_go_audio_frame_set_line_size(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_get_line_size(uintptr_t bridge_addr,
                                                  int32_t *line_size) {
-  TEN_ASSERT(bridge_addr > 0 && line_size, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && line_size, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -297,9 +297,8 @@ ten_go_status_t ten_go_audio_frame_get_line_size(uintptr_t bridge_addr,
   return status;
 }
 
-ten_go_status_t ten_go_audio_frame_set_is_eof(uintptr_t bridge_addr,
-                                              bool is_eof) {
-  TEN_ASSERT(bridge_addr > 0, "Invalid argument.");
+ten_go_status_t ten_go_audio_frame_set_eof(uintptr_t bridge_addr, bool is_eof) {
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -307,13 +306,13 @@ ten_go_status_t ten_go_audio_frame_set_is_eof(uintptr_t bridge_addr,
   ten_go_msg_t *self = ten_go_msg_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_msg_check_integrity(self), "Should not happen.");
 
-  ten_audio_frame_set_is_eof(ten_go_msg_c_msg(self), is_eof);
+  ten_audio_frame_set_eof(ten_go_msg_c_msg(self), is_eof);
 
   return status;
 }
 
 ten_go_status_t ten_go_audio_frame_is_eof(uintptr_t bridge_addr, bool *is_eof) {
-  TEN_ASSERT(bridge_addr > 0 && is_eof, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && is_eof, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -327,7 +326,7 @@ ten_go_status_t ten_go_audio_frame_is_eof(uintptr_t bridge_addr, bool *is_eof) {
 }
 
 ten_go_status_t ten_go_audio_frame_alloc_buf(uintptr_t bridge_addr, int size) {
-  TEN_ASSERT(bridge_addr > 0 && size > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && size, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -347,7 +346,7 @@ ten_go_status_t ten_go_audio_frame_alloc_buf(uintptr_t bridge_addr, int size) {
 ten_go_status_t ten_go_audio_frame_lock_buf(uintptr_t bridge_addr,
                                             uint8_t **buf_addr,
                                             uint64_t *buf_size) {
-  TEN_ASSERT(bridge_addr > 0 && buf_addr && buf_size, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && buf_addr && buf_size, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -380,7 +379,7 @@ ten_go_status_t ten_go_audio_frame_lock_buf(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_unlock_buf(uintptr_t bridge_addr,
                                               const void *buf_addr) {
-  TEN_ASSERT(bridge_addr > 0 && buf_addr, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && buf_addr, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
@@ -406,7 +405,7 @@ ten_go_status_t ten_go_audio_frame_unlock_buf(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_audio_frame_get_buf(uintptr_t bridge_addr,
                                            const void *buf_addr, int buf_size) {
-  TEN_ASSERT(bridge_addr > 0 && buf_addr && buf_size > 0, "Invalid argument.");
+  TEN_ASSERT(bridge_addr && buf_addr && buf_size > 0, "Invalid argument.");
 
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);

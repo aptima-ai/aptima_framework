@@ -118,7 +118,7 @@ PyObject *ten_py_ten_env_return_result(PyObject *self, PyObject *args) {
     ten_py_raise_py_runtime_error_exception("Failed to return result.");
     goto done;
   } else {
-    if (ten_cmd_result_get_is_final(py_cmd_result->msg.c_msg, &err)) {
+    if (ten_cmd_result_is_final(py_cmd_result->msg.c_msg, &err)) {
       // Remove the C message from the python target message if it is the final
       // cmd result.
       ten_py_msg_destroy_c_msg(&py_target_cmd->msg);
