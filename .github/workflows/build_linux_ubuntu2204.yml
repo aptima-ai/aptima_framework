@@ -104,6 +104,24 @@ jobs:
           cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test
           cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test
 
+      - name: Update supports before upload or publish
+        run: |
+          UPDATE_SUPPORTS_SCRIPT=$(pwd)/tools/supports/update_supports_in_manifest_json.py
+
+          cd out/linux/x64/ten_packages
+          ARRAY=(
+            "system/ten_runtime"
+            "system/ten_runtime_go"
+            "system/ten_runtime_python"
+            "extension/py_init_extension_cpp"
+          )
+
+          for item in "${ARRAY[@]}"; do
+            python3 ${UPDATE_SUPPORTS_SCRIPT} --os-arch-pairs linux:x64 --input-file ${item}/manifest.json --output-file ${item}/manifest.json --log-level 1
+            cat ${item}/manifest.json
+          done
+        shell: bash
+
       - name: Upload tman
         uses: actions/upload-artifact@v4
         with:
@@ -121,6 +139,7 @@ jobs:
             out/linux/x64/ten_packages/extension/default_extension_cpp
             out/linux/x64/ten_packages/extension/default_extension_go
             out/linux/x64/ten_packages/extension/default_extension_python
+            out/linux/x64/ten_packages/extension/default_async_extension_python
             out/linux/x64/ten_packages/extension/py_init_extension_cpp
 
       - name: Package assets
@@ -135,6 +154,7 @@ jobs:
             ten_packages/extension/default_extension_cpp \
             ten_packages/extension/default_extension_go \
             ten_packages/extension/default_extension_python \
+            ten_packages/extension/default_async_extension_python \
             ten_packages/extension/py_init_extension_cpp
 
       - name: Publish to release assets
@@ -158,6 +178,7 @@ jobs:
             "extension/default_extension_cpp"
             "extension/default_extension_go"
             "extension/default_extension_python"
+            "extension/default_async_extension_python"
             "extension/py_init_extension_cpp"
           )
 
