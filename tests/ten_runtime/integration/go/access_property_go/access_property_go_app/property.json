@@ -9,9 +9,10 @@
         "singleton": true,
         "nodes": [
           {
-            "type": "extension_group",
-            "name": "nodetest",
-            "addon": "nodetest"
+            "type": "extension",
+            "name": "A",
+            "addon": "extension_a",
+            "extension_group": "nodetest"
           }
         ]
       }

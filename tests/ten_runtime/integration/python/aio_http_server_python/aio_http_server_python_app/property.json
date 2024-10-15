@@ -7,16 +7,6 @@
         "auto_start": true,
         "nodes": [
           {
-            "type": "extension_group",
-            "name": "default_extension_group",
-            "addon": "default_extension_group"
-          },
-          {
-            "type": "extension_group",
-            "name": "test",
-            "addon": "default_extension_group"
-          },
-          {
             "type": "extension",
             "name": "aio_http_server_python",
             "addon": "aio_http_server_python",

@@ -24,27 +24,6 @@ class test_migration : public ten::extension_t {
   }
 };
 
-class test_migration_group : public ten::extension_group_t {
- public:
-  explicit test_migration_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_migration("migration"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -72,9 +51,10 @@ class test_app : public ten::app_t {
                           "auto_start": true,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "migration_group",
-                            "addon": "batch_send_msgs_in_migration__migration_group"
+                            "type": "extension",
+                            "name": "migration",
+                            "addon": "batch_send_msgs_in_migration__extension",
+                            "extension_group": "migration_group"
                           }]
                         }]
                       }
@@ -95,8 +75,8 @@ void *app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    batch_send_msgs_in_migration__migration_group, test_migration_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(batch_send_msgs_in_migration__extension,
+                                    test_migration);
 
 }  // namespace
 

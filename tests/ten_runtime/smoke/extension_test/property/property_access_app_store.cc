@@ -66,14 +66,6 @@ class test_app : public ten::app_t {
                           "auto_start": false,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "default_extension_group_1",
-                            "addon": "default_extension_group"
-                          },{
-                            "type": "extension_group",
-                            "name": "default_extension_group_2",
-                            "addon": "default_extension_group"
-                          },{
                             "type": "extension",
                             "name": "test_property_access_app_store_1",
                             "addon": "test_property_access_app_store_1",

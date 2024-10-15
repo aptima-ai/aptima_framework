@@ -78,11 +78,6 @@ TEST(ExtensionTest, ExtensionRegExtension) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "extension_reg_extension",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "extension_reg_extension",
                "addon": "extension_reg_extension__extension",

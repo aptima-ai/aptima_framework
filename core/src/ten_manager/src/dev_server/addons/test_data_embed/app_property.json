@@ -50,11 +50,6 @@
         "auto_start": false,
         "nodes": [
           {
-            "type": "extension_group",
-            "name": "default",
-            "addon": "default_extension_group"
-          },
-          {
             "type": "extension",
             "name": "extension_1",
             "addon": "extension_addon_1_not_found",

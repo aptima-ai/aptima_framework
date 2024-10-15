@@ -43,48 +43,6 @@ class test_extension_2 : public ten::extension_t {
   }
 };
 
-class test_extension_group_1 : public ten::extension_group_t {
- public:
-  explicit test_extension_group_1(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test_extension_1"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
-class test_extension_group_2 : public ten::extension_group_t {
- public:
-  explicit test_extension_group_2(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_2("test_extension_2"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -113,10 +71,10 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    basic_multi_extension_group__extension_group_1, test_extension_group_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    basic_multi_extension_group__extension_group_2, test_extension_group_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(basic_multi_extension_group__extension_1,
+                                    test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(basic_multi_extension_group__extension_2,
+                                    test_extension_2);
 
 }  // namespace
 
@@ -135,15 +93,17 @@ TEST(ExtensionTest, BasicMultiExtensionGroup) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "basic_multi_extension_group__extension_group_1",
-               "addon": "basic_multi_extension_group__extension_group_1",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension_1",
+               "addon": "basic_multi_extension_group__extension_1",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "basic_multi_extension_group__extension_group_1"
              },{
-               "type": "extension_group",
-               "name": "basic_multi_extension_group__extension_group_2",
-               "addon": "basic_multi_extension_group__extension_group_2",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension_2",
+               "addon": "basic_multi_extension_group__extension_2",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "basic_multi_extension_group__extension_group_2"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",

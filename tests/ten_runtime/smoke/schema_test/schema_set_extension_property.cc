@@ -192,11 +192,6 @@ TEST(SchemaTest, SetExtensionProperty) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-                "type": "extension_group",
-                "name": "test_extension_group",
-                "addon": "default_extension_group",
-                "app": "msgpack://127.0.0.1:8001/"
-             },{
                 "type": "extension",
                 "name": "test_extension",
                 "addon": "schema_set_extension_prop__test_extension",

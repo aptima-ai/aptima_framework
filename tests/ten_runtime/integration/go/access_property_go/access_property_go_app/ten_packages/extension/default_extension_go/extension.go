@@ -42,6 +42,10 @@ type aExtension struct {
 	baseExtension
 }
 
+func newAExtension(name string) ten.Extension {
+	return &aExtension{}
+}
+
 func (p *aExtension) OnCmd(
 	tenEnv ten.TenEnv,
 	cmd ten.Cmd,
@@ -218,8 +222,11 @@ func (p *nodeTestGroup) OnCreateExtensions(
 
 func init() {
 	// Register addon
-	ten.RegisterAddonAsExtensionGroup(
-		"nodetest",
-		ten.NewDefaultExtensionGroupAddon(newNodeTestGroup),
+	err := ten.RegisterAddonAsExtension(
+		"extension_a",
+		ten.NewDefaultExtensionAddon(newAExtension),
 	)
+	if err != nil {
+		panic("Failed to register addon.")
+	}
 }

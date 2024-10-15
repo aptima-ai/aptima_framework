@@ -116,11 +116,6 @@ TEST(VideoFrameTest, FromJson) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "basic_extension_group",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                 "type": "extension",
                 "name": "test_extension_1",
                 "addon": "video_frame_from_json__test_extension_1",

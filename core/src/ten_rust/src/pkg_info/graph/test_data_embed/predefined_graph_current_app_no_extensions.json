@@ -11,12 +11,6 @@
             "addon": "default_extension_cpp",
             "name": "some_ext",
             "app": "http://localhost:8002"
-          },
-          {
-            "type": "extension_group",
-            "addon": "default_extension_group",
-            "name": "some_group",
-            "app": "http://localhost:8002"
           }
         ]
       }

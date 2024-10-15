@@ -50,14 +50,6 @@ class test_app : public ten::app_t {
                           "auto_start": true,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "two_extensions_group_1",
-                            "addon": "default_extension_group"
-                          },{
-                            "type": "extension_group",
-                            "name": "two_extensions_group_2",
-                            "addon": "default_extension_group"
-                          },{
                             "type": "extension",
                             "name": "two_extensions_group_extension_1",
                             "addon": "prebuild_two_extensions_2",

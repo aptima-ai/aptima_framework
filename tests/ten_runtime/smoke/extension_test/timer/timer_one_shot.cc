@@ -105,8 +105,7 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(timer_one_shot__extension_group,
-                                          test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(timer_one_shot__extension, test_extension);
 
 }  // namespace
 
@@ -124,11 +123,11 @@ TEST(ExtensionTest, TimerOneShot) {
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "timer_one_shot__extension_group",
-               "addon": "timer_one_shot__extension_group",
+               "type": "extension",
+               "name": "test_extension",
+               "addon": "timer_one_shot__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension": "test_extension"
+               "extension_group": "timer_one_shot__extension_group"
              }]
            }
          })"_json);

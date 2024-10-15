@@ -26,8 +26,13 @@ namespace {
  */
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const std::string &name, int value)
-      : ten::extension_t(name), name_(name), value_(value) {}
+  explicit test_extension(const std::string &name)
+      : ten::extension_t(name), name_(name) {}
+
+  void on_init(ten::ten_env_t &ten_env) override {
+    value_ = ten_env.get_property_int32("value");
+    ten_env.on_init_done();
+  }
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
@@ -56,32 +61,8 @@ class test_extension : public ten::extension_t {
 
  private:
   const std::string name_;
-  const int value_;
+  int value_;
   int counter_ = 0;
-};
-
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("A", 0));
-    extensions.push_back(new test_extension("B", 1));
-    extensions.push_back(new test_extension("C", 2));
-    extensions.push_back(new test_extension("D", 3));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
 };
 
 class test_app : public ten::app_t {
@@ -112,9 +93,9 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    graph_loop_multiple_circle_through_cmd_with_default__extension_group,
-    test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    graph_loop_multiple_circle_through_cmd_with_default__extension,
+    test_extension);
 
 }  // namespace
 
@@ -135,10 +116,41 @@ TEST(ExtensionTest, GraphLoopMultipleCircleThroughCmdWithDefault) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              }],
              "nodes": [{
-               "type": "extension_group",
-               "name": "graph_loop_multiple_circle_through_cmd_with_default__extension_group",
-               "addon": "graph_loop_multiple_circle_through_cmd_with_default__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "A",
+               "addon": "graph_loop_multiple_circle_through_cmd_with_default__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_loop_multiple_circle_through_cmd_with_default__extension_group",
+               "property": {
+                 "value": 0
+                }
+             },{
+               "type": "extension",
+               "name": "B",
+               "addon": "graph_loop_multiple_circle_through_cmd_with_default__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_loop_multiple_circle_through_cmd_with_default__extension_group",
+               "property": {
+                 "value": 1
+                }
+             },{
+               "type": "extension",
+               "name": "C",
+               "addon": "graph_loop_multiple_circle_through_cmd_with_default__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_loop_multiple_circle_through_cmd_with_default__extension_group",
+               "property": {
+                 "value": 2
+                }
+             },{
+               "type": "extension",
+               "name": "D",
+               "addon": "graph_loop_multiple_circle_through_cmd_with_default__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_loop_multiple_circle_through_cmd_with_default__extension_group",
+               "property": {
+                 "value": 3
+                }
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",

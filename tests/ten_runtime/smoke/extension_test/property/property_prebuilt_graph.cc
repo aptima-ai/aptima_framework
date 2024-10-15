@@ -62,10 +62,6 @@ class test_app : public ten::app_t {
                            "auto_start": true,
                            "singleton": true,
                            "nodes": [{
-                             "type": "extension_group",
-                             "name": "property_predefined_graph",
-                             "addon": "default_extension_group"
-                           },{
                              "type": "extension",
                              "name": "property_predefined_graph",
                              "addon": "property_predefined_graph__extension",

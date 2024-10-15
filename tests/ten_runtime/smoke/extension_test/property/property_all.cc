@@ -95,32 +95,6 @@ class test_extension : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    ten_env.addon_create_extension_async(
-        "property_all__extension", "test_extension",
-        [](ten::ten_env_t &ten_env, ten::extension_t &extension) {
-          std::vector<ten::extension_t *> extensions = {&extension};
-          ten_env.on_create_extensions_done(extensions);
-        });
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      ten_env.addon_destroy_extension_async(
-          extension, [](ten::ten_env_t &ten_env) {
-            ten_env.on_destroy_extensions_done();
-          });
-    }
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -163,8 +137,6 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
 }
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_all__extension, test_extension);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(property_all__extension_group,
-                                          test_extension_group);
 
 }  // namespace
 
@@ -183,20 +155,16 @@ TEST(ExtensionTest, PropertyAll) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "property_all__extension_group",
-               "addon": "property_all__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "test_extension",
                "app": "msgpack://127.0.0.1:8001/",
+               "addon": "property_all__extension",
                "extension_group": "property_all__extension_group",
                "property": {}
              }]
            }
          })"_json;
-  command["_ten"]["nodes"][1]["property"][CONN_PROP_NAME] = CONN_PROP_VAL;
+  command["_ten"]["nodes"][0]["property"][CONN_PROP_NAME] = CONN_PROP_VAL;
 
   nlohmann::json resp = client->send_json_and_recv_resp_in_json(command);
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);

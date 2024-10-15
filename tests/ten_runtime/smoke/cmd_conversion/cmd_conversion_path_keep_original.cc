@@ -73,10 +73,6 @@ class test_app : public ten::app_t {
                           "auto_start": false,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "cmd_mapping_path_keep_original__extension_group",
-                            "addon": "default_extension_group"
-                          },{
                             "type": "extension",
                             "name": "test_extension_1",
                             "addon": "cmd_mapping_path_keep_original__test_extension_1",

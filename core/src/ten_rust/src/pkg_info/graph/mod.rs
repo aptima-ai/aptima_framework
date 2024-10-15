@@ -193,42 +193,6 @@ mod tests {
     }
 
     #[test]
-    fn test_predefined_graph_has_ext_group_duplicated() {
-        let property_str = include_str!(
-            "test_data_embed/predefined_graph_has_duplicated_ext_group.json"
-        );
-        let mut property: Property = Property::from_str(property_str).unwrap();
-        assert!(property.validate_and_complete().is_ok());
-
-        let ten = property._ten.as_ref().unwrap();
-        let predefined_graph =
-            ten.predefined_graphs.as_ref().unwrap().first().unwrap();
-
-        let graph = &predefined_graph.graph;
-        let result = graph.check_if_nodes_duplicated();
-        assert!(result.is_err());
-        println!("Error: {:?}", result.err().unwrap());
-    }
-
-    #[test]
-    fn test_predefined_graph_has_unused_extension_group() {
-        let property_str = include_str!(
-            "test_data_embed/predefined_graph_unused_ext_group.json"
-        );
-        let mut property: Property = Property::from_str(property_str).unwrap();
-        assert!(property.validate_and_complete().is_ok());
-
-        let ten = property._ten.as_ref().unwrap();
-        let predefined_graph =
-            ten.predefined_graphs.as_ref().unwrap().first().unwrap();
-
-        let graph = &predefined_graph.graph;
-        let result = graph.check_if_nodes_duplicated();
-        assert!(result.is_err());
-        println!("Error: {:?}", result.err().unwrap());
-    }
-
-    #[test]
     fn test_predefined_graph_connection_src_not_found() {
         let property_str = include_str!(
             "test_data_embed/predefined_graph_connection_src_not_found.json"

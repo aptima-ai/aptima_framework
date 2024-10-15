@@ -193,10 +193,6 @@ class business_app : public ten::app_t {
                           "auto_start": true,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "specify_dest_group",
-                            "addon": "default_extension_group"
-                          },{
                             "type": "extension",
                             "name": "business_extension",
                             "addon": "specify_dest__business_extension",

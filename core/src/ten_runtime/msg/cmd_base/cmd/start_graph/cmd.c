@@ -338,7 +338,7 @@ static void ten_raw_cmd_start_graph_add_missing_extension_group_node(
     }
 
     if (group_found) {
-      return;
+      continue;
     }
 
     ten_extension_group_info_t *extension_group_info =

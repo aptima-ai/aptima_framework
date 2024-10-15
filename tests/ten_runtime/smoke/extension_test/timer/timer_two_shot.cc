@@ -59,27 +59,6 @@ class test_extension : public ten::extension_t {
   size_t timer_shots_cnt{};
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("test_extension"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -108,8 +87,7 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(timer_two_shot__extension_group,
-                                          test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(timer_two_shot__extension, test_extension);
 
 }  // namespace
 
@@ -127,10 +105,11 @@ TEST(ExtensionTest, TimerTwoShot) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "timer_two_shot__extension_group",
-               "addon": "timer_two_shot__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension",
+               "addon": "timer_two_shot__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "timer_two_shot__extension_group"
              }]
            }
          })"_json);

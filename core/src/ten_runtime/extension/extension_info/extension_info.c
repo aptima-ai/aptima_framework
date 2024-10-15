@@ -170,13 +170,12 @@ ten_shared_ptr_t *get_extension_info_in_extensions_info(
             "'%s'",
             extension_instance_name, extension_addon_name,
             ten_string_get_raw_str(&extension_info->extension_addon_name));
+      } else {
+        TEN_ASSERT(
+            0, "extension '%s' is associated with different addon '%s', '%s'",
+            extension_instance_name, extension_addon_name,
+            ten_string_get_raw_str(&extension_info->extension_addon_name));
       }
-
-      TEN_ASSERT(0,
-                 "extension '%s' is associated with different addon '%s', "
-                 "'%s'",
-                 extension_instance_name, extension_addon_name,
-                 ten_string_get_raw_str(&extension_info->extension_addon_name));
 
       return NULL;
     }

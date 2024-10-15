@@ -9,11 +9,6 @@
         "singleton": true,
         "nodes": [
           {
-            "type": "extension_group",
-            "name": "nodetest_group",
-            "addon": "default_extension_group"
-          },
-          {
             "type": "extension",
             "name": "A",
             "addon": "nodetest",

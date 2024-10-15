@@ -20,12 +20,6 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
       "seq_id": "156",
       "nodes": [
         {
-          "type": "extension_group",
-          "app": "msgpack://127.0.0.1:8007/",
-          "addon": "default_extension_group",
-          "name": "nodetest_group"
-        },
-        {
           "type": "extension",
           "app": "msgpack://127.0.0.1:8007/",
           "extension_group": "nodetest_group",

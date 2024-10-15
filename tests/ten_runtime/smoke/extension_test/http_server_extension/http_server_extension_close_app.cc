@@ -61,10 +61,6 @@ class test_app : public ten::app_t {
                           "name": "default",
                           "auto_start": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "test_extension_group",
-                            "addon": "default_extension_group"
-                          },{
                             "type": "extension",
                             "name": "simple_http_server_cpp",
                             "addon": "simple_http_server_cpp",

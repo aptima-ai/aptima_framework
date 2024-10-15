@@ -101,10 +101,8 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    extension_with_same_name__extension_group_1, test_extension_group_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    extension_with_same_name__extension_group_2, test_extension_group_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(extension_with_same_name__extension,
+                                    test_extension);
 
 }  // namespace
 
@@ -123,15 +121,17 @@ TEST(ExtensionTest, ExtensionWithSameName) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "extension_with_same_name__extension_group_1",
-               "addon": "extension_with_same_name__extension_group_1",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "same_name",
+               "addon": "extension_with_same_name__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "extension_with_same_name__extension_group_1"
              },{
-               "type": "extension_group",
-               "name": "extension_with_same_name__extension_group_2",
-               "addon": "extension_with_same_name__extension_group_2",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "same_name",
+               "addon": "extension_with_same_name__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "extension_with_same_name__extension_group_2"
              }]
            }
          })"_json);

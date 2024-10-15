@@ -16,11 +16,6 @@
             "name": "some_extension_1",
             "addon": "default_extension_go",
             "extension_group": "some_group"
-          },
-          {
-            "type": "extension_group",
-            "addon": "default_extension_group",
-            "name": "some_group"
           }
         ],
         "connections": [

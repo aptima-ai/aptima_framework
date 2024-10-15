@@ -27,27 +27,6 @@ class test_normal_extension : public ten::extension_t {
   }
 };
 
-class test_normal_extension_group : public ten::extension_group_t {
- public:
-  explicit test_normal_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_normal_extension("normal_extension"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_predefined_graph : public ten::extension_t {
  public:
   explicit test_predefined_graph(const std::string &name)
@@ -62,10 +41,11 @@ class test_predefined_graph : public ten::extension_t {
                  "app": "msgpack://127.0.0.1:8001/"
                }],
                "nodes": [{
-                 "type": "extension_group",
-                 "name": "normal_extension_group",
-                 "addon": "predefined_graph_basic_2__normal_extension_group",
-                 "app": "msgpack://127.0.0.1:8001/"
+                 "type": "extension",
+                 "name": "normal_extension",
+                 "addon": "predefined_graph_basic_2__normal_extension",
+                 "app": "msgpack://127.0.0.1:8001/",
+                 "extension_group": "normal_extension_group"
                }]
              }
            })"_json.dump()
@@ -135,29 +115,6 @@ class test_predefined_graph : public ten::extension_t {
   std::unique_ptr<ten::cmd_t> command_1;
 };
 
-class test_predefined_graph_group : public ten::extension_group_t {
- public:
-  explicit test_predefined_graph_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_init(ten::ten_env_t &ten_env) override { ten_env.on_init_done(); }
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_predefined_graph("predefined_graph"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -184,9 +141,10 @@ class test_app : public ten::app_t {
                           "auto_start": false,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "predefined_graph_group",
-                            "addon": "predefined_graph_basic_2__predefined_graph_group"
+                            "type": "extension",
+                            "name": "predefined_graph",
+                            "addon": "predefined_graph_basic_2__predefined_graph",
+                            "extension_group": "predefined_graph_group"
                           }]
                         }]
                       }
@@ -207,12 +165,10 @@ void *app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    predefined_graph_basic_2__predefined_graph_group,
-    test_predefined_graph_group);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    predefined_graph_basic_2__normal_extension_group,
-    test_normal_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    predefined_graph_basic_2__predefined_graph, test_predefined_graph);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    predefined_graph_basic_2__normal_extension, test_normal_extension);
 
 }  // namespace
 

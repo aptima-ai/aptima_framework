@@ -133,64 +133,6 @@ DEFINE_TEST_EXTENSION(33)
 DEFINE_TEST_EXTENSION(34)
 DEFINE_TEST_EXTENSION(35)
 
-#define ADD_TEST_EXTENSION(N) \
-  extensions.push_back(new test_extension_##N("test_extension_" #N));
-
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    ADD_TEST_EXTENSION(1)
-    ADD_TEST_EXTENSION(2)
-    ADD_TEST_EXTENSION(3)
-    ADD_TEST_EXTENSION(4)
-    ADD_TEST_EXTENSION(5)
-    ADD_TEST_EXTENSION(6)
-    ADD_TEST_EXTENSION(7)
-    ADD_TEST_EXTENSION(8)
-    ADD_TEST_EXTENSION(9)
-    ADD_TEST_EXTENSION(10)
-    ADD_TEST_EXTENSION(11)
-    ADD_TEST_EXTENSION(12)
-    ADD_TEST_EXTENSION(13)
-    ADD_TEST_EXTENSION(14)
-    ADD_TEST_EXTENSION(15)
-    ADD_TEST_EXTENSION(16)
-    ADD_TEST_EXTENSION(17)
-    ADD_TEST_EXTENSION(18)
-    ADD_TEST_EXTENSION(19)
-    ADD_TEST_EXTENSION(20)
-    ADD_TEST_EXTENSION(21)
-    ADD_TEST_EXTENSION(22)
-    ADD_TEST_EXTENSION(23)
-    ADD_TEST_EXTENSION(24)
-    ADD_TEST_EXTENSION(25)
-    ADD_TEST_EXTENSION(26)
-    ADD_TEST_EXTENSION(27)
-    ADD_TEST_EXTENSION(28)
-    ADD_TEST_EXTENSION(29)
-    ADD_TEST_EXTENSION(30)
-    ADD_TEST_EXTENSION(31)
-    ADD_TEST_EXTENSION(32)
-    ADD_TEST_EXTENSION(33)
-    ADD_TEST_EXTENSION(34)
-    ADD_TEST_EXTENSION(35)
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -219,8 +161,45 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    multi_dest_in_one_app__extension_group, test_extension_group);
+#define REGISTER_ADDON_AS_EXTENSION(N)                                      \
+  TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_in_one_app__extension_##N, \
+                                      test_extension_##N);
+
+REGISTER_ADDON_AS_EXTENSION(1)
+REGISTER_ADDON_AS_EXTENSION(2)
+REGISTER_ADDON_AS_EXTENSION(3)
+REGISTER_ADDON_AS_EXTENSION(4)
+REGISTER_ADDON_AS_EXTENSION(5)
+REGISTER_ADDON_AS_EXTENSION(6)
+REGISTER_ADDON_AS_EXTENSION(7)
+REGISTER_ADDON_AS_EXTENSION(8)
+REGISTER_ADDON_AS_EXTENSION(9)
+REGISTER_ADDON_AS_EXTENSION(10)
+REGISTER_ADDON_AS_EXTENSION(11)
+REGISTER_ADDON_AS_EXTENSION(12)
+REGISTER_ADDON_AS_EXTENSION(13)
+REGISTER_ADDON_AS_EXTENSION(14)
+REGISTER_ADDON_AS_EXTENSION(15)
+REGISTER_ADDON_AS_EXTENSION(16)
+REGISTER_ADDON_AS_EXTENSION(17)
+REGISTER_ADDON_AS_EXTENSION(18)
+REGISTER_ADDON_AS_EXTENSION(19)
+REGISTER_ADDON_AS_EXTENSION(20)
+REGISTER_ADDON_AS_EXTENSION(21)
+REGISTER_ADDON_AS_EXTENSION(22)
+REGISTER_ADDON_AS_EXTENSION(23)
+REGISTER_ADDON_AS_EXTENSION(24)
+REGISTER_ADDON_AS_EXTENSION(25)
+REGISTER_ADDON_AS_EXTENSION(26)
+REGISTER_ADDON_AS_EXTENSION(27)
+REGISTER_ADDON_AS_EXTENSION(28)
+REGISTER_ADDON_AS_EXTENSION(29)
+REGISTER_ADDON_AS_EXTENSION(30)
+REGISTER_ADDON_AS_EXTENSION(31)
+REGISTER_ADDON_AS_EXTENSION(32)
+REGISTER_ADDON_AS_EXTENSION(33)
+REGISTER_ADDON_AS_EXTENSION(34)
+REGISTER_ADDON_AS_EXTENSION(35)
 
 }  // namespace
 
@@ -232,165 +211,44 @@ TEST(ExtensionTest, MultiDestInOneApp) {  // NOLINT
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
-  // Send graph.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
+  auto request = R"({
            "_ten": {
              "type": "start_graph",
              "seq_id": "55",
-             "nodes": [{
-               "type": "extension_group",
-               "name": "multi_dest_in_one_app__extension_group",
-               "addon": "multi_dest_in_one_app__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             }],
+             "nodes": [],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "multi_dest_in_one_app__extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
-                 "dest": [{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_2"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_3"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_4"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_5"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_6"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_7"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_8"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_9"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_10"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_11"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_12"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_13"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_14"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_15"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_16"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_17"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_18"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_19"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_20"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_21"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_22"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_23"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_24"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_25"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_26"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_27"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_28"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_29"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_30"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_31"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_32"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_33"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_34"
-                 },{
-                   "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "multi_dest_in_one_app__extension_group",
-                   "extension": "test_extension_35"
-                 }]
+                 "dest": []
                }]
              }]
            }
-         })"_json);
+         })"_json;
+
+  for (int i = 1; i <= DEST_EXTENSION_MAX_ID; i++) {
+    request["_ten"]["nodes"].push_back({
+        {"type", "extension"},
+        {"name", "test_extension_" + std::to_string(i)},
+        {"addon", "multi_dest_in_one_app__extension_" + std::to_string(i)},
+        {"app", "msgpack://127.0.0.1:8001/"},
+        {"extension_group", "multi_dest_in_one_app__extension_group"},
+    });
+  }
+
+  for (int i = DEST_EXTENSION_MIN_ID; i <= DEST_EXTENSION_MAX_ID; i++) {
+    request["_ten"]["connections"][0]["cmd"][0]["dest"].push_back({
+        {"app", "msgpack://127.0.0.1:8001/"},  // app
+        {"extension_group",
+         "multi_dest_in_one_app__extension_group"},  // extension_group
+        {"extension", "test_extension_" + std::to_string(i)},  // extension
+    });
+  }
+
+  // Send graph.
+  nlohmann::json resp = client->send_json_and_recv_resp_in_json(request);
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command to 'extension 1'.

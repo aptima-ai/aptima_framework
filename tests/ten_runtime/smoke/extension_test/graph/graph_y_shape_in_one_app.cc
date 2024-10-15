@@ -73,30 +73,6 @@ class test_extension_4 : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test_extension_1"));
-    extensions.push_back(new test_extension_2("test_extension_2"));
-    extensions.push_back(new test_extension_3("test_extension_3"));
-    extensions.push_back(new test_extension_4("test_extension_4"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -125,8 +101,14 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    graph_y_shape_in_one_app__extension_group, test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(graph_y_shape_in_one_app__extension_1,
+                                    test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(graph_y_shape_in_one_app__extension_2,
+                                    test_extension_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(graph_y_shape_in_one_app__extension_3,
+                                    test_extension_3);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(graph_y_shape_in_one_app__extension_4,
+                                    test_extension_4);
 
 }  // namespace
 
@@ -145,10 +127,29 @@ TEST(ExtensionTest, GraphYShapeInOneApp) {
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "graph_y_shape_in_one_app__extension_group",
-               "addon": "graph_y_shape_in_one_app__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension_1",
+               "addon": "graph_y_shape_in_one_app__extension_1",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_y_shape_in_one_app__extension_group"
+             },{
+               "type": "extension",
+               "name": "test_extension_2",
+               "addon": "graph_y_shape_in_one_app__extension_2",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_y_shape_in_one_app__extension_group"
+             },{
+               "type": "extension",
+               "name": "test_extension_3",
+               "addon": "graph_y_shape_in_one_app__extension_3",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_y_shape_in_one_app__extension_group"
+             },{
+               "type": "extension",
+               "name": "test_extension_4",
+               "addon": "graph_y_shape_in_one_app__extension_4",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_y_shape_in_one_app__extension_group"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",

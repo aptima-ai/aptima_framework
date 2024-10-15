@@ -59,35 +59,8 @@
     return nullptr;                                                               \
   }
 
-#define ADD_EXTENSION(N) \
-  extensions.push_back(new test_extension_##N("test_extension_" #N));
-
-#define DEFINE_EXTENSION_GROUP(N, A, B, C)                                     \
-  class test_extension_group_##N : public ten::extension_group_t {             \
-   public:                                                                     \
-    explicit test_extension_group_##N(const std::string &name)                 \
-        : ten::extension_group_t(name) {}                                      \
-                                                                               \
-    void on_create_extensions(ten::ten_env_t &ten_env) override {              \
-      std::vector<ten::extension_t *> extensions;                              \
-      ADD_EXTENSION(A);                                                        \
-      ADD_EXTENSION(B);                                                        \
-      ADD_EXTENSION(C);                                                        \
-      ten_env.on_create_extensions_done(extensions);                           \
-    }                                                                          \
-                                                                               \
-    void on_destroy_extensions(                                                \
-        ten::ten_env_t &ten_env,                                               \
-        const std::vector<ten::extension_t *> &extensions) override {          \
-      for (auto iter = extensions.begin(); iter != extensions.end(); ++iter) { \
-        delete *iter;                                                          \
-      }                                                                        \
-      ten_env.on_destroy_extensions_done();                                    \
-    }                                                                          \
-  };                                                                           \
-  TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(                                   \
-      multi_dest_in_multi_app_with_result_handler_lambda__extension_group_##N, \
-      test_extension_group_##N);
+#define REGISTER_EXTENSION(N) \
+  TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_in_multi_app_with_result_handler_lambda__extension_##N, test_extension_##N);
 
 #define START_APP(N)           \
   auto test_app_##N##_thread = \
@@ -156,11 +129,21 @@ DEFINE_EXTENSION(13)
 DEFINE_EXTENSION(14)
 DEFINE_EXTENSION(15)
 
-DEFINE_EXTENSION_GROUP(1, 1, 2, 3)
-DEFINE_EXTENSION_GROUP(2, 4, 5, 6)
-DEFINE_EXTENSION_GROUP(3, 7, 8, 9)
-DEFINE_EXTENSION_GROUP(4, 10, 11, 12)
-DEFINE_EXTENSION_GROUP(5, 13, 14, 15)
+REGISTER_EXTENSION(1)
+REGISTER_EXTENSION(2)
+REGISTER_EXTENSION(3)
+REGISTER_EXTENSION(4)
+REGISTER_EXTENSION(5)
+REGISTER_EXTENSION(6)
+REGISTER_EXTENSION(7)
+REGISTER_EXTENSION(8)
+REGISTER_EXTENSION(9)
+REGISTER_EXTENSION(10)
+REGISTER_EXTENSION(11)
+REGISTER_EXTENSION(12)
+REGISTER_EXTENSION(13)
+REGISTER_EXTENSION(14)
+REGISTER_EXTENSION(15)
 
 }  // namespace
 
@@ -200,30 +183,95 @@ TEST(ExtensionTest, MultiDestInMultiAppWithResponseHandlerLambda) {  // NOLINT
                "type": "start_graph",
                "seq_id": "55",
                "nodes": [{
-                 "type": "extension_group",
-                 "name": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_1",
-                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_1",
-                 "app": "msgpack://127.0.0.1:8001/"
+                 "type": "extension",
+                 "name": "test_extension_1",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_1",
+                 "app": "msgpack://127.0.0.1:8001/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_1"
                },{
-                 "type": "extension_group",
-                 "name": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_2",
-                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_2",
-                 "app": "msgpack://127.0.0.1:8002/"
+                 "type": "extension",
+                 "name": "test_extension_2",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_2",
+                 "app": "msgpack://127.0.0.1:8001/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_1"
                },{
-                 "type": "extension_group",
-                 "name": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_3",
-                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_3",
-                 "app": "msgpack://127.0.0.1:8003/"
+                 "type": "extension",
+                 "name": "test_extension_3",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_3",
+                 "app": "msgpack://127.0.0.1:8001/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_1"
                },{
-                 "type": "extension_group",
-                 "name": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_4",
-                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_4",
-                 "app": "msgpack://127.0.0.1:8004/"
+                 "type": "extension",
+                 "name": "test_extension_4",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_4",
+                 "app": "msgpack://127.0.0.1:8002/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_2"
                },{
-                 "type": "extension_group",
-                 "name": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_5",
-                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_5",
-                 "app": "msgpack://127.0.0.1:8005/"
+                 "type": "extension",
+                 "name": "test_extension_5",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_5",
+                 "app": "msgpack://127.0.0.1:8002/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_2"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_6",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_6",
+                 "app": "msgpack://127.0.0.1:8002/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_2"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_7",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_7",
+                 "app": "msgpack://127.0.0.1:8003/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_3"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_8",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_8",
+                 "app": "msgpack://127.0.0.1:8003/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_3"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_9",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_9",
+                 "app": "msgpack://127.0.0.1:8003/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_3"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_10",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_10",
+                 "app": "msgpack://127.0.0.1:8004/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_4"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_11",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_11",
+                 "app": "msgpack://127.0.0.1:8004/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_4"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_12",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_12",
+                 "app": "msgpack://127.0.0.1:8004/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_4"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_13",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_13",
+                 "app": "msgpack://127.0.0.1:8005/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_5"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_14",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_14",
+                 "app": "msgpack://127.0.0.1:8005/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_5"
+               },{
+                 "type": "extension",
+                 "name": "test_extension_15",
+                 "addon": "multi_dest_in_multi_app_with_result_handler_lambda__extension_15",
+                 "app": "msgpack://127.0.0.1:8005/",
+                 "extension_group": "multi_dest_in_multi_app_with_result_handler_lambda__extension_group_5"
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",

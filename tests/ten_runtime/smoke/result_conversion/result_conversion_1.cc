@@ -79,11 +79,6 @@ class test_app : public ten::app_t {
                           "auto_start": false,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "result_mapping_1__extension_group",
-                            "addon": "default_extension_group",
-                            "app": "msgpack://127.0.0.1:8001/"
-                          },{
                             "type": "extension",
                             "name": "test_extension_1",
                             "addon": "result_mapping_1__test_extension_1",

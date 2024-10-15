@@ -25,8 +25,13 @@ namespace {
  */
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const std::string &name, bool is_leaf)
-      : ten::extension_t(name), name_(name), is_leaf_node_(is_leaf) {}
+  explicit test_extension(const std::string &name)
+      : ten::extension_t(name), name_(name) {}
+
+  void on_init(ten::ten_env_t &ten_env) override {
+    is_leaf_node_ = ten_env.get_property_bool("is_leaf");
+    ten_env.on_init_done();
+  }
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
@@ -79,32 +84,8 @@ class test_extension : public ten::extension_t {
 
  private:
   const std::string name_;
-  const bool is_leaf_node_;
+  bool is_leaf_node_{};
   int receive_count = 0;
-};
-
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("A", false));
-    extensions.push_back(new test_extension("B", false));
-    extensions.push_back(new test_extension("C", false));
-    extensions.push_back(new test_extension("D", true));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
 };
 
 class test_app : public ten::app_t {
@@ -135,8 +116,8 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    graph_polygon_in_one_app_return_all__extension_group, test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    graph_polygon_in_one_app_return_all__extension, test_extension);
 
 }  // namespace
 
@@ -156,10 +137,41 @@ TEST(ExtensionTest, GraphPolygonInOneAppReturnAll) {  // NOLINT
                "app": "msgpack://127.0.0.1:8001/"
              }],
              "nodes": [{
-               "type": "extension_group",
-               "name": "graph_polygon_in_one_app_return_all__extension_group",
-               "addon": "graph_polygon_in_one_app_return_all__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "A",
+               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "property": {
+                 "is_leaf": false
+                }
+             },{
+               "type": "extension",
+               "name": "B",
+               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "property": {
+                 "is_leaf": false
+                }
+             },{
+               "type": "extension",
+               "name": "C",
+               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "property": {
+                 "is_leaf": false
+                }
+             },{
+               "type": "extension",
+               "name": "D",
+               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "property": {
+                 "is_leaf": true
+                }
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",

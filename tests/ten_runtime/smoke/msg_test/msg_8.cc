@@ -110,16 +110,6 @@ TEST(MsgTest, Msg8) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "msg_8__extension_group_1",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
-               "type": "extension_group",
-               "name": "msg_8__extension_group_2",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "msg_8__extension_1",
                "addon": "msg_8__extension_1",

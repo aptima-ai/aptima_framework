@@ -6,11 +6,6 @@
         "auto_start": true,
         "nodes": [
           {
-            "type": "extension_group",
-            "name": "default",
-            "addon": "default_extension_group"
-          },
-          {
             "type": "extension",
             "extension_group": "default",
             "addon": "default_extension_go",

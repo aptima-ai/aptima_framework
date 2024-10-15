@@ -15,10 +15,12 @@ config("ten_runtime_python_config") {
 
   include_dirs = ten_runtime_common_includes
 
+  python_version = "3"  # "3" by default
+
   cflags = exec_script("//build/common/python/python_config.py",
                        [
                          "--python-version",
-                         "3",
+                         python_version,
                          "--target-os",
                          target_os_arg,
                          "--config-type",
@@ -34,7 +36,7 @@ config("ten_runtime_python_config") {
   ldflags = exec_script("//build/common/python/python_config.py",
                         [
                           "--python-version",
-                          "3",
+                          python_version,
                           "--target-os",
                           target_os_arg,
                           "--config-type",
@@ -75,7 +77,7 @@ config("ten_runtime_python_config") {
   libs = exec_script("//build/common/python/python_config.py",
                      [
                        "--python-version",
-                       "3",
+                       python_version,
                        "--target-os",
                        target_os_arg,
                        "--config-type",

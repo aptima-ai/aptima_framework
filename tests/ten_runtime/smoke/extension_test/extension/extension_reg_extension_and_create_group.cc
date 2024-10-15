@@ -35,32 +35,6 @@ class test_extension : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    ten_env.addon_create_extension_async(
-        "extension_reg_extension_and_create_group__extension", "test_extension",
-        [](ten::ten_env_t &ten_env, ten::extension_t &extension) {
-          std::vector<ten::extension_t *> extensions = {&extension};
-          ten_env.on_create_extensions_done(extensions);
-        });
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      ten_env.addon_destroy_extension_async(
-          extension, [](ten::ten_env_t &ten_env) {
-            ten_env.on_destroy_extensions_done();
-          });
-    }
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -93,11 +67,6 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
     extension_reg_extension_and_create_group__extension, test_extension);
 
-// In the real case, this macro is called from the app.
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    extension_reg_extension_and_create_group__extension_group,
-    test_extension_group);
-
 }  // namespace
 
 TEST(ExtensionTest, ExtensionRegExtensionAndCreateGroup) {  // NOLINT
@@ -115,10 +84,11 @@ TEST(ExtensionTest, ExtensionRegExtensionAndCreateGroup) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "extension_reg_extension_and_create_group__extension_group",
-               "addon": "extension_reg_extension_and_create_group__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension",
+               "addon": "extension_reg_extension_and_create_group__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "extension_reg_extension_and_create_group__extension_group"
              }]
            }
          })"_json);

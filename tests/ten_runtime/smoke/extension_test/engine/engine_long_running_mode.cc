@@ -20,7 +20,7 @@ namespace {
 
 class ExtensionA : public ten::extension_t {
  public:
-  ExtensionA() : ten::extension_t("A") {}
+  ExtensionA(const std::string &name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
@@ -30,7 +30,7 @@ class ExtensionA : public ten::extension_t {
 
 class ExtensionB : public ten::extension_t {
  public:
-  ExtensionB() : ten::extension_t("B") {}
+  ExtensionB(const std::string &name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
@@ -39,48 +39,6 @@ class ExtensionB : public ten::extension_t {
     auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
     cmd_result->set_property_from_json("detail", resp.dump().c_str());
     ten_env.return_result(std::move(cmd_result), std::move(cmd));
-  }
-};
-
-class ExtensionGroupA : public ten::extension_group_t {
- public:
-  explicit ExtensionGroupA(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new ExtensionA());
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
-class ExtensionGroupB : public ten::extension_group_t {
- public:
-  explicit ExtensionGroupB(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new ExtensionB());
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
   }
 };
 
@@ -105,8 +63,10 @@ class test_app_a : public ten::app_t {
   }
 };
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    engine_long_running_mode__extension_group_A, ExtensionGroupA);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(engine_long_running_mode__extension_a,
+                                    ExtensionA);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(engine_long_running_mode__extension_b,
+                                    ExtensionB);
 
 test_app_a *app_a = nullptr;
 
@@ -137,9 +97,6 @@ class test_app_b : public ten::app_t {
     ten_env.on_configure_done();
   }
 };
-
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    engine_long_running_mode__extension_group_B, ExtensionGroupB);
 
 test_app_b *app_b = nullptr;
 
@@ -178,15 +135,17 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
                "long_running_mode": true,
                "seq_id": "55",
                "nodes": [{
-                 "type": "extension_group",
-                 "name": "engine_long_running_mode__extension_group_A",
-                 "addon": "engine_long_running_mode__extension_group_A",
-                 "app": "msgpack://127.0.0.1:8001/"
+                 "type": "extension",
+                 "name": "A",
+                 "addon": "engine_long_running_mode__extension_a",
+                 "app": "msgpack://127.0.0.1:8001/",
+                 "extension_group": "engine_long_running_mode__extension_group_A"
                },{
-                 "type": "extension_group",
-                 "name": "engine_long_running_mode__extension_group_B",
-                 "addon": "engine_long_running_mode__extension_group_B",
-                 "app": "msgpack://127.0.0.1:8002/"
+                 "type": "extension",
+                 "name": "B",
+                 "addon": "engine_long_running_mode__extension_b",
+                 "app": "msgpack://127.0.0.1:8002/",
+                 "extension_group": "engine_long_running_mode__extension_group_B"
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",

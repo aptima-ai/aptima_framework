@@ -50,27 +50,6 @@ class test_extension : public ten::extension_t {
   bool received{};
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("test_extension"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -99,8 +78,7 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(data_basic__extension_group,
-                                          test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(data_basic__extension, test_extension);
 
 }  // namespace
 
@@ -119,18 +97,19 @@ TEST(DataTest, Basic) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "data_basic",
-               "addon": "data_basic__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension",
+               "addon": "data_basic__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "default_extension_group"
              }]
            }
          })"_json);
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
 
   const char *str = DATA;
-  client->send_data("", "data_basic", "test_extension", (void *)str,
-                    strlen(str) + 1);
+  client->send_data("", "default_extension_group", "test_extension",
+                    (void *)str, strlen(str) + 1);
 
   resp = client->send_json_and_recv_resp_in_json(
       R"({
@@ -139,7 +118,7 @@ TEST(DataTest, Basic) {  // NOLINT
              "seq_id": "137",
              "dest":[{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "data_basic",
+               "extension_group": "default_extension_group",
                "extension": "test_extension"
              }]
            }

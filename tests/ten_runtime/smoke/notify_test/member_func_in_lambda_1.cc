@@ -127,11 +127,6 @@ TEST(NotifyTest, MemberFuncInLambda1) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "basic_extension_group",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "test_extension",
                "addon": "notify_test_member_func_basic_in_lambda_1__test_extension",

@@ -75,33 +75,6 @@ class test_extension : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    ten_env.addon_create_extension_async(
-        "property_extension__extension", "test_extension",
-        [](ten::ten_env_t &ten_env, ten::extension_t &extension) {
-          std::vector<ten::extension_t *> extensions;
-          extensions.push_back(&extension);
-          ten_env.on_create_extensions_done(extensions);
-        });
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      ten_env.addon_destroy_extension_async(
-          extension, [](ten::ten_env_t &ten_env) {
-            ten_env.on_destroy_extensions_done();
-          });
-    }
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -145,8 +118,6 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_extension__extension,
                                     test_extension);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(property_extension__extension_group,
-                                          test_extension_group);
 
 }  // namespace
 
@@ -165,10 +136,11 @@ TEST(ExtensionTest, PropertyExtension) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "property_extension__extension_group",
-               "addon": "property_extension__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
+               "type": "extension",
+               "name": "test_extension",
+               "addon": "property_extension__extension",
+               "app": "msgpack://127.0.0.1:8001/",
+               "extension_group": "property_extension__extension_group"
              }]
            }
          })"_json);

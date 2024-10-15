@@ -149,11 +149,6 @@ TEST(ExtensionTest, MultiDestYGraph) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "extension_group",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "extension_1",
                "addon": "multi_dest_y_graph__extension_1",

@@ -46,28 +46,6 @@ class test_extension_2 : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test_extension_1"));
-    extensions.push_back(new test_extension_2("test_extension_2"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -94,9 +72,15 @@ class test_app : public ten::app_t {
                           "auto_start": true,
                           "singleton": true,
                           "nodes": [{
-                            "type": "extension_group",
-                            "name": "predefined_graph_multi_extension_2",
-                            "addon": "predefined_graph_multi_extension_2__extension_group"
+                            "type": "extension",
+                            "name": "test_extension_1",
+                            "addon": "predefined_graph_multi_extension_2__extension_1",
+                            "extension_group": "predefined_graph_multi_extension_2"
+                          },{
+                            "type": "extension",
+                            "name": "test_extension_2",
+                            "addon": "predefined_graph_multi_extension_2__extension_2",
+                            "extension_group": "predefined_graph_multi_extension_2"
                           }],
                           "connections": [{
                             "extension_group": "predefined_graph_multi_extension_2",
@@ -128,8 +112,10 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    predefined_graph_multi_extension_2__extension_group, test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    predefined_graph_multi_extension_2__extension_1, test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    predefined_graph_multi_extension_2__extension_2, test_extension_2);
 
 }  // namespace
 

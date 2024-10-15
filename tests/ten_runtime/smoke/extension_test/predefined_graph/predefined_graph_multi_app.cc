@@ -72,21 +72,11 @@ class test_app_1 : public ten::app_t {
                            "auto_start": false,
                            "singleton": true,
                            "nodes": [{
-                              "type": "extension_group",
-                              "app": "msgpack://127.0.0.1:8001/",
-                              "addon": "default_extension_group",
-                              "name": "predefined_graph_group"
-                           }, {
                               "type": "extension",
                               "app": "msgpack://127.0.0.1:8001/",
                               "extension_group": "predefined_graph_group",
                               "addon": "predefined_graph_multi_app__extension_1",
                               "name": "test_extension_1"
-                           }, {
-                              "type": "extension_group",
-                              "app": "msgpack://127.0.0.1:8002/",
-                              "addon": "default_extension_group",
-                              "name": "predefined_graph_group"
                            }, {
                               "type": "extension",
                               "app": "msgpack://127.0.0.1:8002/",

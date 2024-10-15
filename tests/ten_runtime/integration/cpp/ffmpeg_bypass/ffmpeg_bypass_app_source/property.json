@@ -8,21 +8,6 @@
         "auto_start": true,
         "nodes": [
           {
-            "type": "extension_group",
-            "name": "default_extension_group",
-            "addon": "default_extension_group"
-          },
-          {
-            "type": "extension_group",
-            "name": "demuxer_group",
-            "addon": "default_extension_group"
-          },
-          {
-            "type": "extension_group",
-            "name": "muxer_group",
-            "addon": "default_extension_group"
-          },
-          {
             "type": "extension",
             "name": "ffmpeg_client",
             "addon": "ffmpeg_client",

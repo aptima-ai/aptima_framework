@@ -57,27 +57,6 @@ class test_extension : public ten::extension_t {
   std::unique_ptr<ten::cmd_t> hello_world_cmd;
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension("test_extension"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -100,8 +79,7 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(msg_11__extension_group,
-                                          test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(msg_11__extension, test_extension);
 
 }  // namespace
 
@@ -119,11 +97,11 @@ TEST(MsgTest, Msg11) {
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "msg_11__extension_group",
-               "addon": "msg_11__extension_group",
+               "type": "extension",
+               "name": "test_extension",
+               "addon": "msg_11__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension": "test_extension"
+               "extension_group": "msg_11__extension_group"
              }]
            }
          })"_json);

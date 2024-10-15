@@ -40,33 +40,6 @@ class test_extension : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    ten_env.addon_create_extension_async(
-        "property_start_graph_cmd_override_extension_success__extension",
-        "test_extension",
-        [](ten::ten_env_t &ten_env, ten::extension_t &extension) {
-          std::vector<ten::extension_t *> extensions;
-          extensions.push_back(&extension);
-          ten_env.on_create_extensions_done(extensions);
-        });
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto iter = extensions.begin(); iter != extensions.end(); ++iter) {
-      ten_env.addon_destroy_extension_async(*iter, [](ten::ten_env_t &ten_env) {
-        ten_env.on_destroy_extensions_done();
-      });
-    }
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -97,10 +70,6 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
     property_start_graph_cmd_override_extension_success__extension,
     test_extension);
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    property_start_graph_cmd_override_extension_success__extension_group,
-    test_extension_group);
-
 }  // namespace
 
 TEST(ExtensionTest, PropertyConnectCmdOverrideExtensionSuccess) {  // NOLINT
@@ -118,20 +87,16 @@ TEST(ExtensionTest, PropertyConnectCmdOverrideExtensionSuccess) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "property_start_graph_cmd_override_extension_success__extension_group",
-               "addon": "property_start_graph_cmd_override_extension_success__extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "test_extension",
                "app": "msgpack://127.0.0.1:8001/",
+               "addon": "property_start_graph_cmd_override_extension_success__extension",
                "extension_group": "property_start_graph_cmd_override_extension_success__extension_group",
                "property": {}
              }]
            }
          })"_json;
-  command["_ten"]["nodes"][1]["property"]["test_prop"] = PROP_NEW_VAL;
+  command["_ten"]["nodes"][0]["property"]["test_prop"] = PROP_NEW_VAL;
 
   nlohmann::json resp = client->send_json_and_recv_resp_in_json(command);
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);

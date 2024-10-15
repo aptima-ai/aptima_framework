@@ -46,28 +46,6 @@ class test_extension_2 : public ten::extension_t {
   }
 };
 
-class test_extension_group : public ten::extension_group_t {
- public:
-  explicit test_extension_group(const std::string &name)
-      : ten::extension_group_t(name) {}
-
-  void on_create_extensions(ten::ten_env_t &ten_env) override {
-    std::vector<ten::extension_t *> extensions;
-    extensions.push_back(new test_extension_1("test_extension_1"));
-    extensions.push_back(new test_extension_2("test_extension_2"));
-    ten_env.on_create_extensions_done(extensions);
-  }
-
-  void on_destroy_extensions(
-      ten::ten_env_t &ten_env,
-      const std::vector<ten::extension_t *> &extensions) override {
-    for (auto *extension : extensions) {
-      delete extension;
-    }
-    ten_env.on_destroy_extensions_done();
-  }
-};
-
 class test_app : public ten::app_t {
  public:
   void on_configure(ten::ten_env_t &ten_env) override {
@@ -96,9 +74,10 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION_GROUP(
-    cmd_mapping_start_graph_cmd_extension_1__extension_group,
-    test_extension_group);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_conversion_connect_cmd_extension_1,
+                                    test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_conversion_connect_cmd_extension_2,
+                                    test_extension_2);
 
 }  // namespace
 
@@ -117,20 +96,27 @@ TEST(CmdConversionTest, CmdConversionConnectCmd) {  // NOLINT
             "type": "start_graph",
             "seq_id": "55",
             "nodes": [{
-              "type": "extension_group",
-              "name": "cmd_mapping_start_graph_cmd_extension_1",
-              "addon": "cmd_mapping_start_graph_cmd_extension_1__extension_group",
-              "app": "msgpack://127.0.0.1:8001/"
+              "type": "extension",
+              "name": "test_extension_1",
+              "app": "msgpack://127.0.0.1:8001/",
+              "addon": "cmd_conversion_connect_cmd_extension_1",
+              "extension_group": "cmd_conversion_connect_cmd_extension_group"
+            },{
+              "type": "extension",
+              "name": "test_extension_2",
+              "app": "msgpack://127.0.0.1:8001/",
+              "addon": "cmd_conversion_connect_cmd_extension_2",
+              "extension_group": "cmd_conversion_connect_cmd_extension_group"
             }],
             "connections": [{
               "app": "msgpack://127.0.0.1:8001/",
-              "extension_group": "cmd_mapping_start_graph_cmd_extension_1",
+              "extension_group": "cmd_conversion_connect_cmd_extension_group",
               "extension": "test_extension_1",
               "cmd": [{
                 "name": "hello_world",
                 "dest": [{
                   "app": "msgpack://127.0.0.1:8001/",
-                  "extension_group": "cmd_mapping_start_graph_cmd_extension_1",
+                  "extension_group": "cmd_conversion_connect_cmd_extension_group",
                   "extension": "test_extension_2",
                   "msg_conversion": {
                     "type": "per_property",
@@ -155,7 +141,7 @@ TEST(CmdConversionTest, CmdConversionConnectCmd) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "cmd_mapping_start_graph_cmd_extension_1",
+               "extension_group": "cmd_conversion_connect_cmd_extension_group",
                "extension": "test_extension_1"
              }]
            }

@@ -184,11 +184,6 @@ mod tests {
                 "name": "default",
                 "nodes": [
                   {
-                    "type": "extension_group",
-                    "name": "default_extension_group",
-                    "addon": "default_extension_group"
-                  },
-                  {
                     "type": "extension",
                     "name": "default_extension_cpp",
                     "addon": "default_extension_cpp",
@@ -218,10 +213,6 @@ mod tests {
               {
                 "name": "default",
                 "nodes": [{
-                  "type": "extension_group",
-                  "name": "default_extension_group",
-                  "addon": "default_extension_group"
-                },{
                   "type": "extension",
                   "name": "default_extension_cpp",
                   "addon": "default_extension_cpp",
@@ -266,10 +257,6 @@ mod tests {
               {
                 "name": "default",
                 "nodes": [{
-                  "type": "extension_group",
-                  "name": "default_extension_group",
-                  "addon": "default_extension_group"
-                },{
                   "type": "extension",
                   "name": "default_extension_cpp",
                   "addon": "default_extension_cpp",
@@ -310,11 +297,6 @@ mod tests {
                 "name": "default",
                 "nodes": [
                   {
-                    "type": "extension_group",
-                    "name": "default_extension_group",
-                    "addon": "default_extension_group"
-                  },
-                  {
                     "type": "extension",
                     "name": "default_extension_cpp",
                     "addon": "default_extension_cpp",
@@ -343,11 +325,6 @@ mod tests {
               {
                 "name": "default",
                 "nodes": [
-                  {
-                    "type": "extension_group",
-                    "name": "default_extension_group",
-                    "addon": "default_extension_group"
-                  },
                   {
                     "type": "extension",
                     "name": "default_extension_cpp",
@@ -960,10 +937,6 @@ mod tests {
               "name": "default",
               "auto_start": false,
               "nodes": [{
-                "type": "extension_group",
-                "name": "result_mapping_1__extension_group",
-                "addon": "default_extension_group"
-              },{
                 "type": "extension",
                 "name": "test_extension_1",
                 "addon": "result_mapping_1__test_extension_1",
@@ -1025,10 +998,6 @@ mod tests {
               {
                 "name": "default",
                 "nodes": [{
-                  "type": "extension_group",
-                  "name": "default_extension_group",
-                  "addon": "default_extension_group"
-                },{
                   "type": "extension",
                   "name": "default_extension_cpp",
                   "addon": "default_extension_cpp",

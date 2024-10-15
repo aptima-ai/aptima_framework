@@ -385,10 +385,6 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
           ten_extension_info_node_from_value(
               predefined_graph_info_node_item_value,
               &predefined_graph_info->extensions_info, NULL);
-        } else if (!strcmp(type, TEN_STR_EXTENSION_GROUP)) {
-          ten_extension_group_info_from_value(
-              predefined_graph_info_node_item_value,
-              &predefined_graph_info->extension_groups_info, NULL);
         } else {
           ten_predefined_graph_info_destroy(predefined_graph_info);
           result = false;

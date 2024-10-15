@@ -96,16 +96,6 @@ TEST(ExtensionTest, GraphOutOfOrder1) {  // NOLINT
                 "extension_group": "test_extension_group 1",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
-               "type": "extension_group",
-               "name": "test_extension_group 1",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
-               "type": "extension_group",
-               "name": "test_extension_group 2",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                 "type": "extension",
                 "name": "test_extension_2",
                 "addon": "graph_out_of_order_1__test_extension_2",

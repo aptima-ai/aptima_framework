@@ -113,16 +113,6 @@ TEST(ExtensionTest, MsgPropertySendCString) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "msg_property_send_c_string__extension_group_1",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
-               "type": "extension_group",
-               "name": "msg_property_send_c_string__extension_group_2",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "msg_property_send_c_string__extension_1",
                "addon": "msg_property_send_c_string__extension_1",

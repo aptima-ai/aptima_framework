@@ -74,18 +74,6 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
         "seq_id": "55",
         "nodes":[
           {
-            "type": "extension_group",
-            "name": "extension_group",
-            "addon": "default_extension_group",
-            "app": "msgpack://127.0.0.1:8001/"
-          },
-          {
-            "type": "extension_group",
-            "name": "extension_group",
-            "addon": "default_extension_group_1",
-            "app": "msgpack://127.0.0.1:8001/"
-          },
-          {
             "type": "extension",
             "name": "extension_1",
             "addon": "error_client_send_json__extension_1",
@@ -94,7 +82,7 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
           },
           {
             "type": "extension",
-            "name": "extension_2",
+            "name": "extension_1",
             "addon": "error_client_send_json__extension_2",
             "app": "msgpack://127.0.0.1:8001/",
             "extension_group": "extension_group"
@@ -112,8 +100,9 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
 
   EXPECT_EQ(resp, nullptr);
   EXPECT_STREQ(ten_error_errmsg(err),
-               "extension group 'extension_group' is associated with different "
-               "addon 'default_extension_group_1', 'default_extension_group'");
+               "extension 'extension_1' is associated with different addon "
+               "'error_client_send_json__extension_2', "
+               "'error_client_send_json__extension_1'");
 
   ten_error_destroy(err);
   ten_json_destroy(graph);

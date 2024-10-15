@@ -186,8 +186,7 @@
         "type": {
           "type": "string",
           "enum": [
-            "extension",
-            "extension_group"
+            "extension"
           ]
         },
         "name": {

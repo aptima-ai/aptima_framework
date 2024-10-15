@@ -144,11 +144,6 @@ TEST(ExtensionTest, Return3) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "test_extension_group 1",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                "type": "extension",
                "name": "test_extension_1",
                "addon": "return_3__extension_1",
@@ -160,11 +155,6 @@ TEST(ExtensionTest, Return3) {  // NOLINT
                "addon": "return_3__extension_2",
                "app": "msgpack://127.0.0.1:8001/",
                "extension_group": "test_extension_group 1"
-             },{
-               "type": "extension_group",
-               "name": "test_extension_group 2",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
              },{
                "type": "extension",
                "name": "test_extension_3",

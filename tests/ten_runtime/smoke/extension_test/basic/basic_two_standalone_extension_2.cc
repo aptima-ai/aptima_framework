@@ -90,21 +90,11 @@ TEST(ExtensionTest, BasicTwoStandaloneExtension2) {  // NOLINT
              "type": "start_graph",
              "seq_id": "55",
              "nodes": [{
-               "type": "extension_group",
-               "name": "test_extension_group 1",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
-             },{
                 "type": "extension",
                 "name": "test_extension_1",
                 "addon": "basic_two_standalone_extension_2__test_extension_1",
                 "extension_group": "test_extension_group 1",
                 "app": "msgpack://127.0.0.1:8001/"
-             },{
-               "type": "extension_group",
-               "name": "test_extension_group 2",
-               "addon": "default_extension_group",
-               "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
                 "name": "test_extension_2",

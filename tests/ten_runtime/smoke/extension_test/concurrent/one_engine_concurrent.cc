@@ -173,16 +173,6 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
                "long_running_mode": true,
                "seq_id": "55",
                "nodes": [{
-                 "type": "extension_group",
-                 "name": "extension_group_A",
-                 "addon": "default_extension_group",
-                 "app": "msgpack://127.0.0.1:8001/"
-               },{
-                 "type": "extension_group",
-                 "name": "extension_group_B",
-                 "addon": "default_extension_group",
-                 "app": "msgpack://127.0.0.1:8002/"
-               },{
                  "type": "extension",
                  "name": "A",
                  "addon": "one_engine_concurrent__extension_A",
