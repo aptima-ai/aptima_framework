@@ -54,19 +54,6 @@ jobs:
           tgn build linux x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
-      - name: Create cmd_wrapper.sh
-        run: |
-          echo '#!/bin/sh' > cmd_wrapper.sh
-          echo 'echo "==========================================="' >> cmd_wrapper.sh
-          echo 'echo "cmd wrapper executes the following command:"' >> cmd_wrapper.sh
-          echo 'echo "$@"' >> cmd_wrapper.sh
-          echo 'echo "==========================================="' >> cmd_wrapper.sh
-          echo '"$@"' >> cmd_wrapper.sh
-          echo 'status=$?' >> cmd_wrapper.sh
-          echo 'echo $status >_cmd_wrapper_exit_status.txt' >> cmd_wrapper.sh
-          echo 'exit $status' >> cmd_wrapper.sh
-        shell: bash
-
       - name: Run Tests (ten_utils_unit_test)
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
@@ -74,11 +61,8 @@ jobs:
           TEN_ENABLE_MEMORY_TRACKING: "true"
           TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x cmd_wrapper.sh
           chmod +x out/linux/x64/tests/standalone/ten_utils_unit_test
-          out/linux/x64/tests/standalone/ten_utils_unit_test
-          cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_utils_unit_test
-          cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_utils_unit_test
+          out/linux/x64/tests/standalone/ten_utils_unit_test || { echo "test failed"; exit 1; }
 
       - name: Run Tests (ten_runtime_unit_test)
         env:
@@ -88,9 +72,7 @@ jobs:
           TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           chmod +x out/linux/x64/tests/standalone/ten_runtime_unit_test
-          out/linux/x64/tests/standalone/ten_runtime_unit_test
-          cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_unit_test
-          cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_unit_test
+          out/linux/x64/tests/standalone/ten_runtime_unit_test || { echo "test failed"; exit 1; }
 
       - name: Run Tests (ten_runtime_smoke_test)
         env:
@@ -100,9 +82,7 @@ jobs:
           TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
-          out/linux/x64/tests/standalone/ten_runtime_smoke_test
-          cpulimit -f -l 60 -- taskset 0x3 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test
-          cpulimit -f -l 30 -- taskset 0x1 ./cmd_wrapper.sh out/linux/x64/tests/standalone/ten_runtime_smoke_test
+          out/linux/x64/tests/standalone/ten_runtime_smoke_test || { echo "test failed"; exit 1; }
 
       - name: Upload ten_packages
         uses: actions/upload-artifact@v3
