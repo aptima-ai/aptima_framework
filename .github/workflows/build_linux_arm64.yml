@@ -36,6 +36,23 @@ jobs:
           python3 tools/version/update_version_in_ten_framework.py
           python3 tools/version/check_version_in_ten_framework.py
 
+      - name: Update supports
+        run: |
+          UPDATE_SUPPORTS_SCRIPT=$(pwd)/tools/supports/update_supports_in_manifest_json.py
+
+          ARRAY=(
+            "core/src/ten_runtime"
+            "core/src/ten_runtime/binding/go"
+            "core/src/ten_runtime/binding/python"
+            "packages/core_extensions/py_init_extension_cpp"
+          )
+
+          for item in "${ARRAY[@]}"; do
+            python3 ${UPDATE_SUPPORTS_SCRIPT} --os-arch-pairs linux:arm64 --input-file ${item}/manifest.json --output-file ${item}/manifest.json --log-level 1
+            cat ${item}/manifest.json
+          done
+        shell: bash
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -99,3 +116,24 @@ jobs:
           files: |
             out/linux/arm64/tman-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
             out/linux/arm64/ten_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
+
+      - name: Publish release to TEN cloud store
+        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.compiler == 'gcc' && matrix.build_type == 'release' }}
+        run: |
+          TMAN_BIN=$(pwd)/out/linux/arm64/ten_manager/bin/tman
+
+          cd out/linux/arm64/ten_packages
+          ARRAY=(
+            "system/ten_runtime"
+            "system/ten_runtime_go"
+            "system/ten_runtime_python"
+            "extension/py_init_extension_cpp"
+          )
+
+          for item in "${ARRAY[@]}"; do
+            echo $item
+            cd $item
+            ${TMAN_BIN} --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish
+            cd -
+          done
+        shell: bash
