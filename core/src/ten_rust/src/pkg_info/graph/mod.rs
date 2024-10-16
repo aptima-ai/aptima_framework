@@ -75,6 +75,8 @@ impl Graph {
         self.check_if_extensions_used_in_connections_have_defined_in_nodes()?;
         self.check_if_nodes_have_installed(existed_pkgs_of_all_apps)?;
         self.check_connections_compatible(existed_pkgs_of_all_apps)?;
+        self.check_extension_uniqueness_in_connections()?;
+        self.check_message_names()?;
 
         Ok(())
     }
@@ -458,5 +460,48 @@ mod tests {
         assert!(msg.contains(
             "'app' should not be declared, as not any node has declared it"
         ));
+    }
+
+    #[test]
+    fn test_graph_same_extension_in_two_section_of_connections() {
+        let graph_str = include_str!(
+            "test_data_embed/graph_same_extension_in_two_section_of_connections.json"
+        );
+
+        let graph = Graph::from_str(graph_str).unwrap();
+
+        let result = graph.check_extension_uniqueness_in_connections();
+
+        assert!(result.is_err());
+        println!("Error: {:?}", result);
+
+        let msg = result.err().unwrap().to_string();
+        assert!(msg.contains("extension 'some_extension' is defined in connection[0] and connection[1]"));
+    }
+
+    #[test]
+    fn test_graph_duplicated_cmd_name_in_one_connection() {
+        let graph_str = include_str!(
+            "test_data_embed/graph_duplicated_cmd_name_in_one_connection.json"
+        );
+
+        let graph = Graph::from_str(graph_str).unwrap();
+        let result = graph.check_message_names();
+        assert!(result.is_err());
+        println!("Error: {:?}", result);
+
+        let msg = result.err().unwrap().to_string();
+        assert!(msg.contains("'hello' is defined in flow[0] and flow[1]"));
+    }
+
+    #[test]
+    fn test_graph_messages_same_name_in_different_type_are_ok() {
+        let graph_str = include_str!(
+            "test_data_embed/graph_messages_same_name_in_different_type_are_ok.json"
+        );
+
+        let graph = Graph::from_str(graph_str).unwrap();
+        let result = graph.check_message_names();
+        assert!(result.is_ok());
     }
 }

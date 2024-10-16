@@ -1,0 +1,67 @@
+{
+  "nodes": [
+    {
+      "type": "extension",
+      "name": "some_extension",
+      "addon": "default_extension_go",
+      "extension_group": "some_group"
+    },
+    {
+      "type": "extension",
+      "name": "another_ext",
+      "addon": "default_extension_go",
+      "extension_group": "some_group"
+    },
+    {
+      "type": "extension",
+      "name": "third_ext",
+      "addon": "default_extension_go",
+      "extension_group": "some_group"
+    }
+  ],
+  "connections": [
+    {
+      "extension": "some_extension",
+      "extension_group": "some_group",
+      "cmd": [
+        {
+          "name": "hello",
+          "dest": [
+            {
+              "extension_group": "some_group",
+              "extension": "another_ext"
+            }
+          ]
+        },
+        {
+          "name": "hello",
+          "dest": [
+            {
+              "extension_group": "some_group",
+              "extension": "third_ext"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "extension": "another_ext",
+      "extension_group": "some_group",
+      "data": [
+        {
+          "name": "hello",
+          "dest": [
+            {
+              "extension_group": "some_group",
+              "extension": "third_ext"
+            },
+            {
+              "extension_group": "some_group",
+              "extension": "some_extension"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
