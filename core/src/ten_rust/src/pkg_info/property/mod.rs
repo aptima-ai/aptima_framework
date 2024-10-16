@@ -22,7 +22,7 @@ use super::{
     utils::read_file_to_string,
 };
 use crate::pkg_info::graph::is_app_default_loc_or_none;
-use crate::{json_schema, pkg_info::default_app_loc};
+use crate::{json_schema, pkg_info::localhost};
 use predefined_graph::PropertyPredefinedGraph;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -83,7 +83,7 @@ impl Property {
             }
         }
 
-        default_app_loc()
+        localhost()
     }
 }
 
@@ -108,7 +108,7 @@ impl TenInProperty {
         }
 
         if self.uri.is_none() {
-            self.uri = Some(default_app_loc());
+            self.uri = Some(localhost());
         }
 
         Ok(())
@@ -293,7 +293,7 @@ mod tests {
         let predefined_graphs = ten.predefined_graphs.as_ref().unwrap();
         let nodes = &predefined_graphs.first().as_ref().unwrap().graph.nodes;
         let node = nodes.first().unwrap();
-        assert_eq!(node.get_app_uri(), default_app_loc());
+        assert_eq!(node.get_app_uri(), localhost());
 
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("property.json");
@@ -301,6 +301,6 @@ mod tests {
 
         let saved_content = fs::read_to_string(file_path).unwrap();
         eprintln!("{}", saved_content);
-        assert_eq!(saved_content.find(default_app_loc().as_str()), None);
+        assert_eq!(saved_content.find(localhost().as_str()), None);
     }
 }

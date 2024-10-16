@@ -313,7 +313,7 @@ mod tests {
     use crate::{
         config::TmanConfig, dev_server::mock::tests::inject_all_pkgs_for_mock,
     };
-    use ten_rust::pkg_info::default_app_loc;
+    use ten_rust::pkg_info::localhost;
 
     #[actix_web::test]
     async fn test_get_compatible_messages_success() {
@@ -382,7 +382,7 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_compatibles = vec![DevServerCompatibleMsg {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
             msg_type: MsgType::Cmd,
@@ -524,7 +524,7 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_compatibles = vec![DevServerCompatibleMsg {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
             msg_type: MsgType::Cmd,
@@ -605,7 +605,7 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_compatibles = vec![DevServerCompatibleMsg {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
             msg_type: MsgType::Cmd,
@@ -686,7 +686,7 @@ mod tests {
 
         let expected_compatibles = vec![
             DevServerCompatibleMsg {
-                app: default_app_loc(),
+                app: localhost(),
                 extension_group: "extension_group_1".to_string(),
                 extension: "extension_1".to_string(),
                 msg_type: MsgType::Cmd,
@@ -694,7 +694,7 @@ mod tests {
                 msg_name: "cmd1".to_string(),
             },
             DevServerCompatibleMsg {
-                app: default_app_loc(),
+                app: localhost(),
                 extension_group: "extension_group_1".to_string(),
                 extension: "extension_2".to_string(),
                 msg_type: MsgType::Cmd,
@@ -777,7 +777,7 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_compatibles = vec![DevServerCompatibleMsg {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
             msg_type: MsgType::Cmd,
@@ -1165,7 +1165,7 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_compatibles = vec![DevServerCompatibleMsg {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
             msg_type: MsgType::VideoFrame,

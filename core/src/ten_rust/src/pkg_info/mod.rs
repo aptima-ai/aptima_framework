@@ -46,7 +46,7 @@ use property::{
 };
 use supports::{get_pkg_supports_from_manifest, PkgSupport};
 
-pub fn default_app_loc() -> String {
+pub fn localhost() -> String {
     "localhost".to_string()
 }
 

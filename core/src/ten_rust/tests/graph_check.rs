@@ -6,7 +6,7 @@
 use std::{collections::HashMap, path::Path};
 
 use ten_rust::pkg_info::{
-    default_app_loc, get_all_existed_pkgs_info_of_app, pkg_type::PkgType,
+    get_all_existed_pkgs_info_of_app, localhost, pkg_type::PkgType,
     property::predefined_graph::PropertyPredefinedGraph, PkgInfo,
 };
 
@@ -28,7 +28,7 @@ fn test_graph_check_extension_not_installed() {
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-    pkg_info_map.insert(default_app_loc(), pkg_infos);
+    pkg_info_map.insert(localhost(), pkg_infos);
 
     let result = graph.check_if_nodes_have_installed(&pkg_info_map);
     assert!(result.is_err());
@@ -53,7 +53,7 @@ fn test_graph_check_predefined_graph_success() {
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-    pkg_info_map.insert(default_app_loc(), pkg_infos);
+    pkg_info_map.insert(localhost(), pkg_infos);
 
     let result = graph.check(&pkg_info_map);
     assert!(result.is_ok());
@@ -77,7 +77,7 @@ fn test_graph_check_all_msgs_schema_incompatible() {
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
-    pkg_info_map.insert(default_app_loc(), pkg_infos);
+    pkg_info_map.insert(localhost(), pkg_infos);
 
     let result = graph.check(&pkg_info_map);
     assert!(result.is_err());

@@ -359,7 +359,7 @@ mod tests {
     use crate::{
         config::TmanConfig, dev_server::mock::tests::inject_all_pkgs_for_mock,
     };
-    use ten_rust::pkg_info::default_app_loc;
+    use ten_rust::pkg_info::localhost;
 
     #[actix_web::test]
     async fn test_get_extensions_success() {
@@ -424,7 +424,7 @@ mod tests {
                 addon: "extension_addon_1".to_string(),
                 name: "extension_1".to_string(),
                 extension_group: "extension_group_1".to_string(),
-                app: default_app_loc(),
+                app: localhost(),
                 api: Some(DevServerApi {
                     property: None,
                     cmd_in: None,
@@ -476,7 +476,7 @@ mod tests {
                 addon: "extension_addon_2".to_string(),
                 name: "extension_2".to_string(),
                 extension_group: "extension_group_1".to_string(),
-                app: default_app_loc(),
+                app: localhost(),
                 api: Some(DevServerApi {
                     property: None,
                     cmd_in: Some(vec![
@@ -550,7 +550,7 @@ mod tests {
                 addon: "extension_addon_3".to_string(),
                 name: "extension_3".to_string(),
                 extension_group: "extension_group_1".to_string(),
-                app: default_app_loc(),
+                app: localhost(),
                 api: Some(DevServerApi {
                     property: None,
                     cmd_in: Some(vec![DevServerApiCmdLike {

@@ -11,7 +11,7 @@ use anyhow::{Context, Result};
 use clap::{Arg, ArgMatches, Command};
 use console::Emoji;
 use ten_rust::pkg_info::{
-    default_app_loc, get_all_existed_pkgs_info_of_app, graph::Graph,
+    get_all_existed_pkgs_info_of_app, graph::Graph, localhost,
     property::parse_property_in_folder, PkgInfo,
 };
 
@@ -109,7 +109,7 @@ fn get_existed_pkgs_of_all_apps(
         let app_existed_pkgs = get_all_existed_pkgs_info_of_app(app_path)?;
 
         let app_uri = app_property.get_app_uri();
-        if !single_app && app_uri.as_str() == default_app_loc() {
+        if !single_app && app_uri.as_str() == localhost() {
             return Err(anyhow::anyhow!(
                 "The app uri should be some string other than 'localhost' when
                 using in multi-apps graph."
@@ -143,7 +143,7 @@ fn get_graphs_to_be_checked(command: &CheckGraphCommand) -> Result<Vec<Graph>> {
             .and_then(|p| p.predefined_graphs)
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "No predefined graph is found in the primary app."
+                    "No predefined graph is found in the first app."
                 )
             })?;
 

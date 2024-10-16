@@ -176,7 +176,7 @@ mod tests {
     use crate::{
         config::TmanConfig, dev_server::mock::tests::inject_all_pkgs_for_mock,
     };
-    use ten_rust::pkg_info::default_app_loc;
+    use ten_rust::pkg_info::localhost;
 
     #[actix_web::test]
     async fn test_get_connections_success() {
@@ -236,13 +236,13 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_connections = vec![DevServerConnection {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
             cmd: Some(vec![DevServerMessageFlow {
                 name: "hello_world".to_string(),
                 dest: vec![DevServerDestination {
-                    app: default_app_loc(),
+                    app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                 }],
@@ -316,13 +316,13 @@ mod tests {
             serde_json::from_str(body_str).unwrap();
 
         let expected_connections = vec![DevServerConnection {
-            app: default_app_loc(),
+            app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
             cmd: Some(vec![DevServerMessageFlow {
                 name: "hello_world".to_string(),
                 dest: vec![DevServerDestination {
-                    app: default_app_loc(),
+                    app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                 }],
@@ -330,7 +330,7 @@ mod tests {
             data: Some(vec![DevServerMessageFlow {
                 name: "data".to_string(),
                 dest: vec![DevServerDestination {
-                    app: default_app_loc(),
+                    app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                 }],
@@ -338,7 +338,7 @@ mod tests {
             audio_frame: Some(vec![DevServerMessageFlow {
                 name: "pcm".to_string(),
                 dest: vec![DevServerDestination {
-                    app: default_app_loc(),
+                    app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                 }],
@@ -346,7 +346,7 @@ mod tests {
             video_frame: Some(vec![DevServerMessageFlow {
                 name: "image".to_string(),
                 dest: vec![DevServerDestination {
-                    app: default_app_loc(),
+                    app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                 }],
