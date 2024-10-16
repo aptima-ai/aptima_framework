@@ -1099,8 +1099,7 @@ mod tests {
         {
           "_ten": {
             "log_level": 2,
-            "log_file": "api.log",
-            "uri": "localhost"
+            "log_file": "api.log"
           },
           "a": 1,
           "b": "2",
