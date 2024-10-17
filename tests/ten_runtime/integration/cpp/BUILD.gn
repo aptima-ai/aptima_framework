@@ -14,6 +14,7 @@ group("cpp") {
     "hello_world",
     "http_basic",
     "large_result",
+    "multi_apps",
     "standalone_test_cpp",
   ]
 

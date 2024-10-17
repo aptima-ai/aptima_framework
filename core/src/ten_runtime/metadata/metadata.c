@@ -25,7 +25,7 @@ static bool ten_metadata_load_from_json_string(ten_value_t *metadata,
   TEN_ASSERT(metadata && ten_value_check_integrity(metadata) && json_str,
              "Should not happen.");
 
-  ten_json_t *json = ten_json_from_string(json_str, NULL);
+  ten_json_t *json = ten_json_from_string(json_str, err);
   if (!json) {
     return false;
   }

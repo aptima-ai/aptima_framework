@@ -106,7 +106,7 @@ static void ten_app_on_configure_done_internal(ten_app_t *self) {
   }
 
   rc = ten_app_start_auto_start_predefined_graph(self, &err);
-  TEN_ASSERT(rc, "Should not happen.");
+  TEN_ASSERT(rc, "Should not happen, %s.", ten_error_errmsg(&err));
 
   ten_error_deinit(&err);
 }

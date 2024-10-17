@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 pub mod api;
+mod binding;
 mod constants;
 pub mod dependencies;
 pub mod graph;
@@ -22,12 +23,14 @@ pub mod value_type;
 
 use std::{
     cmp::Ordering,
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     hash::{Hash, Hasher},
     path::{Path, PathBuf},
+    str::FromStr,
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
+use graph::Graph;
 use semver::Version;
 
 use crate::schema::store::SchemaStore;
@@ -399,4 +402,28 @@ pub fn find_to_be_replaced_local_pkgs<'a>(
     }
 
     result
+}
+
+pub fn ten_rust_check_graph_for_app(
+    app_base_dir: &str,
+    graph_json: &str,
+) -> Result<()> {
+    let app_path = Path::new(app_base_dir);
+    if !app_path.exists() {
+        return Err(anyhow::anyhow!(
+            "The app base dir [{}] is not found.",
+            app_base_dir
+        ));
+    }
+
+    let property = parse_property_in_folder(app_path)?;
+
+    let mut pkgs_of_app: HashMap<String, Vec<PkgInfo>> = HashMap::new();
+    let pkgs_info = get_all_existed_pkgs_info_of_app(app_path)?;
+    pkgs_of_app.insert(property.get_app_uri(), pkgs_info);
+
+    let graph = Graph::from_str(graph_json)
+        .with_context(|| "The graph json string is invalid.")?;
+
+    graph.check_for_single_app(&pkgs_of_app)
 }

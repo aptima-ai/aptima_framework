@@ -28,7 +28,7 @@ template("ten_package_test_prepare_app") {
   app_run_root_dir = "${test_case_root_dir}/${_target_name}"
 
   install_app_dummy_output_file =
-      "${target_gen_dir}/install_app_dummy_output_file"
+      "${target_gen_dir}/${_target_name}/install_app_dummy_output_file"
   install_app_depfile = "${target_gen_dir}/install_app_depfile"
 
   action("${test_case_unique_target_name}_${_target_name}_install_app") {
@@ -168,7 +168,7 @@ template("ten_package_test_prepare_app") {
   }
 
   install_all_dummy_output_file =
-      "${target_gen_dir}/install_all_dummy_output_file"
+      "${target_gen_dir}/${_target_name}/install_all_dummy_output_file"
 
   action("${test_case_unique_target_name}_${_target_name}_install_all") {
     script = "//build/ten_runtime/feature/install_all.py"
@@ -290,7 +290,8 @@ template("ten_package_test_prepare_app") {
   }
 
   # App building phase.
-  build_app_dummy_output_file = "${target_gen_dir}/build_app_dummy_output_file"
+  build_app_dummy_output_file =
+      "${target_gen_dir}/${_target_name}/build_app_dummy_output_file"
 
   action("${test_case_unique_target_name}_${_target_name}_build") {
     script = "//build/ten_runtime/feature/build_pkg.py"
@@ -543,7 +544,7 @@ template("ten_package_standalone_pkg") {
   pkg_root_dir = "${test_case_root_dir}/${_target_name}"
 
   install_standalone_dummy_output_file =
-      "${target_gen_dir}/install_standalone_dummy_output_file"
+      "${target_gen_dir}/${_target_name}/install_standalone_dummy_output_file"
   install_standalone_depfile = "${target_gen_dir}/install_standalone_depfile"
 
   action("${test_case_unique_target_name}_${_target_name}_install_pkg") {
@@ -624,7 +625,8 @@ template("ten_package_standalone_pkg") {
     ]
   }
 
-  install_all_dummy_output_file = "${target_gen_dir}/install_dummy_output_file"
+  install_all_dummy_output_file =
+      "${target_gen_dir}/${_target_name}/install_dummy_output_file"
 
   # Install dependencies of the standalone package.
   action("${test_case_unique_target_name}_${_target_name}_install") {
@@ -689,7 +691,8 @@ template("ten_package_standalone_pkg") {
   }
 
   # Build this standalone package.
-  build_pkg_dummy_output_file = "${target_gen_dir}/build_pkg_dummy_output_file"
+  build_pkg_dummy_output_file =
+      "${target_gen_dir}/${_target_name}/build_pkg_dummy_output_file"
 
   action("${test_case_unique_target_name}_${_target_name}_build") {
     script = "//build/ten_runtime/feature/build_pkg.py"

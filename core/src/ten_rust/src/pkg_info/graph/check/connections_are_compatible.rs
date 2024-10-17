@@ -47,7 +47,7 @@ impl Graph {
 
     fn check_msg_flow_compatible(
         &self,
-        all_needed_pkgs: &HashMap<String, Vec<PkgInfo>>,
+        existed_pkgs_of_all_apps: &HashMap<String, Vec<PkgInfo>>,
         msg_name: &str,
         msg_type: &MsgType,
         src_msg_schema: Option<&TenSchema>,
@@ -60,7 +60,7 @@ impl Graph {
                 dest.extension.as_str(),
             );
             let dest_msg_schema = find_msg_schema_from_all_pkgs_info(
-                all_needed_pkgs,
+                existed_pkgs_of_all_apps,
                 dest.get_app_uri(),
                 dest_addon,
                 msg_name,
@@ -84,10 +84,11 @@ impl Graph {
 
     fn check_cmd_flow_compatible(
         &self,
-        all_needed_pkgs: &HashMap<String, Vec<PkgInfo>>,
+        existed_pkgs_of_all_apps: &HashMap<String, Vec<PkgInfo>>,
         cmd_name: &str,
         src_cmd_schema: Option<&CmdSchema>,
         dests: &[GraphDestination],
+        skip_if_app_not_exist: bool,
     ) -> Result<()> {
         let mut errors: Vec<String> = Vec::new();
         for dest in dests {
@@ -95,9 +96,22 @@ impl Graph {
                 dest.get_app_uri(),
                 dest.extension.as_str(),
             );
+
+            let existed_pkgs_of_dest_app =
+                existed_pkgs_of_all_apps.get(dest.get_app_uri());
+            if existed_pkgs_of_dest_app.is_none() {
+                if skip_if_app_not_exist {
+                    continue;
+                } else {
+                    return Err(anyhow::anyhow!(
+                        "App [{}] is not found in the pkgs map, should not happen.",
+                        dest.get_app_uri()
+                    ));
+                }
+            }
+
             let dest_cmd_schema = find_cmd_schema_from_all_pkgs_info(
-                all_needed_pkgs,
-                dest.get_app_uri(),
+                existed_pkgs_of_dest_app.unwrap(),
                 dest_addon,
                 cmd_name,
                 MsgDirection::In,
@@ -119,8 +133,9 @@ impl Graph {
 
     fn check_connection_compatible(
         &self,
-        all_needed_pkgs: &HashMap<String, Vec<PkgInfo>>,
+        existed_pkgs_of_all_apps: &HashMap<String, Vec<PkgInfo>>,
         connection: &GraphConnection,
+        skip_if_app_not_exist: bool,
     ) -> Result<()> {
         let mut errors: Vec<String> = Vec::new();
         if let Some(cmd_flows) = &connection.cmd {
@@ -129,19 +144,30 @@ impl Graph {
                     connection.get_app_uri(),
                     connection.extension.as_str(),
                 );
+
+                let existed_pkgs_of_src_app =
+                    existed_pkgs_of_all_apps.get(connection.get_app_uri());
+                if existed_pkgs_of_src_app.is_none() {
+                    if skip_if_app_not_exist {
+                        continue;
+                    } else {
+                        return Err(anyhow::anyhow!("App [{}] is not found in the pkgs map, should not happen.", connection.get_app_uri()));
+                    }
+                }
+
                 let src_cmd_schema = find_cmd_schema_from_all_pkgs_info(
-                    all_needed_pkgs,
-                    connection.get_app_uri(),
+                    existed_pkgs_of_src_app.unwrap(),
                     src_addon,
                     flow.name.as_str(),
                     MsgDirection::Out,
                 );
 
                 if let Err(e) = self.check_cmd_flow_compatible(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     flow.name.as_str(),
                     src_cmd_schema,
                     &flow.dest,
+                    skip_if_app_not_exist,
                 ) {
                     errors.push(format!("- cmd[{}]:  {}", flow_idx, e));
                 }
@@ -155,7 +181,7 @@ impl Graph {
                     connection.extension.as_str(),
                 );
                 let src_msg_schema = find_msg_schema_from_all_pkgs_info(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
@@ -164,7 +190,7 @@ impl Graph {
                 );
 
                 if let Err(e) = self.check_msg_flow_compatible(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     flow.name.as_str(),
                     &MsgType::Data,
                     src_msg_schema,
@@ -182,7 +208,7 @@ impl Graph {
                     connection.extension.as_str(),
                 );
                 let src_msg_schema = find_msg_schema_from_all_pkgs_info(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
@@ -191,7 +217,7 @@ impl Graph {
                 );
 
                 if let Err(e) = self.check_msg_flow_compatible(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     flow.name.as_str(),
                     &MsgType::VideoFrame,
                     src_msg_schema,
@@ -209,7 +235,7 @@ impl Graph {
                     connection.extension.as_str(),
                 );
                 let src_msg_schema = find_msg_schema_from_all_pkgs_info(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     connection.get_app_uri(),
                     src_addon,
                     flow.name.as_str(),
@@ -218,7 +244,7 @@ impl Graph {
                 );
 
                 if let Err(e) = self.check_msg_flow_compatible(
-                    all_needed_pkgs,
+                    existed_pkgs_of_all_apps,
                     flow.name.as_str(),
                     &MsgType::AudioFrame,
                     src_msg_schema,
@@ -238,7 +264,8 @@ impl Graph {
 
     pub fn check_connections_compatible(
         &self,
-        all_needed_pkgs: &HashMap<String, Vec<PkgInfo>>,
+        existed_pkgs_of_all_apps: &HashMap<String, Vec<PkgInfo>>,
+        skip_if_app_not_exist: bool,
     ) -> Result<()> {
         if self.connections.is_none() {
             return Ok(());
@@ -248,9 +275,11 @@ impl Graph {
 
         let connections = self.connections.as_ref().unwrap();
         for (conn_idx, connection) in connections.iter().enumerate() {
-            if let Err(e) =
-                self.check_connection_compatible(all_needed_pkgs, connection)
-            {
+            if let Err(e) = self.check_connection_compatible(
+                existed_pkgs_of_all_apps,
+                connection,
+                skip_if_app_not_exist,
+            ) {
                 errors.push(format!("- connections[{}]: \n  {}", conn_idx, e));
             }
         }
@@ -264,17 +293,12 @@ impl Graph {
 }
 
 fn find_cmd_schema_from_all_pkgs_info<'a>(
-    all_pkgs: &'a HashMap<String, Vec<PkgInfo>>,
-    app: &str,
+    existed_pkgs_of_app: &'a [PkgInfo],
     addon: &str,
     cmd_name: &str,
     direction: MsgDirection,
 ) -> Option<&'a CmdSchema> {
-    let pkgs_in_app = all_pkgs.get(app).unwrap_or_else(|| {
-        panic!("should not happen.");
-    });
-
-    let addon_pkg = pkgs_in_app
+    let addon_pkg = existed_pkgs_of_app
         .iter()
         .find(|pkg| {
             pkg.pkg_identity.pkg_type == PkgType::Extension
@@ -293,18 +317,19 @@ fn find_cmd_schema_from_all_pkgs_info<'a>(
 }
 
 fn find_msg_schema_from_all_pkgs_info<'a>(
-    all_pkgs: &'a HashMap<String, Vec<PkgInfo>>,
+    existed_pkgs_of_all_apps: &'a HashMap<String, Vec<PkgInfo>>,
     app: &str,
     addon: &str,
     msg_name: &str,
     msg_type: &MsgType,
     direction: MsgDirection,
 ) -> Option<&'a TenSchema> {
-    let pkgs_in_app = all_pkgs.get(app).unwrap_or_else(|| {
-        panic!("should not happen.");
-    });
+    let existed_pkgs_of_app =
+        existed_pkgs_of_all_apps.get(app).unwrap_or_else(|| {
+            panic!("should not happen.");
+        });
 
-    let addon_pkg = pkgs_in_app
+    let addon_pkg = existed_pkgs_of_app
         .iter()
         .find(|pkg| {
             pkg.pkg_identity.pkg_type == PkgType::Extension

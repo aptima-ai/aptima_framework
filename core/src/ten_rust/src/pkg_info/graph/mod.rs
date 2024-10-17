@@ -73,8 +73,27 @@ impl Graph {
     ) -> Result<()> {
         self.check_if_nodes_duplicated()?;
         self.check_if_extensions_used_in_connections_have_defined_in_nodes()?;
-        self.check_if_nodes_have_installed(existed_pkgs_of_all_apps)?;
-        self.check_connections_compatible(existed_pkgs_of_all_apps)?;
+        self.check_if_nodes_have_installed(existed_pkgs_of_all_apps, false)?;
+        self.check_connections_compatible(existed_pkgs_of_all_apps, false)?;
+        self.check_extension_uniqueness_in_connections()?;
+        self.check_message_names()?;
+
+        Ok(())
+    }
+
+    pub fn check_for_single_app(
+        &self,
+        existed_pkgs_of_app: &HashMap<String, Vec<PkgInfo>>,
+    ) -> Result<()> {
+        assert!(existed_pkgs_of_app.len() == 1);
+
+        self.check_if_nodes_duplicated()?;
+        self.check_if_extensions_used_in_connections_have_defined_in_nodes()?;
+        self.check_if_nodes_have_installed(existed_pkgs_of_app, true)?;
+
+        // In a single app, there is no information about pkg_info of other
+        // apps, neither the message schemas.
+        self.check_connections_compatible(existed_pkgs_of_app, true)?;
         self.check_extension_uniqueness_in_connections()?;
         self.check_message_names()?;
 

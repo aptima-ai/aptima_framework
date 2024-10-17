@@ -4,14 +4,17 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/ten_runtime/glob.gni")
+import("//build/feature/ten_package.gni")
 
-glob("app") {
-  file_list = all_native_files
-  deps = [
-    "msg_interface",
-    "ten_env",
+ten_package("ext_c") {
+  package_kind = "extension"
+  enable_build = true
+
+  resources = [
+    "manifest.json",
+    "property.json",
   ]
 
-  public_deps = [ "//core/src/ten_rust:ten_rust_binding" ]
+  sources = [ "src/main.cc" ]
+  include_dirs = [ "include" ]
 }

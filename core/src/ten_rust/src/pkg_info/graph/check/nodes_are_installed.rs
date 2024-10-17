@@ -14,6 +14,7 @@ impl Graph {
     pub fn check_if_nodes_have_installed(
         &self,
         existed_pkgs_of_all_apps: &HashMap<String, Vec<PkgInfo>>,
+        skip_if_app_not_exist: bool,
     ) -> Result<()> {
         // app_uri, node_type, node_addon_name
         let mut not_installed_pkgs: Vec<(String, PkgType, String)> = Vec::new();
@@ -24,11 +25,15 @@ impl Graph {
             // Check if the app to which the graph node belongs has been
             // specified.
             if !existed_pkgs_of_all_apps.contains_key(node_app_uri) {
-                not_installed_pkgs.push((
-                    node_app_uri.to_string(),
-                    node.node_type.clone(),
-                    node.addon.clone(),
-                ));
+                if skip_if_app_not_exist {
+                    continue;
+                } else {
+                    not_installed_pkgs.push((
+                        node_app_uri.to_string(),
+                        node.node_type.clone(),
+                        node.addon.clone(),
+                    ));
+                }
             }
 
             let existed_pkgs_of_app =
