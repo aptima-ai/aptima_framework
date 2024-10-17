@@ -18,11 +18,11 @@
 
 #include "include_internal/ten_utils/backtrace/backtrace.h"
 #include "include_internal/ten_utils/backtrace/platform/posix/internal.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/io/mmap.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic_ptr.h"
 #include "ten_utils/lib/file.h"
+#include "ten_utils/macro/check.h"
 
 // Mach-O file header for a 32-bit executable.
 typedef struct macho_header_32 {

@@ -17,7 +17,7 @@ typedef struct ten_extension_t ten_extension_t;
 typedef struct ten_error_t ten_error_t;
 typedef struct ten_msg_t ten_msg_t;
 
-// TEN runtime supports 5 kinds of message mapping.
+// TEN runtime supports 2 kinds of message mapping.
 //
 // > 1-to-1
 //   Apply for : all messages.
@@ -29,31 +29,6 @@ typedef struct ten_msg_t ten_msg_t;
 //   Apply for : all messages.
 //   This can be declared in 'dests' in the graph declaration. The message
 //   will be cloned to N copies, and sent to the N destinations.
-//
-// > 1-to-N (when a message enters an extension)
-//   Apply for : all commands except cmd results.
-//   This is the command conversion mechanism. The message will be converted
-//   to N new messages before sending to an extension. In command conversion
-//   mechanism, a result conversion rule can also be specified.
-//
-// > N-to-1 (TODO(Wei): Need to implement this if needed)
-//   Apply for : all commands except cmd results.
-//   TEN runtime can provide a special command named 'closure' command.
-//   Users can use command conversion mechanism to map a command (said
-//   command A) to the 'closure' command. What this 'closure' command does
-//   is to _store_ the information of command A to a closure in the
-//   destination extension. And users can specify (in graph declaration)
-//   that a later command will use the information in a previously created
-//   closure.
-//
-//     extension 1              extension 2
-//      command A     ==>     closure command (create closure X)
-//      command B     ==>     closure command (with closure X)
-//      command C     ==>     command D (with closure X)
-//
-// > N-to-M
-//   Combined with the above 1-to-N and N-to-1 message mapping, the effect
-//   of N-to-M mapping can be generated.
 
 // Note: To achieve the best compatibility, any new enum item, whether it is
 // cmd/data/video_frame/audio_frame, should be added to the end to avoid
