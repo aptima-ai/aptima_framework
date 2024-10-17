@@ -38,11 +38,6 @@ jobs:
           python3 tools/version/update_version_in_ten_framework.py
           python3 tools/version/check_version_in_ten_framework.py
 
-      - name: Install cpulimit and taskset
-        run: |
-          apt-get update
-          apt-get install -y cpulimit util-linux
-
       - name: Build
         run: |
           export PATH=$(pwd)/core/ten_gn:$PATH
