@@ -28,6 +28,29 @@ async fn test_cmd_check_predefined_graph_success() {
 }
 
 #[actix_rt::test]
+async fn test_cmd_check_start_graph_cmd() {
+    let tman_config = TmanConfig::default();
+    let command = CheckGraphCommand {
+        app: vec!["tests/test_data/cmd_check_start_graph_cmd".to_string()],
+        graph: Some(
+            include_str!(
+                "test_data/cmd_check_start_graph_cmd/start_graph.json"
+            )
+            .to_string(),
+        ),
+        predefined_graph_name: None,
+    };
+
+    let result = ten_manager::cmd::cmd_check::cmd_check_graph::execute_cmd(
+        &tman_config,
+        command,
+    )
+    .await;
+
+    assert!(result.is_ok());
+}
+
+#[actix_rt::test]
 async fn test_cmd_check_start_graph_multi_apps() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
@@ -130,4 +153,29 @@ async fn test_cmd_check_predefined_graph_check_all() {
 
     let msg = result.err().unwrap().to_string();
     assert!(msg.contains("1/2 graphs failed"));
+}
+
+#[actix_rt::test]
+async fn test_cmd_check_unique_extension_in_connections() {
+    let tman_config = TmanConfig::default();
+    let command = CheckGraphCommand {
+        app: vec!["tests/test_data/cmd_check_start_graph_cmd".to_string()],
+        graph: Some(
+            include_str!(
+                "test_data/cmd_check_start_graph_cmd/cmd_check_unique_extension_in_connections.json"
+            )
+            .to_string(),
+        ),
+        predefined_graph_name: None,
+    };
+
+    let result = ten_manager::cmd::cmd_check::cmd_check_graph::execute_cmd(
+        &tman_config,
+        command,
+    )
+    .await;
+
+    // The same extension is defined in two different connections.
+    assert!(result.is_err());
+    eprintln!("{:?}", result);
 }

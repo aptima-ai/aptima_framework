@@ -5,7 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-use std::{collections::HashMap, fs, path};
+use std::{collections::HashMap, fs, path, str::FromStr};
 
 use anyhow::{Context, Result};
 use clap::{Arg, ArgMatches, Command};
@@ -132,7 +132,7 @@ fn get_graphs_to_be_checked(command: &CheckGraphCommand) -> Result<Vec<Graph>> {
     let mut graphs_to_be_checked: Vec<Graph> = Vec::new();
 
     if let Some(graph_str) = &command.graph {
-        let graph: Graph = serde_json::from_str(graph_str)
+        let graph: Graph = Graph::from_str(graph_str)
             .with_context(|| "The graph json string is invalid")?;
         graphs_to_be_checked.push(graph);
     } else {

@@ -25,15 +25,15 @@ impl Graph {
             // Check if the app to which the graph node belongs has been
             // specified.
             if !existed_pkgs_of_all_apps.contains_key(node_app_uri) {
-                if skip_if_app_not_exist {
-                    continue;
-                } else {
+                if !skip_if_app_not_exist {
                     not_installed_pkgs.push((
                         node_app_uri.to_string(),
                         node.node_type.clone(),
                         node.addon.clone(),
                     ));
                 }
+
+                continue;
             }
 
             let existed_pkgs_of_app =

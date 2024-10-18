@@ -13,8 +13,8 @@ use ten_rust::pkg_info::{
 };
 
 #[test]
-fn test_graph_check_extension_not_installed() {
-    let app_dir = "tests/test_data/graph_check_extension_not_installed";
+fn test_graph_check_extension_not_installed_1() {
+    let app_dir = "tests/test_data/graph_check_extension_not_installed_1";
     let pkg_infos =
         get_all_existed_pkgs_info_of_app(Path::new(app_dir)).unwrap();
     assert!(!pkg_infos.is_empty());
@@ -31,6 +31,31 @@ fn test_graph_check_extension_not_installed() {
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
     pkg_info_map.insert(localhost(), pkg_infos);
+
+    let result = graph.check_if_nodes_have_installed(&pkg_info_map, false);
+    assert!(result.is_err());
+    println!("Error: {:?}", result.err().unwrap());
+}
+
+#[test]
+fn test_graph_check_extension_not_installed_2() {
+    let app_dir = "tests/test_data/graph_check_extension_not_installed_2";
+    let pkg_infos =
+        get_all_existed_pkgs_info_of_app(Path::new(app_dir)).unwrap();
+    assert!(!pkg_infos.is_empty());
+
+    let app_pkg_info = pkg_infos
+        .iter()
+        .filter(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
+        .last();
+    let app_pkg = app_pkg_info.unwrap();
+    let predefined_graphs = app_pkg.get_predefined_graphs().unwrap();
+    let pkg_graph = predefined_graphs.first().unwrap();
+    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone();
+    let graph = &predefined_graph.graph;
+
+    let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
+    pkg_info_map.insert("http://localhost:8001".to_string(), pkg_infos);
 
     let result = graph.check_if_nodes_have_installed(&pkg_info_map, false);
     assert!(result.is_err());
