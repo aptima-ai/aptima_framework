@@ -15,9 +15,8 @@ ten_package_test_prepare_app("three_extension_cmd_go_app") {
   replace_files_after_install_app = [
     "three_extension_cmd_go_app/manifest.json",
     "three_extension_cmd_go_app/property.json",
+    "three_extension_cmd_go_app/ten_packages",
   ]
-
-  replace_files_after_install_all = [ "three_extension_cmd_go_app/ten_packages/extension/default_extension_go/extension.go" ]
 
   if (ten_enable_package_manager) {
     deps = [

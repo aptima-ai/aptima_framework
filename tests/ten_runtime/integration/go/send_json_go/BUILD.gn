@@ -15,10 +15,7 @@ ten_package_test_prepare_app("send_json_go_app") {
   replace_files_after_install_app = [
     "send_json_go_app/manifest.json",
     "send_json_go_app/property.json",
-  ]
-
-  replace_files_after_install_all = [
-    "send_json_go_app/ten_packages/extension/default_extension_go/extension.go",
+    "send_json_go_app/ten_packages",
   ]
 
   if (ten_enable_package_manager) {

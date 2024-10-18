@@ -23,21 +23,21 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
           "type": "extension",
           "app": "msgpack://127.0.0.1:8007/",
           "extension_group": "nodetest_group",
-          "addon": "nodetest",
+          "addon": "extension_a",
           "name": "A"
         },
         {
           "type": "extension",
           "app": "msgpack://127.0.0.1:8007/",
           "extension_group": "nodetest_group",
-          "addon": "nodetest",
+          "addon": "extension_b",
           "name": "B"
         },
         {
           "type": "extension",
           "app": "msgpack://127.0.0.1:8007/",
           "extension_group": "nodetest_group",
-          "addon": "nodetest",
+          "addon": "extension_c",
           "name": "C"
         }
       ],

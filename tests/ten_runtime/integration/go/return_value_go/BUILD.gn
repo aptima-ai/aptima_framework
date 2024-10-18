@@ -15,9 +15,10 @@ ten_package_test_prepare_app("return_value_go_app") {
   replace_files_after_install_app = [
     "return_value_go_app/manifest.json",
     "return_value_go_app/property.json",
+    "return_value_go_app/ten_packages",
+    "return_value_go_app/go_common_dep",
+    "return_value_go_app/go.mod",
   ]
-
-  replace_files_after_install_all = [ "return_value_go_app/ten_packages/extension/default_extension_go/extension.go" ]
 
   if (ten_enable_package_manager) {
     deps = [

@@ -15,9 +15,8 @@ ten_package_test_prepare_app("access_property_go_app") {
   replace_files_after_install_app = [
     "access_property_go_app/manifest.json",
     "access_property_go_app/property.json",
+    "access_property_go_app/ten_packages",
   ]
-
-  replace_files_after_install_all = [ "access_property_go_app/ten_packages/extension/default_extension_go/extension.go" ]
 
   deps = [
     "//core/src/ten_manager",

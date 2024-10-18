@@ -2,7 +2,12 @@
   "dependencies": [
     {
       "type": "extension",
-      "name": "default_extension_go",
+      "name": "addon_a",
+      "version": "0.3.0-alpha"
+    },
+    {
+      "type": "extension",
+      "name": "addon_b",
       "version": "0.3.0-alpha"
     },
     {

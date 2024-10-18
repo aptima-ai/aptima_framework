@@ -11,19 +11,19 @@
           {
             "type": "extension",
             "name": "A",
-            "addon": "nodetest",
+            "addon": "extension_a",
             "extension_group": "nodetest_group"
           },
           {
             "type": "extension",
             "name": "B",
-            "addon": "nodetest",
+            "addon": "extension_b",
             "extension_group": "nodetest_group"
           },
           {
             "type": "extension",
             "name": "C",
-            "addon": "nodetest",
+            "addon": "extension_c",
             "extension_group": "nodetest_group"
           }
         ],
