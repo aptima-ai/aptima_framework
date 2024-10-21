@@ -39,32 +39,41 @@ docker compose up
 Once the command is entered, you should see output similar to this:
 
 <pre class="language-bash" data-title=">_ Terminal"><code class="lang-bash">....
-Attaching to astra_agents_dev, astra_playground, ten_graph_designer
-astra_agents_dev    | >> run graph designer server
-astra_agents_dev    | cd agents && tman dev-server
-astra_agents_dev    | :-)  Starting server at http://0.0.0.0:49483
-astra_playground    |   ▲ Next.js 14.2.4
-astra_playground    |   - Local:        http://localhost:3000
-astra_playground    |   - Network:      http://0.0.0.0:3000
-astra_playground    |
-astra_playground    |  ✓ Starting...
-ten_graph_designer  |   ▲ Next.js 14.2.4
-ten_graph_designer  |   - Local:        http://localhost:3000
-ten_graph_designer  |   - Network:      http://0.0.0.0:3000
-ten_graph_designer  |
-ten_graph_designer  |  ✓ Starting...
-astra_playground    |  ✓ Ready in 394ms
-ten_graph_designer  |  ✓ Ready in 387ms
+Attaching to ten_agent_demo, ten_agent_dev, ten_agent_playground, ten_graph_designer
+ten_agent_dev         | >> run graph designer server
+ten_agent_dev         | cd agents && tman dev-server
+ten_agent_dev         | :-)  Starting server at http://0.0.0.0:49483
+ten_agent_demo        |   ▲ Next.js 14.2.4
+ten_agent_demo        |   - Local:        http://localhost:3000
+ten_agent_demo        |   - Network:      http://0.0.0.0:3000
+ten_agent_demo        |
+ten_agent_demo        |  ✓ Starting...
+ten_agent_playground  |   ▲ Next.js 14.2.4
+ten_agent_playground  |   - Local:        http://localhost:3000
+ten_agent_playground  |   - Network:      http://0.0.0.0:3000
+ten_agent_playground  |
+ten_agent_playground  |  ✓ Starting...
+ten_graph_designer    |   ▲ Next.js 14.2.4
+ten_graph_designer    |   - Local:        http://localhost:3000
+ten_graph_designer    |   - Network:      http://0.0.0.0:3000
+ten_graph_designer    |
+ten_graph_designer    |  ✓ Starting...
+ten_agent_demo        |  ✓ Ready in 425ms
+ten_agent_playground  |  ✓ Ready in 429ms
+ten_graph_designer    |  ✓ Ready in 405ms
 ...
 </code></pre>
 
 Now, we’ve got the following services running:
 
-• `astra_agents_dev` at `http://0.0.0.0:49483` (the backend server)
+• `ten_agent_dev` at `http://0.0.0.0:49483` (the backend server)
 
-• `astra_playground` at `http://localhost:3000` (the frontend of TEN Agent)
+• `ten_agent_playground` at `http://localhost:3000` (the playground of TEN Agent)
 
 • `ten_graph_designer` at `http://localhost:3001` (the frontend of Graph Designer)
+
+• `ten_agent_demo` at `http://localhost:3002` (the frontend of TEN Agent, where the OpenAI Realtime API magic is)
+
 
 ## 2. Enter the docker container
 
@@ -73,7 +82,7 @@ To work within the isolated environment, run the following command:
 {% code title=">_ Terminal" %}
 
 ```bash
-docker exec -it astra_agents_dev bash
+docker exec -it ten_agent_dev bash
 ```
 
 {% endcode %}
@@ -173,7 +182,7 @@ make build
 
 You don’t need to restart the server when you first build the agent. However, after making minor updates, if refreshing the page doesn’t apply the changes, you’ll need to restart the server in Docker to ensure the updates take effect.
 
-<figure><img src="../assets/gif/docker_restart_server.gif" alt=""><figcaption><p>Restart the server for astra_agents_dev</p></figcaption></figure>
+<figure><img src="../assets/gif/docker_restart_server.gif" alt=""><figcaption><p>Restart the server for ten_agent_dev</p></figcaption></figure>
 
 ## 7. Verify the extension&#x20;
 
