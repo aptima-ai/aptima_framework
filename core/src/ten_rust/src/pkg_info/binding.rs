@@ -10,20 +10,25 @@ use std::ffi::{c_char, CStr, CString};
 pub extern "C" fn ten_rust_check_graph_for_app(
     app_base_dir: *const c_char,
     graph_json: *const c_char,
+    app_uri: *const c_char,
     out_err_msg: *mut *const c_char,
 ) -> bool {
     assert!(!app_base_dir.is_null(), "Invalid argument.");
     assert!(!graph_json.is_null(), "Invalid argument.");
+    assert!(!app_uri.is_null(), "Invalid argument.");
 
     let c_app_base_dir = unsafe { CStr::from_ptr(app_base_dir) };
     let c_graph_json = unsafe { CStr::from_ptr(graph_json) };
+    let c_app_uri = unsafe { CStr::from_ptr(app_uri) };
 
     let rust_app_base_dir = c_app_base_dir.to_str().unwrap();
     let rust_graph_json = c_graph_json.to_str().unwrap();
+    let rust_app_uri = c_app_uri.to_str().unwrap();
 
     let ret = crate::pkg_info::ten_rust_check_graph_for_app(
         rust_app_base_dir,
         rust_graph_json,
+        rust_app_uri,
     );
     if ret.is_err() {
         let err_msg = ret.err().unwrap().to_string();

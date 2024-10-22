@@ -36,7 +36,8 @@ bool ten_app_check_start_graph_cmd_json(ten_app_t *self,
       start_graph_cmd_json, TEN_STR_UNDERLINE_TEN, &free_json_string);
 
   const char *err_msg = NULL;
-  bool rc = ten_rust_check_graph_for_app(base_dir, graph_json_str, &err_msg);
+  bool rc = ten_rust_check_graph_for_app(base_dir, graph_json_str,
+                                         ten_app_get_uri(self), &err_msg);
 
   if (free_json_string) {
     TEN_FREE(graph_json_str);

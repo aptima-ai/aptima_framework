@@ -366,3 +366,213 @@ The following is a complete definition of the `start_graph` command:
   }
 }
 ```
+
+## Specification for Graph Definition
+
+- **Requirement for `nodes` Field**:
+  The `nodes` array is mandatory in a graph definition. Conversely, the `connections` array is optional but encouraged for defining inter-node communication.
+
+- **Validation of Node `app` Field**:
+  The `app` field must never be set to `localhost` under any circumstances. In a single-app graph, the `app` URI should not be specified. In a multi-app graph, the value of the `app` field must match the `_ten::uri` value defined in each app's `property.json`.
+
+- **Node Uniqueness and Identification**:
+  Each node in the `nodes` array represents a specific extension instance within a group of an app, created by a specified addon. Therefore, each extension instance should be uniquely represented by a single node. A node must be uniquely identified by the combination of `app`, `extension_group`, and `name`. Multiple entries for the same extension instance are not allowed. The following example is invalid because it defines multiple nodes for the same extension instance:
+
+  ```json
+  {
+    "nodes": [
+      {
+        "type": "extension",
+        "name": "some_ext",
+        "addon": "addon_1",
+        "extension_group": "test"
+      },
+      {
+        "type": "extension",
+        "name": "some_ext",
+        "addon": "addon_2",
+        "extension_group": "test"
+      }
+    ]
+  }
+  ```
+
+- **Consistency of Extension Instance Definition in Connections**:
+  All extension instances referenced in the `connections` field, whether as a source or destination, must be explicitly defined in the `nodes` field. Any instance not defined in the `nodes` array will cause validation errors.
+
+  For example, the following is invalid because the extension instance `ext_2` is used in the `connections` field but is not defined in the `nodes` field:
+
+  ```json
+  {
+    "nodes": [
+      {
+        "type": "extension",
+        "name": "ext_1",
+        "addon": "addon_1",
+        "extension_group": "some_group"
+      }
+    ],
+    "connections": [
+      {
+        "extension_group": "some_group",
+        "extension": "ext_1",
+        "cmd": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+- **Consolidation of Connection Definitions**:
+  Within the `connections` array, all messages related to the same source extension instance must be grouped within a single section. Splitting the information across multiple sections for the same source extension instance leads to inconsistencies and errors.
+
+  For example, the following is incorrect because the messages from `ext_1` are divided into separate sections:
+
+  ```json
+  {
+    "connections": [
+      {
+        "extension_group": "some_group",
+        "extension": "ext_1",
+        "cmd": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "extension_group": "some_group",
+        "extension": "ext_1",
+        "data": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+  The correct approach is to consolidate all messages for the same source extension instance into one section:
+
+  ```json
+  {
+    "connections": [
+      {
+        "extension_group": "some_group",
+        "extension": "ext_1",
+        "cmd": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              }
+            ]
+          }
+        ],
+        "data": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+- **Consolidation of Destinations for Unique Messages**:
+  For each message within a specific type (e.g., `cmd` or `data`), the destination extension instances must be grouped under a single entry for that message. Repeating the same message name with separate destinations leads to inconsistency and validation errors.
+
+  For example, the following is incorrect due to separate entries for the message named `hello`:
+
+  ```json
+  {
+    "connections": [
+      {
+        "extension_group": "some_group",
+        "extension": "ext_1",
+        "cmd": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              }
+            ]
+          },
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_3"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+  The correct approach is to consolidate all destinations for the same message under a single entry:
+
+  ```json
+  {
+    "connections": [
+      {
+        "extension_group": "some_group",
+        "extension": "ext_1",
+        "cmd": [
+          {
+            "name": "hello",
+            "dest": [
+              {
+                "extension_group": "some_group",
+                "extension": "ext_2"
+              },
+              {
+                "extension_group": "some_group",
+                "extension": "ext_3"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+  However, messages with the same name can exist across different types, such as `cmd` and `data`, without causing conflicts.
+
+For further examples, refer to the `check graph` command documentation within the TEN framework's `tman`.

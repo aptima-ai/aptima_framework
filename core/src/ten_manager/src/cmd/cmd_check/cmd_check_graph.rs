@@ -132,8 +132,9 @@ fn get_graphs_to_be_checked(command: &CheckGraphCommand) -> Result<Vec<Graph>> {
     let mut graphs_to_be_checked: Vec<Graph> = Vec::new();
 
     if let Some(graph_str) = &command.graph {
-        let graph: Graph = Graph::from_str(graph_str)
-            .with_context(|| "The graph json string is invalid")?;
+        let graph: Graph = Graph::from_str(graph_str).map_err(|e| {
+            anyhow::anyhow!("Failed to parse graph string, {}", e)
+        })?;
         graphs_to_be_checked.push(graph);
     } else {
         let first_app_path = path::Path::new(&command.app[0]);

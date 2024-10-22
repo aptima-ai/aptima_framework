@@ -103,8 +103,7 @@ async fn test_cmd_check_app_in_graph_cannot_be_localhost() {
     eprintln!("{:?}", result);
 
     let msg = result.err().unwrap().to_string();
-    assert!(msg
-        .contains("the app uri should be some string other than 'localhost'"));
+    assert!(msg.contains("'localhost' is not allowed in graph definition"));
 }
 
 #[actix_rt::test]
@@ -178,4 +177,58 @@ async fn test_cmd_check_unique_extension_in_connections() {
     // The same extension is defined in two different connections.
     assert!(result.is_err());
     eprintln!("{:?}", result);
+}
+
+#[actix_rt::test]
+async fn test_cmd_check_single_app_node_cannot_be_localhost() {
+    let tman_config = TmanConfig::default();
+    let command = CheckGraphCommand {
+        app: vec!["tests/test_data/cmd_check_single_app_node_cannot_be_localhost".to_string()],
+        graph: Some(
+            include_str!(
+                "test_data/cmd_check_single_app_node_cannot_be_localhost/start_graph.json"
+            )
+            .to_string(),
+        ),
+        predefined_graph_name: None,
+    };
+
+    let result = ten_manager::cmd::cmd_check::cmd_check_graph::execute_cmd(
+        &tman_config,
+        command,
+    )
+    .await;
+
+    assert!(result.is_err());
+    eprintln!("{:?}", result);
+
+    let msg = result.err().unwrap().to_string();
+    assert!(msg.contains("'localhost' is not allowed in graph definition"));
+}
+
+#[actix_rt::test]
+async fn test_cmd_check_multi_apps_node_cannot_be_localhost() {
+    let tman_config = TmanConfig::default();
+    let command = CheckGraphCommand {
+        app: vec!["tests/test_data/cmd_check_multi_apps_node_cannot_be_localhost".to_string()],
+        graph: Some(
+            include_str!(
+                "test_data/cmd_check_multi_apps_node_cannot_be_localhost/start_graph.json"
+            )
+            .to_string(),
+        ),
+        predefined_graph_name: None,
+    };
+
+    let result = ten_manager::cmd::cmd_check::cmd_check_graph::execute_cmd(
+        &tman_config,
+        command,
+    )
+    .await;
+
+    assert!(result.is_err());
+    eprintln!("{:?}", result);
+
+    let msg = result.err().unwrap().to_string();
+    assert!(msg.contains("'localhost' is not allowed in graph definition"));
 }
