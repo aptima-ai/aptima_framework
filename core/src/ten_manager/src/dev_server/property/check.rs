@@ -30,11 +30,8 @@ pub async fn check_property(
 
     // Fetch all packages if not already done.
     if let Err(err) = get_all_pkgs(&mut state) {
-        let error_response = ErrorResponse {
-            status: Status::Fail,
-            message: format!("Error fetching packages: {}", err),
-            error: None,
-        };
+        let error_response =
+            ErrorResponse::from_error(&err, "Error fetching packages:");
         return HttpResponse::NotFound().json(error_response);
     }
 
@@ -55,14 +52,10 @@ pub async fn check_property(
                         HttpResponse::Ok().json(response)
                     }
                     Err(err) => {
-                        let error_response = ErrorResponse {
-                            status: Status::Fail,
-                            message: format!(
-                                "Failed to check property: {}",
-                                err
-                            ),
-                            error: None,
-                        };
+                        let error_response = ErrorResponse::from_error(
+                            &err,
+                            "Failed to check property:",
+                        );
                         HttpResponse::NotFound().json(error_response)
                     }
                 },

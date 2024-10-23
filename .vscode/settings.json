@@ -30,12 +30,6 @@
     "**/out/*/**": true,
     "**/third_party/*/**": true
   },
-  "go.formatFlags": [
-    "-m",
-    "80",
-    "--shorten-comments",
-    "-w"
-  ],
   "go.inlayHints.constantValues": true,
   "go.inlayHints.parameterNames": true,
   "go.inlayHints.rangeVariableTypes": true,

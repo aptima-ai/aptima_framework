@@ -37,11 +37,8 @@ pub async fn update_graph(
 
     // Fetch all packages if not already done.
     if let Err(err) = get_all_pkgs(&mut state) {
-        let error_response = ErrorResponse {
-            status: Status::Fail,
-            message: format!("Error fetching packages: {}", err),
-            error: None,
-        };
+        let error_response =
+            ErrorResponse::from_error(&err, "Error fetching packages:");
         return HttpResponse::NotFound().json(error_response);
     }
 
@@ -64,11 +61,10 @@ pub async fn update_graph(
                 ) {
                     Ok(graph) => graph,
                     Err(err) => {
-                        let error_response = ErrorResponse {
-                            status: Status::Fail,
-                            message: format!("Invalid input data: {}", err),
-                            error: None,
-                        };
+                        let error_response = ErrorResponse::from_error(
+                            &err,
+                            "Invalid input data:",
+                        );
                         return HttpResponse::NotFound().json(error_response);
                     }
                 };

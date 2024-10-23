@@ -219,10 +219,7 @@ impl PkgInfo {
 
 pub fn get_pkg_info_from_path(pkg_path: &Path) -> Result<PkgInfo> {
     let manifest = parse_manifest_in_folder(pkg_path)?;
-    let property = match parse_property_in_folder(pkg_path) {
-        Ok(prop) => Some(prop),
-        Err(_) => None,
-    };
+    let property = parse_property_in_folder(pkg_path)?;
 
     let mut pkg_info: PkgInfo = PkgInfo::from_metadata(&manifest, &property)?;
 
@@ -259,17 +256,11 @@ pub fn get_all_existed_pkgs_info_of_app_to_hashset(
     let mut pkgs_info: HashSet<PkgInfo> = HashSet::new();
 
     // Process the manifest.json file in the root path.
-    match collect_pkg_info_from_path(app_path, &mut pkgs_info) {
-        Ok(manifest) => {
-            if manifest.pkg_type != APP_PKG_TYPE {
-                return Err(anyhow::anyhow!(ERR_STR_NOT_APP_DIR));
-            }
-            manifest
-        }
-        Err(_) => {
-            return Err(anyhow::anyhow!(ERR_STR_NOT_APP_DIR));
-        }
-    };
+    let app_pkg_manifest =
+        collect_pkg_info_from_path(app_path, &mut pkgs_info)?;
+    if app_pkg_manifest.pkg_type != APP_PKG_TYPE {
+        return Err(anyhow::anyhow!(ERR_STR_NOT_APP_DIR));
+    }
 
     // Define paths to include manifest.json files from.
     let addon_types =

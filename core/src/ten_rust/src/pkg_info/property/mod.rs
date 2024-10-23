@@ -13,7 +13,7 @@ use std::{
     str::FromStr,
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -135,26 +135,27 @@ pub fn parse_property_from_file<P: AsRef<Path>>(
     Property::from_str(&content)
 }
 
-pub fn parse_property_in_folder(folder_path: &Path) -> Result<Property> {
+pub fn parse_property_in_folder(
+    folder_path: &Path,
+) -> Result<Option<Property>> {
     // Path to the property.json file.
     let property_path = folder_path.join(PROPERTY_JSON_FILENAME);
-
-    // Read and parse the property.json file.
-    let property = parse_property_from_file(&property_path)?;
-
-    // Validate the property schema only if it is present.
-    let validation =
-        json_schema::ten_validate_property_json_file(&property_path);
-
-    if let Err(validation_err) = validation {
-        return Err(anyhow::anyhow!(
-            "Failed to validate {}, caused by {}",
-            property_path.display(),
-            validation_err
-        ));
+    if !property_path.exists() {
+        return Ok(None);
     }
 
-    Ok(property)
+    // Read and parse the property.json file.
+    let property =
+        parse_property_from_file(&property_path).with_context(|| {
+            format!("Failed to load {}.", property_path.display())
+        })?;
+
+    // Validate the property schema only if it is present.
+    json_schema::ten_validate_property_json_file(&property_path).with_context(
+        || format!("Failed to validate {}.", property_path.display()),
+    )?;
+
+    Ok(Some(property))
 }
 
 #[cfg(test)]

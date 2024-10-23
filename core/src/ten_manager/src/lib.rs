@@ -26,7 +26,7 @@ pub mod cmd_line;
 pub mod config;
 pub mod constants;
 mod dep_and_candidate;
-mod dev_server;
+pub mod dev_server;
 mod error;
 mod fs;
 mod install;

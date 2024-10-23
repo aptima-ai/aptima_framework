@@ -13,7 +13,7 @@ mod messages;
 mod mock;
 mod packages;
 mod property;
-mod response;
+pub mod response;
 mod version;
 
 use std::sync::{Arc, RwLock};

@@ -31,7 +31,7 @@ pub extern "C" fn ten_rust_check_graph_for_app(
         rust_app_uri,
     );
     if ret.is_err() {
-        let err_msg = ret.err().unwrap().to_string();
+        let err_msg = format!("{:?}", ret.err().unwrap());
         let c_err_msg =
             CString::new(err_msg).expect("Failed to allocate memory.");
         unsafe {

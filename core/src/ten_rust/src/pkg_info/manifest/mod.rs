@@ -11,7 +11,7 @@ pub mod support;
 
 use std::{fmt, fs, path::Path, str::FromStr};
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::pkg_info::utils::read_file_to_string;
@@ -117,21 +117,17 @@ pub fn parse_manifest_in_folder(folder_path: &Path) -> Result<Manifest> {
     // Read and parse the manifest.json file.
     let manifest = crate::pkg_info::manifest::parse_manifest_from_file(
         manifest_path.clone(),
-    )?;
+    )
+    .with_context(|| format!("Failed to load {}.", manifest_path.display()))?;
 
     // Validate the manifest schema only if it is present.
     let manifest_path_str = manifest_path.to_owned();
-    let validation = json_schema::ten_validate_manifest_json_file(
+    json_schema::ten_validate_manifest_json_file(
         manifest_path_str.to_str().unwrap(),
-    );
-
-    if let Err(validation_err) = validation {
-        return Err(anyhow::anyhow!(
-            "Failed to validate {}, caused by {}",
-            manifest_path.display(),
-            validation_err
-        ));
-    }
+    )
+    .with_context(|| {
+        format!("Failed to validate {}.", manifest_path.display())
+    })?;
 
     Ok(manifest)
 }

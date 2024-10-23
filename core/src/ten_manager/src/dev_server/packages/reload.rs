@@ -29,10 +29,8 @@ pub async fn clear_and_reload_pkgs(
             data: "Packages reloaded successfully",
             meta: None,
         }),
-        Err(err) => HttpResponse::InternalServerError().json(ErrorResponse {
-            status: Status::Fail,
-            message: format!("Failed to reload packages: {}", err),
-            error: None,
-        }),
+        Err(err) => HttpResponse::InternalServerError().json(
+            ErrorResponse::from_error(&err, "Failed to reload packages:"),
+        ),
     }
 }

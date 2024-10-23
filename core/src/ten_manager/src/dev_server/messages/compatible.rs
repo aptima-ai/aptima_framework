@@ -94,11 +94,8 @@ pub async fn get_compatible_messages(
 
     // Fetch all packages if not already done.
     if let Err(err) = get_all_pkgs(&mut state) {
-        let error_response = ErrorResponse {
-            status: Status::Fail,
-            message: format!("Error fetching packages: {}", err),
-            error: None,
-        };
+        let error_response =
+            ErrorResponse::from_error(&err, "Error fetching packages:");
         return HttpResponse::NotFound().json(error_response);
     }
 
@@ -107,14 +104,14 @@ pub async fn get_compatible_messages(
             match get_extension_nodes_in_graph(&input.graph, all_pkgs) {
                 Ok(exts) => exts,
                 Err(err) => {
-                    let error_response = ErrorResponse {
-                        status: Status::Fail,
-                        message: format!(
-                        "Error fetching runtime extensions for graph: {}: {}",
-                        input.graph, err
-                    ),
-                        error: None,
-                    };
+                    let error_response = ErrorResponse::from_error(
+                        &err,
+                        format!(
+                            "Error fetching runtime extensions for graph '{}'",
+                            input.graph
+                        )
+                        .as_str(),
+                    );
                     return HttpResponse::NotFound().json(error_response);
                 }
             };
@@ -127,14 +124,15 @@ pub async fn get_compatible_messages(
         ) {
             Ok(ext) => ext,
             Err(err) => {
-                let error_response = ErrorResponse {
-                    status: Status::Fail,
-                    message: format!(
-                        "Failed to find the extension: {}: {}",
-                        input.extension, err
-                    ),
-                    error: None,
-                };
+                let error_response = ErrorResponse::from_error(
+                    &err,
+                    format!(
+                        "Failed to find the extension: {}",
+                        input.extension
+                    )
+                    .as_str(),
+                );
+
                 return HttpResponse::NotFound().json(error_response);
             }
         };
@@ -142,14 +140,11 @@ pub async fn get_compatible_messages(
         let msg_ty = match MsgType::from_str(&input.msg_type) {
             Ok(msg_ty) => msg_ty,
             Err(err) => {
-                let error_response = ErrorResponse {
-                    status: Status::Fail,
-                    message: format!(
-                        "Unsupported message type: {}: {}",
-                        input.msg_type, err
-                    ),
-                    error: None,
-                };
+                let error_response = ErrorResponse::from_error(
+                    &err,
+                    format!("Unsupported message type: {}", input.msg_type)
+                        .as_str(),
+                );
                 return HttpResponse::InternalServerError()
                     .json(error_response);
             }
@@ -158,14 +153,14 @@ pub async fn get_compatible_messages(
         let msg_dir = match MsgDirection::from_str(&input.msg_direction) {
             Ok(msg_dir) => msg_dir,
             Err(err) => {
-                let error_response = ErrorResponse {
-                    status: Status::Fail,
-                    message: format!(
-                        "Unsupported message direction: {}: {}",
-                        input.msg_direction, err
-                    ),
-                    error: None,
-                };
+                let error_response = ErrorResponse::from_error(
+                    &err,
+                    format!(
+                        "Unsupported message direction: {}",
+                        input.msg_direction
+                    )
+                    .as_str(),
+                );
                 return HttpResponse::InternalServerError()
                     .json(error_response);
             }
@@ -176,14 +171,14 @@ pub async fn get_compatible_messages(
 
         let pkg_info = get_pkg_info_for_extension(extension, all_pkgs);
         if let Err(err) = pkg_info {
-            let error_response = ErrorResponse {
-                status: Status::Fail,
-                message: format!(
-                    "Error fetching runtime extensions for graph: {}: {}",
-                    input.graph, err
-                ),
-                error: None,
-            };
+            let error_response = ErrorResponse::from_error(
+                &err,
+                format!(
+                    "Error fetching runtime extensions for graph '{}'",
+                    input.graph
+                )
+                .as_str(),
+            );
             return HttpResponse::NotFound().json(error_response);
         }
 
@@ -212,14 +207,14 @@ pub async fn get_compatible_messages(
                 ) {
                     Ok(results) => results,
                     Err(err) => {
-                        let error_response = ErrorResponse {
-                            status: Status::Fail,
-                            message: format!(
-                                "Failed to find compatible cmd/{}: {}",
-                                input.msg_name, err
-                            ),
-                            error: None,
-                        };
+                        let error_response = ErrorResponse::from_error(
+                            &err,
+                            format!(
+                                "Failed to find compatible cmd/{}:",
+                                input.msg_name
+                            )
+                            .as_str(),
+                        );
                         return HttpResponse::NotFound().json(error_response);
                     }
                 };
@@ -268,14 +263,14 @@ pub async fn get_compatible_messages(
                 ) {
                     Ok(results) => results,
                     Err(err) => {
-                        let error_response = ErrorResponse {
-                            status: Status::Fail,
-                            message: format!(
-                                "Failed to find compatible cmd/{}: {}",
-                                input.msg_name, err
-                            ),
-                            error: None,
-                        };
+                        let error_response = ErrorResponse::from_error(
+                            &err,
+                            format!(
+                                "Failed to find compatible cmd/{}:",
+                                input.msg_name
+                            )
+                            .as_str(),
+                        );
                         return HttpResponse::NotFound().json(error_response);
                     }
                 };

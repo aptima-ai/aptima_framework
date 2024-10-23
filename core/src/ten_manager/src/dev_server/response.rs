@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use anyhow::Result;
+use anyhow::{Error, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -67,4 +67,30 @@ pub struct InnerError {
     pub error_type: String,
     pub code: Option<String>,
     pub message: String,
+}
+
+impl ErrorResponse {
+    pub fn from_error(err: &Error, message_header: &str) -> Self {
+        let mut this = ErrorResponse {
+            status: Status::Fail,
+            message: format!("{} {}", message_header, err),
+            error: None,
+        };
+
+        let mut errors = vec![];
+
+        err.chain().skip(1).for_each(|cause| {
+            errors.push(cause.to_string());
+        });
+
+        if !errors.is_empty() {
+            this.error = Some(InnerError {
+                error_type: "root cause".to_string(),
+                code: None,
+                message: errors.join("\n"),
+            });
+        }
+
+        this
+    }
 }

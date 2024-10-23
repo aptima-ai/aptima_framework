@@ -105,10 +105,15 @@ fn get_existed_pkgs_of_all_apps(
 
     for app in &command.app {
         let app_path = path::Path::new(app);
-        let app_property = parse_property_in_folder(app_path)?;
         let app_existed_pkgs = get_all_existed_pkgs_info_of_app(app_path)?;
 
-        let app_uri = app_property.get_app_uri();
+        let app_property = parse_property_in_folder(app_path)?;
+        let app_uri = if let Some(property) = app_property {
+            property.get_app_uri()
+        } else {
+            localhost()
+        };
+
         if !single_app && app_uri.as_str() == localhost() {
             return Err(anyhow::anyhow!(
                 "The app uri should be some string other than 'localhost' when
@@ -139,7 +144,12 @@ fn get_graphs_to_be_checked(command: &CheckGraphCommand) -> Result<Vec<Graph>> {
     } else {
         let first_app_path = path::Path::new(&command.app[0]);
         let first_app_property = parse_property_in_folder(first_app_path)?;
+        if first_app_property.is_none() {
+            return Err(anyhow::anyhow!("The property.json is not found in the first app, which is required to retrieve the predefined graphs."));
+        }
+
         let predefined_graphs = first_app_property
+            .unwrap()
             ._ten
             .and_then(|p| p.predefined_graphs)
             .ok_or_else(|| {

@@ -35,11 +35,8 @@ pub async fn dump_manifest(
 
     // Fetch all packages if not already done.
     if let Err(err) = get_all_pkgs(&mut state) {
-        let error_response = ErrorResponse {
-            status: Status::Fail,
-            message: format!("Error fetching packages: {}", err),
-            error: None,
-        };
+        let error_response =
+            ErrorResponse::from_error(&err, "Error fetching packages:");
         return HttpResponse::NotFound().json(error_response);
     }
 
@@ -59,12 +56,10 @@ pub async fn dump_manifest(
             if let Err(err) =
                 dump_manifest_str_to_file(&new_manifest_str, manifest_file_path)
             {
-                let error_response = ErrorResponse {
-                    status: Status::Fail,
-                    message: format!("Failed to dump new manifest content to manifest file: {}",
-                    err),
-                    error: None,
-                };
+                let error_response = ErrorResponse::from_error(
+                    &err,
+                    "Failed to dump new manifest content to manifest file:",
+                );
                 return HttpResponse::NotFound().json(error_response);
             }
 

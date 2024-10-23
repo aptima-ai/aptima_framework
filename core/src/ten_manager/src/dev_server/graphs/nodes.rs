@@ -214,11 +214,8 @@ pub async fn get_graph_nodes(
 
     // Fetch all packages if not already done.
     if let Err(err) = get_all_pkgs(&mut state) {
-        let error_response = ErrorResponse {
-            status: Status::Fail,
-            message: format!("Error fetching packages: {}", err),
-            error: None,
-        };
+        let error_response =
+            ErrorResponse::from_error(&err, "Error fetching packages:");
         return HttpResponse::NotFound().json(error_response);
     }
 
@@ -227,14 +224,14 @@ pub async fn get_graph_nodes(
             match get_extension_nodes_in_graph(&graph_name, all_pkgs) {
                 Ok(exts) => exts,
                 Err(err) => {
-                    let error_response = ErrorResponse {
-                        status: Status::Fail,
-                        message: format!(
-                        "Error fetching runtime extensions for graph '{}': {}",
-                        graph_name, err
-                    ),
-                        error: None,
-                    };
+                    let error_response = ErrorResponse::from_error(
+                        &err,
+                        format!(
+                            "Error fetching runtime extensions for graph '{}'",
+                            graph_name
+                        )
+                        .as_str(),
+                    );
                     return HttpResponse::NotFound().json(error_response);
                 }
             };
@@ -243,14 +240,14 @@ pub async fn get_graph_nodes(
         for extension in &extensions {
             let pkg_info = get_pkg_info_for_extension(extension, all_pkgs);
             if let Err(err) = pkg_info {
-                let error_response = ErrorResponse {
-                    status: Status::Fail,
-                    message: format!(
-                        "Error fetching runtime extensions for graph '{}': {}",
-                        graph_name, err
-                    ),
-                    error: None,
-                };
+                let error_response = ErrorResponse::from_error(
+                    &err,
+                    format!(
+                        "Error fetching runtime extensions for graph '{}'",
+                        graph_name
+                    )
+                    .as_str(),
+                );
                 return HttpResponse::NotFound().json(error_response);
             }
 
