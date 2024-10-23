@@ -31,7 +31,7 @@ class DefaultExtension(Extension):
                 i += 1
                 throw_exception = True
 
-            assert throw_exception == True
+            assert throw_exception is True
 
         assert i == 10000
         print("DefaultExtension __test_thread_routine done")
@@ -39,12 +39,34 @@ class DefaultExtension(Extension):
     def on_start(self, ten_env: TenEnv) -> None:
         ten_env.log_debug("on_start")
 
-        assert ten_env.is_property_exist("undefined_key") == False
+        # The environment variable 'ENV_NOT_SET' used in the property is not
+        # set, but the property should exist.
+        assert ten_env.is_property_exist("env_not_set") is True
+
+        try:
+            _ = ten_env.get_property_string("env_not_set")
+
+            # Should not reach here, as the above line should throw an
+            # exception.
+            assert False
+        except Exception as e:
+            print(e)
+
+        assert ten_env.is_property_exist("env_not_set_has_default") is True
+
+        try:
+            env_value = ten_env.get_property_string("env_not_set_has_default")
+            assert env_value == ""
+        except Exception as e:
+            print(e)
+            assert False
+
+        assert ten_env.is_property_exist("undefined_key") is False
 
         ten_env.set_property_from_json("testKey2", '"testValue2"')
 
-        assert ten_env.is_property_exist("testKey") == True
-        assert ten_env.is_property_exist("testKey2") == True
+        assert ten_env.is_property_exist("testKey") is True
+        assert ten_env.is_property_exist("testKey2") is True
         testValue = ten_env.get_property_to_json("testKey")
         testValue2 = ten_env.get_property_to_json("testKey2")
         assert testValue == '"testValue"'
@@ -52,8 +74,8 @@ class DefaultExtension(Extension):
 
         ten_env.set_property_bool("testBoolTrue", True)
         ten_env.set_property_bool("testBoolFalse", False)
-        assert ten_env.get_property_bool("testBoolTrue") == True
-        assert ten_env.get_property_bool("testBoolFalse") == False
+        assert ten_env.get_property_bool("testBoolTrue") is True
+        assert ten_env.get_property_bool("testBoolFalse") is False
 
         ten_env.set_property_int("testInt", 123)
         assert ten_env.get_property_int("testInt") == 123
@@ -77,7 +99,7 @@ class DefaultExtension(Extension):
             except Exception:
                 throw_exception = True
 
-            assert throw_exception == True
+            assert throw_exception is True
 
         ten_env.on_start_done()
 
@@ -115,7 +137,7 @@ class DefaultExtension(Extension):
             except Exception:
                 throw_exception = True
 
-            assert throw_exception == True
+            assert throw_exception is True
 
         respCmd = CmdResult.create(StatusCode.OK)
         respCmd.set_property_string("detail", detail + " nbnb")
@@ -135,8 +157,8 @@ class DefaultExtension(Extension):
 
         new_cmd.set_property_bool("testBoolTrue", True)
         new_cmd.set_property_bool("testBoolFalse", False)
-        assert new_cmd.get_property_bool("testBoolTrue") == True
-        assert new_cmd.get_property_bool("testBoolFalse") == False
+        assert new_cmd.get_property_bool("testBoolTrue") is True
+        assert new_cmd.get_property_bool("testBoolFalse") is False
 
         new_cmd.set_property_int("testInt", 123)
         assert new_cmd.get_property_int("testInt") == 123

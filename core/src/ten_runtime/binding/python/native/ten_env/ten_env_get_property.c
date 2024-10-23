@@ -205,11 +205,19 @@ PyObject *ten_py_ten_env_get_property_string(PyObject *self, PyObject *args) {
   ten_value_t *value =
       ten_py_ten_property_get_and_check_if_exists(py_ten_env, path);
   if (!value) {
-    return ten_py_raise_py_value_error_exception("Failed to get property.");
+    return ten_py_raise_py_value_error_exception("Property [%s] is not found.",
+                                                 path);
   }
 
   const char *str_value = ten_value_peek_c_str(value);
+  if (!str_value) {
+    ten_value_destroy(value);
 
+    return ten_py_raise_py_value_error_exception(
+        "Property [%s] is not a string.", path);
+  }
+
+  // Note that `PyUnicode_FromString()` can not accept NULL.
   PyObject *result = PyUnicode_FromString(str_value);
 
   ten_value_destroy(value);

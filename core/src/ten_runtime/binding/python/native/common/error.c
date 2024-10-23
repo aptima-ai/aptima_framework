@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include "include_internal/ten_runtime/binding/python/common/python_stuff.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/log/log.h"
 
 static void ten_py_print_py_error(void) {
@@ -67,9 +68,20 @@ bool ten_py_check_and_clear_py_error(void) {
   return err_occurred;
 }
 
-PyObject *ten_py_raise_py_value_error_exception(const char *msg) {
-  TEN_LOGD("Raise Python ValueError exception: %s", msg);
-  PyErr_SetString(PyExc_ValueError, msg);
+PyObject *ten_py_raise_py_value_error_exception(const char *msg, ...) {
+  ten_string_t err_msg;
+  ten_string_init(&err_msg);
+
+  va_list args;
+  va_start(args, msg);
+  ten_string_append_from_va_list(&err_msg, msg, args);
+  va_end(args);
+
+  TEN_LOGD("Raise Python ValueError exception: %s",
+           ten_string_get_raw_str(&err_msg));
+  PyErr_SetString(PyExc_ValueError, ten_string_get_raw_str(&err_msg));
+
+  ten_string_deinit(&err_msg);
 
   // Returning NULL indicates that an exception has occurred during the
   // function's execution, and signaling to the Python interpreter to handle the

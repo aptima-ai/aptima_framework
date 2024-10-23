@@ -19,7 +19,11 @@
             "type": "extension",
             "name": "default_extension_python",
             "addon": "default_extension_python",
-            "extension_group": "default_extension_group"
+            "extension_group": "default_extension_group",
+            "property": {
+              "env_not_set": "${env:ENV_NOT_SET}",
+              "env_not_set_has_default": "${env:ENV_NOT_SET|}"
+            }
           },
           {
             "type": "extension",
