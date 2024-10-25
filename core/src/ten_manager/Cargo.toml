@@ -22,7 +22,7 @@ zip = { version = "2.1", default-features = false, features = [
   "zstd",
 ] }
 anyhow = "1.0"
-handlebars = "5.1"
+handlebars = "6.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 clap = "4.5"
@@ -31,7 +31,7 @@ walkdir = "2.5"
 tempfile = "3.10"
 sha2 = "0.10"
 clingo = { version = "0.8" }
-regex = "1.10"
+regex = "1.11"
 remove_dir_all = "0.8"
 dirs = "5.0"
 tokio = { version = "1", features = ["full"] }
@@ -47,6 +47,7 @@ indicatif = "0.17"
 console = "0.15"
 ten_rust = { path = "../ten_rust", version = "0.1.0" }
 inquire = "0.7.5"
+futures-util = "0.3"
 
 [target.'cfg(unix)'.dependencies]
 mimalloc = "0.1"
