@@ -51,7 +51,7 @@ async fn test_cmd_dev_server_graphs_some_property_invalid() {
 
     let root_cause = json["error"]["message"].as_str().unwrap();
     assert!(root_cause
-        .contains("the app uri should be some string other than 'localhost'"));
+        .contains("Either all nodes should have 'app' declared, or none should, but not a mix of both"));
 }
 
 #[actix_rt::test]

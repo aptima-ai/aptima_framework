@@ -9,10 +9,10 @@
 #include <float.h>
 #include <stdint.h>
 
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_can_convert.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"
@@ -29,7 +29,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       int16_t content = self->content.int16;
       if (content < INT8_MIN || content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -41,7 +41,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       int32_t content = self->content.int32;
       if (content < INT8_MIN || content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -53,7 +53,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < INT8_MIN || content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -65,7 +65,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       uint8_t content = self->content.uint8;
       if (content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -77,7 +77,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       uint16_t content = self->content.uint16;
       if (content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -89,7 +89,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       uint32_t content = self->content.uint32;
       if (content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -101,7 +101,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > INT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int8");
         }
         return false;
       }
@@ -112,7 +112,7 @@ bool ten_value_convert_to_int8(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to int8.",
+                      "unsupported conversion from `%s` to `int8`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -136,7 +136,7 @@ bool ten_value_convert_to_int16(ten_value_t *self, ten_error_t *err) {
       int32_t content = self->content.int32;
       if (content < INT16_MIN || content > INT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int16");
         }
         return false;
       }
@@ -148,7 +148,7 @@ bool ten_value_convert_to_int16(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < INT16_MIN || content > INT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int16");
         }
         return false;
       }
@@ -164,7 +164,7 @@ bool ten_value_convert_to_int16(ten_value_t *self, ten_error_t *err) {
       uint16_t content = self->content.uint16;
       if (content > INT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int16");
         }
         return false;
       }
@@ -176,7 +176,7 @@ bool ten_value_convert_to_int16(ten_value_t *self, ten_error_t *err) {
       uint32_t content = self->content.uint32;
       if (content > INT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int16");
         }
         return false;
       }
@@ -188,7 +188,7 @@ bool ten_value_convert_to_int16(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > INT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int16");
         }
         return false;
       }
@@ -199,7 +199,7 @@ bool ten_value_convert_to_int16(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to int16.",
+                      "unsupported conversion from `%s` to `int16`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -227,7 +227,7 @@ bool ten_value_convert_to_int32(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < INT32_MIN || content > INT32_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int32");
         }
         return false;
       }
@@ -247,7 +247,7 @@ bool ten_value_convert_to_int32(ten_value_t *self, ten_error_t *err) {
       uint32_t content = self->content.uint32;
       if (content > INT32_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int32");
         }
         return false;
       }
@@ -259,7 +259,7 @@ bool ten_value_convert_to_int32(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > INT32_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int32");
         }
         return false;
       }
@@ -270,7 +270,7 @@ bool ten_value_convert_to_int32(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to int32.",
+                      "unsupported conversion from `%s` to `int32`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -314,7 +314,7 @@ bool ten_value_convert_to_int64(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > INT64_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of int64.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of int64");
         }
         return false;
       }
@@ -325,7 +325,7 @@ bool ten_value_convert_to_int64(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to int64.",
+                      "unsupported conversion from `%s` to `int64`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -341,7 +341,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       int8_t content = self->content.int8;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -353,7 +353,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       int16_t content = self->content.int16;
       if (content < 0 || content > UINT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -365,7 +365,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       int32_t content = self->content.int32;
       if (content < 0 || content > UINT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -377,7 +377,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < 0 || content > UINT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -393,7 +393,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       uint16_t content = self->content.uint16;
       if (content > UINT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -405,7 +405,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       uint32_t content = self->content.uint32;
       if (content > UINT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -417,7 +417,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > UINT8_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint8.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint8");
         }
         return false;
       }
@@ -428,7 +428,7 @@ bool ten_value_convert_to_uint8(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to uint8.",
+                      "unsupported conversion from `%s` to `uint8`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -444,7 +444,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
       int8_t content = self->content.int8;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint16");
         }
         return false;
       }
@@ -456,7 +456,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
       int16_t content = self->content.int16;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint16");
         }
         return false;
       }
@@ -468,7 +468,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
       int32_t content = self->content.int32;
       if (content < 0 || content > UINT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint16");
         }
         return false;
       }
@@ -480,7 +480,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < 0 || content > UINT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint16");
         }
         return false;
       }
@@ -500,7 +500,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
       uint32_t content = self->content.uint32;
       if (content > UINT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint16");
         }
         return false;
       }
@@ -512,7 +512,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > UINT16_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint16.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint16");
         }
         return false;
       }
@@ -523,7 +523,7 @@ bool ten_value_convert_to_uint16(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to uint16.",
+                      "unsupported conversion from `%s` to `uint16`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -539,7 +539,7 @@ bool ten_value_convert_to_uint32(ten_value_t *self, ten_error_t *err) {
       int8_t content = self->content.int8;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint32");
         }
         return false;
       }
@@ -551,7 +551,7 @@ bool ten_value_convert_to_uint32(ten_value_t *self, ten_error_t *err) {
       int16_t content = self->content.int16;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint32");
         }
         return false;
       }
@@ -563,7 +563,7 @@ bool ten_value_convert_to_uint32(ten_value_t *self, ten_error_t *err) {
       int32_t content = self->content.int32;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint32");
         }
         return false;
       }
@@ -575,7 +575,7 @@ bool ten_value_convert_to_uint32(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < 0 || content > UINT32_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint32");
         }
         return false;
       }
@@ -599,7 +599,7 @@ bool ten_value_convert_to_uint32(ten_value_t *self, ten_error_t *err) {
       uint64_t content = self->content.uint64;
       if (content > UINT32_MAX) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint32.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint32");
         }
         return false;
       }
@@ -610,7 +610,7 @@ bool ten_value_convert_to_uint32(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to uint32.",
+                      "unsupported conversion from `%s` to `uint32`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -626,7 +626,7 @@ bool ten_value_convert_to_uint64(ten_value_t *self, ten_error_t *err) {
       int8_t content = self->content.int8;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint64.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint64");
         }
         return false;
       }
@@ -638,7 +638,7 @@ bool ten_value_convert_to_uint64(ten_value_t *self, ten_error_t *err) {
       int16_t content = self->content.int16;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint64.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint64");
         }
         return false;
       }
@@ -650,7 +650,7 @@ bool ten_value_convert_to_uint64(ten_value_t *self, ten_error_t *err) {
       int32_t content = self->content.int32;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint64.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint64");
         }
         return false;
       }
@@ -662,7 +662,7 @@ bool ten_value_convert_to_uint64(ten_value_t *self, ten_error_t *err) {
       int64_t content = self->content.int64;
       if (content < 0) {
         if (err) {
-          ten_error_set(err, TEN_ERRNO_GENERIC, "Out of range of uint64.");
+          ten_error_set(err, TEN_ERRNO_GENERIC, "out of range of uint64");
         }
         return false;
       }
@@ -689,7 +689,7 @@ bool ten_value_convert_to_uint64(ten_value_t *self, ten_error_t *err) {
     default:
       if (err) {
         ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Unsupported conversion from `%s` to uint64.",
+                      "unsupported conversion from `%s` to `uint64`",
                       ten_type_to_string(self->type));
       }
       return false;
@@ -756,7 +756,7 @@ bool ten_value_convert_to_float32(ten_value_t *self, ten_error_t *err) {
 
   if (err) {
     ten_error_set(err, TEN_ERRNO_GENERIC,
-                  "Unsupported conversion from `%s` to float32.",
+                  "unsupported conversion from `%s` to `float32`",
                   ten_type_to_string(self->type));
   }
   return false;
@@ -811,7 +811,7 @@ bool ten_value_convert_to_float64(ten_value_t *self, ten_error_t *err) {
 
   if (err) {
     ten_error_set(err, TEN_ERRNO_GENERIC,
-                  "Unsupported conversion from `%s` to float64.",
+                  "unsupported conversion from `%s` to `float64`",
                   ten_type_to_string(self->type));
   }
   return false;

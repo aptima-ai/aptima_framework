@@ -6,7 +6,6 @@
 //
 #include "include_internal/ten_utils/schema/keywords/keyword_properties.h"
 
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/keywords/keyword.h"
 #include "include_internal/ten_utils/schema/schema.h"
 #include "include_internal/ten_utils/schema/types/schema_object.h"
@@ -15,6 +14,7 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"
@@ -70,17 +70,17 @@ ten_schema_t *ten_schema_keyword_properties_peek_property_schema(
 }
 
 static bool ten_schema_keyword_properties_validate_value(
-    ten_schema_keyword_t *self_, ten_value_t *value, ten_error_t *err) {
-  TEN_ASSERT(self_ && value && err, "Invalid argument.");
+    ten_schema_keyword_t *self_, ten_value_t *value,
+    ten_schema_error_t *schema_err) {
+  TEN_ASSERT(self_ && value && schema_err, "Invalid argument.");
   TEN_ASSERT(ten_schema_keyword_check_integrity(self_), "Invalid argument.");
   TEN_ASSERT(ten_value_check_integrity(value), "Invalid argument.");
+  TEN_ASSERT(ten_schema_error_check_integrity(schema_err), "Invalid argument.");
 
   if (!ten_value_is_object(value)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_GENERIC,
-                    "The value must be an object, but is: %s.",
-                    ten_type_to_string(ten_value_get_type(value)));
-    }
+    ten_error_set(schema_err->err, TEN_ERRNO_GENERIC,
+                  "the value should be an object, but is: %s",
+                  ten_type_to_string(ten_value_get_type(value)));
     return false;
   }
 
@@ -107,7 +107,10 @@ static bool ten_schema_keyword_properties_validate_value(
       continue;
     }
 
-    if (!ten_schema_validate_value(prop_schema, field_value, err)) {
+    if (!ten_schema_validate_value_with_schema_error(prop_schema, field_value,
+                                                     schema_err)) {
+      ten_string_prepend_formatted(&schema_err->path, ".%s",
+                                   ten_string_get_raw_str(field_key));
       return false;
     }
   }
@@ -116,17 +119,17 @@ static bool ten_schema_keyword_properties_validate_value(
 }
 
 static bool ten_schema_keyword_properties_adjust_value(
-    ten_schema_keyword_t *self_, ten_value_t *value, ten_error_t *err) {
-  TEN_ASSERT(self_ && value && err, "Invalid argument.");
+    ten_schema_keyword_t *self_, ten_value_t *value,
+    ten_schema_error_t *schema_err) {
+  TEN_ASSERT(self_ && value && schema_err, "Invalid argument.");
   TEN_ASSERT(ten_schema_keyword_check_integrity(self_), "Invalid argument.");
   TEN_ASSERT(ten_value_check_integrity(value), "Invalid argument.");
+  TEN_ASSERT(ten_schema_error_check_integrity(schema_err), "Invalid argument.");
 
   if (!ten_value_is_object(value)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_GENERIC,
-                    "The value should be an object, but is: %s.",
-                    ten_type_to_string(ten_value_get_type(value)));
-    }
+    ten_error_set(schema_err->err, TEN_ERRNO_GENERIC,
+                  "the value should be an object, but is: %s",
+                  ten_type_to_string(ten_value_get_type(value)));
     return false;
   }
 
@@ -148,7 +151,10 @@ static bool ten_schema_keyword_properties_adjust_value(
       continue;
     }
 
-    if (!ten_schema_adjust_value_type(prop_schema, field_value, err)) {
+    if (!ten_schema_adjust_value_type_with_schema_error(
+            prop_schema, field_value, schema_err)) {
+      ten_string_prepend_formatted(&schema_err->path, ".%s",
+                                   ten_string_get_raw_str(field_key));
       return false;
     }
   }
@@ -164,9 +170,10 @@ static bool ten_schema_keyword_properties_adjust_value(
 // otherwise their schemas are invalid.
 static bool ten_schema_keyword_properties_is_compatible(
     ten_schema_keyword_t *self_, ten_schema_keyword_t *target_,
-    ten_error_t *err) {
+    ten_schema_error_t *schema_err) {
   TEN_ASSERT(self_ && target_, "Invalid argument.");
-  TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
+  TEN_ASSERT(schema_err && ten_schema_error_check_integrity(schema_err),
+             "Invalid argument.");
 
   ten_schema_keyword_properties_t *self =
       (ten_schema_keyword_properties_t *)self_;
@@ -193,22 +200,26 @@ static bool ten_schema_keyword_properties_is_compatible(
       continue;
     }
 
-    ten_error_t schema_err;
-    ten_error_init(&schema_err);
-    if (!ten_schema_is_compatible(property->schema, target_prop_schema,
-                                  &schema_err)) {
-      ten_string_append_formatted(&incompatible_fields, "\n\tproperty [%s], %s",
+    if (!ten_schema_is_compatible_with_schema_error(
+            property->schema, target_prop_schema, schema_err)) {
+      // Ex:
+      // .a[0]: type is incompatible, ...; .b: ...
+      const char *separator =
+          ten_string_is_empty(&incompatible_fields) ? "" : "; ";
+      ten_string_append_formatted(&incompatible_fields, "%s.%s%s: %s",
+                                  separator,
                                   ten_string_get_raw_str(&property->name),
-                                  ten_error_errmsg(&schema_err));
+                                  ten_string_get_raw_str(&schema_err->path),
+                                  ten_error_errmsg(schema_err->err));
     }
 
-    ten_error_deinit(&schema_err);
+    ten_schema_error_reset(schema_err);
   }
 
   bool success = ten_string_is_empty(&incompatible_fields);
 
   if (!success) {
-    ten_error_set(err, TEN_ERRNO_GENERIC, "properties are incompatible: %s",
+    ten_error_set(schema_err->err, TEN_ERRNO_GENERIC, "{ %s }",
                   ten_string_get_raw_str(&incompatible_fields));
   }
 

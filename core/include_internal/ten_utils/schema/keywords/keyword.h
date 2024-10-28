@@ -9,7 +9,6 @@
 #include "ten_utils/ten_config.h"
 
 #include "ten_utils/container/hash_handle.h"
-#include "ten_utils/lib/error.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/value/value.h"
 
@@ -17,14 +16,17 @@
 
 typedef struct ten_schema_t ten_schema_t;
 typedef struct ten_schema_keyword_t ten_schema_keyword_t;
+typedef struct ten_schema_error_t ten_schema_error_t;
 
 typedef void (*ten_schema_keyword_destroy_func_t)(ten_schema_keyword_t *self);
 
 typedef bool (*ten_schema_keyword_validate_value_func_t)(
-    ten_schema_keyword_t *self, ten_value_t *value, ten_error_t *err);
+    ten_schema_keyword_t *self, ten_value_t *value,
+    ten_schema_error_t *schema_err);
 
 typedef bool (*ten_schema_keyword_adjust_value_func_t)(
-    ten_schema_keyword_t *self, ten_value_t *value, ten_error_t *err);
+    ten_schema_keyword_t *self, ten_value_t *value,
+    ten_schema_error_t *schema_err);
 
 /**
  * @brief Check if the keyword is compatible with the target keyword. Note that
@@ -32,7 +34,8 @@ typedef bool (*ten_schema_keyword_adjust_value_func_t)(
  * schema), all implementations should handle this case properly.
  */
 typedef bool (*ten_schema_keyword_is_compatible_func_t)(
-    ten_schema_keyword_t *self, ten_schema_keyword_t *target, ten_error_t *err);
+    ten_schema_keyword_t *self, ten_schema_keyword_t *target,
+    ten_schema_error_t *schema_err);
 
 typedef enum TEN_SCHEMA_KEYWORD {
   TEN_SCHEMA_KEYWORD_INVALID = 0,

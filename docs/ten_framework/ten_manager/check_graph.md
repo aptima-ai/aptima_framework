@@ -606,8 +606,7 @@ The message declared in each message flow in the connections will be checked if 
   ```text
   Checking graph[0]... ❌. Details:
     - connections[0]:
-      - cmd[0]:  Schema incompatible to [extension_group: some_group, extension: another_ext], properties are incompatible:
-      property [foo], Type is incompatible, source is [string], but target is [int8].
+      - cmd[0]:  Schema incompatible to [extension_group: some_group, extension: another_ext], { .foo: type is incompatible, source is [string], but target is [int8] }
 
   All is done.
   💔 Error: 1/1 graphs failed.

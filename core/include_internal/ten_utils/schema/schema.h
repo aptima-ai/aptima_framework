@@ -14,6 +14,7 @@
 #include "ten_utils/value/value.h"
 
 #define TEN_SCHEMA_SIGNATURE 0x4D9FEA8F6273C974U
+#define TEN_SCHEMA_ERROR_SIGNATURE 0x32B696D4FC8FFD09U
 
 typedef struct ten_schema_keyword_type_t ten_schema_keyword_type_t;
 
@@ -81,6 +82,54 @@ typedef struct ten_schema_t {
   ten_schema_keyword_type_t *keyword_type;
 } ten_schema_t;
 
+// Internal use.
+//
+// The error context to be used during the schema validation process. An example
+// of schema is as follows:
+//
+// {
+//   "type": "object",
+//   "properties": {
+//     "a": {
+//       "type": "array",
+//       "items": {
+//         "type": "int32"
+//       }
+//     }
+//   }
+// }
+//
+// And the value to be validated is as follows:
+//
+// {
+//   "a": [1, "2", 3]
+// }
+//
+// Verify each value according to its corresponding schema in DFS order, until
+// an error is encountered. After the validation, the error message should
+// display which value is invalid, ex: it will be `a[1]` in this case. We need
+// to record the path of the schema during the process, besides the error
+// message. We can not use ten_error_t to record the path, because there is no
+// space to achieve this. Neither can we use the `ten_schema_t` to record the
+// path, because we need to know the index, if the value is an array; but there
+// is no index information in the ten_schema_array_t because each item in the
+// array shares the same schema.
+typedef struct ten_schema_error_t {
+  ten_signature_t signature;
+  ten_error_t *err;
+  ten_string_t path;
+} ten_schema_error_t;
+
+TEN_UTILS_PRIVATE_API bool ten_schema_error_check_integrity(
+    ten_schema_error_t *self);
+
+TEN_UTILS_PRIVATE_API void ten_schema_error_init(ten_schema_error_t *self,
+                                                 ten_error_t *err);
+
+TEN_UTILS_PRIVATE_API void ten_schema_error_deinit(ten_schema_error_t *self);
+
+TEN_UTILS_PRIVATE_API void ten_schema_error_reset(ten_schema_error_t *self);
+
 TEN_UTILS_PRIVATE_API bool ten_schema_check_integrity(ten_schema_t *self);
 
 TEN_UTILS_PRIVATE_API void ten_schema_init(ten_schema_t *self);
@@ -99,13 +148,22 @@ TEN_UTILS_API ten_schema_t *ten_schema_create_from_value(ten_value_t *value);
 
 TEN_UTILS_API void ten_schema_destroy(ten_schema_t *self);
 
+TEN_UTILS_PRIVATE_API bool ten_schema_validate_value_with_schema_error(
+    ten_schema_t *self, ten_value_t *value, ten_schema_error_t *schema_err);
+
 TEN_UTILS_API bool ten_schema_validate_value(ten_schema_t *self,
                                              ten_value_t *value,
                                              ten_error_t *err);
 
+TEN_UTILS_PRIVATE_API bool ten_schema_adjust_value_type_with_schema_error(
+    ten_schema_t *self, ten_value_t *value, ten_schema_error_t *schema_err);
+
 TEN_UTILS_API bool ten_schema_adjust_value_type(ten_schema_t *self,
                                                 ten_value_t *value,
                                                 ten_error_t *err);
+
+TEN_UTILS_PRIVATE_API bool ten_schema_is_compatible_with_schema_error(
+    ten_schema_t *self, ten_schema_t *target, ten_schema_error_t *schema_err);
 
 TEN_UTILS_API bool ten_schema_is_compatible(ten_schema_t *self,
                                             ten_schema_t *target,
