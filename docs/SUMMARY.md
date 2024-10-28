@@ -12,6 +12,7 @@
 * [Customize TEN Agent](ten_agent/customize_your_agent.md)
 * [Create a Hello World Extension](ten_agent/create_a_hello_world_extension.md)
 * [Setup VSCode Inside Container](ten_agent/setting_up_vscode_for_development_inside_container.md)
+* [How does interrupt work in TEN-Agent](ten_agent/how_does_interrupt_work.md)
 
 ## TEN framework
 
