@@ -4,10 +4,8 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::{io::Write, path::PathBuf, time::Duration};
-use tokio::time::sleep;
 
 use anyhow::{anyhow, Context, Result};
 use reqwest::header::{HeaderMap, AUTHORIZATION, CONTENT_TYPE};
@@ -15,6 +13,8 @@ use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tempfile::NamedTempFile;
+use tokio::sync::RwLock;
+use tokio::time::sleep;
 
 use super::{FoundResult, SearchCriteria};
 use crate::{
@@ -328,27 +328,24 @@ pub async fn get_package<'a>(
 ) -> Result<()> {
     let client = reqwest::Client::new();
 
-    // Wrap the temp_file in an Rc<RefCell<_>> to allow mutable borrowing inside
-    // the async closure.
-    let temp_file = Rc::new(RefCell::new(temp_file));
+    let temp_file = Arc::new(RwLock::new(temp_file));
 
     let max_retries = 3;
     let retry_delay = Duration::from_millis(100);
 
-    let download_complete = Rc::new(RefCell::new(false));
+    let download_complete = Arc::new(RwLock::new(false));
 
-    // Pass the Rc<RefCell<>> into the retry logic
     retry_async(tman_config, max_retries, retry_delay, || {
         let client = client.clone();
         let url = url.to_string();
-        let temp_file = Rc::clone(&temp_file); // Clone the Rc pointer.
-        let download_complete = Rc::clone(&download_complete);
+        let temp_file = Arc::clone(&temp_file); // Clone the Rc pointer.
+        let download_complete = Arc::clone(&download_complete);
 
         Box::pin(async move {
             // Check the size of the file that has already been downloaded.
             let temp_file_len = {
-                let temp_file_borrow = temp_file.borrow();
-                temp_file_borrow
+                let temp_file_read = temp_file.read().await;
+                temp_file_read
                     .as_file()
                     .metadata()
                     .map(|metadata| metadata.len())
@@ -403,10 +400,8 @@ pub async fn get_package<'a>(
                 return Err(anyhow!("No new content downloaded"));
             }
 
-            // Mutably borrow temp_file inside the async block.
-            let mut temp_file_borrow = temp_file.borrow_mut();
-
-            temp_file_borrow
+            let mut temp_file_write = temp_file.write().await;
+            temp_file_write
                 .as_file_mut()
                 .write_all(&content)
                 .with_context(|| "Failed to write content to temporary file")?;
@@ -419,13 +414,13 @@ pub async fn get_package<'a>(
                     parse_content_range(content_range_str)
                 {
                     if temp_file_len + content.len() as u64 >= total_size {
-                        *download_complete.borrow_mut() = true;
+                        *download_complete.write().await = true;
                     }
                 }
             } else if content_length.is_some() {
                 // If there is no content-range but content-length exists, the
                 // download should be complete in one go.
-                *download_complete.borrow_mut() = true;
+                *download_complete.write().await = true;
             }
 
             Ok(())
@@ -434,8 +429,8 @@ pub async fn get_package<'a>(
     .await?;
 
     // Only print when `download_complete` is `true`.
-    if *download_complete.borrow() {
-        let temp_file_borrow = temp_file.borrow();
+    if *download_complete.read().await {
+        let temp_file_borrow = temp_file.read().await;
         tman_verbose_println!(
             tman_config,
             "Package downloaded successfully from {} and written to {}",
