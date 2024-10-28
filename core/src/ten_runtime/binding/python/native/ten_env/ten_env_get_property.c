@@ -318,17 +318,12 @@ PyObject *ten_py_ten_env_is_property_exist(PyObject *self, PyObject *args) {
         "Failed to parse argument when ten_env.is_property_exist.");
   }
 
-  ten_error_t err;
-  ten_error_init(&err);
-
-  bool is_exist = ten_env_is_property_exist(py_ten_env->c_ten_env, path, &err);
-  if (!ten_error_is_success(&err)) {
-    ten_error_deinit(&err);
-
-    return ten_py_raise_py_value_error_exception(
-        "Failed to check if property exists.");
+  ten_value_t *value =
+      ten_py_ten_property_get_and_check_if_exists(py_ten_env, path);
+  if (!value) {
+    return PyBool_FromLong(false);
   }
 
-  ten_error_deinit(&err);
-  return PyBool_FromLong(is_exist);
+  ten_value_destroy(value);
+  return PyBool_FromLong(true);
 }

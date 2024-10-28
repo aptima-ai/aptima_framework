@@ -28,6 +28,12 @@ class DefaultAsyncExtension(AsyncExtension):
     async def on_start(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
         ten_env.log_debug("on_start")
+
+        assert ten_env.is_property_exist("unknown_field") is False
+
+        ten_env.set_property_string("string_field", "hello")
+        assert ten_env.is_property_exist("string_field") is True
+
         ten_env.on_start_done()
 
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
@@ -40,6 +46,9 @@ class DefaultAsyncExtension(AsyncExtension):
 
         # Mock async operation, e.g. network, file I/O.
         await asyncio.sleep(0.5)
+
+        assert ten_env.is_cmd_connected("hello") is True
+        assert ten_env.is_cmd_connected("unknown_cmd") is False
 
         # Send a new command to other extensions and wait for the result. The
         # result will be returned to the original sender.
