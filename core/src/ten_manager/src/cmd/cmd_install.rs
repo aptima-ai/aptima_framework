@@ -579,16 +579,7 @@ pub async fn execute_cmd(
     } else {
         // Case 2: tman install
 
-        let manifest_result = parse_manifest_in_folder(&cwd);
-        // TODO(Liu): using anyhow::Error().context() to wrap the internal
-        // error.
-        if manifest_result.is_err() {
-            return Err(anyhow::anyhow!(
-                "Must be in a TEN app or extension folder to install all dependencies, caused by \n\t{}", manifest_result.unwrap_err()
-            ));
-        }
-
-        let manifest = manifest_result.unwrap();
+        let manifest = parse_manifest_in_folder(&cwd)?;
         affected_pkg_type = manifest.pkg_type.parse::<PkgType>()?;
         affected_pkg_name = manifest.name.clone();
 

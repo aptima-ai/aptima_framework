@@ -18,7 +18,7 @@
 #define TEN_PATH_SIGNATURE 0xC60A6AEBDC969A43U
 
 typedef struct ten_path_group_t ten_path_group_t;
-typedef struct ten_msg_conversion_operation_t ten_msg_conversion_operation_t;
+typedef struct ten_msg_conversion_t ten_msg_conversion_t;
 
 typedef struct ten_path_t {
   ten_signature_t signature;
@@ -63,7 +63,7 @@ typedef struct ten_path_t {
   // previous node in graph automatically.
   ten_shared_ptr_t *cached_cmd_result;
 
-  ten_msg_conversion_operation_t *result_conversion;
+  ten_msg_conversion_t *result_conversion;
 
   uint64_t expired_time_us;
 } ten_path_t;

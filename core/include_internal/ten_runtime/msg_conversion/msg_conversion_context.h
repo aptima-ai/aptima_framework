@@ -18,8 +18,7 @@
 
 typedef struct ten_extension_info_t ten_extension_info_t;
 typedef struct ten_extension_t ten_extension_t;
-typedef struct ten_msg_and_result_conversion_operation_t
-    ten_msg_and_result_conversion_operation_t;
+typedef struct ten_msg_and_result_conversion_t ten_msg_and_result_conversion_t;
 
 // {
 //   "type": "per_property",
@@ -33,42 +32,43 @@ typedef struct ten_msg_and_result_conversion_operation_t
 //     "value": "..."
 //   }]
 // }
-typedef struct ten_msg_conversion_t {
+typedef struct ten_msg_conversion_context_t {
   ten_signature_t signature;
 
   ten_loc_t src_loc;
   ten_string_t msg_name;
 
-  ten_msg_and_result_conversion_operation_t
-      *msg_and_result_conversion_operation;
-} ten_msg_conversion_t;
+  ten_msg_and_result_conversion_t *msg_and_result_conversion;
+} ten_msg_conversion_context_t;
 
-TEN_RUNTIME_PRIVATE_API bool ten_msg_conversion_check_integrity(
-    ten_msg_conversion_t *self);
+TEN_RUNTIME_PRIVATE_API bool ten_msg_conversion_context_check_integrity(
+    ten_msg_conversion_context_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_msg_conversion_t *ten_msg_conversion_create(
-    const char *msg_name);
+TEN_RUNTIME_PRIVATE_API ten_msg_conversion_context_t *
+ten_msg_conversion_context_create(const char *msg_name);
 
-TEN_RUNTIME_PRIVATE_API void ten_msg_conversion_destroy(
-    ten_msg_conversion_t *self);
+TEN_RUNTIME_PRIVATE_API void ten_msg_conversion_context_destroy(
+    ten_msg_conversion_context_t *self);
 
-TEN_RUNTIME_PRIVATE_API bool ten_msg_conversion_merge(
-    ten_list_t *msg_conversions, ten_msg_conversion_t *new_msg_conversion,
-    ten_error_t *err);
+TEN_RUNTIME_PRIVATE_API bool ten_msg_conversion_context_merge(
+    ten_list_t *msg_conversion_contexts,
+    ten_msg_conversion_context_t *new_msg_conversion_context, ten_error_t *err);
 
 /**
  * @param result [out] The type of each item is
- * 'ten_msg_and_result_conversion_t'
+ * 'ten_msg_and_its_result_conversion_t'
  */
 TEN_RUNTIME_PRIVATE_API bool ten_extension_convert_msg(ten_extension_t *self,
                                                        ten_shared_ptr_t *msg,
                                                        ten_list_t *result,
                                                        ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API ten_msg_conversion_t *ten_msg_conversion_from_json(
-    ten_json_t *json, ten_extension_info_t *src_extension_info,
-    const char *cmd_name, ten_error_t *err);
+TEN_RUNTIME_PRIVATE_API ten_msg_conversion_context_t *
+ten_msg_conversion_context_from_json(ten_json_t *json,
+                                     ten_extension_info_t *src_extension_info,
+                                     const char *cmd_name, ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API ten_msg_conversion_t *ten_msg_conversion_from_value(
-    ten_value_t *value, ten_extension_info_t *src_extension_info,
-    const char *cmd_name, ten_error_t *err);
+TEN_RUNTIME_PRIVATE_API ten_msg_conversion_context_t *
+ten_msg_conversion_context_from_value(ten_value_t *value,
+                                      ten_extension_info_t *src_extension_info,
+                                      const char *cmd_name, ten_error_t *err);

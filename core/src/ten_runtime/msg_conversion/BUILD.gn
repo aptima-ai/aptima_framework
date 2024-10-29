@@ -8,8 +8,5 @@ import("//build/ten_runtime/glob.gni")
 
 glob("msg_conversion") {
   file_list = all_native_files
-  deps = [
-    "msg_conversion",
-    "msg_conversion_operation",
-  ]
+  deps = [ "msg_conversion" ]
 }

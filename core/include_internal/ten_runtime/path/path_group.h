@@ -127,7 +127,7 @@
 #define TEN_PATH_GROUP_SIGNATURE 0x2EB016AECBDE782CU
 
 typedef struct ten_path_t ten_path_t;
-typedef struct ten_msg_conversion_operation_t ten_msg_conversion_operation_t;
+typedef struct ten_msg_conversion_t ten_msg_conversion_t;
 
 typedef enum TEN_PATH_GROUP_POLICY {
   TEN_PATH_GROUP_POLICY_INVALID,

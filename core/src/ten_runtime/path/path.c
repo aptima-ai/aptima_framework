@@ -11,7 +11,7 @@
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/base.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion/base.h"
 #include "include_internal/ten_runtime/path/path_group.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
@@ -138,8 +138,8 @@ void ten_path_set_result(ten_path_t *path, ten_shared_ptr_t *cmd_result) {
     ten_error_t err;
     ten_error_init(&err);
 
-    cmd_result = ten_msg_conversion_operation_convert(path->result_conversion,
-                                                      cmd_result, &err);
+    cmd_result =
+        ten_msg_conversion_convert(path->result_conversion, cmd_result, &err);
     if (!cmd_result) {
       TEN_LOGE("Failed to convert cmd result: %s", ten_error_errmsg(&err));
 

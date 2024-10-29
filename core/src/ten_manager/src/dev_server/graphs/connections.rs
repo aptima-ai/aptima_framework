@@ -8,6 +8,7 @@ use std::sync::{Arc, RwLock};
 
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use ten_rust::pkg_info::graph::msg_conversion::MsgAndResultConversion;
 use ten_rust::pkg_info::graph::{
     GraphConnection, GraphDestination, GraphMessageFlow,
 };
@@ -89,6 +90,9 @@ pub struct DevServerDestination {
     pub app: String,
     pub extension_group: String,
     pub extension: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub msg_conversion: Option<MsgAndResultConversion>,
 }
 
 impl From<GraphDestination> for DevServerDestination {
@@ -97,6 +101,7 @@ impl From<GraphDestination> for DevServerDestination {
             app: destination.get_app_uri().to_string(),
             extension_group: destination.extension_group,
             extension: destination.extension,
+            msg_conversion: destination.msg_conversion,
         }
     }
 }
@@ -242,6 +247,7 @@ mod tests {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
+                    msg_conversion: None,
                 }],
             }]),
             data: None,
@@ -322,6 +328,7 @@ mod tests {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
+                    msg_conversion: None,
                 }],
             }]),
             data: Some(vec![DevServerMessageFlow {
@@ -330,6 +337,7 @@ mod tests {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
+                    msg_conversion: None,
                 }],
             }]),
             audio_frame: Some(vec![DevServerMessageFlow {
@@ -338,6 +346,7 @@ mod tests {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
+                    msg_conversion: None,
                 }],
             }]),
             video_frame: Some(vec![DevServerMessageFlow {
@@ -346,6 +355,7 @@ mod tests {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
+                    msg_conversion: None,
                 }],
             }]),
         }];

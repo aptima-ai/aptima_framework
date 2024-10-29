@@ -374,7 +374,8 @@ pub async fn get_package<'a>(
                 && response.status() != reqwest::StatusCode::PARTIAL_CONTENT
             {
                 return Err(anyhow!(
-                    "Failed to download the package: HTTP {}",
+                    "Failed to download the package from {}: HTTP {}.",
+                    url,
                     response.status()
                 ));
             }

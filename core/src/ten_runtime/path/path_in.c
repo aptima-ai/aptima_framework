@@ -8,13 +8,13 @@
 
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_table.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 
-ten_path_in_t *ten_path_in_create(
-    ten_path_table_t *table, const char *cmd_name, const char *parent_cmd_id,
-    const char *cmd_id, ten_loc_t *src_loc, ten_loc_t *dest_loc,
-    ten_msg_conversion_operation_t *result_conversion) {
+ten_path_in_t *ten_path_in_create(ten_path_table_t *table, const char *cmd_name,
+                                  const char *parent_cmd_id, const char *cmd_id,
+                                  ten_loc_t *src_loc, ten_loc_t *dest_loc,
+                                  ten_msg_conversion_t *result_conversion) {
   ten_path_in_t *self = (ten_path_in_t *)TEN_MALLOC(sizeof(ten_path_in_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 

@@ -37,7 +37,7 @@ typedef struct ten_extension_info_t {
   // The definition of properties in the graph related to the current extension.
   ten_value_t *property;
 
-  ten_list_t msg_conversions;  // ten_msg_conversion_t
+  ten_list_t msg_conversion_contexts;  // ten_msg_conversion_context_t
 } ten_extension_info_t;
 
 TEN_RUNTIME_PRIVATE_API ten_extension_info_t *ten_extension_info_create(void);

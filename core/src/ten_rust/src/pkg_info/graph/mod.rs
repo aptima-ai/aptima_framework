@@ -6,10 +6,12 @@
 //
 mod check;
 mod constants;
+pub mod msg_conversion;
 
 use std::{collections::HashMap, str::FromStr};
 
 use anyhow::Result;
+use msg_conversion::MsgAndResultConversion;
 use serde::{Deserialize, Serialize};
 
 use super::{pkg_type::PkgType, PkgInfo};
@@ -20,7 +22,7 @@ use crate::pkg_info::localhost;
 /// There might be the following cases for the 'app' field declaration:
 ///
 /// - Case 1: neither of the nodes has declared the 'app' field. The state will
-///   be `AllNone`.
+///   be `NoneDeclared`.
 ///
 /// - Case 2: all nodes have declared the 'app' field, and all of them have the
 ///   same value. Ex:
@@ -44,7 +46,7 @@ use crate::pkg_info::localhost;
 ///         ]
 ///     }
 ///
-///   The state will be `Uniform`.
+///   The state will be `UniformDeclared`.
 ///
 /// - Case 3: all nodes have declared the 'app' field, but they have different
 ///   values.
@@ -68,15 +70,15 @@ use crate::pkg_info::localhost;
 ///         ]
 ///     }
 ///
-///   The state will be `Mixed`.
+///   The state will be `MixedDeclared`.
 ///
 /// - Case 4: some nodes have declared the 'app' field, and some have not. It's
 ///   illegal.
 ///
 /// In the view of the 'app' field declaration, there are two types of graphs:
 ///
-/// * Single-app graph: the state is `AllNone` or `Uniform`.
-/// * Multi-app graph: the state is `Mixed`.
+/// * Single-app graph: the state is `NoneDeclared` or `UniformDeclared`.
+/// * Multi-app graph: the state is `MixedDeclared`.
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum GraphNodeAppDeclaration {
@@ -393,6 +395,9 @@ pub struct GraphDestination {
 
     pub extension_group: String,
     pub extension: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub msg_conversion: Option<MsgAndResultConversion>,
 }
 
 impl GraphDestination {
@@ -429,6 +434,12 @@ impl GraphDestination {
             }
 
             self.app = Some(localhost().to_string());
+        }
+
+        if let Some(msg_conversion) = &self.msg_conversion {
+            msg_conversion.validate().map_err(|e| {
+                anyhow::anyhow!("invalid msg_conversion: {}", e)
+            })?;
         }
 
         Ok(())
@@ -734,5 +745,29 @@ mod tests {
 
         let msg = graph.err().unwrap().to_string();
         assert!(msg.contains(constants::ERR_MSG_APP_IS_EMPTY));
+    }
+
+    #[test]
+    fn test_graph_message_conversion_fixed_value() {
+        let graph_str = include_str!(
+            "test_data_embed/graph_message_conversion_fixed_value.json"
+        );
+        let graph = Graph::from_str(graph_str).unwrap();
+
+        let connections = graph.connections.unwrap();
+        let cmd = connections
+            .first()
+            .unwrap()
+            .cmd
+            .as_ref()
+            .unwrap()
+            .first()
+            .unwrap();
+        let msg_conversion =
+            cmd.dest.first().unwrap().msg_conversion.as_ref().unwrap();
+        let rules = &msg_conversion.msg.rules.rules;
+        assert_eq!(rules.len(), 4);
+        assert_eq!(rules[1].value.as_ref().unwrap().as_str().unwrap(), "hello");
+        assert!(rules[2].value.as_ref().unwrap().as_bool().unwrap());
     }
 }

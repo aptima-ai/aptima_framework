@@ -59,6 +59,7 @@ impl From<DevServerDestination> for GraphDestination {
             app: Some(dev_server_destination.app),
             extension_group: dev_server_destination.extension_group,
             extension: dev_server_destination.extension,
+            msg_conversion: dev_server_destination.msg_conversion,
         }
     }
 }

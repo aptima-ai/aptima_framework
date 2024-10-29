@@ -4,13 +4,13 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/per_property/rules.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion/per_property/rules.h"
 
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/field/field.h"
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/per_property/rule.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion/per_property/rule.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
@@ -21,11 +21,11 @@
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_kv.h"
 
-static ten_msg_conversion_operation_per_property_rules_t *
-ten_msg_conversion_operation_per_property_rules_create(void) {
-  ten_msg_conversion_operation_per_property_rules_t *self =
-      (ten_msg_conversion_operation_per_property_rules_t *)TEN_MALLOC(
-          sizeof(ten_msg_conversion_operation_per_property_rules_t));
+static ten_msg_conversion_per_property_rules_t *
+ten_msg_conversion_per_property_rules_create(void) {
+  ten_msg_conversion_per_property_rules_t *self =
+      (ten_msg_conversion_per_property_rules_t *)TEN_MALLOC(
+          sizeof(ten_msg_conversion_per_property_rules_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_list_init(&self->rules);
@@ -34,8 +34,8 @@ ten_msg_conversion_operation_per_property_rules_create(void) {
   return self;
 }
 
-void ten_msg_conversion_operation_per_property_rules_destroy(
-    ten_msg_conversion_operation_per_property_rules_t *self) {
+void ten_msg_conversion_per_property_rules_destroy(
+    ten_msg_conversion_per_property_rules_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_list_clear(&self->rules);
@@ -43,9 +43,9 @@ void ten_msg_conversion_operation_per_property_rules_destroy(
   TEN_FREE(self);
 }
 
-ten_shared_ptr_t *ten_msg_conversion_operation_per_property_rules_convert(
-    ten_msg_conversion_operation_per_property_rules_t *self,
-    ten_shared_ptr_t *msg, ten_error_t *err) {
+ten_shared_ptr_t *ten_msg_conversion_per_property_rules_convert(
+    ten_msg_conversion_per_property_rules_t *self, ten_shared_ptr_t *msg,
+    ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
 
@@ -65,12 +65,12 @@ ten_shared_ptr_t *ten_msg_conversion_operation_per_property_rules_convert(
   }
 
   ten_list_foreach (&self->rules, iter) {
-    ten_msg_conversion_operation_per_property_rule_t *property_rule =
+    ten_msg_conversion_per_property_rule_t *property_rule =
         ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(property_rule, "Invalid argument.");
 
-    if (!ten_msg_conversion_operation_per_property_rule_convert(
-            property_rule, msg, new_msg, err)) {
+    if (!ten_msg_conversion_per_property_rule_convert(property_rule, msg,
+                                                      new_msg, err)) {
       ten_shared_ptr_destroy(new_msg);
       new_msg = NULL;
       break;
@@ -80,9 +80,9 @@ ten_shared_ptr_t *ten_msg_conversion_operation_per_property_rules_convert(
   return new_msg;
 }
 
-ten_shared_ptr_t *ten_result_conversion_operation_per_property_rules_convert(
-    ten_msg_conversion_operation_per_property_rules_t *self,
-    ten_shared_ptr_t *msg, ten_error_t *err) {
+ten_shared_ptr_t *ten_result_conversion_per_property_rules_convert(
+    ten_msg_conversion_per_property_rules_t *self, ten_shared_ptr_t *msg,
+    ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
 
@@ -112,12 +112,12 @@ ten_shared_ptr_t *ten_result_conversion_operation_per_property_rules_convert(
 
   // Properties.
   ten_list_foreach (&self->rules, iter) {
-    ten_msg_conversion_operation_per_property_rule_t *property_rule =
+    ten_msg_conversion_per_property_rule_t *property_rule =
         ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(property_rule, "Invalid argument.");
 
-    if (!ten_msg_conversion_operation_per_property_rule_convert(
-            property_rule, msg, new_msg, err)) {
+    if (!ten_msg_conversion_per_property_rule_convert(property_rule, msg,
+                                                      new_msg, err)) {
       ten_shared_ptr_destroy(new_msg);
       new_msg = NULL;
       break;
@@ -127,47 +127,46 @@ ten_shared_ptr_t *ten_result_conversion_operation_per_property_rules_convert(
   return new_msg;
 }
 
-ten_msg_conversion_operation_per_property_rules_t *
-ten_msg_conversion_operation_per_property_rules_from_json(ten_json_t *json,
-                                                          ten_error_t *err) {
+ten_msg_conversion_per_property_rules_t *
+ten_msg_conversion_per_property_rules_from_json(ten_json_t *json,
+                                                ten_error_t *err) {
   TEN_ASSERT(json, "Invalid argument.");
 
-  ten_msg_conversion_operation_per_property_rules_t *rules =
-      ten_msg_conversion_operation_per_property_rules_create();
+  ten_msg_conversion_per_property_rules_t *rules =
+      ten_msg_conversion_per_property_rules_create();
 
   size_t index = 0;
   ten_json_t *value = NULL;
   ten_json_array_foreach(json, index, value) {
-    ten_msg_conversion_operation_per_property_rule_t *rule =
-        ten_msg_conversion_operation_per_property_rule_from_json(value, err);
+    ten_msg_conversion_per_property_rule_t *rule =
+        ten_msg_conversion_per_property_rule_from_json(value, err);
     if (!rule) {
-      ten_msg_conversion_operation_per_property_rules_destroy(rules);
+      ten_msg_conversion_per_property_rules_destroy(rules);
       return NULL;
     }
 
-    ten_list_push_ptr_back(
-        &rules->rules, rule,
-        (ten_ptr_listnode_destroy_func_t)
-            ten_msg_conversion_operation_per_property_rule_destroy);
+    ten_list_push_ptr_back(&rules->rules, rule,
+                           (ten_ptr_listnode_destroy_func_t)
+                               ten_msg_conversion_per_property_rule_destroy);
   }
 
   return rules;
 }
 
-ten_json_t *ten_msg_conversion_operation_per_property_rules_to_json(
-    ten_msg_conversion_operation_per_property_rules_t *self, ten_error_t *err) {
+ten_json_t *ten_msg_conversion_per_property_rules_to_json(
+    ten_msg_conversion_per_property_rules_t *self, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_json_t *rules_json = ten_json_create_array();
 
   if (ten_list_size(&self->rules) > 0) {
     ten_list_foreach (&self->rules, iter) {
-      ten_msg_conversion_operation_per_property_rule_t *rule =
+      ten_msg_conversion_per_property_rule_t *rule =
           ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(rule, "Invalid argument.");
 
       ten_json_t *rule_json =
-          ten_msg_conversion_operation_per_property_rule_to_json(rule, err);
+          ten_msg_conversion_per_property_rule_to_json(rule, err);
       if (!rule_json) {
         ten_json_destroy(rules_json);
         return NULL;
@@ -179,52 +178,50 @@ ten_json_t *ten_msg_conversion_operation_per_property_rules_to_json(
   return rules_json;
 }
 
-ten_msg_conversion_operation_per_property_rules_t *
-ten_msg_conversion_operation_per_property_rules_from_value(ten_value_t *value,
-                                                           ten_error_t *err) {
+ten_msg_conversion_per_property_rules_t *
+ten_msg_conversion_per_property_rules_from_value(ten_value_t *value,
+                                                 ten_error_t *err) {
   TEN_ASSERT(value, "Invalid argument.");
 
   if (!ten_value_is_array(value)) {
     return NULL;
   }
 
-  ten_msg_conversion_operation_per_property_rules_t *rules =
-      ten_msg_conversion_operation_per_property_rules_create();
+  ten_msg_conversion_per_property_rules_t *rules =
+      ten_msg_conversion_per_property_rules_create();
 
   ten_list_foreach (&value->content.array, iter) {
     ten_value_t *array_item_value = ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(array_item_value && ten_value_check_integrity(array_item_value),
                "Invalid argument.");
 
-    ten_msg_conversion_operation_per_property_rule_t *rule =
-        ten_msg_conversion_operation_per_property_rule_from_value(
-            array_item_value, err);
+    ten_msg_conversion_per_property_rule_t *rule =
+        ten_msg_conversion_per_property_rule_from_value(array_item_value, err);
     TEN_ASSERT(rule, "Invalid argument.");
 
-    ten_list_push_ptr_back(
-        &rules->rules, rule,
-        (ten_ptr_listnode_destroy_func_t)
-            ten_msg_conversion_operation_per_property_rule_destroy);
+    ten_list_push_ptr_back(&rules->rules, rule,
+                           (ten_ptr_listnode_destroy_func_t)
+                               ten_msg_conversion_per_property_rule_destroy);
   }
 
   return rules;
 }
 
 TEN_RUNTIME_PRIVATE_API ten_value_t *
-ten_msg_conversion_operation_per_property_rules_to_value(
-    ten_msg_conversion_operation_per_property_rules_t *self, ten_error_t *err) {
+ten_msg_conversion_per_property_rules_to_value(
+    ten_msg_conversion_per_property_rules_t *self, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_value_t *rules_value = ten_value_create_array_with_move(NULL);
 
   if (ten_list_size(&self->rules) > 0) {
     ten_list_foreach (&self->rules, iter) {
-      ten_msg_conversion_operation_per_property_rule_t *rule =
+      ten_msg_conversion_per_property_rule_t *rule =
           ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(rule, "Invalid argument.");
 
       ten_value_t *rule_value =
-          ten_msg_conversion_operation_per_property_rule_to_value(rule, err);
+          ten_msg_conversion_per_property_rule_to_value(rule, err);
       if (!rule_value) {
         ten_value_destroy(rules_value);
         return NULL;

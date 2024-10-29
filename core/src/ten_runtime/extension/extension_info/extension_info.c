@@ -12,7 +12,7 @@
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_ptr.h"
@@ -40,7 +40,7 @@ ten_extension_info_t *ten_extension_info_create(void) {
 
   self->property = ten_value_create_object_with_move(NULL);
 
-  ten_list_init(&self->msg_conversions);
+  ten_list_init(&self->msg_conversion_contexts);
 
   ten_all_msg_type_dest_info_init(&self->msg_dest_info);
 
@@ -117,7 +117,7 @@ static void ten_extension_info_destroy(ten_extension_info_t *self) {
   if (self->property) {
     ten_value_destroy(self->property);
   }
-  ten_list_clear(&self->msg_conversions);
+  ten_list_clear(&self->msg_conversion_contexts);
 
   TEN_FREE(self);
 }
@@ -271,14 +271,15 @@ ten_shared_ptr_t *ten_extension_info_clone(ten_extension_info_t *self,
     ten_value_object_merge_with_clone(new_extension_info->property,
                                       self->property);
 
-    ten_list_foreach (&self->msg_conversions, iter) {
-      ten_msg_conversion_t *msg_conversion = ten_ptr_listnode_get(iter.node);
-      TEN_ASSERT(
-          msg_conversion && ten_msg_conversion_check_integrity(msg_conversion),
-          "Should not happen.");
+    ten_list_foreach (&self->msg_conversion_contexts, iter) {
+      ten_msg_conversion_context_t *msg_conversion =
+          ten_ptr_listnode_get(iter.node);
+      TEN_ASSERT(msg_conversion &&
+                     ten_msg_conversion_context_check_integrity(msg_conversion),
+                 "Should not happen.");
 
-      bool rc = ten_msg_conversion_merge(&new_extension_info->msg_conversions,
-                                         msg_conversion, err);
+      bool rc = ten_msg_conversion_context_merge(
+          &new_extension_info->msg_conversion_contexts, msg_conversion, err);
       TEN_ASSERT(rc, "Should not happen.");
     }
 
@@ -360,11 +361,12 @@ static void ten_extension_info_fill_app_uri(ten_extension_info_t *self,
   }
 
   // Fill the app uri of each item in the msg_conversions_list if it is empty.
-  ten_list_foreach (&self->msg_conversions, iter) {
-    ten_msg_conversion_t *conversion_iter = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(
-        conversion_iter && ten_msg_conversion_check_integrity(conversion_iter),
-        "Should not happen.");
+  ten_list_foreach (&self->msg_conversion_contexts, iter) {
+    ten_msg_conversion_context_t *conversion_iter =
+        ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(conversion_iter &&
+                   ten_msg_conversion_context_check_integrity(conversion_iter),
+               "Should not happen.");
 
     if (ten_string_is_empty(&conversion_iter->src_loc.app_uri)) {
       ten_string_set_formatted(&conversion_iter->src_loc.app_uri, "%s",
@@ -408,11 +410,12 @@ static void ten_extension_info_fill_loc_info(ten_extension_info_t *self,
   }
 
   // Fill the app uri of each item in the msg_conversions_list if it is empty.
-  ten_list_foreach (&self->msg_conversions, iter) {
-    ten_msg_conversion_t *conversion_iter = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(
-        conversion_iter && ten_msg_conversion_check_integrity(conversion_iter),
-        "Should not happen.");
+  ten_list_foreach (&self->msg_conversion_contexts, iter) {
+    ten_msg_conversion_context_t *conversion_iter =
+        ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(conversion_iter &&
+                   ten_msg_conversion_context_check_integrity(conversion_iter),
+               "Should not happen.");
 
     if (ten_string_is_empty(&conversion_iter->src_loc.graph_id)) {
       ten_string_set_formatted(&conversion_iter->src_loc.graph_id, "%s",

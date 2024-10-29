@@ -11,8 +11,7 @@
 #include "include_internal/ten_runtime/extension/extension_info/json.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/value.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
-#include "ten_utils/container/list.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_merge.h"
@@ -66,16 +65,17 @@ static bool parse_msg_conversions_value(
   TEN_ASSERT(src_extension_info, "Should not happen.");
   TEN_ASSERT(msg_name, "Should not happen.");
 
-  ten_msg_conversion_t *msg_conversion =
-      ten_msg_conversion_from_value(value, src_extension_info, msg_name, err);
-  TEN_ASSERT(
-      msg_conversion && ten_msg_conversion_check_integrity(msg_conversion),
-      "Should not happen.");
+  ten_msg_conversion_context_t *msg_conversion =
+      ten_msg_conversion_context_from_value(value, src_extension_info, msg_name,
+                                            err);
+  TEN_ASSERT(msg_conversion &&
+                 ten_msg_conversion_context_check_integrity(msg_conversion),
+             "Should not happen.");
   if (!msg_conversion) {
     return false;
   }
 
-  return ten_msg_conversion_merge(msg_conversions, msg_conversion, err);
+  return ten_msg_conversion_context_merge(msg_conversions, msg_conversion, err);
 }
 
 ten_shared_ptr_t *ten_extension_info_node_from_value(
@@ -247,9 +247,9 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_value(
   ten_value_t *msg_conversions_value =
       ten_value_object_peek(value, TEN_STR_MSG_CONVERSION);
   if (msg_conversions_value) {
-    if (!parse_msg_conversions_value(msg_conversions_value, src_extension_info,
-                                     origin_cmd_name,
-                                     &extension_info->msg_conversions, err)) {
+    if (!parse_msg_conversions_value(
+            msg_conversions_value, src_extension_info, origin_cmd_name,
+            &extension_info->msg_conversion_contexts, err)) {
       TEN_ASSERT(0, "Should not happen.");
       return NULL;
     }
@@ -391,7 +391,7 @@ ten_value_t *ten_extension_info_connection_to_value(ten_extension_info_t *self,
       ten_list_is_empty(&self->msg_dest_info.video_frame) &&
       ten_list_is_empty(&self->msg_dest_info.audio_frame) &&
       ten_list_is_empty(&self->msg_dest_info.interface) &&
-      ten_list_is_empty(&self->msg_conversions)) {
+      ten_list_is_empty(&self->msg_conversion_contexts)) {
     return NULL;
   }
 

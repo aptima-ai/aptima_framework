@@ -23,7 +23,7 @@ typedef struct ten_engine_t ten_engine_t;
 typedef struct ten_path_t ten_path_t;
 typedef struct ten_path_out_t ten_path_out_t;
 typedef struct ten_path_in_t ten_path_in_t;
-typedef struct ten_msg_conversion_operation_t ten_msg_conversion_operation_t;
+typedef struct ten_msg_conversion_t ten_msg_conversion_t;
 
 typedef enum TEN_PATH_TABLE_ATTACH_TO {
   TEN_PATH_TABLE_ATTACH_TO_INVALID,
@@ -55,7 +55,7 @@ TEN_RUNTIME_PRIVATE_API void ten_path_table_check_empty(ten_path_table_t *self);
 
 TEN_RUNTIME_PRIVATE_API ten_path_in_t *ten_path_table_add_in_path(
     ten_path_table_t *self, ten_shared_ptr_t *cmd,
-    ten_msg_conversion_operation_t *result_conversion);
+    ten_msg_conversion_t *result_conversion);
 
 TEN_RUNTIME_PRIVATE_API ten_path_out_t *ten_path_table_add_out_path(
     ten_path_table_t *self, ten_shared_ptr_t *cmd);

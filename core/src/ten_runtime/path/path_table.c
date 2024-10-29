@@ -16,7 +16,7 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_result/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/base.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion/base.h"
 #include "include_internal/ten_runtime/path/common.h"
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_group.h"
@@ -190,7 +190,7 @@ static uint64_t ten_path_table_get_path_timeout_duration(
  */
 ten_path_in_t *ten_path_table_add_in_path(
     ten_path_table_t *self, ten_shared_ptr_t *cmd,
-    ten_msg_conversion_operation_t *result_conversion) {
+    ten_msg_conversion_t *result_conversion) {
   TEN_ASSERT(self && ten_path_table_check_integrity(self, true),
              "Should not happen.");
   TEN_ASSERT(cmd && ten_cmd_base_check_integrity(cmd) &&

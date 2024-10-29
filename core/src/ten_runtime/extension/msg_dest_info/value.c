@@ -10,8 +10,8 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/extension_info/value.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_and_result_conversion_operation.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_and_result_conversion.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
 
 ten_value_t *ten_msg_dest_info_to_value(
     ten_msg_dest_info_t *self, ten_extension_info_t *src_extension_info,
@@ -69,22 +69,24 @@ ten_value_t *ten_msg_dest_info_to_value(
 
     bool found = false;
 
-    ten_list_foreach (&extension_info->msg_conversions, msg_conversion_iter) {
-      ten_msg_conversion_t *msg_conversion =
+    ten_list_foreach (&extension_info->msg_conversion_contexts,
+                      msg_conversion_iter) {
+      ten_msg_conversion_context_t *msg_conversion_context =
           ten_ptr_listnode_get(msg_conversion_iter.node);
       TEN_ASSERT(
-          msg_conversion && ten_msg_conversion_check_integrity(msg_conversion),
+          msg_conversion_context && ten_msg_conversion_context_check_integrity(
+                                        msg_conversion_context),
           "Should not happen.");
 
       if (ten_loc_is_equal(&src_extension_info->loc,
-                           &msg_conversion->src_loc) &&
-          ten_string_is_equal(&msg_conversion->msg_name, &self->name)) {
+                           &msg_conversion_context->src_loc) &&
+          ten_string_is_equal(&msg_conversion_context->msg_name, &self->name)) {
         TEN_ASSERT(found == false, "Should not happen.");
         found = true;
 
         ten_value_t *msg_and_result_conversion_operation_value =
-            ten_msg_and_result_conversion_operation_to_value(
-                msg_conversion->msg_and_result_conversion_operation, err);
+            ten_msg_and_result_conversion_to_value(
+                msg_conversion_context->msg_and_result_conversion, err);
 
         if (!msg_and_result_conversion_operation_value) {
           TEN_LOGE("Failed to convert msg_and_result_conversion_operation.");

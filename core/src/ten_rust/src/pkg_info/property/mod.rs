@@ -160,6 +160,10 @@ pub fn parse_property_in_folder(
 
 #[cfg(test)]
 mod tests {
+    use crate::pkg_info::graph::msg_conversion::{
+        MsgConversionMode, MsgConversionType,
+    };
+
     use super::*;
     use std::fs::{self};
     use tempfile::tempdir;
@@ -303,5 +307,56 @@ mod tests {
         let saved_content = fs::read_to_string(file_path).unwrap();
         eprintln!("{}", saved_content);
         assert_eq!(saved_content.find(localhost().as_str()), None);
+    }
+
+    #[test]
+    fn test_dump_property_with_msg_conversion() {
+        let prop_str = include_str!(
+            "test_data_embed/dump_property_with_msg_conversion.json"
+        );
+        let property: Property = prop_str.parse().unwrap();
+        assert!(property._ten.is_some());
+
+        let ten = property._ten.as_ref().unwrap();
+        let predefined_graphs = ten.predefined_graphs.as_ref().unwrap();
+        let connections = &predefined_graphs
+            .first()
+            .as_ref()
+            .unwrap()
+            .graph
+            .connections
+            .as_ref()
+            .unwrap();
+        let connection = connections.first().unwrap();
+        let cmd = connection.cmd.as_ref().unwrap();
+        assert_eq!(cmd.len(), 1);
+
+        let cmd_dest = &cmd.first().unwrap().dest;
+        assert_eq!(cmd_dest.len(), 1);
+
+        let msg_conversion =
+            cmd_dest.first().unwrap().msg_conversion.as_ref().unwrap();
+        assert_eq!(
+            msg_conversion.msg.conversion_type,
+            MsgConversionType::PerProperty
+        );
+
+        let rules = &msg_conversion.msg.rules;
+        assert!(rules.keep_original.is_none());
+        assert_eq!(rules.rules.len(), 2);
+
+        let rule = rules.rules.first().unwrap();
+        assert_eq!(rule.conversion_mode, MsgConversionMode::FixedValue);
+        assert!(rule.original_path.is_none());
+        assert_eq!(rule.value.as_ref().unwrap(), "hello_mapping");
+
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("property.json");
+
+        property.dump_property_to_file(&file_path).unwrap();
+
+        let saved_content = fs::read_to_string(file_path).unwrap();
+        eprintln!("{}", saved_content);
+        assert!(saved_content.contains("msg_conversion"));
     }
 }

@@ -10,7 +10,7 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/json.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
@@ -104,7 +104,7 @@ bool ten_extension_info_connections_to_json(ten_extension_info_t *self,
       ten_list_is_empty(&self->msg_dest_info.video_frame) &&
       ten_list_is_empty(&self->msg_dest_info.audio_frame) &&
       ten_list_is_empty(&self->msg_dest_info.interface) &&
-      ten_list_is_empty(&self->msg_conversions)) {
+      ten_list_is_empty(&self->msg_conversion_contexts)) {
     *json = NULL;
     return true;
   }
@@ -222,13 +222,14 @@ static bool parse_msg_conversions_json(ten_json_t *msg_conversions_json,
                                        ten_error_t *err) {
   TEN_ASSERT(msg_name, "Should not happen.");
 
-  ten_msg_conversion_t *msg_conversion = ten_msg_conversion_from_json(
-      msg_conversions_json, src_extension_info, msg_name, err);
-  TEN_ASSERT(
-      msg_conversion && ten_msg_conversion_check_integrity(msg_conversion),
-      "Should not happen.");
+  ten_msg_conversion_context_t *msg_conversion =
+      ten_msg_conversion_context_from_json(msg_conversions_json,
+                                           src_extension_info, msg_name, err);
+  TEN_ASSERT(msg_conversion &&
+                 ten_msg_conversion_context_check_integrity(msg_conversion),
+             "Should not happen.");
 
-  return ten_msg_conversion_merge(msg_conversions, msg_conversion, err);
+  return ten_msg_conversion_context_merge(msg_conversions, msg_conversion, err);
 }
 
 ten_shared_ptr_t *ten_extension_info_nodes_from_json(
@@ -416,9 +417,9 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_json(
   ten_json_t *msg_conversions_json =
       ten_json_object_peek(json, TEN_STR_MSG_CONVERSION);
   if (msg_conversions_json) {
-    if (!parse_msg_conversions_json(msg_conversions_json, origin_cmd_name,
-                                    src_extension_info,
-                                    &extension_info->msg_conversions, err)) {
+    if (!parse_msg_conversions_json(
+            msg_conversions_json, origin_cmd_name, src_extension_info,
+            &extension_info->msg_conversion_contexts, err)) {
       TEN_ASSERT(0, "Should not happen.");
       return NULL;
     }

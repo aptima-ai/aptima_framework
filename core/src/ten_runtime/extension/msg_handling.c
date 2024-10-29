@@ -14,8 +14,8 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_result/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg_info.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_and_result_conversion.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion/msg_conversion.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_and_its_result_conversion.h"
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
 #include "include_internal/ten_runtime/path/common.h"
 #include "include_internal/ten_runtime/path/path.h"
 #include "include_internal/ten_runtime/path/path_group.h"
@@ -171,9 +171,9 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
       // If there is no message conversions exist, put the original command to
       // the list directly.
       self->extension_info &&
-      ten_list_size(&self->extension_info->msg_conversions) > 0;
+      ten_list_size(&self->extension_info->msg_conversion_contexts) > 0;
 
-  // The type of elements is 'ten_msg_and_result_conversion_t'.
+  // The type of elements is 'ten_msg_and_its_result_conversion_t'.
   ten_list_t converted_msgs = TEN_LIST_INIT_VAL;
 
   if (should_this_msg_do_msg_conversion) {
@@ -187,9 +187,10 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
     }
     ten_error_deinit(&err);
   } else {
-    ten_list_push_ptr_back(
-        &converted_msgs, ten_msg_and_result_conversion_create(msg, NULL),
-        (ten_ptr_listnode_destroy_func_t)ten_msg_and_result_conversion_destroy);
+    ten_list_push_ptr_back(&converted_msgs,
+                           ten_msg_and_its_result_conversion_create(msg, NULL),
+                           (ten_ptr_listnode_destroy_func_t)
+                               ten_msg_and_its_result_conversion_destroy);
   }
 
   // Get the actual messages which should be sent to the extension. Handle those
@@ -201,7 +202,7 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
     ten_list_t in_paths = TEN_LIST_INIT_VAL;
 
     ten_list_foreach (&converted_msgs, iter) {
-      ten_msg_and_result_conversion_t *msg_and_result_conversion =
+      ten_msg_and_its_result_conversion_t *msg_and_result_conversion =
           ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(msg_and_result_conversion, "Invalid argument.");
 
@@ -214,7 +215,7 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
           // Add a path entry to the IN path table of this extension.
           ten_path_t *in_path = (ten_path_t *)ten_path_table_add_in_path(
               self->path_table, actual_cmd,
-              msg_and_result_conversion->operation);
+              msg_and_result_conversion->result_conversion);
 
           ten_list_push_ptr_back(&in_paths, in_path, NULL);
         }
@@ -239,7 +240,7 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
   // guaranteed by the conversions.
   bool pass_schema_check = true;
   ten_list_foreach (&converted_msgs, iter) {
-    ten_msg_and_result_conversion_t *msg_and_result_conversion =
+    ten_msg_and_its_result_conversion_t *msg_and_result_conversion =
         ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(msg_and_result_conversion, "Invalid argument.");
 
@@ -258,7 +259,7 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
     // the extension.
 
     ten_list_foreach (&converted_msgs, iter) {
-      ten_msg_and_result_conversion_t *msg_and_result_conversion =
+      ten_msg_and_its_result_conversion_t *msg_and_result_conversion =
           ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(msg_and_result_conversion, "Invalid argument.");
 
