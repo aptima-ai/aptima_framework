@@ -121,7 +121,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_custom_as_msg_init_from_json,   /* init_from_json */
             ten_raw_cmd_custom_as_msg_create_from_json, /* create_from_json */
             ten_raw_cmd_custom_to_json,                 /* to_json*/
-            NULL,                                       /* loop_all_fields */
+            ten_raw_cmd_custom_loop_all_fields,         /* loop_all_fields */
             ten_raw_msg_validate_schema,                /* validate_schema */
             ten_raw_cmd_custom_set_ten_property,        /* set_ten_property */
             NULL,                                       /* peek_ten_property */
@@ -138,11 +138,11 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_stop_graph_as_msg_create_from_json, /* create_from_json
                                                              */
             ten_raw_cmd_stop_graph_to_json,                 /* to_json */
-            NULL, /* loop_all_fields */
-            NULL, /* validate_schema */
-            NULL, /* set_ten_property */
-            NULL, /* peek_ten_property */
-            NULL, /* check_type_and_name */
+            ten_raw_cmd_stop_graph_loop_all_fields, /* loop_all_fields */
+            NULL,                                   /* validate_schema */
+            NULL,                                   /* set_ten_property */
+            NULL,                                   /* peek_ten_property */
+            NULL,                                   /* check_type_and_name */
         },
     [TEN_MSG_TYPE_CMD_START_GRAPH] =
         {
@@ -155,11 +155,11 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_start_graph_as_msg_create_from_json, /* create_from_json
                                                               */
             ten_raw_cmd_start_graph_to_json,                 /* to_json */
-            NULL, /* loop_all_fields */
-            NULL, /* validate_schema */
-            NULL, /* set_ten_property */
-            NULL, /* peek_ten_property */
-            NULL, /* check_type_and_name */
+            ten_raw_cmd_start_graph_loop_all_fields, /* loop_all_fields */
+            NULL,                                    /* validate_schema */
+            NULL,                                    /* set_ten_property */
+            NULL,                                    /* peek_ten_property */
+            NULL,                                    /* check_type_and_name */
         },
     [TEN_MSG_TYPE_CMD_RESULT] =
         {
@@ -171,7 +171,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_result_as_msg_init_from_json,   /* init_from_json */
             ten_raw_cmd_result_as_msg_create_from_json, /* create_from_json */
             ten_raw_cmd_result_as_msg_to_json,          /* to_json */
-            NULL,                                       /* loop_all_fields */
+            ten_raw_cmd_result_loop_all_fields,         /* loop_all_fields */
             ten_raw_cmd_result_validate_schema,         /* validate_schema */
             NULL,                                       /* set_ten_property */
             NULL,                                       /* peek_ten_property */
@@ -187,7 +187,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_close_app_as_msg_init_from_json,   /* init_from_json*/
             ten_raw_cmd_close_app_as_msg_create_from_json, /* create_from_json*/
             ten_raw_cmd_close_app_to_json,                 /* to_json */
-            NULL,                                          /* loop_all_fields */
+            ten_raw_cmd_close_app_loop_all_fields,         /* loop_all_fields */
             NULL,                                          /* validate_schema */
             NULL, /* set_ten_property */
             NULL, /* peek_ten_property */
@@ -203,7 +203,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_timeout_as_msg_init_from_json,   /* init_from_json */
             ten_raw_cmd_timeout_as_msg_create_from_json, /* create_from_json */
             ten_raw_cmd_timeout_as_msg_to_json,          /* to_json */
-            NULL,                                        /* loop_all_fields */
+            ten_raw_cmd_timeout_loop_all_fields,         /* loop_all_fields */
             NULL,                                        /* validate_schema */
             NULL,                                        /* set_ten_property */
             NULL,                                        /* peek_ten_property */
@@ -219,7 +219,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_cmd_timer_as_msg_init_from_json,   /* init_from_json */
             ten_raw_cmd_timer_as_msg_create_from_json, /* create_from_json */
             ten_raw_cmd_timer_as_msg_to_json,          /* to_json */
-            NULL,                                      /* loop_all_fields */
+            ten_raw_cmd_timer_loop_all_fields,         /* loop_all_fields */
             NULL,                                      /* validate_schema */
             ten_raw_cmd_timer_set_ten_property,        /* set_ten_property */
             NULL,                                      /* peek_ten_property */
@@ -263,7 +263,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_audio_frame_as_msg_init_from_json,   /* init_from_json */
             ten_raw_audio_frame_as_msg_create_from_json, /* create_from_json */
             ten_raw_audio_frame_as_msg_to_json,          /* to_json */
-            NULL,                                        /* loop_all_fields */
+            ten_raw_audio_frame_loop_all_fields,         /* loop_all_fields */
             ten_raw_msg_validate_schema,                 /* validate_schema */
             ten_raw_data_like_set_ten_property,          /* set_ten_property */
             ten_raw_audio_frame_peek_ten_property,       /* peek_ten_property */
@@ -285,7 +285,7 @@ TEN_UNUSED static const ten_msg_info_t ten_msg_info[] = {
             ten_raw_video_frame_as_msg_init_from_json,   /* init_from_json */
             ten_raw_video_frame_as_msg_create_from_json, /* create_from_json */
             ten_raw_video_frame_as_msg_to_json,          /* to_json */
-            NULL,                                        /* loop_all_fields */
+            ten_raw_video_frame_loop_all_fields,         /* loop_all_fields */
             ten_raw_msg_validate_schema,                 /* validate_schema */
             ten_raw_video_frame_set_ten_property,        /* set_ten_property */
             ten_raw_video_frame_peek_ten_property,       /* peek_ten_property */

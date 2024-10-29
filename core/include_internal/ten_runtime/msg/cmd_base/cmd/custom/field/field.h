@@ -9,7 +9,7 @@
 #include "ten_runtime/ten_config.h"
 
 typedef enum TEN_CMD_CUSTOM_FIELD {
-  TEN_CMD_CUSTOM_FIELD_CMDHDR,
+  TEN_CMD_CUSTOM_FIELD_CMD_HDR,
 
   TEN_CMD_CUSTOM_FIELD_LAST,
 } TEN_CMD_CUSTOM_FIELD;

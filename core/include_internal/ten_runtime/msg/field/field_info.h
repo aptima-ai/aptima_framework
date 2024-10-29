@@ -15,10 +15,11 @@
 #include "include_internal/ten_runtime/msg/field/properties.h"
 #include "include_internal/ten_runtime/msg/field/src.h"
 #include "include_internal/ten_runtime/msg/field/type.h"
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 
 #ifdef __cplusplus
-  #error \
-      "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
+#error \
+    "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
 #endif
 
 typedef bool (*ten_msg_put_field_to_json_func_t)(ten_msg_t *self,
@@ -29,6 +30,9 @@ typedef bool (*ten_msg_get_field_from_json_func_t)(ten_msg_t *self,
                                                    ten_error_t *err);
 typedef void (*ten_msg_copy_field_func_t)(ten_msg_t *self, ten_msg_t *src,
                                           ten_list_t *excluded_field_ids);
+typedef bool (*ten_msg_process_field_func_t)(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);
 
 typedef struct ten_msg_field_info_t {
   const char *field_name;
@@ -47,6 +51,7 @@ typedef struct ten_msg_field_info_t {
   ten_msg_put_field_to_json_func_t put_field_to_json;
   ten_msg_get_field_from_json_func_t get_field_from_json;
   ten_msg_copy_field_func_t copy_field;
+  ten_msg_process_field_func_t process_field;
 } ten_msg_field_info_t;
 
 static const ten_msg_field_info_t ten_msg_fields_info[] = {
@@ -57,6 +62,7 @@ static const ten_msg_field_info_t ten_msg_fields_info[] = {
             .put_field_to_json = ten_raw_msg_type_to_json,
             .get_field_from_json = ten_raw_msg_type_from_json,
             .copy_field = ten_raw_msg_type_copy,
+            .process_field = ten_raw_msg_type_process,
         },
     [TEN_MSG_FIELD_NAME] =
         {
@@ -65,6 +71,7 @@ static const ten_msg_field_info_t ten_msg_fields_info[] = {
             .put_field_to_json = ten_raw_msg_name_to_json,
             .get_field_from_json = ten_raw_msg_name_from_json,
             .copy_field = ten_raw_msg_name_copy,
+            .process_field = ten_raw_msg_name_process,
         },
     [TEN_MSG_FIELD_SRC] =
         {
@@ -73,6 +80,7 @@ static const ten_msg_field_info_t ten_msg_fields_info[] = {
             .put_field_to_json = ten_raw_msg_src_to_json,
             .get_field_from_json = ten_raw_msg_src_from_json,
             .copy_field = ten_raw_msg_src_copy,
+            .process_field = ten_raw_msg_src_process,
         },
     [TEN_MSG_FIELD_DEST] =
         {
@@ -81,6 +89,7 @@ static const ten_msg_field_info_t ten_msg_fields_info[] = {
             .put_field_to_json = ten_raw_msg_dest_to_json,
             .get_field_from_json = ten_raw_msg_dest_from_json,
             .copy_field = ten_raw_msg_dest_copy,
+            .process_field = ten_raw_msg_dest_process,
         },
     [TEN_MSG_FIELD_PROPERTIES] =
         {
@@ -89,6 +98,7 @@ static const ten_msg_field_info_t ten_msg_fields_info[] = {
             .put_field_to_json = ten_raw_msg_properties_to_json,
             .get_field_from_json = ten_raw_msg_properties_from_json,
             .copy_field = ten_raw_msg_properties_copy,
+            .process_field = ten_raw_msg_properties_process,
         },
     [TEN_MSG_FIELD_LAST] = {0},
 };

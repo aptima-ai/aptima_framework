@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include "core_protocols/msgpack/msg/cmd/cmd.h"
+#include "core_protocols/msgpack/msg/cmd_result/field/is_final.h"
 #include "core_protocols/msgpack/msg/cmd_result/field/original_cmd_type.h"
 #include "core_protocols/msgpack/msg/cmd_result/field/status_code.h"
 #include "core_protocols/msgpack/msg/field/field_info.h"
@@ -37,6 +38,11 @@ static const ten_protocol_msgpack_msg_field_info_t
             {
                 .serialize = ten_msgpack_cmd_result_code_serialize,
                 .deserialize = ten_msgpack_cmd_result_code_deserialize,
+            },
+        [TEN_CMD_STATUS_FIELD_IS_FINAL] =
+            {
+                .serialize = ten_msgpack_cmd_result_is_final_serialize,
+                .deserialize = ten_msgpack_cmd_result_is_final_deserialize,
             },
         [TEN_CMD_STATUS_FIELD_LAST] = {0},
 };

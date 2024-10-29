@@ -71,7 +71,7 @@ const char *ten_value_object_peek_string(ten_value_t *self, const char *key) {
     return NULL;
   }
 
-  const char *result = ten_value_peek_string(v);
+  const char *result = ten_value_peek_raw_str(v);
   return result;
 }
 

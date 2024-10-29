@@ -9,6 +9,7 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
@@ -56,7 +57,9 @@ bool ten_cmd_start_graph_get_long_running_mode_from_json(
 
   if (ten_json_is_boolean(long_running_mode_json)) {
     ten_cmd_start_graph_t *cmd = (ten_cmd_start_graph_t *)self;
-    cmd->long_running_mode = ten_json_get_boolean_value(long_running_mode_json);
+
+    ten_value_set_bool(&cmd->long_running_mode,
+                       ten_json_get_boolean_value(long_running_mode_json));
   } else {
     TEN_LOGW("long_running_mode should be a boolean value.");
   }
@@ -70,6 +73,20 @@ void ten_cmd_start_graph_copy_long_running_mode(
                  ten_raw_msg_get_type(src) == TEN_MSG_TYPE_CMD_START_GRAPH,
              "Should not happen.");
 
-  ((ten_cmd_start_graph_t *)self)->long_running_mode =
-      ((ten_cmd_start_graph_t *)src)->long_running_mode;
+  ten_value_set_bool(&((ten_cmd_start_graph_t *)self)->long_running_mode,
+                     ten_raw_cmd_start_graph_get_long_running_mode(
+                         (ten_cmd_start_graph_t *)src));
+}
+
+bool ten_cmd_start_graph_process_long_running_mode(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t long_running_mode_field;
+  ten_msg_field_process_data_init(
+      &long_running_mode_field, TEN_STR_LONG_RUNNING_MODE,
+      &((ten_cmd_start_graph_t *)self)->long_running_mode, false);
+
+  return cb(self, &long_running_mode_field, user_data, err);
 }

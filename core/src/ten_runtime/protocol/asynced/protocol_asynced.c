@@ -495,7 +495,7 @@ const char *ten_protocol_asynced_get_name(ten_protocol_asynced_t *self) {
   ten_value_t *item = ten_value_object_peek(&addon_host->manifest, "name");
   TEN_ASSERT(item, "Failed to get protocol name from its manifest.");
 
-  const char *name = ten_value_peek_string(item);
+  const char *name = ten_value_peek_raw_str(item);
   return name;
 }
 

@@ -20,7 +20,7 @@
 
 static const ten_protocol_msgpack_msg_field_info_t
     ten_cmd_custom_fields_info[] = {
-        [TEN_CMD_CUSTOM_FIELD_CMDHDR] =
+        [TEN_CMD_CUSTOM_FIELD_CMD_HDR] =
             {
                 .serialize = ten_msgpack_cmd_base_hdr_serialize,
                 .deserialize = ten_msgpack_cmd_base_hdr_deserialize,

@@ -9,13 +9,13 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/per_property/fixed_value.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_kv.h"
 
@@ -223,9 +223,9 @@ ten_msg_conversion_operation_per_property_rule_from_value(ten_value_t *value,
 
   ten_string_init_formatted(
       &self->property_path, "%s",
-      ten_value_peek_c_str(ten_value_object_peek(value, TEN_STR_PATH)));
+      ten_value_peek_raw_str(ten_value_object_peek(value, TEN_STR_PATH)));
 
-  const char *conversion_mode_str = ten_value_peek_string(
+  const char *conversion_mode_str = ten_value_peek_raw_str(
       ten_value_object_peek(value, TEN_STR_CONVERSION_MODE));
 
   self->conversion_mode =

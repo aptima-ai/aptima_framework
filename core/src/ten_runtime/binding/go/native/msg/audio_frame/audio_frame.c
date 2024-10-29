@@ -335,7 +335,7 @@ ten_go_status_t ten_go_audio_frame_alloc_buf(uintptr_t bridge_addr, int size) {
   TEN_ASSERT(self && ten_go_msg_check_integrity(self), "Invalid argument.");
 
   ten_shared_ptr_t *c_audio_frame = ten_go_msg_c_msg(self);
-  uint8_t *data = ten_audio_frame_alloc_data(c_audio_frame, size);
+  uint8_t *data = ten_audio_frame_alloc_buf(c_audio_frame, size);
   if (!data) {
     ten_go_status_set(&status, TEN_ERRNO_GENERIC, "failed to allocate memory");
   }
@@ -358,7 +358,7 @@ ten_go_status_t ten_go_audio_frame_lock_buf(uintptr_t bridge_addr,
 
   ten_shared_ptr_t *c_audio_frame = ten_go_msg_c_msg(self);
 
-  ten_buf_t *c_audio_frame_data = ten_audio_frame_peek_data(c_audio_frame);
+  ten_buf_t *c_audio_frame_data = ten_audio_frame_peek_buf(c_audio_frame);
 
   ten_error_t c_err;
   ten_error_init(&c_err);
@@ -416,11 +416,11 @@ ten_go_status_t ten_go_audio_frame_get_buf(uintptr_t bridge_addr,
       "Invalid argument.");
 
   ten_shared_ptr_t *c_audio_frame = ten_go_msg_c_msg(audio_frame_bridge);
-  uint64_t size = ten_audio_frame_peek_data(c_audio_frame)->size;
+  uint64_t size = ten_audio_frame_peek_buf(c_audio_frame)->size;
   if (buf_size < size) {
     ten_go_status_set(&status, TEN_ERRNO_GENERIC, "buffer is not enough");
   } else {
-    ten_buf_t *data = ten_audio_frame_peek_data(c_audio_frame);
+    ten_buf_t *data = ten_audio_frame_peek_buf(c_audio_frame);
     memcpy((void *)buf_addr, data->data, size);
   }
 

@@ -9,10 +9,10 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/audio_frame/audio_frame.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 bool ten_audio_frame_put_line_size_to_json(ten_msg_t *self, ten_json_t *json,
@@ -62,4 +62,19 @@ void ten_audio_frame_copy_line_size(ten_msg_t *self, ten_msg_t *src,
   ten_raw_audio_frame_set_line_size(
       (ten_audio_frame_t *)self,
       ten_raw_audio_frame_get_line_size((ten_audio_frame_t *)src));
+}
+
+bool ten_audio_frame_process_line_size(ten_msg_t *self,
+                                       ten_raw_msg_process_one_field_func_t cb,
+                                       void *user_data, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t line_size_field;
+  ten_msg_field_process_data_init(&line_size_field, TEN_STR_LINE_SIZE,
+                                  &((ten_audio_frame_t *)self)->line_size,
+                                  false);
+
+  bool rc = cb(self, &line_size_field, user_data, err);
+
+  return rc;
 }

@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
 
@@ -24,3 +25,10 @@ TEN_RUNTIME_PRIVATE_API bool ten_cmd_start_graph_get_extension_info_from_json(
 
 TEN_RUNTIME_PRIVATE_API void ten_cmd_start_graph_copy_extensions_info(
     ten_msg_t *self, ten_msg_t *src, ten_list_t *excluded_field_ids);
+
+TEN_RUNTIME_PRIVATE_API ten_value_t *
+ten_cmd_start_graph_extensions_info_to_value(ten_msg_t *self, ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_cmd_start_graph_process_extensions_info(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

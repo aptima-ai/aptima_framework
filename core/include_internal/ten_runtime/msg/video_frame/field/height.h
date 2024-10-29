@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
 
@@ -24,3 +25,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_video_frame_get_height_from_json(
 
 TEN_RUNTIME_PRIVATE_API void ten_video_frame_copy_height(
     ten_msg_t *self, ten_msg_t *src, ten_list_t *excluded_field_ids);
+
+TEN_RUNTIME_PRIVATE_API bool ten_video_frame_process_height(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

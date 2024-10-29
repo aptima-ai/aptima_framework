@@ -8,11 +8,12 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/audio_frame/audio_frame.h"
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 bool ten_audio_frame_put_sample_rate_to_json(ten_msg_t *self, ten_json_t *json,
@@ -65,4 +66,19 @@ void ten_audio_frame_copy_sample_rate(
   ten_raw_audio_frame_set_sample_rate(
       (ten_audio_frame_t *)self,
       ten_raw_audio_frame_get_sample_rate((ten_audio_frame_t *)src));
+}
+
+bool ten_audio_frame_process_sample_rate(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t sample_rate_field;
+  ten_msg_field_process_data_init(&sample_rate_field, TEN_STR_SAMPLE_RATE,
+                                  &((ten_audio_frame_t *)self)->sample_rate,
+                                  false);
+
+  bool rc = cb(self, &sample_rate_field, user_data, err);
+
+  return rc;
 }

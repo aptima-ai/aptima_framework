@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_runtime/msg/video_frame/video_frame.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
@@ -31,3 +32,7 @@ TEN_RUNTIME_PRIVATE_API const char *ten_video_frame_pixel_fmt_to_string(
 
 TEN_RUNTIME_PRIVATE_API TEN_PIXEL_FMT
 ten_video_frame_pixel_fmt_from_string(const char *pixel_fmt_str);
+
+TEN_RUNTIME_PRIVATE_API bool ten_video_frame_process_pixel_fmt(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

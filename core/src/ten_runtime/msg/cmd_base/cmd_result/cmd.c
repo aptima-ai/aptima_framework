@@ -17,6 +17,7 @@
 #include "include_internal/ten_runtime/schema_store/cmd.h"
 #include "include_internal/ten_runtime/schema_store/msg.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lib/error.h"
@@ -25,6 +26,7 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
+#include "ten_utils/value/value.h"
 
 static bool ten_raw_cmd_result_check_integrity(ten_cmd_result_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -74,13 +76,12 @@ static ten_cmd_result_t *ten_raw_cmd_result_create_empty(void) {
   ten_signature_set(&raw_cmd->signature,
                     (ten_signature_t)TEN_CMD_STATUS_SIGNATURE);
 
-  raw_cmd->status_code = TEN_STATUS_CODE_INVALID;
+  ten_value_init_int32(&raw_cmd->status_code, TEN_STATUS_CODE_INVALID);
 
   // We will get the original cmd type later.
-  raw_cmd->original_cmd_type = TEN_MSG_TYPE_INVALID;
-  ten_string_init(&raw_cmd->original_cmd_name);
-
-  raw_cmd->is_final = true;
+  ten_value_init_int32(&raw_cmd->original_cmd_type, TEN_MSG_TYPE_INVALID);
+  ten_value_init_string(&raw_cmd->original_cmd_name);
+  ten_value_init_bool(&raw_cmd->is_final, true);
 
   return raw_cmd;
 }
@@ -89,7 +90,7 @@ static ten_cmd_result_t *ten_raw_cmd_result_create(
     const TEN_STATUS_CODE status_code) {
   ten_cmd_result_t *raw_cmd = ten_raw_cmd_result_create_empty();
 
-  raw_cmd->status_code = status_code;
+  ten_value_set_int32(&raw_cmd->status_code, status_code);
 
   return raw_cmd;
 }
@@ -162,7 +163,7 @@ TEN_STATUS_CODE ten_raw_cmd_result_get_status_code(ten_cmd_result_t *self) {
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
-  return self->status_code;
+  return ten_value_get_int32(&self->status_code, NULL);
 }
 
 TEN_STATUS_CODE ten_cmd_result_get_status_code(ten_shared_ptr_t *self) {
@@ -178,7 +179,7 @@ bool ten_raw_cmd_result_set_final(ten_cmd_result_t *self, bool is_final,
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
-  self->is_final = is_final;
+  ten_value_set_bool(&self->is_final, is_final);
 
   return true;
 }
@@ -192,13 +193,12 @@ bool ten_cmd_result_set_final(ten_shared_ptr_t *self, bool is_final,
       (ten_cmd_result_t *)ten_msg_get_raw_msg(self), is_final, err);
 }
 
-bool ten_raw_cmd_result_is_final(ten_cmd_result_t *self,
-                                 TEN_UNUSED ten_error_t *err) {
+bool ten_raw_cmd_result_is_final(ten_cmd_result_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
-  return self->is_final;
+  return ten_value_get_bool(&self->is_final, err);
 }
 
 bool ten_cmd_result_is_final(ten_shared_ptr_t *self, ten_error_t *err) {
@@ -215,7 +215,7 @@ void ten_raw_cmd_result_set_status_code(ten_cmd_result_t *self,
              "Invalid argument.");
   TEN_ASSERT(status_code != TEN_STATUS_CODE_INVALID, "Invalid argument.");
 
-  self->status_code = status_code;
+  ten_value_set_int32(&self->status_code, status_code);
 }
 
 void ten_cmd_result_set_status_code(ten_shared_ptr_t *self,
@@ -234,17 +234,8 @@ static bool ten_raw_cmd_result_init_from_json(ten_cmd_result_t *self,
              "Should not happen.");
   TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_result_fields_info_size; ++i) {
-    ten_msg_get_field_from_json_func_t get_field_from_json =
-        ten_cmd_result_fields_info[i].get_field_from_json;
-    if (get_field_from_json) {
-      if (!get_field_from_json((ten_msg_t *)self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  return ten_raw_cmd_result_loop_all_fields(
+      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
 }
 
 bool ten_raw_cmd_result_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
@@ -288,15 +279,10 @@ static ten_json_t *ten_raw_cmd_result_put_field_to_json(ten_cmd_result_t *self,
   ten_json_t *json = ten_json_create_object();
   TEN_ASSERT(json, "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_result_fields_info_size; ++i) {
-    ten_msg_put_field_to_json_func_t put_field_to_json =
-        ten_cmd_result_fields_info[i].put_field_to_json;
-    if (put_field_to_json) {
-      if (!put_field_to_json((ten_msg_t *)self, json, err)) {
-        ten_json_destroy(json);
-        return NULL;
-      }
-    }
+  if (!ten_raw_cmd_result_loop_all_fields(
+          (ten_msg_t *)self, ten_raw_msg_put_one_field_to_json, json, err)) {
+    ten_json_destroy(json);
+    return NULL;
   }
 
   return json;
@@ -322,14 +308,15 @@ void ten_raw_cmd_result_set_original_cmd_type(ten_cmd_result_t *self,
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
-  self->original_cmd_type = type;
+  ten_value_set_int32(&self->original_cmd_type, type);
 }
 
 TEN_MSG_TYPE ten_raw_cmd_result_get_original_cmd_type(ten_cmd_result_t *self) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
                          TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
-  return self->original_cmd_type;
+
+  return ten_value_get_int32(&self->original_cmd_type, NULL);
 }
 
 void ten_cmd_result_set_original_cmd_type(ten_shared_ptr_t *self,
@@ -381,7 +368,7 @@ bool ten_raw_cmd_result_validate_schema(ten_msg_t *status_msg,
              "Invalid argument.");
 
   const char *original_cmd_name =
-      ten_string_get_raw_str(&cmd_result->original_cmd_name);
+      ten_value_peek_raw_str(&cmd_result->original_cmd_name);
   TEN_ASSERT(original_cmd_name && strlen(original_cmd_name),
              "Invalid argument.");
 
@@ -427,8 +414,8 @@ static void ten_raw_cmd_result_set_original_cmd_name(
   TEN_ASSERT(original_cmd_name && strlen(original_cmd_name),
              "Invalid argument.");
 
-  ten_string_init_from_c_str(&self->original_cmd_name, original_cmd_name,
-                             strlen(original_cmd_name));
+  ten_string_init_from_c_str(ten_value_peek_string(&self->original_cmd_name),
+                             original_cmd_name, strlen(original_cmd_name));
 }
 
 void ten_cmd_result_set_original_cmd_name(ten_shared_ptr_t *self,
@@ -439,4 +426,24 @@ void ten_cmd_result_set_original_cmd_name(ten_shared_ptr_t *self,
 
   ten_raw_cmd_result_set_original_cmd_name(
       (ten_cmd_result_t *)ten_msg_get_raw_msg(self), original_cmd_name);
+}
+
+bool ten_raw_cmd_result_loop_all_fields(ten_msg_t *self,
+                                        ten_raw_msg_process_one_field_func_t cb,
+                                        void *user_data, ten_error_t *err) {
+  TEN_ASSERT(
+      self && ten_raw_cmd_base_check_integrity((ten_cmd_base_t *)self) && cb,
+      "Should not happen.");
+
+  for (size_t i = 0; i < ten_cmd_result_fields_info_size; ++i) {
+    ten_msg_process_field_func_t process_field =
+        ten_cmd_result_fields_info[i].process_field;
+    if (process_field) {
+      if (!process_field(self, cb, user_data, err)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }

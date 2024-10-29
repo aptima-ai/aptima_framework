@@ -234,7 +234,7 @@ ten_schema_keyword_t *ten_schema_keyword_required_create_from_value(
       break;
     }
 
-    const char *required_property = ten_value_peek_string(item);
+    const char *required_property = ten_value_peek_raw_str(item);
     TEN_ASSERT(required_property, "Should not happen.");
 
     ten_list_push_str_back(&self->required_properties, required_property);

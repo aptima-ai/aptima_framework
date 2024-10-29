@@ -95,3 +95,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_set_ten_property(
 
 TEN_RUNTIME_PRIVATE_API ten_value_t *ten_raw_video_frame_peek_ten_property(
     ten_msg_t *self, ten_list_t *paths, ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

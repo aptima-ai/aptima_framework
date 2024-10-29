@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timer/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
@@ -64,7 +65,7 @@ bool ten_cmd_timer_get_timeout_in_us_from_json(ten_msg_t *self,
       TEN_LOGE("Invalid negative timeout value %ld", timeout_in_us);
       return false;
     }
-    cmd->timeout_in_us = (uint64_t)timeout_in_us;
+    ten_value_set_uint64(&cmd->timeout_in_us, timeout_in_us);
   } else {
     TEN_LOGW("timeout_in_us should be an integer.");
   }
@@ -74,4 +75,17 @@ bool ten_cmd_timer_get_timeout_in_us_from_json(ten_msg_t *self,
   }
 
   return true;
+}
+
+bool ten_cmd_timer_process_timeout_in_us(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t timeout_in_us_field;
+  ten_msg_field_process_data_init(&timeout_in_us_field, TEN_STR_TIMEOUT_IN_US,
+                                  &((ten_cmd_timer_t *)self)->timeout_in_us,
+                                  false);
+
+  return cb(self, &timeout_in_us_field, user_data, err);
 }

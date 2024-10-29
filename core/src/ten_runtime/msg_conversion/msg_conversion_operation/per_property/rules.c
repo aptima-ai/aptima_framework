@@ -11,13 +11,13 @@
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/per_property/rule.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_kv.h"
 
@@ -232,8 +232,7 @@ ten_msg_conversion_operation_per_property_rules_to_value(
 
       ten_list_push_ptr_back(
           &rules_value->content.array, rule_value,
-          (ten_ptr_listnode_destroy_func_t)
-              ten_msg_conversion_operation_per_property_rule_destroy);
+          (ten_ptr_listnode_destroy_func_t)ten_value_destroy);
     }
   }
 

@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/json.h"
 
@@ -28,3 +29,7 @@ ten_cmd_start_graph_get_predefined_graph_name_from_json(ten_msg_t *self,
 
 TEN_RUNTIME_PRIVATE_API void ten_cmd_start_graph_copy_predefined_graph_name(
     ten_msg_t *self, ten_msg_t *src, ten_list_t *excluded_field_ids);
+
+TEN_RUNTIME_PRIVATE_API bool ten_cmd_start_graph_process_predefined_graph_name(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

@@ -20,7 +20,7 @@ void ten_msgpack_audio_frame_data_serialize(ten_msg_t *self,
              "Invalid argument.");
 
   ten_audio_frame_t *audio_frame = (ten_audio_frame_t *)self;
-  ten_msgpack_value_serialize(&audio_frame->data, pck);
+  ten_msgpack_value_serialize(&audio_frame->buf, pck);
 }
 
 bool ten_msgpack_audio_frame_data_deserialize(ten_msg_t *self,
@@ -29,5 +29,5 @@ bool ten_msgpack_audio_frame_data_deserialize(ten_msg_t *self,
   TEN_ASSERT(self && unpacker && unpacked, "Invalid argument.");
 
   return ten_msgpack_value_deserialize_inplace(
-      &((ten_audio_frame_t *)self)->data, unpacker, unpacked);
+      &((ten_audio_frame_t *)self)->buf, unpacker, unpacked);
 }

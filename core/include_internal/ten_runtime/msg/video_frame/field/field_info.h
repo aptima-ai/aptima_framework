@@ -10,6 +10,7 @@
 
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_runtime/msg/video_frame/field/buf.h"
 #include "include_internal/ten_runtime/msg/video_frame/field/field.h"
 #include "include_internal/ten_runtime/msg/video_frame/field/height.h"
 #include "include_internal/ten_runtime/msg/video_frame/field/pixel_fmt.h"
@@ -17,8 +18,8 @@
 #include "include_internal/ten_runtime/msg/video_frame/field/width.h"
 
 #ifdef __cplusplus
-  #error \
-      "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
+#error \
+    "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
 #endif
 
 static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
@@ -29,6 +30,7 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
             .put_field_to_json = ten_raw_msg_put_field_to_json,
             .get_field_from_json = ten_raw_msg_get_field_from_json,
             .copy_field = ten_raw_msg_copy_field,
+            .process_field = ten_raw_msg_process_field,
         },
     [TEN_VIDEO_FRAME_FIELD_PIXEL_FMT] =
         {
@@ -37,6 +39,7 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
             .put_field_to_json = ten_video_frame_put_pixel_fmt_to_json,
             .get_field_from_json = ten_video_frame_get_pixel_fmt_from_json,
             .copy_field = ten_video_frame_copy_pixel_fmt,
+            .process_field = ten_video_frame_process_pixel_fmt,
         },
     [TEN_VIDEO_FRAME_FIELD_TIMESTAMP] =
         {
@@ -45,6 +48,7 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
             .put_field_to_json = ten_video_frame_put_timestamp_to_json,
             .get_field_from_json = ten_video_frame_get_timestamp_from_json,
             .copy_field = ten_video_frame_copy_timestamp,
+            .process_field = ten_video_frame_process_timestamp,
         },
     [TEN_VIDEO_FRAME_FIELD_WIDTH] =
         {
@@ -53,6 +57,7 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
             .put_field_to_json = ten_video_frame_put_width_to_json,
             .get_field_from_json = ten_video_frame_get_width_from_json,
             .copy_field = ten_video_frame_copy_width,
+            .process_field = ten_video_frame_process_width,
         },
     [TEN_VIDEO_FRAME_FIELD_HEIGHT] =
         {
@@ -61,6 +66,7 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
             .put_field_to_json = ten_video_frame_put_height_to_json,
             .get_field_from_json = ten_video_frame_get_height_from_json,
             .copy_field = ten_video_frame_copy_height,
+            .process_field = ten_video_frame_process_height,
         },
     [TEN_VIDEO_FRAME_FIELD_BUF] =
         {
@@ -73,8 +79,8 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
             // cannot use JSON for this.
             .put_field_to_json = NULL,
             .get_field_from_json = NULL,
-
             .copy_field = NULL,
+            .process_field = ten_video_frame_process_buf,
         },
     [TEN_VIDEO_FRAME_FIELD_LAST] = {0},
 };

@@ -60,7 +60,7 @@ void ten_addon_on_init_done(ten_env_t *self) {
 
   const char *manifest_name = NULL;
   if (manifest_name_value) {
-    manifest_name = ten_value_peek_string(manifest_name_value);
+    manifest_name = ten_value_peek_raw_str(manifest_name_value);
   }
 
   if (manifest_name) {

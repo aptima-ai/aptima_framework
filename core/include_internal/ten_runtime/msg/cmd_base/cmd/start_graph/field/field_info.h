@@ -24,12 +24,13 @@
 #endif
 
 static const ten_msg_field_info_t ten_cmd_start_graph_fields_info[] = {
-    [TEN_CMD_CONNECT_FIELD_CMDHDR] =
+    [TEN_CMD_CONNECT_FIELD_CMD_HDR] =
         {
             .field_name = NULL,
             .put_field_to_json = ten_raw_cmd_put_field_to_json,
             .get_field_from_json = ten_raw_cmd_get_field_from_json,
             .copy_field = ten_raw_cmd_copy_field,
+            .process_field = ten_raw_cmd_process_field,
         },
     [TEN_CMD_CONNECT_FIELD_LONG_RUNNING_MODE] =
         {
@@ -39,6 +40,7 @@ static const ten_msg_field_info_t ten_cmd_start_graph_fields_info[] = {
             .get_field_from_json =
                 ten_cmd_start_graph_get_long_running_mode_from_json,
             .copy_field = ten_cmd_start_graph_copy_long_running_mode,
+            .process_field = ten_cmd_start_graph_process_long_running_mode,
         },
     [TEN_CMD_CONNECT_FIELD_PREDEFINED_GRAPH] =
         {
@@ -48,6 +50,7 @@ static const ten_msg_field_info_t ten_cmd_start_graph_fields_info[] = {
             .get_field_from_json =
                 ten_cmd_start_graph_get_predefined_graph_name_from_json,
             .copy_field = ten_cmd_start_graph_copy_predefined_graph_name,
+            .process_field = ten_cmd_start_graph_process_predefined_graph_name,
         },
     [TEN_CMD_CONNECT_FIELD_EXTENSION_INFO] =
         {
@@ -56,6 +59,7 @@ static const ten_msg_field_info_t ten_cmd_start_graph_fields_info[] = {
             .get_field_from_json =
                 ten_cmd_start_graph_get_extension_info_from_json,
             .copy_field = ten_cmd_start_graph_copy_extensions_info,
+            .process_field = ten_cmd_start_graph_process_extensions_info,
         },
     [TEN_CMD_CONNECT_FIELD_LAST] = {0},
 };

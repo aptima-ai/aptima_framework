@@ -187,7 +187,7 @@ ten_schema_keyword_t *ten_schema_keyword_type_create_from_value(
     return NULL;
   }
 
-  TEN_TYPE type = ten_type_from_string(ten_value_peek_c_str(value));
+  TEN_TYPE type = ten_type_from_string(ten_value_peek_raw_str(value));
   if (type == TEN_TYPE_INVALID) {
     TEN_ASSERT(0, "Invalid TEN type.");
     return NULL;

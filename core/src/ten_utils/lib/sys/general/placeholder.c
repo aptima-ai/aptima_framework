@@ -10,13 +10,12 @@
 #include <string.h>
 
 #include "include_internal/ten_utils/common/constant_str.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/macro/memory.h"
 #include "include_internal/ten_utils/value/value.h"
-#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
@@ -189,7 +188,7 @@ bool ten_placeholder_resolve(ten_placeholder_t *self,
           ten_value_reset_to_null(placeholder_value);
         } else {
           const char *default_value =
-              ten_value_peek_string(&self->default_value);
+              ten_value_peek_raw_str(&self->default_value);
           ten_value_reset_to_string_with_size(placeholder_value, default_value,
                                               strlen(default_value));
         }

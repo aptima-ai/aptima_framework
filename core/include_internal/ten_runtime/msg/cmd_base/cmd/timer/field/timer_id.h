@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_utils/lib/json.h"
 
 typedef struct ten_msg_t ten_msg_t;
@@ -20,3 +21,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_cmd_timer_put_timer_id_to_json(
 
 TEN_RUNTIME_PRIVATE_API bool ten_cmd_timer_get_timer_id_from_json(
     ten_msg_t *self, ten_json_t *json, ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_cmd_timer_process_timer_id(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

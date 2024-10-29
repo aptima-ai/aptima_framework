@@ -9,10 +9,10 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_operation/per_property/per_property.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_kv.h"
 
@@ -82,7 +82,7 @@ ten_msg_conversion_operation_t *ten_msg_conversion_operation_from_value(
     return NULL;
   }
 
-  const char *type_str = ten_value_peek_string(type_value);
+  const char *type_str = ten_value_peek_raw_str(type_value);
   if (!type_str) {
     TEN_ASSERT(0, "Should not happen.");
     return NULL;

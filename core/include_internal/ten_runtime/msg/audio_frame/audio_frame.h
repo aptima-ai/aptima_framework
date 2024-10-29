@@ -38,7 +38,7 @@ typedef struct ten_audio_frame_t {
 
   ten_value_t data_fmt;  // int32 (TEN_AUDIO_FRAME_DATA_FMT). Format of `data`.
 
-  ten_value_t data;  // buf
+  ten_value_t buf;  // buf
 
   // TODO(Liu): Add data size info for each channel.
   //
@@ -73,7 +73,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_check_type_and_name(
 TEN_RUNTIME_PRIVATE_API int32_t
 ten_raw_audio_frame_get_samples_per_channel(ten_audio_frame_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_buf_t *ten_raw_audio_frame_peek_data(
+TEN_RUNTIME_PRIVATE_API ten_buf_t *ten_raw_audio_frame_peek_buf(
     ten_audio_frame_t *self);
 
 TEN_RUNTIME_PRIVATE_API int32_t
@@ -135,3 +135,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_as_msg_init_from_json(
 
 TEN_RUNTIME_PRIVATE_API ten_value_t *ten_raw_audio_frame_peek_ten_property(
     ten_msg_t *self, ten_list_t *paths, ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

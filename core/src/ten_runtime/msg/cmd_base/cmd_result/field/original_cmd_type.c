@@ -9,6 +9,7 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_result/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/macro/check.h"
@@ -63,7 +64,8 @@ bool ten_cmd_result_get_original_cmd_type_from_json(
     TEN_MSG_TYPE msg_type = ten_msg_type_from_type_and_name_string(
         original_cmd_type_str, original_cmd_name_str);
 
-    ((ten_cmd_result_t *)self)->original_cmd_type = msg_type;
+    ten_value_set_int32(&((ten_cmd_result_t *)self)->original_cmd_type,
+                        msg_type);
   } else {
     TEN_LOGW("original_cmd_type should be a string.");
   }
@@ -79,6 +81,20 @@ void ten_cmd_result_copy_original_cmd_type(
                  ten_raw_msg_get_type(src) == TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
-  ((ten_cmd_result_t *)self)->original_cmd_type =
-      ((ten_cmd_result_t *)src)->original_cmd_type;
+  ten_value_set_int32(
+      &((ten_cmd_result_t *)self)->original_cmd_type,
+      ten_raw_cmd_result_get_original_cmd_type((ten_cmd_result_t *)src));
+}
+
+bool ten_cmd_result_process_original_cmd_type(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t original_cmd_type_field;
+  ten_msg_field_process_data_init(
+      &original_cmd_type_field, TEN_STR_ORIGINAL_CMD_TYPE,
+      &((ten_cmd_result_t *)self)->original_cmd_type, false);
+
+  return cb(self, &original_cmd_type_field, user_data, err);
 }

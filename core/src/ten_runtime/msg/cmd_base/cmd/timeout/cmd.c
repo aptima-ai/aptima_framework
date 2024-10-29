@@ -11,10 +11,12 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timeout/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
+#include "ten_utils/value/value.h"
 
 static ten_cmd_timeout_t *get_raw_cmd(ten_shared_ptr_t *self) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self), "Should not happen.");
@@ -28,13 +30,15 @@ void ten_raw_cmd_timeout_set_timer_id(ten_cmd_timeout_t *self,
           ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMEOUT,
       "Should not happen.");
 
-  self->timer_id = timer_id;
+  ten_value_set_uint32(&self->timer_id, timer_id);
 }
 
 static void ten_raw_cmd_timeout_destroy(ten_cmd_timeout_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   ten_raw_cmd_deinit(&self->cmd_hdr);
+
+  ten_value_deinit(&self->timer_id);
   TEN_FREE(self);
 }
 
@@ -49,7 +53,7 @@ static ten_cmd_timeout_t *ten_raw_cmd_timeout_create(const uint32_t timer_id) {
   TEN_ASSERT(raw_cmd, "Failed to allocate memory.");
 
   ten_raw_cmd_init(&raw_cmd->cmd_hdr, TEN_MSG_TYPE_CMD_TIMEOUT);
-  raw_cmd->timer_id = timer_id;
+  ten_value_init_uint32(&raw_cmd->timer_id, timer_id);
 
   return raw_cmd;
 }
@@ -66,17 +70,8 @@ static bool ten_raw_cmd_timeout_init_from_json(ten_cmd_timeout_t *self,
              "Should not happen.");
   TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_timeout_fields_info_size; ++i) {
-    ten_msg_get_field_from_json_func_t get_field_from_json =
-        ten_cmd_timeout_fields_info[i].get_field_from_json;
-    if (get_field_from_json) {
-      if (!get_field_from_json((ten_msg_t *)self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  return ten_raw_cmd_timeout_loop_all_fields(
+      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
 }
 
 bool ten_raw_cmd_timeout_as_msg_init_from_json(ten_msg_t *self,
@@ -123,16 +118,10 @@ static ten_json_t *ten_raw_cmd_timeout_to_json(ten_cmd_timeout_t *self,
   ten_json_t *json = ten_json_create_object();
   TEN_ASSERT(json, "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_timeout_fields_info_size; ++i) {
-    ten_msg_put_field_to_json_func_t put_field_to_json =
-        ten_cmd_timeout_fields_info[i].put_field_to_json;
-    if (put_field_to_json) {
-      if (!put_field_to_json(&(self->cmd_hdr.cmd_base_hdr.msg_hdr), json,
-                             err)) {
-        ten_json_destroy(json);
-        return NULL;
-      }
-    }
+  if (!ten_raw_cmd_timeout_loop_all_fields(
+          (ten_msg_t *)self, ten_raw_msg_put_one_field_to_json, json, err)) {
+    ten_json_destroy(json);
+    return NULL;
   }
 
   return json;
@@ -153,7 +142,7 @@ uint32_t ten_raw_cmd_timeout_get_timer_id(ten_cmd_timeout_t *self) {
           ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMEOUT,
       "Should not happen.");
 
-  return self->timer_id;
+  return ten_value_get_uint32(&self->timer_id, NULL);
 }
 
 uint32_t ten_cmd_timeout_get_timer_id(ten_shared_ptr_t *self) {
@@ -168,4 +157,23 @@ void ten_cmd_timeout_set_timer_id(ten_shared_ptr_t *self, uint32_t timer_id) {
   TEN_ASSERT(self, "Should not happen.");
 
   ten_raw_cmd_timeout_set_timer_id(get_raw_cmd(self), timer_id);
+}
+
+bool ten_raw_cmd_timeout_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self) && cb,
+             "Should not happen.");
+
+  for (size_t i = 0; i < ten_cmd_timeout_fields_info_size; ++i) {
+    ten_msg_process_field_func_t process_field =
+        ten_cmd_timeout_fields_info[i].process_field;
+    if (process_field) {
+      if (!process_field(self, cb, user_data, err)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }

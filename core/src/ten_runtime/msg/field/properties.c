@@ -9,15 +9,16 @@
 
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
+#include "ten_utils/value/value_kv.h"
 #include "ten_utils/value/value_merge.h"
 
 bool ten_raw_msg_properties_to_json(ten_msg_t *self, ten_json_t *json,
@@ -138,4 +139,23 @@ bool ten_msg_del_property(ten_shared_ptr_t *self, const char *path) {
   }
 
   return false;
+}
+
+bool ten_raw_msg_properties_process(ten_msg_t *self,
+                                    ten_raw_msg_process_one_field_func_t cb,
+                                    void *user_data, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_value_t *properties_value = &self->properties;
+  TEN_ASSERT(ten_value_is_object(properties_value), "Should not happen.");
+
+  ten_msg_field_process_data_t properties_field;
+  ten_msg_field_process_data_init(&properties_field, TEN_STR_PROPERTIES,
+                                  properties_value, true);
+
+  bool rc = cb(self, &properties_field, user_data, err);
+
+  // Note: The properties may be changed in the callback function.
+
+  return rc;
 }

@@ -111,7 +111,7 @@ PyObject *ten_py_audio_frame_alloc_buf(PyObject *self, PyObject *args) {
     return ten_py_raise_py_value_error_exception("Invalid video frame size.");
   }
 
-  ten_audio_frame_alloc_data(py_audio_frame->msg.c_msg, size);
+  ten_audio_frame_alloc_buf(py_audio_frame->msg.c_msg, size);
 
   Py_RETURN_NONE;
 }
@@ -125,7 +125,7 @@ PyObject *ten_py_audio_frame_lock_buf(PyObject *self, PyObject *args) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_buf_t *data = ten_audio_frame_peek_data(py_audio_frame->msg.c_msg);
+  ten_buf_t *data = ten_audio_frame_peek_buf(py_audio_frame->msg.c_msg);
 
   if (!ten_msg_add_locked_res_buf(py_audio_frame->msg.c_msg, data->data,
                                   &err)) {
@@ -179,7 +179,7 @@ PyObject *ten_py_audio_frame_get_buf(PyObject *self, PyObject *args) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_buf_t *data = ten_audio_frame_peek_data(py_audio_frame->msg.c_msg);
+  ten_buf_t *data = ten_audio_frame_peek_buf(py_audio_frame->msg.c_msg);
   if (!data->data) {
     return ten_py_raise_py_system_error_exception("Failed to get buffer.");
   }

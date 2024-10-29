@@ -8,12 +8,14 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
+#include "ten_utils/value/value_get.h"
 
 bool ten_cmd_start_graph_put_predefined_graph_name_to_json(ten_msg_t *self,
                                                            ten_json_t *json,
@@ -57,7 +59,7 @@ bool ten_cmd_start_graph_get_predefined_graph_name_from_json(
   if (ten_json_is_string(predefined_graph_name_json)) {
     ten_cmd_start_graph_t *cmd = (ten_cmd_start_graph_t *)self;
     ten_string_init_formatted(
-        &cmd->predefined_graph_name,
+        ten_value_peek_string(&cmd->predefined_graph_name),
         ten_json_peek_string_value(predefined_graph_name_json));
   } else {
     TEN_LOGW("predefined_graph should be a string value.");
@@ -72,7 +74,21 @@ void ten_cmd_start_graph_copy_predefined_graph_name(
   TEN_ASSERT(self && src && ten_raw_cmd_check_integrity((ten_cmd_t *)src) &&
                  ten_raw_msg_get_type(src) == TEN_MSG_TYPE_CMD_START_GRAPH,
              "Should not happen.");
+  ten_string_copy(ten_value_peek_string(
+                      &((ten_cmd_start_graph_t *)self)->predefined_graph_name),
+                  ten_value_peek_string(
+                      &((ten_cmd_start_graph_t *)src)->predefined_graph_name));
+}
 
-  ten_string_copy(&((ten_cmd_start_graph_t *)self)->predefined_graph_name,
-                  &((ten_cmd_start_graph_t *)src)->predefined_graph_name);
+bool ten_cmd_start_graph_process_predefined_graph_name(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t predefined_graph_name_field;
+  ten_msg_field_process_data_init(
+      &predefined_graph_name_field, TEN_STR_PREDEFINED_GRAPH,
+      &((ten_cmd_start_graph_t *)self)->predefined_graph_name, false);
+
+  return cb(self, &predefined_graph_name_field, user_data, err);
 }

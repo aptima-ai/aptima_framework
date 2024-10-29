@@ -11,7 +11,6 @@
 
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_smart_ptr.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/common/errno.h"
@@ -21,6 +20,7 @@
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"
@@ -421,7 +421,7 @@ const char *ten_go_value_get_string_v1(ten_go_value_t *self) {
   TEN_ASSERT(c_value && ten_value_check_integrity(c_value),
              "Should not happen.");
 
-  return ten_value_peek_c_str(c_value);
+  return ten_value_peek_raw_str(c_value);
 }
 
 bool ten_go_value_get_bool_v1(ten_go_value_t *self) {
@@ -522,7 +522,7 @@ void ten_go_ten_value_get_type_and_size(ten_value_t *self, uint8_t *type,
     }
 
     case TEN_TYPE_STRING: {
-      const char *str = ten_value_peek_string(self);
+      const char *str = ten_value_peek_raw_str(self);
       TEN_ASSERT(str, "Should not happen.");
 
       *size = strlen(str);
@@ -545,7 +545,7 @@ void ten_go_ten_value_get_string(ten_value_t *self, void *value,
     return;
   }
 
-  const char *str_value = ten_value_peek_string(self);
+  const char *str_value = ten_value_peek_raw_str(self);
   TEN_ASSERT(str_value, "Should not happen");
 
   // The value is a pointer to a GO slice which has no space for the null

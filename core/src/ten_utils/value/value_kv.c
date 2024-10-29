@@ -9,9 +9,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
 bool ten_value_kv_check_integrity(ten_value_kv_t *self) {
@@ -95,6 +95,15 @@ void ten_value_kv_destroy(ten_value_kv_t *self) {
   if (self->value) {
     ten_value_destroy(self->value);
   }
+  ten_free(self);
+}
+
+void ten_value_kv_destroy_key_only(ten_value_kv_t *self) {
+  TEN_ASSERT(self && ten_value_kv_check_integrity(self), "Invalid argument.");
+
+  ten_string_deinit(&self->key);
+  self->value = NULL;
+
   ten_free(self);
 }
 

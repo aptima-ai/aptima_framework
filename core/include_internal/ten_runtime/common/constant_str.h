@@ -30,6 +30,7 @@
 // Result command relevant fields.
 #define TEN_STR_STATUS_CODE "status_code"
 #define TEN_STR_DETAIL "detail"
+#define TEN_STR_IS_FINAL "is_final"
 
 // Timer relevant fields.
 #define TEN_STR_TIMER_ID "timer_id"
@@ -111,6 +112,9 @@
 // App uri.
 #define TEN_STR_URI "uri"
 #define TEN_STR_LOCALHOST "localhost"
+
+// Data.
+#define TEN_STR_BUF "buf"
 
 // Video frame.
 #define TEN_STR_PIXEL_FMT "pixel_fmt"

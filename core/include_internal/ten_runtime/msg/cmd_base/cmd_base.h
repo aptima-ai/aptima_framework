@@ -26,8 +26,8 @@ typedef struct ten_cmd_base_t {
   // the relationship between these 2 commands.
   ten_string_t parent_cmd_id;
 
-  ten_string_t cmd_id;  // This is used in TEN runtime internally.
-  ten_string_t seq_id;  // This is used in TEN client.
+  ten_value_t cmd_id;  // string. This is used in TEN runtime internally.
+  ten_value_t seq_id;  // string. This is used in TEN client.
 
   // The origin where the command is originated.
   //
@@ -76,6 +76,10 @@ TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_base_deinit(ten_cmd_base_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_base_copy_field(
     ten_msg_t *self, ten_msg_t *src, ten_list_t *excluded_field_ids);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_base_process_field(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API ten_string_t *ten_cmd_base_gen_cmd_id_if_empty(
     ten_shared_ptr_t *self);

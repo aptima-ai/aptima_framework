@@ -16,13 +16,13 @@
 #include <vector>
 
 #include "buf.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_is.h"
@@ -397,7 +397,7 @@ class value_t {
     (void)err;
 
     // TODO(Liu): pass `err` to the underlying function.
-    const char *result = ten_value_peek_c_str(c_value_);
+    const char *result = ten_value_peek_raw_str(c_value_);
     if (result != nullptr) {
       return result;
     } else {

@@ -81,7 +81,7 @@ ten_shared_ptr_t *ten_msgpack_cmd_deserialize_through_json(
                             TEN_STR_SPECIAL_CMD_FOR_SERIALIZATION) &&
       ten_msg_is_property_exist(msg, TEN_STR_MSGPACK_SERIALIZATION_HACK,
                                 NULL)) {
-    const char *json_str = ten_value_peek_c_str(
+    const char *json_str = ten_value_peek_raw_str(
         ten_msg_peek_property(msg, TEN_STR_MSGPACK_SERIALIZATION_HACK, NULL));
 
     ten_json_t *json = ten_json_from_string(json_str, NULL);

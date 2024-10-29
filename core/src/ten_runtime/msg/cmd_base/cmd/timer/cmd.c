@@ -13,6 +13,7 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timer/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_utils/value/value_path.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/alloc.h"
@@ -20,6 +21,7 @@
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_is.h"
 
@@ -34,7 +36,7 @@ void ten_raw_cmd_timer_set_timer_id(ten_cmd_timer_t *self, uint32_t timer_id) {
       self && ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMER,
       "Should not happen.");
 
-  self->timer_id = timer_id;
+  ten_value_set_uint32(&self->timer_id, timer_id);
 }
 
 void ten_raw_cmd_timer_set_times(ten_cmd_timer_t *self, int32_t times) {
@@ -42,13 +44,18 @@ void ten_raw_cmd_timer_set_times(ten_cmd_timer_t *self, int32_t times) {
       self && ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMER,
       "Should not happen.");
 
-  self->times = times;
+  ten_value_set_int32(&self->times, times);
 }
 
 static void ten_raw_cmd_timer_destroy(ten_cmd_timer_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   ten_raw_cmd_deinit(&self->cmd_hdr);
+
+  ten_value_deinit(&self->timer_id);
+  ten_value_deinit(&self->timeout_in_us);
+  ten_value_deinit(&self->times);
+
   TEN_FREE(self);
 }
 
@@ -65,11 +72,20 @@ static bool ten_raw_cmd_timer_init_from_json(ten_cmd_timer_t *self,
              "Should not happen.");
   TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
 
+  return ten_raw_cmd_timer_loop_all_fields(
+      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
+}
+
+bool ten_raw_cmd_timer_loop_all_fields(ten_msg_t *self,
+                                       ten_raw_msg_process_one_field_func_t cb,
+                                       void *user_data, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
   for (size_t i = 0; i < ten_cmd_timer_fields_info_size; ++i) {
-    ten_msg_get_field_from_json_func_t get_field_from_json =
-        ten_cmd_timer_fields_info[i].get_field_from_json;
-    if (get_field_from_json) {
-      if (!get_field_from_json((ten_msg_t *)self, json, err)) {
+    ten_msg_process_field_func_t process_field =
+        ten_cmd_timer_fields_info[i].process_field;
+    if (process_field) {
+      if (!process_field(self, cb, user_data, err)) {
         return false;
       }
     }
@@ -92,6 +108,10 @@ ten_cmd_timer_t *ten_raw_cmd_timer_create(void) {
   TEN_ASSERT(raw_cmd, "Failed to allocate memory.");
 
   ten_raw_cmd_init(&raw_cmd->cmd_hdr, TEN_MSG_TYPE_CMD_TIMER);
+
+  ten_value_init_uint32(&raw_cmd->timer_id, 0);
+  ten_value_init_uint64(&raw_cmd->timeout_in_us, 0);
+  ten_value_init_int32(&raw_cmd->times, 0);
 
   return raw_cmd;
 }
@@ -139,16 +159,10 @@ static ten_json_t *ten_raw_cmd_timer_to_json(ten_cmd_timer_t *self,
   ten_json_t *json = ten_json_create_object();
   TEN_ASSERT(json, "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_timer_fields_info_size; ++i) {
-    ten_msg_put_field_to_json_func_t put_field_to_json =
-        ten_cmd_timer_fields_info[i].put_field_to_json;
-    if (put_field_to_json) {
-      if (!put_field_to_json(&(self->cmd_hdr.cmd_base_hdr.msg_hdr), json,
-                             err)) {
-        ten_json_destroy(json);
-        return NULL;
-      }
-    }
+  if (!ten_raw_cmd_timer_loop_all_fields(
+          (ten_msg_t *)self, ten_raw_msg_put_one_field_to_json, json, err)) {
+    ten_json_destroy(json);
+    return NULL;
   }
 
   return json;
@@ -167,7 +181,7 @@ uint32_t ten_raw_cmd_timer_get_timer_id(ten_cmd_timer_t *self) {
       self && ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMER,
       "Should not happen.");
 
-  return self->timer_id;
+  return ten_value_get_uint32(&self->timer_id, NULL);
 }
 
 uint32_t ten_cmd_timer_get_timer_id(ten_shared_ptr_t *self) {
@@ -182,7 +196,7 @@ uint64_t ten_raw_cmd_timer_get_timeout_in_us(ten_cmd_timer_t *self) {
       self && ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMER,
       "Should not happen.");
 
-  return self->timeout_in_us;
+  return ten_value_get_uint64(&self->timeout_in_us, NULL);
 }
 
 uint64_t ten_cmd_timer_get_timeout_in_us(ten_shared_ptr_t *self) {
@@ -197,7 +211,7 @@ int32_t ten_raw_cmd_timer_get_times(ten_cmd_timer_t *self) {
       self && ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMER,
       "Should not happen.");
 
-  return self->times;
+  return ten_value_get_int32(&self->times, NULL);
 }
 
 bool ten_raw_cmd_timer_set_ten_property(ten_msg_t *self, ten_list_t *paths,
@@ -227,22 +241,25 @@ bool ten_raw_cmd_timer_set_ten_property(ten_msg_t *self, ten_list_t *paths,
       case TEN_VALUE_PATH_ITEM_TYPE_OBJECT_ITEM: {
         if (!strcmp(TEN_STR_TIMER_ID,
                     ten_string_get_raw_str(&item->obj_item_str))) {
-          timer_cmd->timer_id = ten_value_get_uint32(value, err);
+          ten_value_set_uint32(&timer_cmd->timer_id,
+                               ten_value_get_uint32(value, err));
           success = ten_error_is_success(err);
         } else if (!strcmp(TEN_STR_TIMEOUT_IN_US,
                            ten_string_get_raw_str(&item->obj_item_str))) {
-          timer_cmd->timeout_in_us = ten_value_get_uint64(value, err);
+          ten_value_set_uint64(&timer_cmd->timeout_in_us,
+                               ten_value_get_uint64(value, err));
           success = ten_error_is_success(err);
         } else if (!strcmp(TEN_STR_TIMES,
                            ten_string_get_raw_str(&item->obj_item_str))) {
-          timer_cmd->times = ten_value_get_int32(value, err);
+          ten_value_set_int32(&timer_cmd->times,
+                              ten_value_get_int32(value, err));
           success = ten_error_is_success(err);
         } else if (!strcmp(TEN_STR_NAME,
                            ten_string_get_raw_str(&item->obj_item_str))) {
           if (ten_value_is_string(value)) {
-            ten_string_init_from_c_str(&self->name,
-                                       ten_value_peek_string(value),
-                                       strlen(ten_value_peek_string(value)));
+            ten_value_init_string_with_size(
+                &self->name, ten_value_peek_raw_str(value),
+                strlen(ten_value_peek_raw_str(value)));
             success = true;
           } else {
             success = false;

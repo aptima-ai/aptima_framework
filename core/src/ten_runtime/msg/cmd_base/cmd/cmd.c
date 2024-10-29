@@ -15,12 +15,12 @@
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg_info.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/cmd/cmd.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 bool ten_raw_cmd_check_integrity(ten_cmd_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -128,6 +128,25 @@ void ten_raw_cmd_copy_field(ten_msg_t *self, ten_msg_t *src,
       copy_field(self, src, excluded_field_ids);
     }
   }
+}
+
+bool ten_raw_cmd_process_field(ten_msg_t *self,
+                               ten_raw_msg_process_one_field_func_t cb,
+                               void *user_data, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self) && cb,
+             "Should not happen.");
+
+  for (size_t i = 0; i < ten_cmd_fields_info_size; ++i) {
+    ten_msg_process_field_func_t process_field =
+        ten_cmd_fields_info[i].process_field;
+    if (process_field) {
+      if (!process_field(self, cb, user_data, err)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 static ten_cmd_t *ten_raw_cmd_create_from_json(ten_json_t *json,

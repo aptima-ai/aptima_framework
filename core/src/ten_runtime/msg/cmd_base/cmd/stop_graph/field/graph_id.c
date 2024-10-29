@@ -10,6 +10,7 @@
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/stop_graph/cmd.h"
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/string.h"
@@ -55,7 +56,7 @@ bool ten_cmd_stop_graph_get_graph_id_from_json(ten_msg_t *self,
 
   if (ten_json_is_string(graph_id_json)) {
     ten_cmd_stop_graph_t *cmd = (ten_cmd_stop_graph_t *)self;
-    ten_string_init_formatted(&cmd->graph_id,
+    ten_string_init_formatted(ten_value_peek_string(&cmd->graph_id),
                               ten_json_peek_string_value(graph_id_json));
   } else {
     TEN_LOGW("graph_id should be a string value.");
@@ -71,6 +72,20 @@ void ten_cmd_stop_graph_copy_graph_id(
                  ten_raw_msg_get_type(src) == TEN_MSG_TYPE_CMD_STOP_GRAPH,
              "Should not happen.");
 
-  ten_string_copy(&((ten_cmd_stop_graph_t *)self)->graph_id,
-                  &((ten_cmd_stop_graph_t *)src)->graph_id);
+  ten_string_copy(
+      ten_value_peek_string(&((ten_cmd_stop_graph_t *)self)->graph_id),
+      ten_value_peek_string(&((ten_cmd_stop_graph_t *)src)->graph_id));
+}
+
+bool ten_cmd_stop_graph_process_graph_id(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t graph_id_field;
+  ten_msg_field_process_data_init(&graph_id_field, TEN_STR_GRAPH_ID,
+                                  &((ten_cmd_stop_graph_t *)self)->graph_id,
+                                  false);
+
+  return cb(self, &graph_id_field, user_data, err);
 }

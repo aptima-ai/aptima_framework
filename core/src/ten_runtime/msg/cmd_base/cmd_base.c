@@ -20,6 +20,8 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uuid.h"
 #include "ten_utils/macro/check.h"
+#include "ten_utils/value/value.h"
+#include "ten_utils/value/value_get.h"
 
 bool ten_raw_cmd_base_check_integrity(ten_cmd_base_t *self) {
   TEN_ASSERT(self, "Should not happen.");
@@ -55,8 +57,8 @@ static void ten_raw_cmd_base_init_empty(ten_cmd_base_t *self) {
   ten_signature_set(&self->signature, (ten_signature_t)TEN_CMD_BASE_SIGNATURE);
 
   ten_string_init(&self->parent_cmd_id);
-  ten_string_init(&self->cmd_id);
-  ten_string_init(&self->seq_id);
+  ten_value_init_string(&self->cmd_id);
+  ten_value_init_string(&self->seq_id);
 
   self->original_connection = NULL;
 
@@ -73,33 +75,33 @@ void ten_raw_cmd_base_init(ten_cmd_base_t *self, TEN_MSG_TYPE type) {
 
   switch (type) {
     case TEN_MSG_TYPE_CMD_START_GRAPH:
-      ten_string_init_formatted(&self->msg_hdr.name, "%s",
-                                TEN_STR_MSG_NAME_TEN_START_GRAPH);
+      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
+                                "%s", TEN_STR_MSG_NAME_TEN_START_GRAPH);
       break;
 
     case TEN_MSG_TYPE_CMD_TIMEOUT:
-      ten_string_init_formatted(&self->msg_hdr.name, "%s",
-                                TEN_STR_MSG_NAME_TEN_TIMEOUT);
+      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
+                                "%s", TEN_STR_MSG_NAME_TEN_TIMEOUT);
       break;
 
     case TEN_MSG_TYPE_CMD_TIMER:
-      ten_string_init_formatted(&self->msg_hdr.name, "%s",
-                                TEN_STR_MSG_NAME_TEN_TIMER);
+      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
+                                "%s", TEN_STR_MSG_NAME_TEN_TIMER);
       break;
 
     case TEN_MSG_TYPE_CMD_STOP_GRAPH:
-      ten_string_init_formatted(&self->msg_hdr.name, "%s",
-                                TEN_STR_MSG_NAME_TEN_STOP_GRAPH);
+      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
+                                "%s", TEN_STR_MSG_NAME_TEN_STOP_GRAPH);
       break;
 
     case TEN_MSG_TYPE_CMD_CLOSE_APP:
-      ten_string_init_formatted(&self->msg_hdr.name, "%s",
-                                TEN_STR_MSG_NAME_TEN_CLOSE_APP);
+      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
+                                "%s", TEN_STR_MSG_NAME_TEN_CLOSE_APP);
       break;
 
     case TEN_MSG_TYPE_CMD_RESULT:
-      ten_string_init_formatted(&self->msg_hdr.name, "%s",
-                                TEN_STR_MSG_NAME_TEN_RESULT);
+      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
+                                "%s", TEN_STR_MSG_NAME_TEN_RESULT);
       break;
 
     default:
@@ -115,8 +117,8 @@ void ten_raw_cmd_base_deinit(ten_cmd_base_t *self) {
 
   ten_raw_msg_deinit(&self->msg_hdr);
 
-  ten_string_deinit(&self->cmd_id);
-  ten_string_deinit(&self->seq_id);
+  ten_value_deinit(&self->cmd_id);
+  ten_value_deinit(&self->seq_id);
 
   self->original_connection = NULL;
 }
@@ -152,16 +154,36 @@ void ten_raw_cmd_base_copy_field(ten_msg_t *self, ten_msg_t *src,
   }
 }
 
+bool ten_raw_cmd_base_process_field(ten_msg_t *self,
+                                    ten_raw_msg_process_one_field_func_t cb,
+                                    void *user_data, ten_error_t *err) {
+  TEN_ASSERT(
+      self && ten_raw_cmd_base_check_integrity((ten_cmd_base_t *)self) && cb,
+      "Should not happen.");
+
+  for (size_t i = 0; i < ten_cmd_base_fields_info_size; ++i) {
+    ten_msg_process_field_func_t process_field =
+        ten_cmd_base_fields_info[i].process_field;
+    if (process_field) {
+      if (!process_field(self, cb, user_data, err)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 static ten_string_t *ten_raw_cmd_base_gen_cmd_id_if_empty(
     ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
 
-  if (ten_string_is_empty(&self->cmd_id)) {
-    ten_uuid4_gen_string(&self->cmd_id);
+  if (ten_string_is_empty(ten_value_peek_string(&self->cmd_id))) {
+    ten_uuid4_gen_string(ten_value_peek_string(&self->cmd_id));
   }
 
-  return &self->cmd_id;
+  return ten_value_peek_string(&self->cmd_id);
 }
 
 ten_string_t *ten_cmd_base_gen_cmd_id_if_empty(ten_shared_ptr_t *self) {
@@ -174,10 +196,12 @@ const char *ten_raw_cmd_base_gen_new_cmd_id_forcibly(ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
 
-  ten_string_clear(&self->cmd_id);
-  ten_uuid4_gen_string(&self->cmd_id);
+  ten_string_t *cmd_id = ten_value_peek_string(&self->cmd_id);
 
-  return ten_string_get_raw_str(&self->cmd_id);
+  ten_string_clear(cmd_id);
+  ten_uuid4_gen_string(cmd_id);
+
+  return ten_string_get_raw_str(cmd_id);
 }
 
 const char *ten_cmd_base_gen_new_cmd_id_forcibly(ten_shared_ptr_t *self) {
@@ -189,20 +213,20 @@ const char *ten_cmd_base_gen_new_cmd_id_forcibly(ten_shared_ptr_t *self) {
 void ten_raw_cmd_base_set_cmd_id(ten_cmd_base_t *self, const char *cmd_id) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self) && cmd_id,
              "Should not happen.");
-  ten_string_init_formatted(&self->cmd_id, "%s", cmd_id);
+  ten_string_init_formatted(ten_value_peek_string(&self->cmd_id), "%s", cmd_id);
 }
 
 ten_string_t *ten_raw_cmd_base_get_cmd_id(ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
-  return &self->cmd_id;
+  return ten_value_peek_string(&self->cmd_id);
 }
 
 void ten_raw_cmd_base_save_cmd_id_to_parent_cmd_id(ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
 
-  ten_string_copy(&self->parent_cmd_id, &self->cmd_id);
+  ten_string_copy(&self->parent_cmd_id, ten_value_peek_string(&self->cmd_id));
 }
 
 void ten_cmd_base_save_cmd_id_to_parent_cmd_id(ten_shared_ptr_t *self) {
@@ -214,24 +238,15 @@ void ten_cmd_base_save_cmd_id_to_parent_cmd_id(ten_shared_ptr_t *self) {
 void ten_raw_cmd_base_set_seq_id(ten_cmd_base_t *self, const char *seq_id) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self) && seq_id,
              "Should not happen.");
-  ten_string_init_formatted(&self->seq_id, "%s", seq_id);
+  ten_string_init_formatted(ten_value_peek_string(&self->seq_id), "%s", seq_id);
 }
 
 bool ten_raw_cmd_base_get_field_from_json(ten_msg_t *self, ten_json_t *json,
                                           ten_error_t *err) {
   TEN_ASSERT(self && json, "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_base_fields_info_size; ++i) {
-    ten_msg_get_field_from_json_func_t get_field_from_json =
-        ten_cmd_base_fields_info[i].get_field_from_json;
-    if (get_field_from_json) {
-      if (!get_field_from_json(self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  return ten_raw_cmd_base_process_field(
+      self, ten_raw_msg_get_one_field_from_json, json, err);
 }
 
 bool ten_raw_cmd_base_put_field_to_json(ten_msg_t *self, ten_json_t *json,
@@ -239,23 +254,14 @@ bool ten_raw_cmd_base_put_field_to_json(ten_msg_t *self, ten_json_t *json,
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && json,
              "Should not happen.");
 
-  for (size_t i = 0; i < ten_cmd_base_fields_info_size; ++i) {
-    ten_msg_put_field_to_json_func_t put_field_to_json =
-        ten_cmd_base_fields_info[i].put_field_to_json;
-    if (put_field_to_json) {
-      if (!put_field_to_json(self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  return ten_raw_cmd_base_process_field(self, ten_raw_msg_put_one_field_to_json,
+                                        json, err);
 }
 
 static bool ten_raw_cmd_base_cmd_id_is_empty(ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
-  return ten_string_is_empty(&self->cmd_id);
+  return ten_string_is_empty(ten_value_peek_string(&self->cmd_id));
 }
 
 bool ten_cmd_base_cmd_id_is_empty(ten_shared_ptr_t *self) {
@@ -335,7 +341,7 @@ void ten_cmd_base_reset_parent_cmd_id(ten_shared_ptr_t *self) {
 ten_string_t *ten_raw_cmd_base_get_seq_id(ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
-  return &self->seq_id;
+  return ten_value_peek_string(&self->seq_id);
 }
 
 const char *ten_cmd_base_get_seq_id(ten_shared_ptr_t *self) {

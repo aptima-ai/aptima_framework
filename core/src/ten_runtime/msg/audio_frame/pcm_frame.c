@@ -42,9 +42,9 @@ int32_t ten_raw_audio_frame_get_samples_per_channel(ten_audio_frame_t *self) {
   return ten_value_get_int32(&self->samples_per_channel, NULL);
 }
 
-ten_buf_t *ten_raw_audio_frame_peek_data(ten_audio_frame_t *self) {
+ten_buf_t *ten_raw_audio_frame_peek_buf(ten_audio_frame_t *self) {
   TEN_ASSERT(self, "Should not happen.");
-  return ten_value_peek_buf(&self->data);
+  return ten_value_peek_buf(&self->buf);
 }
 
 int32_t ten_raw_audio_frame_get_sample_rate(ten_audio_frame_t *self) {
@@ -141,16 +141,16 @@ bool ten_raw_audio_frame_set_timestamp(ten_audio_frame_t *self,
   return ten_value_set_int64(&self->timestamp, timestamp);
 }
 
-static uint8_t *ten_raw_audio_frame_alloc_data(ten_audio_frame_t *self,
-                                               size_t size) {
+static uint8_t *ten_raw_audio_frame_alloc_buf(ten_audio_frame_t *self,
+                                              size_t size) {
   if (size <= 0) {
     TEN_ASSERT(0, "Should not happen.");
     return NULL;
   }
 
-  ten_value_init_buf(&self->data, size);
+  ten_value_init_buf(&self->buf, size);
 
-  return ten_value_peek_buf(&self->data)->data;
+  return ten_value_peek_buf(&self->buf)->data;
 }
 
 static void ten_raw_audio_frame_init(ten_audio_frame_t *self) {
@@ -166,7 +166,7 @@ static void ten_raw_audio_frame_init(ten_audio_frame_t *self) {
   ten_value_init_int32(&self->number_of_channel, 0);
   ten_value_init_int32(&self->data_fmt, TEN_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
   ten_value_init_int32(&self->line_size, 0);
-  ten_value_init_buf(&self->data, 0);
+  ten_value_init_buf(&self->buf, 0);
   ten_value_init_bool(&self->is_eof, false);
 }
 
@@ -189,7 +189,7 @@ void ten_raw_audio_frame_destroy(ten_audio_frame_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   ten_raw_msg_deinit(&self->msg_hdr);
-  ten_value_deinit(&self->data);
+  ten_value_deinit(&self->buf);
 
   TEN_FREE(self);
 }
@@ -252,9 +252,9 @@ bool ten_audio_frame_set_samples_per_channel(ten_shared_ptr_t *self,
       ten_shared_ptr_get_data(self), samples_per_channel);
 }
 
-ten_buf_t *ten_audio_frame_peek_data(ten_shared_ptr_t *self) {
+ten_buf_t *ten_audio_frame_peek_buf(ten_shared_ptr_t *self) {
   TEN_ASSERT(self, "Should not happen.");
-  return ten_raw_audio_frame_peek_data(ten_shared_ptr_get_data(self));
+  return ten_raw_audio_frame_peek_buf(ten_shared_ptr_get_data(self));
 }
 
 int32_t ten_audio_frame_get_line_size(ten_shared_ptr_t *self) {
@@ -306,10 +306,10 @@ bool ten_audio_frame_set_data_fmt(ten_shared_ptr_t *self,
                                           data_fmt);
 }
 
-uint8_t *ten_audio_frame_alloc_data(ten_shared_ptr_t *self, size_t size) {
+uint8_t *ten_audio_frame_alloc_buf(ten_shared_ptr_t *self, size_t size) {
   TEN_ASSERT(self, "Should not happen.");
 
-  return ten_raw_audio_frame_alloc_data(ten_shared_ptr_get_data(self), size);
+  return ten_raw_audio_frame_alloc_buf(ten_shared_ptr_get_data(self), size);
 }
 
 ten_msg_t *ten_raw_audio_frame_as_msg_clone(ten_msg_t *self,
@@ -336,7 +336,7 @@ ten_msg_t *ten_raw_audio_frame_as_msg_clone(ten_msg_t *self,
   ten_value_copy(&self_frame->data_fmt, &new_frame->data_fmt);
   ten_value_copy(&self_frame->line_size, &new_frame->line_size);
   ten_value_copy(&self_frame->is_eof, &new_frame->is_eof);
-  ten_value_copy(&self_frame->data, &new_frame->data);
+  ten_value_copy(&self_frame->buf, &new_frame->buf);
 
   for (size_t i = 0; i < ten_audio_frame_fields_info_size; ++i) {
     if (excluded_field_ids) {
@@ -374,7 +374,9 @@ ten_json_t *ten_raw_audio_frame_as_msg_to_json(ten_msg_t *self,
   ten_json_t *json = ten_json_create_object();
   TEN_ASSERT(json, "Should not happen.");
 
-  if (!ten_raw_msg_put_field_to_json(self, json, err)) {
+  bool rc = ten_raw_audio_frame_loop_all_fields(
+      self, ten_raw_msg_put_one_field_to_json, json, err);
+  if (!rc) {
     ten_json_destroy(json);
     return NULL;
   }
@@ -419,17 +421,8 @@ static bool ten_raw_audio_frame_init_from_json(ten_audio_frame_t *self,
              "Should not happen.");
   TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
 
-  for (size_t i = 0; i < ten_audio_frame_fields_info_size; ++i) {
-    ten_msg_get_field_from_json_func_t get_field_from_json =
-        ten_audio_frame_fields_info[i].get_field_from_json;
-    if (get_field_from_json) {
-      if (!get_field_from_json((ten_msg_t *)self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  return ten_raw_audio_frame_loop_all_fields(
+      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
 }
 
 static ten_audio_frame_t *ten_raw_audio_frame_create_from_json(
@@ -556,4 +549,24 @@ ten_value_t *ten_raw_audio_frame_peek_ten_property(ten_msg_t *self,
   }
 
   return result;
+}
+
+bool ten_raw_audio_frame_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(
+      self && ten_raw_audio_frame_check_integrity((ten_audio_frame_t *)self),
+      "Invalid argument.");
+
+  for (size_t i = 0; i < ten_audio_frame_fields_info_size; ++i) {
+    ten_msg_process_field_func_t process_field =
+        ten_audio_frame_fields_info[i].process_field;
+    if (process_field) {
+      if (!process_field(self, cb, user_data, err)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }

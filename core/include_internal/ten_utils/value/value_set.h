@@ -6,9 +6,10 @@
 //
 #pragma once
 
+#include "ten_utils/ten_config.h"
+
 #include <stdbool.h>
 
-#include "ten_utils/ten_config.h"
 #include "ten_utils/value/value.h"
 
 TEN_UTILS_API bool ten_value_set_int64(ten_value_t *self, int64_t value);
@@ -28,3 +29,15 @@ TEN_UTILS_API bool ten_value_set_uint16(ten_value_t *self, uint16_t value);
 TEN_UTILS_API bool ten_value_set_uint8(ten_value_t *self, uint8_t value);
 
 TEN_UTILS_API bool ten_value_set_bool(ten_value_t *self, bool value);
+
+TEN_UTILS_API bool ten_value_set_float32(ten_value_t *self, float value);
+
+TEN_UTILS_API bool ten_value_set_float64(ten_value_t *self, double value);
+
+TEN_UTILS_API bool ten_value_set_string(ten_value_t *self, const char *value);
+
+TEN_UTILS_API bool ten_value_set_array_with_move(ten_value_t *self,
+                                                 ten_list_t *value);
+
+TEN_UTILS_API bool ten_value_set_object_with_move(ten_value_t *self,
+                                                  ten_list_t *value);

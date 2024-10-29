@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/value/value.h"
@@ -45,3 +46,7 @@ TEN_RUNTIME_API ten_shared_ptr_t *ten_cmd_custom_create_empty(void);
 
 TEN_RUNTIME_PRIVATE_API ten_cmd_t *ten_raw_cmd_custom_create(
     const char *cmd_name);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_custom_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

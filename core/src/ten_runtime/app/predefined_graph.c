@@ -342,8 +342,8 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
     }
     ten_string_init_from_c_str(
         &predefined_graph_info->name,
-        ten_value_peek_string(predefined_graph_info_name_value),
-        strlen(ten_value_peek_string(predefined_graph_info_name_value)));
+        ten_value_peek_raw_str(predefined_graph_info_name_value),
+        strlen(ten_value_peek_raw_str(predefined_graph_info_name_value)));
 
     ten_value_t *predefined_graph_info_auto_start_value =
         ten_value_object_peek(predefined_graph_info_value, TEN_STR_AUTO_START);
@@ -389,7 +389,7 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
           goto done;
         }
 
-        const char *type = ten_value_peek_string(type_value);
+        const char *type = ten_value_peek_raw_str(type_value);
         if (!strcmp(type, TEN_STR_EXTENSION)) {
           ten_extension_info_node_from_value(
               predefined_graph_info_node_item_value,

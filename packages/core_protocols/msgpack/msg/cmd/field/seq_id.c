@@ -15,9 +15,10 @@ void ten_msgpack_cmd_seq_id_serialize(ten_msg_t *self, msgpack_packer *pck) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && pck,
              "Invalid argument.");
 
-  int rc = msgpack_pack_str_with_body(
-      pck, ten_string_get_raw_str(&(((ten_cmd_base_t *)self)->seq_id)),
-      ten_string_len(&(((ten_cmd_base_t *)self)->seq_id)));
+  const char *seq_id =
+      ten_value_peek_raw_str(&(((ten_cmd_base_t *)self)->seq_id));
+
+  int rc = msgpack_pack_str_with_body(pck, seq_id, strlen(seq_id));
   TEN_ASSERT(rc == 0, "Should not happen.");
 }
 
@@ -29,8 +30,9 @@ bool ten_msgpack_cmd_seq_id_deserialize(ten_msg_t *self,
   msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
   if (rc == MSGPACK_UNPACK_SUCCESS) {
     if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_STR) {
-      ten_string_set_formatted(&((ten_cmd_base_t *)self)->seq_id, "%.*s",
-                               MSGPACK_DATA_STR_SIZE, MSGPACK_DATA_STR_PTR);
+      ten_string_set_formatted(
+          ten_value_peek_string(&((ten_cmd_base_t *)self)->seq_id), "%.*s",
+          MSGPACK_DATA_STR_SIZE, MSGPACK_DATA_STR_PTR);
       return true;
     } else {
       TEN_ASSERT(0, "Should not happen.");

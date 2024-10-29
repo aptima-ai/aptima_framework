@@ -9,10 +9,10 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/msg/video_frame/video_frame.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/msg/video_frame/video_frame.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 const char *ten_video_frame_pixel_fmt_to_string(const TEN_PIXEL_FMT pixel_fmt) {
@@ -109,4 +109,19 @@ void ten_video_frame_copy_pixel_fmt(ten_msg_t *self, ten_msg_t *src,
   ten_raw_video_frame_set_pixel_fmt(
       (ten_video_frame_t *)self,
       ten_raw_video_frame_get_pixel_fmt((ten_video_frame_t *)src));
+}
+
+bool ten_video_frame_process_pixel_fmt(ten_msg_t *self,
+                                       ten_raw_msg_process_one_field_func_t cb,
+                                       void *user_data, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+
+  ten_msg_field_process_data_t pixel_fmt_field;
+  ten_msg_field_process_data_init(&pixel_fmt_field, TEN_STR_PIXEL_FMT,
+                                  &((ten_video_frame_t *)self)->pixel_fmt,
+                                  false);
+
+  bool rc = cb(self, &pixel_fmt_field, user_data, err);
+
+  return rc;
 }

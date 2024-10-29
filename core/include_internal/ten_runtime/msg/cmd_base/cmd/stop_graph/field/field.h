@@ -9,7 +9,7 @@
 #include "ten_runtime/ten_config.h"
 
 typedef enum TEN_CMD_STOP_GRAPH_FIELD {
-  TEN_CMD_STOP_GRAPH_FIELD_CMDHDR,
+  TEN_CMD_STOP_GRAPH_FIELD_CMD_HDR,
 
   TEN_CMD_STOP_GRAPH_FIELD_GRAPH_NAME,
 

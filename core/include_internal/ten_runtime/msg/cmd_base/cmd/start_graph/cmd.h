@@ -13,7 +13,7 @@
 typedef struct ten_cmd_start_graph_t {
   ten_cmd_t cmd_hdr;
 
-  bool long_running_mode;
+  ten_value_t long_running_mode;  // bool
 
   // There are two methods to start a graph:
   // 1) one is by explicitly specifying the graph's content through
@@ -23,7 +23,7 @@ typedef struct ten_cmd_start_graph_t {
   //    graph database.
 
   // The name of the specified predefined graph.
-  ten_string_t predefined_graph_name;
+  ten_value_t predefined_graph_name;  // string
 
   // ten_shared_ptr_t of ten_extension_group_info_t
   ten_list_t extension_groups_info;
@@ -91,3 +91,7 @@ TEN_RUNTIME_PRIVATE_API ten_cmd_start_graph_t *ten_raw_cmd_start_graph_create(
 
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_start_graph_as_msg_clone(
     ten_msg_t *self, ten_list_t *excluded_field_ids);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_start_graph_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

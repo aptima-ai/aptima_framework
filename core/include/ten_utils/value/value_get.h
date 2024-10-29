@@ -45,9 +45,9 @@ TEN_UTILS_API double ten_value_get_float64(ten_value_t *self, ten_error_t *err);
 
 TEN_UTILS_API bool ten_value_get_bool(ten_value_t *self, ten_error_t *err);
 
-TEN_UTILS_API const char *ten_value_peek_string(ten_value_t *self);
+TEN_UTILS_API ten_string_t *ten_value_peek_string(ten_value_t *self);
 
-TEN_UTILS_API const char *ten_value_peek_c_str(ten_value_t *self);
+TEN_UTILS_API const char *ten_value_peek_raw_str(ten_value_t *self);
 
 TEN_UTILS_API void *ten_value_get_ptr(ten_value_t *self, ten_error_t *err);
 

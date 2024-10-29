@@ -103,6 +103,7 @@ TEN_UTILS_API bool ten_value_init_float32(ten_value_t *self, float value);
 TEN_UTILS_API bool ten_value_init_float64(ten_value_t *self, double value);
 TEN_UTILS_API bool ten_value_init_bool(ten_value_t *self, bool value);
 TEN_UTILS_API bool ten_value_init_null(ten_value_t *self);
+TEN_UTILS_API bool ten_value_init_string(ten_value_t *self);
 TEN_UTILS_API bool ten_value_init_string_with_size(ten_value_t *self,
                                                    const char *str, size_t len);
 TEN_UTILS_API bool ten_value_init_buf(ten_value_t *self, size_t size);

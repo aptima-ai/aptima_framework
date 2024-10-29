@@ -560,7 +560,7 @@ class ten_env_t {
     if (c_value == nullptr) {
       return "";
     }
-    return ten_value_peek_string(c_value);
+    return ten_value_peek_raw_str(c_value);
   }
 
   std::string get_property_string(const char *path) {
@@ -630,7 +630,7 @@ class ten_env_t {
     return get_property_async_impl(
         path,
         [cb_copy](ten_env_t &ten_env, ten_value_t *value, error_t *err) {
-          cb_copy(ten_env, ten_value_peek_string(value), err);
+          cb_copy(ten_env, ten_value_peek_raw_str(value), err);
           return;
         },
         err);

@@ -68,7 +68,7 @@ static const ten_protocol_msgpack_msg_field_info_t
                 .serialize = ten_msgpack_audio_frame_data_fmt_serialize,
                 .deserialize = ten_msgpack_audio_frame_data_fmt_deserialize,
             },
-        [TEN_AUDIO_FRAME_FIELD_DATA] =
+        [TEN_AUDIO_FRAME_FIELD_BUF] =
             {
                 .serialize = ten_msgpack_audio_frame_data_serialize,
                 .deserialize = ten_msgpack_audio_frame_data_deserialize,

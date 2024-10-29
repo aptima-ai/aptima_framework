@@ -9,10 +9,10 @@
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/msg/field/properties.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/value_convert.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
@@ -130,7 +130,7 @@ bool ten_msg_conversion_operation_per_property_rule_fixed_value_to_json(
     }
 
     case TEN_TYPE_STRING: {
-      const char *value_str = ten_value_peek_string(self->value);
+      const char *value_str = ten_value_peek_raw_str(self->value);
       ten_json_object_set_new(json, TEN_STR_VALUE,
                               ten_json_create_string(value_str));
       break;

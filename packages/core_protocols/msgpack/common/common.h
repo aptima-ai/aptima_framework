@@ -19,6 +19,7 @@ typedef enum TEN_MSGPACK_EXT_TYPE {
 
 #define MSGPACK_DATA_TYPE (unpacked->data.type)
 
+#define MSGPACK_DATA_BOOL (unpacked->data.via.boolean)
 #define MSGPACK_DATA_I64 (unpacked->data.via.i64)
 #define MSGPACK_DATA_U64 (unpacked->data.via.u64)
 

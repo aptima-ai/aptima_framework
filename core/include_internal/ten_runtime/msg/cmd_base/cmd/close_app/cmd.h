@@ -28,3 +28,7 @@ TEN_RUNTIME_PRIVATE_API ten_json_t *ten_raw_cmd_close_app_to_json(
     ten_msg_t *self, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API ten_cmd_close_app_t *ten_raw_cmd_close_app_create(void);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_close_app_loop_all_fields(
+    ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
+    ten_error_t *err);

@@ -6,6 +6,8 @@
 //
 #include "include_internal/ten_utils/value/value_set.h"
 
+#include "ten_utils/container/list.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
 
@@ -86,6 +88,56 @@ bool ten_value_set_bool(ten_value_t *self, bool value) {
   TEN_ASSERT(self->type == TEN_TYPE_BOOL, "Invalid argument.");
 
   self->content.boolean = value;
+
+  return true;
+}
+
+bool ten_value_set_float32(ten_value_t *self, float value) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->type == TEN_TYPE_FLOAT32, "Invalid argument.");
+
+  self->content.float32 = value;
+
+  return true;
+}
+
+bool ten_value_set_float64(ten_value_t *self, double value) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->type == TEN_TYPE_FLOAT64, "Invalid argument.");
+
+  self->content.float64 = value;
+
+  return true;
+}
+
+bool ten_value_set_string(ten_value_t *self, const char *value) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->type == TEN_TYPE_STRING, "Invalid argument.");
+
+  ten_string_init_formatted(&self->content.string, "%.*s", strlen(value),
+                            value);
+
+  return true;
+}
+
+bool ten_value_set_array_with_move(ten_value_t *self, ten_list_t *value) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->type == TEN_TYPE_ARRAY, "Invalid argument.");
+  TEN_ASSERT(value, "Invalid argument.");
+
+  ten_list_clear(&self->content.array);
+  ten_list_swap(&self->content.array, value);
+
+  return true;
+}
+
+bool ten_value_set_object_with_move(ten_value_t *self, ten_list_t *value) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(self->type == TEN_TYPE_OBJECT, "Invalid argument.");
+  TEN_ASSERT(value, "Invalid argument.");
+
+  ten_list_clear(&self->content.object);
+  ten_list_swap(&self->content.object, value);
 
   return true;
 }

@@ -323,7 +323,7 @@ class msg_t {
     if (c_value == nullptr) {
       return "";
     }
-    return ten_value_peek_string(c_value);
+    return ten_value_peek_raw_str(c_value);
   }
 
   std::string get_property_string(const char *path) {
