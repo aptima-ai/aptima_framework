@@ -15,7 +15,7 @@ use crate::dev_server::{get_all_pkgs::get_all_pkgs, DevServerState};
 use ten_rust::pkg_info::pkg_type::PkgType;
 use ten_rust::pkg_info::predefined_graphs::get_pkg_predefined_graph_from_nodes_and_connections;
 
-#[derive(Deserialize, Debug, PartialEq, Clone)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct GraphUpdateRequest {
     pub auto_start: bool,
     pub nodes: Vec<DevServerExtension>,
@@ -104,7 +104,6 @@ mod tests {
         config::TmanConfig, dev_server::mock::tests::inject_all_pkgs_for_mock,
     };
     use actix_web::{test, App};
-    use serde_json::Value;
     use std::{env, fs};
 
     #[actix_web::test]
@@ -167,10 +166,11 @@ mod tests {
         )
         .await;
 
-        let input_data: Value = serde_json::from_str(include_str!(
-            "test_data_embed/update_graph_success/input_data.json"
-        ))
-        .unwrap();
+        let input_data: GraphUpdateRequest =
+            serde_json::from_str(include_str!(
+                "test_data_embed/update_graph_success/input_data.json"
+            ))
+            .unwrap();
 
         let req = test::TestRequest::put()
             .uri("/api/dev-server/v1/graphs/default")

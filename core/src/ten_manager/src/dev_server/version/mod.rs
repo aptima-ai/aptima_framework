@@ -85,7 +85,8 @@ mod tests {
         // Compare the actual Version struct with the expected one
         assert_eq!(version.data, expected_version);
 
-        let json: serde_json::Value = serde_json::from_str(body_str).unwrap();
+        let json: ApiResponse<DevServerVersion> =
+            serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
     }

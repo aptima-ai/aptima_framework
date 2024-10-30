@@ -258,7 +258,8 @@ mod tests {
         assert_eq!(connections.data, expected_connections);
         assert!(!connections.data.is_empty());
 
-        let json: serde_json::Value = serde_json::from_str(body_str).unwrap();
+        let json: ApiResponse<Vec<DevServerConnection>> =
+            serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
     }
@@ -363,7 +364,8 @@ mod tests {
         assert_eq!(connections.data, expected_connections);
         assert!(!connections.data.is_empty());
 
-        let json: serde_json::Value = serde_json::from_str(body_str).unwrap();
+        let json: ApiResponse<Vec<DevServerConnection>> =
+            serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
     }

@@ -89,7 +89,7 @@ pub async fn upload_package(
 }
 
 pub async fn get_package(
-    tman_config: &TmanConfig,
+    _tman_config: &TmanConfig,
     url: &str,
     temp_path: &mut NamedTempFile,
 ) -> Result<()> {
@@ -202,7 +202,7 @@ fn find_file_with_criteria(
 }
 
 pub async fn get_package_list(
-    tman_config: &TmanConfig,
+    _tman_config: &TmanConfig,
     base_url: &str,
     pkg_identity: &PkgIdentity,
     criteria: &SearchCriteria,

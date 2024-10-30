@@ -371,7 +371,8 @@ mod tests {
 
         assert_eq!(addons.data, expected_addons);
 
-        let json: serde_json::Value = serde_json::from_str(body_str).unwrap();
+        let json: ApiResponse<Vec<DevServerExtensionAddon>> =
+            serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
     }

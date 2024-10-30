@@ -15,7 +15,7 @@ use ten_manager::{
             connections::{get_graph_connections, DevServerConnection},
             get_graphs, RespGraph,
         },
-        response::ApiResponse,
+        response::{ApiResponse, ErrorResponse},
         DevServerState,
     },
 };
@@ -47,12 +47,12 @@ async fn test_cmd_dev_server_graphs_some_property_invalid() {
 
     let body = test::read_body(resp).await;
     let body_str = std::str::from_utf8(&body).unwrap();
-    let json: serde_json::Value = serde_json::from_str(body_str).unwrap();
+    let json: ErrorResponse = serde_json::from_str(body_str).unwrap();
 
     let pretty_json = serde_json::to_string_pretty(&json).unwrap();
     println!("Response body: {}", pretty_json);
 
-    let root_cause = json["error"]["message"].as_str().unwrap();
+    let root_cause = json.error.unwrap().message;
     assert!(root_cause
         .contains("Either all nodes should have 'app' declared, or none should, but not a mix of both"));
 }
@@ -84,8 +84,8 @@ async fn test_cmd_dev_server_graphs_app_property_not_exist() {
 
     let body = test::read_body(resp).await;
     let body_str = std::str::from_utf8(&body).unwrap();
-    let json =
-        serde_json::from_str::<ApiResponse<Vec<RespGraph>>>(body_str).unwrap();
+    let json: ApiResponse<Vec<RespGraph>> =
+        serde_json::from_str(body_str).unwrap();
 
     let pretty_json = serde_json::to_string_pretty(&json).unwrap();
     println!("Response body: {}", pretty_json);
@@ -121,9 +121,8 @@ async fn test_cmd_dev_server_connections_has_msg_conversion() {
 
     let body = test::read_body(resp).await;
     let body_str = std::str::from_utf8(&body).unwrap();
-    let json =
-        serde_json::from_str::<ApiResponse<Vec<DevServerConnection>>>(body_str)
-            .unwrap();
+    let json: ApiResponse<Vec<DevServerConnection>> =
+        serde_json::from_str(body_str).unwrap();
 
     let pretty_json = serde_json::to_string_pretty(&json).unwrap();
     println!("Response body: {}", pretty_json);

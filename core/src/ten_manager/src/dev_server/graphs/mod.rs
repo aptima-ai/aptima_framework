@@ -156,7 +156,8 @@ mod tests {
 
         assert_eq!(graphs.data, expected_graphs);
 
-        let json: serde_json::Value = serde_json::from_str(body_str).unwrap();
+        let json: ApiResponse<Vec<RespGraph>> =
+            serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
     }

@@ -95,14 +95,14 @@ mod tests {
     use crate::{
         config::TmanConfig,
         dev_server::{
-            graphs::update::update_graph, mock::tests::inject_all_pkgs_for_mock,
+            graphs::update::{update_graph, GraphUpdateRequest},
+            mock::tests::inject_all_pkgs_for_mock,
         },
         utils::read_file_to_string,
     };
     use actix_web::{test, App};
-    use serde_json::Value;
     use std::{env, fs};
-    use ten_rust::pkg_info::property::parse_property_from_file;
+    use ten_rust::pkg_info::property::{parse_property_from_file, Property};
 
     #[actix_web::test]
     async fn test_dump_property_success() {
@@ -151,10 +151,11 @@ mod tests {
         )
         .await;
 
-        let input_data: Value = serde_json::from_str(include_str!(
-            "test_data_embed/dump_property_success_input_data.json"
-        ))
-        .unwrap();
+        let input_data: GraphUpdateRequest =
+            serde_json::from_str(include_str!(
+                "test_data_embed/dump_property_success_input_data.json"
+            ))
+            .unwrap();
 
         let req = test::TestRequest::put()
             .uri("/api/dev-server/v1/graphs/default")
@@ -199,9 +200,8 @@ mod tests {
 
         let new_property_str =
             read_file_to_string(property_file_path.clone()).unwrap();
-        let new_property_json: serde_json::Value =
-            serde_json::from_str(&new_property_str).unwrap();
-        assert!(new_property_json.is_object());
+
+        serde_json::from_str::<Property>(&new_property_str).unwrap();
 
         fs::remove_file(property_file_path)
             .expect("Failed to remove property.json file");
