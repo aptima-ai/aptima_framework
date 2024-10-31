@@ -4,6 +4,3 @@
 # See the LICENSE file for more information.
 #
 from . import addon
-from .log import logger
-
-logger.info("default_async_extension_python extension loaded")

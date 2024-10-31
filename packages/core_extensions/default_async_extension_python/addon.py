@@ -9,12 +9,11 @@ from ten import (
     TenEnv,
 )
 from .extension import DefaultAsyncExtension
-from .log import logger
 
 
 @register_addon_as_extension("default_async_extension_python")
 class DefaultAsyncExtensionAddon(Addon):
 
     def on_create_instance(self, ten_env: TenEnv, name: str, context) -> None:
-        logger.info("DefaultAsyncExtensionAddon on_create_instance")
+        ten_env.log_info("DefaultAsyncExtensionAddon on_create_instance")
         ten_env.on_create_instance_done(DefaultAsyncExtension(name), context)

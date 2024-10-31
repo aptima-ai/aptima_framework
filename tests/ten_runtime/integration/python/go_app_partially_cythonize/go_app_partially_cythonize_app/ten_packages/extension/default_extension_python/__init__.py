@@ -5,6 +5,3 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 from . import addon
-from .log import logger
-
-logger.info("default_extension_python extension loaded")
