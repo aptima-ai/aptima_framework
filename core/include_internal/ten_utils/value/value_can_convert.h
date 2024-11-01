@@ -73,3 +73,49 @@ TEN_UTILS_PRIVATE_API bool can_convert_uint32_to_int32(uint32_t value);
 TEN_UTILS_PRIVATE_API bool can_convert_uint64_to_int32(uint64_t value);
 
 TEN_UTILS_PRIVATE_API bool can_convert_uint64_to_int64(uint64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int8_to_uint8(int8_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int16_to_uint8(int16_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int32_to_uint8(int32_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int64_to_uint8(int64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_uint16_to_uint8(uint16_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_uint32_to_uint8(uint32_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_uint64_to_uint8(uint64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int8_to_uint16(int8_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int16_to_uint16(int16_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int32_to_uint16(int32_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int64_to_uint16(int64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_uint32_to_uint16(uint32_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_uint64_to_uint16(uint64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int8_to_uint32(int8_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int16_to_uint32(int16_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int32_to_uint32(int32_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int64_to_uint32(int64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_uint64_to_uint32(uint64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int8_to_uint64(int8_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int16_to_uint64(int16_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int32_to_uint64(int32_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_int64_to_uint64(int64_t value);
+
+TEN_UTILS_PRIVATE_API bool can_convert_float64_to_float32(double value);
