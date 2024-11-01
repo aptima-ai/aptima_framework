@@ -95,7 +95,7 @@ By running the following commands, an extension called `hello_world` will be cre
 {% tab title="Python" %}
 <pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">cd agents
 
-<strong>tman install extension default_extension_python --template-mode --template-data package_name=hello_world --template-data class_name_prefix=HelloWorld
+<strong>tman install extension default_async_extension_python --template-mode --template-data package_name=hello_world --template-data class_name_prefix=HelloWorld
 </strong>
 </code></pre>
 {% endtab %}
@@ -120,9 +120,11 @@ By running the following commands, an extension called `hello_world` will be cre
 After running the command, the log will display something like this:
 
 <pre class="language-bash" data-title=">_ Bash"><code class="lang-bash">...
-Resolving packages...
-<strong>:-)  Install successfully in xxx seconds
-</strong>...
+  Creating manifest-lock.json...
++  Installing packages...
+  <strong>[00:00:01] [########################################]      11/11      Done</strong>
+                <strong>:-)  Install successfully in 20 seconds</strong>
+...
 </code></pre>
 
 ## 4. Adding API to the extension
@@ -132,15 +134,25 @@ Navigate into the `hello_world` directory and open manifest.json. Add the API ob
 <pre class="language-json" data-title="./hello_world/manifest.json"><code class="lang-json">{
   "type": "extension",
   "name": "hello_world",
-  "version": "0.4.1",
-  "language": "python",
+  "version": "0.3.1",
   "dependencies": [
     {
       "type": "system",
-      "name": "rte_runtime_python",
-      "version": "0.4.1"
+      "name": "ten_runtime_python",
+      "version": "0.3.1"
     }
   ],
+  "package": {
+    "include": [
+      "manifest.json",
+      "property.json",
+      "BUILD.gn",
+      "**.tent",
+      "**.py",
+      "README.md",
+      "tests/**"
+    ]
+  },
   "api": {
 <strong>    "data_in": [
 </strong><strong>      {
