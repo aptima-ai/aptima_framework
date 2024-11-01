@@ -116,3 +116,115 @@ bool can_convert_uint64_to_float64(uint64_t value) {
   uint64_t converted_back = (uint64_t)double_value;
   return value == converted_back;
 }
+
+bool can_convert_int16_to_int8(int16_t value) {
+  if (value < INT8_MIN || value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_int32_to_int8(int32_t value) {
+  if (value < INT8_MIN || value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_int64_to_int8(int64_t value) {
+  if (value < INT8_MIN || value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint8_to_int8(uint8_t value) {
+  if (value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint16_to_int8(uint16_t value) {
+  if (value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint32_to_int8(uint32_t value) {
+  if (value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint64_to_int8(uint64_t value) {
+  if (value > INT8_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_int32_to_int16(int32_t value) {
+  if (value < INT16_MIN || value > INT16_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_int64_to_int16(int64_t value) {
+  if (value < INT16_MIN || value > INT16_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint16_to_int16(uint16_t value) {
+  if (value > INT16_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint32_to_int16(uint32_t value) {
+  if (value > INT16_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint64_to_int16(uint64_t value) {
+  if (value > INT16_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_int64_to_int32(int64_t value) {
+  if (value < INT32_MIN || value > INT32_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint32_to_int32(uint32_t value) {
+  if (value > INT32_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint64_to_int32(uint64_t value) {
+  if (value > INT32_MAX) {
+    return false;
+  }
+  return true;
+}
+
+bool can_convert_uint64_to_int64(uint64_t value) {
+  if (value > INT64_MAX) {
+    return false;
+  }
+  return true;
+}

@@ -78,6 +78,8 @@ static bool ten_schema_keyword_type_validate_value(
   return true;
 }
 
+// Automatically perform TEN-supported value conversion based on the type. This
+// conversion is generally safe, meaning the value will not change as a result.
 static bool ten_schema_keyword_type_adjust_value(
     ten_schema_keyword_t *self_, ten_value_t *value,
     ten_schema_error_t *schema_err) {
@@ -92,6 +94,8 @@ static bool ten_schema_keyword_type_adjust_value(
   TEN_TYPE schema_type = self->type;
   TEN_TYPE value_type = ten_value_get_type(value);
   if (value_type == schema_type) {
+    // The types are consistent, so there's no need to adjust the value; this is
+    // a normal situation.
     return true;
   }
 

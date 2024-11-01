@@ -6,15 +6,17 @@
 //
 #include "ten_utils/value/value_string.h"
 
+#include <errno.h>
 #include <float.h>
 #include <inttypes.h>
 
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/constant_str.h"
 #include "include_internal/ten_utils/value/value_convert.h"
+#include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"
@@ -158,6 +160,44 @@ bool ten_value_to_string(ten_value_t *self, ten_string_t *str,
   return true;
 }
 
+static bool ten_value_adjust_from_int_type(TEN_TYPE type, ten_value_t *result,
+                                           ten_error_t *err) {
+  TEN_ASSERT(result && err, "Invalid argument.");
+
+  bool success = false;
+
+  switch (type) {
+    case TEN_TYPE_INT8:
+      success = ten_value_convert_to_int8(result, err);
+      break;
+    case TEN_TYPE_INT16:
+      success = ten_value_convert_to_int16(result, err);
+      break;
+    case TEN_TYPE_INT32:
+      success = ten_value_convert_to_int32(result, err);
+      break;
+    case TEN_TYPE_INT64:
+      break;
+    case TEN_TYPE_UINT8:
+      success = ten_value_convert_to_uint8(result, err);
+      break;
+    case TEN_TYPE_UINT16:
+      success = ten_value_convert_to_uint16(result, err);
+      break;
+    case TEN_TYPE_UINT32:
+      success = ten_value_convert_to_uint32(result, err);
+      break;
+    case TEN_TYPE_UINT64:
+      success = ten_value_convert_to_uint64(result, err);
+      break;
+    default:
+      TEN_ASSERT(0, "Should not happen.");
+      break;
+  }
+
+  return success;
+}
+
 ten_value_t *ten_value_from_type_and_string(TEN_TYPE type, const char *str,
                                             ten_error_t *err) {
   TEN_ASSERT(type, "Invalid argument.");
@@ -170,41 +210,36 @@ ten_value_t *ten_value_from_type_and_string(TEN_TYPE type, const char *str,
     case TEN_TYPE_INT8:
     case TEN_TYPE_INT16:
     case TEN_TYPE_INT32:
-    case TEN_TYPE_INT64:
+    case TEN_TYPE_INT64: {
+      errno = 0;
+      int64_t int64_val = strtol(str, NULL, 10);
+      if (errno == ERANGE) {
+        if (err) {
+          ten_error_set(err, TEN_ERRNO_GENERIC, "Integer value out of range");
+        }
+        return NULL;
+      }
+
+      result = ten_value_create_int64(int64_val);
+      success = ten_value_adjust_from_int_type(type, result, err);
+      break;
+    }
+
     case TEN_TYPE_UINT8:
     case TEN_TYPE_UINT16:
     case TEN_TYPE_UINT32:
     case TEN_TYPE_UINT64: {
-      int64_t int64_val = strtol(str, NULL, 10);
-      result = ten_value_create_int64(int64_val);
-
-      switch (type) {
-        case TEN_TYPE_INT8:
-          success = ten_value_convert_to_int8(result, err);
-          break;
-        case TEN_TYPE_INT16:
-          success = ten_value_convert_to_int16(result, err);
-        case TEN_TYPE_INT32:
-          success = ten_value_convert_to_int32(result, err);
-          break;
-        case TEN_TYPE_INT64:
-          break;
-        case TEN_TYPE_UINT8:
-          success = ten_value_convert_to_uint8(result, err);
-          break;
-        case TEN_TYPE_UINT16:
-          success = ten_value_convert_to_uint16(result, err);
-          break;
-        case TEN_TYPE_UINT32:
-          success = ten_value_convert_to_uint32(result, err);
-          break;
-        case TEN_TYPE_UINT64:
-          success = ten_value_convert_to_uint64(result, err);
-          break;
-        default:
-          TEN_ASSERT(0, "Should not happen.");
-          break;
+      errno = 0;
+      uint64_t uint64_val = strtoul(str, NULL, 10);
+      if (errno == ERANGE) {
+        if (err) {
+          ten_error_set(err, TEN_ERRNO_GENERIC, "Integer value out of range");
+        }
+        return NULL;
       }
+
+      result = ten_value_create_uint64(uint64_val);
+      success = ten_value_adjust_from_int_type(type, result, err);
       break;
     }
 
@@ -223,16 +258,26 @@ ten_value_t *ten_value_from_type_and_string(TEN_TYPE type, const char *str,
 
     case TEN_TYPE_FLOAT32:
     case TEN_TYPE_FLOAT64: {
+      errno = 0;
       double double_val = strtod(str, NULL);
+      if (errno == ERANGE) {
+        if (err) {
+          ten_error_set(err, TEN_ERRNO_GENERIC,
+                        "Floating point value out of range");
+        }
+        return NULL;
+      }
 
       switch (type) {
         case TEN_TYPE_FLOAT32:
-          result = ten_value_create_float32(
-              double_val < FLT_MIN || double_val > FLT_MAX ? 0.0F
-                                                           : (float)double_val);
+          result = ten_value_create_float32(double_val < -FLT_MAX ||
+                                                    double_val > FLT_MAX
+                                                ? 0.0F
+                                                : (float)double_val);
           break;
         case TEN_TYPE_FLOAT64:
-          result = ten_value_create_float64(double_val);
+          result = ten_value_create_float64(
+              double_val < -DBL_MAX || double_val > DBL_MAX ? 0.0 : double_val);
           break;
         default:
           TEN_ASSERT(0, "Should not happen.");
@@ -247,7 +292,9 @@ ten_value_t *ten_value_from_type_and_string(TEN_TYPE type, const char *str,
   }
 
   if (!success) {
-    ten_value_destroy(result);
+    if (result) {
+      ten_value_destroy(result);
+    }
     result = NULL;
   }
 
