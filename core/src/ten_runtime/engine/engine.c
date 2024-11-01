@@ -18,6 +18,7 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/remote/remote.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/container/hash_table.h"
@@ -61,6 +62,8 @@ void ten_engine_destroy(ten_engine_t *self) {
   TEN_ASSERT(
       (self->extension_context == NULL) && ten_list_is_empty(&self->timers),
       "Should not happen.");
+
+  ten_env_destroy(self->ten_env);
 
   ten_signature_set(&self->signature, 0);
 
@@ -198,6 +201,8 @@ ten_engine_t *ten_engine_create(ten_app_t *app, ten_shared_ptr_t *cmd) {
   self->original_start_graph_cmd_of_enabling_engine = NULL;
   self->cmd_stop_graph = NULL;
 
+  self->ten_env = NULL;
+
   self->long_running_mode = ten_cmd_start_graph_get_long_running_mode(cmd);
 
   // This is a workaround as the 'close_trigger_gc' in the ten_remote_t is
@@ -219,6 +224,11 @@ ten_engine_t *ten_engine_create(ten_app_t *app, ten_shared_ptr_t *cmd) {
   ten_engine_init_individual_eventloop_relevant_vars(self, app);
   if (self->has_own_loop) {
     ten_engine_create_its_own_thread(self);
+  } else {
+    // Since the engine does not have its own run loop, it means that it will
+    // reuse the app's run loop. Therefore, the current app thread is also the
+    // engine thread, allowing us to create the ten_env object here.
+    self->ten_env = ten_env_create_for_engine(self);
   }
 
   return self;

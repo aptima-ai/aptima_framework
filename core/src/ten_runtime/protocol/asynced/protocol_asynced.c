@@ -21,6 +21,7 @@
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/remote/remote.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/protocol/close.h"
 #include "ten_utils/container/list.h"
@@ -30,6 +31,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
@@ -395,6 +397,54 @@ void ten_protocol_asynced_on_connected_async(ten_protocol_asynced_t *self,
                              (void *)is_connected);  // NOLINT
 }
 
+static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
+                                                      void *instance,
+                                                      void *cb_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_app_t *app = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+
+  ten_protocol_asynced_creation_info_t *info =
+      (ten_protocol_asynced_creation_info_t *)cb_data;
+  TEN_ASSERT(info, "Invalid argument.");
+
+  ten_protocol_asynced_t *listening_protocol = info->user_data;
+  TEN_ASSERT(listening_protocol &&
+                 ten_protocol_check_integrity(&listening_protocol->base, true),
+             "Invalid argument.");
+
+  ten_protocol_asynced_t *protocol = instance;
+  if (!protocol) {
+    TEN_LOGE("Failed to create the protocol instance.");
+    info->on_created(NULL, info);
+    return;
+  }
+
+  // Those implementation protocols are used for handling the messages from
+  // the client side, and the related connection (i.e., the 'ten_connection_t'
+  // object) might need to be migrated, so set the value to 'INIT' as the
+  // default value is 'DONE'. Refer to 'ten_protocol_asynced_init()'.
+  protocol->migration_state = TEN_CONNECTION_MIGRATION_STATE_INIT;
+
+  // We can _not_ know whether the protocol role is
+  // 'TEN_PROTOCOL_ROLE_IN_INTERNAL' or 'TEN_PROTOCOL_ROLE_IN_EXTERNAL' until
+  // the message received from the protocol is processed. Refer to
+  // 'ten_connection_on_msgs()' and
+  // 'ten_connection_handle_command_from_external_client()'.
+  protocol->base.role = TEN_PROTOCOL_ROLE_IN_DEFAULT;
+  protocol->base.on_accepted = listening_protocol->base.on_accepted;
+
+  ten_protocol_attach_to_app_and_thread(&protocol->base, app);
+
+  if (protocol->base.on_accepted) {
+    protocol->base.on_accepted(&protocol->base);
+  }
+
+  info->on_created(protocol, info);
+}
+
 static void ten_protocol_asynced_on_client_accepted(void *self, void *info_) {
   ten_protocol_asynced_t *listening_protocol = (ten_protocol_asynced_t *)self;
   TEN_ASSERT(listening_protocol, "Should not happen.");
@@ -423,31 +473,11 @@ static void ten_protocol_asynced_on_client_accepted(void *self, void *info_) {
     ten_app_t *app = listening_base_protocol->attached_target.app;
     TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
 
-    ten_protocol_asynced_t *protocol = addon_host->addon->on_create_instance(
-        addon_host->addon, addon_host->ten_env, NULL);
-    TEN_ASSERT(protocol, "Should not happen.");
-
-    // Those implementation protocols are used for handling the messages from
-    // the client side, and the related connection (i.e., the 'ten_connection_t'
-    // object) might need to be migrated, so set the value to 'INIT' as the
-    // default value is 'DONE'. Refer to 'ten_protocol_asynced_init()'.
-    protocol->migration_state = TEN_CONNECTION_MIGRATION_STATE_INIT;
-
-    // We can _not_ know whether the protocol role is
-    // 'TEN_PROTOCOL_ROLE_IN_INTERNAL' or 'TEN_PROTOCOL_ROLE_IN_EXTERNAL' until
-    // the message received from the protocol is processed. Refer to
-    // 'ten_connection_on_msgs()' and
-    // 'ten_connection_handle_command_from_external_client()'.
-    protocol->base.role = TEN_PROTOCOL_ROLE_IN_DEFAULT;
-    protocol->base.on_accepted = listening_base_protocol->on_accepted;
-
-    ten_protocol_attach_to_app_and_thread(&protocol->base, app);
-
-    if (protocol->base.on_accepted) {
-      protocol->base.on_accepted(&protocol->base);
-    }
-
-    info->on_created(protocol, info);
+    bool rc = ten_addon_create_instance_async(
+        app->ten_env, ten_string_get_raw_str(&addon_host->name),
+        ten_string_get_raw_str(&addon_host->name), TEN_ADDON_TYPE_PROTOCOL,
+        ten_app_thread_on_client_protocol_created, info);
+    TEN_ASSERT(rc, "Should not happen.");
   }
 
   // The task is completed, so delete a reference to the 'protocol' to reflect

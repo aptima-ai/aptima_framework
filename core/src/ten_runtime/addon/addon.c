@@ -48,33 +48,30 @@ bool ten_addon_check_integrity(ten_addon_t *self) {
   return true;
 }
 
-void ten_addon_init(
-    ten_addon_t *self, ten_addon_on_init_func_t on_init,
-    ten_addon_on_deinit_func_t on_deinit,
-    ten_addon_on_create_instance_async_func_t on_create_instance_async,
-    ten_addon_on_destroy_instance_async_func_t on_destroy_instance_async) {
+void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
+                    ten_addon_on_deinit_func_t on_deinit,
+                    ten_addon_on_create_instance_func_t on_create_instance,
+                    ten_addon_on_destroy_instance_func_t on_destroy_instance) {
   ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)self, NULL);
   ten_signature_set(&self->signature, TEN_ADDON_SIGNATURE);
 
   self->on_init = on_init;
   self->on_deinit = on_deinit;
-  self->on_create_instance = NULL;
-  self->on_destroy_instance = NULL;
-  self->on_create_instance_async = on_create_instance_async;
-  self->on_destroy_instance_async = on_destroy_instance_async;
+  self->on_create_instance = on_create_instance;
+  self->on_destroy_instance = on_destroy_instance;
 
   self->user_data = NULL;
 }
 
 ten_addon_t *ten_addon_create(
     ten_addon_on_init_func_t on_init, ten_addon_on_deinit_func_t on_deinit,
-    ten_addon_on_create_instance_async_func_t on_create_instance_async,
-    ten_addon_on_destroy_instance_async_func_t on_destroy_instance_async) {
+    ten_addon_on_create_instance_func_t on_create_instance,
+    ten_addon_on_destroy_instance_func_t on_destroy_instance) {
   ten_addon_t *self = TEN_MALLOC(sizeof(ten_addon_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
-  ten_addon_init(self, on_init, on_deinit, on_create_instance_async,
-                 on_destroy_instance_async);
+  ten_addon_init(self, on_init, on_deinit, on_create_instance,
+                 on_destroy_instance);
 
   return self;
 }
@@ -327,15 +324,6 @@ ten_addon_host_t *ten_addon_host_find(const char *addon_name,
   return NULL;
 }
 
-static void *ten_addon_host_create_instance(ten_addon_host_t *self,
-                                            const char *name) {
-  TEN_ASSERT(self && ten_addon_host_check_integrity(self) && name,
-             "Should not happen.");
-  TEN_ASSERT(self->addon->on_create_instance, "Should not happen.");
-
-  return self->addon->on_create_instance(self->addon, self->ten_env, name);
-}
-
 static ten_addon_context_t *ten_addon_context_create(void) {
   ten_addon_context_t *self = TEN_MALLOC(sizeof(ten_addon_context_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
@@ -378,16 +366,10 @@ static void ten_addon_host_on_create_instance_async(
   addon_context->addon_on_create_instance_async_cb = cb;
   addon_context->addon_on_create_instance_async_cb_data = cb_data;
 
-  if (self->addon->on_create_instance_async) {
-    TEN_ASSERT(self->addon->on_create_instance_async, "Should not happen.");
-    self->addon->on_create_instance_async(self->addon, self->ten_env, name,
-                                          addon_context);
-  } else if (self->addon->on_create_instance) {
-    void *instance = ten_addon_host_create_instance(self, name);
-    TEN_ASSERT(instance, "Should not happen.");
-
-    ten_env_on_create_instance_done(self->ten_env, instance, addon_context,
-                                    NULL);
+  if (self->addon->on_create_instance) {
+    TEN_ASSERT(self->addon->on_create_instance, "Should not happen.");
+    self->addon->on_create_instance(self->addon, self->ten_env, name,
+                                    addon_context);
   } else {
     TEN_ASSERT(0,
                "Failed to create instance from %s, because it does not define "
@@ -435,68 +417,6 @@ bool ten_addon_create_instance_async(
   return true;
 }
 
-void *ten_addon_create_instance(TEN_UNUSED ten_env_t *ten_env,
-                                const char *addon_name,
-                                const char *instance_name,
-                                TEN_ADDON_TYPE type) {
-  // We increase the refcount of the 'addon' here, and will decrease the
-  // refcount in "ten_(extension/extension_group)_set_addon" after the
-  // extension/extension_group instance has been created.
-
-  // We can not detect the addon type based on the `ten` instance here, as the
-  // `ten` instance is not attached to the expected addon, instead it is
-  // attached to the initiator of the creation request.
-  ten_addon_host_t *addon_host = ten_addon_host_find(addon_name, type);
-  TEN_ASSERT(addon_host, "Should not happen.");
-
-  void *instance = ten_addon_host_create_instance(addon_host, instance_name);
-  TEN_ASSERT(instance, "Should not happen.");
-
-  switch (addon_host->type) {
-    case TEN_ADDON_TYPE_EXTENSION: {
-      ten_extension_t *extension = instance;
-      TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-                 "Should not happen.");
-
-      ten_extension_set_addon(extension, addon_host);
-      break;
-    }
-
-    case TEN_ADDON_TYPE_EXTENSION_GROUP: {
-      ten_extension_group_t *extension_group = instance;
-      TEN_ASSERT(
-          extension_group &&
-              // TEN_NOLINTNEXTLINE(thread-check)
-              // thread-check: The extension thread has not been created
-              // yet, so it is thread safe
-              ten_extension_group_check_integrity(extension_group, false),
-          "Should not happen.");
-
-      ten_extension_group_set_addon(extension_group, addon_host);
-      break;
-    }
-
-    case TEN_ADDON_TYPE_PROTOCOL: {
-      ten_protocol_t *protocol = instance;
-      TEN_ASSERT(protocol &&
-                     // TEN_NOLINTNEXTLINE(thread-check)
-                     // thread-check: The extension thread has not been created
-                     // yet, so it is thread safe
-                     ten_protocol_check_integrity(protocol, false),
-                 "Should not happen.");
-
-      ten_protocol_set_addon(protocol, addon_host);
-      break;
-    }
-
-    default:
-      TEN_ASSERT(0, "Should not happen.");
-      break;
-  }
-
-  return instance;
-}
-
 /**
  * @param ten Might be the ten of the 'engine', or the ten of an extension
  * thread(group).
@@ -527,13 +447,10 @@ bool ten_addon_host_destroy_instance_async(
   addon_context->addon_on_destroy_instance_async_cb = cb;
   addon_context->addon_on_destroy_instance_async_cb_data = cb_data;
 
-  if (self->addon->on_destroy_instance_async) {
-    TEN_ASSERT(self->addon->on_destroy_instance_async, "Should not happen.");
-    self->addon->on_destroy_instance_async(self->addon, self->ten_env, instance,
-                                           addon_context);
-  } else if (self->addon->on_destroy_instance) {
-    ten_addon_host_destroy_instance(self, self->ten_env, instance);
-    ten_env_on_destroy_instance_done(self->ten_env, addon_context, NULL);
+  if (self->addon->on_destroy_instance) {
+    TEN_ASSERT(self->addon->on_destroy_instance, "Should not happen.");
+    self->addon->on_destroy_instance(self->addon, self->ten_env, instance,
+                                     addon_context);
   } else {
     TEN_ASSERT(0,
                "Failed to destroy an instance from %s, because it does not "
@@ -551,7 +468,7 @@ bool ten_addon_host_destroy_instance(ten_addon_host_t *self, ten_env_t *ten_env,
   TEN_ASSERT(self && instance, "Should not happen.");
   TEN_ASSERT(self->addon->on_destroy_instance, "Should not happen.");
 
-  self->addon->on_destroy_instance(self->addon, self->ten_env, instance);
+  self->addon->on_destroy_instance(self->addon, self->ten_env, instance, NULL);
 
   return true;
 }

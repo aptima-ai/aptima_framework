@@ -9,9 +9,12 @@
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/protocol/protocol.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uri.h"
 #include "ten_utils/macro/check.h"
@@ -105,4 +108,117 @@ ten_addon_host_t *ten_addon_protocol_find(const char *protocol) {
   ten_mutex_unlock(store->lock);
 
   return result;
+}
+
+static ten_addon_create_protocol_info_t *ten_addon_create_protocol_info_create(
+    const char *uri, TEN_PROTOCOL_ROLE role,
+    ten_env_addon_on_create_protocol_async_cb_t cb, void *user_data) {
+  TEN_ASSERT(uri && role > TEN_PROTOCOL_ROLE_INVALID, "Should not happen.");
+
+  ten_addon_create_protocol_info_t *info =
+      (ten_addon_create_protocol_info_t *)TEN_MALLOC(
+          sizeof(ten_addon_create_protocol_info_t));
+  TEN_ASSERT(info, "Failed to allocate memory.");
+
+  ten_string_init_formatted(&info->uri, "%s", uri);
+  info->role = role;
+  info->cb = cb;
+  info->user_data = user_data;
+
+  return info;
+}
+
+static void ten_addon_create_protocol_info_destroy(
+    ten_addon_create_protocol_info_t *info) {
+  TEN_ASSERT(info, "Should not happen.");
+
+  ten_string_deinit(&info->uri);
+
+  TEN_FREE(info);
+}
+
+static void proxy_on_addon_protocol_created(ten_env_t *ten_env, void *instance,
+                                            void *cb_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_addon_create_protocol_info_t *info =
+      (ten_addon_create_protocol_info_t *)cb_data;
+  TEN_ASSERT(info, "Should not happen.");
+
+  ten_protocol_t *protocol = instance;
+  if (protocol) {
+    ten_protocol_determine_default_property_value(protocol);
+
+    ten_string_set_formatted(&protocol->uri, "%s",
+                             ten_string_get_raw_str(&info->uri));
+    protocol->role = info->role;
+  }
+
+  if (info->cb) {
+    info->cb(ten_env, protocol, info->user_data);
+  }
+
+  ten_addon_create_protocol_info_destroy(info);
+}
+
+bool ten_addon_create_protocol_async(
+    ten_env_t *ten_env, const char *uri, TEN_PROTOCOL_ROLE role,
+    ten_env_addon_on_create_protocol_async_cb_t cb, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(uri && role > TEN_PROTOCOL_ROLE_INVALID, "Should not happen.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  TEN_ENV_ATTACH_TO attach_to = ten_env_get_attach_to(ten_env);
+  if (attach_to != TEN_ENV_ATTACH_TO_APP &&
+      attach_to != TEN_ENV_ATTACH_TO_ENGINE) {
+    TEN_LOGE("Invalid ten_env attach_to: %d", attach_to);
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid ten_env.");
+    }
+    return false;
+  }
+
+  ten_string_t *protocol_str = ten_uri_get_protocol(uri);
+  ten_addon_host_t *addon_host =
+      ten_addon_protocol_find(ten_string_get_raw_str(protocol_str));
+  if (!addon_host) {
+    TEN_LOGE("Can not handle protocol '%s' because no addon installed for it",
+             uri);
+    ten_string_destroy(protocol_str);
+
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_GENERIC,
+                    "No addon installed for the protocol.");
+    }
+    return false;
+  }
+
+  TEN_LOGD("Loading protocol addon: %s",
+           ten_string_get_raw_str(&addon_host->name));
+
+  ten_string_destroy(protocol_str);
+
+  ten_addon_create_protocol_info_t *info =
+      ten_addon_create_protocol_info_create(uri, role, cb, user_data);
+  TEN_ASSERT(info, "Failed to allocate memory.");
+
+  bool rc = ten_addon_create_instance_async(
+      ten_env, ten_string_get_raw_str(&addon_host->name),
+      ten_string_get_raw_str(&addon_host->name), TEN_ADDON_TYPE_PROTOCOL,
+      proxy_on_addon_protocol_created, info);
+
+  if (!rc) {
+    TEN_LOGE("Failed to create protocol for %s", uri);
+    ten_addon_create_protocol_info_destroy(info);
+
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_GENERIC,
+                    "Failed to create protocol for uri: %s.", uri);
+    }
+    return false;
+  }
+
+  return true;
 }

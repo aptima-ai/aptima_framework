@@ -29,6 +29,7 @@
 
 typedef struct ten_extension_context_t ten_extension_context_t;
 typedef struct ten_app_t ten_app_t;
+typedef struct ten_env_t ten_env_t;
 
 struct ten_engine_t {
   ten_signature_t signature;
@@ -41,6 +42,8 @@ struct ten_engine_t {
 
   ten_app_t *app;
   ten_extension_context_t *extension_context;
+
+  ten_env_t *ten_env;
 
   // This means that the engine can start to handle messages, i.e. all the
   // extension threads are started successfully.

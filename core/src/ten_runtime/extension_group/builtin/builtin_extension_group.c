@@ -209,8 +209,6 @@ static ten_addon_t builtin_extension_group_addon = {
     TEN_ADDON_SIGNATURE,
     ten_builtin_extension_group_addon_on_init,
     NULL,
-    NULL,
-    NULL,
     ten_builtin_extension_group_addon_create_instance,
     ten_builtin_extension_group_addon_destroy_instance,
     NULL,

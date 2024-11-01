@@ -12,6 +12,7 @@
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/connection/connection.h"
 #include "include_internal/ten_runtime/engine/engine.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/event.h"
@@ -44,6 +45,10 @@ static void *ten_engine_thread_main(void *self_) {
 
   // Create an eventloop dedicated to the engine.
   self->loop = ten_runloop_create(NULL);
+
+  // Create the ten_env for the engine on the engine thread.
+  TEN_ASSERT(!self->ten_env, "Should not happen.");
+  self->ten_env = ten_env_create_for_engine(self);
 
   // Notify that the engine thread is started, and the mechanism related to the
   // pipe reading has been established, and could start to receive the file

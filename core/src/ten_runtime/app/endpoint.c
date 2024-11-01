@@ -12,7 +12,7 @@
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
-#include "include_internal/ten_utils/log/log.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 
 static ten_connection_t *create_connection_when_client_accepted(
@@ -36,22 +36,15 @@ static ten_connection_t *create_connection_when_client_accepted(
   return connection;
 }
 
-bool ten_app_create_endpoint(ten_app_t *self, ten_string_t *uri) {
+bool ten_app_endpoint_listen(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
-  self->endpoint_protocol = ten_protocol_create(ten_string_get_raw_str(uri),
-                                                TEN_PROTOCOL_ROLE_LISTEN);
   if (!self->endpoint_protocol) {
     return false;
   }
 
-  TEN_ASSERT(self->endpoint_protocol, "Should not happen.");
-
-  ten_protocol_attach_to_app(self->endpoint_protocol, self);
-  ten_protocol_set_on_closed(self->endpoint_protocol,
-                             ten_app_on_protocol_closed, self);
-
-  ten_protocol_listen(self->endpoint_protocol, ten_string_get_raw_str(uri),
+  ten_protocol_listen(self->endpoint_protocol,
+                      ten_string_get_raw_str(&self->uri),
                       create_connection_when_client_accepted);
 
   return true;

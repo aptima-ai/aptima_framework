@@ -47,7 +47,8 @@ static ten_buf_t ten_protocol_msgpack_on_output(ten_protocol_msgpack_t *self,
 }
 
 static void ten_protocol_msgpack_on_destroy_instance(
-    TEN_UNUSED ten_addon_t *addon, TEN_UNUSED ten_env_t *ten_env, void *_self) {
+    TEN_UNUSED ten_addon_t *addon, TEN_UNUSED ten_env_t *ten_env, void *_self,
+    TEN_UNUSED void *context) {
   ten_protocol_msgpack_t *self = (ten_protocol_msgpack_t *)_self;
   TEN_ASSERT(self &&
                  // TEN_NOLINTNEXTLINE(thread-check)
@@ -61,11 +62,13 @@ static void ten_protocol_msgpack_on_destroy_instance(
   ten_protocol_deinit(&self->base.base);
 
   TEN_FREE(self);
+
+  ten_env_on_destroy_instance_done(ten_env, context, NULL);
 }
 
-static void *ten_protocol_msgpack_on_create_instance(
-    TEN_UNUSED ten_addon_t *addon, TEN_UNUSED ten_env_t *ten_env,
-    TEN_UNUSED const char *name) {
+static void ten_protocol_msgpack_on_create_instance(
+    TEN_UNUSED ten_addon_t *addon, ten_env_t *ten_env,
+    TEN_UNUSED const char *name, void *context) {
   ten_protocol_msgpack_t *self =
       (ten_protocol_msgpack_t *)TEN_MALLOC(sizeof(ten_protocol_msgpack_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
@@ -77,7 +80,7 @@ static void *ten_protocol_msgpack_on_create_instance(
 
   ten_msgpack_parser_init(&self->parser);
 
-  return self;
+  ten_env_on_create_instance_done(ten_env, self, context, NULL);
 }
 
 static void ten_protocol_msgpack_on_init(TEN_UNUSED ten_addon_t *addon,
@@ -106,7 +109,6 @@ static ten_addon_t msgpack_protocol_factory = {
     NULL,
     ten_protocol_msgpack_on_create_instance,
     ten_protocol_msgpack_on_destroy_instance,
-    NULL,
     NULL,
     NULL,
 };

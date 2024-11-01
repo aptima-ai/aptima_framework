@@ -23,8 +23,8 @@
 #include "include_internal/ten_runtime/protocol/integrated/close.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/remote/remote.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/protocol/close.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/io/runloop.h"
@@ -33,6 +33,7 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 static void ten_protocol_close_task(void *self_, TEN_UNUSED void *arg) {
@@ -270,34 +271,30 @@ static void ten_protocol_integrated_set_stream(ten_protocol_integrated_t *self,
                            self);
 }
 
-static void ten_protocol_integrated_on_client_accepted(
-    ten_transport_t *transport, ten_stream_t *stream, TEN_UNUSED int status) {
-  TEN_ASSERT(transport && stream, "Should not happen.");
+static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
+                                                      void *instance,
+                                                      void *cb_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
 
-  ten_protocol_integrated_t *listening_protocol = transport->user_data;
-  TEN_ASSERT(listening_protocol, "Should not happen.");
+  ten_protocol_integrated_t *protocol = instance;
+  TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
+             "Should not happen.");
 
-  ten_protocol_t *listening_base_protocol = &listening_protocol->base;
+  ten_stream_t *stream = cb_data;
+  TEN_ASSERT(stream, "Should not happen.");
+
+  ten_app_t *app = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+
+  ten_protocol_t *listening_base_protocol = app->endpoint_protocol;
   TEN_ASSERT(listening_base_protocol &&
                  ten_protocol_check_integrity(listening_base_protocol, true),
              "Should not happen.");
 
-  // Create a new protocol for this newly accepted physical connection.
-  ten_protocol_integrated_t *new_communication_protocol =
-      ten_addon_create_instance(
-          listening_base_protocol->addon_host->ten_env,
-          ten_string_get_raw_str(&listening_base_protocol->addon_host->name),
-          ten_string_get_raw_str(&listening_base_protocol->addon_host->name),
-          TEN_ADDON_TYPE_PROTOCOL);
-  TEN_ASSERT(new_communication_protocol, "Should not happen.");
+  ten_protocol_determine_default_property_value(&protocol->base);
 
-  ten_protocol_determine_default_property_value(
-      &new_communication_protocol->base);
-  ten_env_on_create_instance_done(listening_base_protocol->addon_host->ten_env,
-                                  new_communication_protocol, NULL, NULL);
-
-  ten_protocol_t *new_communication_base_protocol =
-      &new_communication_protocol->base;
+  ten_protocol_t *new_communication_base_protocol = &protocol->base;
   TEN_ASSERT(
       new_communication_base_protocol &&
           ten_protocol_check_integrity(new_communication_base_protocol, true),
@@ -324,12 +321,36 @@ static void ten_protocol_integrated_on_client_accepted(
   TEN_ASSERT(connection && ten_connection_check_integrity(connection, true),
              "Should not happen.");
 
-  ten_protocol_integrated_set_stream(new_communication_protocol, stream);
+  ten_protocol_integrated_set_stream(protocol, stream);
 
   TEN_LOGD("Start read from stream");
 
   TEN_UNUSED int rc = ten_stream_start_read(stream);
   TEN_ASSERT(!rc, "ten_stream_start_read() failed: %d", rc);
+}
+
+static void ten_protocol_integrated_on_client_accepted(
+    ten_transport_t *transport, ten_stream_t *stream, TEN_UNUSED int status) {
+  TEN_ASSERT(transport && stream, "Should not happen.");
+
+  ten_protocol_integrated_t *listening_protocol = transport->user_data;
+  TEN_ASSERT(listening_protocol, "Should not happen.");
+
+  ten_protocol_t *listening_base_protocol = &listening_protocol->base;
+  TEN_ASSERT(listening_base_protocol &&
+                 ten_protocol_check_integrity(listening_base_protocol, true),
+             "Should not happen.");
+
+  ten_app_t *app = listening_base_protocol->attached_target.app;
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+
+  bool rc = ten_addon_create_instance_async(
+      app->ten_env,
+      ten_string_get_raw_str(&listening_base_protocol->addon_host->name),
+      ten_string_get_raw_str(&listening_base_protocol->addon_host->name),
+      TEN_ADDON_TYPE_PROTOCOL, ten_app_thread_on_client_protocol_created,
+      stream);
+  TEN_ASSERT(rc, "Should not happen.");
 }
 
 static void ten_protocol_integrated_listen(ten_protocol_integrated_t *self,

@@ -163,12 +163,6 @@ typedef struct ten_protocol_t ten_protocol_t;
 TEN_RUNTIME_API bool ten_protocol_check_integrity(ten_protocol_t *self,
                                                   bool check_thread);
 
-/**
- * @param uri Server uri
- */
-TEN_RUNTIME_API ten_protocol_t *ten_protocol_create(const char *uri,
-                                                    TEN_PROTOCOL_ROLE role);
-
 TEN_RUNTIME_API void ten_protocol_init(
     ten_protocol_t *self, const char *name, ten_protocol_close_func_t close,
     ten_protocol_on_output_func_t on_output, ten_protocol_listen_func_t listen,

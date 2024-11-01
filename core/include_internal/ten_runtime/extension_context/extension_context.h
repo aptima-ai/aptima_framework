@@ -55,7 +55,6 @@ struct ten_extension_context_t {
   ten_extension_context_on_closed_func_t on_closed;
   void *on_closed_data;
 
-  ten_env_t *ten_env;
   ten_engine_t *engine;
 
   // 'state_requester_cmd' will be used in the following scenarios:

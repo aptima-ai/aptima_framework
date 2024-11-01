@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
+#include "include_internal/ten_runtime/addon/protocol/protocol.h"
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/base_dir.h"
 #include "include_internal/ten_runtime/app/close.h"
@@ -17,13 +18,17 @@
 #include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
 #include "include_internal/ten_runtime/metadata/metadata.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
+#include "include_internal/ten_runtime/protocol/close.h"
+#include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/app/app.h"
+#include "ten_runtime/protocol/protocol.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 
 static void ten_app_adjust_and_validate_property_on_configure_done(
@@ -54,9 +59,64 @@ done:
   }
 }
 
-static void ten_app_on_configure_done_internal(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true) && self->loop,
+static void ten_app_start_auto_start_predefined_graph_and_trigger_on_init(
+    ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+  TEN_ASSERT(self->ten_env && ten_env_check_integrity(self->ten_env, true),
              "Should not happen.");
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool rc = ten_app_start_auto_start_predefined_graph(self, &err);
+  TEN_ASSERT(rc, "Should not happen, %s.", ten_error_errmsg(&err));
+
+  ten_error_deinit(&err);
+
+  // Trigger on_init.
+  ten_app_on_init(self->ten_env);
+}
+
+static void ten_app_on_endpoint_protocol_created(ten_env_t *ten_env,
+                                                 ten_protocol_t *protocol,
+                                                 void *cb_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_app_t *self = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+
+  if (!protocol) {
+    TEN_LOGE("Failed to create app endpoint protocol, FATAL ERROR.");
+    ten_app_close(self, NULL);
+    return;
+  }
+
+  TEN_ASSERT(ten_protocol_check_integrity(protocol, true),
+             "Should not happen, %p.", protocol);
+
+  self->endpoint_protocol = protocol;
+
+  ten_protocol_attach_to_app(self->endpoint_protocol, self);
+  ten_protocol_set_on_closed(self->endpoint_protocol,
+                             ten_app_on_protocol_closed, self);
+
+  if (!ten_app_endpoint_listen(self)) {
+    ten_app_close(self, NULL);
+    return;
+  }
+
+  ten_app_start_auto_start_predefined_graph_and_trigger_on_init(self);
+}
+
+void ten_app_on_configure_done(ten_env_t *ten_env) {
+  TEN_ASSERT(ten_env, "Invalid argument.");
+  TEN_ASSERT(ten_env_check_integrity(ten_env, true),
+             "Invalid use of ten_env %p.", ten_env);
+
+  ten_app_t *self = ten_env_get_attached_app(ten_env);
+  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
+  TEN_ASSERT(self->loop, "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
@@ -91,38 +151,34 @@ static void ten_app_on_configure_done_internal(ten_app_t *self) {
   ten_addon_load_all_from_ten_package_base_dirs(self, &err);
 
   if (!ten_app_get_predefined_graphs_from_property(self)) {
-    return;
+    goto error;
   }
 
-  // Create the protocol context store _BEFORE_ 'ten_app_create_endpoint()', the
-  // context data of the endpoint protocol will depend on the context store.
+  // Create the protocol context store _BEFORE_ creating the listening endpoint
+  // protocol as the context data of the endpoint protocol will depend on the
+  // context store.
   ten_app_create_protocol_context_store(self);
 
   if (!ten_string_is_equal_c_str(&self->uri, TEN_STR_LOCALHOST)) {
-    // Create the app listening endpoint if specifying one.
-    if (!ten_app_create_endpoint(self, &self->uri)) {
-      ten_app_close(self, NULL);
+    // Create the app listening endpoint protocol if specifying one.
+    rc = ten_addon_create_protocol_async(
+        self->ten_env, ten_string_get_raw_str(&self->uri),
+        TEN_PROTOCOL_ROLE_LISTEN, ten_app_on_endpoint_protocol_created, NULL,
+        &err);
+    if (!rc) {
+      TEN_LOGW("Failed to create app endpoint protocol, %s.",
+               ten_error_errmsg(&err));
+      goto error;
     }
+  } else {
+    ten_app_start_auto_start_predefined_graph_and_trigger_on_init(self);
   }
 
-  rc = ten_app_start_auto_start_predefined_graph(self, &err);
-  TEN_ASSERT(rc, "Should not happen, %s.", ten_error_errmsg(&err));
+  return;
 
+error:
   ten_error_deinit(&err);
-}
-
-void ten_app_on_configure_done(ten_env_t *ten_env) {
-  TEN_ASSERT(ten_env, "Invalid argument.");
-  TEN_ASSERT(ten_env_check_integrity(ten_env, true),
-             "Invalid use of ten_env %p.", ten_env);
-
-  ten_app_t *self = ten_env_get_attached_app(ten_env);
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  ten_app_on_configure_done_internal(self);
-
-  // Trigger on_init.
-  ten_app_on_init(ten_env);
+  ten_app_close(self, NULL);
 }
 
 void ten_app_on_configure(ten_env_t *ten_env) {

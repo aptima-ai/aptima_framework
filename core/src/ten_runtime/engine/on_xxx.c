@@ -26,6 +26,7 @@
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
+#include "ten_utils/macro/memory.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
 static void ten_engine_on_extension_thread_is_ready(
@@ -197,11 +198,6 @@ void ten_engine_on_addon_create_extension_group_done(void *self_, void *arg) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
 
-  ten_extension_context_t *extension_context = self->extension_context;
-  TEN_ASSERT(extension_context, "Invalid argument.");
-  TEN_ASSERT(ten_extension_context_check_integrity(extension_context, true),
-             "Invalid use of extension_context %p.", extension_context);
-
   ten_extension_context_on_addon_create_extension_group_done_info_t *info = arg;
   TEN_ASSERT(info, "Should not happen.");
 
@@ -214,7 +210,7 @@ void ten_engine_on_addon_create_extension_group_done(void *self_, void *arg) {
              "Should not happen.");
 
   ten_extension_context_on_addon_create_extension_group_done(
-      extension_context->ten_env, extension_group, info->addon_context);
+      self->ten_env, extension_group, info->addon_context);
 
   ten_extension_context_on_addon_create_extension_group_done_info_destroy(info);
 }
@@ -224,16 +220,50 @@ void ten_engine_on_addon_destroy_extension_group_done(void *self_, void *arg) {
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
 
-  ten_extension_context_t *extension_context = self->extension_context;
-  TEN_ASSERT(extension_context, "Invalid argument.");
-  TEN_ASSERT(ten_extension_context_check_integrity(extension_context, true),
-             "Invalid use of extension_context %p.", extension_context);
-
   ten_addon_context_t *addon_context = arg;
   TEN_ASSERT(addon_context, "Should not happen.");
 
   // This happens on the engine thread, so it's thread safe.
 
-  ten_extension_context_on_addon_destroy_extension_group_done(
-      extension_context->ten_env, addon_context);
+  ten_extension_context_on_addon_destroy_extension_group_done(self->ten_env,
+                                                              addon_context);
+}
+
+ten_engine_thread_on_addon_create_protocol_done_info_t *
+ten_engine_thread_on_addon_create_protocol_done_info_create(void) {
+  ten_engine_thread_on_addon_create_protocol_done_info_t *self = TEN_MALLOC(
+      sizeof(ten_engine_thread_on_addon_create_protocol_done_info_t));
+
+  self->protocol = NULL;
+  self->addon_context = NULL;
+
+  return self;
+}
+
+static void ten_engine_thread_on_addon_create_protocol_done_info_destroy(
+    ten_engine_thread_on_addon_create_protocol_done_info_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_FREE(self);
+}
+
+void ten_engine_thread_on_addon_create_protocol_done(void *self, void *arg) {
+  ten_engine_t *engine = self;
+  TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
+             "Should not happen.");
+
+  ten_engine_thread_on_addon_create_protocol_done_info_t *info = arg;
+  TEN_ASSERT(info, "Should not happen.");
+
+  ten_protocol_t *protocol = info->protocol;
+  ten_addon_context_t *addon_context = info->addon_context;
+  TEN_ASSERT(addon_context, "Should not happen.");
+
+  if (addon_context->addon_on_create_instance_async_cb) {
+    addon_context->addon_on_create_instance_async_cb(
+        engine->ten_env, protocol,
+        addon_context->addon_on_create_instance_async_cb_data);
+  }
+
+  ten_addon_context_destroy(addon_context);
+  ten_engine_thread_on_addon_create_protocol_done_info_destroy(info);
 }

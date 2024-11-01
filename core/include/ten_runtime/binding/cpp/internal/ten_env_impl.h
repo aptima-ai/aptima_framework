@@ -64,13 +64,6 @@ inline bool ten_env_t::on_create_extensions_done(
       err != nullptr ? err->get_internal_representation() : nullptr);
 }
 
-inline bool ten_env_t::addon_destroy_extension(ten::extension_t *extension,
-                                               error_t *err) {
-  return ten_addon_destroy_extension(
-      c_ten_env, extension->get_c_extension(),
-      err != nullptr ? err->get_internal_representation() : nullptr);
-}
-
 inline bool ten_env_t::addon_destroy_extension_async(
     ten::extension_t *extension, addon_destroy_extension_async_cb_t &&cb,
     error_t *err) {

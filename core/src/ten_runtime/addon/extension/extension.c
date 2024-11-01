@@ -26,36 +26,6 @@ static ten_addon_store_t g_extension_store = {
 
 ten_addon_store_t *ten_extension_get_store(void) { return &g_extension_store; }
 
-ten_extension_t *ten_addon_create_extension(ten_env_t *ten_env,
-                                            const char *addon_name,
-                                            const char *instance_name,
-                                            TEN_UNUSED ten_error_t *err) {
-  TEN_ASSERT(addon_name && instance_name, "Should not happen.");
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-  TEN_ASSERT(ten_env->attach_to == TEN_ENV_ATTACH_TO_EXTENSION_GROUP,
-             "Should not happen.");
-
-  return ten_addon_create_instance(ten_env, addon_name, instance_name,
-                                   TEN_ADDON_TYPE_EXTENSION);
-}
-
-bool ten_addon_create_extension_async_for_mock(
-    ten_env_t *ten_env, const char *addon_name, const char *instance_name,
-    ten_env_addon_on_create_instance_async_cb_t cb, void *cb_data,
-    TEN_UNUSED ten_error_t *err) {
-  TEN_ASSERT(addon_name && instance_name, "Should not happen.");
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-
-  // Use this trick to remember that this mock_ten is for use by the
-  // extension.
-  ten_env_set_attach_to(ten_env, TEN_ENV_ATTACH_TO_EXTENSION, err);
-
-  return ten_addon_create_instance_async(ten_env, addon_name, instance_name,
-                                         TEN_ADDON_TYPE_EXTENSION, cb, cb_data);
-}
-
 bool ten_addon_create_extension_async(
     ten_env_t *ten_env, const char *addon_name, const char *instance_name,
     ten_env_addon_on_create_instance_async_cb_t cb, void *cb_data,
@@ -98,39 +68,6 @@ bool ten_addon_create_extension_async(
         extension_group->extension_thread, addon_instance_info);
     return true;
   }
-}
-
-bool ten_addon_destroy_extension(ten_env_t *ten_env, ten_extension_t *extension,
-                                 TEN_UNUSED ten_error_t *err) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
-  TEN_ASSERT(ten_env->attach_to == TEN_ENV_ATTACH_TO_EXTENSION_GROUP,
-             "Should not happen.");
-
-  ten_addon_host_t *addon_host = extension->addon_host;
-  TEN_ASSERT(addon_host,
-             "Should not happen, otherwise, memory leakage will occur.");
-
-  return ten_addon_host_destroy_instance(addon_host, ten_env, extension);
-}
-
-bool ten_addon_destroy_extension_async_for_mock(
-    ten_env_t *ten_env, ten_extension_t *extension,
-    ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data,
-    TEN_UNUSED ten_error_t *err) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
-
-  ten_addon_host_t *addon_host = extension->addon_host;
-  TEN_ASSERT(addon_host,
-             "Should not happen, otherwise, memory leakage will occur.");
-
-  return ten_addon_host_destroy_instance_async(addon_host, ten_env, extension,
-                                               cb, cb_data);
 }
 
 bool ten_addon_destroy_extension_async(

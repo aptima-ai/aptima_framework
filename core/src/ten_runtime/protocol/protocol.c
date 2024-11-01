@@ -19,7 +19,6 @@
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "include_internal/ten_runtime/remote/remote.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/protocol/close.h"
@@ -28,6 +27,7 @@
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/uri.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/sanitizer/thread_check.h"
 #include "ten_utils/value/value_object.h"
@@ -79,8 +79,8 @@ static void ten_protocol_destroy(ten_protocol_t *self) {
   TEN_ASSERT(self->is_closed,
              "Protocol should be closed first before been destroyed.");
 
-  self->addon_host->addon->on_destroy_instance(self->addon_host->addon,
-                                               self->addon_host->ten_env, self);
+  self->addon_host->addon->on_destroy_instance(
+      self->addon_host->addon, self->addon_host->ten_env, self, NULL);
 }
 
 static void ten_protocol_on_end_of_life(TEN_UNUSED ten_ref_t *ref,
@@ -461,39 +461,6 @@ void ten_protocol_update_belonging_thread_on_cleaned(ten_protocol_t *self) {
 
   ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
       &self->closeable.thread_check);
-}
-
-ten_protocol_t *ten_protocol_create(const char *uri, TEN_PROTOCOL_ROLE role) {
-  TEN_ASSERT(uri && role > TEN_PROTOCOL_ROLE_INVALID, "Should not happen.");
-
-  ten_protocol_t *protocol = NULL;
-  ten_string_t *protocol_str = ten_uri_get_protocol(uri);
-
-  ten_addon_host_t *addon_host =
-      ten_addon_protocol_find(ten_string_get_raw_str(protocol_str));
-  if (!addon_host) {
-    TEN_LOGE("Can not handle protocol '%s' because no addon installed for it",
-             uri);
-    goto done;
-  }
-
-  TEN_LOGD("Loading protocol addon: %s",
-           ten_string_get_raw_str(&addon_host->name));
-
-  protocol = ten_addon_create_instance(
-      addon_host->ten_env, ten_string_get_raw_str(&addon_host->name),
-      ten_string_get_raw_str(&addon_host->name), TEN_ADDON_TYPE_PROTOCOL);
-  TEN_ASSERT(protocol, "Should not happen.");
-
-  ten_protocol_determine_default_property_value(protocol);
-  ten_env_on_create_instance_done(addon_host->ten_env, protocol, NULL, NULL);
-
-  ten_string_set_formatted(&protocol->uri, "%s", uri);
-  protocol->role = role;
-
-done:
-  ten_string_destroy(protocol_str);
-  return protocol;
 }
 
 void ten_protocol_set_addon(ten_protocol_t *self,

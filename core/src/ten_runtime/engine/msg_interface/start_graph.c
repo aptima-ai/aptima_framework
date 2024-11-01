@@ -24,6 +24,7 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
 
 void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
@@ -53,6 +54,7 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
   } else {
     // There are more apps need to be connected, so connect them now.
     ten_list_t new_works = TEN_LIST_INIT_VAL;
+    bool error_occurred = false;
 
     ten_list_foreach (&next, iter) {
       ten_string_t *dest_uri = ten_str_listnode_get(iter.node);
@@ -89,43 +91,56 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
 
         ten_list_push_ptr_back(&new_works, out_path, NULL);
 
-        ten_engine_connect_to_graph_remote(
+        bool rc = ten_engine_connect_to_graph_remote(
             self, ten_string_get_raw_str(dest_uri), child_cmd);
-
-        ten_shared_ptr_destroy(child_cmd);
+        if (!rc) {
+          TEN_LOGE("Failed to connect to %s.", dest_uri_c_str);
+          error_occurred = true;
+          ten_shared_ptr_destroy(child_cmd);
+          ten_engine_return_error_for_cmd_start_graph(
+              self, cmd, "Failed to connect to %s.", dest_uri_c_str);
+          break;
+        }
       } else {
         TEN_LOGD("%s is connected, there is nothing to do.", dest_uri_c_str);
       }
     }
 
-    if (!ten_list_is_empty(&new_works)) {
-      // This means that we can _not_ start the engine now. We must wait for
-      // these newly submitted 'start_graph' commands to be completed in order
-      // to start the engine, so we must save the current received 'start_graph'
-      // command (to prevent it from being destroyed) in order to return a
-      // correct cmd result according to it.
-      TEN_ASSERT(!self->original_start_graph_cmd_of_enabling_engine,
-                 "Should not happen.");
-      self->original_start_graph_cmd_of_enabling_engine =
-          ten_shared_ptr_clone(cmd);
-
-      if (ten_list_size(&new_works) > 1) {
-        // Create path group for these newly submitted 'start_graph' commands.
-        ten_paths_create_group(
-            &new_works,
-            TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_LAST);
-      }
+    if (error_occurred) {
+      // An error occurred, so we should not continue to connect to the
+      // remaining apps (remotes).
       ten_list_clear(&new_works);
-
-      TEN_LOGD("Create a IN path for the receiving 'start_graph' command: %s.",
-               ten_cmd_base_get_cmd_id(cmd));
-      ten_path_table_add_in_path(self->path_table, cmd, NULL);
     } else {
-      TEN_LOGD(
-          "No more new connections should be made, enable the extension system "
-          "now.");
+      if (!ten_list_is_empty(&new_works)) {
+        // This means that we can _not_ start the engine now. We must wait for
+        // these newly submitted 'start_graph' commands to be completed in order
+        // to start the engine, so we must save the current received
+        // 'start_graph' command (to prevent it from being destroyed) in order
+        // to return a correct cmd result according to it.
+        TEN_ASSERT(!self->original_start_graph_cmd_of_enabling_engine,
+                   "Should not happen.");
+        self->original_start_graph_cmd_of_enabling_engine =
+            ten_shared_ptr_clone(cmd);
 
-      ten_engine_enable_extension_system(self, cmd, err);
+        if (ten_list_size(&new_works) > 1) {
+          // Create path group for these newly submitted 'start_graph' commands.
+          ten_paths_create_group(
+              &new_works,
+              TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_LAST);
+        }
+        ten_list_clear(&new_works);
+
+        TEN_LOGD(
+            "Create a IN path for the receiving 'start_graph' command: %s.",
+            ten_cmd_base_get_cmd_id(cmd));
+        ten_path_table_add_in_path(self->path_table, cmd, NULL);
+      } else {
+        TEN_LOGD(
+            "No more new connections should be made, enable the extension "
+            "system now.");
+
+        ten_engine_enable_extension_system(self, cmd, err);
+      }
     }
   }
 

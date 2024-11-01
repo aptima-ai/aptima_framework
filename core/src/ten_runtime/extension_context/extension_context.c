@@ -74,8 +74,6 @@ ten_extension_context_t *ten_extension_context_create(ten_engine_t *engine) {
 
   self->engine = engine;
 
-  self->ten_env = ten_env_create_for_engine(engine);
-
   ten_list_init(&self->extension_groups_info_from_graph);
   ten_list_init(&self->extensions_info_from_graph);
 
@@ -104,8 +102,6 @@ static void ten_extension_context_destroy(ten_extension_context_t *self) {
   ten_list_clear(&self->extension_groups_info_from_graph);
   ten_list_clear(&self->extensions_info_from_graph);
 
-  ten_env_destroy(self->ten_env);
-
   if (self->state_requester_cmd) {
     ten_shared_ptr_destroy(self->state_requester_cmd);
   }
@@ -133,7 +129,10 @@ ten_extension_context_do_close_after_all_extension_groups_are_closed(
   TEN_ASSERT(ten_extension_context_check_integrity(self, true),
              "Invalid use of extension_context %p.", self);
 
-  ten_env_close(self->ten_env);
+  ten_engine_t *engine = self->engine;
+  TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
+             "Should not happen.");
+  ten_env_close(engine->ten_env);
 
   if (self->on_closed) {
     self->on_closed(self, self->on_closed_data);
@@ -394,7 +393,11 @@ static void destroy_extension_group_by_addon(
   TEN_ASSERT(ten_extension_context_check_integrity(extension_context, true),
              "Invalid use of extension_context %p.", extension_context);
 
-  ten_env_t *ten_env = extension_context->ten_env;
+  ten_engine_t *engine = extension_context->engine;
+  TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
+             "Should not happen.");
+
+  ten_env_t *ten_env = engine->ten_env;
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
@@ -540,7 +543,11 @@ bool ten_extension_context_start_extension_group(
     goto done;
   }
 
-  ten_env_t *ten_env = self->ten_env;
+  ten_engine_t *engine = self->engine;
+  TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
+             "Should not happen.");
+
+  ten_env_t *ten_env = engine->ten_env;
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
   TEN_ASSERT(ten_env->attach_to == TEN_ENV_ATTACH_TO_ENGINE,
