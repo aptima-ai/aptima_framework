@@ -12,7 +12,6 @@
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
@@ -20,45 +19,6 @@
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_kv.h"
 #include "ten_utils/value/value_merge.h"
-
-bool ten_raw_msg_properties_to_json(ten_msg_t *self, ten_json_t *json,
-                                    ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && json,
-             "Should not happen.");
-
-  ten_list_foreach (ten_raw_msg_get_properties(self), iter) {
-    ten_value_kv_t *kv = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(kv, "Should not happen.");
-
-    ten_json_object_set_new(json,
-                            ten_string_get_raw_str(ten_value_kv_get_key(kv)),
-                            ten_value_to_json(ten_value_kv_get_value(kv)));
-  }
-
-  return true;
-}
-
-bool ten_raw_msg_properties_from_json(ten_msg_t *self, ten_json_t *json,
-                                      TEN_UNUSED ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && json,
-             "Should not happen.");
-
-  const char *key = NULL;
-  ten_json_t *item = NULL;
-  ten_json_object_foreach(json, key, item) {
-    if (ten_c_string_is_equal(key, TEN_STR_UNDERLINE_TEN)) {
-      // The "ten" section is reserved for internal usage.
-      continue;
-    }
-
-    ten_list_push_ptr_back(
-        ten_raw_msg_get_properties(self),
-        ten_value_kv_create(key, ten_value_from_json(item)),
-        (ten_ptr_listnode_destroy_func_t)ten_value_kv_destroy);
-  }
-
-  return true;
-}
 
 void ten_raw_msg_properties_copy(ten_msg_t *self, ten_msg_t *src,
                                  TEN_UNUSED ten_list_t *excluded_field_ids) {

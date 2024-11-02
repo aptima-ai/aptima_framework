@@ -22,16 +22,12 @@ static const ten_msg_field_info_t ten_cmd_timeout_fields_info[] = {
     [TEN_CMD_TIMEOUT_FIELD_CMD_HDR] =
         {
             .field_name = NULL,
-            .put_field_to_json = ten_raw_cmd_put_field_to_json,
-            .get_field_from_json = ten_raw_cmd_get_field_from_json,
             .copy_field = ten_raw_cmd_copy_field,
             .process_field = ten_raw_cmd_process_field,
         },
     [TEN_CMD_TIMEOUT_FIELD_TIMER_ID] =
         {
             .field_name = NULL,
-            .put_field_to_json = ten_cmd_timeout_put_timer_id_to_json,
-            .get_field_from_json = ten_cmd_timeout_get_timer_id_from_json,
             .copy_field = NULL,
             .process_field = ten_cmd_timeout_process_timer_id,
         },

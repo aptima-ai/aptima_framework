@@ -11,16 +11,9 @@
 #include <stdbool.h>
 
 #include "include_internal/ten_runtime/msg/loop_fields.h"
-#include "ten_utils/lib/json.h"
 
 typedef struct ten_msg_t ten_msg_t;
 typedef struct ten_error_t ten_error_t;
-
-TEN_RUNTIME_PRIVATE_API bool ten_cmd_timer_put_timeout_in_us_to_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
-TEN_RUNTIME_PRIVATE_API bool ten_cmd_timer_get_timeout_in_us_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API bool ten_cmd_timer_process_timeout_in_us(
     ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,

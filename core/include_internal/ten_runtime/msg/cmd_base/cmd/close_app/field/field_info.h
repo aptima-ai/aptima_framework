@@ -21,8 +21,6 @@ static const ten_msg_field_info_t ten_cmd_close_app_fields_info[] = {
     [TEN_CMD_CLOSE_APP_FIELD_CMD_HDR] =
         {
             .field_name = NULL,
-            .put_field_to_json = ten_raw_cmd_put_field_to_json,
-            .get_field_from_json = ten_raw_cmd_get_field_from_json,
             .copy_field = NULL,
             .process_field = ten_raw_cmd_process_field,
         },

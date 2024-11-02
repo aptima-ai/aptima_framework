@@ -24,8 +24,6 @@ static const ten_msg_field_info_t ten_data_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = -1,
-            .put_field_to_json = ten_raw_msg_put_field_to_json,
-            .get_field_from_json = ten_raw_msg_get_field_from_json,
             .copy_field = ten_raw_msg_copy_field,
             .process_field = ten_raw_msg_process_field,
         },
@@ -34,13 +32,6 @@ static const ten_msg_field_info_t ten_data_fields_info[] = {
             .field_name = NULL,
             .field_id =
                 TEN_MSG_FIELD_LAST + TEN_DATA_FIELD_BUF - TEN_DATA_FIELD_BUF,
-
-            // It is not possible to get/put the binary content of a memory
-            // buffer from/into JSON (unless you use base64). If needed, clients
-            // must use explicit get/set properties from/to the buffer; clients
-            // cannot use JSON for this.
-            .put_field_to_json = NULL,
-            .get_field_from_json = NULL,
             .copy_field = ten_raw_data_buf_copy,
             .process_field = ten_data_process_buf,
         },

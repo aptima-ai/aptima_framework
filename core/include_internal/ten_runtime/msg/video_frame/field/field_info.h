@@ -27,8 +27,6 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = -1,
-            .put_field_to_json = ten_raw_msg_put_field_to_json,
-            .get_field_from_json = ten_raw_msg_get_field_from_json,
             .copy_field = ten_raw_msg_copy_field,
             .process_field = ten_raw_msg_process_field,
         },
@@ -36,8 +34,6 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = TEN_MSG_FIELD_LAST + TEN_VIDEO_FRAME_FIELD_PIXEL_FMT,
-            .put_field_to_json = ten_video_frame_put_pixel_fmt_to_json,
-            .get_field_from_json = ten_video_frame_get_pixel_fmt_from_json,
             .copy_field = ten_video_frame_copy_pixel_fmt,
             .process_field = ten_video_frame_process_pixel_fmt,
         },
@@ -45,8 +41,6 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = TEN_MSG_FIELD_LAST + TEN_VIDEO_FRAME_FIELD_TIMESTAMP,
-            .put_field_to_json = ten_video_frame_put_timestamp_to_json,
-            .get_field_from_json = ten_video_frame_get_timestamp_from_json,
             .copy_field = ten_video_frame_copy_timestamp,
             .process_field = ten_video_frame_process_timestamp,
         },
@@ -54,8 +48,6 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = TEN_MSG_FIELD_LAST + TEN_VIDEO_FRAME_FIELD_WIDTH,
-            .put_field_to_json = ten_video_frame_put_width_to_json,
-            .get_field_from_json = ten_video_frame_get_width_from_json,
             .copy_field = ten_video_frame_copy_width,
             .process_field = ten_video_frame_process_width,
         },
@@ -63,8 +55,6 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = TEN_MSG_FIELD_LAST + TEN_VIDEO_FRAME_FIELD_HEIGHT,
-            .put_field_to_json = ten_video_frame_put_height_to_json,
-            .get_field_from_json = ten_video_frame_get_height_from_json,
             .copy_field = ten_video_frame_copy_height,
             .process_field = ten_video_frame_process_height,
         },
@@ -72,13 +62,6 @@ static const ten_msg_field_info_t ten_video_frame_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = TEN_MSG_FIELD_LAST + TEN_VIDEO_FRAME_FIELD_BUF,
-
-            // It is not possible to get/put the binary content of a memory
-            // buffer from/into JSON (unless you use base64). If needed, clients
-            // must use explicit get/set properties from/to the buffer; clients
-            // cannot use JSON for this.
-            .put_field_to_json = NULL,
-            .get_field_from_json = NULL,
             .copy_field = NULL,
             .process_field = ten_video_frame_process_buf,
         },

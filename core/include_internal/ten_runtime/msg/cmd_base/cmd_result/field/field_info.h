@@ -27,33 +27,24 @@ static const ten_msg_field_info_t ten_cmd_result_fields_info[] = {
     [TEN_CMD_STATUS_FIELD_CMD_BASE_HDR] =
         {
             .field_name = NULL,
-            .put_field_to_json = ten_raw_cmd_base_put_field_to_json,
-            .get_field_from_json = ten_raw_cmd_base_get_field_from_json,
             .copy_field = ten_raw_cmd_base_copy_field,
             .process_field = ten_raw_cmd_base_process_field,
         },
     [TEN_CMD_STATUS_FIELD_ORIGINAL_CMD_TYPE] =
         {
             .field_name = TEN_STR_ORIGINAL_CMD_TYPE,
-            .put_field_to_json = ten_cmd_result_put_original_cmd_type_to_json,
-            .get_field_from_json =
-                ten_cmd_result_get_original_cmd_type_from_json,
             .copy_field = ten_cmd_result_copy_original_cmd_type,
             .process_field = ten_cmd_result_process_original_cmd_type,
         },
     [TEN_CMD_STATUS_FIELD_STATUS_CODE] =
         {
             .field_name = TEN_STR_STATUS_CODE,
-            .put_field_to_json = ten_cmd_result_put_status_code_to_json,
-            .get_field_from_json = ten_cmd_result_get_status_code_from_json,
             .copy_field = ten_cmd_result_copy_status_code,
             .process_field = ten_cmd_result_process_status_code,
         },
     [TEN_CMD_STATUS_FIELD_IS_FINAL] =
         {
             .field_name = TEN_STR_IS_FINAL,
-            .put_field_to_json = ten_cmd_result_put_is_final_to_json,
-            .get_field_from_json = ten_cmd_result_get_is_final_from_json,
             .copy_field = ten_cmd_result_copy_is_final,
             .process_field = ten_cmd_result_process_is_final,
         },

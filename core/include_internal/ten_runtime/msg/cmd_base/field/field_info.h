@@ -31,8 +31,6 @@ static const ten_msg_field_info_t ten_cmd_base_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = -1,
-            .put_field_to_json = ten_raw_msg_put_field_to_json,
-            .get_field_from_json = ten_raw_msg_get_field_from_json,
             .copy_field = ten_raw_msg_copy_field,
             .process_field = ten_raw_msg_process_field,
         },
@@ -40,8 +38,6 @@ static const ten_msg_field_info_t ten_cmd_base_fields_info[] = {
         {
             .field_name = TEN_STR_CMD_ID,
             .field_id = TEN_MSG_FIELD_LAST + TEN_CMD_BASE_FIELD_CMD_ID,
-            .put_field_to_json = ten_cmd_base_put_cmd_id_to_json,
-            .get_field_from_json = ten_cmd_base_get_cmd_id_from_json,
             .copy_field = ten_cmd_base_copy_cmd_id,
             .process_field = ten_cmd_base_process_cmd_id,
         },
@@ -49,8 +45,6 @@ static const ten_msg_field_info_t ten_cmd_base_fields_info[] = {
         {
             .field_name = TEN_STR_SEQ_ID,
             .field_id = TEN_MSG_FIELD_LAST + TEN_CMD_BASE_FIELD_SEQ_ID,
-            .put_field_to_json = ten_cmd_base_put_seq_id_to_json,
-            .get_field_from_json = ten_cmd_base_get_seq_id_from_json,
             .copy_field = ten_cmd_base_copy_seq_id,
             .process_field = ten_cmd_base_process_seq_id,
         },
@@ -59,8 +53,6 @@ static const ten_msg_field_info_t ten_cmd_base_fields_info[] = {
             .field_name = NULL,
             .field_id =
                 TEN_MSG_FIELD_LAST + TEN_CMD_BASE_FIELD_ORIGINAL_CONNECTION,
-            .put_field_to_json = NULL,
-            .get_field_from_json = NULL,
             .copy_field = ten_cmd_base_copy_original_connection,
             .process_field = NULL,
         },
@@ -69,8 +61,6 @@ static const ten_msg_field_info_t ten_cmd_base_fields_info[] = {
             .field_name = NULL,
             .field_id =
                 TEN_MSG_FIELD_LAST + TEN_CMD_BASE_FIELD_RESPONSE_HANDLER,
-            .put_field_to_json = NULL,
-            .get_field_from_json = NULL,
             .copy_field = ten_cmd_base_copy_result_handler,
             .process_field = NULL,
         },
@@ -79,8 +69,6 @@ static const ten_msg_field_info_t ten_cmd_base_fields_info[] = {
             .field_name = NULL,
             .field_id =
                 TEN_MSG_FIELD_LAST + TEN_CMD_BASE_FIELD_RESPONSE_HANDLER_DATA,
-            .put_field_to_json = NULL,
-            .get_field_from_json = NULL,
             .copy_field = ten_cmd_base_copy_result_handler_data,
             .process_field = NULL,
         },

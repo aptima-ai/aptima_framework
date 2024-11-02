@@ -12,16 +12,9 @@
 
 #include "include_internal/ten_runtime/msg/loop_fields.h"
 #include "ten_utils/container/list.h"
-#include "ten_utils/lib/json.h"
 
 typedef struct ten_msg_t ten_msg_t;
 typedef struct ten_error_t ten_error_t;
-
-TEN_RUNTIME_PRIVATE_API bool ten_audio_frame_put_sample_rate_to_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
-TEN_RUNTIME_PRIVATE_API bool ten_audio_frame_get_sample_rate_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API void ten_audio_frame_copy_sample_rate(
     ten_msg_t *self, ten_msg_t *src, ten_list_t *excluded_field_ids);

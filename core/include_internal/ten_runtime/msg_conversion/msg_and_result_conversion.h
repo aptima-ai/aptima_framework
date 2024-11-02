@@ -8,7 +8,6 @@
 
 #include "ten_runtime/ten_config.h"
 
-#include "ten_utils/lib/json.h"
 #include "ten_utils/value/value.h"
 
 typedef struct ten_msg_conversion_t ten_msg_conversion_t;

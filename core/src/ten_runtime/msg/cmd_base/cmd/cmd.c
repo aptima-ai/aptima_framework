@@ -66,41 +66,6 @@ void ten_raw_cmd_deinit(ten_cmd_t *self) {
   ten_raw_cmd_base_deinit(&self->cmd_base_hdr);
 }
 
-bool ten_raw_cmd_get_field_from_json(ten_msg_t *self, ten_json_t *json,
-                                     ten_error_t *err) {
-  TEN_ASSERT(self && json, "Should not happen.");
-
-  for (size_t i = 0; i < ten_cmd_fields_info_size; ++i) {
-    ten_msg_get_field_from_json_func_t from_json =
-        ten_cmd_fields_info[i].get_field_from_json;
-    if (from_json) {
-      if (!from_json(self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-bool ten_raw_cmd_put_field_to_json(ten_msg_t *self, ten_json_t *json,
-                                   ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && json,
-             "Should not happen.");
-
-  for (size_t i = 0; i < ten_cmd_fields_info_size; ++i) {
-    ten_msg_put_field_to_json_func_t put_field_to_json =
-        ten_cmd_fields_info[i].put_field_to_json;
-    if (put_field_to_json) {
-      if (!put_field_to_json(self, json, err)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
 void ten_raw_cmd_copy_field(ten_msg_t *self, ten_msg_t *src,
                             ten_list_t *excluded_field_ids) {
   TEN_ASSERT(src && ten_raw_cmd_check_integrity((ten_cmd_t *)src) && self,

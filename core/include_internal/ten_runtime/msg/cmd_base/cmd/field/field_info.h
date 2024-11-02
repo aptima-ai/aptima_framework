@@ -24,8 +24,6 @@ static const ten_msg_field_info_t ten_cmd_fields_info[] = {
         {
             .field_name = NULL,
             .field_id = -1,
-            .put_field_to_json = ten_raw_cmd_base_put_field_to_json,
-            .get_field_from_json = ten_raw_cmd_base_get_field_from_json,
             .copy_field = ten_raw_cmd_base_copy_field,
             .process_field = ten_raw_cmd_base_process_field,
         },
