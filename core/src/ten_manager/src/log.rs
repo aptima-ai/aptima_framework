@@ -12,4 +12,13 @@ macro_rules! tman_verbose_println {
     };
 }
 
+macro_rules! tman_verbose_print {
+    ($tman_config:expr, $($arg:tt)*) => {
+        if $tman_config.verbose {
+            print!($($arg)*);
+        }
+    };
+}
+
+pub(crate) use tman_verbose_print;
 pub(crate) use tman_verbose_println;

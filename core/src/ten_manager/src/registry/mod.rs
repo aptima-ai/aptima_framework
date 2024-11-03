@@ -12,9 +12,11 @@ use anyhow::{anyhow, Result};
 use semver::{Version, VersionReq};
 use tempfile::NamedTempFile;
 
+use ten_rust::pkg_info::{pkg_identity::PkgIdentity, PkgInfo};
+
 use super::config::TmanConfig;
 use found_result::FoundResult;
-use ten_rust::pkg_info::{pkg_identity::PkgIdentity, PkgInfo};
+
 
 pub struct SearchCriteria {
     pub version_req: VersionReq,

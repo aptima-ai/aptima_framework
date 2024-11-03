@@ -11,12 +11,13 @@ use clap::{ArgMatches, Command};
 use console::Emoji;
 use indicatif::HumanDuration;
 
+use ten_rust::pkg_info::get_pkg_info_from_path;
+
 use crate::config::TmanConfig;
 use crate::log::tman_verbose_println;
 use crate::package_file::create_package_zip_file;
 use crate::package_file::get_package_zip_file_name;
 use crate::registry::upload_package;
-use ten_rust::pkg_info::get_pkg_info_from_path;
 
 #[derive(Debug)]
 pub struct PublishCommand {}

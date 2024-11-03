@@ -13,10 +13,11 @@ use console::Emoji;
 use indicatif::HumanDuration;
 use semver::Version;
 
-use crate::log::tman_verbose_println;
-use crate::{config::TmanConfig, registry::delete_package};
 use ten_rust::pkg_info::pkg_identity::PkgIdentity;
 use ten_rust::pkg_info::pkg_type::PkgType;
+
+use crate::log::tman_verbose_println;
+use crate::{config::TmanConfig, registry::delete_package};
 
 #[derive(Debug)]
 pub struct DeleteCommand {

@@ -15,12 +15,13 @@ use installed_paths::{
 };
 use tempfile::NamedTempFile;
 
+use ten_rust::pkg_info::{
+    pkg_identity::PkgIdentity, pkg_type::PkgType, PkgInfo,
+};
+
 use super::{config::TmanConfig, fs::merge_folders, registry::get_package};
 use crate::{
     log::tman_verbose_println, package_file::unzip::extract_and_process_zip,
-};
-use ten_rust::pkg_info::{
-    pkg_identity::PkgIdentity, pkg_type::PkgType, PkgInfo,
 };
 
 pub struct PkgIdentityMapping {

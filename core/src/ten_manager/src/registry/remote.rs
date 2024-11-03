@@ -16,14 +16,15 @@ use tempfile::NamedTempFile;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
 
+use ten_rust::pkg_info::{
+    pkg_identity::PkgIdentity, supports::get_manifest_supports_from_pkg,
+    PkgInfo,
+};
+
 use super::{FoundResult, SearchCriteria};
 use crate::{
     config::TmanConfig, error::TmanError, log::tman_verbose_println,
     registry::found_result::RegistryPackageData,
-};
-use ten_rust::pkg_info::{
-    pkg_identity::PkgIdentity, supports::get_manifest_supports_from_pkg,
-    PkgInfo,
 };
 
 async fn retry_async<'a, F, T>(

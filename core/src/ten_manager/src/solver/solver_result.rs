@@ -15,6 +15,10 @@ use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 use semver::Version;
 
+use ten_rust::pkg_info::{
+    pkg_identity::PkgIdentity, pkg_type::PkgType, PkgInfo,
+};
+
 use crate::{
     config::TmanConfig,
     constants::{
@@ -22,9 +26,6 @@ use crate::{
         TEN_PACKAGES_DIR,
     },
     install::{install_pkg_info, PkgIdentityMapping},
-};
-use ten_rust::pkg_info::{
-    pkg_identity::PkgIdentity, pkg_type::PkgType, PkgInfo,
 };
 
 pub fn extract_solver_results_from_raw_solver_results(
@@ -46,14 +47,13 @@ pub fn extract_solver_results_from_raw_solver_results(
             let pkg_type = pkg_type_str.parse::<PkgType>()?;
             let semver = semver_str.parse::<Version>()?;
 
-            let candidates = all_candidates
+            for candidate in all_candidates
                 .get(&PkgIdentity {
                     pkg_type: pkg_type.clone(),
                     name: name.to_string(),
                 })
-                .unwrap();
-
-            for candidate in candidates {
+                .unwrap()
+            {
                 if candidate.pkg_identity.pkg_type != pkg_type
                     || candidate.pkg_identity.name != name
                 {
@@ -65,8 +65,6 @@ pub fn extract_solver_results_from_raw_solver_results(
                     continue 'outer;
                 }
             }
-        } else {
-            panic!("Should not happen. No match found.");
         }
     }
 
@@ -108,7 +106,7 @@ pub async fn install_solver_results_in_app_folder(
     template_ctx: Option<&serde_json::Value>,
     app_dir: &Path,
 ) -> Result<()> {
-    println!("{}  Installing packages...", Emoji("📦", "+"));
+    println!("{}  Installing packages...", Emoji("📥", "+"));
 
     let bar = ProgressBar::new(solver_results.len().try_into()?);
     bar.set_style(

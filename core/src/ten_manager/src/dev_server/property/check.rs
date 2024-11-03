@@ -9,13 +9,14 @@ use std::sync::{Arc, RwLock};
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
+use ten_rust::pkg_info::pkg_type::PkgType;
+
 use crate::dev_server::{
     common::CheckTypeQuery,
     get_all_pkgs::get_all_pkgs,
     response::{ApiResponse, ErrorResponse, Status},
     DevServerState,
 };
-use ten_rust::pkg_info::pkg_type::PkgType;
 
 #[derive(Serialize, Deserialize)]
 struct CheckResponse {

@@ -13,12 +13,25 @@ use std::{
     time::Instant,
 };
 
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use clap::{Arg, ArgAction, ArgMatches, Command};
 use console::Emoji;
 use indicatif::HumanDuration;
 use inquire::Confirm;
 use semver::VersionReq;
+
+use ten_rust::pkg_info::manifest::{
+    dependency::ManifestDependency, parse_manifest_in_folder,
+};
+use ten_rust::pkg_info::{
+    dependencies::{DependencyRelationship, PkgDependency},
+    find_to_be_replaced_local_pkgs, find_untracked_local_packages,
+    get_pkg_info_from_path,
+    pkg_identity::PkgIdentity,
+    pkg_type::PkgType,
+    supports::{is_pkg_supports_compatible_with, Arch, Os, PkgSupport},
+    PkgInfo,
+};
 
 use crate::{
     config::TmanConfig,
@@ -32,7 +45,9 @@ use crate::{
     },
     package_info::tman_get_all_existed_pkgs_info_of_app,
     solver::{
+        introducer::extract_introducer_relations_from_raw_solver_results,
         solve::solve_all,
+        solver_error::{parse_error_statement, print_conflict_info},
         solver_result::{
             extract_solver_results_from_raw_solver_results,
             filter_solver_results_by_type_and_name,
@@ -41,18 +56,6 @@ use crate::{
         },
     },
     utils::{check_is_app_folder, check_is_package_folder},
-};
-use ten_rust::pkg_info::manifest::{
-    dependency::ManifestDependency, parse_manifest_in_folder,
-};
-use ten_rust::pkg_info::{
-    dependencies::{DependencyRelationship, PkgDependency},
-    find_to_be_replaced_local_pkgs, find_untracked_local_packages,
-    get_pkg_info_from_path,
-    pkg_identity::PkgIdentity,
-    pkg_type::PkgType,
-    supports::{is_pkg_supports_compatible_with, Arch, Os, PkgSupport},
-    PkgInfo,
 };
 
 #[derive(Debug)]
@@ -659,7 +662,7 @@ pub async fn execute_cmd(
     println!("{}  Resolving packages...", Emoji("🔍", ""),);
 
     // Find the answer that satisfies all dependencies.
-    let results = solve_all(
+    let (usable_model, non_usable_models) = solve_all(
         tman_config,
         &affected_pkg_name,
         &affected_pkg_type,
@@ -669,176 +672,214 @@ pub async fn execute_cmd(
     )?;
 
     // Print out the answer.
+    tman_verbose_println!(tman_config, "\n");
     tman_verbose_println!(tman_config, "Result:");
-    for result in &results {
-        tman_verbose_println!(tman_config, " {:?}", result);
+    if let Some(ref usable_model) = usable_model {
+        for result in usable_model {
+            tman_verbose_println!(tman_config, " {:?}", result);
+        }
     }
     tman_verbose_println!(tman_config, "");
 
-    // Get the information of the resultant packages.
-    let solver_results = extract_solver_results_from_raw_solver_results(
-        &results,
-        &all_candidates,
-    )?;
-
-    if is_standalone_installing {
-        // If installing a standalone package (ex: app or extension), the
-        // package itself must be installed first.
-
-        let affected_pkg = filter_solver_results_by_type_and_name(
-            &solver_results,
-            Some(&affected_pkg_type),
-            Some(&affected_pkg_name),
-            true,
+    if let Some(ref usable_model) = usable_model {
+        // Get the information of the resultant packages.
+        let solver_results = extract_solver_results_from_raw_solver_results(
+            usable_model,
+            &all_candidates,
         )?;
 
-        if affected_pkg.is_empty() {
-            return Err(TmanError::Custom(format!(
-                "Failed to find any of {}:{}.",
-                affected_pkg_type, affected_pkg_name,
-            ))
-            .into());
-        }
-        if affected_pkg.len() > 1 {
-            return Err(TmanError::Custom(format!(
-                "Found the possibility of multiple {}:{} being incorrect.",
-                affected_pkg_type, affected_pkg_name
-            ))
-            .into());
-        }
+        if is_standalone_installing {
+            // If installing a standalone package (ex: app or extension), the
+            // package itself must be installed first.
 
-        // TODO(Liu): Do some check after the installation. Ex: the package is
-        // installed in the template mode, however the package might not have a
-        // manifest.json template file to rerender the package name. In this
-        // case, the installed package is invalid, because as a spec of TEN
-        // package, the installed folder name should be the same as the package
-        // name. Anyway, the package name in manifest.json should be forced to
-        // replace with the `package-name` arg?
-        install_solver_results_in_standalone_mode(
-            tman_config,
-            &affected_pkg,
-            &pkg_identity_mappings,
-            template_ctx,
-            &cwd,
-        )
-        .await?;
-    }
-
-    // If we need to switch to a specific folder before installing other
-    // packages, do so now.
-    let mut app_dir = cwd.clone();
-    if let Some(preinstall_chdir_path) = &preinstall_chdir_path {
-        env::set_current_dir(cwd.join(preinstall_chdir_path))?;
-        app_dir = cwd.join(preinstall_chdir_path);
-    }
-
-    // We have the following three cases:
-    //
-    // Case 1: install a standalone app, i.e.: tman install app ...
-    // Case 2: install a standalone extension, i.e.: tman install extension ...
-    // Case 3: install dependencies of a package, i.e.: run `tman install` in a
-    // package folder, which is either a TEN app or extension.
-    //
-    // In case 2, after the package has been installed, its dependencies can NOT
-    // be installed automatically, as the installation directory of
-    // dependencies is different in this case.
-    if affected_pkg_type == PkgType::App || !is_standalone_installing {
-        // Install all the dependencies which the app depends on.
-        let remaining_solver_results = filter_solver_results_by_type_and_name(
-            &solver_results,
-            Some(&affected_pkg_type),
-            Some(&affected_pkg_name),
-            false,
-        )?;
-
-        // Compare the remaining_solver_results with the all_existing_local_pkgs
-        // to check if there are any local packages that need to be deleted or
-        // replaced.
-        let has_conflict = compare_solver_results_with_existed_pkgs(
-            &remaining_solver_results,
-            &all_existing_local_pkgs,
-        );
-
-        if has_conflict && !tman_config.assume_yes {
-            // "y" for continuing to install, "n" for stopping.
-            let ans = Confirm::new(
-                "Warning!!! Some local packages will be overwritten, \
-do you want to continue?",
-            )
-            .with_default(false)
-            .prompt();
-
-            match ans {
-                std::result::Result::Ok(true) => {
-                    // continue to install
-                }
-                std::result::Result::Ok(false) => {
-                    // stop
-                    return Ok(());
-                }
-                Err(_) => {
-                    // stop
-                    return Ok(());
-                }
-            }
-        }
-
-        write_pkgs_into_lock(&remaining_solver_results, &app_dir)?;
-
-        install_solver_results_in_app_folder(
-            tman_config,
-            &remaining_solver_results,
-            &pkg_identity_mappings,
-            template_ctx,
-            &app_dir,
-        )
-        .await?;
-    }
-
-    // Change back to the original folder.
-    if preinstall_chdir_path.is_some() {
-        env::set_current_dir(cwd)?;
-    }
-
-    // Write package info to manifest.json.
-    if let Some(mut app_pkg) = app_pkg {
-        if !command_data.template_mode
-            && desired_pkg_type.is_some()
-            && desired_pkg_src_name.is_some()
-        {
-            let desired_pkg = filter_solver_results_by_type_and_name(
+            let affected_pkg = filter_solver_results_by_type_and_name(
                 &solver_results,
-                desired_pkg_type.as_ref(),
-                desired_pkg_src_name.as_ref(),
+                Some(&affected_pkg_type),
+                Some(&affected_pkg_name),
                 true,
             )?;
 
-            if desired_pkg.is_empty() {
+            if affected_pkg.is_empty() {
                 return Err(TmanError::Custom(format!(
                     "Failed to find any of {}:{}.",
-                    desired_pkg_type.unwrap(),
-                    desired_pkg_src_name.unwrap(),
+                    affected_pkg_type, affected_pkg_name,
                 ))
                 .into());
             }
-            if desired_pkg.len() > 1 {
+            if affected_pkg.len() > 1 {
                 return Err(TmanError::Custom(format!(
+                    "Found the possibility of multiple {}:{} being incorrect.",
+                    affected_pkg_type, affected_pkg_name
+                ))
+                .into());
+            }
+
+            // TODO(Liu): Do some check after the installation. Ex: the package
+            // is installed in the template mode, however the
+            // package might not have a manifest.json template file
+            // to rerender the package name. In this
+            // case, the installed package is invalid, because as a spec of TEN
+            // package, the installed folder name should be the same as the
+            // package name. Anyway, the package name in
+            // manifest.json should be forced to replace with the
+            // `package-name` arg?
+            install_solver_results_in_standalone_mode(
+                tman_config,
+                &affected_pkg,
+                &pkg_identity_mappings,
+                template_ctx,
+                &cwd,
+            )
+            .await?;
+        }
+
+        // If we need to switch to a specific folder before installing other
+        // packages, do so now.
+        let mut app_dir = cwd.clone();
+        if let Some(preinstall_chdir_path) = &preinstall_chdir_path {
+            env::set_current_dir(cwd.join(preinstall_chdir_path))?;
+            app_dir = cwd.join(preinstall_chdir_path);
+        }
+
+        // We have the following three cases:
+        //
+        // Case 1: install a standalone app, i.e.: tman install app ...
+        // Case 2: install a standalone extension, i.e.: tman install extension
+        // ... Case 3: install dependencies of a package, i.e.: run
+        // `tman install` in a package folder, which is either a TEN app
+        // or extension.
+        //
+        // In case 2, after the package has been installed, its dependencies can
+        // NOT be installed automatically, as the installation directory
+        // of dependencies is different in this case.
+        if affected_pkg_type == PkgType::App || !is_standalone_installing {
+            // Install all the dependencies which the app depends on.
+            let remaining_solver_results =
+                filter_solver_results_by_type_and_name(
+                    &solver_results,
+                    Some(&affected_pkg_type),
+                    Some(&affected_pkg_name),
+                    false,
+                )?;
+
+            // Compare the remaining_solver_results with the
+            // all_existing_local_pkgs to check if there are any
+            // local packages that need to be deleted or replaced.
+            let has_conflict = compare_solver_results_with_existed_pkgs(
+                &remaining_solver_results,
+                &all_existing_local_pkgs,
+            );
+
+            if has_conflict && !tman_config.assume_yes {
+                // "y" for continuing to install, "n" for stopping.
+                let ans = Confirm::new(
+                    "Warning!!! Some local packages will be overwritten, \
+do you want to continue?",
+                )
+                .with_default(false)
+                .prompt();
+
+                match ans {
+                    std::result::Result::Ok(true) => {
+                        // continue to install
+                    }
+                    std::result::Result::Ok(false) => {
+                        // stop
+                        return Ok(());
+                    }
+                    Err(_) => {
+                        // stop
+                        return Ok(());
+                    }
+                }
+            }
+
+            write_pkgs_into_lock(&remaining_solver_results, &app_dir)?;
+
+            install_solver_results_in_app_folder(
+                tman_config,
+                &remaining_solver_results,
+                &pkg_identity_mappings,
+                template_ctx,
+                &app_dir,
+            )
+            .await?;
+        }
+
+        // Change back to the original folder.
+        if preinstall_chdir_path.is_some() {
+            env::set_current_dir(cwd)?;
+        }
+
+        // Write package info to manifest.json.
+        if let Some(mut app_pkg) = app_pkg {
+            if !command_data.template_mode
+                && desired_pkg_type.is_some()
+                && desired_pkg_src_name.is_some()
+            {
+                let desired_pkg = filter_solver_results_by_type_and_name(
+                    &solver_results,
+                    desired_pkg_type.as_ref(),
+                    desired_pkg_src_name.as_ref(),
+                    true,
+                )?;
+
+                if desired_pkg.is_empty() {
+                    return Err(TmanError::Custom(format!(
+                        "Failed to find any of {}:{}.",
+                        desired_pkg_type.unwrap(),
+                        desired_pkg_src_name.unwrap(),
+                    ))
+                    .into());
+                }
+                if desired_pkg.len() > 1 {
+                    return Err(TmanError::Custom(format!(
                     "Found the possibility of multiple {}:{} being incorrect.",
                     desired_pkg_type.unwrap(),
                     desired_pkg_src_name.unwrap()
                 ))
+                    .into());
+                }
+
+                update_package_manifest(&mut app_pkg, desired_pkg[0])?;
+            }
+        }
+
+        println!(
+            "{}  Install successfully in {}",
+            Emoji("🏆", ":-)"),
+            HumanDuration(started.elapsed())
+        );
+
+        Ok(())
+    } else {
+        if let Some(non_usable_model) = non_usable_models.first() {
+            // Extract introducer relations, and parse the error message.
+            if let Ok(conflict_info) = parse_error_statement(non_usable_model) {
+                // Print the error message and dependency chains.
+                print_conflict_info(
+                    &conflict_info,
+                    &extract_introducer_relations_from_raw_solver_results(
+                        non_usable_model,
+                        &all_candidates,
+                    )?,
+                    &all_candidates,
+                )?;
+
+                // Since there is an error, we need to exit.
+                return Err(TmanError::Custom(
+                    "Dependency resolution failed.".to_string(),
+                )
                 .into());
             }
-
-            update_package_manifest(&mut app_pkg, desired_pkg[0])?;
         }
+
+        // If there are no error models or unable to parse, return a generic
+        // error
+        Err(TmanError::Custom(
+            "Dependency resolution failed without specific error details."
+                .to_string(),
+        )
+        .into())
     }
-
-    println!(
-        "{}  Install successfully in {}",
-        Emoji("🏆", ":-)"),
-        HumanDuration(started.elapsed())
-    );
-
-    Ok(())
 }

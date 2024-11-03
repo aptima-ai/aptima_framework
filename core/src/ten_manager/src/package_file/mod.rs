@@ -13,6 +13,10 @@ use anyhow::Result;
 use console::Emoji;
 use globset::{GlobBuilder, GlobSetBuilder};
 use ignore::{overrides::OverrideBuilder, WalkBuilder};
+use zip::zip_files_to_file;
+
+use ten_rust::pkg_info::manifest::parse_manifest_in_folder;
+use ten_rust::pkg_info::PkgInfo;
 
 use super::{config::TmanConfig, constants::TEN_PACKAGE_FILE_EXTENSION};
 use crate::{
@@ -20,9 +24,6 @@ use crate::{
     log::tman_verbose_println,
     utils::pathbuf_to_string_lossy,
 };
-use ten_rust::pkg_info::manifest::parse_manifest_in_folder;
-use ten_rust::pkg_info::PkgInfo;
-use zip::zip_files_to_file;
 
 pub fn get_package_zip_file_name(pkg_info: &PkgInfo) -> Result<String> {
     let output_zip_file_name = format!(

@@ -12,6 +12,9 @@ use std::{
 use actix_web::{web, HttpResponse, Responder};
 use serde::Serialize;
 
+use ten_rust::pkg_info::manifest::dump_manifest_str_to_file;
+use ten_rust::pkg_info::pkg_type::PkgType;
+
 use crate::{
     constants::MANIFEST_JSON_FILENAME,
     dev_server::{
@@ -20,8 +23,6 @@ use crate::{
         DevServerState,
     },
 };
-use ten_rust::pkg_info::manifest::dump_manifest_str_to_file;
-use ten_rust::pkg_info::pkg_type::PkgType;
 
 #[derive(Serialize, Debug, PartialEq)]
 struct DumpResponse {

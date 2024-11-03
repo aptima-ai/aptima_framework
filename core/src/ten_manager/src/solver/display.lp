@@ -8,13 +8,11 @@
 % Used to build the result of the solve.
 #show selected_pkg_version/3.
 
+#show introducer/6.
+
 % error types
-#show error/2.
-#show error/3.
-#show error/4.
-#show error/5.
 #show error/6.
-#show error/7.
+#show error/12.
 
 % debug
 % #show selected_pkg_weight/3.

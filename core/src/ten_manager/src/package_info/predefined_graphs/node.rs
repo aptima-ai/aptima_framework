@@ -4,8 +4,9 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use crate::dev_server::graphs::nodes::DevServerExtension;
 use ten_rust::pkg_info::{graph::GraphNode, pkg_type::PkgType};
+
+use crate::dev_server::graphs::nodes::DevServerExtension;
 
 impl From<DevServerExtension> for GraphNode {
     fn from(dev_server_extension: DevServerExtension) -> Self {

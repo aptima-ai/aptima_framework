@@ -9,6 +9,8 @@ use std::sync::{Arc, RwLock};
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
+use ten_rust::pkg_info::pkg_type::PkgType;
+
 use crate::dev_server::{
     common::{
         get_dev_server_api_cmd_likes_from_pkg,
@@ -20,7 +22,7 @@ use crate::dev_server::{
     response::{ApiResponse, ErrorResponse, Status},
     DevServerState,
 };
-use ten_rust::pkg_info::pkg_type::PkgType;
+
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 struct DevServerExtensionAddon {

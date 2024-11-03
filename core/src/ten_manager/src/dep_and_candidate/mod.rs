@@ -7,19 +7,21 @@
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use semver::{Version, VersionReq};
+
+use ten_rust::pkg_info::dependencies::PkgDependency;
+use ten_rust::pkg_info::pkg_identity::PkgIdentity;
+use ten_rust::pkg_info::pkg_type::PkgType;
+use ten_rust::pkg_info::supports::{
+    is_pkg_supports_compatible_with, PkgSupport,
+};
+use ten_rust::pkg_info::PkgInfo;
 
 use super::config::TmanConfig;
 use super::registry::{get_package_list, SearchCriteria};
 use super::utils::pathbuf_to_string;
 use crate::package_info::pkg_info_from_find_package_data;
-use ten_rust::pkg_info::dependencies::PkgDependency;
-use ten_rust::pkg_info::pkg_identity::PkgIdentity;
-use ten_rust::pkg_info::supports::{
-    is_pkg_supports_compatible_with, PkgSupport,
-};
-use ten_rust::pkg_info::PkgInfo;
 
 // TODO(Wei): Should use the union of the semantic versioning rather than the
 // union of all version requirements.
@@ -318,4 +320,30 @@ pub async fn get_all_candidates_from_deps(
     clean_up_all_candidates(&mut all_candidates, locked_pkgs);
 
     Ok(all_candidates)
+}
+
+pub fn get_pkg_info_from_candidates(
+    pkg_type: &str,
+    pkg_name: &str,
+    version: &str,
+    all_candidates: &HashMap<PkgIdentity, HashSet<PkgInfo>>,
+) -> Result<PkgInfo> {
+    let pkg_type_enum = pkg_type.parse::<PkgType>()?;
+    let pkg_identity = PkgIdentity {
+        pkg_type: pkg_type_enum,
+        name: pkg_name.to_string(),
+    };
+    let version_parsed = Version::parse(version)?;
+    let pkg_info = all_candidates
+        .get(&pkg_identity)
+        .and_then(|set| set.iter().find(|pkg| pkg.version == version_parsed))
+        .ok_or_else(|| {
+            anyhow!(
+                "PkgInfo not found for [{}]{}@{}",
+                pkg_type,
+                pkg_name,
+                version
+            )
+        })?;
+    Ok(pkg_info.clone())
 }

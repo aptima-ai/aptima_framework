@@ -91,7 +91,7 @@ The `nodes` array is required in any graph definition. If absent, an error will 
     No extension node is defined in graph.
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 ### 2. Uniqueness of Nodes
@@ -130,7 +130,7 @@ Each node in the `nodes` array represents a specific extension instance within a
     Duplicated extension was found in nodes[1], addon: basic_hello_world_1__test_extension, name: test_extension.
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 ### 3. Extensions used in connections should be defined in nodes
@@ -190,7 +190,7 @@ All extension instances referenced in the `connections` field, whether as a sour
     The extension declared in connections[0] is not defined in nodes, extension_group: producer, extension: some_extension.
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 - **Example (Destination extension not defined)**:
@@ -265,7 +265,7 @@ All extension instances referenced in the `connections` field, whether as a sour
     The extension declared in connections[0].cmd[1] is not defined in nodes extension_group: some_group, extension: consumer.
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 ### 4. The addons declared in the `nodes` must be installed in the app
@@ -307,7 +307,7 @@ All extension instances referenced in the `connections` field, whether as a sour
     The following packages are declared in nodes but not installed: [("localhost", Extension, "default_extension_go")].
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
   The problem is all packages in the app will be stored in a map which key is the `uri` of the app, and each node in the graph is retrieved by the `app` field (which is `localhost` by default). The `app` in node (i.e., localhost) is mismatch with the `uri` of app (i.e., <http://localhost:8001>).
@@ -350,7 +350,7 @@ All extension instances referenced in the `connections` field, whether as a sour
     The following packages are declared in nodes but not installed: [("localhost", Extension, "default_extension_go")].
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 ### 5. In connections, messages sent from one extension should be defined in the same section
@@ -417,7 +417,7 @@ All extension instances referenced in the `connections` field, whether as a sour
     extension 'some_extension' is defined in connection[0] and connection[1], merge them into one section.
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 ### 6. In connections, the messages sent out from one extension should have a unique name in each type
@@ -480,7 +480,7 @@ All extension instances referenced in the `connections` field, whether as a sour
         'hello' is defined in flow[0] and flow[1].
 
   All is done.
-  💔  Error: 1/1 graphs failed.
+  ❌  Error: 1/1 graphs failed.
   ```
 
 ### 7. The messages declared in the connections should be compatible
@@ -609,7 +609,7 @@ The message declared in each message flow in the connections will be checked if 
       - cmd[0]:  Schema incompatible to [extension_group: some_group, extension: another_ext], { .foo: type is incompatible, source is [string], but target is [int8] }
 
   All is done.
-  💔 Error: 1/1 graphs failed.
+  ❌ Error: 1/1 graphs failed.
   ```
 
 ### 8. The `app` in node must be unambiguous
@@ -648,7 +648,7 @@ The `app` field in each node must met the following rules.
   **Output**:
 
   ```text
-  💔  Error: The graph json string is invalid
+  ❌  Error: The graph json string is invalid
 
   Caused by:
     Either all nodes should have 'app' declared, or none should, but not a mix of both.
@@ -698,7 +698,7 @@ The `app` field in each node must met the following rules.
   **Output**:
 
   ```text
-  💔  Error: The graph json string is invalid
+  ❌  Error: The graph json string is invalid
 
   Caused by:
     connections[0].the 'app' should not be declared, as not any node has declared it
@@ -748,7 +748,7 @@ The `app` field in each node must met the following rules.
   **Output**:
 
   ```text
-  💔  Error: The graph json string is invalid
+  ❌  Error: The graph json string is invalid
 
   Caused by:
     connections[0].cmd[0].dest[0]: the 'app' should not be declared, as not any node has declared it
@@ -802,7 +802,7 @@ The `app` field in each node must met the following rules.
   **Output**:
 
   ```text
-  💔  Error: Failed to parse graph string, nodes[1]: 'localhost' is not allowed in graph definition, and the graph seems to be a single-app graph, just remove the 'app' field
+  ❌  Error: Failed to parse graph string, nodes[1]: 'localhost' is not allowed in graph definition, and the graph seems to be a single-app graph, just remove the 'app' field
   ```
 
 - **Example (The `app` field is `localhost` in a multi-app graph)**:
@@ -851,5 +851,5 @@ The `app` field in each node must met the following rules.
   **Output**:
 
   ```text
-  💔  Error: Failed to parse graph string, nodes[1]: 'localhost' is not allowed in graph definition, change the content of 'app' field to be consistent with '_ten::uri'
+  ❌  Error: Failed to parse graph string, nodes[1]: 'localhost' is not allowed in graph definition, change the content of 'app' field to be consistent with '_ten::uri'
   ```

@@ -11,7 +11,6 @@ use console::Emoji;
 use semver::{Version, VersionReq};
 use serde::{Deserialize, Serialize};
 
-use super::constants::MANIFEST_LOCK_JSON_FILENAME;
 use ten_rust::json_schema::validate_manifest_lock_json_string;
 use ten_rust::pkg_info::dependencies::PkgDependency;
 use ten_rust::pkg_info::manifest::support::ManifestSupport;
@@ -21,6 +20,8 @@ use ten_rust::pkg_info::supports::{
 use ten_rust::pkg_info::{
     pkg_identity::PkgIdentity, pkg_type::PkgType, PkgInfo,
 };
+
+use super::constants::MANIFEST_LOCK_JSON_FILENAME;
 
 // The `manifest-lock.json` structure.
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -107,7 +108,7 @@ impl ManifestLock {
             for pkg in added_pkgs.iter() {
                 println!(
                     "{}  Adding package {} v{}",
-                    Emoji("🔒", ""),
+                    Emoji("➕", ""),
                     pkg.pkg_identity.name,
                     pkg.version
                 );
@@ -118,7 +119,7 @@ impl ManifestLock {
             for pkg in removed_pkgs.iter() {
                 println!(
                     "{}  Removing package {} v{}",
-                    Emoji("🔒", ""),
+                    Emoji("🗑️", ""),
                     pkg.pkg_identity.name,
                     pkg.version
                 );
@@ -129,7 +130,7 @@ impl ManifestLock {
             for (old_pkg, new_pkg) in updated_pkgs.iter() {
                 println!(
                     "{}  Updating package {} v{} to v{}",
-                    Emoji("🔒", ""),
+                    Emoji("🔄", ""),
                     old_pkg.pkg_identity.name,
                     old_pkg.version,
                     new_pkg.version

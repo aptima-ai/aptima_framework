@@ -12,11 +12,6 @@ use std::{
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
-use crate::dev_server::{
-    get_all_pkgs::get_all_pkgs,
-    response::{ApiResponse, ErrorResponse, Status},
-    DevServerState,
-};
 use ten_rust::pkg_info::{
     message::{MsgDirection, MsgType},
     predefined_graphs::extension::{
@@ -24,6 +19,12 @@ use ten_rust::pkg_info::{
         get_extension, get_extension_nodes_in_graph,
         get_pkg_info_for_extension, CompatibleExtensionAndMsg,
     },
+};
+
+use crate::dev_server::{
+    get_all_pkgs::get_all_pkgs,
+    response::{ApiResponse, ErrorResponse, Status},
+    DevServerState,
 };
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -304,11 +305,12 @@ mod tests {
     use actix_web::{test, App};
     use serde_json::json;
 
+    use ten_rust::pkg_info::localhost;
+
     use super::*;
     use crate::{
         config::TmanConfig, dev_server::mock::tests::inject_all_pkgs_for_mock,
     };
-    use ten_rust::pkg_info::localhost;
 
     #[actix_web::test]
     async fn test_get_compatible_messages_success() {

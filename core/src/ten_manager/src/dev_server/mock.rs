@@ -10,9 +10,10 @@ pub mod tests {
 
     use anyhow::Result;
 
-    use crate::dev_server::DevServerState;
     use ten_rust::pkg_info::PkgInfo;
     use ten_rust::pkg_info::{manifest::Manifest, property::Property};
+
+    use crate::dev_server::DevServerState;
 
     pub fn inject_all_pkgs_for_mock(
         state: &mut DevServerState,

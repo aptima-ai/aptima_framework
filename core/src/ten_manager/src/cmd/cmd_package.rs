@@ -11,12 +11,13 @@ use clap::{ArgMatches, Command};
 use console::Emoji;
 use indicatif::HumanDuration;
 
+use ten_rust::pkg_info::get_pkg_info_from_path;
+
 use crate::{
     config::TmanConfig,
     log::tman_verbose_println,
     package_file::{create_package_zip_file, get_package_zip_file_name},
 };
-use ten_rust::pkg_info::get_pkg_info_from_path;
 
 #[derive(Debug)]
 pub struct PackageCommand {}

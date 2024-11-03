@@ -20,8 +20,9 @@ use std::sync::{Arc, RwLock};
 
 use actix_web::{web, HttpRequest, HttpResponse};
 
-use super::config::TmanConfig;
 use ten_rust::pkg_info::PkgInfo;
+
+use super::config::TmanConfig;
 use version::get_version;
 
 pub struct DevServerState {

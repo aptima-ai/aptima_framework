@@ -8,11 +8,12 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use super::graphs::nodes::{
-    DevServerApiCmdLike, DevServerApiDataLike, DevServerPropertyAttributes,
-};
 use ten_rust::pkg_info::api::{
     PkgApiCmdLike, PkgApiDataLike, PkgPropertyAttributes,
+};
+
+use super::graphs::nodes::{
+    DevServerApiCmdLike, DevServerApiDataLike, DevServerPropertyAttributes,
 };
 
 pub fn get_dev_server_property_hashmap_from_pkg(

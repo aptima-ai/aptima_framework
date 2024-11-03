@@ -12,6 +12,8 @@ use std::{
 use actix_web::{web, HttpResponse, Responder};
 use serde::Serialize;
 
+use ten_rust::pkg_info::pkg_type::PkgType;
+
 use crate::{
     constants::PROPERTY_JSON_FILENAME,
     dev_server::{
@@ -20,7 +22,6 @@ use crate::{
         DevServerState,
     },
 };
-use ten_rust::pkg_info::pkg_type::PkgType;
 
 #[derive(Serialize, Debug, PartialEq)]
 struct DumpResponse {
@@ -91,6 +92,12 @@ pub async fn dump_property(
 
 #[cfg(test)]
 mod tests {
+    use std::{env, fs};
+
+    use actix_web::{test, App};
+
+    use ten_rust::pkg_info::property::{parse_property_from_file, Property};
+
     use super::*;
     use crate::{
         config::TmanConfig,
@@ -100,9 +107,6 @@ mod tests {
         },
         utils::read_file_to_string,
     };
-    use actix_web::{test, App};
-    use std::{env, fs};
-    use ten_rust::pkg_info::property::{parse_property_from_file, Property};
 
     #[actix_web::test]
     async fn test_dump_property_success() {
