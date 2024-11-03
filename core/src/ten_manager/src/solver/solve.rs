@@ -179,11 +179,13 @@ fn solve(
         conf.value_set(solve_models_key, "0")
             .expect("Failed to set solve.models to 0.");
 
+        // Configure to enumerate all optimal models.
         let solve_opt_mode_key =
             conf.map_at(root_key, "solve.opt_mode").unwrap();
         conf.value_set(solve_opt_mode_key, "optN")
             .expect("Failed to set solve.opt_mode to optN.");
 
+        // Enable full statistics.
         let stats_key = conf.map_at(root_key, "stats").unwrap();
         conf.value_set(stats_key, "2")
             .expect("Failed to set stats_key to 2.");
@@ -242,6 +244,12 @@ fn solve(
                 if let Some(m) = get_model(tman_config, model, &mut is_usable) {
                     if is_usable {
                         usable_model = Some(m);
+
+                        // Clingo will only output increasingly optimized
+                        // models, so we need to take the last model without an
+                        // error statement from all outputted models, not just
+                        // the first good one. Therefore, we shouldn’t break
+                        // here.
                     } else {
                         non_usable_models.push(m); // Collect error models.
                     }
