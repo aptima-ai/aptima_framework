@@ -118,7 +118,7 @@ static void ten_env_proxy_notify_addon_create_extension(ten_env_t *ten_env,
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_addon_create_extension_async(
+  bool rc = ten_addon_create_extension(
       ten_env, ten_string_get_raw_str(&info->addon_name),
       ten_string_get_raw_str(&info->instance_name),
       proxy_addon_create_extension_done, info->callback_info, &err);

@@ -255,7 +255,7 @@ static bool ten_engine_create_remote_async(
       ten_engine_on_protocol_created_info_create(on_remote_created_cb, cb_data);
   TEN_ASSERT(info, "Failed to allocate memory.");
 
-  bool rc = ten_addon_create_protocol_async(
+  bool rc = ten_addon_create_protocol_with_uri(
       self->ten_env, uri, TEN_PROTOCOL_ROLE_OUT_DEFAULT,
       ten_engine_on_remote_protocol_created, info, &err);
   if (!rc) {

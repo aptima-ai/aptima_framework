@@ -161,7 +161,7 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
 
   if (!ten_string_is_equal_c_str(&self->uri, TEN_STR_LOCALHOST)) {
     // Create the app listening endpoint protocol if specifying one.
-    rc = ten_addon_create_protocol_async(
+    rc = ten_addon_create_protocol_with_uri(
         self->ten_env, ten_string_get_raw_str(&self->uri),
         TEN_PROTOCOL_ROLE_LISTEN, ten_app_on_endpoint_protocol_created, NULL,
         &err);

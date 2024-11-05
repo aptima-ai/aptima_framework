@@ -121,7 +121,7 @@ static void ten_builtin_extension_group_on_create_extensions(
     ten_string_t *extension_addon_name = &extension_name_info->addon_name;
     ten_string_t *extension_instance_name = &extension_name_info->instance_name;
 
-    bool res = ten_addon_create_extension_async(
+    bool res = ten_addon_create_extension(
         ten_env, ten_string_get_raw_str(extension_addon_name),
         ten_string_get_raw_str(extension_instance_name),
         (ten_env_addon_on_create_instance_async_cb_t)
@@ -156,8 +156,8 @@ static void ten_builtin_extension_group_on_destroy_extensions(
     TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
                "Invalid argument.");
 
-    ten_addon_destroy_extension_async(
-        ten_env, extension, on_addon_destroy_instance_done, NULL, NULL);
+    ten_addon_destroy_extension(ten_env, extension,
+                                on_addon_destroy_instance_done, NULL, NULL);
   }
 }
 

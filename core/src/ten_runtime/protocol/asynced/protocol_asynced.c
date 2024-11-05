@@ -398,7 +398,7 @@ void ten_protocol_asynced_on_connected_async(ten_protocol_asynced_t *self,
 }
 
 static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
-                                                      void *instance,
+                                                      ten_protocol_t *instance,
                                                       void *cb_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -415,7 +415,7 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
                  ten_protocol_check_integrity(&listening_protocol->base, true),
              "Invalid argument.");
 
-  ten_protocol_asynced_t *protocol = instance;
+  ten_protocol_asynced_t *protocol = (ten_protocol_asynced_t *)instance;
   if (!protocol) {
     TEN_LOGE("Failed to create the protocol instance.");
     info->on_created(NULL, info);
@@ -427,13 +427,6 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
   // object) might need to be migrated, so set the value to 'INIT' as the
   // default value is 'DONE'. Refer to 'ten_protocol_asynced_init()'.
   protocol->migration_state = TEN_CONNECTION_MIGRATION_STATE_INIT;
-
-  // We can _not_ know whether the protocol role is
-  // 'TEN_PROTOCOL_ROLE_IN_INTERNAL' or 'TEN_PROTOCOL_ROLE_IN_EXTERNAL' until
-  // the message received from the protocol is processed. Refer to
-  // 'ten_connection_on_msgs()' and
-  // 'ten_connection_handle_command_from_external_client()'.
-  protocol->base.role = TEN_PROTOCOL_ROLE_IN_DEFAULT;
   protocol->base.on_accepted = listening_protocol->base.on_accepted;
 
   ten_protocol_attach_to_app_and_thread(&protocol->base, app);
@@ -473,11 +466,22 @@ static void ten_protocol_asynced_on_client_accepted(void *self, void *info_) {
     ten_app_t *app = listening_base_protocol->attached_target.app;
     TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
 
-    bool rc = ten_addon_create_instance_async(
+    ten_error_t err;
+    ten_error_init(&err);
+
+    // We can _not_ know whether the protocol role is
+    // 'TEN_PROTOCOL_ROLE_IN_INTERNAL' or 'TEN_PROTOCOL_ROLE_IN_EXTERNAL'
+    // until the message received from the protocol is processed. Refer to
+    // 'ten_connection_on_msgs()' and
+    // 'ten_connection_handle_command_from_external_client()'.
+    bool rc = ten_addon_create_protocol(
         app->ten_env, ten_string_get_raw_str(&addon_host->name),
-        ten_string_get_raw_str(&addon_host->name), TEN_ADDON_TYPE_PROTOCOL,
-        ten_app_thread_on_client_protocol_created, info);
-    TEN_ASSERT(rc, "Should not happen.");
+        ten_string_get_raw_str(&addon_host->name), TEN_PROTOCOL_ROLE_IN_DEFAULT,
+        ten_app_thread_on_client_protocol_created, info, NULL);
+    TEN_ASSERT(rc, "Failed to create protocol, err: %s",
+               ten_error_errmsg(&err));
+
+    ten_error_deinit(&err);
   }
 
   // The task is completed, so delete a reference to the 'protocol' to reflect

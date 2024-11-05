@@ -894,13 +894,13 @@ class ten_env_t {
                                     addon_create_extension_async_cb_t &&cb,
                                     error_t *err) {
     if (cb == nullptr) {
-      return ten_addon_create_extension_async(
+      return ten_addon_create_extension(
           c_ten_env, addon_name, instance_name, nullptr, nullptr,
           err != nullptr ? err->get_internal_representation() : nullptr);
     } else {
       auto *cb_ptr = new addon_create_extension_async_cb_t(std::move(cb));
 
-      return ten_addon_create_extension_async(
+      return ten_addon_create_extension(
           c_ten_env, addon_name, instance_name,
           proxy_addon_create_extension_async_cb, cb_ptr,
           err != nullptr ? err->get_internal_representation() : nullptr);

@@ -92,9 +92,9 @@ static void ten_env_proxy_notify_addon_destroy_extension(ten_env_t *ten_env,
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_addon_destroy_extension_async(
-      ten_env, info->c_extension, proxy_addon_destroy_extension_done, info,
-      &err);
+  bool rc = ten_addon_destroy_extension(ten_env, info->c_extension,
+                                        proxy_addon_destroy_extension_done,
+                                        info, &err);
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_error_deinit(&err);

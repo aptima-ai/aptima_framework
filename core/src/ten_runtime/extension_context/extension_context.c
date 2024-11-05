@@ -401,7 +401,7 @@ static void destroy_extension_group_by_addon(
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_addon_extension_group_destroy(
+  ten_addon_destroy_extension_group(
       ten_env, extension_group,
       ten_extension_context_on_extension_group_destroyed, NULL);
 }
@@ -566,7 +566,7 @@ bool ten_extension_context_start_extension_group(
     // `app`.
     if (ten_string_is_equal(&extension_group_info->loc.app_uri,
                             &self->engine->app->uri)) {
-      bool res = ten_addon_extension_group_create(
+      bool res = ten_addon_create_extension_group(
           ten_env,
           ten_string_get_raw_str(
               &extension_group_info->extension_group_addon_name),

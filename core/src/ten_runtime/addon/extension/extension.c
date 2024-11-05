@@ -26,10 +26,10 @@ static ten_addon_store_t g_extension_store = {
 
 ten_addon_store_t *ten_extension_get_store(void) { return &g_extension_store; }
 
-bool ten_addon_create_extension_async(
-    ten_env_t *ten_env, const char *addon_name, const char *instance_name,
-    ten_env_addon_on_create_instance_async_cb_t cb, void *cb_data,
-    TEN_UNUSED ten_error_t *err) {
+bool ten_addon_create_extension(ten_env_t *ten_env, const char *addon_name,
+                                const char *instance_name,
+                                ten_env_addon_on_create_instance_async_cb_t cb,
+                                void *cb_data, TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(addon_name && instance_name, "Should not happen.");
 
   TEN_ASSERT(ten_env, "Invalid argument.");
@@ -70,7 +70,7 @@ bool ten_addon_create_extension_async(
   }
 }
 
-bool ten_addon_destroy_extension_async(
+bool ten_addon_destroy_extension(
     ten_env_t *ten_env, ten_extension_t *extension,
     ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data,
     TEN_UNUSED ten_error_t *err) {
