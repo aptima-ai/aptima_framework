@@ -16,6 +16,7 @@
 #include <unistd.h>
 #endif
 
+#include "include_internal/ten_utils/log/formatter.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "include_internal/ten_utils/log/output.h"
 #include "ten_utils/lib/file.h"
@@ -56,7 +57,7 @@ static int *get_log_fd(const char *log_path) {
   return fd_ptr;
 }
 
-static void ten_log_output_file_cb(ten_string_t *msg, void *user_data) {
+static void ten_log_output_to_file_cb(ten_string_t *msg, void *user_data) {
   assert(msg && "Invalid argument.");
 
   if (!user_data) {
@@ -87,10 +88,13 @@ void ten_log_set_output_to_file(ten_log_t *self, const char *log_path) {
   assert(log_path && "Invalid argument.");
 
   int *fd = get_log_fd(log_path);
-  ten_log_output_set(self, ten_log_output_file_cb, ten_log_close_file_cb, fd);
+  ten_log_output_set(self, ten_log_output_to_file_cb, ten_log_close_file_cb,
+                     fd);
+
+  ten_log_set_formatter(self, ten_log_default_formatter, NULL);
 }
 
-void ten_log_out_stderr_cb(ten_string_t *msg, void *user_data) {
+void ten_log_output_to_stderr_cb(ten_string_t *msg, void *user_data) {
   assert(msg && "Invalid argument.");
 
   (void)user_data;
@@ -112,5 +116,11 @@ void ten_log_out_stderr_cb(ten_string_t *msg, void *user_data) {
 }
 
 void ten_log_set_output_to_stderr(ten_log_t *self) {
-  ten_log_output_set(self, ten_log_out_stderr_cb, NULL, NULL);
+  ten_log_output_set(self, ten_log_output_to_stderr_cb, NULL, NULL);
+
+#if defined(OS_LINUX) || defined(OS_MACOS)
+  ten_log_set_formatter(self, ten_log_colored_formatter, NULL);
+#else
+  ten_log_set_formatter(self, ten_log_default_formatter, NULL);
+#endif
 }

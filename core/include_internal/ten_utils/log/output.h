@@ -20,8 +20,8 @@ typedef struct ten_string_t ten_string_t;
 
 TEN_UTILS_API void ten_log_set_output_to_stderr(ten_log_t *self);
 
-TEN_UTILS_PRIVATE_API void ten_log_out_stderr_cb(ten_string_t *msg,
-                                                 void *user_data);
+TEN_UTILS_PRIVATE_API void ten_log_output_to_stderr_cb(ten_string_t *msg,
+                                                       void *user_data);
 
 TEN_UTILS_PRIVATE_API void ten_log_set_output_to_file(ten_log_t *self,
                                                       const char *log_path);

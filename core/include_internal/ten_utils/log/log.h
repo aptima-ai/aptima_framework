@@ -31,6 +31,9 @@ TEN_UTILS_API void ten_log_deinit(ten_log_t *self);
 
 TEN_UTILS_PRIVATE_API void ten_log_destroy(ten_log_t *self);
 
+TEN_UTILS_PRIVATE_API const char *filename(const char *path, size_t path_len,
+                                           size_t *filename_len);
+
 TEN_UTILS_API void ten_log_log_with_size_from_va_list(
     ten_log_t *self, TEN_LOG_LEVEL level, const char *func_name,
     size_t func_name_len, const char *file_name, size_t file_name_len,

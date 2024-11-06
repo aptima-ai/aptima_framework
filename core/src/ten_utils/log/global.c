@@ -15,7 +15,7 @@
 
 ten_log_t ten_global_log = {TEN_LOG_SIGNATURE,
                             TEN_LOG_LEVEL_DEBUG,
-                            {ten_log_out_stderr_cb, NULL, NULL}};
+                            {ten_log_output_to_stderr_cb, NULL, NULL}};
 
 void ten_log_global_init(void) { ten_log_init(&ten_global_log); }
 

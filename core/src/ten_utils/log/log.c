@@ -12,11 +12,9 @@
 #include <stdlib.h>
 
 #include "include_internal/ten_utils/lib/string.h"
-#include "include_internal/ten_utils/log/level.h"
+#include "include_internal/ten_utils/log/formatter.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "include_internal/ten_utils/log/output.h"
-#include "include_internal/ten_utils/log/pid.h"
-#include "include_internal/ten_utils/log/time.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/string.h"
 
@@ -70,8 +68,7 @@ void ten_log_destroy(ten_log_t *self) {
 
 static const char *funcname(const char *func) { return func ? func : ""; }
 
-static const char *filename(const char *path, size_t path_len,
-                            size_t *filename_len) {
+const char *filename(const char *path, size_t path_len, size_t *filename_len) {
   assert(filename_len && "Invalid argument.");
 
   if (!path || path_len == 0) {
@@ -185,32 +182,14 @@ void ten_log_log_with_size(ten_log_t *self, TEN_LOG_LEVEL level,
   ten_string_t buf;
   ten_string_init(&buf);
 
-  struct tm time_info;
-  size_t msec = 0;
-  ten_log_get_time(&time_info, &msec);
-  ten_log_add_time_string(&buf, &time_info, msec);
-
-  int64_t pid = 0;
-  int64_t tid = 0;
-  ten_log_get_pid_tid(&pid, &tid);
-
-  ten_string_append_formatted(&buf, " %d(%d) %c", pid, tid,
-                              ten_log_level_char(level));
-
-  if (func_name_len) {
-    ten_string_append_formatted(&buf, " %.*s", func_name_len,
-                                funcname(func_name));
+  if (self->formatter.format_cb) {
+    self->formatter.format_cb(&buf, level, func_name, func_name_len, file_name,
+                              file_name_len, line_no, msg, msg_len);
+  } else {
+    // Use default formatter if none is set.
+    ten_log_default_formatter(&buf, level, func_name, func_name_len, file_name,
+                              file_name_len, line_no, msg, msg_len);
   }
-
-  size_t actual_file_name_len = 0;
-  const char *actual_file_name =
-      filename(file_name, file_name_len, &actual_file_name_len);
-  if (actual_file_name_len) {
-    ten_string_append_formatted(&buf, "@%.*s:%d", actual_file_name_len,
-                                actual_file_name, line_no);
-  }
-
-  ten_string_append_formatted(&buf, " %.*s", msg_len, msg);
 
   self->output.output_cb(&buf, self->output.user_data);
 
