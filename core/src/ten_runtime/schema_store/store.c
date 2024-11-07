@@ -27,6 +27,7 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_kv.h"
@@ -234,6 +235,7 @@ bool ten_schema_store_set_schema_definition(ten_schema_store_t *self,
   return true;
 }
 
+#if defined(TEN_ENABLE_TEN_RUST_APIS)
 static void ten_schemas_parse_interface_part(
     ten_hashtable_t *interface_schema_map, ten_value_t *interface_schema_value,
     const char *base_dir) {
@@ -329,22 +331,23 @@ static bool ten_schema_store_merge_interface_schemas_into_msg_schemas(
 
   return true;
 }
+#endif
 
 /**
  * @param base_dir The base directory of the addon. If the interface definition
  * is a file reference, it is used to resolve the file reference based on the
  * base_dir.
  */
-bool ten_schema_store_set_interface_schema_definition(ten_schema_store_t *self,
-                                                      ten_value_t *schema_def,
-                                                      const char *base_dir,
-                                                      ten_error_t *err) {
+bool ten_schema_store_set_interface_schema_definition(
+    ten_schema_store_t *self, ten_value_t *schema_def,
+    TEN_UNUSED const char *base_dir, ten_error_t *err) {
   TEN_ASSERT(self && ten_schema_store_check_integrity(self),
              "Invalid argument.");
   TEN_ASSERT(schema_def && ten_value_check_integrity(schema_def),
              "Invalid argument.");
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
 
+#if defined(TEN_ENABLE_TEN_RUST_APIS)
   if (!ten_value_is_object(schema_def)) {
     ten_error_set(err, TEN_ERRNO_GENERIC,
                   "The interface schema should be an object.");
@@ -374,6 +377,7 @@ bool ten_schema_store_set_interface_schema_definition(ten_schema_store_t *self,
       return false;
     }
   }
+#endif
 
   return true;
 }

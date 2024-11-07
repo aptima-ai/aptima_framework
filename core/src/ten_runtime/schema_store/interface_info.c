@@ -5,19 +5,23 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/schema_store/interface.h"
-#include "include_internal/ten_rust/ten_rust.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/memory.h"
+#include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_json.h"
 
+#if defined(TEN_ENABLE_TEN_RUST_APIS)
+#include "include_internal/ten_rust/ten_rust.h"
+#include "ten_utils/lib/json.h"
+#include "ten_utils/macro/memory.h"
+#endif
+
 ten_value_t *ten_interface_schema_info_resolve(
-    ten_value_t *unresolved_interface_schema_def, const char *base_dir,
-    ten_error_t *err) {
+    ten_value_t *unresolved_interface_schema_def,
+    TEN_UNUSED const char *base_dir, ten_error_t *err) {
   TEN_ASSERT(unresolved_interface_schema_def &&
                  ten_value_check_integrity(unresolved_interface_schema_def),
              "Invalid argument.");
@@ -29,6 +33,7 @@ ten_value_t *ten_interface_schema_info_resolve(
     return NULL;
   }
 
+#if defined(TEN_ENABLE_TEN_RUST_APIS)
   ten_json_t *unresolved_interface_schema_json =
       ten_value_to_json(unresolved_interface_schema_def);
 
@@ -76,4 +81,7 @@ ten_value_t *ten_interface_schema_info_resolve(
   }
 
   return resolved_interface_schema_def;
+#else
+  return NULL;
+#endif
 }

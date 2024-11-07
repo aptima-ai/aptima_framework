@@ -38,14 +38,19 @@ ten_executable("ten_runtime_smoke_test") {
     "data_test",
     "extension_test",
     "graph_test",
-    "interface_test",
     "msg_test",
     "notify_test",
     "result_conversion",
-    "schema_test",
     "standalone_test",
     "video_frame_test",
   ]
+
+  if (ten_enable_ten_rust && ten_enable_ten_rust_apis) {
+    deps += [
+      "interface_test",
+      "schema_test",
+    ]
+  }
 
   if (ten_enable_curl) {
     deps += [ "//third_party/curl" ]

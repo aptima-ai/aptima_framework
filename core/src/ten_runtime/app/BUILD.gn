@@ -5,6 +5,7 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/ten_runtime/glob.gni")
+import("//build/ten_runtime/options.gni")
 
 glob("app") {
   file_list = all_native_files
@@ -13,5 +14,7 @@ glob("app") {
     "ten_env",
   ]
 
-  public_deps = [ "//core/src/ten_rust:ten_rust_binding" ]
+  if (ten_enable_ten_rust && ten_enable_ten_rust_apis) {
+    public_deps = [ "//core/src/ten_rust:ten_rust_binding" ]
+  }
 }

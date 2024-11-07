@@ -8,17 +8,22 @@
 
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/base_dir.h"
+#include "ten_runtime/app/app.h"
+#include "ten_utils/macro/mark.h"
+
+#if defined(TEN_ENABLE_TEN_RUST_APIS)
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_rust/ten_rust.h"
-#include "ten_runtime/app/app.h"
 #include "ten_utils/macro/memory.h"
+#endif
 
 bool ten_app_check_start_graph_cmd_json(ten_app_t *self,
                                         ten_json_t *start_graph_cmd_json,
-                                        ten_error_t *err) {
+                                        TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
   TEN_ASSERT(start_graph_cmd_json, "Invalid argument.");
 
+#if defined(TEN_ENABLE_TEN_RUST_APIS)
   const char *base_dir = ten_app_get_base_dir(self);
 
   // The pkg_info of extensions in the graph is read from the ten_packages
@@ -49,4 +54,7 @@ bool ten_app_check_start_graph_cmd_json(ten_app_t *self,
   }
 
   return rc;
+#else
+  return true;
+#endif
 }
