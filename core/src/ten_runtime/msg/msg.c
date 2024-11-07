@@ -93,7 +93,7 @@ void ten_raw_msg_deinit(ten_msg_t *self) {
 
 void ten_raw_msg_set_src_to_loc(ten_msg_t *self, ten_loc_t *loc) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
-  ten_loc_init_from_loc(&self->src_loc, loc);
+  ten_loc_set_from_loc(&self->src_loc, loc);
 }
 
 void ten_msg_set_src_to_loc(ten_shared_ptr_t *self, ten_loc_t *loc) {
@@ -945,7 +945,7 @@ void ten_msg_correct_dest(ten_shared_ptr_t *msg, ten_engine_t *engine) {
       // 'correct' the real destination location from 'localhost' to the real
       // URI of the app.
 
-      ten_string_init_from_c_str(&dest_loc->app_uri, app_uri, strlen(app_uri));
+      ten_string_set_from_c_str(&dest_loc->app_uri, app_uri, strlen(app_uri));
       is_local_app = true;
     }
 

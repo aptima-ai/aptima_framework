@@ -248,6 +248,9 @@ ten_path_in_t *ten_path_table_add_in_path(
   ten_list_push_ptr_back(&self->in_paths, in_path,
                          (ten_ptr_listnode_destroy_func_t)ten_path_in_destroy);
 
+  ten_loc_deinit(&src_loc);
+  ten_loc_deinit(&dest_loc);
+
   return in_path;
 }
 
@@ -296,6 +299,9 @@ ten_path_out_t *ten_path_table_add_out_path(ten_path_table_t *self,
   // Save the created path to the path table.
   ten_list_push_ptr_back(&self->out_paths, out_path,
                          (ten_ptr_listnode_destroy_func_t)ten_path_out_destroy);
+
+  ten_loc_deinit(&src_loc);
+  ten_loc_deinit(&dest_loc);
 
   return out_path;
 }

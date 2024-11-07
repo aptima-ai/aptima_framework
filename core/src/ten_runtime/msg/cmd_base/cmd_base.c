@@ -75,33 +75,33 @@ void ten_raw_cmd_base_init(ten_cmd_base_t *self, TEN_MSG_TYPE type) {
 
   switch (type) {
     case TEN_MSG_TYPE_CMD_START_GRAPH:
-      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
-                                "%s", TEN_STR_MSG_NAME_TEN_START_GRAPH);
+      ten_string_set_formatted(ten_value_peek_string(&self->msg_hdr.name), "%s",
+                               TEN_STR_MSG_NAME_TEN_START_GRAPH);
       break;
 
     case TEN_MSG_TYPE_CMD_TIMEOUT:
-      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
-                                "%s", TEN_STR_MSG_NAME_TEN_TIMEOUT);
+      ten_string_set_formatted(ten_value_peek_string(&self->msg_hdr.name), "%s",
+                               TEN_STR_MSG_NAME_TEN_TIMEOUT);
       break;
 
     case TEN_MSG_TYPE_CMD_TIMER:
-      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
-                                "%s", TEN_STR_MSG_NAME_TEN_TIMER);
+      ten_string_set_formatted(ten_value_peek_string(&self->msg_hdr.name), "%s",
+                               TEN_STR_MSG_NAME_TEN_TIMER);
       break;
 
     case TEN_MSG_TYPE_CMD_STOP_GRAPH:
-      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
-                                "%s", TEN_STR_MSG_NAME_TEN_STOP_GRAPH);
+      ten_string_set_formatted(ten_value_peek_string(&self->msg_hdr.name), "%s",
+                               TEN_STR_MSG_NAME_TEN_STOP_GRAPH);
       break;
 
     case TEN_MSG_TYPE_CMD_CLOSE_APP:
-      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
-                                "%s", TEN_STR_MSG_NAME_TEN_CLOSE_APP);
+      ten_string_set_formatted(ten_value_peek_string(&self->msg_hdr.name), "%s",
+                               TEN_STR_MSG_NAME_TEN_CLOSE_APP);
       break;
 
     case TEN_MSG_TYPE_CMD_RESULT:
-      ten_string_init_formatted(ten_value_peek_string(&self->msg_hdr.name),
-                                "%s", TEN_STR_MSG_NAME_TEN_RESULT);
+      ten_string_set_formatted(ten_value_peek_string(&self->msg_hdr.name), "%s",
+                               TEN_STR_MSG_NAME_TEN_RESULT);
       break;
 
     default:
@@ -119,6 +119,8 @@ void ten_raw_cmd_base_deinit(ten_cmd_base_t *self) {
 
   ten_value_deinit(&self->cmd_id);
   ten_value_deinit(&self->seq_id);
+
+  ten_string_deinit(&self->parent_cmd_id);
 
   self->original_connection = NULL;
 }
@@ -213,7 +215,7 @@ const char *ten_cmd_base_gen_new_cmd_id_forcibly(ten_shared_ptr_t *self) {
 void ten_raw_cmd_base_set_cmd_id(ten_cmd_base_t *self, const char *cmd_id) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self) && cmd_id,
              "Should not happen.");
-  ten_string_init_formatted(ten_value_peek_string(&self->cmd_id), "%s", cmd_id);
+  ten_string_set_formatted(ten_value_peek_string(&self->cmd_id), "%s", cmd_id);
 }
 
 ten_string_t *ten_raw_cmd_base_get_cmd_id(ten_cmd_base_t *self) {
@@ -238,7 +240,7 @@ void ten_cmd_base_save_cmd_id_to_parent_cmd_id(ten_shared_ptr_t *self) {
 void ten_raw_cmd_base_set_seq_id(ten_cmd_base_t *self, const char *seq_id) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self) && seq_id,
              "Should not happen.");
-  ten_string_init_formatted(ten_value_peek_string(&self->seq_id), "%s", seq_id);
+  ten_string_set_formatted(ten_value_peek_string(&self->seq_id), "%s", seq_id);
 }
 
 bool ten_raw_cmd_base_get_field_from_json(ten_msg_t *self, ten_json_t *json,

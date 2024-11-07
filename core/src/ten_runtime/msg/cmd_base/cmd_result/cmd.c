@@ -64,6 +64,8 @@ void ten_raw_cmd_result_destroy(ten_cmd_result_t *self) {
 
   ten_raw_cmd_base_deinit(&self->cmd_base_hdr);
   ten_signature_set(&self->signature, 0);
+  ten_string_deinit(ten_value_peek_string(&self->original_cmd_name));
+
   TEN_FREE(self);
 }
 
@@ -414,8 +416,8 @@ static void ten_raw_cmd_result_set_original_cmd_name(
   TEN_ASSERT(original_cmd_name && strlen(original_cmd_name),
              "Invalid argument.");
 
-  ten_string_init_from_c_str(ten_value_peek_string(&self->original_cmd_name),
-                             original_cmd_name, strlen(original_cmd_name));
+  ten_string_set_from_c_str(ten_value_peek_string(&self->original_cmd_name),
+                            original_cmd_name, strlen(original_cmd_name));
 }
 
 void ten_cmd_result_set_original_cmd_name(ten_shared_ptr_t *self,

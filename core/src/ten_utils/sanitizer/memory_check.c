@@ -111,7 +111,7 @@ static ten_sanitizer_memory_record_t *ten_sanitizer_memory_record_create(
 #endif
 
   ten_sanitizer_memory_record_t *self =
-      ten_malloc(sizeof(ten_sanitizer_memory_record_t));
+      malloc(sizeof(ten_sanitizer_memory_record_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
   if (!self) {
 #if defined(TEN_USE_ASAN)
@@ -123,12 +123,15 @@ static ten_sanitizer_memory_record_t *ten_sanitizer_memory_record_create(
   self->addr = addr;
   self->size = size;
 
-  ten_string_init_formatted(&self->func_name, "%s", func_name);
+  self->func_name = (char *)malloc(strlen(func_name) + 1);
+  TEN_ASSERT(self->func_name, "Failed to allocate memory.");
+  (void)sprintf(self->func_name, "%s", func_name);
 
-  ten_string_init_formatted(
-      &self->file_name, "%.*s",
-      strlen(file_name) - TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH,
-      file_name + TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH);
+  self->file_name = (char *)malloc(strlen(file_name) + 1);
+  TEN_ASSERT(self->file_name, "Failed to allocate memory.");
+  (void)sprintf(self->file_name, "%.*s",
+                (int)(strlen(file_name) - TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH),
+                file_name + TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH);
 
   self->lineno = lineno;
 
@@ -147,8 +150,9 @@ static void ten_sanitizer_memory_record_destroy(
 
   TEN_ASSERT(self, "Invalid argument.");
 
-  ten_string_deinit(&self->file_name);
-  ten_free(self);
+  free(self->func_name);
+  free(self->file_name);
+  free(self);
 
 #if defined(TEN_USE_ASAN)
   __lsan_enable();
@@ -276,8 +280,7 @@ void ten_sanitizer_memory_record_dump(void) {
     ten_sanitizer_memory_record_t *info = ten_ptr_listnode_get(iter.node);
 
     TEN_LOGE("\t#%zu %p(%zu bytes) in %s %s:%d", idx, info->addr, info->size,
-             ten_string_get_raw_str(&info->func_name),
-             ten_string_get_raw_str(&info->file_name), info->lineno);
+             info->func_name, info->file_name, info->lineno);
 
     idx++;
 
@@ -320,7 +323,7 @@ void ten_sanitizer_memory_record_dump(void) {
 
 void *ten_sanitizer_memory_malloc(size_t size, const char *file_name,
                                   uint32_t lineno, const char *func_name) {
-  void *self = ten_malloc(size);
+  void *self = malloc(size);
   TEN_ASSERT(self, "Failed to allocate memory.");
   if (!self) {
     return NULL;
@@ -334,7 +337,7 @@ void *ten_sanitizer_memory_malloc(size_t size, const char *file_name,
       self, size, file_name, lineno, func_name);
   TEN_ASSERT(record, "Should not happen.");
   if (!record) {
-    ten_free(self);
+    free(self);
     return NULL;
   }
 
@@ -365,7 +368,7 @@ void *ten_sanitizer_memory_calloc(size_t cnt, size_t size,
       self, total_size, file_name, lineno, func_name);
   TEN_ASSERT(record, "Should not happen.");
   if (!record) {
-    ten_free(self);
+    free(self);
     return NULL;
   }
 
@@ -386,7 +389,7 @@ void ten_sanitizer_memory_free(void *addr) {
   ten_sanitizer_memory_record_del(&g_memory_records, addr);
 
 done:
-  ten_free(addr);
+  free(addr);
 }
 
 void *ten_sanitizer_memory_realloc(void *addr, size_t size,
@@ -405,7 +408,7 @@ void *ten_sanitizer_memory_realloc(void *addr, size_t size,
     ten_sanitizer_memory_record_t *record = ten_sanitizer_memory_record_create(
         self, size, file_name, lineno, func_name);
     if (!record) {
-      ten_free(self);
+      free(self);
       if (addr != NULL) {
         ten_sanitizer_memory_record_del(&g_memory_records, addr);
       }
@@ -444,7 +447,7 @@ char *ten_sanitizer_memory_strdup(const char *str, const char *file_name,
   ten_sanitizer_memory_record_t *record = ten_sanitizer_memory_record_create(
       self, strlen(self), file_name, lineno, func_name);
   if (!record) {
-    ten_free(self);
+    free(self);
     return NULL;
   }
 
@@ -472,7 +475,7 @@ char *ten_sanitizer_memory_strndup(const char *str, size_t size,
   ten_sanitizer_memory_record_t *record = ten_sanitizer_memory_record_create(
       self, strlen(self), file_name, lineno, func_name);
   if (!record) {
-    ten_free(self);
+    free(self);
     return NULL;
   }
 

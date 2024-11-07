@@ -221,7 +221,7 @@ ten_msg_conversion_per_property_rule_from_value(ten_value_t *value,
   ten_msg_conversion_per_property_rule_t *self =
       ten_msg_conversion_per_property_rule_create();
 
-  ten_string_init_formatted(
+  ten_string_set_formatted(
       &self->property_path, "%s",
       ten_value_peek_raw_str(ten_value_object_peek(value, TEN_STR_PATH)));
 

@@ -517,7 +517,7 @@ void ten_addon_find_and_set_base_dir(ten_addon_host_t *self,
     // If the addon's base dir cannot be found by searching upward through the
     // parent folders, simply trust the passed-in parameter as the addon’s base
     // dir.
-    ten_string_init_from_c_str(&self->base_dir, start_path, strlen(start_path));
+    ten_string_set_from_c_str(&self->base_dir, start_path, strlen(start_path));
   }
 }
 

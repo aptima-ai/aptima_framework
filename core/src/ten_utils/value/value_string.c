@@ -19,6 +19,7 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
+#include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_kv.h"
 

@@ -222,7 +222,7 @@ ten_timer_t *ten_timer_create_with_cmd(ten_shared_ptr_t *cmd,
   self->id = ten_cmd_timer_get_timer_id(cmd);
   self->timeout_in_us = ten_cmd_timer_get_timeout_in_us(cmd);
   self->requested_times = ten_cmd_timer_get_times(cmd);
-  ten_loc_init_from_loc(&self->src_loc, ten_msg_get_src_loc(cmd));
+  ten_loc_set_from_loc(&self->src_loc, ten_msg_get_src_loc(cmd));
 
   return self;
 }
@@ -237,6 +237,7 @@ void ten_timer_destroy(ten_timer_t *self) {
 
   ten_sanitizer_thread_check_deinit(&self->thread_check);
   ten_signature_set(&self->signature, 0);
+  ten_loc_deinit(&self->src_loc);
 
   TEN_FREE(self);
 }

@@ -36,4 +36,5 @@ TEST(Base64Test, positive) {
             true);
 
   ten_buf_deinit(&convert_back_data);
+  ten_string_deinit(&result);
 }

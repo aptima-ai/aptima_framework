@@ -263,6 +263,7 @@ bool ten_addon_load_all_from_app_base_dir(ten_app_t *app, ten_error_t *err) {
 
   for (int i = 0; i < sizeof(folders) / sizeof(folders[0]); i++) {
     ten_string_t module_path;
+    ten_string_init(&module_path);
     ten_string_copy(&module_path, &app->base_dir);
 
     do {

@@ -90,7 +90,7 @@ bool ten_app_init_uri(ten_app_t *self, ten_value_t *value) {
                             ? ten_value_peek_raw_str(value)
                             : ten_string_get_raw_str(&default_url);
 
-  ten_string_init_from_c_str(&self->uri, url_str, strlen(url_str));
+  ten_string_set_from_c_str(&self->uri, url_str, strlen(url_str));
 
   ten_string_deinit(&default_url);
 

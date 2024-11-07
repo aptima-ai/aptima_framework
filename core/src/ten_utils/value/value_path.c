@@ -8,7 +8,6 @@
 
 #include <stdlib.h>
 
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/value/constant_str.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
@@ -16,6 +15,7 @@
 #include "ten_utils/container/list_node_ptr.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value.h"
@@ -58,6 +58,10 @@ static ten_value_path_item_t *ten_value_path_item_create(void) {
       (ten_value_path_item_t *)TEN_MALLOC(sizeof(ten_value_path_item_t));
   TEN_ASSERT(item, "Failed to allocate memory.");
 
+  // Initialize all memory within `item` to 0, so that the type within it (such
+  // as `ten_string_t`) recognizes it as being in an uninitialized state.
+  memset(item, 0, sizeof(ten_value_path_item_t));
+
   item->type = TEN_VALUE_PATH_ITEM_TYPE_INVALID;
 
   return item;
@@ -84,7 +88,7 @@ static ten_value_path_item_t *ten_value_path_parse_between_bracket(
 
   if (is_first) {
     item->type = TEN_VALUE_PATH_ITEM_TYPE_OBJECT_ITEM;
-    ten_string_copy(&item->obj_item_str, content);
+    ten_string_init_from_string(&item->obj_item_str, content);
   } else {
     if (!ten_c_string_is_equal(
             ten_string_get_raw_str(content) + ten_string_len(content) - 1,

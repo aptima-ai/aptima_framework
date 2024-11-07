@@ -143,8 +143,8 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
   ten_app_adjust_and_validate_property_on_configure_done(self);
 
   if (ten_string_is_empty(&self->uri)) {
-    ten_string_init_from_c_str(&self->uri, TEN_STR_LOCALHOST,
-                               strlen(TEN_STR_LOCALHOST));
+    ten_string_set_from_c_str(&self->uri, TEN_STR_LOCALHOST,
+                              strlen(TEN_STR_LOCALHOST));
   }
 
   ten_addon_load_all_from_app_base_dir(self, &err);

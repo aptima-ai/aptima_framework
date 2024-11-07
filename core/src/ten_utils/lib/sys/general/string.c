@@ -34,7 +34,7 @@ ten_string_t *ten_string_create_from_c_str(const char *str, size_t size) {
   TEN_ASSERT(str, "Invalid argument.");
 
   ten_string_t *result = ten_string_create();
-  ten_string_init_from_c_str(result, str, size);
+  ten_string_set_from_c_str(result, str, size);
 
   return result;
 }
@@ -110,6 +110,8 @@ void ten_string_destroy(ten_string_t *self) {
 
 void ten_string_init(ten_string_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
+  // TEN_ASSERT(ten_signature_get(&self->signature) != TEN_STRING_SIGNATURE,
+  //            "Should not happen.");
 
   ten_signature_set(&self->signature, (ten_signature_t)TEN_STRING_SIGNATURE);
 
@@ -127,12 +129,22 @@ void ten_string_init_from_va_list(ten_string_t *self, const char *fmt,
   ten_string_append_from_va_list(self, fmt, ap);
 }
 
-void ten_string_copy(ten_string_t *self, ten_string_t *other) {
-  TEN_ASSERT(self && other && ten_string_check_integrity(other) &&
+void ten_string_init_from_string(ten_string_t *self, ten_string_t *other) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(other && ten_string_check_integrity(other) &&
                  ten_string_get_raw_str(other),
              "Invalid argument.");
 
   ten_string_init_formatted(self, "%s", ten_string_get_raw_str(other));
+}
+
+void ten_string_copy(ten_string_t *self, ten_string_t *other) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(other && ten_string_check_integrity(other) &&
+                 ten_string_get_raw_str(other),
+             "Invalid argument.");
+
+  ten_string_set_formatted(self, "%s", ten_string_get_raw_str(other));
 }
 
 void ten_string_init_formatted(ten_string_t *self, const char *fmt, ...) {
@@ -144,17 +156,22 @@ void ten_string_init_formatted(ten_string_t *self, const char *fmt, ...) {
   va_end(ap);
 }
 
-void ten_string_init_from_c_str(ten_string_t *self, const char *other,
+void ten_string_init_from_c_str(ten_string_t *self, const char *str,
                                 size_t size) {
-  TEN_ASSERT(self && other, "Invalid argument.");
+  TEN_ASSERT(self && str, "Invalid argument.");
+  TEN_ASSERT(size, "Invalid argument.");
 
   ten_string_init(self);
+  ten_string_set_formatted(self, "%.*s", size, str);
+}
 
-  if (size == 0) {
-    size = strlen(other);
-  }
+void ten_string_set_from_c_str(ten_string_t *self, const char *str,
+                               size_t size) {
+  TEN_ASSERT(self && ten_string_check_integrity(self) && str,
+             "Invalid argument.");
+  TEN_ASSERT(size, "Invalid argument.");
 
-  ten_string_set_formatted(self, "%.*s", size, other);
+  ten_string_set_formatted(self, "%.*s", size, str);
 }
 
 void ten_string_set_formatted(ten_string_t *self, const char *fmt, ...) {
@@ -217,10 +234,8 @@ void ten_string_append_formatted(ten_string_t *self, const char *fmt, ...) {
   va_end(ap);
 }
 
-void ten_string_deinit(ten_string_t *self) {
+static void ten_string_reset(ten_string_t *self) {
   TEN_ASSERT(self && ten_string_check_integrity(self), "Invalid argument.");
-
-  ten_signature_set(&self->signature, 0);
 
   if (self->buf && self->buf != self->pre_buf) {
     TEN_FREE(self->buf);
@@ -228,6 +243,13 @@ void ten_string_deinit(ten_string_t *self) {
   }
   self->buf_size = TEN_STRING_PRE_BUF_SIZE;
   self->first_unused_idx = 0;
+}
+
+void ten_string_deinit(ten_string_t *self) {
+  TEN_ASSERT(self && ten_string_check_integrity(self), "Invalid argument.");
+
+  ten_string_reset(self);
+  ten_signature_set(&self->signature, 0);
 }
 
 void ten_string_clear(ten_string_t *self) {

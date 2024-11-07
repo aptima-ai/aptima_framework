@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "include_internal/ten_utils/backtrace/backtrace.h"
 #include "include_internal/ten_utils/lib/alloc.h"
 
 void *ten_malloc_without_backtrace(size_t size) {

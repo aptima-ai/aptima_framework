@@ -4,6 +4,8 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
+
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
@@ -11,7 +13,6 @@
 #include "include_internal/ten_runtime/msg_conversion/msg_and_its_result_conversion.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_and_result_conversion.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion/base.h"
-#include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"

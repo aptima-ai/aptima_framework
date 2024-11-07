@@ -21,8 +21,8 @@
 #include <unistd.h>
 #endif
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 
 ten_socket_addr_t *ten_socket_addr_create(const char *address, uint16_t port) {
   ten_socket_addr_t *self =
@@ -114,7 +114,7 @@ void ten_socket_get_info(ten_socket_t *self, ten_string_t *ip, uint16_t *port) {
   getsockname(self->fd, (struct sockaddr *)&socket_info, &socket_info_size);
 
   char ip_buf[INET_ADDRSTRLEN + 1];
-  ten_string_init_formatted(
+  ten_string_set_formatted(
       ip, "%s",
       inet_ntop(AF_INET, &socket_info.sin_addr, ip_buf, sizeof(ip_buf)));
 

@@ -25,6 +25,7 @@
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/type.h"
+#include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_kv.h"
 
 bool ten_value_check_integrity(ten_value_t *self) {
@@ -50,6 +51,8 @@ static bool ten_value_copy_int8(ten_value_t *dest, ten_value_t *src,
 static void ten_value_init(ten_value_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
+  // Initialize all memory within `value` to 0, so that the type within it (such
+  // as `ten_string_t`) recognizes it as being in an uninitialized state.
   memset(self, 0, sizeof(ten_value_t));
 
   ten_signature_set(&self->signature, (ten_signature_t)TEN_VALUE_SIGNATURE);
@@ -331,12 +334,12 @@ bool ten_value_init_bool(ten_value_t *self, bool value) {
   return true;
 }
 
-static bool ten_value_copy_string(ten_value_t *dest, ten_value_t *src,
-                                  TEN_UNUSED ten_error_t *err) {
+static bool ten_value_copy_construct_string(ten_value_t *dest, ten_value_t *src,
+                                            TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(dest && src, "Invalid argument.");
-  TEN_ASSERT(src->type == TEN_TYPE_STRING, "Invalid argument.");
+  TEN_ASSERT(ten_value_is_string(src), "Invalid argument.");
 
-  ten_string_copy(&dest->content.string, &src->content.string);
+  ten_string_init_from_string(&dest->content.string, &src->content.string);
 
   return true;
 }
@@ -344,7 +347,7 @@ static bool ten_value_copy_string(ten_value_t *dest, ten_value_t *src,
 static bool ten_value_destruct_string(ten_value_t *self,
                                       TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->type == TEN_TYPE_STRING, "Invalid argument.");
+  TEN_ASSERT(ten_value_is_string(self), "Invalid argument.");
 
   ten_string_deinit(&self->content.string);
 
@@ -357,10 +360,10 @@ bool ten_value_init_string(ten_value_t *self) {
   ten_value_init(self);
 
   self->type = TEN_TYPE_STRING;
-  ten_string_init(&self->content.string);
 
+  ten_string_init(&self->content.string);
   self->construct = NULL;
-  self->copy = ten_value_copy_string;
+  self->copy = ten_value_copy_construct_string;
   self->destruct = ten_value_destruct_string;
 
   return true;
@@ -383,7 +386,7 @@ bool ten_value_init_string_with_size(ten_value_t *self, const char *str,
   TEN_ASSERT(str, "Invalid argument.");
 
   ten_value_init_string(self);
-  ten_string_init_formatted(&self->content.string, "%.*s", len, str);
+  ten_string_set_formatted(&self->content.string, "%.*s", len, str);
 
   return true;
 }

@@ -18,7 +18,7 @@ void ten_cmd_base_copy_cmd_id(ten_msg_t *self, ten_msg_t *src,
                               TEN_UNUSED ten_list_t *excluded_field_ids) {
   TEN_ASSERT(src && ten_raw_msg_check_integrity(src), "Should not happen.");
 
-  ten_string_init_formatted(
+  ten_string_set_formatted(
       ten_value_peek_string(&((ten_cmd_base_t *)self)->cmd_id), "%s",
       ten_value_peek_raw_str(&((ten_cmd_base_t *)src)->cmd_id));
 }

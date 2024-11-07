@@ -79,6 +79,8 @@ void ten_path_deinit(ten_path_t *self) {
   // the thread safety here.
   TEN_ASSERT(ten_path_check_integrity(self, false), "Should not happen.");
 
+  ten_string_deinit(&self->cmd_name);
+
   ten_string_deinit(&self->cmd_id);
   ten_string_deinit(&self->original_cmd_id);
 

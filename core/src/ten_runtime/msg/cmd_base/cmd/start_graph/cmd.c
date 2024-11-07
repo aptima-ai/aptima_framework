@@ -334,8 +334,8 @@ static void ten_raw_cmd_start_graph_add_missing_extension_group_node(
     // Create an extension_group item that uses the builtin
     // default_extension_group, allowing the extension's extension_group to be
     // associated with an extension_group addon.
-    ten_string_init_formatted(&extension_group_info->extension_group_addon_name,
-                              TEN_STR_DEFAULT_EXTENSION_GROUP);
+    ten_string_set_formatted(&extension_group_info->extension_group_addon_name,
+                             TEN_STR_DEFAULT_EXTENSION_GROUP);
 
     ten_loc_set(
         &extension_group_info->loc,

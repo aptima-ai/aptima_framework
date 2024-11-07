@@ -111,12 +111,22 @@ bool ten_value_set_float64(ten_value_t *self, double value) {
   return true;
 }
 
-bool ten_value_set_string(ten_value_t *self, const char *value) {
+bool ten_value_set_string(ten_value_t *self, const char *str) {
   TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(self->type == TEN_TYPE_STRING, "Invalid argument.");
+  TEN_ASSERT(ten_value_is_string(self), "Invalid argument.");
 
-  ten_string_init_formatted(&self->content.string, "%.*s", strlen(value),
-                            value);
+  ten_string_set_formatted(&self->content.string, "%.*s", strlen(str), str);
+
+  return true;
+}
+
+bool ten_value_set_string_with_size(ten_value_t *self, const char *str,
+                                    size_t len) {
+  TEN_ASSERT(self && ten_value_check_integrity(self), "Invalid argument.");
+  TEN_ASSERT(ten_value_is_string(self), "Invalid argument.");
+  TEN_ASSERT(str, "Invalid argument.");
+
+  ten_string_set_formatted(&self->content.string, "%.*s", len, str);
 
   return true;
 }

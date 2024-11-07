@@ -19,8 +19,12 @@
 typedef struct ten_sanitizer_memory_record_t {
   void *addr;
   size_t size;
-  ten_string_t func_name;
-  ten_string_t file_name;
+
+  // Do not use `ten_string_t` here to avoid a circular dependency between
+  // `ten_string_t` and `ten_malloc`.
+  char *func_name;
+  char *file_name;
+
   uint32_t lineno;
 } ten_sanitizer_memory_record_t;
 

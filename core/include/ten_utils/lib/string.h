@@ -17,7 +17,15 @@
 #include "ten_utils/macro/check.h"
 
 #define TEN_STRING_SIGNATURE 0x178445C0402E320DU
-#define TEN_STRING_PRE_BUF_SIZE 512
+
+#if defined(NDEBUG)
+#define TEN_STRING_PRE_BUF_SIZE 256
+#else
+// In debug mode, significantly reduce the size of `prebuf` so that
+// `ten_string_reserve` is actually triggered. This way, we can test that even
+// if `malloc` occurs within `ten_string_reserve`, there will be no memory leak.
+#define TEN_STRING_PRE_BUF_SIZE 8
+#endif
 
 typedef struct ten_list_t ten_list_t;
 
@@ -36,6 +44,13 @@ inline bool ten_string_check_integrity(const ten_string_t *self) {
   if (ten_signature_get(&self->signature) != TEN_STRING_SIGNATURE) {
     return false;
   }
+
+  // A normal `ten_string_t`'s `buf` should be a non-NULL value, either pointing
+  // to `prebuf` or to memory allocated by `malloc`.
+  if (self->buf == NULL) {
+    return false;
+  }
+
   return true;
 }
 
@@ -66,6 +81,13 @@ TEN_UTILS_API ten_string_t *ten_string_create_from_va_list(const char *fmt,
 TEN_UTILS_API ten_string_t *ten_string_clone(const ten_string_t *other);
 
 /**
+ * @brief Initialize a string object from another string object.
+ * @param self The string object.
+ * @param other The other string object.
+ */
+TEN_UTILS_API void ten_string_copy(ten_string_t *self, ten_string_t *other);
+
+/**
  * @brief Initialize a string object from existing memory.
  * @param self The string object.
  */
@@ -79,12 +101,8 @@ TEN_UTILS_API void ten_string_init(ten_string_t *self);
 TEN_UTILS_API void ten_string_init_formatted(ten_string_t *self,
                                              const char *fmt, ...);
 
-/**
- * @brief Initialize a string object from another string object.
- * @param self The string object.
- * @param other The other string object.
- */
-TEN_UTILS_API void ten_string_copy(ten_string_t *self, ten_string_t *other);
+TEN_UTILS_API void ten_string_init_from_string(ten_string_t *self,
+                                               ten_string_t *other);
 
 /**
  * @brief Initialize a string object from another string object.
@@ -93,7 +111,7 @@ TEN_UTILS_API void ten_string_copy(ten_string_t *self, ten_string_t *other);
  * @param size the max size, copy all if size <= 0
  */
 TEN_UTILS_API void ten_string_init_from_c_str(ten_string_t *self,
-                                              const char *other, size_t size);
+                                              const char *str, size_t size);
 
 /**
  * @brief Destroy a string object and release the memory.
@@ -120,16 +138,16 @@ TEN_UTILS_API void ten_string_clear(ten_string_t *self);
  */
 TEN_UTILS_API void ten_string_reserve(ten_string_t *self, size_t extra);
 
-TEN_UTILS_API void ten_string_append_from_va_list(ten_string_t *self,
-                                                  const char *fmt, va_list ap);
-
 /**
- * @brief Set the string object with a c string.
+ * @brief Append a c string to the string object.
  * @param self The string object.
  * @param fmt The c string.
  */
-TEN_UTILS_API void ten_string_set_formatted(ten_string_t *self, const char *fmt,
-                                            ...);
+TEN_UTILS_API void ten_string_append_formatted(ten_string_t *self,
+                                               const char *fmt, ...);
+
+TEN_UTILS_API void ten_string_append_from_va_list(ten_string_t *self,
+                                                  const char *fmt, va_list ap);
 
 /**
  * @brief Prepend a c string to the string object.
@@ -143,12 +161,15 @@ TEN_UTILS_API void ten_string_prepend_from_va_list(ten_string_t *self,
                                                    const char *fmt, va_list ap);
 
 /**
- * @brief Append a c string to the string object.
+ * @brief Set the string object with a c string.
  * @param self The string object.
  * @param fmt The c string.
  */
-TEN_UTILS_API void ten_string_append_formatted(ten_string_t *self,
-                                               const char *fmt, ...);
+TEN_UTILS_API void ten_string_set_formatted(ten_string_t *self, const char *fmt,
+                                            ...);
+
+TEN_UTILS_API void ten_string_set_from_c_str(ten_string_t *self,
+                                             const char *str, size_t size);
 
 /**
  * @brief Check if the string object is empty.

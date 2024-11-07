@@ -89,8 +89,8 @@ void ten_addon_on_init_done(ten_env_t *self) {
     // runtime would use that name instead of the name specified in the codes to
     // register it to the extension store.
     if (strlen(manifest_name)) {
-      ten_string_init_from_c_str(&addon_host->name, manifest_name,
-                                 strlen(manifest_name));
+      ten_string_set_from_c_str(&addon_host->name, manifest_name,
+                                strlen(manifest_name));
     }
   }
 
