@@ -4,13 +4,12 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "ten_runtime/msg/cmd/custom/cmd.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "include_internal/ten_runtime/common/constant_str.h"
-#include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/custom/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/custom/field/field_info.h"
 #include "include_internal/ten_runtime/msg/field/field_info.h"
@@ -25,7 +24,6 @@
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 
 static void ten_raw_cmd_custom_destroy(ten_cmd_t *self) {
@@ -53,7 +51,7 @@ static ten_cmd_t *ten_raw_cmd_custom_create_empty(void) {
   return raw_cmd;
 }
 
-ten_shared_ptr_t *ten_cmd_custom_create_empty(void) {
+ten_shared_ptr_t *ten_cmd_custom_create(void) {
   return ten_shared_ptr_create(ten_raw_cmd_custom_create_empty(),
                                ten_raw_cmd_custom_destroy);
 }
@@ -67,13 +65,6 @@ ten_cmd_t *ten_raw_cmd_custom_create(const char *cmd_name) {
   ten_raw_msg_set_name((ten_msg_t *)cmd, cmd_name, NULL);
 
   return cmd;
-}
-
-ten_shared_ptr_t *ten_cmd_custom_create(const char *cmd_name) {
-  TEN_ASSERT(cmd_name, "Should not happen.");
-
-  ten_cmd_t *cmd = ten_raw_cmd_custom_create(cmd_name);
-  return ten_shared_ptr_create(cmd, ten_raw_cmd_custom_destroy);
 }
 
 static bool ten_raw_cmd_custom_init_from_json(ten_cmd_t *self, ten_json_t *json,

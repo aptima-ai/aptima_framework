@@ -8,17 +8,267 @@
 #include "core_protocols/msgpack/common/common.h"
 #include "core_protocols/msgpack/common/value.h"
 #include "include_internal/ten_utils/value/value_kv.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "msgpack/object.h"
 #include "msgpack/pack.h"
 #include "msgpack/unpack.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
+#include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/memory.h"
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_kv.h"
+
+bool ten_msgpack_value_deserialize(ten_value_t *value,
+                                   msgpack_unpacker *unpacker,
+                                   msgpack_unpacked *unpacked) {
+  TEN_ASSERT(unpacker, "Invalid argument.");
+  TEN_ASSERT(unpacked, "Invalid argument.");
+
+  bool result = true;
+
+  msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+  if (rc == MSGPACK_UNPACK_SUCCESS) {
+    if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_POSITIVE_INTEGER) {
+      switch (MSGPACK_DATA_I64) {
+        case TEN_TYPE_INT8: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_int8(value, MSGPACK_DATA_I64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_INT16: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_int16(value, MSGPACK_DATA_I64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_INT32: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_int32(value, MSGPACK_DATA_I64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_INT64: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_int64(value, MSGPACK_DATA_I64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_UINT8: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_uint8(value, MSGPACK_DATA_U64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_UINT16: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_uint16(value, MSGPACK_DATA_U64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_UINT32: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_uint32(value, MSGPACK_DATA_U64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_UINT64: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_uint64(value, MSGPACK_DATA_U64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_FLOAT32: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_float32(value, MSGPACK_DATA_F64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_FLOAT64: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_float64(value, MSGPACK_DATA_F64);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_BOOL: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            ten_value_set_bool(value, MSGPACK_DATA_BOOL);
+            goto done;
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_STRING: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_STR) {
+              ten_value_set_string_with_size(value, MSGPACK_DATA_STR_PTR,
+                                             MSGPACK_DATA_STR_SIZE);
+              goto done;
+            } else {
+              TEN_ASSERT(0, "Should not happen.");
+            }
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_BUF: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_BIN) {
+              ten_buf_t *buf = ten_value_peek_buf(value);
+              TEN_ASSERT(buf && ten_buf_check_integrity(buf),
+                         "Invalid argument.");
+
+              // To overwrite the old buffer, we deinit it first.
+              ten_buf_deinit(buf);
+              ten_buf_init_with_copying_data(
+                  buf, (uint8_t *)MSGPACK_DATA_BIN_PTR, MSGPACK_DATA_BIN_SIZE);
+              goto done;
+            } else {
+              TEN_ASSERT(0, "Should not happen.");
+            }
+          }
+          break;
+        }
+
+        case TEN_TYPE_ARRAY: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_POSITIVE_INTEGER) {
+              ten_list_t array = TEN_LIST_INIT_VAL;
+
+              size_t array_items_cnt = MSGPACK_DATA_I64;
+              for (size_t i = 0; i < array_items_cnt; i++) {
+                ten_value_t *item =
+                    ten_msgpack_create_value_through_deserialization(unpacker,
+                                                                     unpacked);
+                if (!item) {
+                  goto error;
+                }
+                ten_list_push_ptr_back(
+                    &array, item,
+                    (ten_ptr_listnode_destroy_func_t)ten_value_destroy);
+              }
+
+              ten_value_set_array_with_move(value, &array);
+              goto done;
+            } else {
+              TEN_ASSERT(0, "Should not happen.");
+            }
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        case TEN_TYPE_OBJECT: {
+          msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
+          if (rc == MSGPACK_UNPACK_SUCCESS) {
+            if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_POSITIVE_INTEGER) {
+              ten_list_t kv_list = TEN_LIST_INIT_VAL;
+
+              size_t object_kv_cnt = MSGPACK_DATA_I64;
+              for (size_t i = 0; i < object_kv_cnt; i++) {
+                ten_value_kv_t *kv =
+                    ten_msgpack_create_value_kv_through_deserialization(
+                        unpacker, unpacked);
+                if (!kv) {
+                  goto error;
+                }
+                ten_list_push_ptr_back(
+                    &kv_list, kv,
+                    (ten_ptr_listnode_destroy_func_t)ten_value_kv_destroy);
+              }
+
+              ten_value_set_object_with_move(value, &kv_list);
+              goto done;
+            } else {
+              TEN_ASSERT(0, "Should not happen.");
+            }
+          } else {
+            TEN_ASSERT(0, "Should not happen.");
+          }
+          break;
+        }
+
+        default:
+          TEN_ASSERT(0, "Need to implement more types.");
+          break;
+      }
+    } else {
+      TEN_ASSERT(0, "Should not happen.");
+    }
+  } else {
+    TEN_ASSERT(0, "Should not happen.");
+  }
+
+  goto done;
+
+error:
+  result = false;
+
+done:
+  return result;
+}
 
 bool ten_msgpack_value_deserialize_inplace(ten_value_t *value,
                                            msgpack_unpacker *unpacker,
@@ -173,13 +423,14 @@ bool ten_msgpack_value_deserialize_inplace(ten_value_t *value,
           msgpack_unpack_return rc = msgpack_unpacker_next(unpacker, unpacked);
           if (rc == MSGPACK_UNPACK_SUCCESS) {
             if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_BIN) {
-              ten_value_peek_buf(value)->data =
-                  TEN_MALLOC(MSGPACK_DATA_BIN_SIZE + 32);
-              TEN_ASSERT(ten_value_peek_buf(value)->data,
-                         "Failed to allocate memory.");
+              ten_value_init_buf(value, 0);
 
-              memcpy(ten_value_peek_buf(value)->data, MSGPACK_DATA_BIN_PTR,
-                     MSGPACK_DATA_BIN_SIZE);
+              ten_buf_t *buf = ten_value_peek_buf(value);
+              TEN_ASSERT(buf && ten_buf_check_integrity(buf),
+                         "Invalid argument.");
+
+              ten_buf_init_with_copying_data(
+                  buf, (uint8_t *)MSGPACK_DATA_BIN_PTR, MSGPACK_DATA_BIN_SIZE);
               goto done;
             } else {
               TEN_ASSERT(0, "Should not happen.");
@@ -197,7 +448,8 @@ bool ten_msgpack_value_deserialize_inplace(ten_value_t *value,
               size_t array_items_cnt = MSGPACK_DATA_I64;
               for (size_t i = 0; i < array_items_cnt; i++) {
                 ten_value_t *item =
-                    ten_msgpack_value_deserialize(unpacker, unpacked);
+                    ten_msgpack_create_value_through_deserialization(unpacker,
+                                                                     unpacked);
                 if (!item) {
                   goto error;
                 }
@@ -225,7 +477,8 @@ bool ten_msgpack_value_deserialize_inplace(ten_value_t *value,
               size_t object_kv_cnt = MSGPACK_DATA_I64;
               for (size_t i = 0; i < object_kv_cnt; i++) {
                 ten_value_kv_t *kv =
-                    ten_msgpack_value_kv_deserialize(unpacker, unpacked);
+                    ten_msgpack_create_value_kv_through_deserialization(
+                        unpacker, unpacked);
                 if (!kv) {
                   goto error;
                 }
@@ -265,8 +518,8 @@ done:
   return result;
 }
 
-ten_value_t *ten_msgpack_value_deserialize(msgpack_unpacker *unpacker,
-                                           msgpack_unpacked *unpacked) {
+ten_value_t *ten_msgpack_create_value_through_deserialization(
+    msgpack_unpacker *unpacker, msgpack_unpacked *unpacked) {
   ten_value_t *result = ten_value_create_invalid();
   if (ten_msgpack_value_deserialize_inplace(result, unpacker, unpacked)) {
     return result;
@@ -276,8 +529,8 @@ ten_value_t *ten_msgpack_value_deserialize(msgpack_unpacker *unpacker,
   }
 }
 
-ten_value_kv_t *ten_msgpack_value_kv_deserialize(msgpack_unpacker *unpacker,
-                                                 msgpack_unpacked *unpacked) {
+ten_value_kv_t *ten_msgpack_create_value_kv_through_deserialization(
+    msgpack_unpacker *unpacker, msgpack_unpacked *unpacked) {
   TEN_ASSERT(unpacker, "Invalid argument.");
   TEN_ASSERT(unpacked, "Invalid argument.");
 
@@ -288,7 +541,8 @@ ten_value_kv_t *ten_msgpack_value_kv_deserialize(msgpack_unpacker *unpacker,
     if (MSGPACK_DATA_TYPE == MSGPACK_OBJECT_STR) {
       result = ten_value_kv_create_vempty("%.*s", MSGPACK_DATA_STR_SIZE,
                                           MSGPACK_DATA_STR_PTR);
-      result->value = ten_msgpack_value_deserialize(unpacker, unpacked);
+      result->value =
+          ten_msgpack_create_value_through_deserialization(unpacker, unpacked);
     } else {
       TEN_ASSERT(0, "Should not happen.");
     }

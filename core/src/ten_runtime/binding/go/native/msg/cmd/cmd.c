@@ -32,7 +32,7 @@ ten_go_status_t ten_go_cmd_create_cmd(const void *cmd_name, int cmd_name_len,
   ten_go_status_t status;
   ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
 
-  ten_shared_ptr_t *cmd = ten_cmd_custom_create_empty();
+  ten_shared_ptr_t *cmd = ten_cmd_custom_create();
   TEN_ASSERT(cmd && ten_cmd_check_integrity(cmd), "Should not happen.");
 
   ten_msg_set_name_with_size(cmd, cmd_name, cmd_name_len, NULL);

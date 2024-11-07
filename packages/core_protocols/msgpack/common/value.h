@@ -12,14 +12,19 @@
 
 #include "ten_utils/value/value_kv.h"
 
+TEN_RUNTIME_PRIVATE_API bool ten_msgpack_value_deserialize(
+    ten_value_t *value, msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
+
 TEN_RUNTIME_PRIVATE_API bool ten_msgpack_value_deserialize_inplace(
     ten_value_t *value, msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API ten_value_t *ten_msgpack_value_deserialize(
-    msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
+TEN_RUNTIME_PRIVATE_API ten_value_t *
+ten_msgpack_create_value_through_deserialization(msgpack_unpacker *unpacker,
+                                                 msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API ten_value_kv_t *ten_msgpack_value_kv_deserialize(
-    msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
+TEN_RUNTIME_PRIVATE_API ten_value_kv_t *
+ten_msgpack_create_value_kv_through_deserialization(msgpack_unpacker *unpacker,
+                                                    msgpack_unpacked *unpacked);
 
 TEN_RUNTIME_PRIVATE_API void ten_msgpack_value_serialize(ten_value_t *value,
                                                          msgpack_packer *pck);

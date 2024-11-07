@@ -20,7 +20,7 @@
 
 static ten_buf_t ten_test_msgpack_tcp_client_msgs_to_buf(ten_list_t *msgs) {
   TEN_ASSERT(msgs && ten_list_check_integrity(msgs), "Invalid argument.");
-  return ten_msgpack_serialize_msg(msgs, NULL);
+  return ten_msgpack_serialize_msgs(msgs, NULL);
 }
 
 static void ten_test_msgpack_tcp_client_buf_to_msgs(
@@ -30,7 +30,7 @@ static void ten_test_msgpack_tcp_client_buf_to_msgs(
 
   ten_test_msgpack_tcp_client_t *msgpack_client =
       (ten_test_msgpack_tcp_client_t *)client;
-  ten_msgpack_deserialize_msg(
+  ten_msgpack_deserialize_msgs(
       &msgpack_client->parser,
       TEN_BUF_STATIC_INIT_WITH_DATA_UNOWNED(data, data_size), msgs);
 }

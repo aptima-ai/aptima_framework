@@ -38,3 +38,13 @@ bool ten_raw_msg_loop_all_fields(ten_msg_t *self,
 
   return loop_all_fields(self, cb, user_data, err);
 }
+
+bool ten_msg_loop_all_fields(ten_shared_ptr_t *self,
+                             ten_raw_msg_process_one_field_func_t cb,
+                             void *user_data, ten_error_t *err) {
+  TEN_ASSERT(self && ten_msg_check_integrity(self), "Invalid argument.");
+  TEN_ASSERT(cb, "Invalid argument.");
+
+  return ten_raw_msg_loop_all_fields(ten_msg_get_raw_msg(self), cb, user_data,
+                                     err);
+}

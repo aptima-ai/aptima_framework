@@ -9,6 +9,7 @@
 #include "ten_runtime/ten_config.h"
 
 #include "ten_utils/lib/error.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/value/value_kv.h"
 
 typedef struct ten_msg_t ten_msg_t;
@@ -46,3 +47,7 @@ TEN_RUNTIME_API void ten_msg_field_process_data_init(
 TEN_RUNTIME_API bool ten_raw_msg_loop_all_fields(
     ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
     ten_error_t *err);
+
+TEN_RUNTIME_API bool ten_msg_loop_all_fields(
+    ten_shared_ptr_t *self, ten_raw_msg_process_one_field_func_t cb,
+    void *user_data, ten_error_t *err);

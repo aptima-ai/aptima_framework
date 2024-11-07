@@ -34,7 +34,7 @@ static void ten_protocol_msgpack_on_input(ten_protocol_msgpack_t *self,
   TEN_ASSERT(input_buf.data && input_buf.content_size && result_msgs,
              "Invalid argument.");
 
-  ten_msgpack_deserialize_msg(&self->parser, input_buf, result_msgs);
+  ten_msgpack_deserialize_msgs(&self->parser, input_buf, result_msgs);
 }
 
 static ten_buf_t ten_protocol_msgpack_on_output(ten_protocol_msgpack_t *self,
@@ -43,7 +43,7 @@ static ten_buf_t ten_protocol_msgpack_on_output(ten_protocol_msgpack_t *self,
              "Invalid argument.");
   TEN_ASSERT(self->base.on_output, "Invalid argument.");
 
-  return ten_msgpack_serialize_msg(output_msgs, NULL);
+  return ten_msgpack_serialize_msgs(output_msgs, NULL);
 }
 
 static void ten_protocol_msgpack_on_destroy_instance(

@@ -11,9 +11,9 @@
 #include <string.h>
 
 #include "include_internal/ten_utils/lib/buf.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/signature.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 bool ten_buf_check_integrity(ten_buf_t *self) {
@@ -26,7 +26,7 @@ bool ten_buf_check_integrity(ten_buf_t *self) {
   return true;
 }
 
-static void ten_buf_reset_to_empty_directly(ten_buf_t *self) {
+static void ten_buf_init_empty(ten_buf_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_signature_set(&self->signature, TEN_BUF_SIGNATURE);
@@ -76,7 +76,7 @@ bool ten_buf_init_with_owned_data(ten_buf_t *self, size_t size) {
     return false;
   }
 
-  ten_buf_reset_to_empty_directly(self);
+  ten_buf_init_empty(self);
 
   if (size != 0) {
     self->data = TEN_MALLOC(size);
@@ -98,7 +98,7 @@ bool ten_buf_init_with_unowned_data(ten_buf_t *self, uint8_t *data,
     return false;
   }
 
-  ten_buf_reset_to_empty_directly(self);
+  ten_buf_init_empty(self);
 
   self->data = data;
   self->content_size = size;
@@ -118,7 +118,7 @@ bool ten_buf_init_with_copying_data(ten_buf_t *self, uint8_t *data,
     return false;
   }
 
-  ten_buf_reset_to_empty_directly(self);
+  ten_buf_init_empty(self);
 
   self->data = TEN_MALLOC(size);
   TEN_ASSERT(self->data, "Failed to allocate memory.");
@@ -299,6 +299,10 @@ void ten_buf_move(ten_buf_t *self, ten_buf_t *other) {
   self->size = other->size;
   self->owns_memory = other->owns_memory;
   self->is_fixed_size = other->is_fixed_size;
+
+  // The buf_t 'other' being moved to 'self' means that the ownership of the
+  // memory has been transferred.
+  other->owns_memory = false;
 
   ten_buf_init_with_owned_data(other, 0);
 }

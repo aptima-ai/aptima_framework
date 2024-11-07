@@ -29,6 +29,7 @@
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
+#include "ten_runtime/msg/cmd/stop_graph/cmd.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/msg/data/data.h"
 #include "ten_runtime/msg/msg.h"
@@ -862,7 +863,13 @@ ten_shared_ptr_t *ten_msg_create_from_msg_type(TEN_MSG_TYPE msg_type) {
     case TEN_MSG_TYPE_CMD_CLOSE_APP:
       return ten_cmd_close_app_create();
     case TEN_MSG_TYPE_CMD:
-      return ten_cmd_custom_create_empty();
+      return ten_cmd_custom_create();
+    case TEN_MSG_TYPE_CMD_START_GRAPH:
+      return ten_cmd_start_graph_create();
+    case TEN_MSG_TYPE_CMD_STOP_GRAPH:
+      return ten_cmd_stop_graph_create();
+    case TEN_MSG_TYPE_CMD_TIMEOUT:
+      return ten_cmd_timeout_create(0);
     case TEN_MSG_TYPE_CMD_RESULT:
       return ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_OK, NULL);
     case TEN_MSG_TYPE_DATA:
