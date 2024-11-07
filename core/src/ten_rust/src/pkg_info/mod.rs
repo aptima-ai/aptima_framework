@@ -215,6 +215,17 @@ impl PkgInfo {
             }
         }
     }
+
+    pub fn get_dependency_by_type_and_name(
+        &self,
+        pkg_type: &str,
+        pkg_name: &str,
+    ) -> Option<&PkgDependency> {
+        self.dependencies.iter().find(|dep| {
+            dep.pkg_identity.pkg_type.to_string() == pkg_type
+                && dep.pkg_identity.name == pkg_name
+        })
+    }
 }
 
 pub fn get_pkg_info_from_path(pkg_path: &Path) -> Result<PkgInfo> {

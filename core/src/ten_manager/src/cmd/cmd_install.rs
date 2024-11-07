@@ -282,12 +282,16 @@ fn write_pkgs_into_lock(pkgs: &Vec<&PkgInfo>, app_dir: &Path) -> Result<()> {
 
 fn parse_pkg_name_version(
     pkg_name_version: &str,
-) -> Result<(String, VersionReq)> {
+) -> Result<(String, Option<String>, VersionReq)> {
     let parts: Vec<&str> = pkg_name_version.split('@').collect();
     if parts.len() == 2 {
-        Ok((parts[0].to_string(), VersionReq::parse(parts[1])?))
+        Ok((
+            parts[0].to_string(),
+            Some(parts[1].to_string()),
+            VersionReq::parse(parts[1])?,
+        ))
     } else {
-        Ok((pkg_name_version.to_string(), VersionReq::STAR))
+        Ok((pkg_name_version.to_string(), None, VersionReq::STAR))
     }
 }
 
@@ -499,8 +503,11 @@ pub async fn execute_cmd(
         // Case 1: tman install <package_type> <package_name>
 
         let desired_pkg_type_: PkgType = package_type_str.parse()?;
-        let (desired_pkg_src_name_, desired_pkg_src_version_) =
-            parse_pkg_name_version(&command_data.package_name.unwrap())?;
+        let (
+            desired_pkg_src_name_,
+            desired_pkg_src_version_str_,
+            desired_pkg_src_version_,
+        ) = parse_pkg_name_version(&command_data.package_name.unwrap())?;
 
         desired_pkg_type = Some(desired_pkg_type_.clone());
         desired_pkg_src_name = Some(desired_pkg_src_name_.clone());
@@ -552,6 +559,7 @@ pub async fn execute_cmd(
                         name: desired_pkg_src_name_.clone(),
                     },
                     version_req: desired_pkg_src_version_.clone(),
+                    version_req_str: desired_pkg_src_version_str_,
                 },
             };
             extra_dependency_relationships.push(extra_dependency_relationship);
@@ -853,7 +861,59 @@ do you want to continue?",
 
         Ok(())
     } else {
-        if let Some(non_usable_model) = non_usable_models.first() {
+        // The last model always represents the optimal version.
+        //
+        // The first error messages (i.e., non_usable_models.first()) might be
+        // changed when we run `tman install` in an app folder, if the app
+        // contains a conflicted dependency which has many candidates. The
+        // different error messages are as follows.
+        //
+        // ```
+        // ❌  Error: Select more than 1 version of '[system]ten_runtime':
+        //     '@0.2.0' introduced by '[extension]agora_rtm@0.1.0', and '@0.3.1'
+        //     introduced by '[system]ten_runtime_go@0.3.0'
+        // ```
+        //
+        // ```
+        // ❌  Error: Select more than 1 version of '[system]ten_runtime':
+        //     '@0.2.0' introduced by '[extension]agora_rtm@0.1.2', and '@0.3.0'
+        //     introduced by '[system]ten_runtime_go@0.3.0'
+        // ```
+        //
+        // The introducer pkg are different in the two error messages,
+        // `agora_rtm@0.1.0` vs `agora_rtm@0.1.2`.
+        //
+        // The reason is that the candidates are stored in a HashSet, and when
+        // they are traversed and written to the `depends_on_declared` field in
+        // `input.lp``, the order of writing is not guaranteed. Ex, the
+        // `agora_rtm` has three candidates, 0.1.0, 0.1.1, 0.1.2. The
+        // content in the input.ip might be:
+        //
+        // case 1:
+        // ```
+        // depends_on_declared("app", "ten_agent", "0.4.0", "extension", "agora_rtm", "0.1.0").
+        // depends_on_declared("app", "ten_agent", "0.4.0", "extension", "agora_rtm", "0.1.1").
+        // depends_on_declared("app", "ten_agent", "0.4.0", "extension", "agora_rtm", "0.1.2").
+        // ```
+        //
+        // or
+        //
+        // case 2:
+        // ```
+        // depends_on_declared("app", "ten_agent", "0.4.0", "extension", "agora_rtm", "0.1.2").
+        // depends_on_declared("app", "ten_agent", "0.4.0", "extension", "agora_rtm", "0.1.0").
+        // depends_on_declared("app", "ten_agent", "0.4.0", "extension", "agora_rtm", "0.1.1").
+        // ```
+        // Due to the different order of input data, clingo may start searching
+        // from different points. However, clingo will only output increasingly
+        // better models. Therefore, if we select the first `non_usable_models`,
+        // it is often inconsistent. But if we select the last model, it is
+        // usually consistent, representing the optimal error model that clingo
+        // can find. This phenomenon is similar to the gradient descent process
+        // in neural networks that seeks local optima. Thus, we should select
+        // the last model to obtain the optimal error model and achieve stable
+        // results.
+        if let Some(non_usable_model) = non_usable_models.last() {
             // Extract introducer relations, and parse the error message.
             if let Ok(conflict_info) = parse_error_statement(non_usable_model) {
                 // Print the error message and dependency chains.

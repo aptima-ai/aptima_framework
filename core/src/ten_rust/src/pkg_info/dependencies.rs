@@ -19,7 +19,15 @@ use crate::pkg_info::manifest::{dependency::ManifestDependency, Manifest};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PkgDependency {
     pub pkg_identity: PkgIdentity,
+
+    // The version requirement of this dependency, ex: the `version`
+    // field declared in the `dependencies` section in the manifest.json, or
+    // the `pkg@version` parameter in the command line.
+    //
+    // The `version_req_str` is the original value in string form, while
+    // `version_req` is the result after being converted to `VersionReq`.
     pub version_req: VersionReq,
+    pub version_req_str: Option<String>,
 }
 
 pub fn get_pkg_dependencies_from_manifest(
@@ -48,6 +56,7 @@ pub fn get_pkg_dependencies_from_manifest_dependencies(
         dependencies.push(PkgDependency {
             pkg_identity: PkgIdentity { pkg_type, name },
             version_req,
+            version_req_str: Some(manifest_dependency.version.clone()),
         });
     }
 
@@ -77,6 +86,7 @@ impl PkgDependency {
         PkgDependency {
             pkg_identity: PkgIdentity { pkg_type, name },
             version_req,
+            version_req_str: None,
         }
     }
 }
