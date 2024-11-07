@@ -17,7 +17,7 @@
 #include "ten_utils/macro/check.h"
 
 #define TEN_STRING_SIGNATURE 0x178445C0402E320DU
-#define TEN_STRING_PRE_BUF_SIZE 256
+#define TEN_STRING_PRE_BUF_SIZE 512
 
 typedef struct ten_list_t ten_list_t;
 

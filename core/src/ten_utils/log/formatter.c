@@ -6,6 +6,7 @@
 //
 #include "ten_utils/ten_config.h"
 
+#include <inttypes.h>
 #include <time.h>
 
 #include "include_internal/ten_utils/log/level.h"
@@ -95,8 +96,9 @@ void ten_log_colored_formatter(ten_string_t *buf, TEN_LOG_LEVEL level,
       break;
   }
 
-  ten_string_append_formatted(buf, " %d(%d) %s%c%s", pid, tid, level_color,
-                              ten_log_level_char(level), TEN_LOG_COLOR_RESET);
+  ten_string_append_formatted(buf, " %" PRId64 "(%" PRId64 ") %s%c%s", pid, tid,
+                              level_color, ten_log_level_char(level),
+                              TEN_LOG_COLOR_RESET);
 
   // Add color to function name.
   if (func_name_len) {
@@ -110,9 +112,9 @@ void ten_log_colored_formatter(ten_string_t *buf, TEN_LOG_LEVEL level,
   const char *actual_file_name =
       filename(file_name, file_name_len, &actual_file_name_len);
   if (actual_file_name_len) {
-    ten_string_append_formatted(buf, "%s@%.*s:%d%s", TEN_LOG_COLOR_BLUE,
+    ten_string_append_formatted(buf, "%s@%.*s:%zu%s", TEN_LOG_COLOR_BLUE,
                                 (int)actual_file_name_len, actual_file_name,
-                                (int)line_no, TEN_LOG_COLOR_RESET);
+                                line_no, TEN_LOG_COLOR_RESET);
   }
 
   // Add color to message.

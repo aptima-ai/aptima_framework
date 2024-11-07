@@ -39,19 +39,29 @@ ten_string_t *ten_string_create_from_c_str(const char *str, size_t size) {
   return result;
 }
 
+#define MAX_RETRIES 10
+
 void ten_string_append_from_va_list(ten_string_t *self, const char *fmt,
                                     va_list ap) {
   TEN_ASSERT(self && ten_string_check_integrity(self), "Invalid argument.");
 
+  size_t retry_count = 0;
+
   va_list cp;
+  va_copy(cp, ap);
+
   for (;;) {
-    va_copy(cp, ap);
+    va_list temp;
+    va_copy(temp, cp);
+
     int n = vsnprintf(&self->buf[self->first_unused_idx],
-                      self->buf_size - self->first_unused_idx, fmt, cp);
-    va_end(cp);
+                      self->buf_size - self->first_unused_idx, fmt, temp);
+
+    va_end(temp);
 
     if ((n > -1) && ((size_t)n < (self->buf_size - self->first_unused_idx))) {
       self->first_unused_idx += n;
+      va_end(cp);
       return;
     }
 
@@ -60,6 +70,13 @@ void ten_string_append_from_va_list(ten_string_t *self, const char *fmt,
       ten_string_reserve(self, n + 1);  // Exact
     } else {
       ten_string_reserve(self, self->buf_size * 2);  // 2x
+    }
+
+    if (++retry_count > MAX_RETRIES) {
+      va_end(cp);
+
+      TEN_ASSERT(0, "Should not happen");
+      return;
     }
   }
 }
@@ -219,20 +236,41 @@ void ten_string_clear(ten_string_t *self) {
   self->buf[0] = 0;
 }
 
+#define MAX_BUFFER_SIZE (10 * 1024 * 1024)  // 10 M
+
 void ten_string_reserve(ten_string_t *self, size_t extra) {
   TEN_ASSERT(self && ten_string_check_integrity(self), "Invalid argument.");
-  if ((self->buf_size - self->first_unused_idx) < extra) {
+
+  if (extra > SIZE_MAX - self->first_unused_idx) {
+    TEN_ASSERT(0, "Size overflow detected.");
+    return;
+  }
+
+  size_t required_size = self->first_unused_idx + extra;
+  if (required_size > (size_t)MAX_BUFFER_SIZE) {
+    TEN_ASSERT(0, "Buffer size exceeds the maximum limit.");
+    return;
+  }
+
+  if (self->buf_size < required_size) {
+    size_t new_size = self->buf_size * 2;
+    if (new_size < required_size) {
+      new_size = required_size;
+    }
+
     char *tmp = NULL;
     if (self->buf == self->pre_buf) {
-      tmp = (char *)TEN_MALLOC(self->buf_size + extra);
+      tmp = (char *)TEN_MALLOC(new_size);
       TEN_ASSERT(tmp, "Failed to allocate memory.");
+
       memcpy(tmp, self->buf, self->first_unused_idx);
     } else {
-      tmp = (char *)TEN_REALLOC(self->buf, self->buf_size + extra);
+      tmp = (char *)TEN_REALLOC(self->buf, new_size);
       TEN_ASSERT(tmp, "Failed to allocate memory.");
     }
+
     self->buf = tmp;
-    self->buf_size += extra;
+    self->buf_size = new_size;
   }
 }
 

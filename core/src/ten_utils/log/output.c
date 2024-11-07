@@ -119,7 +119,8 @@ void ten_log_set_output_to_stderr(ten_log_t *self) {
   ten_log_output_set(self, ten_log_output_to_stderr_cb, NULL, NULL);
 
 #if defined(OS_LINUX) || defined(OS_MACOS)
-  ten_log_set_formatter(self, ten_log_colored_formatter, NULL);
+  // ten_log_set_formatter(self, ten_log_colored_formatter, NULL);
+  ten_log_set_formatter(self, ten_log_default_formatter, NULL);
 #else
   ten_log_set_formatter(self, ten_log_default_formatter, NULL);
 #endif
