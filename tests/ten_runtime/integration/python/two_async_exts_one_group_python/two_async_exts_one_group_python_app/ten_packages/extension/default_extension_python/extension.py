@@ -19,21 +19,16 @@ class DefaultExtension(AsyncExtension):
 
     async def on_configure(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
-        ten_env.on_configure_done()
 
     async def on_init(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
-        ten_env.on_init_done()
 
     async def on_start(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
         ten_env.log_debug("on_start")
-        ten_env.on_start_done()
 
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
-        ten_env.on_deinit_done()
-
         await asyncio.sleep(1)
 
     async def on_cmd(self, ten_env: AsyncTenEnv, cmd: Cmd) -> None:
@@ -53,4 +48,3 @@ class DefaultExtension(AsyncExtension):
         ten_env.log_debug("on_stop")
 
         await asyncio.sleep(0.5)
-        ten_env.on_stop_done()

@@ -55,7 +55,32 @@ class AsyncTenEnv(TenEnv):
         if hasattr(self, "_deinit_thread"):
             self._deinit_thread.join()
 
-    def on_deinit_done(self) -> None:
+    def _deinit(self) -> None:
         # Start the deinit thread to avoid blocking the extension thread.
         self._deinit_thread = threading.Thread(target=self._deinit_routine)
         self._deinit_thread.start()
+
+    def on_configure_done(self) -> None:
+        raise NotImplementedError(
+            "No need to call this method in async extension"
+        )
+
+    def on_init_done(self) -> None:
+        raise NotImplementedError(
+            "No need to call this method in async extension"
+        )
+
+    def on_start_done(self) -> None:
+        raise NotImplementedError(
+            "No need to call this method in async extension"
+        )
+
+    def on_stop_done(self) -> None:
+        raise NotImplementedError(
+            "No need to call this method in async extension"
+        )
+
+    def on_deinit_done(self) -> None:
+        raise NotImplementedError(
+            "No need to call this method in async extension"
+        )

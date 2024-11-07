@@ -27,8 +27,6 @@ class DefaultExtension(AsyncExtension):
 
         await asyncio.sleep(0.5)
 
-        ten_env.on_configure_done()
-
     async def on_start(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_start")
 
@@ -39,20 +37,15 @@ class DefaultExtension(AsyncExtension):
         testValue2 = ten_env.get_property_to_json("testKey2")
         ten_env.log_info(f"testValue: {testValue}, testValue2: {testValue2}")
 
-        ten_env.on_start_done()
-
     async def on_stop(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_stop")
 
         await asyncio.sleep(0.5)
 
-        ten_env.on_stop_done()
-
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_deinit")
 
         await asyncio.sleep(0.5)
-        ten_env.on_deinit_done()
 
     async def greeting(self, ten_env: AsyncTenEnv) -> CmdResult:
         await asyncio.sleep(1)

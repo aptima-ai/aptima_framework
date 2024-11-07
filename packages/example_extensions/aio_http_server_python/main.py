@@ -106,7 +106,6 @@ class HttpServerExtension(AsyncExtension):
 
     async def on_init(self, ten_env: AsyncTenEnv) -> None:
         self.ten_env = ten_env
-        ten_env.on_init_done()
 
     async def on_start(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_start")
@@ -121,11 +120,8 @@ class HttpServerExtension(AsyncExtension):
 
         await self.start_server("0.0.0.0", self.server_port)
 
-        ten_env.on_start_done()
-
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_deinit")
-        ten_env.on_deinit_done()
 
     async def on_cmd(self, ten_env: AsyncTenEnv, cmd: Cmd) -> None:
         ten_env.log_debug("on_cmd")
@@ -135,7 +131,6 @@ class HttpServerExtension(AsyncExtension):
 
     async def on_stop(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_stop")
-        ten_env.on_stop_done()
 
 
 @register_addon_as_extension("aio_http_server_python")

@@ -19,11 +19,9 @@ class DefaultAsyncExtension(AsyncExtension):
 
     async def on_configure(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
-        ten_env.on_configure_done()
 
     async def on_init(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
-        ten_env.on_init_done()
 
     async def on_start(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
@@ -34,11 +32,8 @@ class DefaultAsyncExtension(AsyncExtension):
         ten_env.set_property_string("string_field", "hello")
         assert ten_env.is_property_exist("string_field") is True
 
-        ten_env.on_start_done()
-
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
-        ten_env.on_deinit_done()
 
     async def on_cmd(self, ten_env: AsyncTenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.to_json()
@@ -60,4 +55,3 @@ class DefaultAsyncExtension(AsyncExtension):
         ten_env.log_debug("on_stop")
 
         await asyncio.sleep(0.5)
-        ten_env.on_stop_done()

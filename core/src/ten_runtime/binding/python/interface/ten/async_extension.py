@@ -32,11 +32,13 @@ class AsyncExtension(_Extension):
         )
 
         await self.on_configure(self._async_ten_env)
+        ten_env.on_configure_done()
 
         # Suspend the thread until stopEvent is set.
         await self._ten_stop_event.wait()
 
         await self.on_deinit(self._async_ten_env)
+        self._async_ten_env._deinit()
 
     async def _stop_thread(self):
         self._ten_stop_event.set()
@@ -57,20 +59,35 @@ class AsyncExtension(_Extension):
     @final
     def _proxy_on_init(self, ten_env: TenEnv) -> None:
         asyncio.run_coroutine_threadsafe(
-            self.on_init(self._async_ten_env), self._ten_loop
+            self._proxy_async_on_init(ten_env), self._ten_loop
         )
+
+    @final
+    async def _proxy_async_on_init(self, ten_env: TenEnv):
+        await self.on_init(self._async_ten_env)
+        ten_env.on_init_done()
 
     @final
     def _proxy_on_start(self, ten_env: TenEnv) -> None:
         asyncio.run_coroutine_threadsafe(
-            self.on_start(self._async_ten_env), self._ten_loop
+            self._proxy_async_on_start(ten_env), self._ten_loop
         )
+
+    @final
+    async def _proxy_async_on_start(self, ten_env: TenEnv):
+        await self.on_start(self._async_ten_env)
+        ten_env.on_start_done()
 
     @final
     def _proxy_on_stop(self, ten_env: TenEnv) -> None:
         asyncio.run_coroutine_threadsafe(
-            self.on_stop(self._async_ten_env), self._ten_loop
+            self._proxy_async_on_stop(ten_env), self._ten_loop
         )
+
+    @final
+    async def _proxy_async_on_stop(self, ten_env: TenEnv):
+        await self.on_stop(self._async_ten_env)
+        ten_env.on_stop_done()
 
     @final
     def _proxy_on_deinit(self, ten_env: TenEnv) -> None:
@@ -109,19 +126,19 @@ class AsyncExtension(_Extension):
     # Override these methods in your extension
 
     async def on_configure(self, async_ten_env: AsyncTenEnv) -> None:
-        async_ten_env.on_configure_done()
+        pass
 
     async def on_init(self, async_ten_env: AsyncTenEnv) -> None:
-        async_ten_env.on_init_done()
+        pass
 
     async def on_start(self, async_ten_env: AsyncTenEnv) -> None:
-        async_ten_env.on_start_done()
+        pass
 
     async def on_stop(self, async_ten_env: AsyncTenEnv) -> None:
-        async_ten_env.on_stop_done()
+        pass
 
     async def on_deinit(self, async_ten_env: AsyncTenEnv) -> None:
-        async_ten_env.on_deinit_done()
+        pass
 
     async def on_cmd(self, async_ten_env: AsyncTenEnv, cmd: Cmd) -> None:
         pass

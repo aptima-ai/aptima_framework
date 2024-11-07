@@ -18,21 +18,16 @@ from ten import (
 class {{class_name_prefix}}Extension(AsyncExtension):
     async def on_init(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_init")
-        ten_env.on_init_done()
 
     async def on_start(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_start")
 
         # TODO: read properties, initialize resources
 
-        ten_env.on_start_done()
-
     async def on_stop(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_stop")
 
         # TODO: clean up resources
-
-        ten_env.on_stop_done()
 
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_deinit")
