@@ -26,7 +26,6 @@ use std::{
     collections::{HashMap, HashSet},
     hash::{Hash, Hasher},
     path::{Path, PathBuf},
-    str::FromStr,
 };
 
 use anyhow::Result;
@@ -432,6 +431,15 @@ pub fn ten_rust_check_graph_for_app(
     let pkgs_info = get_all_existed_pkgs_info_of_app(app_path)?;
     pkgs_of_app.insert(app_uri.to_string(), pkgs_info);
 
-    let graph = Graph::from_str(graph_json)?;
+    // `Graph::from_str` calls `validate`, and `validate` checks that there are
+    // no `localhost` entries in the graph JSON (as per our rule). However, the
+    // TEN runtime first processes the content of the graph JSON, inserting
+    // the appropriate `localhost` string before passing it to the Rust
+    // side. Therefore, the graph JSON received here might already includes the
+    // `localhost` string processed by the TEN runtime, so `Graph::from_str`
+    // cannot be used in this context.
+    //
+    // let graph = Graph::from_str(graph_json)?;
+    let graph: Graph = serde_json::from_str(graph_json)?;
     graph.check_for_single_app(&pkgs_of_app)
 }

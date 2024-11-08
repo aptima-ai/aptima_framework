@@ -107,6 +107,25 @@ class test_extension_1 : public ten::extension_t {
   OUTER_THREAD_MAIN(31)
   OUTER_THREAD_MAIN(32)
 
+  void on_configure(ten::ten_env_t &ten_env) override {
+    // We have increased the path timeout to 20 minutes because, under limited
+    // computing resources, it is easy to exceed the path timeout without
+    // completing the data transmission. This can lead to the path being
+    // discarded, causing the test case to hang indefinitely. Therefore, we have
+    // extended the path timeout to avoid this situation.
+
+    // clang-format off
+    bool rc = ten_env.init_property_from_json( R"({
+      "_ten": {
+        "path_timeout": 1200000000
+      }
+    })");
+    // clang-format on
+    ASSERT_EQ(rc, true);
+
+    ten_env.on_configure_done();
+  }
+
   void on_start(ten::ten_env_t &ten_env) override {
     auto start_to_send_cmd = ten::cmd_t::create("start_to_send");
     ten_env.send_cmd(std::move(start_to_send_cmd),
@@ -302,6 +321,25 @@ class test_extension_1 : public ten::extension_t {
 class test_extension_2 : public ten::extension_t {
  public:
   explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
+
+  void on_configure(ten::ten_env_t &ten_env) override {
+    // We have increased the path timeout to 20 minutes because, under limited
+    // computing resources, it is easy to exceed the path timeout without
+    // completing the data transmission. This can lead to the path being
+    // discarded, causing the test case to hang indefinitely. Therefore, we have
+    // extended the path timeout to avoid this situation.
+
+    // clang-format off
+    bool rc = ten_env.init_property_from_json( R"({
+      "_ten": {
+        "path_timeout": 1200000000
+      }
+    })");
+    // clang-format on
+    ASSERT_EQ(rc, true);
+
+    ten_env.on_configure_done();
+  }
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {

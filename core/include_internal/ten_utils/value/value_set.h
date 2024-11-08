@@ -39,10 +39,6 @@ TEN_UTILS_API bool ten_value_set_string(ten_value_t *self, const char *str);
 TEN_UTILS_API bool ten_value_set_string_with_size(ten_value_t *self,
                                                   const char *str, size_t len);
 
-TEN_UTILS_API bool ten_value_set_string_with_size(ten_value_t *self,
-                                                  const char *value,
-                                                  size_t len);
-
 TEN_UTILS_API bool ten_value_set_array_with_move(ten_value_t *self,
                                                  ten_list_t *value);
 

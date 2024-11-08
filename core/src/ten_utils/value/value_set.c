@@ -131,17 +131,6 @@ bool ten_value_set_string_with_size(ten_value_t *self, const char *str,
   return true;
 }
 
-TEN_UTILS_API bool ten_value_set_string_with_size(ten_value_t *self,
-                                                  const char *value,
-                                                  size_t len) {
-  TEN_ASSERT(self && ten_value_check_integrity(self), "Invalid argument.");
-  TEN_ASSERT(self->type == TEN_TYPE_STRING, "Invalid argument.");
-
-  ten_string_init_formatted(&self->content.string, "%.*s", len, value);
-
-  return true;
-}
-
 bool ten_value_set_array_with_move(ten_value_t *self, ten_list_t *value) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(self->type == TEN_TYPE_ARRAY, "Invalid argument.");

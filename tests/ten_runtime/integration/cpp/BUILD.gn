@@ -8,6 +8,7 @@ import("//build/ten_runtime/options.gni")
 
 group("cpp") {
   deps = [
+    "check_start_graph",
     "graph_env_var_1",
     "graph_env_var_2",
     "graph_env_var_3",

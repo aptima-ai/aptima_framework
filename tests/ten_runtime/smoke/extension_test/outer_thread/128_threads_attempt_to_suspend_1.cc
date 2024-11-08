@@ -843,11 +843,15 @@ class test_extension_2 : public ten::extension_t {
     // discarded, causing the test case to hang indefinitely. Therefore, we have
     // extended the path timeout to avoid this situation.
 
-    ten_env.init_property_from_json(R"({
+    // clang-format off
+    bool rc = ten_env.init_property_from_json( R"({
       "_ten": {
         "path_timeout": 1200000000
       }
     })");
+    // clang-format on
+    ASSERT_EQ(rc, true);
+
     ten_env.on_configure_done();
   }
 
