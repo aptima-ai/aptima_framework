@@ -166,4 +166,4 @@
 #define TEN_STR_RESULT_RETURN_POLICY "result_return_policy"
 #define TEN_STR_FIRST_ERROR_OR_FIRST_OK "first_error_or_first_ok"
 #define TEN_STR_FIRST_ERROR_OR_LAST_OK "first_error_or_last_ok"
-#define TEN_STR_EACH_IMMEDIATELY "each_immediately"
+#define TEN_STR_EACH_OK_AND_ERROR "each_ok_and_error"

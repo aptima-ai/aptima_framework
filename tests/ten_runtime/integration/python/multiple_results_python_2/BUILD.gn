@@ -7,17 +7,17 @@
 import("//build/ten_runtime/feature/test.gni")
 import("//build/ten_runtime/ten.gni")
 
-ten_package_test_prepare_app("multiple_results_python_app") {
+ten_package_test_prepare_app("multiple_results_python_2_app") {
   src_app = "default_app_python"
   src_app_language = "python"
-  generated_app_src_root_dir_name = "multiple_results_python_app"
+  generated_app_src_root_dir_name = "multiple_results_python_2_app"
 
   replace_files_after_install_app = [
-    "multiple_results_python_app/manifest.json",
-    "multiple_results_python_app/property.json",
+    "multiple_results_python_2_app/manifest.json",
+    "multiple_results_python_2_app/property.json",
   ]
 
-  replace_files_after_install_all = [ "multiple_results_python_app/ten_packages/extension/default_extension_python/extension.py" ]
+  replace_files_after_install_all = [ "multiple_results_python_2_app/ten_packages/extension/default_extension_python/extension.py" ]
 
   if (ten_enable_package_manager) {
     deps = [
@@ -31,7 +31,7 @@ ten_package_test_prepare_app("multiple_results_python_app") {
 }
 
 ten_package_test_prepare_auxiliary_resources(
-    "multiple_results_python_test_files") {
+    "multiple_results_python_2_test_files") {
   resources = [
     "//tests/ten_runtime/integration/common=>common",
     "__init__.py",
@@ -42,9 +42,9 @@ ten_package_test_prepare_auxiliary_resources(
   }
 }
 
-group("multiple_results_python") {
+group("multiple_results_python_2") {
   deps = [
-    ":multiple_results_python_app",
-    ":multiple_results_python_test_files",
+    ":multiple_results_python_2_app",
+    ":multiple_results_python_2_test_files",
   ]
 }

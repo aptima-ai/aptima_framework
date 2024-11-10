@@ -74,8 +74,8 @@ static void proxy_send_xxx_callback(ten_extension_t *extension,
 
   Py_XDECREF(arglist);
 
-  bool is_final = ten_cmd_result_is_final(cmd_result, NULL);
-  if (is_final) {
+  bool is_completed = ten_cmd_result_is_completed(cmd_result, NULL);
+  if (is_completed) {
     Py_XDECREF(cb_func);
   }
 

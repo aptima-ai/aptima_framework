@@ -22,8 +22,8 @@ typedef enum TEN_RESULT_RETURN_POLICY {
   // Similar to the above, except return the last received one.
   TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_LAST_OK,
 
-  // Return each result immediately as it is received.
-  TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY,
+  // Return each result as it is received, regardless of its status.
+  TEN_RESULT_RETURN_POLICY_EACH_OK_AND_ERROR,
 
   // More modes is allowed, and could be added here in case needed.
 } TEN_RESULT_RETURN_POLICY;

@@ -150,7 +150,7 @@ TEST(CmdResultTest, MultipleResult3) {  // NOLINT
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
-                 "result_return_policy": "each_immediately",
+                 "result_return_policy": "each_ok_and_error",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",

@@ -526,7 +526,7 @@ ten_shared_ptr_t *ten_path_table_determine_actual_cmd_result(
     ten_path_group_t *path_group = ten_path_get_group(path);
 
     switch (path_group->policy) {
-      case TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY: {
+      case TEN_RESULT_RETURN_POLICY_EACH_OK_AND_ERROR: {
         bool last_one =
             ten_path_table_remove_path_from_group(self, path_type, path);
 

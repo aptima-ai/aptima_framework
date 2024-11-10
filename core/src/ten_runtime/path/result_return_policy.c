@@ -19,8 +19,8 @@ TEN_RESULT_RETURN_POLICY ten_result_return_policy_from_string(
   } else if (ten_c_string_is_equal(policy_str,
                                    TEN_STR_FIRST_ERROR_OR_LAST_OK)) {
     return TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_LAST_OK;
-  } else if (ten_c_string_is_equal(policy_str, TEN_STR_EACH_IMMEDIATELY)) {
-    return TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY;
+  } else if (ten_c_string_is_equal(policy_str, TEN_STR_EACH_OK_AND_ERROR)) {
+    return TEN_RESULT_RETURN_POLICY_EACH_OK_AND_ERROR;
   } else {
     return TEN_RESULT_RETURN_POLICY_INVALID;
   }
@@ -33,8 +33,8 @@ const char *ten_result_return_policy_to_string(
       return TEN_STR_FIRST_ERROR_OR_FIRST_OK;
     case TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_LAST_OK:
       return TEN_STR_FIRST_ERROR_OR_LAST_OK;
-    case TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY:
-      return TEN_STR_EACH_IMMEDIATELY;
+    case TEN_RESULT_RETURN_POLICY_EACH_OK_AND_ERROR:
+      return TEN_STR_EACH_OK_AND_ERROR;
     default:
       return NULL;
   }

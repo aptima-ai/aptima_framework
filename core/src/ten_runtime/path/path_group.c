@@ -217,7 +217,7 @@ ten_path_t *ten_path_group_resolve(ten_path_t *path, TEN_PATH_TYPE type) {
     case TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_LAST_OK:
       return ten_path_group_resolve_in_one_fail_and_all_ok_return(members, type,
                                                                   true);
-    case TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY:
+    case TEN_RESULT_RETURN_POLICY_EACH_OK_AND_ERROR:
       // In this policy, we return the current path immediately.
       return path;
     default:
