@@ -37,10 +37,12 @@ func newTenError(errno uint32, errMsg string) error {
 // again.
 func withGoStatus(status *C.ten_go_status_t) error {
 	if status.errno == 0 {
+		// No error.
 		return nil
 	}
 
-	if status.msg_size == 0 {
+	if status.err_msg_size == 0 {
+		// An error occurred, but no error message.
 		return &TenError{
 			errno: uint32(status.errno),
 		}

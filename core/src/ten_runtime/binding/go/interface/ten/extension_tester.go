@@ -84,7 +84,6 @@ func newExtensionTesterWithBridge(
 	return newImmutableHandle(instance)
 }
 
-//
 //export tenGoExtensionTesterOnStart
 func tenGoExtensionTesterOnStart(
 	extTesterID C.uintptr_t,

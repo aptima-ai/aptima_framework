@@ -9,7 +9,10 @@
 #include <memory>
 
 #include "ten_runtime/binding/common.h"
+#include "ten_runtime/binding/cpp/internal/msg/audio_frame.h"
 #include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
+#include "ten_runtime/binding/cpp/internal/msg/data.h"
+#include "ten_runtime/binding/cpp/internal/msg/video_frame.h"
 #include "ten_runtime/binding/cpp/internal/test/env_tester.h"
 #include "ten_runtime/test/extension_tester.h"
 #include "ten_utils/macro/check.h"
@@ -66,14 +69,79 @@ class extension_tester_t {
     TEN_ASSERT(cpp_ten_env_tester, "Should not happen.");
   }
 
+  virtual void on_configure(ten_env_tester_t &ten_env_tester) {
+    ten_env_tester.on_configure_done();
+  }
+
+  virtual void on_init(ten_env_tester_t &ten_env_tester) {
+    ten_env_tester.on_init_done();
+  }
+
   virtual void on_start(ten_env_tester_t &ten_env_tester) {
     ten_env_tester.on_start_done();
+  }
+
+  virtual void on_stop(ten_env_tester_t &ten_env_tester) {
+    ten_env_tester.on_stop_done();
+  }
+
+  virtual void on_deinit(ten_env_tester_t &ten_env_tester) {
+    ten_env_tester.on_deinit_done();
   }
 
   virtual void on_cmd(ten_env_tester_t &ten_env_tester,
                       std::unique_ptr<cmd_t> cmd) {}
 
+  virtual void on_data(ten_env_tester_t &ten_env_tester,
+                       std::unique_ptr<data_t> data) {}
+
+  virtual void on_audio_frame(ten_env_tester_t &ten_env_tester,
+                              std::unique_ptr<audio_frame_t> audio_frame) {}
+
+  virtual void on_video_frame(ten_env_tester_t &ten_env_tester,
+                              std::unique_ptr<video_frame_t> video_frame) {}
+
  private:
+  void invoke_cpp_extension_tester_on_configure(
+      ten_env_tester_t &cpp_ten_env_tester) {
+    on_configure(cpp_ten_env_tester);
+  }
+
+  static void proxy_on_configure(ten_extension_tester_t *tester,
+                                 ::ten_env_tester_t *c_ten_env_tester) {
+    TEN_ASSERT(tester && c_ten_env_tester, "Should not happen.");
+
+    auto *cpp_extension_tester = static_cast<extension_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(tester)));
+    auto *cpp_ten_env_tester = static_cast<ten_env_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(c_ten_env_tester)));
+
+    cpp_extension_tester->invoke_cpp_extension_tester_on_configure(
+        *cpp_ten_env_tester);
+  }
+
+  void invoke_cpp_extension_tester_on_init(
+      ten_env_tester_t &cpp_ten_env_tester) {
+    on_init(cpp_ten_env_tester);
+  }
+
+  static void proxy_on_init(ten_extension_tester_t *tester,
+                            ::ten_env_tester_t *c_ten_env_tester) {
+    TEN_ASSERT(tester && c_ten_env_tester, "Should not happen.");
+
+    auto *cpp_extension_tester = static_cast<extension_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(tester)));
+    auto *cpp_ten_env_tester = static_cast<ten_env_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(c_ten_env_tester)));
+
+    cpp_extension_tester->invoke_cpp_extension_tester_on_init(
+        *cpp_ten_env_tester);
+  }
+
   void invoke_cpp_extension_tester_on_start(
       ten_env_tester_t &cpp_ten_env_tester) {
     on_start(cpp_ten_env_tester);
@@ -91,6 +159,46 @@ class extension_tester_t {
             reinterpret_cast<ten_binding_handle_t *>(c_ten_env_tester)));
 
     cpp_extension_tester->invoke_cpp_extension_tester_on_start(
+        *cpp_ten_env_tester);
+  }
+
+  void invoke_cpp_extension_tester_on_stop(
+      ten_env_tester_t &cpp_ten_env_tester) {
+    on_stop(cpp_ten_env_tester);
+  }
+
+  static void proxy_on_stop(ten_extension_tester_t *tester,
+                            ::ten_env_tester_t *c_ten_env_tester) {
+    TEN_ASSERT(tester && c_ten_env_tester, "Should not happen.");
+
+    auto *cpp_extension_tester = static_cast<extension_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(tester)));
+    auto *cpp_ten_env_tester = static_cast<ten_env_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(c_ten_env_tester)));
+
+    cpp_extension_tester->invoke_cpp_extension_tester_on_stop(
+        *cpp_ten_env_tester);
+  }
+
+  void invoke_cpp_extension_tester_on_deinit(
+      ten_env_tester_t &cpp_ten_env_tester) {
+    on_deinit(cpp_ten_env_tester);
+  }
+
+  static void proxy_on_deinit(ten_extension_tester_t *tester,
+                              ::ten_env_tester_t *c_ten_env_tester) {
+    TEN_ASSERT(tester && c_ten_env_tester, "Should not happen.");
+
+    auto *cpp_extension_tester = static_cast<extension_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(tester)));
+    auto *cpp_ten_env_tester = static_cast<ten_env_tester_t *>(
+        ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(c_ten_env_tester)));
+
+    cpp_extension_tester->invoke_cpp_extension_tester_on_deinit(
         *cpp_ten_env_tester);
   }
 

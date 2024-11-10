@@ -20,6 +20,7 @@
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/time.h"
+#include "ten_utils/log/log.h"
 
 static void ten_extension_in_path_timer_on_triggered(ten_timer_t *self,
                                                      void *on_trigger_data) {

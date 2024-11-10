@@ -13,7 +13,6 @@
 #include <stdlib.h>  // IWYU pragma: keep
 
 #include "ten_utils/backtrace/backtrace.h"  // IWYU pragma: keep
-#include "ten_utils/log/log.h"
 
 #if defined(__has_feature)
 #if __has_feature(address_sanitizer)
@@ -35,30 +34,42 @@
 
 #else  // TEN_PRODUCTION
 
+// TEN_ASSERT is used within `ten_string_t`, so do not use `ten_string_t` inside
+// `TEN_ASSERT` to avoid circular dependencies.
+#define ASSERT_ERR_MSG_MAX_LENGTH 1024
+
 #ifndef NDEBUG
 
-#define TEN_ASSERT(expr, fmt, ...)                         \
-  do {                                                     \
-    /* NOLINTNEXTLINE(readability-simplify-boolean-expr)*/ \
-    if (!(expr)) {                                         \
-      TEN_LOGE(fmt, ##__VA_ARGS__);                        \
-      ten_backtrace_dump_global(0);                        \
-      /* NOLINTNEXTLINE */                                 \
-      assert(0);                                           \
-    }                                                      \
+#define TEN_ASSERT(expr, fmt, ...)                                            \
+  do {                                                                        \
+    /* NOLINTNEXTLINE */                                                      \
+    if (!(expr)) {                                                            \
+      /* NOLINTNEXTLINE */                                                    \
+      char err_msg[ASSERT_ERR_MSG_MAX_LENGTH];                                \
+      (void)snprintf(err_msg, ASSERT_ERR_MSG_MAX_LENGTH, fmt, ##__VA_ARGS__); \
+      (void)fprintf(stderr, "%s\n", err_msg);                                 \
+      ten_backtrace_dump_global(0);                                           \
+      /* NOLINTNEXTLINE */                                                    \
+      assert(0);                                                              \
+    }                                                                         \
   } while (0)
 
 #else  // NDEBUG
 
 // Enable minimal protection if the optimization is enabled.
 
-#define TEN_ASSERT(expr, fmt, ...)  \
-  do {                              \
-    if (!(expr)) {                  \
-      TEN_LOGE(fmt, ##__VA_ARGS__); \
-      ten_backtrace_dump_global(0); \
-      abort();                      \
-    }                               \
+#define TEN_ASSERT(expr, fmt, ...)                                            \
+  do {                                                                        \
+    /* NOLINTNEXTLINE */                                                      \
+    if (!(expr)) {                                                            \
+      /* NOLINTNEXTLINE */                                                    \
+      char err_msg[ASSERT_ERR_MSG_MAX_LENGTH];                                \
+      (void)snprintf(err_msg, ASSERT_ERR_MSG_MAX_LENGTH, fmt, ##__VA_ARGS__); \
+      (void)fprintf(stderr, "%s\n", err_msg);                                 \
+      ten_backtrace_dump_global(0);                                           \
+      /* NOLINTNEXTLINE */                                                    \
+      abort();                                                                \
+    }                                                                         \
   } while (0)
 
 #endif  // NDEBUG

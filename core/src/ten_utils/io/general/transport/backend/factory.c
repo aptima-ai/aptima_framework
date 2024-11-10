@@ -13,6 +13,7 @@
 #include "ten_utils/io/stream.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uri.h"
+#include "ten_utils/log/log.h"
 
 typedef struct ten_backend_map_t {
   const char *name;

@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ten_utils/log/log.h"
+
 #if defined(__linux__)
 #include <sys/syscall.h>
 #include <sys/types.h>

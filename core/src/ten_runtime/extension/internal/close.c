@@ -16,6 +16,7 @@
 #include "include_internal/ten_runtime/path/path_table.h"
 #include "include_internal/ten_runtime/timer/timer.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
+#include "ten_utils/log/log.h"
 
 static bool ten_extension_could_be_closed(ten_extension_t *self) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),

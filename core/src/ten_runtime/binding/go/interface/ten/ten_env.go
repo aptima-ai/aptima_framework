@@ -28,13 +28,6 @@ type TenEnv interface {
 	postSyncJob(payload job) any
 	postAsyncJob(payload job) any
 
-	setPropertyAsync(
-		path string,
-		v *value,
-		callback func(TenEnv, error),
-	)
-	getPropertyAsync(path string, callback func(TenEnv, *value, error)) error
-
 	SendJSON(json string, handler ResultHandler) error
 	SendJSONBytes(json []byte, handler ResultHandler) error
 	SendCmd(cmd Cmd, handler ResultHandler) error
@@ -69,12 +62,6 @@ type TenEnv interface {
 	) error
 
 	iProperty
-
-	SetPropertyAsync(
-		path string,
-		v any,
-		callback func(TenEnv, error),
-	) error
 
 	InitPropertyFromJSONBytes(value []byte) error
 
@@ -241,6 +228,27 @@ func (p *tenEnv) sendCmd(cmd Cmd, handler ResultHandler) error {
 	return withGoStatus(&cStatus)
 }
 
+// Exported function to be called from C when the async operation in C
+// completes.
+//
+//export tenGoCAsyncApiCallback
+func tenGoCAsyncApiCallback(
+	callbackHandle C.uintptr_t,
+	apiStatus C.ten_go_status_t,
+) {
+	// Start a Go routine for asynchronous processing to prevent blocking C code
+	// on the native thread, which would in turn block the Go code calling the C
+	// code.
+	go func() {
+		goHandle := goHandle(callbackHandle)
+		done := loadAndDeleteGoHandle(goHandle).(chan error)
+
+		err := withGoStatus(&apiStatus)
+
+		done <- err
+	}()
+}
+
 func (p *tenEnv) SendData(data Data) error {
 	if data == nil {
 		return newTenError(
@@ -251,12 +259,30 @@ func (p *tenEnv) SendData(data Data) error {
 
 	defer data.keepAlive()
 
-	return withCGO(func() error {
-		apiStatus := C.ten_go_ten_env_send_data(p.cPtr, data.getCPtr())
-		err := withGoStatus(&apiStatus)
+	// Create a channel to wait for the async operation in C to complete.
+	done := make(chan error, 1)
+	callbackHandle := newGoHandle(done)
 
+	err := withCGO(func() error {
+		apiStatus := C.ten_go_ten_env_send_data(
+			p.cPtr,
+			data.getCPtr(),
+			C.uintptr_t(callbackHandle),
+		)
+		err := withGoStatus(&apiStatus)
 		return err
 	})
+
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(callbackHandle)
+		return err
+	}
+
+	// Wait for the async operation to complete.
+	err = <-done
+
+	return err
 }
 
 func (p *tenEnv) SendVideoFrame(videoFrame VideoFrame) error {
@@ -379,68 +405,6 @@ func (p *tenEnv) OnCreateInstanceDone(instance any, context uintptr) error {
 	return nil
 }
 
-func (p *tenEnv) setPropertyAsync(
-	path string,
-	v *value,
-	callback func(TenEnv, error),
-) {
-	if v == nil || path == "" {
-		callback(p, newTenError(
-			ErrnoInvalidArgument,
-			"path and value is required.",
-		))
-		return
-	}
-
-	defer v.keepAlive()
-
-	callbackID := handle(0)
-	if callback != nil {
-		callbackID = newhandle(callback)
-	}
-
-	cName := C.CString(path)
-	defer C.free(unsafe.Pointer(cName))
-
-	if res := C.ten_go_ten_env_set_property_async(p.cPtr, cName, v.cPtr, C.uintptr_t(callbackID)); !res {
-		callback(p, newTenError(
-			ErrnoGeneric,
-			"ten is closed.",
-		))
-	}
-}
-
-// Retrieve a property asynchronously from TEN world. It takes a property path
-// and a callback function to be executed once the property is retrieved. The
-// method interfaces with C code using cgo, and it ensures proper memory
-// management and error handling.
-func (p *tenEnv) getPropertyAsync(
-	path string,
-	callback func(TenEnv, *value, error),
-) error {
-	if callback == nil || path == "" {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"path and callback is required.",
-		)
-	}
-
-	callbackID := newhandle(callback)
-
-	cName := C.CString(path)
-	// Ensures that the memory allocated for the C string is freed after the
-	// function exits.
-	defer C.free(unsafe.Pointer(cName))
-
-	if res := C.ten_go_ten_env_get_property_async(p.cPtr, cName, C.uintptr_t(callbackID)); !res {
-		return newTenError(
-			ErrnoGeneric,
-			"ten is closed.",
-		)
-	}
-	return nil
-}
-
 func (p *tenEnv) IsCmdConnected(cmdName string) (bool, error) {
 	return p.process(func() any {
 		cName := C.CString(cmdName)
@@ -508,35 +472,6 @@ func (p *tenEnv) String() string {
 	defer C.free(unsafe.Pointer(cString))
 
 	return C.GoString(cString)
-}
-
-func (p *tenEnv) SetPropertyAsync(
-	path string,
-	v any,
-	callback func(TenEnv, error),
-) error {
-	if path == "" || v == nil {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"path and value is required.",
-		)
-	}
-
-	res, ok := p.postAsyncJob(func() any {
-		wrappedValue, err := wrapValueInner(v)
-		if err != nil {
-			return err
-		}
-		defer wrappedValue.free()
-
-		p.setPropertyAsync(path, wrappedValue, callback)
-		return nil
-	}).(error)
-
-	if ok {
-		return res
-	}
-	return nil
 }
 
 func (p *tenEnv) LogVerbose(msg string) {

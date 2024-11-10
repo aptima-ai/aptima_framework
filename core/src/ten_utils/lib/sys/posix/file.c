@@ -15,15 +15,16 @@
 #include <unistd.h>
 
 #include "ten_utils/lib/path.h"
+#include "ten_utils/log/log.h"
 
 // Mac OS X 10.6 does not support O_CLOEXEC.
 #ifndef O_CLOEXEC
-  #define O_CLOEXEC 0
+#define O_CLOEXEC 0
 #endif
 
 // Mac OS does not support FD_CLOEXEC.
 #ifndef FD_CLOEXEC
-  #define FD_CLOEXEC 1
+#define FD_CLOEXEC 1
 #endif
 
 int ten_file_get_fd(FILE *fp) { return fileno(fp); }

@@ -12,6 +12,7 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_and_result_conversion.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
+#include "ten_utils/log/log.h"
 
 ten_value_t *ten_msg_dest_info_to_value(
     ten_msg_dest_info_t *self, ten_extension_info_t *src_extension_info,

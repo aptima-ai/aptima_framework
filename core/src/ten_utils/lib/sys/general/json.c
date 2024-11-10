@@ -8,10 +8,11 @@
 
 #include <stdbool.h>
 
-#include "ten_utils/macro/check.h"
 #include "jansson.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/value/type.h"
 
 bool ten_json_check_integrity(ten_json_t *json) {

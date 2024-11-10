@@ -12,13 +12,9 @@
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include "ten_utils/macro/macros.h"
 
 #if defined(TEN_ENABLE_OWN_IFADDR)
 TEN_UTILS_API int getifaddrs(struct ifaddrs **ifap);

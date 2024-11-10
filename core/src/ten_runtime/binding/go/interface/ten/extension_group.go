@@ -121,7 +121,6 @@ func newExtensionGroupWithBridge(
 	return newImmutableHandle(extGroupInstance)
 }
 
-//
 //export tenGoExtensionGroupOnInit
 func tenGoExtensionGroupOnInit(
 	extensionGroupID C.uintptr_t,
@@ -160,7 +159,6 @@ func tenGoExtensionGroupOnInit(
 	)
 }
 
-//
 //export tenGoExtensionGroupOnDeinit
 func tenGoExtensionGroupOnDeinit(
 	extensionGroupID C.uintptr_t,
@@ -189,7 +187,6 @@ func tenGoExtensionGroupOnDeinit(
 	extensionGroupObj.OnDeinit(tenEnvObj)
 }
 
-//
 //export tenGoExtensionGroupOnCreateExtensions
 func tenGoExtensionGroupOnCreateExtensions(
 	extensionGroupID C.uintptr_t,
@@ -218,7 +215,6 @@ func tenGoExtensionGroupOnCreateExtensions(
 	extensionGroupObj.OnCreateExtensions(tenEnvObj)
 }
 
-//
 //export tenGoExtensionGroupOnDestroyExtensions
 func tenGoExtensionGroupOnDestroyExtensions(
 	extensionGroupID C.uintptr_t,

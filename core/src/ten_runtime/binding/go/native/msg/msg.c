@@ -15,6 +15,7 @@
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
 #include "include_internal/ten_runtime/msg/field/properties.h"
+#include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/value.h"
 #include "ten_runtime/common/errno.h"
@@ -25,17 +26,11 @@
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
-
-typedef struct ten_go_msg_t {
-  ten_signature_t signature;
-
-  ten_shared_ptr_t *c_msg;
-  ten_go_handle_t go_msg;
-} ten_go_msg_t;
 
 bool ten_go_msg_check_integrity(ten_go_msg_t *self) {
   TEN_ASSERT(self, "Should not happen.");

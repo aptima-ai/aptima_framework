@@ -16,6 +16,7 @@
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/sanitizer/thread_check.h"
 
@@ -128,7 +129,7 @@ void ten_path_set_result(ten_path_t *path, ten_shared_ptr_t *cmd_result) {
     // another extension thread. Accessing `cached_cmd_result` here could lead
     // to a thread safety issue.
 
-    ten_msg_dump(cmd_result, NULL, "The new cached cmd result: ^m");
+    // ten_msg_dump(cmd_result, NULL, "The new cached cmd result: ^m");
 
     ten_shared_ptr_destroy(path->cached_cmd_result);
     path->cached_cmd_result = NULL;

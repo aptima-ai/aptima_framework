@@ -11,6 +11,7 @@
 #include "include_internal/ten_runtime/protocol/integrated/protocol_integrated.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "ten_utils/io/stream.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 // The principle is very simple. As long as the integrated protocol still has

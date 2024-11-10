@@ -34,6 +34,10 @@ ten_go_status_t ten_go_audio_frame_create(const void *msg_name,
   ten_go_msg_t *bridge = ten_go_msg_create(c_audio_frame);
   *bridge_addr = (uintptr_t)bridge;
 
+  // The ownership of the C message instance is transferred into the GO message
+  // instance.
+  ten_shared_ptr_destroy(c_audio_frame);
+
   return status;
 }
 

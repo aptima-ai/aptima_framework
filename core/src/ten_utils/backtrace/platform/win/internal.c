@@ -18,6 +18,7 @@
 #include "include_internal/ten_utils/backtrace/backtrace.h"
 #include "include_internal/ten_utils/backtrace/common.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/memory.h"
 
 typedef BOOL(WINAPI *win_SymInitialize_func_t)(HANDLE hProcess,

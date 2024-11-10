@@ -57,10 +57,10 @@ static void ten_extension_thread_handle_in_msg_sync(
       self->extension_store, ten_string_get_raw_str(&dest_loc->extension_name),
       self->in_lock_mode ? false : true);
   if (!extension) {
-    ten_msg_dump(msg, NULL,
-                 "Failed to find destination extension %s for msg ^m in %s",
-                 ten_string_get_raw_str(&dest_loc->extension_name),
-                 ten_string_get_raw_str(&self->extension_group->name));
+    // ten_msg_dump(msg, NULL,
+    //              "Failed to find destination extension %s for msg ^m in %s",
+    //              ten_string_get_raw_str(&dest_loc->extension_name),
+    //              ten_string_get_raw_str(&self->extension_group->name));
 
     // Return a result, so that the sender can know what's going on.
     if (ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD) {
@@ -85,8 +85,8 @@ static void ten_extension_thread_handle_in_msg_sync(
     return;
   } else {
     if (extension->extension_thread != self) {
-      ten_msg_dump(msg, NULL, "Unexpected msg ^m for extension %s",
-                   ten_string_get_raw_str(&extension->name));
+      // ten_msg_dump(msg, NULL, "Unexpected msg ^m for extension %s",
+      //              ten_string_get_raw_str(&extension->name));
 
       TEN_ASSERT(0, "Should not happen.");
     }
@@ -109,10 +109,10 @@ static void ten_extension_thread_handle_in_msg_task(void *self_, void *arg) {
     case TEN_EXTENSION_THREAD_STATE_INIT:
     case TEN_EXTENSION_THREAD_STATE_CREATING_EXTENSIONS:
 #if defined(_DEBUG)
-      ten_msg_dump(msg, NULL,
-                   "A message (^m) comes when extension thread (%p) is in "
-                   "state (%d)",
-                   self, ten_extension_thread_get_state(self));
+      // ten_msg_dump(msg, NULL,
+      //              "A message (^m) comes when extension thread (%p) is in "
+      //              "state (%d)",
+      //              self, ten_extension_thread_get_state(self));
 #endif
 
       // At this stage, the extensions have not been created yet, so any

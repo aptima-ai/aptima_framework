@@ -47,7 +47,7 @@ typedef struct ten_go_status_t {
   //
   // Note that the max size of err_msg is TEN_GO_STATUS_ERR_MSG_BUF_SIZE - 1, so
   // the type is uint8_t here.
-  uint8_t msg_size;
+  uint8_t err_msg_size;
 
   // The err_msg is always NULL if no error.
   //

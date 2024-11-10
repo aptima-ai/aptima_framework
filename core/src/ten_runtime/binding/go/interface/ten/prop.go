@@ -269,12 +269,6 @@ type iProperty interface {
 
 type iPropertyContainerForAsyncGeneric interface {
 	postAsyncJob(payload job) any
-	setPropertyAsync(
-		path string,
-		v *value,
-		callback func(TenEnv, error),
-	)
-	getPropertyAsync(path string, callback func(TenEnv, *value, error)) error
 }
 
 func wrapValueInner(v any) (*value, error) {

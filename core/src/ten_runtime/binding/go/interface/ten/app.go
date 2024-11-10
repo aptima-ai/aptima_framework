@@ -106,7 +106,6 @@ func NewApp(
 	return pApp, nil
 }
 
-//
 //export tenGoAppOnConfigure
 func tenGoAppOnConfigure(
 	appID C.uintptr_t,
@@ -135,7 +134,6 @@ func tenGoAppOnConfigure(
 	appObj.OnConfigure(tenEnvObj)
 }
 
-//
 //export tenGoAppOnInit
 func tenGoAppOnInit(
 	appID C.uintptr_t,

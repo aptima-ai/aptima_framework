@@ -203,7 +203,6 @@ func unloadAllAddons() error {
 	return nil
 }
 
-//
 //export tenGoAddonOnInit
 func tenGoAddonOnInit(
 	addonID C.uintptr_t,
@@ -232,7 +231,6 @@ func tenGoAddonOnInit(
 	addonObj.OnInit(tenEnvObj)
 }
 
-//
 //export tenGoAddonOnDeinit
 func tenGoAddonOnDeinit(addonID C.uintptr_t, tenEnvID C.uintptr_t) {
 	addonObj, ok := loadImmutableHandle(goHandle(addonID)).(*addon)
@@ -258,7 +256,6 @@ func tenGoAddonOnDeinit(addonID C.uintptr_t, tenEnvID C.uintptr_t) {
 	addonObj.OnDeinit(tenEnvObj)
 }
 
-//
 //export tenGoAddonCreateInstance
 func tenGoAddonCreateInstance(
 	addonID C.uintptr_t,
@@ -290,7 +287,6 @@ func tenGoAddonCreateInstance(
 	addonObj.OnCreateInstance(tenEnvObj, extensionName, uintptr(context))
 }
 
-//
 //export tenGoAddonDestroyInstance
 func tenGoAddonDestroyInstance(
 	instanceID C.uintptr_t,

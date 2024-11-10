@@ -334,6 +334,34 @@ static void ten_extension_tester_create_and_run_app(
              "test_app should have been created its ten_env_proxy.");
 }
 
+void ten_extension_tester_on_configure_done(ten_extension_tester_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_tester_check_integrity(self, true),
+             "Invalid use of extension_tester %p.", self);
+
+  TEN_LOGI("tester on_configure() done.");
+
+  bool rc = ten_env_proxy_notify(
+      self->test_extension_ten_env_proxy,
+      ten_builtin_test_extension_ten_env_notify_on_configure_done, NULL, false,
+      NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
+void ten_extension_tester_on_init_done(ten_extension_tester_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_tester_check_integrity(self, true),
+             "Invalid use of extension_tester %p.", self);
+
+  TEN_LOGI("tester on_init() done.");
+
+  bool rc = ten_env_proxy_notify(
+      self->test_extension_ten_env_proxy,
+      ten_builtin_test_extension_ten_env_notify_on_init_done, NULL, false,
+      NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
 void ten_extension_tester_on_start_done(ten_extension_tester_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_tester_check_integrity(self, true),
@@ -344,6 +372,34 @@ void ten_extension_tester_on_start_done(ten_extension_tester_t *self) {
   bool rc = ten_env_proxy_notify(
       self->test_extension_ten_env_proxy,
       ten_builtin_test_extension_ten_env_notify_on_start_done, NULL, false,
+      NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
+void ten_extension_tester_on_stop_done(ten_extension_tester_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_tester_check_integrity(self, true),
+             "Invalid use of extension_tester %p.", self);
+
+  TEN_LOGI("tester on_stop() done.");
+
+  bool rc = ten_env_proxy_notify(
+      self->test_extension_ten_env_proxy,
+      ten_builtin_test_extension_ten_env_notify_on_stop_done, NULL, false,
+      NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
+void ten_extension_tester_on_deinit_done(ten_extension_tester_t *self) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_extension_tester_check_integrity(self, true),
+             "Invalid use of extension_tester %p.", self);
+
+  TEN_LOGI("tester on_deinit() done.");
+
+  bool rc = ten_env_proxy_notify(
+      self->test_extension_ten_env_proxy,
+      ten_builtin_test_extension_ten_env_notify_on_deinit_done, NULL, false,
       NULL);
   TEN_ASSERT(rc, "Should not happen.");
 }

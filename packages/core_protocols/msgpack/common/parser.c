@@ -11,6 +11,7 @@
 #include "core_protocols/msgpack/msg/msg.h"
 #include "msgpack.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 

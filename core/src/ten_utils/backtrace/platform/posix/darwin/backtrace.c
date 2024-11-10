@@ -14,6 +14,7 @@
 
 #include "include_internal/ten_utils/backtrace/common.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/log/log.h"
 
 /**
  * @note On Mac, we are currently using a simple method instead of a complicated

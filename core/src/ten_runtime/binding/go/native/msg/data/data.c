@@ -13,6 +13,7 @@
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/data/data.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
 
 ten_go_status_t ten_go_data_create(const void *msg_name, int msg_name_len,
@@ -33,6 +34,10 @@ ten_go_status_t ten_go_data_create(const void *msg_name, int msg_name_len,
 
   uintptr_t addr = (uintptr_t)data_bridge;
   *bridge = addr;
+
+  // The ownership of the C message instance is transferred into the GO message
+  // instance.
+  ten_shared_ptr_destroy(c_data);
 
   return status;
 }

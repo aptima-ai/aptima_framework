@@ -385,6 +385,10 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 		return err
 	}
 
+	// Create a channel to wait for the async operation in C to complete.
+	done := make(chan error, 1)
+	callbackHandle := newGoHandle(done)
+
 	var err error
 	switch pt {
 	case propTypeBool:
@@ -393,6 +397,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.bool(value.(bool)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -402,6 +407,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.int8_t(value.(int8)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -411,6 +417,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.int16_t(value.(int16)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -420,6 +427,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.int32_t(value.(int32)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -429,6 +437,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.int64_t(value.(int64)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -439,6 +448,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
 				C.int64_t(value.(int)),
+				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
 		} else {
@@ -447,6 +457,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
 				C.int32_t(value.(int)),
+				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
 		}
@@ -457,6 +468,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.uint8_t(value.(uint8)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -466,6 +478,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.uint16_t(value.(uint16)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -475,6 +488,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.uint32_t(value.(uint32)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -484,6 +498,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.uint64_t(value.(uint64)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -494,6 +509,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
 				C.uint64_t(value.(uint)),
+				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
 		} else {
@@ -502,6 +518,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
 				C.uint32_t(value.(uint)),
+				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
 		}
@@ -512,6 +529,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.float(value.(float32)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -521,16 +539,33 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			C.double(value.(float64)),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
 	case propTypeStr:
 		vs := value.(string)
-		err = p.SetPropertyString(path, vs)
+		apiStatus := C.ten_go_ten_env_set_property_string(
+			p.cPtr,
+			unsafe.Pointer(unsafe.StringData(path)),
+			C.int(len(path)),
+			unsafe.Pointer(unsafe.StringData(vs)),
+			C.int(len(vs)),
+			C.uintptr_t(callbackHandle),
+		)
+		err = withGoStatus(&apiStatus)
 
 	case propTypeBuf:
 		vb := value.([]byte)
-		err = p.SetPropertyBytes(path, vb)
+		apiStatus := C.ten_go_ten_env_set_property_buf(
+			p.cPtr,
+			unsafe.Pointer(unsafe.StringData(path)),
+			C.int(len(path)),
+			unsafe.Pointer(unsafe.SliceData(vb)),
+			C.int(len(vb)),
+			C.uintptr_t(callbackHandle),
+		)
+		err = withGoStatus(&apiStatus)
 
 	case propTypePtr:
 		vh := newGoHandle(value)
@@ -539,6 +574,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 			unsafe.Pointer(unsafe.StringData(path)),
 			C.int(len(path)),
 			cHandle(vh),
+			C.uintptr_t(callbackHandle),
 		)
 		err = withGoStatus(&apiStatus)
 
@@ -547,12 +583,24 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 		err = newTenError(ErrnoInvalidType, "")
 	}
 
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(callbackHandle)
+		return err
+	}
+
+	// Wait for the async operation to complete.
+	err = <-done
+
 	return err
 }
 
 // SetPropertyString sets a string as property in the ten. This function has one
 // less memory allocation than calling SetProperty.
-func (p *tenEnv) SetPropertyString(path string, value string) error {
+func (p *tenEnv) SetPropertyString(
+	path string,
+	value string,
+) error {
 	if len(path) == 0 {
 		return newTenError(
 			ErrnoInvalidArgument,
@@ -560,26 +608,47 @@ func (p *tenEnv) SetPropertyString(path string, value string) error {
 		)
 	}
 
+	// Create a channel to wait for the async operation in C to complete.
+	done := make(chan error, 1)
+	callbackHandle := newGoHandle(done)
+
 	apiStatus := C.ten_go_ten_env_set_property_string(
 		p.cPtr,
 		unsafe.Pointer(unsafe.StringData(path)),
 		C.int(len(path)),
 		unsafe.Pointer(unsafe.StringData(value)),
 		C.int(len(value)),
+		C.uintptr_t(callbackHandle),
 	)
 	err := withGoStatus(&apiStatus)
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(callbackHandle)
+		return err
+	}
+
+	// Wait for the async operation to complete.
+	err = <-done
+
 	return err
 }
 
 // SetPropertyBytes sets a []byte as property in the ten. This function has one
 // less memory allocation than calling SetProperty.
-func (p *tenEnv) SetPropertyBytes(path string, value []byte) error {
+func (p *tenEnv) SetPropertyBytes(
+	path string,
+	value []byte,
+) error {
 	if len(path) == 0 || len(value) == 0 {
 		return newTenError(
 			ErrnoInvalidArgument,
 			"the property value is required",
 		)
 	}
+
+	// Create a channel to wait for the async operation in C to complete.
+	done := make(chan error, 1)
+	callbackHandle := newGoHandle(done)
 
 	apiStatus := C.ten_go_ten_env_set_property_buf(
 		p.cPtr,
@@ -590,13 +659,27 @@ func (p *tenEnv) SetPropertyBytes(path string, value []byte) error {
 		// `runtime.convTslice` will be called if using `&value[0]`.
 		unsafe.Pointer(unsafe.SliceData(value)),
 		C.int(len(value)),
+		C.uintptr_t(callbackHandle),
 	)
 	err := withGoStatus(&apiStatus)
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(callbackHandle)
+		return err
+	}
+
+	// Wait for the async operation to complete.
+	err = <-done
+
 	return err
 }
 
 func (p *tenEnv) setPropertyFromJSONBytes(path string, value []byte) error {
 	defer p.keepAlive()
+
+	// Create a channel to wait for the async operation in C to complete.
+	done := make(chan error, 1)
+	callbackHandle := newGoHandle(done)
 
 	apiStatus := C.ten_go_ten_env_set_property_json_bytes(
 		p.cPtr,
@@ -604,8 +687,17 @@ func (p *tenEnv) setPropertyFromJSONBytes(path string, value []byte) error {
 		C.int(len(path)),
 		unsafe.Pointer(unsafe.SliceData(value)),
 		C.int(len(value)),
+		C.uintptr_t(callbackHandle),
 	)
 	err := withGoStatus(&apiStatus)
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(callbackHandle)
+		return err
+	}
+
+	// Wait for the async operation to complete.
+	err = <-done
 
 	return err
 }

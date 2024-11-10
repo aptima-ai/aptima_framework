@@ -136,7 +136,6 @@ func newExtensionWithBridge(
 	return newImmutableHandle(instance)
 }
 
-//
 //export tenGoExtensionOnConfigure
 func tenGoExtensionOnConfigure(
 	extensionID C.uintptr_t,
@@ -173,7 +172,6 @@ func tenGoExtensionOnConfigure(
 	extensionObj.OnConfigure(tenEnvObj)
 }
 
-//
 //export tenGoExtensionOnInit
 func tenGoExtensionOnInit(
 	extensionID C.uintptr_t,
@@ -354,7 +352,6 @@ func tenGoExtensionOnData(
 	extensionObj.OnData(tenEnvObj, d)
 }
 
-//
 //export tenGoExtensionOnVideoFrame
 func tenGoExtensionOnVideoFrame(
 	extensionID C.uintptr_t,
@@ -385,7 +382,6 @@ func tenGoExtensionOnVideoFrame(
 	extensionObj.OnVideoFrame(tenEnvObj, videoFrameObj)
 }
 
-//
 //export tenGoExtensionOnAudioFrame
 func tenGoExtensionOnAudioFrame(
 	extensionID C.uintptr_t,

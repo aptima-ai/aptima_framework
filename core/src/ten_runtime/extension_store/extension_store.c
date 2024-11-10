@@ -13,6 +13,7 @@
 #include "ten_utils/container/hash_table.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/sanitizer/thread_check.h"

@@ -8,6 +8,7 @@
 
 #include "include_internal/ten_runtime/common/closeable.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/field.h"
 #include "ten_utils/macro/mark.h"

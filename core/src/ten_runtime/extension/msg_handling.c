@@ -43,7 +43,7 @@ static void ten_extension_cache_cmd_result_to_in_path_for_auto_return(
       ten_extension_get_name(extension, true), ten_shared_ptr_get_data(cmd),
       ten_msg_type_to_string(ten_cmd_result_get_original_cmd_type(cmd)));
 
-  ten_msg_dump(cmd, NULL, "The received cmd result: ^m");
+  // ten_msg_dump(cmd, NULL, "The received cmd result: ^m");
 
   ten_path_t *in_path =
       (ten_path_t *)ten_extension_get_cmd_return_path_from_itself(

@@ -7,11 +7,12 @@
 #include "include_internal/ten_runtime/msg/locked_res.h"
 
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
 
 static bool ten_msg_locked_res_check_integrity(ten_msg_locked_res_t *self) {
   TEN_ASSERT(self, "Should not happen.");

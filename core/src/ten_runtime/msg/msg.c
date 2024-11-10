@@ -1076,7 +1076,7 @@ static bool ten_raw_msg_dump_internal(ten_msg_t *msg, ten_error_t *err,
     }
   }
 
-  TEN_LOGV("%s", ten_string_get_raw_str(&dump_str));
+  TEN_LOGE("%s", ten_string_get_raw_str(&dump_str));
 
   ten_string_deinit(&dump_str);
   ten_string_deinit(&description);

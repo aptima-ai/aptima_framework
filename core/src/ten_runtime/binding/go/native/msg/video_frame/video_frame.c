@@ -33,6 +33,10 @@ ten_go_status_t ten_go_video_frame_create(const void *msg_name,
   ten_go_msg_t *bridge = ten_go_msg_create(c_video_frame);
   *bridge_addr = (uintptr_t)bridge;
 
+  // The ownership of the C message instance is transferred into the GO message
+  // instance.
+  ten_shared_ptr_destroy(c_video_frame);
+
   return status;
 }
 

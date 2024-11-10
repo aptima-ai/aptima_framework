@@ -6,6 +6,11 @@
 
 package main
 
+// To detect memory leaks with ASan, need to enable the following cgo code.
+
+// void __lsan_do_leak_check(void);
+// import "C"
+
 import (
 	"fmt"
 
@@ -35,4 +40,8 @@ func main() {
 
 	app.Run(true)
 	app.Wait()
+
+	// To detect memory leaks with ASan, need to enable the following cgo code.
+	// runtime.GC()
+	// C.__lsan_do_leak_check()
 }

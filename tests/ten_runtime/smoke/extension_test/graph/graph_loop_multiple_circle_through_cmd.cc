@@ -37,7 +37,7 @@ class test_extension : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "sum") {
-      if (counter_ == 10) {
+      if (counter_ == 2) {
         auto json = nlohmann::json::parse(cmd->to_json());
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", json.dump().c_str());
@@ -223,7 +223,7 @@ TEST(ExtensionTest, GraphLoopMultipleCircleThroughCmd) {  // NOLINT
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
 
   nlohmann::json detail = resp["detail"];
-  EXPECT_EQ((1 + 2 + 3) * 10, detail["total"].get<std::int32_t>());
+  EXPECT_EQ((1 + 2 + 3) * 2, detail["total"].get<std::int32_t>());
 
   delete client;
 

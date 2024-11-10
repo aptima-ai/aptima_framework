@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include <stdlib.h>
+#include <sys/param.h>
 
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"
@@ -18,22 +19,24 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 
 typedef struct ten_env_notify_send_data_info_t {
-  ten_shared_ptr_t *c_data;
+  ten_go_msg_t *data_bridge;
+  uintptr_t callback_handle;
 } ten_env_notify_send_data_info_t;
 
 static ten_env_notify_send_data_info_t *ten_env_notify_send_data_info_create(
-    ten_shared_ptr_t *c_data) {
-  TEN_ASSERT(c_data, "Invalid argument.");
+    ten_go_msg_t *data_bridge, uintptr_t callback_handle) {
+  TEN_ASSERT(data_bridge, "Invalid argument.");
 
   ten_env_notify_send_data_info_t *info =
       TEN_MALLOC(sizeof(ten_env_notify_send_data_info_t));
   TEN_ASSERT(info, "Failed to allocate memory.");
 
-  info->c_data = c_data;
+  info->data_bridge = data_bridge;
+  info->callback_handle = callback_handle;
 
   return info;
 }
@@ -41,11 +44,6 @@ static ten_env_notify_send_data_info_t *ten_env_notify_send_data_info_create(
 static void ten_env_notify_send_data_info_destroy(
     ten_env_notify_send_data_info_t *info) {
   TEN_ASSERT(info, "Invalid argument.");
-
-  if (info->c_data) {
-    ten_shared_ptr_destroy(info->c_data);
-    info->c_data = NULL;
-  }
 
   TEN_FREE(info);
 }
@@ -58,10 +56,25 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
 
   ten_env_notify_send_data_info_t *notify_info = user_data;
 
+  ten_go_status_t status;
+  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+
   ten_error_t err;
   ten_error_init(&err);
 
-  TEN_UNUSED bool res = ten_env_send_data(ten_env, notify_info->c_data, NULL);
+  bool res = ten_env_send_data(ten_env, notify_info->data_bridge->c_msg, &err);
+  if (res) {
+    // `send_data` succeeded, transferring the ownership of the data message out
+    // of the Go data message.
+    ten_shared_ptr_destroy(notify_info->data_bridge->c_msg);
+    notify_info->data_bridge->c_msg = NULL;
+  } else {
+    // Prepare error information to pass to Go.
+    ten_go_status_from_error(&status, &err);
+  }
+
+  // Call back into Go to signal that the async operation in C is complete.
+  tenGoCAsyncApiCallback(notify_info->callback_handle, status);
 
   ten_error_deinit(&err);
 
@@ -69,7 +82,8 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
 }
 
 ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
-                                         uintptr_t data_bridge_addr) {
+                                         uintptr_t data_bridge_addr,
+                                         uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -87,11 +101,12 @@ ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
   ten_error_init(&err);
 
   ten_env_notify_send_data_info_t *notify_info =
-      ten_env_notify_send_data_info_create(ten_go_msg_move_c_msg(data));
+      ten_env_notify_send_data_info_create(data, callback_handle);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
                             ten_env_proxy_notify_send_data, notify_info, false,
                             &err)) {
+    // Failed to invoke ten_env_proxy_notify.
     ten_env_notify_send_data_info_destroy(notify_info);
     ten_go_status_from_error(&status, &err);
   }

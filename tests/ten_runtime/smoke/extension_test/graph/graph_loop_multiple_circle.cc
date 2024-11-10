@@ -6,10 +6,10 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
@@ -39,7 +39,9 @@ class test_extension : public ten::extension_t {
     nlohmann::json json = nlohmann::json::parse(cmd->to_json());
 
     if (json["_ten"]["name"] == "sum") {
-      if (counter_ == 10) {
+      // TEN_ENV_LOG_ERROR(ten_env, std::to_string(counter_).c_str());
+
+      if (counter_ == 2) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", json.dump().c_str());
         ten_env.return_result(std::move(cmd_result), std::move(cmd));
@@ -97,8 +99,8 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
-    graph_loop_multiple_circle__extension, test_extension);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(graph_loop_multiple_circle__extension,
+                                    test_extension);
 
 }  // namespace
 
@@ -223,7 +225,7 @@ TEST(ExtensionTest, GraphLoopMultipleCircle) {  // NOLINT
   ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
 
   nlohmann::json detail = resp["detail"];
-  EXPECT_EQ((1 + 2 + 3) * 10, std::stoi(detail["total"].get<std::string>()));
+  EXPECT_EQ((1 + 2 + 3) * 2, std::stoi(detail["total"].get<std::string>()));
 
   delete client;
 

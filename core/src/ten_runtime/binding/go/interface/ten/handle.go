@@ -93,7 +93,7 @@ func LeakObjSize() int {
 type goHandle = uintptr
 
 // cHandle is the C type corresponding to the goHandle when passing a goHandle
-// to from GO to C. goHandle and cHandle can be converted into each other.
+// from GO to C. goHandle and cHandle can be converted into each other.
 type cHandle = C.uintptr_t
 
 // concurrentMap is a goroutine-safety map.

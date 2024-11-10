@@ -24,6 +24,10 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
+// Note: Since TEN LOG also involves memory operations, to avoid circular
+// dependencies in the memory checker system, use the basic printf family
+// functions instead of TEN LOG.
+
 // Note: The `ten_sanitizer_memory_record_t` items stored in
 // `ten_sanitizer_memory_records_t` not only contain the actual allocated memory
 // region addresses but also include other auxiliary allocations used to record
@@ -46,8 +50,6 @@ static void ten_sanitizer_memory_record_check_enabled(void) {
   if (enable_memory_sanitizer && !strcmp(enable_memory_sanitizer, "true")) {
     g_memory_records_enabled = true;
   }
-#else
-  TEN_LOGI("The memory check is disabled.");
 #endif
 }
 
@@ -76,8 +78,6 @@ void ten_sanitizer_memory_record_init(void) {
   __lsan_enable();
 #endif
 
-#else
-  TEN_LOGI("The memory check is disabled.");
 #endif
 }
 
@@ -98,8 +98,6 @@ void ten_sanitizer_memory_record_deinit(void) {
   __lsan_enable();
 #endif
 
-#else
-  TEN_LOGI("The memory check is disabled.");
 #endif
 }
 
@@ -224,6 +222,7 @@ static void ten_sanitizer_memory_record_del(
     ten_sanitizer_memory_record_t *record = ten_ptr_listnode_get(iter.node);
 
     if (record->addr == addr) {
+      TEN_ASSERT(self->total_size >= record->size, "Should not happen.");
       self->total_size -= record->size;
       ten_list_remove_node(&self->records, iter.node);
       break;
@@ -259,8 +258,8 @@ void ten_sanitizer_memory_record_dump(void) {
   TEN_ASSERT(!rc, "Failed to lock.");
 
   if (g_memory_records.total_size) {
-    TEN_LOGD("Memory allocation summary(%zu bytes):",
-             g_memory_records.total_size);
+    (void)fprintf(stderr, "Memory allocation summary(%zu bytes):",
+                  g_memory_records.total_size);
   }
 
 #if defined(TEN_USE_ASAN)
@@ -279,8 +278,8 @@ void ten_sanitizer_memory_record_dump(void) {
 
     ten_sanitizer_memory_record_t *info = ten_ptr_listnode_get(iter.node);
 
-    TEN_LOGE("\t#%zu %p(%zu bytes) in %s %s:%d", idx, info->addr, info->size,
-             info->func_name, info->file_name, info->lineno);
+    (void)fprintf(stderr, "\t#%zu %p(%zu bytes) in %s %s:%d", idx, info->addr,
+                  info->size, info->func_name, info->file_name, info->lineno);
 
     idx++;
 
@@ -303,7 +302,7 @@ void ten_sanitizer_memory_record_dump(void) {
   TEN_ASSERT(!rc, "Failed to unlock.");
 
   if (total_size) {
-    TEN_LOGE("Memory leak with %zu bytes.", total_size);
+    (void)fprintf(stderr, "Memory leak with %zu bytes.", total_size);
 
 #if defined(TEN_USE_ASAN)
     __lsan_enable();
@@ -317,7 +316,7 @@ void ten_sanitizer_memory_record_dump(void) {
 #endif
 
 #else
-  TEN_LOGI("The memory check is disabled.");
+  (void)fprintf(stderr, "The memory check is disabled.");
 #endif
 }
 

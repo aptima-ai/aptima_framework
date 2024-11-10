@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 /**

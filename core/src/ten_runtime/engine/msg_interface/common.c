@@ -142,8 +142,10 @@ static void ten_engine_handle_in_msgs_sync(ten_engine_t *self) {
         default:
           // Otherwise put back those messages to the original external commands
           // queue.
-          ten_msg_dump(msg, NULL,
-                       "Engine is unable to handle msg now, put back it: ^m");
+          //
+          // ten_msg_dump(msg, NULL,
+          //              "Engine is unable to handle msg now, put back it:
+          //              ^m");
           ten_list_push_smart_ptr_back(&put_back_msgs, msg);
           break;
       }
@@ -314,9 +316,9 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
         }
 
         if (!found) {
-          ten_msg_dump(msg, NULL,
-                       "Failed to find the destination extension thread for "
-                       "the message ^m");
+          // ten_msg_dump(msg, NULL,
+          //              "Failed to find the destination extension thread for "
+          //              "the message ^m");
 
           ten_shared_ptr_t *status =
               ten_extension_group_create_invalid_dest_status(

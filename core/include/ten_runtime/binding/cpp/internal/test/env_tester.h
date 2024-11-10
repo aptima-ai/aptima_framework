@@ -34,6 +34,24 @@ class ten_env_tester_t {
   ten_env_tester_t &operator=(const ten_env_tester_t &&) = delete;
   // @}};
 
+  virtual bool on_configure_done(error_t *err) {
+    TEN_ASSERT(c_ten_env_tester, "Should not happen.");
+    return ten_env_tester_on_configure_done(
+        c_ten_env_tester,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
+  bool on_configure_done() { return on_configure_done(nullptr); }
+
+  virtual bool on_init_done(error_t *err) {
+    TEN_ASSERT(c_ten_env_tester, "Should not happen.");
+    return ten_env_tester_on_init_done(
+        c_ten_env_tester,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
+  bool on_init_done() { return on_init_done(nullptr); }
+
   virtual bool on_start_done(error_t *err) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
     return ten_env_tester_on_start_done(
@@ -42,6 +60,24 @@ class ten_env_tester_t {
   }
 
   bool on_start_done() { return on_start_done(nullptr); }
+
+  virtual bool on_stop_done(error_t *err) {
+    TEN_ASSERT(c_ten_env_tester, "Should not happen.");
+    return ten_env_tester_on_stop_done(
+        c_ten_env_tester,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
+  bool on_stop_done() { return on_stop_done(nullptr); }
+
+  virtual bool on_deinit_done(error_t *err) {
+    TEN_ASSERT(c_ten_env_tester, "Should not happen.");
+    return ten_env_tester_on_deinit_done(
+        c_ten_env_tester,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
+  bool on_deinit_done() { return on_deinit_done(nullptr); }
 
   virtual bool send_cmd(
       std::unique_ptr<cmd_t> &&cmd,

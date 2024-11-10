@@ -44,5 +44,17 @@ TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_test_extension_start(
 TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_test_extension_deinit(
     ten_extension_tester_t *self);
 
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_configure_done(
+    ten_extension_tester_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_init_done(
+    ten_extension_tester_t *self);
+
 TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_start_done(
+    ten_extension_tester_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_stop_done(
+    ten_extension_tester_t *self);
+
+TEN_RUNTIME_PRIVATE_API void ten_extension_tester_on_deinit_done(
     ten_extension_tester_t *self);

@@ -79,9 +79,9 @@ static void ten_engine_on_extension_thread_is_ready(
     extension_context->state_requester_cmd = NULL;
 
 #if defined(_DEBUG)
-    ten_msg_dump(
-        returned_cmd, NULL,
-        "Return extension-system-initted-result to previous stage: ^m");
+    // ten_msg_dump(
+    //     returned_cmd, NULL,
+    //     "Return extension-system-initted-result to previous stage: ^m");
 #endif
 
     ten_engine_dispatch_msg(self, returned_cmd);

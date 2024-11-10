@@ -15,7 +15,7 @@ import (
 	"ten_framework/ten"
 )
 
-const concurrency = 10000
+const concurrency = 100000
 
 type extensionA struct {
 	ten.DefaultExtension
@@ -26,23 +26,29 @@ func newExtensionA(name string) ten.Extension {
 }
 
 func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
-	count := 0
-	for i := 0; i < concurrency; i++ {
-		go func(i int) {
-			tenEnv.SetPropertyAsync(
-				fmt.Sprintf("prop_%d", i),
-				i,
-				func(r ten.TenEnv, e error) {
-					// It's thread safe because the callback is always called on
-					// the extension thread.
-					count++
-					if count == concurrency {
-						tenEnv.OnStartDone()
-					}
-				},
-			)
-		}(i % 100)
-	}
+	go func() {
+		var wg sync.WaitGroup
+
+		wg.Add(concurrency)
+
+		for i := 0; i < concurrency; i++ {
+			go func(i int) {
+				defer wg.Done()
+
+				err := tenEnv.SetProperty(
+					fmt.Sprintf("prop_%d", i),
+					i,
+				)
+
+				if err != nil {
+					fmt.Printf("Error in goroutine %d: %v\n", i, err)
+				}
+			}(i % 100)
+		}
+
+		wg.Wait()
+		tenEnv.OnStartDone()
+	}()
 }
 
 func (p *extensionA) OnCmd(
