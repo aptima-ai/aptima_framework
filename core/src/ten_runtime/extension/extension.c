@@ -711,9 +711,8 @@ bool ten_extension_handle_out_msg(ten_extension_t *self, ten_shared_ptr_t *msg,
 
     if (ten_list_size(&result_out_paths) > 1) {
       // Create a path group in this case.
-      ten_paths_create_group(
-          &result_out_paths,
-          TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_LAST);
+      ten_paths_create_group(&result_out_paths,
+                             TEN_PATH_GROUP_POLICY_RETURN_LAST_OK_OR_FAIL);
     }
 
     ten_list_clear(&result_out_paths);

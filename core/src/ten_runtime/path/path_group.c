@@ -70,7 +70,6 @@ static ten_path_group_t *ten_path_group_create(ten_path_table_t *table,
 
   self->table = table;
   self->policy = policy;
-  self->has_been_processed = false;
   ten_list_init(&self->members);
 
   return self;
@@ -140,12 +139,11 @@ static ten_path_t *ten_path_group_resolve_in_one_fail_and_all_ok_return(
                "Invalid argument.");
 
     ten_shared_ptr_t *cmd_result = path->cached_cmd_result;
+
     if (cmd_result) {
       TEN_ASSERT(ten_msg_get_type(cmd_result) == TEN_MSG_TYPE_CMD_RESULT,
                  "Invalid argument.");
-    }
 
-    if (cmd_result) {
       if (ten_cmd_result_get_status_code(cmd_result) != TEN_STATUS_CODE_OK) {
         // Receive a fail result, return it.
         return path;
@@ -178,10 +176,7 @@ ten_list_t *ten_path_group_get_members(ten_path_t *path) {
   TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
   TEN_ASSERT(ten_path_is_in_a_group(path), "Invalid argument.");
 
-  ten_path_group_t *path_group =
-      (ten_path_group_t *)ten_shared_ptr_get_data(path->group);
-  TEN_ASSERT(path_group && ten_path_group_check_integrity(path_group, true),
-             "Invalid argument.");
+  ten_path_group_t *path_group = ten_path_get_group(path);
 
   ten_list_t *members = &path_group->members;
   TEN_ASSERT(members && ten_list_check_integrity(members),
@@ -198,30 +193,30 @@ ten_list_t *ten_path_group_get_members(ten_path_t *path) {
  * group to a final cmd result. It checks the policy of the path group and calls
  * the appropriate function to resolve the path group status.
  *
- * Policy `TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST`
- * returns the first path in the list if all paths have succeeded, and returns
- * the first path that has failed otherwise.
+ * Policy `TEN_PATH_GROUP_POLICY_RETURN_FIRST_OK_OR_FAIL` returns the first path
+ * in the list if all paths have succeeded, and returns the first path that has
+ * failed otherwise.
  */
 ten_path_t *ten_path_group_resolve(ten_path_t *path, TEN_PATH_TYPE type) {
   TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
   TEN_ASSERT(ten_path_is_in_a_group(path), "Invalid argument.");
 
-  ten_path_group_t *path_group =
-      (ten_path_group_t *)ten_shared_ptr_get_data(path->group);
-  TEN_ASSERT(path_group && ten_path_group_check_integrity(path_group, true),
-             "Invalid argument.");
+  ten_path_group_t *path_group = ten_path_get_group(path);
 
   ten_list_t *members = &path_group->members;
   TEN_ASSERT(members && ten_list_check_integrity(members),
              "Should not happen.");
 
   switch (path_group->policy) {
-    case TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST:
+    case TEN_PATH_GROUP_POLICY_RETURN_FIRST_OK_OR_FAIL:
       return ten_path_group_resolve_in_one_fail_and_all_ok_return(members, type,
                                                                   false);
-    case TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_LAST:
+    case TEN_PATH_GROUP_POLICY_RETURN_LAST_OK_OR_FAIL:
       return ten_path_group_resolve_in_one_fail_and_all_ok_return(members, type,
                                                                   true);
+    case TEN_PATH_GROUP_POLICY_RETURN_EACH_IMMEDIATELY:
+      // In this policy, we return the current path immediately.
+      return path;
     default:
       TEN_ASSERT(0, "Should not happen.");
       return NULL;

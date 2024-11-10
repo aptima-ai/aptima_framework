@@ -53,6 +53,8 @@ static void ten_extension_thread_process_remaining_paths(
              ten_extension_get_name(extension, true), out_paths_cnt);
 
     ten_list_t cmd_result_list = TEN_LIST_INIT_VAL;
+
+    // Generate an error result for each remaining out path.
     ten_list_foreach (out_paths, iter) {
       ten_path_t *path = (ten_path_t *)ten_ptr_listnode_get(iter.node);
       TEN_ASSERT(path && ten_path_check_integrity(path, true),
@@ -72,6 +74,7 @@ static void ten_extension_thread_process_remaining_paths(
       ten_shared_ptr_destroy(cmd_result);
     }
 
+    // Send these newly generated error results to the extension.
     ten_list_foreach (&cmd_result_list, iter) {
       ten_shared_ptr_t *cmd_result = ten_smart_ptr_listnode_get(iter.node);
       TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),

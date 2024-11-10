@@ -152,7 +152,6 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
         // TODO(Xilin): Currently, there is no mechanism for auto return, so the
         // relevant codes should be able to be disabled.
         ten_extension_cache_cmd_result_to_in_path_for_auto_return(self, msg);
-
         delete_msg = true;
       }
     }
@@ -199,8 +198,6 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
   if (!msg_is_cmd_result) {
     // Create the corresponding IN paths for the input commands.
 
-    ten_list_t in_paths = TEN_LIST_INIT_VAL;
-
     ten_list_foreach (&converted_msgs, iter) {
       ten_msg_and_its_result_conversion_t *msg_and_result_conversion =
           ten_ptr_listnode_get(iter.node);
@@ -213,24 +210,12 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
       if (ten_msg_is_cmd(actual_cmd)) {
         if (ten_msg_info[ten_msg_get_type(actual_cmd)].create_in_path) {
           // Add a path entry to the IN path table of this extension.
-          ten_path_t *in_path = (ten_path_t *)ten_path_table_add_in_path(
+          ten_path_table_add_in_path(
               self->path_table, actual_cmd,
               msg_and_result_conversion->result_conversion);
-
-          ten_list_push_ptr_back(&in_paths, in_path, NULL);
         }
       }
     }
-
-    if (ten_list_size(&in_paths) > 1) {
-      // Create a path group in this case.
-
-      ten_paths_create_group(
-          &in_paths,
-          TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_LAST);
-    }
-
-    ten_list_clear(&in_paths);
   }
 
   // The path table processing is completed, it's time to check the schema. And

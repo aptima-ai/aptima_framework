@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"

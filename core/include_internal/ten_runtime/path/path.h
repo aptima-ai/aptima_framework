@@ -83,3 +83,5 @@ TEN_RUNTIME_PRIVATE_API void ten_path_set_result(ten_path_t *path,
 
 TEN_RUNTIME_PRIVATE_API void ten_path_set_expired_time(
     ten_path_t *path, uint64_t expired_time_us);
+
+TEN_RUNTIME_PRIVATE_API ten_path_group_t *ten_path_get_group(ten_path_t *self);

@@ -135,10 +135,13 @@ typedef enum TEN_PATH_GROUP_POLICY {
   // If receive a fail result, return it, otherwise, when all OK results are
   // received, return the first received one. Clear the group after returning
   // the result.
-  TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST,
+  TEN_PATH_GROUP_POLICY_RETURN_FIRST_OK_OR_FAIL,
 
   // Similar to the above, except return the last received one.
-  TEN_PATH_GROUP_POLICY_ONE_FAIL_RETURN_AND_ALL_OK_RETURN_LAST,
+  TEN_PATH_GROUP_POLICY_RETURN_LAST_OK_OR_FAIL,
+
+  // Return each result immediately as it is received.
+  TEN_PATH_GROUP_POLICY_RETURN_EACH_IMMEDIATELY,
 
   // More modes is allowed, and could be added here in case needed.
 } TEN_PATH_GROUP_POLICY;
@@ -150,16 +153,9 @@ typedef struct ten_path_group_t {
   ten_path_table_t *table;
 
   TEN_PATH_GROUP_POLICY policy;
-  ten_list_t members;  // Contain the members of the group.
 
-  // If this flag is set, none of the paths in the path_group can be used to
-  // trace back cmd results anymore.
-  //
-  // For example, if the policy is ONE_FAIL_RETURN_AND_ALL_OK_RETURN_FIRST
-  // and one of the paths in the group has received a fail cmd result, then
-  // the 'has_been_processed' flag will be set to true to prevent the left
-  // paths in the group from transmitting cmd results.
-  bool has_been_processed;
+  // Contain the members of the group.
+  ten_list_t members;  // ten_path_t
 } ten_path_group_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_path_group_check_integrity(
