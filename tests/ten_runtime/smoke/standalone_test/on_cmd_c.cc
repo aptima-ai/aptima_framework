@@ -104,7 +104,8 @@ void ten_extension_tester_on_cmd(TEN_UNUSED ten_extension_tester_t *tester,
 
 TEST(StandaloneTest, OnCmdC) {  // NOLINT
   ten_extension_tester_t *tester = ten_extension_tester_create(
-      ten_extension_tester_on_start, ten_extension_tester_on_cmd);
+      ten_extension_tester_on_start, ten_extension_tester_on_cmd, nullptr,
+      nullptr, nullptr);
   ten_extension_tester_set_test_mode_single(
       tester, "standalone_test_on_cmd_c__test_extension_1");
 

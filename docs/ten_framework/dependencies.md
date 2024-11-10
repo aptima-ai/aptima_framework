@@ -24,7 +24,7 @@ This is used in the TEN framework core to parse and generate JSON data. Please r
 
 ## libuv
 
-Version: 1.48.0
+Version: 1.49.2
 
 [MIT license](https://github.com/libuv/libuv#licensing)
 

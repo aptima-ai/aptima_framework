@@ -140,6 +140,11 @@ PyTypeObject *ten_py_ten_env_tester_type(void) {
        NULL},
       {"stop_test", ten_py_ten_env_tester_stop_test, METH_VARARGS, NULL},
       {"send_cmd", ten_py_ten_env_tester_send_cmd, METH_VARARGS, NULL},
+      {"send_data", ten_py_ten_env_tester_send_data, METH_VARARGS, NULL},
+      {"send_audio_frame", ten_py_ten_env_tester_send_audio_frame, METH_VARARGS,
+       NULL},
+      {"send_video_frame", ten_py_ten_env_tester_send_video_frame, METH_VARARGS,
+       NULL},
       {NULL, NULL, 0, NULL},
   };
 

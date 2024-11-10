@@ -19,6 +19,9 @@ import (
 type ExtensionTester interface {
 	OnStart(tenEnv TenEnvTester)
 	OnCmd(tenEnv TenEnvTester, cmd Cmd)
+	OnData(tenEnv TenEnvTester, data Data)
+	OnAudioFrame(tenEnv TenEnvTester, audio_frame AudioFrame)
+	OnVideoFrame(tenEnv TenEnvTester, video_frame VideoFrame)
 }
 
 // DefaultExtension implements the Extension interface.
@@ -31,6 +34,21 @@ func (p *DefaultExtensionTester) OnStart(tenEnv TenEnvTester) {
 }
 
 func (p *DefaultExtensionTester) OnCmd(tenEnv TenEnvTester, cmd Cmd) {
+}
+
+func (p *DefaultExtensionTester) OnData(tenEnv TenEnvTester, data Data) {
+}
+
+func (p *DefaultExtensionTester) OnAudioFrame(
+	tenEnv TenEnvTester,
+	audio_frame AudioFrame,
+) {
+}
+
+func (p *DefaultExtensionTester) OnVideoFrame(
+	tenEnv TenEnvTester,
+	video_frame VideoFrame,
+) {
 }
 
 type extTester struct {
@@ -141,4 +159,100 @@ func tenGoExtensionTesterOnCmd(
 	// The GO cmd object should be created in GO side, and managed by the GO GC.
 	customCmd := newCmd(cmdBridge)
 	extTesterObj.OnCmd(tenEnvTesterObj, customCmd)
+}
+
+//export tenGoExtensionTesterOnData
+func tenGoExtensionTesterOnData(
+	extTesterID C.uintptr_t,
+	tenEnvTesterID C.uintptr_t,
+	dataBridge C.uintptr_t,
+) {
+	extTesterObj, ok := loadImmutableHandle(goHandle(extTesterID)).(*extTester)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get extension tester from handle map, id: %d.",
+				uintptr(extTesterID),
+			),
+		)
+	}
+
+	tenEnvTesterObj, ok := handle(tenEnvTesterID).get().(TenEnvTester)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get ten env tester from handle map, id: %d.",
+				uintptr(tenEnvTesterID),
+			),
+		)
+	}
+
+	// The GO data object should be created in GO side, and managed by the GO
+	// GC.
+	customData := newData(dataBridge)
+	extTesterObj.OnData(tenEnvTesterObj, customData)
+}
+
+//export tenGoExtensionTesterOnAudioFrame
+func tenGoExtensionTesterOnAudioFrame(
+	extTesterID C.uintptr_t,
+	tenEnvTesterID C.uintptr_t,
+	audioFrameBridge C.uintptr_t,
+) {
+	extTesterObj, ok := loadImmutableHandle(goHandle(extTesterID)).(*extTester)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get extension tester from handle map, id: %d.",
+				uintptr(extTesterID),
+			),
+		)
+	}
+
+	tenEnvTesterObj, ok := handle(tenEnvTesterID).get().(TenEnvTester)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get ten env tester from handle map, id: %d.",
+				uintptr(tenEnvTesterID),
+			),
+		)
+	}
+
+	// The GO audio_frame object should be created in GO side, and managed by
+	// the GO GC.
+	customAudioFrame := newAudioFrame(audioFrameBridge)
+	extTesterObj.OnAudioFrame(tenEnvTesterObj, customAudioFrame)
+}
+
+//export tenGoExtensionTesterOnVideoFrame
+func tenGoExtensionTesterOnVideoFrame(
+	extTesterID C.uintptr_t,
+	tenEnvTesterID C.uintptr_t,
+	videoFrameBridge C.uintptr_t,
+) {
+	extTesterObj, ok := loadImmutableHandle(goHandle(extTesterID)).(*extTester)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get extension tester from handle map, id: %d.",
+				uintptr(extTesterID),
+			),
+		)
+	}
+
+	tenEnvTesterObj, ok := handle(tenEnvTesterID).get().(TenEnvTester)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get ten env tester from handle map, id: %d.",
+				uintptr(tenEnvTesterID),
+			),
+		)
+	}
+
+	// The GO video_frame object should be created in GO side, and managed by
+	// the GO GC.
+	customVideoFrame := newVideoFrame(videoFrameBridge)
+	extTesterObj.OnVideoFrame(tenEnvTesterObj, customVideoFrame)
 }

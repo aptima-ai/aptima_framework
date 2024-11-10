@@ -80,48 +80,12 @@ static void test_extension_on_start(ten_extension_t *self, ten_env_t *ten_env) {
                              tester, NULL);
 }
 
-void ten_builtin_test_extension_ten_env_notify_on_configure_done(
-    ten_env_t *ten_env, TEN_UNUSED void *user_data) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-
-  bool rc = ten_env_on_configure_done(ten_env, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-}
-
-void ten_builtin_test_extension_ten_env_notify_on_init_done(
-    ten_env_t *ten_env, TEN_UNUSED void *user_data) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-
-  bool rc = ten_env_on_init_done(ten_env, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-}
-
 void ten_builtin_test_extension_ten_env_notify_on_start_done(
     ten_env_t *ten_env, TEN_UNUSED void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
   bool rc = ten_env_on_start_done(ten_env, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-}
-
-void ten_builtin_test_extension_ten_env_notify_on_stop_done(
-    ten_env_t *ten_env, TEN_UNUSED void *user_data) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-
-  bool rc = ten_env_on_stop_done(ten_env, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-}
-
-void ten_builtin_test_extension_ten_env_notify_on_deinit_done(
-    ten_env_t *ten_env, TEN_UNUSED void *user_data) {
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
-             "Should not happen.");
-
-  bool rc = ten_env_on_deinit_done(ten_env, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 }
 
@@ -153,6 +117,102 @@ static void test_extension_on_cmd(ten_extension_t *self, ten_env_t *ten_env,
   ten_runloop_post_task_tail(tester->tester_runloop,
                              ten_extension_tester_on_test_extension_cmd_task,
                              tester, ten_shared_ptr_clone(cmd));
+}
+
+static void ten_extension_tester_on_test_extension_data_task(void *self_,
+                                                             void *arg) {
+  ten_extension_tester_t *tester = self_;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
+             "Invalid argument.");
+
+  ten_shared_ptr_t *data = arg;
+  TEN_ASSERT(data, "Invalid argument.");
+
+  if (tester->on_data) {
+    tester->on_data(tester, tester->ten_env_tester, data);
+  }
+
+  ten_shared_ptr_destroy(data);
+}
+
+static void test_extension_on_data(ten_extension_t *self, ten_env_t *ten_env,
+                                   ten_shared_ptr_t *data) {
+  TEN_ASSERT(self && ten_env, "Invalid argument.");
+
+  ten_extension_tester_t *tester = self->user_data;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, false),
+             "Should not happen.");
+
+  // Inject data into the extension_tester thread to ensure thread safety.
+  ten_runloop_post_task_tail(tester->tester_runloop,
+                             ten_extension_tester_on_test_extension_data_task,
+                             tester, ten_shared_ptr_clone(data));
+}
+
+static void ten_extension_tester_on_test_extension_audio_frame_task(void *self_,
+                                                                    void *arg) {
+  ten_extension_tester_t *tester = self_;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
+             "Invalid argument.");
+
+  ten_shared_ptr_t *audio_frame = arg;
+  TEN_ASSERT(audio_frame, "Invalid argument.");
+
+  if (tester->on_audio_frame) {
+    tester->on_audio_frame(tester, tester->ten_env_tester, audio_frame);
+  }
+
+  ten_shared_ptr_destroy(audio_frame);
+}
+
+static void test_extension_on_audio_frame(ten_extension_t *self,
+                                          ten_env_t *ten_env,
+                                          ten_shared_ptr_t *audio_frame) {
+  TEN_ASSERT(self && ten_env, "Invalid argument.");
+
+  ten_extension_tester_t *tester = self->user_data;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, false),
+             "Should not happen.");
+
+  // Inject audio_frame into the extension_tester thread to ensure thread
+  // safety.
+  ten_runloop_post_task_tail(
+      tester->tester_runloop,
+      ten_extension_tester_on_test_extension_audio_frame_task, tester,
+      ten_shared_ptr_clone(audio_frame));
+}
+
+static void ten_extension_tester_on_test_extension_video_frame_task(void *self_,
+                                                                    void *arg) {
+  ten_extension_tester_t *tester = self_;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
+             "Invalid argument.");
+
+  ten_shared_ptr_t *video_frame = arg;
+  TEN_ASSERT(video_frame, "Invalid argument.");
+
+  if (tester->on_video_frame) {
+    tester->on_video_frame(tester, tester->ten_env_tester, video_frame);
+  }
+
+  ten_shared_ptr_destroy(video_frame);
+}
+
+static void test_extension_on_video_frame(ten_extension_t *self,
+                                          ten_env_t *ten_env,
+                                          ten_shared_ptr_t *video_frame) {
+  TEN_ASSERT(self && ten_env, "Invalid argument.");
+
+  ten_extension_tester_t *tester = self->user_data;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, false),
+             "Should not happen.");
+
+  // Inject video_frame into the extension_tester thread to ensure thread
+  // safety.
+  ten_runloop_post_task_tail(
+      tester->tester_runloop,
+      ten_extension_tester_on_test_extension_video_frame_task, tester,
+      ten_shared_ptr_clone(video_frame));
 }
 
 static void ten_extension_tester_on_test_extension_deinit_task(
@@ -196,7 +256,8 @@ static void test_extension_addon_create_instance(ten_addon_t *addon,
 
   ten_extension_t *extension = ten_extension_create(
       name, test_extension_on_configure, NULL, test_extension_on_start, NULL,
-      test_extension_on_deinit, test_extension_on_cmd, NULL, NULL, NULL, NULL);
+      test_extension_on_deinit, test_extension_on_cmd, test_extension_on_data,
+      test_extension_on_audio_frame, test_extension_on_video_frame, NULL);
 
   ten_env_on_create_instance_done(ten_env, extension, context, NULL);
 }

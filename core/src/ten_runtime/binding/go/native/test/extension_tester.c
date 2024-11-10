@@ -27,6 +27,18 @@ extern void tenGoExtensionTesterOnCmd(ten_go_handle_t go_extension_tester,
                                       ten_go_handle_t go_ten_env_tester,
                                       uintptr_t cmd_bridge_addr);
 
+extern void tenGoExtensionTesterOnData(ten_go_handle_t go_extension_tester,
+                                       ten_go_handle_t go_ten_env_tester,
+                                       uintptr_t data_bridge_addr);
+
+extern void tenGoExtensionTesterOnAudioFrame(
+    ten_go_handle_t go_extension_tester, ten_go_handle_t go_ten_env_tester,
+    uintptr_t audio_frame_bridge_addr);
+
+extern void tenGoExtensionTesterOnVideoFrame(
+    ten_go_handle_t go_extension_tester, ten_go_handle_t go_ten_env_tester,
+    uintptr_t video_frame_bridge_addr);
+
 bool ten_go_extension_tester_check_integrity(ten_go_extension_tester_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
@@ -124,6 +136,89 @@ static void proxy_on_cmd(ten_extension_tester_t *self,
       ten_go_ten_env_tester_go_handle(ten_env_tester_bridge), msg_bridge_addr);
 }
 
+static void proxy_on_data(ten_extension_tester_t *self,
+                          ten_env_tester_t *ten_env_tester,
+                          ten_shared_ptr_t *data) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
+             "Should not happen.");
+  TEN_ASSERT(ten_extension_tester_get_ten_env_tester(self) == ten_env_tester,
+             "Should not happen.");
+  TEN_ASSERT(data && ten_msg_check_integrity(data), "Should not happen.");
+
+  ten_go_extension_tester_t *extension_tester_bridge =
+      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
+  TEN_ASSERT(ten_go_extension_tester_check_integrity(extension_tester_bridge),
+             "Should not happen.");
+
+  ten_go_ten_env_tester_t *ten_env_tester_bridge =
+      ten_go_ten_env_tester_wrap(ten_env_tester);
+
+  ten_go_msg_t *msg_bridge = ten_go_msg_create(data);
+  uintptr_t msg_bridge_addr = (uintptr_t)msg_bridge;
+
+  tenGoExtensionTesterOnData(
+      ten_go_extension_tester_go_handle(extension_tester_bridge),
+      ten_go_ten_env_tester_go_handle(ten_env_tester_bridge), msg_bridge_addr);
+}
+
+static void proxy_on_audio_frame(ten_extension_tester_t *self,
+                                 ten_env_tester_t *ten_env_tester,
+                                 ten_shared_ptr_t *audio_frame) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
+             "Should not happen.");
+  TEN_ASSERT(ten_extension_tester_get_ten_env_tester(self) == ten_env_tester,
+             "Should not happen.");
+  TEN_ASSERT(audio_frame && ten_msg_check_integrity(audio_frame),
+             "Should not happen.");
+
+  ten_go_extension_tester_t *extension_tester_bridge =
+      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
+  TEN_ASSERT(ten_go_extension_tester_check_integrity(extension_tester_bridge),
+             "Should not happen.");
+
+  ten_go_ten_env_tester_t *ten_env_tester_bridge =
+      ten_go_ten_env_tester_wrap(ten_env_tester);
+
+  ten_go_msg_t *msg_bridge = ten_go_msg_create(audio_frame);
+  uintptr_t msg_bridge_addr = (uintptr_t)msg_bridge;
+
+  tenGoExtensionTesterOnAudioFrame(
+      ten_go_extension_tester_go_handle(extension_tester_bridge),
+      ten_go_ten_env_tester_go_handle(ten_env_tester_bridge), msg_bridge_addr);
+}
+
+static void proxy_on_video_frame(ten_extension_tester_t *self,
+                                 ten_env_tester_t *ten_env_tester,
+                                 ten_shared_ptr_t *video_frame) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
+             "Should not happen.");
+  TEN_ASSERT(ten_extension_tester_get_ten_env_tester(self) == ten_env_tester,
+             "Should not happen.");
+  TEN_ASSERT(video_frame && ten_msg_check_integrity(video_frame),
+             "Should not happen.");
+
+  ten_go_extension_tester_t *extension_tester_bridge =
+      ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)self);
+  TEN_ASSERT(ten_go_extension_tester_check_integrity(extension_tester_bridge),
+             "Should not happen.");
+
+  ten_go_ten_env_tester_t *ten_env_tester_bridge =
+      ten_go_ten_env_tester_wrap(ten_env_tester);
+
+  ten_go_msg_t *msg_bridge = ten_go_msg_create(video_frame);
+  uintptr_t msg_bridge_addr = (uintptr_t)msg_bridge;
+
+  tenGoExtensionTesterOnVideoFrame(
+      ten_go_extension_tester_go_handle(extension_tester_bridge),
+      ten_go_ten_env_tester_go_handle(ten_env_tester_bridge), msg_bridge_addr);
+}
+
 ten_go_status_t ten_go_extension_tester_create(
     ten_go_handle_t go_extension_tester, uintptr_t *bridge_addr) {
   TEN_ASSERT(go_extension_tester > 0 && bridge_addr, "Invalid argument.");
@@ -164,7 +259,8 @@ ten_go_extension_tester_t *ten_go_extension_tester_create_internal(
   extension_tester_bridge->bridge.sp_ref_by_c = NULL;
 
   extension_tester_bridge->c_extension_tester =
-      ten_extension_tester_create(proxy_on_start, proxy_on_cmd);
+      ten_extension_tester_create(proxy_on_start, proxy_on_cmd, proxy_on_data,
+                                  proxy_on_audio_frame, proxy_on_video_frame);
 
   ten_binding_handle_set_me_in_target_lang(
       &extension_tester_bridge->c_extension_tester->binding_handle,

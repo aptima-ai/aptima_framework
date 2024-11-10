@@ -47,5 +47,14 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_tester_stop_test(
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_tester_send_cmd(
     PyObject *self, PyObject *args);
 
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_tester_send_data(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_tester_send_audio_frame(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_tester_send_video_frame(
+    PyObject *self, PyObject *args);
+
 TEN_RUNTIME_PRIVATE_API bool ten_py_ten_env_tester_check_integrity(
     ten_py_ten_env_tester_t *self);

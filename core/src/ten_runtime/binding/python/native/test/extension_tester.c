@@ -10,7 +10,10 @@
 
 #include "include_internal/ten_runtime/binding/python/common/common.h"
 #include "include_internal/ten_runtime/binding/python/common/error.h"
+#include "include_internal/ten_runtime/binding/python/msg/audio_frame.h"
 #include "include_internal/ten_runtime/binding/python/msg/cmd.h"
+#include "include_internal/ten_runtime/binding/python/msg/data.h"
+#include "include_internal/ten_runtime/binding/python/msg/video_frame.h"
 #include "include_internal/ten_runtime/binding/python/test/env_tester.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/test/extension_tester.h"
@@ -124,6 +127,137 @@ static void proxy_on_cmd(ten_extension_tester_t *extension_tester,
   ten_py_gil_state_release(prev_state);
 }
 
+static void proxy_on_data(ten_extension_tester_t *extension_tester,
+                          ten_env_tester_t *ten_env_tester,
+                          ten_shared_ptr_t *data) {
+  TEN_ASSERT(extension_tester &&
+                 ten_extension_tester_check_integrity(extension_tester, true),
+             "Invalid argument.");
+  TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
+             "Invalid argument.");
+  TEN_ASSERT(data && ten_msg_check_integrity(data), "Invalid argument.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  ten_py_extension_tester_t *py_extension_tester =
+      (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
+          (ten_binding_handle_t *)extension_tester);
+  TEN_ASSERT(py_extension_tester &&
+                 ten_py_extension_tester_check_integrity(py_extension_tester),
+             "Invalid argument.");
+
+  PyObject *py_ten_env_tester = py_extension_tester->py_ten_env_tester;
+  TEN_ASSERT(py_ten_env_tester, "Should not happen.");
+  TEN_ASSERT(
+      ((ten_py_ten_env_tester_t *)py_ten_env_tester)->actual_py_ten_env_tester,
+      "Should not happen.");
+
+  ten_py_data_t *py_data = ten_py_data_wrap(data);
+
+  PyObject *py_res = PyObject_CallMethod(
+      (PyObject *)py_extension_tester, "on_data", "OO",
+      ((ten_py_ten_env_tester_t *)py_ten_env_tester)->actual_py_ten_env_tester,
+      py_data);
+  Py_XDECREF(py_res);
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  ten_py_data_invalidate(py_data);
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void proxy_on_audio_frame(ten_extension_tester_t *extension_tester,
+                                 ten_env_tester_t *ten_env_tester,
+                                 ten_shared_ptr_t *audio_frame) {
+  TEN_ASSERT(extension_tester &&
+                 ten_extension_tester_check_integrity(extension_tester, true),
+             "Invalid argument.");
+  TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
+             "Invalid argument.");
+  TEN_ASSERT(audio_frame && ten_msg_check_integrity(audio_frame),
+             "Invalid argument.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  ten_py_extension_tester_t *py_extension_tester =
+      (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
+          (ten_binding_handle_t *)extension_tester);
+  TEN_ASSERT(py_extension_tester &&
+                 ten_py_extension_tester_check_integrity(py_extension_tester),
+             "Invalid argument.");
+
+  PyObject *py_ten_env_tester = py_extension_tester->py_ten_env_tester;
+  TEN_ASSERT(py_ten_env_tester, "Should not happen.");
+  TEN_ASSERT(
+      ((ten_py_ten_env_tester_t *)py_ten_env_tester)->actual_py_ten_env_tester,
+      "Should not happen.");
+
+  ten_py_audio_frame_t *py_audio_frame = ten_py_audio_frame_wrap(audio_frame);
+
+  PyObject *py_res = PyObject_CallMethod(
+      (PyObject *)py_extension_tester, "on_audio_frame", "OO",
+      ((ten_py_ten_env_tester_t *)py_ten_env_tester)->actual_py_ten_env_tester,
+      py_audio_frame);
+  Py_XDECREF(py_res);
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  ten_py_audio_frame_invalidate(py_audio_frame);
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void proxy_on_video_frame(ten_extension_tester_t *extension_tester,
+                                 ten_env_tester_t *ten_env_tester,
+                                 ten_shared_ptr_t *video_frame) {
+  TEN_ASSERT(extension_tester &&
+                 ten_extension_tester_check_integrity(extension_tester, true),
+             "Invalid argument.");
+  TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
+             "Invalid argument.");
+  TEN_ASSERT(video_frame && ten_msg_check_integrity(video_frame),
+             "Invalid argument.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  ten_py_extension_tester_t *py_extension_tester =
+      (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
+          (ten_binding_handle_t *)extension_tester);
+  TEN_ASSERT(py_extension_tester &&
+                 ten_py_extension_tester_check_integrity(py_extension_tester),
+             "Invalid argument.");
+
+  PyObject *py_ten_env_tester = py_extension_tester->py_ten_env_tester;
+  TEN_ASSERT(py_ten_env_tester, "Should not happen.");
+  TEN_ASSERT(
+      ((ten_py_ten_env_tester_t *)py_ten_env_tester)->actual_py_ten_env_tester,
+      "Should not happen.");
+
+  ten_py_video_frame_t *py_video_frame = ten_py_video_frame_wrap(video_frame);
+
+  PyObject *py_res = PyObject_CallMethod(
+      (PyObject *)py_extension_tester, "on_video_frame", "OO",
+      ((ten_py_ten_env_tester_t *)py_ten_env_tester)->actual_py_ten_env_tester,
+      py_video_frame);
+  Py_XDECREF(py_res);
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  ten_py_video_frame_invalidate(py_video_frame);
+
+  ten_py_gil_state_release(prev_state);
+}
+
 static ten_py_extension_tester_t *ten_py_extension_tester_init(
     ten_py_extension_tester_t *py_extension_tester, TEN_UNUSED PyObject *args,
     TEN_UNUSED PyObject *kw) {
@@ -133,7 +267,8 @@ static ten_py_extension_tester_t *ten_py_extension_tester_init(
              "Invalid argument.");
 
   py_extension_tester->c_extension_tester =
-      ten_extension_tester_create(proxy_on_start, proxy_on_cmd);
+      ten_extension_tester_create(proxy_on_start, proxy_on_cmd, proxy_on_data,
+                                  proxy_on_audio_frame, proxy_on_video_frame);
 
   ten_binding_handle_set_me_in_target_lang(
       &py_extension_tester->c_extension_tester->binding_handle,

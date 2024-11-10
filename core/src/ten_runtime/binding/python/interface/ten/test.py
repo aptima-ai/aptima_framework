@@ -10,6 +10,9 @@ import importlib
 from pathlib import Path
 from libten_runtime_python import _ExtensionTester, _TenEnvTester
 from .cmd import Cmd
+from .data import Data
+from .audio_frame import AudioFrame
+from .video_frame import VideoFrame
 from .cmd_result import CmdResult
 
 
@@ -32,6 +35,15 @@ class TenEnvTester:
 
     def send_cmd(self, cmd: Cmd, result_handler: ResultHandler) -> None:
         return self._internal.send_cmd(cmd, result_handler)
+
+    def send_data(self, data: Data) -> None:
+        return self._internal.send_data(data)
+
+    def send_audio_frame(self, audio_frame: AudioFrame) -> None:
+        return self._internal.send_audio_frame(audio_frame)
+
+    def send_video_frame(self, video_frame: VideoFrame) -> None:
+        return self._internal.send_video_frame(video_frame)
 
     def stop_test(self) -> None:
         return self._internal.stop_test()
@@ -68,4 +80,17 @@ class ExtensionTester(_ExtensionTester):
         ten_env_tester.on_start_done()
 
     def on_cmd(self, ten_env_tester: TenEnvTester, cmd: Cmd) -> None:
+        pass
+
+    def on_data(self, ten_env_tester: TenEnvTester, data: Data) -> None:
+        pass
+
+    def on_audio_frame(
+        self, ten_env_tester: TenEnvTester, audio_frame: AudioFrame
+    ) -> None:
+        pass
+
+    def on_video_frame(
+        self, ten_env_tester: TenEnvTester, video_frame: VideoFrame
+    ) -> None:
         pass
