@@ -52,6 +52,11 @@ class cmd_result_t : public msg_t {
         c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
+  bool is_completed(error_t *err = nullptr) const {
+    return ten_cmd_result_is_completed(
+        c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
   bool set_final(bool final, error_t *err = nullptr) {
     return ten_cmd_result_set_final(
         c_msg, final,

@@ -164,3 +164,33 @@ ten_go_status_t ten_go_cmd_result_is_final(uintptr_t bridge_addr,
   ten_error_deinit(&err);
   return status;
 }
+
+ten_go_status_t ten_go_cmd_result_is_completed(uintptr_t bridge_addr,
+                                               bool *is_completed) {
+  TEN_ASSERT(bridge_addr && is_completed, "Invalid argument.");
+
+  ten_go_msg_t *msg_bridge = ten_go_msg_reinterpret(bridge_addr);
+  TEN_ASSERT(msg_bridge && ten_go_msg_check_integrity(msg_bridge),
+             "Should not happen.");
+
+  ten_shared_ptr_t *c_cmd = ten_go_msg_c_msg(msg_bridge);
+  TEN_ASSERT(c_cmd, "Should not happen.");
+
+  ten_go_status_t status;
+  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool is_completed_ =
+      ten_cmd_result_is_completed(ten_go_msg_c_msg(msg_bridge), &err);
+
+  if (!ten_error_is_success(&err)) {
+    ten_go_status_set(&status, ten_error_errno(&err), ten_error_errmsg(&err));
+  } else {
+    *is_completed = is_completed_;
+  }
+
+  ten_error_deinit(&err);
+  return status;
+}

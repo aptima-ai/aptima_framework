@@ -12,6 +12,8 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_and_result_conversion.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
+#include "include_internal/ten_runtime/path/result_return_policy.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/log/log.h"
 
 ten_value_t *ten_msg_dest_info_to_value(
@@ -27,6 +29,14 @@ ten_value_t *ten_msg_dest_info_to_value(
       ten_value_kv_create(
           TEN_STR_NAME,
           ten_value_create_string(ten_string_get_raw_str(&self->name))),
+      (ten_ptr_listnode_destroy_func_t)ten_value_kv_destroy);
+
+  ten_list_push_ptr_back(
+      &value_object_kv_list,
+      ten_value_kv_create(
+          TEN_STR_RESULT_RETURN_POLICY,
+          ten_value_create_string(
+              ten_result_return_policy_to_string(self->policy))),
       (ten_ptr_listnode_destroy_func_t)ten_value_kv_destroy);
 
   ten_list_t dests_list = TEN_LIST_INIT_VAL;
@@ -149,6 +159,21 @@ ten_shared_ptr_t *ten_msg_dest_info_from_value(
 
   self = ten_msg_dest_info_create(name);
   TEN_ASSERT(self, "Should not happen.");
+
+  self->policy = TEN_DEFAULT_RESULT_RETURN_POLICY;
+  ten_value_t *result_return_policy_value =
+      ten_value_object_peek(value, TEN_STR_RESULT_RETURN_POLICY);
+  if (result_return_policy_value) {
+    TEN_ASSERT(ten_value_is_string(result_return_policy_value),
+               "Should not happen.");
+
+    TEN_RESULT_RETURN_POLICY policy =
+        ten_result_return_policy_from_string(ten_string_get_raw_str(
+            ten_value_peek_string(result_return_policy_value)));
+    if (policy != TEN_RESULT_RETURN_POLICY_INVALID) {
+      self->policy = policy;
+    }
+  }
 
   // "dest": [{
   //   "app": "...",

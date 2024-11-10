@@ -31,7 +31,8 @@ typedef struct ten_cmd_result_t {
 
   ten_value_t status_code;  // int32 (TEN_STATUS_CODE)
 
-  ten_value_t is_final;  // bool
+  ten_value_t is_final;      // bool
+  ten_value_t is_completed;  // bool
 } ten_cmd_result_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_validate_schema(
@@ -103,9 +104,18 @@ TEN_RUNTIME_API ten_json_t *ten_cmd_result_to_json(ten_shared_ptr_t *self,
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_is_final(ten_cmd_result_t *self,
                                                          ten_error_t *err);
 
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_is_completed(
+    ten_cmd_result_t *self, ten_error_t *err);
+
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_set_final(
     ten_cmd_result_t *self, bool is_final, ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_set_completed(
+    ten_cmd_result_t *self, bool is_completed, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_loop_all_fields(
     ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
     ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_cmd_result_set_completed(
+    ten_shared_ptr_t *self, bool is_completed, ten_error_t *err);

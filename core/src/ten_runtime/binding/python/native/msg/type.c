@@ -78,6 +78,7 @@ PyTypeObject *ten_py_cmd_result_py_type(void) {
        NULL},
       {"set_final", ten_py_cmd_result_set_final, METH_VARARGS, NULL},
       {"is_final", ten_py_cmd_result_is_final, METH_VARARGS, NULL},
+      {"is_completed", ten_py_cmd_result_is_completed, METH_VARARGS, NULL},
       {NULL, NULL, 0, NULL},
   };
 

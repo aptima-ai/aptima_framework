@@ -30,6 +30,7 @@
 #include "include_internal/ten_runtime/path/path_group.h"
 #include "include_internal/ten_runtime/path/path_in.h"
 #include "include_internal/ten_runtime/path/path_table.h"
+#include "include_internal/ten_runtime/path/result_return_policy.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_utils/log/log.h"
@@ -325,7 +326,7 @@ bool ten_extension_determine_and_merge_all_interface_dest_extension(
   return true;
 }
 
-static ten_list_t *ten_extension_get_msg_dests_from_graph_internal(
+static ten_msg_dest_info_t *ten_extension_get_msg_dests_from_graph_internal(
     ten_list_t *dest_info_list, ten_shared_ptr_t *msg) {
   TEN_ASSERT(dest_info_list && msg, "Should not happen.");
 
@@ -338,13 +339,13 @@ static ten_list_t *ten_extension_get_msg_dests_from_graph_internal(
     ten_msg_dest_info_t *msg_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(msg_dest_info_node));
 
-    return &msg_dest->dest;
+    return msg_dest;
   }
 
   return NULL;
 }
 
-static ten_list_t *ten_extension_get_msg_dests_from_graph(
+static ten_msg_dest_info_t *ten_extension_get_msg_dests_from_graph(
     ten_extension_t *self, ten_shared_ptr_t *msg) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true) && msg,
              "Should not happen.");
@@ -432,14 +433,15 @@ static void ten_extension_determine_out_msg_dest_from_msg(
  */
 static bool ten_extension_determine_out_msg_dest_from_graph(
     ten_extension_t *self, ten_shared_ptr_t *msg, ten_list_t *result_msgs,
-    ten_error_t *err) {
+    TEN_RESULT_RETURN_POLICY *result_return_policy, ten_error_t *err) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
-             "Should not happen.");
+             "Invalid argument.");
   TEN_ASSERT(
       msg && ten_msg_check_integrity(msg) && ten_msg_get_dest_cnt(msg) == 0,
-      "Should not happen.");
+      "Invalid argument.");
   TEN_ASSERT(result_msgs && ten_list_size(result_msgs) == 0,
-             "Should not happen.");
+             "Invalid argument.");
+  TEN_ASSERT(result_return_policy, "Invalid argument.");
 
   TEN_UNUSED ten_extension_thread_t *extension_thread = self->extension_thread;
   TEN_ASSERT(extension_thread, "Invalid argument.");
@@ -447,7 +449,10 @@ static bool ten_extension_determine_out_msg_dest_from_graph(
              "Invalid use of extension_thread %p.", extension_thread);
 
   // Fetch the destinations from the graph.
-  ten_list_t *dests = ten_extension_get_msg_dests_from_graph(self, msg);
+  ten_msg_dest_info_t *msg_dest_info =
+      ten_extension_get_msg_dests_from_graph(self, msg);
+  *result_return_policy = msg_dest_info->policy;
+  ten_list_t *dests = &msg_dest_info->dest;
 
   if (dests && ten_list_size(dests) > 0) {
     ten_list_foreach (dests, iter) {
@@ -532,11 +537,13 @@ typedef enum TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT {
  */
 static TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT ten_extension_determine_out_msgs(
     ten_extension_t *self, ten_shared_ptr_t *msg, ten_list_t *result_msgs,
-    ten_path_t *in_path, ten_error_t *err) {
+    TEN_RESULT_RETURN_POLICY *result_return_policy, ten_path_t *in_path,
+    ten_error_t *err) {
   TEN_ASSERT(self && ten_extension_check_integrity(self, true),
-             "Should not happen.");
-  TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Should not happen.");
-  TEN_ASSERT(result_msgs, "Should not happen.");
+             "Invalid argument.");
+  TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
+  TEN_ASSERT(result_msgs, "Invalid argument.");
+  TEN_ASSERT(result_return_policy, "Invalid argument.");
 
   if (ten_msg_get_dest_cnt(msg) > 0) {
     // Because the messages has already had destinations, no matter it is a
@@ -579,8 +586,8 @@ static TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT ten_extension_determine_out_msgs(
       } else {
         // All command types except the cmd results, should find its
         // destination in the graph.
-        if (ten_extension_determine_out_msg_dest_from_graph(self, msg,
-                                                            result_msgs, err)) {
+        if (ten_extension_determine_out_msg_dest_from_graph(
+                self, msg, result_msgs, result_return_policy, err)) {
           return TEN_EXTENSION_DETERMINE_OUT_MSGS_SUCCESS;
         } else {
           return TEN_EXTENSION_DETERMINE_OUT_MSGS_NOT_FOUND_IN_GRAPH;
@@ -589,8 +596,8 @@ static TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT ten_extension_determine_out_msgs(
     } else {
       // The message is not a command, so the only source to find its
       // destination is in the graph.
-      if (ten_extension_determine_out_msg_dest_from_graph(self, msg,
-                                                          result_msgs, err)) {
+      if (ten_extension_determine_out_msg_dest_from_graph(
+              self, msg, result_msgs, result_return_policy, err)) {
         return TEN_EXTENSION_DETERMINE_OUT_MSGS_SUCCESS;
       } else {
         return TEN_EXTENSION_DETERMINE_OUT_MSGS_NOT_FOUND_IN_GRAPH;
@@ -673,9 +680,11 @@ bool ten_extension_handle_out_msg(ten_extension_t *self, ten_shared_ptr_t *msg,
   }
 
   ten_list_t result_msgs = TEN_LIST_INIT_VAL;  // ten_shared_ptr_t*
+  TEN_RESULT_RETURN_POLICY result_return_policy =
+      TEN_RESULT_RETURN_POLICY_INVALID;
 
-  switch (
-      ten_extension_determine_out_msgs(self, msg, &result_msgs, in_path, err)) {
+  switch (ten_extension_determine_out_msgs(
+      self, msg, &result_msgs, &result_return_policy, in_path, err)) {
     case TEN_EXTENSION_DETERMINE_OUT_MSGS_NOT_FOUND_IN_GRAPH:
       result = false;
     case TEN_EXTENSION_DETERMINE_OUT_MSGS_CACHING_IN_PATH_IN_GROUP:
@@ -711,8 +720,7 @@ bool ten_extension_handle_out_msg(ten_extension_t *self, ten_shared_ptr_t *msg,
 
     if (ten_list_size(&result_out_paths) > 1) {
       // Create a path group in this case.
-      ten_paths_create_group(&result_out_paths,
-                             TEN_PATH_GROUP_POLICY_RETURN_LAST_OK_OR_FAIL);
+      ten_paths_create_group(&result_out_paths, result_return_policy);
     }
 
     ten_list_clear(&result_out_paths);

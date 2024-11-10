@@ -12,11 +12,13 @@
 #include "include_internal/ten_runtime/path/path.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
+#include "ten_runtime/msg/msg.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
@@ -59,8 +61,8 @@ bool ten_path_is_in_a_group(ten_path_t *self) {
  * allocate memory for the structure, initialize various components of the path
  * group, and return the group.
  */
-static ten_path_group_t *ten_path_group_create(ten_path_table_t *table,
-                                               TEN_PATH_GROUP_POLICY policy) {
+static ten_path_group_t *ten_path_group_create(
+    ten_path_table_t *table, TEN_RESULT_RETURN_POLICY policy) {
   ten_path_group_t *self =
       (ten_path_group_t *)TEN_MALLOC(sizeof(ten_path_group_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
@@ -95,7 +97,8 @@ void ten_path_group_destroy(ten_path_group_t *self) {
  * as the master, and the rest are designated as slaves. It also initializes the
  * members of the master group.
  */
-void ten_paths_create_group(ten_list_t *paths, TEN_PATH_GROUP_POLICY policy) {
+void ten_paths_create_group(ten_list_t *paths,
+                            TEN_RESULT_RETURN_POLICY policy) {
   TEN_ASSERT(paths, "Invalid argument.");
   TEN_ASSERT(ten_list_size(paths) > 1, "Invalid argument.");
 
@@ -193,9 +196,9 @@ ten_list_t *ten_path_group_get_members(ten_path_t *path) {
  * group to a final cmd result. It checks the policy of the path group and calls
  * the appropriate function to resolve the path group status.
  *
- * Policy `TEN_PATH_GROUP_POLICY_RETURN_FIRST_OK_OR_FAIL` returns the first path
- * in the list if all paths have succeeded, and returns the first path that has
- * failed otherwise.
+ * Policy `TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_FIRST_OK` returns the first
+ * path in the list if all paths have succeeded, and returns the first path that
+ * has failed otherwise.
  */
 ten_path_t *ten_path_group_resolve(ten_path_t *path, TEN_PATH_TYPE type) {
   TEN_ASSERT(path && ten_path_check_integrity(path, true), "Invalid argument.");
@@ -208,13 +211,13 @@ ten_path_t *ten_path_group_resolve(ten_path_t *path, TEN_PATH_TYPE type) {
              "Should not happen.");
 
   switch (path_group->policy) {
-    case TEN_PATH_GROUP_POLICY_RETURN_FIRST_OK_OR_FAIL:
+    case TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_FIRST_OK:
       return ten_path_group_resolve_in_one_fail_and_all_ok_return(members, type,
                                                                   false);
-    case TEN_PATH_GROUP_POLICY_RETURN_LAST_OK_OR_FAIL:
+    case TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_LAST_OK:
       return ten_path_group_resolve_in_one_fail_and_all_ok_return(members, type,
                                                                   true);
-    case TEN_PATH_GROUP_POLICY_RETURN_EACH_IMMEDIATELY:
+    case TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY:
       // In this policy, we return the current path immediately.
       return path;
     default:

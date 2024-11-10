@@ -8,6 +8,7 @@
 
 #include "ten_runtime/ten_config.h"
 
+#include "include_internal/ten_runtime/path/path_group.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/signature.h"
@@ -20,7 +21,8 @@
 typedef struct ten_msg_dest_info_t {
   ten_signature_t signature;
   ten_string_t name;  // The name of a message or an interface.
-  ten_list_t dest;    // ten_weak_ptr_t of ten_extension_info_t
+  TEN_RESULT_RETURN_POLICY policy;
+  ten_list_t dest;  // ten_weak_ptr_t of ten_extension_info_t
 } ten_msg_dest_info_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_msg_dest_info_check_integrity(

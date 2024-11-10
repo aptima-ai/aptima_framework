@@ -176,6 +176,29 @@ PyObject *ten_py_cmd_result_is_final(PyObject *self, PyObject *args) {
   return PyBool_FromLong(is_final);
 }
 
+PyObject *ten_py_cmd_result_is_completed(PyObject *self, PyObject *args) {
+  ten_py_cmd_result_t *py_cmd_result = (ten_py_cmd_result_t *)self;
+
+  TEN_ASSERT(py_cmd_result &&
+                 ten_py_msg_check_integrity((ten_py_msg_t *)py_cmd_result),
+             "Invalid argument.");
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool is_completed =
+      ten_cmd_result_is_completed(py_cmd_result->msg.c_msg, &err);
+
+  if (!ten_error_is_success(&err)) {
+    ten_error_deinit(&err);
+    return ten_py_raise_py_runtime_error_exception("Failed to is_completed.");
+  }
+
+  ten_error_deinit(&err);
+
+  return PyBool_FromLong(is_completed);
+}
+
 bool ten_py_cmd_result_init_for_module(PyObject *module) {
   PyTypeObject *py_type = ten_py_cmd_result_py_type();
   if (PyType_Ready(py_type) < 0) {

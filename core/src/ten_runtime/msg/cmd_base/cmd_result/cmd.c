@@ -84,6 +84,7 @@ static ten_cmd_result_t *ten_raw_cmd_result_create_empty(void) {
   ten_value_init_int32(&raw_cmd->original_cmd_type, TEN_MSG_TYPE_INVALID);
   ten_value_init_string(&raw_cmd->original_cmd_name);
   ten_value_init_bool(&raw_cmd->is_final, true);
+  ten_value_init_bool(&raw_cmd->is_completed, true);
 
   return raw_cmd;
 }
@@ -186,6 +187,26 @@ bool ten_raw_cmd_result_set_final(ten_cmd_result_t *self, bool is_final,
   return true;
 }
 
+bool ten_raw_cmd_result_set_completed(ten_cmd_result_t *self, bool is_completed,
+                                      TEN_UNUSED ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
+                         TEN_MSG_TYPE_CMD_RESULT,
+             "Should not happen.");
+
+  ten_value_set_bool(&self->is_completed, is_completed);
+
+  return true;
+}
+
+bool ten_cmd_result_set_completed(ten_shared_ptr_t *self, bool is_completed,
+                                  ten_error_t *err) {
+  TEN_ASSERT(self && ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
+             "Should not happen.");
+
+  return ten_raw_cmd_result_set_completed(
+      (ten_cmd_result_t *)ten_msg_get_raw_msg(self), is_completed, err);
+}
+
 bool ten_cmd_result_set_final(ten_shared_ptr_t *self, bool is_final,
                               ten_error_t *err) {
   TEN_ASSERT(self && ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
@@ -203,11 +224,27 @@ bool ten_raw_cmd_result_is_final(ten_cmd_result_t *self, ten_error_t *err) {
   return ten_value_get_bool(&self->is_final, err);
 }
 
+bool ten_raw_cmd_result_is_completed(ten_cmd_result_t *self, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
+                         TEN_MSG_TYPE_CMD_RESULT,
+             "Should not happen.");
+
+  return ten_value_get_bool(&self->is_completed, err);
+}
+
 bool ten_cmd_result_is_final(ten_shared_ptr_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
              "Should not happen.");
 
   return ten_raw_cmd_result_is_final(
+      (ten_cmd_result_t *)ten_msg_get_raw_msg(self), err);
+}
+
+bool ten_cmd_result_is_completed(ten_shared_ptr_t *self, ten_error_t *err) {
+  TEN_ASSERT(self && ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
+             "Should not happen.");
+
+  return ten_raw_cmd_result_is_completed(
       (ten_cmd_result_t *)ten_msg_get_raw_msg(self), err);
 }
 

@@ -161,3 +161,9 @@
 
 #define TEN_STR_DEFAULT_EXTENSION_GROUP "default_extension_group"
 #define TEN_STR_TEN_TEST_EXTENSION "ten:test_extension"
+
+// Result return policy.
+#define TEN_STR_RESULT_RETURN_POLICY "result_return_policy"
+#define TEN_STR_FIRST_ERROR_OR_FIRST_OK "first_error_or_first_ok"
+#define TEN_STR_FIRST_ERROR_OR_LAST_OK "first_error_or_last_ok"
+#define TEN_STR_EACH_IMMEDIATELY "each_immediately"

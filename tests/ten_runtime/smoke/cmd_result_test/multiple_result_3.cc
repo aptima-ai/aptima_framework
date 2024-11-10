@@ -33,7 +33,7 @@ class test_extension_1 : public ten::extension_t {
                              std::to_string(received_result_cnt).c_str());
 
             if (cmd_result->is_completed()) {
-              TEN_ASSERT(received_result_cnt == 1, "Should not happen.");
+              TEN_ASSERT(received_result_cnt == 2, "Should not happen.");
 
               cmd_result->set_property("detail", "hello world, too");
               ten_env.return_result_directly(std::move(cmd_result));
@@ -102,16 +102,16 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multiple_result_2__test_extension_1,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multiple_result_3__test_extension_1,
                                     test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multiple_result_2__test_extension_2,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multiple_result_3__test_extension_2,
                                     test_extension_2);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multiple_result_2__test_extension_3,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(multiple_result_3__test_extension_3,
                                     test_extension_3);
 
 }  // namespace
 
-TEST(CmdResultTest, MultipleResult2) {  // NOLINT
+TEST(CmdResultTest, MultipleResult3) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -128,19 +128,19 @@ TEST(CmdResultTest, MultipleResult2) {  // NOLINT
              "nodes": [{
                 "type": "extension",
                 "name": "test_extension_1",
-                "addon": "multiple_result_2__test_extension_1",
+                "addon": "multiple_result_3__test_extension_1",
                 "extension_group": "basic_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
                 "name": "test_extension_2",
-                "addon": "multiple_result_2__test_extension_2",
+                "addon": "multiple_result_3__test_extension_2",
                 "extension_group": "basic_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
              },{
                 "type": "extension",
                 "name": "test_extension_3",
-                "addon": "multiple_result_2__test_extension_3",
+                "addon": "multiple_result_3__test_extension_3",
                 "extension_group": "basic_extension_group",
                 "app": "msgpack://127.0.0.1:8001/"
              }],
@@ -150,6 +150,7 @@ TEST(CmdResultTest, MultipleResult2) {  // NOLINT
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
+                 "result_return_policy": "each_immediately",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",

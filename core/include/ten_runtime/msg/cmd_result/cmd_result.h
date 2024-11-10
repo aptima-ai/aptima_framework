@@ -26,5 +26,8 @@ ten_cmd_result_get_status_code(ten_shared_ptr_t *self);
 TEN_RUNTIME_API bool ten_cmd_result_is_final(ten_shared_ptr_t *self,
                                              ten_error_t *err);
 
+TEN_RUNTIME_API bool ten_cmd_result_is_completed(ten_shared_ptr_t *self,
+                                                 ten_error_t *err);
+
 TEN_RUNTIME_API bool ten_cmd_result_set_final(ten_shared_ptr_t *self,
                                               bool is_final, ten_error_t *err);

@@ -40,6 +40,7 @@ type CmdResult interface {
 	GetStatusCode() (StatusCode, error)
 	SetFinal(isFinal bool) error
 	IsFinal() (bool, error)
+	IsCompleted() (bool, error)
 }
 
 type cmdResult struct {
@@ -116,4 +117,21 @@ func (p *cmdResult) IsFinal() (bool, error) {
 	}
 
 	return bool(isFinal), nil
+}
+
+func (p *cmdResult) IsCompleted() (bool, error) {
+	var isCompleted C.bool
+	err := withCGOLimiter(func() error {
+		apiStatus := C.ten_go_cmd_result_is_completed(
+			p.getCPtr(),
+			&isCompleted,
+		)
+		return withGoStatus(&apiStatus)
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	return bool(isCompleted), nil
 }

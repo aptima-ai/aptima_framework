@@ -16,6 +16,7 @@
 #include "ten_runtime/binding/cpp/internal/msg/data.h"
 #include "ten_runtime/binding/cpp/internal/msg/video_frame.h"
 #include "ten_runtime/common/errno.h"
+#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
@@ -1184,7 +1185,7 @@ class ten_env_t {
 
     (*result_handler)(*cpp_ten_env, std::move(cmd_result));
 
-    if (ten_cmd_result_is_final(c_cmd_result, nullptr)) {
+    if (ten_cmd_result_is_completed(c_cmd_result, nullptr)) {
       // Only when is_final is true should the result handler be cleared.
       // Otherwise, since more result handlers are expected, the result
       // handler should not be cleared.

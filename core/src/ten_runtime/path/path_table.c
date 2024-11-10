@@ -22,6 +22,7 @@
 #include "include_internal/ten_runtime/path/path_group.h"
 #include "include_internal/ten_runtime/path/path_in.h"
 #include "include_internal/ten_runtime/path/path_out.h"
+#include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
@@ -366,7 +367,7 @@ static ten_path_in_t *ten_path_table_find_in_path(ten_path_table_t *self,
   return ten_ptr_listnode_get(old_node);
 }
 
-static void ten_path_table_remove_path_from_group(ten_path_table_t *self,
+static bool ten_path_table_remove_path_from_group(ten_path_table_t *self,
                                                   TEN_PATH_TYPE type,
                                                   ten_path_t *path) {
   TEN_ASSERT(self, "Invalid argument.");
@@ -380,11 +381,15 @@ static void ten_path_table_remove_path_from_group(ten_path_table_t *self,
   TEN_ASSERT(group_member_node, "Should not happen.");
   ten_list_remove_node(group_members, group_member_node);
 
+  bool last_one = ten_list_size(group_members) == 0;
+
   // Remove path from the path table.
   ten_list_t *paths = type == TEN_PATH_IN ? &self->in_paths : &self->out_paths;
   ten_listnode_t *paths_node = ten_list_find_ptr(paths, path);
   TEN_ASSERT(paths_node, "Should not happen.");
   ten_list_remove_node(paths, paths_node);
+
+  return last_one;
 }
 
 static void ten_path_table_remove_group_and_all_its_paths(
@@ -521,15 +526,20 @@ ten_shared_ptr_t *ten_path_table_determine_actual_cmd_result(
     ten_path_group_t *path_group = ten_path_get_group(path);
 
     switch (path_group->policy) {
-      case TEN_PATH_GROUP_POLICY_RETURN_EACH_IMMEDIATELY:
-        ten_path_table_remove_path_from_group(self, path_type, path);
-        break;
+      case TEN_RESULT_RETURN_POLICY_EACH_IMMEDIATELY: {
+        bool last_one =
+            ten_path_table_remove_path_from_group(self, path_type, path);
 
-      case TEN_PATH_GROUP_POLICY_RETURN_FIRST_OK_OR_FAIL:
-      case TEN_PATH_GROUP_POLICY_RETURN_LAST_OK_OR_FAIL:
+        ten_cmd_result_set_completed(cmd_result, last_one, NULL);
+        break;
+      }
+      case TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_FIRST_OK:
+      case TEN_RESULT_RETURN_POLICY_FIRST_ERROR_OR_LAST_OK:
         // The path group has completed its task, so clean up the path group and
         // all paths it contains.
         ten_path_table_remove_group_and_all_its_paths(self, path_type, path);
+
+        ten_cmd_result_set_completed(cmd_result, true, NULL);
         break;
 
       default:
@@ -546,6 +556,9 @@ ten_shared_ptr_t *ten_path_table_determine_actual_cmd_result(
       ten_list_remove_ptr(
           path_type == TEN_PATH_IN ? &self->in_paths : &self->out_paths, path);
     }
+
+    ten_cmd_result_set_completed(
+        cmd_result, ten_cmd_result_is_final(cmd_result, NULL), NULL);
   }
 
   return cmd_result;

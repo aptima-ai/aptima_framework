@@ -39,3 +39,6 @@ class CmdResult(_CmdResult):
 
     def is_final(self) -> bool:
         return _CmdResult.is_final(self)
+
+    def is_completed(self) -> bool:
+        return _CmdResult.is_completed(self)
