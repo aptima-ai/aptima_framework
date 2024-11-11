@@ -24,7 +24,6 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_str.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/log/log.h"
@@ -153,17 +152,9 @@ bool ten_cmd_start_graph_copy_extensions_info(
     TEN_ASSERT(rc, "Should not happen.");
   }
 
-  ten_list_foreach (&src_cmd->extensions_info, iter) {
-    ten_shared_ptr_t *extension_info_ = ten_smart_ptr_listnode_get(iter.node);
-    ten_extension_info_t *extension_info =
-        ten_extension_info_from_smart_ptr(extension_info_);
-
-    bool rc = ten_extension_info_clone(extension_info,
-                                       &self_cmd->extensions_info, err);
-    TEN_ASSERT(rc, "Should not happen.");
-    if (!rc) {
-      return false;
-    }
+  if (!ten_extensions_info_clone(&src_cmd->extensions_info,
+                                 &self_cmd->extensions_info, err)) {
+    return false;
   }
 
   return true;
@@ -228,8 +219,11 @@ bool ten_cmd_start_graph_process_extensions_info(
         goto error;
       }
 
-      ten_extension_info_parse_connection_src_part_from_value(
-          item_value, ten_raw_cmd_start_graph_get_extensions_info(cmd), err);
+      if (ten_extension_info_parse_connection_src_part_from_value(
+              item_value, ten_raw_cmd_start_graph_get_extensions_info(cmd),
+              err) == NULL) {
+        goto error;
+      }
     }
   }
 

@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -72,11 +71,13 @@ class test_app : public ten::app_t {
                           "auto_start": false,
                           "singleton": true,
                           "nodes": [{
+                            "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_1",
                             "addon": "cmd_conversion_graph__extension_1",
                             "extension_group": "default_extension_group"
                           },{
+                            "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_2",
                             "addon": "cmd_conversion_graph__extension_2",
@@ -122,8 +123,10 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_conversion_graph__extension_1, test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_conversion_graph__extension_2, test_extension_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_conversion_graph__extension_1,
+                                    test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_conversion_graph__extension_2,
+                                    test_extension_2);
 
 }  // namespace
 

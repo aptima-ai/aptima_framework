@@ -212,7 +212,7 @@ ten_shared_ptr_t *ten_msg_dest_info_from_value(
   goto done;
 
 error:
-  if (!self) {
+  if (self) {
     ten_msg_dest_info_destroy(self);
     self = NULL;
   }

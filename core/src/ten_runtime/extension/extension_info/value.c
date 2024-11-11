@@ -12,6 +12,8 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/value.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
+#include "ten_runtime/common/errno.h"
+#include "ten_utils/lib/error.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_merge.h"
@@ -80,7 +82,7 @@ static bool parse_msg_conversions_value(
 
 ten_shared_ptr_t *ten_extension_info_node_from_value(
     ten_value_t *value, ten_list_t *extensions_info, ten_error_t *err) {
-  TEN_ASSERT(value && extensions_info, "Should not happen.");
+  TEN_ASSERT(value && extensions_info, "Invalid argument.");
 
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
   const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
@@ -91,7 +93,7 @@ ten_shared_ptr_t *ten_extension_info_node_from_value(
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
       extensions_info, app_uri, graph_id, extension_group_name, addon_name,
-      instance_name, NULL, err);
+      instance_name, false, err);
   if (!self) {
     return NULL;
   }
@@ -104,10 +106,13 @@ ten_shared_ptr_t *ten_extension_info_node_from_value(
   ten_value_t *props_value = ten_value_object_peek(value, TEN_STR_PROPERTY);
   if (props_value) {
     if (!ten_value_is_object(props_value)) {
-      // Indicates an error.
-      TEN_ASSERT(0,
-                 "Failed to parse 'prop' in 'start_graph' command, it's not an "
-                 "object.");
+      if (err) {
+        ten_error_set(err, TEN_ERRNO_GENERIC,
+                      "The `property` in graph node should be an object.");
+      } else {
+        TEN_ASSERT(0, "The `property` in graph node should be an object.");
+      }
+
       return NULL;
     }
 
@@ -119,28 +124,40 @@ ten_shared_ptr_t *ten_extension_info_node_from_value(
 
 ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
     ten_value_t *value, ten_list_t *extensions_info, ten_error_t *err) {
-  TEN_ASSERT(value && extensions_info, "Should not happen.");
+  TEN_ASSERT(value && extensions_info, "Invalid argument.");
 
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
   const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
 
   const char *extension_group_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
-  if (!extension_group_name) {
-    TEN_ASSERT(0, "Should not happen.");
+  if (!extension_group_name || ten_c_string_is_empty(extension_group_name)) {
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
+                    "The extension_group in connection is required.");
+    } else {
+      TEN_ASSERT(0, "The extension_group in connection is required.");
+    }
+
     return NULL;
   }
 
   const char *extension_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION);
-  if (!extension_name) {
-    TEN_ASSERT(0, "Should not happen.");
+  if (!extension_name || ten_c_string_is_empty(extension_name)) {
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
+                    "The extension in connection is required.");
+    } else {
+      TEN_ASSERT(0, "The extension in connection is required.");
+    }
+
     return NULL;
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
       extensions_info, app_uri, graph_id, extension_group_name, NULL,
-      extension_name, NULL, err);
+      extension_name, true, err);
   if (!self) {
     return NULL;
   }
@@ -165,7 +182,6 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
     if (!parse_msg_dest_value(data_value, extensions_info,
                               &extension_info->msg_dest_info.data,
                               extension_info, err)) {
-      TEN_ASSERT(0, "Should not happen.");
       return NULL;
     }
   }
@@ -177,7 +193,6 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
     if (!parse_msg_dest_value(video_frame_value, extensions_info,
                               &extension_info->msg_dest_info.video_frame,
                               extension_info, err)) {
-      TEN_ASSERT(0, "Should not happen.");
       return NULL;
     }
   }
@@ -189,7 +204,6 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
     if (!parse_msg_dest_value(audio_frame_value, extensions_info,
                               &extension_info->msg_dest_info.audio_frame,
                               extension_info, err)) {
-      TEN_ASSERT(0, "Should not happen.");
       return NULL;
     }
   }
@@ -201,7 +215,6 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
     if (!parse_msg_dest_value(interface_value, extensions_info,
                               &extension_info->msg_dest_info.interface,
                               extension_info, err)) {
-      TEN_ASSERT(0, "Should not happen.");
       return NULL;
     }
   }
@@ -220,21 +233,31 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_value(
 
   const char *extension_group_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
-  if (!extension_group_name) {
-    TEN_ASSERT(0, "Should not happen.");
+  if (!extension_group_name || ten_c_string_is_empty(extension_group_name)) {
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
+                    "The extension_group in connection is required.");
+    } else {
+      TEN_ASSERT(0, "The extension_group in connection is required.");
+    }
     return NULL;
   }
 
   const char *extension_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION);
-  if (!extension_name) {
-    TEN_ASSERT(0, "Should not happen.");
+  if (!extension_name || ten_c_string_is_empty(extension_name)) {
+    if (err) {
+      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
+                    "The extension in connection is required.");
+    } else {
+      TEN_ASSERT(0, "The extension in connection is required.");
+    }
     return NULL;
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
       extensions_info, app_uri, graph_id, extension_group_name, NULL,
-      extension_name, NULL, err);
+      extension_name, true, err);
   if (!self) {
     return NULL;
   }

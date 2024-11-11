@@ -111,6 +111,7 @@ ten_app_t *ten_app_create(ten_app_on_configure_func_t on_configure,
   self->state = TEN_APP_STATE_INIT;
 
   self->endpoint_protocol = NULL;
+  self->protocol_context_store = NULL;
 
   ten_list_init(&self->engines);
   ten_list_init(&self->orphan_connections);
@@ -157,8 +158,10 @@ void ten_app_destroy(ten_app_t *self) {
     ten_ref_dec_ref(&self->endpoint_protocol->ref);
   }
 
-  ten_protocol_context_store_destroy(self->protocol_context_store);
-  self->protocol_context_store = NULL;
+  if (self->protocol_context_store) {
+    ten_protocol_context_store_destroy(self->protocol_context_store);
+    self->protocol_context_store = NULL;
+  }
 
   ten_value_deinit(&self->manifest);
   ten_value_deinit(&self->property);

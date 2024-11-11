@@ -19,3 +19,6 @@ TEN_RUNTIME_PRIVATE_API bool ten_app_is_endpoint_closed(ten_app_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_app_create_protocol_context_store(
     ten_app_t *self);
+
+TEN_RUNTIME_PRIVATE_API bool ten_app_is_protocol_context_store_closed(
+    ten_app_t *self);

@@ -262,7 +262,7 @@ ten_shared_ptr_t *ten_extension_info_nodes_from_json(
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
       extensions_info, app_uri, graph_id, extension_group_name, addon_name,
-      instance_name, NULL, err);
+      instance_name, false, err);
   if (!self) {
     return NULL;
   }
@@ -313,7 +313,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_json(
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
       extensions_info, app_uri, graph_id, extension_group_name, NULL,
-      extension_name, NULL, err);
+      extension_name, true, err);
   if (!self) {
     return NULL;
   }
@@ -404,7 +404,7 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_json(
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
       extensions_info, app_uri, graph_id, extension_group_name, NULL,
-      extension_name, NULL, err);
+      extension_name, true, err);
   if (!self) {
     return NULL;
   }

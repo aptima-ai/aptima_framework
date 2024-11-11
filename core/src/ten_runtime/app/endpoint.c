@@ -76,3 +76,14 @@ void ten_app_create_protocol_context_store(ten_app_t *self) {
       self->protocol_context_store, ten_app_on_protocol_context_store_closed,
       self);
 }
+
+bool ten_app_is_protocol_context_store_closed(ten_app_t *self) {
+  TEN_ASSERT(self && ten_app_check_integrity(self, true),
+             "Access across threads.");
+
+  if (!self->protocol_context_store) {
+    return true;
+  }
+
+  return ten_protocol_context_store_is_closed(self->protocol_context_store);
+}

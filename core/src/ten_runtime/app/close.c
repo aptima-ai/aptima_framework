@@ -41,7 +41,7 @@ static bool ten_app_could_be_close(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
   if (ten_app_has_no_work(self) && ten_app_is_endpoint_closed(self) &&
-      ten_protocol_context_store_is_closed(self->protocol_context_store)) {
+      ten_app_is_protocol_context_store_closed(self)) {
     return true;
   }
 
@@ -85,6 +85,13 @@ static void ten_app_close_sync(ten_app_t *self) {
 static void ten_app_close_task(void *app_, TEN_UNUSED void *arg) {
   ten_app_t *app = (ten_app_t *)app_;
   TEN_ASSERT(app_ && ten_app_check_integrity(app_, true), "Should not happen.");
+
+  // The app might be closed due to the problems during creation, ex: some
+  // property is invalid. And all resources have not been created yet.
+  if (ten_app_could_be_close(app)) {
+    ten_app_proceed_to_close(app);
+    return;
+  }
 
   ten_app_close_sync(app);
 }

@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -90,16 +89,19 @@ class test_app : public ten::app_t {
                           "auto_start": false,
                           "singleton": true,
                           "nodes": [{
+                            "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_1",
                             "addon": "predefined_graph_multi_extension_4__extension_1",
                             "extension_group": "predefined_graph_multi_extension_4"
                           },{
+                            "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_2",
                             "addon": "predefined_graph_multi_extension_4__extension_2",
                             "extension_group": "predefined_graph_multi_extension_4"
                           },{
+                            "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_3",
                             "addon": "predefined_graph_multi_extension_4__extension_3",
@@ -150,14 +152,11 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
 }
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
-    predefined_graph_multi_extension_4__extension_1,
-    test_extension_1);
+    predefined_graph_multi_extension_4__extension_1, test_extension_1);
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
-    predefined_graph_multi_extension_4__extension_2,
-    test_extension_2);
+    predefined_graph_multi_extension_4__extension_2, test_extension_2);
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
-    predefined_graph_multi_extension_4__extension_3,
-    test_extension_3);
+    predefined_graph_multi_extension_4__extension_3, test_extension_3);
 
 }  // namespace
 

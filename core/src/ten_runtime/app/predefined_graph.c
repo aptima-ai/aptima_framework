@@ -261,12 +261,9 @@ bool ten_app_get_predefined_graph_extensions_and_groups_info_by_name(
     return false;
   }
 
-  ten_list_foreach (&predefined_graph_info->extensions_info, iter) {
-    ten_extension_info_t *extension_info =
-        ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
-    if (!ten_extension_info_clone(extension_info, extensions_info, err)) {
-      return false;
-    }
+  if (!ten_extensions_info_clone(
+          extensions_info, &predefined_graph_info->extensions_info, err)) {
+    return false;
   }
 
   ten_list_foreach (&predefined_graph_info->extension_groups_info, iter) {
@@ -316,8 +313,11 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
     goto done;
   }
 
+  int graph_idx = -1;
   ten_list_foreach (ten_value_peek_array(predefined_graphs),
                     predefined_graphs_iter) {
+    graph_idx++;
+
     ten_value_t *predefined_graph_info_value =
         ten_ptr_listnode_get(predefined_graphs_iter.node);
     TEN_ASSERT(predefined_graph_info_value &&
@@ -361,6 +361,7 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
           ten_value_get_bool(predefined_graph_info_singleton_value, &err);
     }
 
+    // Parse 'nodes'.
     ten_value_t *predefined_graph_info_nodes_value =
         ten_value_object_peek(predefined_graph_info_value, TEN_STR_NODES);
     if (predefined_graph_info_nodes_value &&
@@ -390,18 +391,26 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
         }
 
         const char *type = ten_value_peek_raw_str(type_value);
-        if (!strcmp(type, TEN_STR_EXTENSION)) {
-          ten_extension_info_node_from_value(
+
+        // Only the extension node is preferred.
+        result = ten_c_string_is_equal(type, TEN_STR_EXTENSION);
+        if (result) {
+          ten_shared_ptr_t *extension_info = ten_extension_info_node_from_value(
               predefined_graph_info_node_item_value,
-              &predefined_graph_info->extensions_info, NULL);
-        } else {
+              &predefined_graph_info->extensions_info, &err);
+          if (!extension_info) {
+            result = false;
+          }
+        }
+
+        if (!result) {
           ten_predefined_graph_info_destroy(predefined_graph_info);
-          result = false;
           goto done;
         }
       }
     }
 
+    // Parse 'connections'.
     ten_value_t *predefined_graph_info_connections_value =
         ten_value_object_peek(predefined_graph_info_value, TEN_STR_CONNECTIONS);
     if (predefined_graph_info_connections_value &&
@@ -415,16 +424,23 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
                            predefined_graph_info_connection_item_value),
                    "Invalid argument.");
 
-        if (!predefined_graph_info_connection_item_value ||
-            !ten_value_is_object(predefined_graph_info_connection_item_value)) {
-          ten_predefined_graph_info_destroy(predefined_graph_info);
-          result = false;
-          goto done;
+        result =
+            predefined_graph_info_connection_item_value &&
+            ten_value_is_object(predefined_graph_info_connection_item_value);
+        if (result) {
+          ten_shared_ptr_t *src_extension_in_connection =
+              ten_extension_info_parse_connection_src_part_from_value(
+                  predefined_graph_info_connection_item_value,
+                  &predefined_graph_info->extensions_info, &err);
+          if (!src_extension_in_connection) {
+            result = false;
+          }
         }
 
-        ten_extension_info_parse_connection_src_part_from_value(
-            predefined_graph_info_connection_item_value,
-            &predefined_graph_info->extensions_info, NULL);
+        if (!result) {
+          ten_predefined_graph_info_destroy(predefined_graph_info);
+          goto done;
+        }
       }
     }
 
@@ -449,6 +465,8 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
 done:
   if (result == false) {
     ten_list_clear(&self->predefined_graph_infos);
+    TEN_LOGE("[%s] Failed to parse predefined_graphs[%d], %s",
+             ten_app_get_uri(self), graph_idx, ten_error_errmsg(&err));
   }
 
   ten_error_deinit(&err);
