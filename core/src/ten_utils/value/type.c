@@ -69,6 +69,13 @@ ten_list_t ten_type_from_json(ten_json_t *json) {
   return result;
 }
 
+// When converting `ten_value_t` between different types, this function is used
+// to check if the types before and after the conversion are compatible. If they
+// are not compatible, the conversion will not proceed. This mechanism ensures
+// that compatibility between `TEN` types throughout the entire `TEN` system is
+// managed consistently by this function. Even in `TEN` Rust code, if type
+// compatibility between `TEN` types needs to be checked, it will ultimately
+// rely on this function.
 bool ten_type_is_compatible(TEN_TYPE actual, TEN_TYPE expected) {
   if (actual == TEN_TYPE_INVALID || expected == TEN_TYPE_INVALID) {
     return false;

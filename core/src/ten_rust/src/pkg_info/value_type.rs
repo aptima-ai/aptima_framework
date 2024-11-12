@@ -95,39 +95,3 @@ impl fmt::Display for ValueType {
         }
     }
 }
-
-pub fn are_types_compatible(
-    from_type: &ValueType,
-    to_type: &ValueType,
-) -> bool {
-    matches!(
-        (from_type, to_type),
-        (
-            ValueType::Uint8
-                | ValueType::Int8
-                | ValueType::Uint16
-                | ValueType::Int16
-                | ValueType::Uint32
-                | ValueType::Int32
-                | ValueType::Uint64
-                | ValueType::Int64,
-            ValueType::Uint8
-                | ValueType::Int8
-                | ValueType::Uint16
-                | ValueType::Int16
-                | ValueType::Uint32
-                | ValueType::Int32
-                | ValueType::Uint64
-                | ValueType::Int64,
-        ) | (
-            ValueType::Float32 | ValueType::Float64,
-            ValueType::Float32 | ValueType::Float64,
-        ) | (ValueType::Bool, ValueType::Bool)
-            | (ValueType::String, ValueType::String)
-            | (ValueType::Buf, ValueType::Buf)
-            | (ValueType::Array, ValueType::Array)
-            | (ValueType::Object, ValueType::Object)
-            | (ValueType::Ptr, ValueType::Ptr)
-            | (ValueType::Null, ValueType::Null)
-    )
-}
