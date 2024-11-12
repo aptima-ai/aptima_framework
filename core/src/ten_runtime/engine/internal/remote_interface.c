@@ -194,17 +194,12 @@ void ten_engine_link_connection_to_remote(ten_engine_t *self,
   TEN_ASSERT(uri, "Invalid argument.");
 
   ten_remote_t *remote = ten_engine_find_remote(self, uri);
-  if (remote) {
-    TEN_ASSERT(
-        remote->connection == NULL,
-        "The relationship of remote and connection should be 1-1 mapping.");
+  TEN_ASSERT(
+      !remote,
+      "The relationship of remote and connection should be 1-1 mapping.");
 
-    ten_connection_attach_to_remote(connection, remote);
-  } else {
-    remote = ten_remote_create_for_engine(uri, self, connection);
-
-    ten_engine_add_remote(self, remote);
-  }
+  remote = ten_remote_create_for_engine(uri, self, connection);
+  ten_engine_add_remote(self, remote);
 }
 
 static void ten_engine_on_remote_protocol_created(ten_env_t *ten_env,
@@ -262,6 +257,7 @@ static bool ten_engine_create_remote_async(
     TEN_LOGE("Failed to create protocol for %s. err: %s", uri,
              ten_error_errmsg(&err));
     ten_error_deinit(&err);
+    ten_engine_on_protocol_created_info_destroy(info);
     return false;
   }
 

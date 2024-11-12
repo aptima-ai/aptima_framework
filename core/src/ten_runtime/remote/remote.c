@@ -155,6 +155,8 @@ static ten_remote_t *ten_remote_create_empty(const char *uri,
 
   ten_connection_attach_to_remote(connection, self);
 
+  self->connection = connection;
+
   self->engine = NULL;
 
   ten_loc_init_empty(&self->explicit_dest_loc);

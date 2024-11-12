@@ -415,8 +415,6 @@ void ten_connection_attach_to_remote(ten_connection_t *self,
   ten_atomic_store(&self->attach_to, TEN_CONNECTION_ATTACH_TO_REMOTE);
   self->attached_target.remote = remote;
 
-  remote->connection = self;
-
   ten_connection_set_on_closed(self, ten_remote_on_connection_closed, remote);
 
   if (self->protocol) {

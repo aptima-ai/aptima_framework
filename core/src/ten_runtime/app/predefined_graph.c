@@ -261,8 +261,8 @@ bool ten_app_get_predefined_graph_extensions_and_groups_info_by_name(
     return false;
   }
 
-  if (!ten_extensions_info_clone(
-          extensions_info, &predefined_graph_info->extensions_info, err)) {
+  if (!ten_extensions_info_clone(&predefined_graph_info->extensions_info,
+                                 extensions_info, err)) {
     return false;
   }
 
