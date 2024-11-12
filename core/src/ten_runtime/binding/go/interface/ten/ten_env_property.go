@@ -309,6 +309,13 @@ func (p *tenEnv) GetPropertyString(path string) (string, error) {
 		)
 	}
 
+	if pSize == 0 {
+		tenValueDestroy(cValue)
+
+		// We can not allocate a []byte with size 0, so just return "".
+		return "", nil
+	}
+
 	return getPropStr(
 		uintptr(pSize),
 		func(v unsafe.Pointer) C.ten_go_status_t {
@@ -357,6 +364,13 @@ func (p *tenEnv) GetPropertyBytes(path string) ([]byte, error) {
 			ErrnoInvalidType,
 			fmt.Sprintf("expected: %s, actual: %s", propTypeBuf, realPt),
 		)
+	}
+
+	if pSize == 0 {
+		tenValueDestroy(cValue)
+
+		// We can not allocate a []byte with size 0, so just return nil.
+		return nil, nil
 	}
 
 	return getPropBytes(

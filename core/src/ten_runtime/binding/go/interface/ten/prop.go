@@ -455,7 +455,7 @@ func getPropStr(
 	retrieve func(unsafe.Pointer) C.ten_go_status_t,
 ) (string, error) {
 	if size == 0 {
-		return "", nil
+		panic("Should not happen.")
 	}
 
 	// About the size of the slice:
@@ -525,7 +525,7 @@ func getPropBytes(
 	retrieve func(unsafe.Pointer) C.ten_go_status_t,
 ) ([]byte, error) {
 	if size == 0 {
-		return nil, nil
+		panic("Should not happen.")
 	}
 
 	buf := acquireBytes(int(size))
