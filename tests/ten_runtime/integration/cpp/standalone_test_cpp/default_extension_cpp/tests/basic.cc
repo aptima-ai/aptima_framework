@@ -24,6 +24,8 @@ class extension_tester_1 : public ten::extension_tester_t {
                          ten_env.stop_test();
                        }
                      });
+
+    ten_env.on_start_done();
   }
 };
 

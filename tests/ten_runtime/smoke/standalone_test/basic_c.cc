@@ -62,6 +62,8 @@ void ten_extension_tester_on_start(TEN_UNUSED ten_extension_tester_t *tester,
   if (rc) {
     ten_shared_ptr_destroy(hello_world_cmd);
   }
+
+  ten_env_tester_on_start_done(ten_env, nullptr);
 }
 
 }  // namespace

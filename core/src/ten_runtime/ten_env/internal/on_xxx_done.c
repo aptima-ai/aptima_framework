@@ -29,8 +29,7 @@ bool ten_env_on_configure_done(ten_env_t *self, ten_error_t *err) {
 
   switch (self->attach_to) {
     case TEN_ENV_ATTACH_TO_EXTENSION:
-      ten_extension_on_configure_done(self);
-      break;
+      return ten_extension_on_configure_done(self);
 
     case TEN_ENV_ATTACH_TO_APP:
       ten_app_on_configure_done(self);
@@ -58,8 +57,7 @@ bool ten_env_on_init_done(ten_env_t *self, ten_error_t *err) {
 
   switch (self->attach_to) {
     case TEN_ENV_ATTACH_TO_EXTENSION:
-      ten_extension_on_init_done(self);
-      break;
+      return ten_extension_on_init_done(self);
 
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
       ten_extension_group_on_init_done(self);
@@ -98,8 +96,7 @@ bool ten_env_on_deinit_done(ten_env_t *self, TEN_UNUSED ten_error_t *err) {
       break;
 
     case TEN_ENV_ATTACH_TO_EXTENSION:
-      ten_extension_on_deinit_done(self);
-      break;
+      return ten_extension_on_deinit_done(self);
 
     case TEN_ENV_ATTACH_TO_APP:
       ten_app_on_deinit_done(self);
@@ -210,9 +207,7 @@ bool ten_env_on_start_done(ten_env_t *self, TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_EXTENSION,
              "Should not happen.");
 
-  ten_extension_on_start_done(self);
-
-  return true;
+  return ten_extension_on_start_done(self);
 }
 
 bool ten_env_on_stop_done(ten_env_t *self, TEN_UNUSED ten_error_t *err) {
@@ -222,7 +217,5 @@ bool ten_env_on_stop_done(ten_env_t *self, TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_EXTENSION,
              "Should not happen.");
 
-  ten_extension_on_stop_done(self);
-
-  return true;
+  return ten_extension_on_stop_done(self);
 }

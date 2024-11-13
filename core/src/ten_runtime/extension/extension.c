@@ -794,7 +794,7 @@ void ten_extension_on_init(ten_env_t *ten_env) {
   if (self->on_init) {
     self->on_init(self, self->ten_env);
   } else {
-    ten_extension_on_init_done(self->ten_env);
+    (void)ten_extension_on_init_done(self->ten_env);
   }
 }
 

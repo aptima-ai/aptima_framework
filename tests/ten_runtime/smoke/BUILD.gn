@@ -42,6 +42,7 @@ ten_executable("ten_runtime_smoke_test") {
     "notify_test",
     "result_conversion",
     "standalone_test",
+    "ten_env_call_timing",
     "video_frame_test",
   ]
 
