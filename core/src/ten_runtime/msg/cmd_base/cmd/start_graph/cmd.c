@@ -22,6 +22,7 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_utils/value/value_set.h"
 #include "ten_runtime/app/app.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
@@ -374,6 +375,16 @@ bool ten_cmd_start_graph_get_long_running_mode(ten_shared_ptr_t *self) {
              "Should not happen.");
 
   return ten_raw_cmd_start_graph_get_long_running_mode(get_raw_cmd(self));
+}
+
+void ten_cmd_start_graph_set_predefined_graph_name(
+    ten_shared_ptr_t *self, const char *predefined_graph_name) {
+  TEN_ASSERT(self && ten_cmd_base_check_integrity(self) &&
+                 ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_START_GRAPH,
+             "Should not happen.");
+
+  ten_value_set_string(&get_raw_cmd(self)->predefined_graph_name,
+                       predefined_graph_name);
 }
 
 ten_string_t *ten_raw_cmd_start_graph_get_predefined_graph_name(

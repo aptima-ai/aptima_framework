@@ -343,6 +343,23 @@ static void ten_engine_connect_to_remote_after_remote_is_created(
   TEN_ASSERT(remote && ten_remote_check_integrity(remote, true),
              "Invalid use of remote %p.", remote);
 
+  if (ten_engine_check_remote_is_duplicated(
+          engine, ten_string_get_raw_str(&remote->uri))) {
+    // Since the remote_t creation is asynchronous, the engine may have already
+    // established a new connection with the remote during the creation process.
+    // If it is found that a connection is about to be duplicated, the remote_t
+    // object can be directly destroyed as the physical connection has not
+    // actually been established yet.
+    // Additionally, there is no need to send the 'start_graph' command to the
+    // remote, as the graph must have already been started on the remote side.
+    TEN_LOGD("Destroy remote %p for %s because it's duplicated.", remote,
+             ten_string_get_raw_str(&remote->uri));
+
+    ten_remote_destroy(remote);
+    ten_shared_ptr_destroy(start_graph_cmd);
+    return;
+  }
+
   // This channel might be duplicated with other channels between this TEN app
   // and the remote TEN app. This situation may appear in a graph which
   // contains loops.
@@ -452,7 +469,7 @@ ten_remote_t *ten_engine_check_remote_is_existed(ten_engine_t *self,
 // This function is used to solve the connection duplication problem. If there
 // are two physical connections between two TEN apps, the connection which
 // connects a TEN app with a smaller URI to a TEN app with a larger URI would be
-// keep, and the other connection would be dropped.
+// kept, and the other connection would be dropped.
 //
 //                   ------->
 //  ----> TEN app 1            TEN app 2 <----

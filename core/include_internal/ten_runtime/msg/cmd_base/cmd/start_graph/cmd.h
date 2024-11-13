@@ -56,6 +56,9 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_start_graph_get_long_running_mode(
 TEN_RUNTIME_PRIVATE_API bool ten_cmd_start_graph_get_long_running_mode(
     ten_shared_ptr_t *self);
 
+TEN_RUNTIME_PRIVATE_API void ten_cmd_start_graph_set_predefined_graph_name(
+    ten_shared_ptr_t *self, const char *predefined_graph_name);
+
 TEN_RUNTIME_PRIVATE_API ten_string_t *
 ten_raw_cmd_start_graph_get_predefined_graph_name(ten_cmd_start_graph_t *self);
 

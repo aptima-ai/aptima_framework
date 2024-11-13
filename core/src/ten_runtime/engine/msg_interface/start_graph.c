@@ -74,6 +74,11 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
         ten_shared_ptr_t *child_cmd = ten_msg_clone(cmd, NULL);
         TEN_ASSERT(child_cmd, "Should not happen.");
 
+        // The remote app does not recognize the local app's
+        // 'predefined_graph_name', so this field should not be included in the
+        // 'start_graph' command which will be sent to the remote app.
+        ten_cmd_start_graph_set_predefined_graph_name(child_cmd, "");
+
         // Use the uri of the local app to fill/override the value of 'from'
         // field (even if there is any old value in the 'from' field), so that
         // the remote could know who connects to them.
