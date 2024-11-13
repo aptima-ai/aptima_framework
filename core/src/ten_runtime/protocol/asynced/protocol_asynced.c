@@ -346,8 +346,8 @@ static void ten_protocol_asynced_on_connected(void *self_, void *arg) {
   TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
              "Should not happen.");
 
-  if (protocol->base.on_connected) {
-    protocol->base.on_connected(&protocol->base, (bool)arg);
+  if (protocol->base.on_server_connected) {
+    protocol->base.on_server_connected(&protocol->base, (bool)arg);
   }
 
   // The task is completed, so delete a reference to the 'protocol' to reflect
@@ -427,12 +427,12 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
   // object) might need to be migrated, so set the value to 'INIT' as the
   // default value is 'DONE'. Refer to 'ten_protocol_asynced_init()'.
   protocol->migration_state = TEN_CONNECTION_MIGRATION_STATE_INIT;
-  protocol->base.on_accepted = listening_protocol->base.on_accepted;
 
   ten_protocol_attach_to_app_and_thread(&protocol->base, app);
 
-  if (protocol->base.on_accepted) {
-    protocol->base.on_accepted(&protocol->base);
+  if (listening_protocol->base.on_client_accepted) {
+    listening_protocol->base.on_client_accepted(&listening_protocol->base,
+                                                &protocol->base);
   }
 
   info->on_created(protocol, info);
@@ -505,6 +505,9 @@ bool ten_protocol_asynced_on_client_accepted_async(
   // 'protocol', so that it will not be destroyed _before_ the runloop task is
   // executed.
   ten_ref_inc_ref(&listening_protocol->base.ref);
+
+  // TODO(xilin): Replace pushing a task to the runloop with wrapping it into
+  // 'ten_env' apis.
 
   ten_runloop_t *loop =
       ten_protocol_get_attached_runloop(&listening_protocol->base);

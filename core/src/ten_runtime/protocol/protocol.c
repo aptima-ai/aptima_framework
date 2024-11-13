@@ -22,6 +22,7 @@
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/protocol/close.h"
+#include "ten_runtime/protocol/protocol.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
@@ -120,10 +121,10 @@ void ten_protocol_init(ten_protocol_t *self, const char *name,
   self->on_output = on_output;
 
   self->listen = listen;
-  self->on_accepted = NULL;
+  self->on_client_accepted = NULL;
 
   self->connect_to = connect_to;
-  self->on_connected = NULL;
+  self->on_server_connected = NULL;
 
   self->migrate = migrate;
   self->on_migrated = NULL;
@@ -192,11 +193,14 @@ void ten_protocol_deinit(ten_protocol_t *self) {
   ten_sanitizer_thread_check_deinit(&self->thread_check);
 }
 
-void ten_protocol_listen(ten_protocol_t *self, const char *uri,
-                         ten_protocol_on_accepted_func_t on_accepted) {
+void ten_protocol_listen(
+    ten_protocol_t *self, const char *uri,
+    ten_protocol_on_client_accepted_func_t on_client_accepted) {
   TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
              "Should not happen.");
-  TEN_ASSERT(self->listen && uri && on_accepted, "Should not happen.");
+  TEN_ASSERT(ten_protocol_role_is_listening(self),
+             "Only the listening protocol could listen.");
+  TEN_ASSERT(self->listen && uri && on_client_accepted, "Should not happen.");
 
   TEN_ASSERT(self->attach_to == TEN_PROTOCOL_ATTACH_TO_APP,
              "Should not happen.");
@@ -209,7 +213,7 @@ void ten_protocol_listen(ten_protocol_t *self, const char *uri,
   TEN_ASSERT(self->context_store,
              "The protocol context store in app is not ready.");
 
-  self->on_accepted = on_accepted;
+  self->on_client_accepted = on_client_accepted;
   self->listen(self, uri);
 }
 
@@ -386,10 +390,13 @@ ten_protocol_get_context_store_in_connect_to(ten_protocol_t *self) {
   return ten_app_get_protocol_context_store(app);
 }
 
-bool ten_protocol_connect_to(ten_protocol_t *self, const char *uri,
-                             ten_protocol_on_connected_func_t on_connected) {
+bool ten_protocol_connect_to(
+    ten_protocol_t *self, const char *uri,
+    ten_protocol_on_server_connected_func_t on_server_connected) {
   TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
              "Should not happen.");
+  TEN_ASSERT(ten_protocol_role_is_communication(self),
+             "Only the communication protocol could connect to remote.");
   TEN_ASSERT(uri, "Should not happen.");
 
   if (self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION &&
@@ -406,7 +413,7 @@ bool ten_protocol_connect_to(ten_protocol_t *self, const char *uri,
   TEN_ASSERT(self->context_store,
              "The protocol context store is not ready in 'connect_to'.");
 
-  self->on_connected = on_connected;
+  self->on_server_connected = on_server_connected;
   if (self->connect_to) {
     return self->connect_to(self, uri);
   }
@@ -553,4 +560,11 @@ bool ten_protocol_role_is_communication(ten_protocol_t *self) {
              "Access across threads.");
 
   return self->role > TEN_PROTOCOL_ROLE_LISTEN;
+}
+
+bool ten_protocol_role_is_listening(ten_protocol_t *self) {
+  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
+             "Access across threads.");
+
+  return self->role == TEN_PROTOCOL_ROLE_LISTEN;
 }

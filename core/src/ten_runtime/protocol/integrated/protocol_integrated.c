@@ -301,17 +301,14 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
           ten_protocol_check_integrity(new_communication_base_protocol, true),
       "Should not happen.");
 
-  // Setup important fields of the newly created protocol.
-  new_communication_base_protocol->on_connected =
-      listening_base_protocol->on_connected;
-
   // Attach the newly created protocol to app first.
   ten_protocol_attach_to_app(new_communication_base_protocol,
                              listening_base_protocol->attached_target.app);
 
-  TEN_ASSERT(listening_base_protocol->on_accepted, "Should not happen.");
+  TEN_ASSERT(listening_base_protocol->on_client_accepted, "Should not happen.");
   TEN_UNUSED ten_connection_t *connection =
-      listening_base_protocol->on_accepted(new_communication_base_protocol);
+      listening_base_protocol->on_client_accepted(
+          listening_base_protocol, new_communication_base_protocol);
   TEN_ASSERT(connection && ten_connection_check_integrity(connection, true),
              "Should not happen.");
 
@@ -427,11 +424,7 @@ static void ten_protocol_integrated_on_output_async(
   TEN_ASSERT(msgs, "Invalid argument.");
 
   ten_protocol_t *protocol = &self->base;
-  TEN_ASSERT(protocol &&
-                 // TEN_NOLINTNEXTLINE(thread-check)
-                 // thread-check: This function is intended to be used in
-                 // different threads.
-                 ten_protocol_check_integrity(protocol, false) &&
+  TEN_ASSERT(protocol && ten_protocol_check_integrity(protocol, true) &&
                  ten_protocol_role_is_communication(protocol),
              "Should not happen.");
 
@@ -474,8 +467,8 @@ static void on_server_connected(ten_transport_t *transport,
     ten_protocol_integrated_set_stream(protocol, stream);
   }
 
-  if (protocol->base.on_connected) {
-    protocol->base.on_connected(&protocol->base, success);
+  if (protocol->base.on_server_connected) {
+    protocol->base.on_server_connected(&protocol->base, success);
   }
 
   if (success) {

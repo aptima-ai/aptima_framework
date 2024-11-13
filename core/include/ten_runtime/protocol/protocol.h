@@ -115,14 +115,14 @@ typedef void (*ten_protocol_on_output_func_t)(ten_protocol_t *self,
 typedef void (*ten_protocol_listen_func_t)(ten_protocol_t *self,
                                            const char *uri);
 
-typedef ten_connection_t *(*ten_protocol_on_accepted_func_t)(
-    ten_protocol_t *new_protocol);
+typedef ten_connection_t *(*ten_protocol_on_client_accepted_func_t)(
+    ten_protocol_t *self, ten_protocol_t *new_protocol);
 
 typedef bool (*ten_protocol_connect_to_func_t)(ten_protocol_t *self,
                                                const char *uri);
 
-typedef void (*ten_protocol_on_connected_func_t)(ten_protocol_t *self,
-                                                 bool success);
+typedef void (*ten_protocol_on_server_connected_func_t)(ten_protocol_t *self,
+                                                        bool success);
 
 typedef void (*ten_protocol_migrate_func_t)(ten_protocol_t *self,
                                             ten_engine_t *engine,
@@ -190,3 +190,5 @@ TEN_RUNTIME_API ten_protocol_context_store_t *ten_protocol_get_context_store(
     ten_protocol_t *self);
 
 TEN_RUNTIME_API bool ten_protocol_role_is_communication(ten_protocol_t *self);
+
+TEN_RUNTIME_API bool ten_protocol_role_is_listening(ten_protocol_t *self);
