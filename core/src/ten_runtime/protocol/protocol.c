@@ -9,7 +9,6 @@
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/protocol/protocol.h"
 #include "include_internal/ten_runtime/app/app.h"
-#include "include_internal/ten_runtime/common/closeable.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/connection/connection.h"
 #include "include_internal/ten_runtime/connection/migration.h"
@@ -108,8 +107,6 @@ void ten_protocol_init(ten_protocol_t *self, const char *name,
 
   ten_signature_set(&self->signature, (ten_signature_t)TEN_PROTOCOL_SIGNATURE);
 
-  ten_closeable_init(&self->closeable, offsetof(ten_protocol_t, closeable));
-
   ten_sanitizer_thread_check_init_with_current_thread(&self->thread_check);
 
   self->addon_host = NULL;
@@ -165,8 +162,6 @@ void ten_protocol_deinit(ten_protocol_t *self) {
              "Should not happen.");
 
   ten_signature_set(&self->signature, 0);
-
-  ten_closeable_deinit(&self->closeable);
 
   self->attach_to = TEN_PROTOCOL_ATTACH_TO_INVALID;
   self->attached_target.app = NULL;
@@ -424,9 +419,6 @@ void ten_protocol_update_belonging_thread_on_cleaned(ten_protocol_t *self) {
       &self->thread_check);
   TEN_ASSERT(ten_protocol_check_integrity(self, true),
              "Access across threads.");
-
-  ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
-      &self->closeable.thread_check);
 }
 
 void ten_protocol_set_addon(ten_protocol_t *self,

@@ -8,10 +8,10 @@
 
 #include "ten_runtime/ten_config.h"
 
-#include "include_internal/ten_runtime/common/closeable.h"
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "ten_runtime/protocol/protocol.h"
 #include "ten_utils/container/list.h"
+#include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
@@ -73,8 +73,6 @@ typedef struct ten_protocol_t {
    * thread.
    */
   ten_sanitizer_thread_check_t thread_check;
-
-  ten_closeable_t closeable;
 
   ten_ref_t ref;
 
