@@ -158,13 +158,3 @@ ten_sanitizer_thread_check_t *ten_app_get_thread_check(ten_app_t *self) {
 
   return &self->thread_check;
 }
-
-ten_protocol_context_store_t *ten_app_get_protocol_context_store(
-    ten_app_t *self) {
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: we will call this function in 'protocol::on_listen' and
-  // 'protocol::connect_to', and 'protocol::connect_to' maybe in engine thread.
-  TEN_ASSERT(self && ten_app_check_integrity(self, false), "Invalid argument.");
-
-  return self->protocol_context_store;
-}

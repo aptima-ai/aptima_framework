@@ -77,18 +77,14 @@ typedef struct ten_app_t ten_app_t;
 typedef struct ten_engine_t ten_engine_t;
 typedef struct ten_connection_t ten_connection_t;
 typedef struct ten_protocol_t ten_protocol_t;
-typedef struct ten_protocol_context_store_t ten_protocol_context_store_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_app_is_closing(ten_app_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_app_check_termination_when_engine_closed(
     ten_app_t *self, ten_engine_t *engine);
 
-TEN_RUNTIME_PRIVATE_API void ten_app_on_protocol_closed(ten_protocol_t *protocol,
-                                                      void *on_closed_data);
+TEN_RUNTIME_PRIVATE_API void ten_app_on_protocol_closed(
+    ten_protocol_t *protocol, void *on_closed_data);
 
 TEN_RUNTIME_PRIVATE_API void ten_app_on_orphan_connection_closed(
     ten_connection_t *connection, void *on_closed_data);
-
-TEN_RUNTIME_PRIVATE_API void ten_app_on_protocol_context_store_closed(
-    ten_protocol_context_store_t *context_store, void *on_closed_data);

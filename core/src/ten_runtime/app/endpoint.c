@@ -10,7 +10,6 @@
 #include "include_internal/ten_runtime/app/close.h"
 #include "include_internal/ten_runtime/connection/connection.h"
 #include "include_internal/ten_runtime/protocol/close.h"
-#include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
@@ -62,31 +61,4 @@ bool ten_app_is_endpoint_closed(ten_app_t *self) {
   }
 
   return ten_protocol_is_closed(self->endpoint_protocol);
-}
-
-void ten_app_create_protocol_context_store(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true),
-             "Access across threads.");
-
-  self->protocol_context_store = ten_protocol_context_store_create(
-      offsetof(ten_protocol_context_store_item_t, hh_in_context_store));
-  TEN_ASSERT(self->protocol_context_store,
-             "Failed to create protocol context store.");
-
-  ten_protocol_context_store_attach_to_app(self->protocol_context_store, self);
-
-  ten_protocol_context_store_set_on_closed(
-      self->protocol_context_store, ten_app_on_protocol_context_store_closed,
-      self);
-}
-
-bool ten_app_is_protocol_context_store_closed(ten_app_t *self) {
-  TEN_ASSERT(self && ten_app_check_integrity(self, true),
-             "Access across threads.");
-
-  if (!self->protocol_context_store) {
-    return true;
-  }
-
-  return ten_protocol_context_store_is_closed(self->protocol_context_store);
 }

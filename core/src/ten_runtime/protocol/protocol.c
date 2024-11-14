@@ -149,8 +149,6 @@ void ten_protocol_init(ten_protocol_t *self, const char *name,
 
   self->role = TEN_PROTOCOL_ROLE_INVALID;
 
-  self->context_store = NULL;
-
   ten_list_init(&self->in_msgs);
   ten_list_init(&self->out_msgs);
 
@@ -208,10 +206,6 @@ void ten_protocol_listen(
   ten_app_t *app = self->attached_target.app;
   TEN_ASSERT(app && ten_app_check_integrity(app, true),
              "Access across threads.");
-
-  self->context_store = ten_app_get_protocol_context_store(app);
-  TEN_ASSERT(self->context_store,
-             "The protocol context store in app is not ready.");
 
   self->on_client_accepted = on_client_accepted;
   self->listen(self, uri);
@@ -359,37 +353,6 @@ void ten_protocol_send_msg(ten_protocol_t *self, ten_shared_ptr_t *msg) {
   }
 }
 
-static ten_protocol_context_store_t *
-ten_protocol_get_context_store_in_connect_to(ten_protocol_t *self) {
-  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
-             "Access across threads.");
-  TEN_ASSERT(self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION,
-             "Invalid argument.");
-
-  ten_connection_t *connection = self->attached_target.connection;
-  TEN_ASSERT(ten_connection_check_integrity(connection, true),
-             "Invalid argument.");
-  TEN_ASSERT(
-      ten_connection_attach_to(connection) == TEN_CONNECTION_ATTACH_TO_REMOTE,
-      "connection should attach to remote.");
-
-  ten_remote_t *remote = connection->attached_target.remote;
-  TEN_ASSERT(remote && ten_remote_check_integrity(remote, true),
-             "Access across threads.");
-
-  ten_engine_t *engine = remote->engine;
-  TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
-             "Access across threads.");
-
-  ten_app_t *app = engine->app;
-
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: The engine and app thread maybe different.
-  TEN_ASSERT(app && ten_app_check_integrity(app, false), "Invalid argument.");
-
-  return ten_app_get_protocol_context_store(app);
-}
-
 bool ten_protocol_connect_to(
     ten_protocol_t *self, const char *uri,
     ten_protocol_on_server_connected_func_t on_server_connected) {
@@ -408,10 +371,6 @@ bool ten_protocol_connect_to(
             true),
         "Should not happen.");
   }
-
-  self->context_store = ten_protocol_get_context_store_in_connect_to(self);
-  TEN_ASSERT(self->context_store,
-             "The protocol context store is not ready in 'connect_to'.");
 
   self->on_server_connected = on_server_connected;
   if (self->connect_to) {
@@ -537,14 +496,6 @@ ten_runloop_t *ten_protocol_get_attached_runloop(ten_protocol_t *self) {
   }
 
   return NULL;
-}
-
-ten_protocol_context_store_t *ten_protocol_get_context_store(
-    ten_protocol_t *self) {
-  TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
-             "Access across threads.");
-
-  return self->context_store;
 }
 
 void ten_protocol_set_uri(ten_protocol_t *self, ten_string_t *uri) {

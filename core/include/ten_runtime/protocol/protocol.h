@@ -19,7 +19,6 @@ typedef struct ten_app_t ten_app_t;
 typedef struct ten_engine_t ten_engine_t;
 typedef struct ten_addon_host_t ten_addon_host_t;
 typedef struct ten_runloop_t ten_runloop_t;
-typedef struct ten_protocol_context_store_t ten_protocol_context_store_t;
 
 // The protocols will be created in the following scenarios:
 // - A listening protocol when the app acts as a server.
@@ -184,9 +183,6 @@ TEN_RUNTIME_API void ten_protocol_send_msg(ten_protocol_t *self,
  * @return NULL if the protocol attaches to a connection who is in migration.
  */
 TEN_RUNTIME_API ten_runloop_t *ten_protocol_get_attached_runloop(
-    ten_protocol_t *self);
-
-TEN_RUNTIME_API ten_protocol_context_store_t *ten_protocol_get_context_store(
     ten_protocol_t *self);
 
 TEN_RUNTIME_API bool ten_protocol_role_is_communication(ten_protocol_t *self);

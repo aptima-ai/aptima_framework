@@ -14,12 +14,10 @@
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
-#include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/protocol/context_store.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_str.h"
@@ -111,7 +109,6 @@ ten_app_t *ten_app_create(ten_app_on_configure_func_t on_configure,
   self->state = TEN_APP_STATE_INIT;
 
   self->endpoint_protocol = NULL;
-  self->protocol_context_store = NULL;
 
   ten_list_init(&self->engines);
   ten_list_init(&self->orphan_connections);
@@ -156,11 +153,6 @@ void ten_app_destroy(ten_app_t *self) {
 
   if (self->endpoint_protocol) {
     ten_ref_dec_ref(&self->endpoint_protocol->ref);
-  }
-
-  if (self->protocol_context_store) {
-    ten_protocol_context_store_destroy(self->protocol_context_store);
-    self->protocol_context_store = NULL;
   }
 
   ten_value_deinit(&self->manifest);

@@ -26,7 +26,6 @@
 typedef struct ten_connection_t ten_connection_t;
 typedef struct ten_engine_t ten_engine_t;
 typedef struct ten_protocol_t ten_protocol_t;
-typedef struct ten_protocol_context_store_t ten_protocol_context_store_t;
 
 typedef enum TEN_APP_STATE {
   TEN_APP_STATE_INIT,
@@ -69,7 +68,6 @@ typedef struct ten_app_t {
   ten_runloop_t *loop;
 
   ten_protocol_t *endpoint_protocol;
-  ten_protocol_context_store_t *protocol_context_store;
 
   ten_env_t *ten_env;
 
@@ -127,9 +125,6 @@ TEN_RUNTIME_PRIVATE_API ten_runloop_t *ten_app_get_attached_runloop(
     ten_app_t *self);
 
 TEN_RUNTIME_PRIVATE_API const char *ten_app_get_uri(ten_app_t *self);
-
-TEN_RUNTIME_PRIVATE_API ten_protocol_context_store_t *
-ten_app_get_protocol_context_store(ten_app_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_app_on_configure(ten_env_t *ten_env);
 

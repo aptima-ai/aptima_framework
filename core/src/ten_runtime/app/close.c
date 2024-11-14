@@ -14,11 +14,9 @@
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/engine/msg_interface/common.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "include_internal/ten_runtime/protocol/context_store.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
-#include "ten_runtime/protocol/context_store.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
@@ -40,8 +38,7 @@ static bool ten_app_has_no_work(ten_app_t *self) {
 static bool ten_app_could_be_close(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
-  if (ten_app_has_no_work(self) && ten_app_is_endpoint_closed(self) &&
-      ten_app_is_protocol_context_store_closed(self)) {
+  if (ten_app_has_no_work(self) && ten_app_is_endpoint_closed(self)) {
     return true;
   }
 
@@ -75,10 +72,6 @@ static void ten_app_close_sync(ten_app_t *self) {
 
   if (self->endpoint_protocol) {
     ten_protocol_close(self->endpoint_protocol);
-  }
-
-  if (self->protocol_context_store) {
-    ten_protocol_context_store_close(self->protocol_context_store);
   }
 }
 
@@ -234,41 +227,6 @@ void ten_app_on_protocol_closed(TEN_UNUSED ten_protocol_t *protocol,
                                 void *on_closed_data) {
   ten_app_t *self = (ten_app_t *)on_closed_data;
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
-
-  if (ten_app_is_closing(self)) {
-    ten_app_proceed_to_close(self);
-  }
-}
-
-void ten_app_on_protocol_context_store_closed(
-    ten_protocol_context_store_t *context_store, void *on_closed_data) {
-  TEN_ASSERT(context_store, "Invalid argument.");
-
-  ten_app_t *self = (ten_app_t *)on_closed_data;
-  TEN_ASSERT(self && ten_app_check_integrity(self, true), "Invalid argument.");
-
-  // We should _not_ destroy 'ten_protocol_context_store_t' here. The reason and
-  // the principle is very simple:
-  //
-  //  "The destroy of the protocol context should be in the step 3 of the whole
-  //   closing flow - the 'destroy' step."
-  //
-  // And the 'destroy' step will be triggered when the destroy of the app
-  // starts.
-  //
-  // One possible bad thing would happen if we do not follow the above simple
-  // principle:
-  //
-  // In the whole app closing flow, the 'ten_protocol_context_store_t' might be
-  // closed before the TEN engine closed, and a protocol may create a new
-  // protocol context when the engine handles the 'connect_to' command before
-  // the engine enters its closing flow. And the engine needs to access the
-  // memory space of 'ten_protocol_context_store_t' when handling the
-  // 'connect_to' command. => Bomb! segmentation fault if we destroy the
-  // protocol context store here.
-  //
-  // Therefore, just follow the simple rule of "3 steps closing flow", then
-  // everything would be simply be alright.
 
   if (ten_app_is_closing(self)) {
     ten_app_proceed_to_close(self);

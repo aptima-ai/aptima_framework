@@ -154,11 +154,6 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
     goto error;
   }
 
-  // Create the protocol context store _BEFORE_ creating the listening endpoint
-  // protocol as the context data of the endpoint protocol will depend on the
-  // context store.
-  ten_app_create_protocol_context_store(self);
-
   if (!ten_string_is_equal_c_str(&self->uri, TEN_STR_LOCALHOST)) {
     // Create the app listening endpoint protocol if specifying one.
     rc = ten_addon_create_protocol_with_uri(
