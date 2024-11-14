@@ -451,63 +451,67 @@ static bool ten_extension_determine_out_msg_dest_from_graph(
   // Fetch the destinations from the graph.
   ten_msg_dest_info_t *msg_dest_info =
       ten_extension_get_msg_dests_from_graph(self, msg);
-  *result_return_policy = msg_dest_info->policy;
-  ten_list_t *dests = &msg_dest_info->dest;
+  if (msg_dest_info) {
+    *result_return_policy = msg_dest_info->policy;
+    ten_list_t *dests = &msg_dest_info->dest;
 
-  if (dests && ten_list_size(dests) > 0) {
-    ten_list_foreach (dests, iter) {
-      bool need_to_clone_msg = need_to_clone_msg_when_sending(msg, iter.index);
+    if (dests && ten_list_size(dests) > 0) {
+      ten_list_foreach (dests, iter) {
+        bool need_to_clone_msg =
+            need_to_clone_msg_when_sending(msg, iter.index);
 
-      ten_shared_ptr_t *curr_msg = NULL;
-      if (need_to_clone_msg) {
-        curr_msg = ten_msg_clone(msg, NULL);
-      } else {
-        curr_msg = msg;
+        ten_shared_ptr_t *curr_msg = NULL;
+        if (need_to_clone_msg) {
+          curr_msg = ten_msg_clone(msg, NULL);
+        } else {
+          curr_msg = msg;
+        }
+
+        ten_extension_info_t *dest_extension_info =
+            ten_smart_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
+        TEN_ASSERT(dest_extension_info, "Should not happen.");
+
+        // TEN_NOLINTNEXTLINE(thread-check)
+        // thread-check: The graph-related information of the extension remains
+        // unchanged during the lifecycle of engine/graph, allowing safe
+        // cross-thread access.
+        TEN_ASSERT(
+            ten_extension_info_check_integrity(dest_extension_info, false),
+            "Invalid use of extension_info %p.", dest_extension_info);
+
+        ten_msg_clear_and_set_dest_from_extension_info(curr_msg,
+                                                       dest_extension_info);
+
+        ten_list_push_smart_ptr_back(result_msgs, curr_msg);
+
+        if (need_to_clone_msg) {
+          ten_shared_ptr_destroy(curr_msg);
+        }
       }
 
-      ten_extension_info_t *dest_extension_info =
-          ten_smart_ptr_get_data(ten_smart_ptr_listnode_get(iter.node));
-      TEN_ASSERT(dest_extension_info, "Should not happen.");
-
-      // TEN_NOLINTNEXTLINE(thread-check)
-      // thread-check: The graph-related information of the extension remains
-      // unchanged during the lifecycle of engine/graph, allowing safe
-      // cross-thread access.
-      TEN_ASSERT(ten_extension_info_check_integrity(dest_extension_info, false),
-                 "Invalid use of extension_info %p.", dest_extension_info);
-
-      ten_msg_clear_and_set_dest_from_extension_info(curr_msg,
-                                                     dest_extension_info);
-
-      ten_list_push_smart_ptr_back(result_msgs, curr_msg);
-
-      if (need_to_clone_msg) {
-        ten_shared_ptr_destroy(curr_msg);
-      }
+      return true;
     }
-
-    return true;
-  } else {
-    // Graph doesn't specify how to route the messages.
-
-    const char *msg_name = ten_msg_get_name(msg);
-
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
-                    "Failed to find destination of a message (%s) from graph.",
-                    msg_name);
-    } else {
-      if (ten_msg_is_cmd_and_result(msg)) {
-        TEN_LOGE("Failed to find destination of a command (%s) from graph.",
-                 msg_name);
-      } else {
-        // The amount of the data-like messages might be huge, so we don't dump
-        // error logs here to prevent log flooding.
-      }
-    }
-
-    return false;
   }
+
+  // Graph doesn't specify how to route the messages.
+
+  const char *msg_name = ten_msg_get_name(msg);
+
+  if (err) {
+    ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
+                  "Failed to find destination of a message (%s) from graph.",
+                  msg_name);
+  } else {
+    if (ten_msg_is_cmd_and_result(msg)) {
+      TEN_LOGE("Failed to find destination of a command (%s) from graph.",
+               msg_name);
+    } else {
+      // The amount of the data-like messages might be huge, so we don't
+      // dump error logs here to prevent log flooding.
+    }
+  }
+
+  return false;
 }
 
 typedef enum TEN_EXTENSION_DETERMINE_OUT_MSGS_RESULT {
