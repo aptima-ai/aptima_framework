@@ -8,8 +8,5 @@ import("//build/ten_runtime/glob.gni")
 
 glob("protocol") {
   file_list = all_native_files
-  deps = [
-    "asynced",
-    "integrated",
-  ]
+  deps = [ "integrated" ]
 }
