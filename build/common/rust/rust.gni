@@ -479,3 +479,63 @@ template("rust_gen_cargo_config") {
     outputs = [ _output ]
   }
 }
+
+template("rust_clean") {
+  _project_path = rebase_path(invoker.project_path)
+  _target_path = rebase_path(invoker.target_path)
+
+  _target_name = target_name
+
+  action("${_target_name}") {
+    script = "//build/common/rust/rust_clean.py"
+    _output = "${target_gen_dir}/${_target_name}_rust_clean"
+
+    args = [
+      "--project-path",
+      _project_path,
+      "--target-path",
+      _target_path,
+      "--tg-timestamp-proxy-file",
+      rebase_path(_output),
+      "--log-level",
+      "${log_level}",
+    ]
+
+    if (is_win) {
+      if (target_cpu == "x86") {
+        target = "i686-pc-windows-msvc"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-pc-windows-msvc"
+      } else if (target_cpu == "arm64") {
+        target = "aarch64-pc-windows-msvc"
+      }
+    } else if (is_linux) {
+      if (target_cpu == "arm64") {
+        target = "aarch64-unknown-linux-gnu"
+      } else if (target_cpu == "arm") {
+        target = "armv7-unknown-linux-gnueabi"
+      } else if (target_cpu == "x86") {
+        target = "i686-unknown-linux-gnu"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-unknown-linux-gnu"
+      }
+    } else if (is_mac) {
+      if (target_cpu == "arm64") {
+        target = "aarch64-apple-darwin"
+      } else if (target_cpu == "x86") {
+        target = "i686-apple-darwin"
+      } else if (target_cpu == "x64") {
+        target = "x86_64-apple-darwin"
+      }
+    }
+
+    args += [
+      "--target",
+      target,
+    ]
+
+    forward_variables_from(invoker, [ "deps" ])
+
+    outputs = [ _output ]
+  }
+}

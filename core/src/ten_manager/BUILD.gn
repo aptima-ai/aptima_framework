@@ -98,8 +98,9 @@ if (ten_enable_package_manager) {
   }
 
   # Assembling the final ten manager package.
-  ten_package("ten_manager") {
+  ten_package("ten_manager_package") {
     package_kind = "custom"
+    package_output_root_dir_name = "ten_manager"
 
     tman_output = get_target_outputs(":tman")
 
@@ -135,6 +136,21 @@ if (ten_enable_package_manager) {
     if (use_shared_lib) {
       # Copy relevant resources files.
       deps += [ ":copy_clingo_config_files" ]
+    }
+  }
+
+  rust_clean("tman_cargo_clean") {
+    project_path = "//core/src/ten_manager"
+    target_path = get_path_info("tman", "gen_dir")
+
+    deps = [ ":ten_manager_package" ]
+  }
+
+  group("ten_manager") {
+    if (ten_enable_clean_build) {
+      deps = [ ":tman_cargo_clean" ]
+    } else {
+      deps = [ ":ten_manager_package" ]
     }
   }
 }

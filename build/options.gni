@@ -6,9 +6,7 @@
 #
 declare_args() {
   ten_enable_memory_check = true
-}
 
-declare_args() {
   # The 'ten_rust' crate depends on the 'ten_utils' (C codes) static library.
   # The C compiler supports AddressSanitizer on Linux x86, however the rustc
   # does not. Therefore, the 'ten_rust' crate is disabled on x86.
@@ -16,8 +14,8 @@ declare_args() {
   # TODO(Liu): Add a gn target to compile the 'ten_utils' static without asan on
   # x86.
   ten_enable_ten_rust = !(enable_sanitizer && target_cpu == "x86")
-}
 
-declare_args() {
   ten_enable_package_manager = true
+
+  ten_enable_clean_build = false
 }

@@ -49,7 +49,7 @@ jobs:
       - name: Build
         run: |
           $ENV:PATH += ";$PWD/core/ten_gn"
-          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_package_manager_enable_tests=false ten_rust_enable_gen_cargo_config=false
+          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_package_manager_enable_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_clean_build=true
           tgn build win x64 ${{ matrix.build_type }}
 
       - name: Run Tests (ten_utils_unit_test)
