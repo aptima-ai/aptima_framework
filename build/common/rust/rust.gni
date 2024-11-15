@@ -8,11 +8,12 @@ import("//build/options.gni")
 import("//build/ten_rust/options.gni")
 
 template("rust_target") {
-  assert(defined(invoker.project_path), "project_file is not defined")
+  assert(defined(invoker.project_path), "project_path is not defined")
+  assert(defined(invoker.target_path), "target_path is not defined")
   assert(defined(invoker.output_name), "output_name is not defined")
 
   _target_name = target_name
-  target_path = target_gen_dir
+  target_path = invoker.target_path
 
   action("${_target_name}") {
     script = "//build/common/rust/rust.py"

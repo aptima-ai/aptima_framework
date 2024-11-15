@@ -41,6 +41,7 @@ if (ten_enable_ten_rust) {
 
 rust_target("ten_rust_static_lib") {
   project_path = "//core/src/ten_rust"
+  target_path = "${target_gen_dir}/ten_rust_static_lib"
   manifest_path = "//core/src/ten_rust/Cargo.toml"
 
   extra_inputs = [

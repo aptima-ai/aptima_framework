@@ -76,7 +76,7 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_clean_build=true
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
           tgn build mac arm64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 

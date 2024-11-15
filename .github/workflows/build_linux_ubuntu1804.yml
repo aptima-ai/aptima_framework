@@ -50,7 +50,7 @@ jobs:
           echo $PATH
           go env -w GOFLAGS="-buildvcs=false"
           rustup default nightly
-          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=false log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_enable_package_manager=false ten_rust_enable_gen_cargo_config=false ten_enable_clean_build=true
+          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=false log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_enable_package_manager=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
           tgn build linux x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
