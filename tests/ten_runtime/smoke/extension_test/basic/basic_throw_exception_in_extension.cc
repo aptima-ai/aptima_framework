@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -160,14 +159,14 @@ void *app_thread_3_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(basic_throw_exception_in_extension__extension_1,
-                                    test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(basic_throw_exception_in_extension__extension_2,
-                                    test_extension_2);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(basic_throw_exception_in_extension__extension_3,
-                                    test_extension_3);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(basic_throw_exception_in_extension__extension_4,
-                                    test_extension_4);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    basic_throw_exception_in_extension__extension_1, test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    basic_throw_exception_in_extension__extension_2, test_extension_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    basic_throw_exception_in_extension__extension_3, test_extension_3);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    basic_throw_exception_in_extension__extension_4, test_extension_4);
 
 }  // namespace
 
@@ -179,8 +178,6 @@ TEST(ExtensionTest, BasicThrowExceptionInExtension) {  // NOLINT
       ten_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_1_thread =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
-
-  ten_sleep(300);
 
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;

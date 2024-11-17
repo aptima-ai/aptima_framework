@@ -25,6 +25,13 @@ void ten_log_global_set_output_level(TEN_LOG_LEVEL level) {
   ten_log_set_output_level(&ten_global_log, level);
 }
 
+void ten_log_global_set_output_to_stderr(void) {
+  if (ten_log_is_output_to_file(&ten_global_log)) {
+    ten_log_output_to_file_deinit(&ten_global_log);
+  }
+  ten_log_set_output_to_stderr(&ten_global_log);
+}
+
 void ten_log_global_set_output_to_file(const char *log_path) {
   ten_log_set_output_to_file(&ten_global_log, log_path);
 }

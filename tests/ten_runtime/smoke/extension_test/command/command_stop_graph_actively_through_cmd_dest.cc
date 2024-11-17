@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -161,14 +160,18 @@ void *app_thread_3_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(command_stop_graph_actively_through_cmd_dest__extension_1,
-                                    test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(command_stop_graph_actively_through_cmd_dest__extension_2,
-                                    test_extension_2);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(command_stop_graph_actively_through_cmd_dest__extension_3,
-                                    test_extension_3);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(command_stop_graph_actively_through_cmd_dest__extension_4,
-                                    test_extension_4);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    command_stop_graph_actively_through_cmd_dest__extension_1,
+    test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    command_stop_graph_actively_through_cmd_dest__extension_2,
+    test_extension_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    command_stop_graph_actively_through_cmd_dest__extension_3,
+    test_extension_3);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    command_stop_graph_actively_through_cmd_dest__extension_4,
+    test_extension_4);
 
 }  // namespace
 
@@ -180,8 +183,6 @@ TEST(ExtensionTest, CommandStopGraphActivelyThroughCmdDest) {  // NOLINT
       ten_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_thread_1 =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
-
-  ten_sleep(300);
 
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;

@@ -393,14 +393,13 @@ void ten_connection_connect_to(ten_connection_t *self, const char *uri,
         "Should not happen.");
   }
 
-  if (self->protocol) {
-    bool is_connected =
-        ten_protocol_connect_to(self->protocol, uri, on_server_connected);
+  TEN_ASSERT(
+      self->protocol && ten_protocol_check_integrity(self->protocol, true),
+      "Should not happen.");
+  TEN_ASSERT(ten_protocol_role_is_communication(self->protocol),
+             "Should not happen.");
 
-    if (!is_connected && on_server_connected) {
-      on_server_connected(self->protocol, false);
-    }
-  }
+  ten_protocol_connect_to(self->protocol, uri, on_server_connected);
 }
 
 void ten_connection_attach_to_remote(ten_connection_t *self,

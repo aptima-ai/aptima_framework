@@ -44,6 +44,16 @@ struct ten_timer_t {
   int32_t requested_times;  // TEN_TIMER_INFINITE means "forever"
   int32_t times;
 
+  // If the auto_restart flag is set to be 'false', it will __not__
+  // automatically restart timing after each timeout. Instead, the user needs to
+  // manually restart the timer (ten_timer_enable). When the number of timeouts
+  // exceeds the specified times, the timer will automatically close.
+  //
+  // Conversely, if auto_restart is set to be 'true' (by default), the timer
+  // will automatically decide whether to restart timing or close the timer
+  // based on its policy after each timeout.
+  bool auto_restart;
+
   ten_loc_t src_loc;
 
   ten_runloop_timer_t *backend;
@@ -58,7 +68,8 @@ TEN_RUNTIME_PRIVATE_API ten_timer_t *ten_timer_create_with_cmd(
 
 TEN_RUNTIME_PRIVATE_API ten_timer_t *ten_timer_create(ten_runloop_t *runloop,
                                                       uint64_t timeout_in_us,
-                                                      int32_t requested_times);
+                                                      int32_t requested_times,
+                                                      bool auto_restart);
 
 TEN_RUNTIME_PRIVATE_API void ten_timer_destroy(ten_timer_t *self);
 

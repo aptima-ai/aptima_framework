@@ -103,6 +103,9 @@
 
 typedef struct ten_protocol_integrated_t ten_protocol_integrated_t;
 
+TEN_RUNTIME_PRIVATE_API void ten_protocol_integrated_on_close(
+    ten_protocol_integrated_t *self);
+
 TEN_RUNTIME_PRIVATE_API void ten_protocol_integrated_on_stream_closed(
     ten_protocol_integrated_t *self);
 

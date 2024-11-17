@@ -219,8 +219,6 @@ TEST(ExtensionTest, DISABLED_MultiAppConcurrent) {  // NOLINT
   auto *app_thread_1 =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
 
-  ten_sleep(300);
-
   std::vector<ten_thread_t *> client_threads;
 
   for (size_t i = 0; i < ONE_ENGINE_ONE_CLIENT_CONCURRENT_CNT; ++i) {

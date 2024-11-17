@@ -10,6 +10,7 @@
 #include "include_internal/ten_runtime/protocol/integrated/close.h"
 #include "include_internal/ten_runtime/protocol/integrated/protocol_integrated.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
+#include "include_internal/ten_runtime/timer/timer.h"
 #include "ten_utils/io/stream.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
@@ -39,6 +40,10 @@ static bool ten_protocol_integrated_could_be_close(
       if (self->role_facility.communication_stream) {
         return false;
       }
+
+      if (self->retry_timer) {
+        return false;
+      }
       break;
     default:
       TEN_ASSERT(0, "Should not happen.");
@@ -48,7 +53,7 @@ static bool ten_protocol_integrated_could_be_close(
   return true;
 }
 
-static void ten_protocol_integrated_on_close(ten_protocol_integrated_t *self) {
+void ten_protocol_integrated_on_close(ten_protocol_integrated_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   ten_protocol_t *protocol = &self->base;
@@ -139,6 +144,12 @@ void ten_protocol_integrated_close(ten_protocol_integrated_t *self) {
     case TEN_PROTOCOL_ROLE_OUT_EXTERNAL:
       if (self->role_facility.communication_stream) {
         ten_stream_close(self->role_facility.communication_stream);
+        perform_any_closing_operation = true;
+      }
+
+      if (self->retry_timer) {
+        ten_timer_stop_async(self->retry_timer);
+        ten_timer_close_async(self->retry_timer);
         perform_any_closing_operation = true;
       }
       break;

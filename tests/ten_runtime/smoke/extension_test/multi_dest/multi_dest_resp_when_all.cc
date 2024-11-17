@@ -10,7 +10,6 @@
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -166,10 +165,6 @@ TEST(ExtensionTest, MultiDestRespWhenAll) {
          })"_json);
   ten_test::check_result_is(resp, "137", TEN_STATUS_CODE_OK,
                             "hello world, too");
-
-  // Wait for some time to ensure that the extension 1 will not receive any more
-  // results.
-  ten_sleep(100);
 
   delete client;
 

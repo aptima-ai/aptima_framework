@@ -60,4 +60,6 @@ TEN_UTILS_API void ten_log_global_deinit(void);
 
 TEN_UTILS_API void ten_log_global_set_output_level(TEN_LOG_LEVEL level);
 
+TEN_UTILS_API void ten_log_global_set_output_to_stderr(void);
+
 TEN_UTILS_API void ten_log_global_set_output_to_file(const char *log_path);

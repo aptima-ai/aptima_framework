@@ -69,7 +69,7 @@ class test_app_1 : public ten::app_t {
                         "log_level": 2,
                         "predefined_graphs": [{
                            "name": "default",
-                           "auto_start": false,
+                           "auto_start": true,
                            "singleton": true,
                            "nodes": [{
                               "type": "extension",
@@ -146,12 +146,13 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(predefined_graph_multi_app__extension_2,
 
 TEST(ExtensionTest, PredefinedGraphMultiApp) {  // NOLINT
   // Start app.
-  auto *app_2_thread =
-      ten_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_1_thread =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
 
-  ten_sleep(300);
+  // Used to verify the retry mechanism of the protocol.
+  ten_sleep(1000);
+  auto *app_2_thread =
+      ten_thread_create("app thread 2", app_thread_2_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");

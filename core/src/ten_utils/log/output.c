@@ -169,7 +169,7 @@ static int *get_log_fd(const char *log_path) {
   return fd_ptr;
 }
 
-static void ten_log_output_to_file_cb(ten_string_t *msg, void *user_data) {
+void ten_log_output_to_file_cb(ten_string_t *msg, void *user_data) {
   assert(msg && "Invalid argument.");
 
   if (!user_data) {
@@ -242,4 +242,17 @@ void ten_log_set_output_to_stderr(ten_log_t *self) {
 #else
   ten_log_set_formatter(self, ten_log_default_formatter, NULL);
 #endif
+}
+
+void ten_log_output_to_file_deinit(ten_log_t *self) {
+  assert(self && "Invalid argument.");
+  assert(self->output.output_cb == ten_log_output_to_file_cb &&
+         "Invalid argument.");
+
+  free(self->output.user_data);
+}
+
+bool ten_log_is_output_to_file(ten_log_t *self) {
+  assert(self && "Invalid argument.");
+  return self->output.output_cb == ten_log_output_to_file_cb;
 }

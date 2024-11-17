@@ -33,6 +33,7 @@
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
@@ -127,7 +128,7 @@ static void ten_stream_on_data(ten_stream_t *stream, void *data, int size) {
 
   if (size < 0) {
     // Something unexpected happened, close the protocol.
-    TEN_LOGV("Failed to receive data, close the protocol: %d", size);
+    TEN_LOGD("Failed to receive data, close the protocol: %d", size);
 
     // This branch means that the client side closes the physical connection
     // first, and then the corresponding protocol will be closed. An example of
@@ -284,6 +285,9 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
   ten_stream_t *stream = cb_data;
   TEN_ASSERT(stream, "Should not happen.");
 
+  ten_protocol_on_client_accepted_func_t on_client_accepted = stream->user_data;
+  TEN_ASSERT(on_client_accepted, "Should not happen.");
+
   ten_app_t *app = ten_env_get_attached_app(ten_env);
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
 
@@ -304,10 +308,8 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
   ten_protocol_attach_to_app(new_communication_base_protocol,
                              listening_base_protocol->attached_target.app);
 
-  TEN_ASSERT(listening_base_protocol->on_client_accepted, "Should not happen.");
-  TEN_UNUSED ten_connection_t *connection =
-      listening_base_protocol->on_client_accepted(
-          listening_base_protocol, new_communication_base_protocol);
+  TEN_UNUSED ten_connection_t *connection = on_client_accepted(
+      listening_base_protocol, new_communication_base_protocol);
   TEN_ASSERT(connection && ten_connection_check_integrity(connection, true),
              "Should not happen.");
 
@@ -319,12 +321,21 @@ static void ten_app_thread_on_client_protocol_created(ten_env_t *ten_env,
   TEN_ASSERT(!rc, "ten_stream_start_read() failed: %d", rc);
 }
 
-static void ten_protocol_integrated_on_client_accepted(
-    ten_transport_t *transport, ten_stream_t *stream, TEN_UNUSED int status) {
+static void ten_transport_on_client_accepted(ten_transport_t *transport,
+                                             ten_stream_t *stream,
+                                             TEN_UNUSED int status) {
   TEN_ASSERT(transport && stream, "Should not happen.");
 
   ten_protocol_integrated_t *listening_protocol = transport->user_data;
   TEN_ASSERT(listening_protocol, "Should not happen.");
+
+  // The `on_client_accepted_data` in transport stores the `on_client_accepted`
+  // callback function set by the TEN runtime.
+  ten_protocol_on_client_accepted_func_t on_client_accepted =
+      transport->on_client_accepted_data;
+  TEN_ASSERT(on_client_accepted, "Should not happen.");
+
+  stream->user_data = on_client_accepted;
 
   ten_protocol_t *listening_base_protocol = &listening_protocol->base;
   TEN_ASSERT(listening_base_protocol &&
@@ -353,8 +364,10 @@ static void ten_protocol_integrated_on_client_accepted(
   ten_error_deinit(&err);
 }
 
-static void ten_protocol_integrated_listen(ten_protocol_integrated_t *self,
-                                           const char *uri) {
+static void ten_protocol_integrated_listen(
+    ten_protocol_t *self_, const char *uri,
+    ten_protocol_on_client_accepted_func_t on_client_accepted) {
+  ten_protocol_integrated_t *self = (ten_protocol_integrated_t *)self_;
   TEN_ASSERT(self && ten_protocol_check_integrity(&self->base, true),
              "Should not happen.");
   TEN_ASSERT(uri, "Should not happen.");
@@ -373,7 +386,14 @@ static void ten_protocol_integrated_listen(ten_protocol_integrated_t *self,
   self->role_facility.listening_transport = transport;
 
   transport->user_data = self;
-  transport->on_client_accepted = ten_protocol_integrated_on_client_accepted;
+  // When a client connects, it is first handled using
+  // `ten_transport_on_client_accepted`, and only afterward is the
+  // `on_client_accepted` defined from TEN runtime. This way, some tasks can be
+  // performed within the protocol at the transport/stream layer first, before
+  // switching to the TEN runtime's `on_client_accepted` callback.
+  transport->on_client_accepted = ten_transport_on_client_accepted;
+  transport->on_client_accepted_data = on_client_accepted;
+
   ten_transport_set_close_cb(transport,
                              ten_protocol_integrated_on_transport_closed, self);
 
@@ -385,6 +405,8 @@ static void ten_protocol_integrated_listen(ten_protocol_integrated_t *self,
   if (rc) {
     TEN_LOGE("Failed to create a listening endpoint (%s): %d",
              ten_string_get_raw_str(transport_uri), rc);
+
+    // TODO(xilin): Handle the error.
   }
 
   ten_string_destroy(transport_uri);
@@ -447,38 +469,218 @@ static void ten_protocol_integrated_on_output_async(
                              NULL);
 }
 
-static void on_server_connected(ten_transport_t *transport,
-                                ten_stream_t *stream, int status) {
+static void ten_protocol_integrated_on_server_finally_connected(
+    ten_protocol_integrated_connect_to_context_t *cb_data, bool success) {
+  TEN_ASSERT(cb_data, "Should not happen.");
+  TEN_ASSERT(cb_data->on_server_connected, "Should not happen.");
+
+  ten_protocol_integrated_t *protocol = cb_data->protocol;
+  TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
+             "Should not happen.");
+
+  cb_data->on_server_connected(&cb_data->protocol->base, success);
+  cb_data->on_server_connected = NULL;
+
+  ten_protocol_integrated_connect_to_context_destroy(cb_data);
+}
+
+static void ten_transport_on_server_connected_after_retry(
+    ten_transport_t *transport, ten_stream_t *stream, int status) {
   ten_protocol_integrated_t *protocol = transport->user_data;
+  // Since the transport is created with the runloop of the engine, it is
+  // currently in the engine thread.
   TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
              "Should not happen.");
   TEN_ASSERT(ten_protocol_role_is_communication(&protocol->base),
              "Should not happen.");
 
-  // If the protocol is closing, do not handle this connect success event.
+  ten_protocol_integrated_connect_to_context_t *connect_to_context =
+      transport->on_server_connected_data;
+  TEN_ASSERT(connect_to_context, "Should not happen.");
+  TEN_ASSERT(connect_to_context->on_server_connected, "Should not happen.");
+
   if (ten_protocol_is_closing(&protocol->base)) {
+    ten_stream_close(stream);
+    // The ownership of the 'connect_to_context' is transferred to the timer, so
+    // the 'connect_to_context' will be freed when the timer is closed.
+    return;
+  }
+
+  TEN_ASSERT(protocol->retry_timer, "Should not happen.");
+
+  bool success = status >= 0;
+
+  if (success) {
+    ten_protocol_integrated_set_stream(protocol, stream);
+
+    connect_to_context->on_server_connected(&protocol->base, success);
+    transport->on_server_connected_data = NULL;
+    // Set 'on_server_connected' to NULL to indicate that this callback has
+    // already been called and to prevent it from being called again.
+    connect_to_context->on_server_connected = NULL;
+
+    ten_stream_start_read(stream);
+
+    TEN_LOGD("Connect to %s successfully after retry",
+             ten_string_get_raw_str(&connect_to_context->server_uri));
+
+    ten_timer_stop_async(protocol->retry_timer);
+    ten_timer_close_async(protocol->retry_timer);
+  } else {
+    ten_stream_close(stream);
+
+    // Reset the timer to retry or close the timer if the retry times are
+    // exhausted.
+    ten_timer_enable(protocol->retry_timer);
+
+    TEN_LOGD("Failed to connect to %s after retry",
+             ten_string_get_raw_str(&connect_to_context->server_uri));
+  }
+}
+
+static void ten_protocol_integrated_on_retry_timer_triggered(
+    TEN_UNUSED ten_timer_t *self, void *on_trigger_data) {
+  ten_protocol_integrated_connect_to_context_t *connect_to_context =
+      on_trigger_data;
+  TEN_ASSERT(connect_to_context, "Should not happen.");
+
+  ten_protocol_integrated_t *protocol = connect_to_context->protocol;
+  TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
+             "Should not happen.");
+
+  ten_runloop_t *loop = ten_protocol_get_attached_runloop(&protocol->base);
+  TEN_ASSERT(loop, "Should not happen.");
+
+  ten_transport_t *transport = ten_transport_create(loop);
+  transport->user_data = protocol;
+  transport->on_server_connected =
+      ten_transport_on_server_connected_after_retry;
+  transport->on_server_connected_data = connect_to_context;
+
+  int rc = ten_transport_connect(transport, &connect_to_context->server_uri);
+  if (rc) {
+    // If the 'ten_transport_connect' directly returns error, it could be due to
+    // invalid parameters or other errors which cannot be solved by retrying.
+
+    TEN_LOGW(
+        "Failed to connect to %s due to invalid parameters or other fatal "
+        "errors.",
+        ten_string_get_raw_str(&connect_to_context->server_uri));
+
+    transport->on_server_connected_data = NULL;
+    ten_transport_close(transport);
+
+    connect_to_context->on_server_connected(&protocol->base, false);
+    // Set 'on_server_connected' to NULL to indicate that this callback has
+    // already been called and to prevent it from being called again.
+    connect_to_context->on_server_connected = NULL;
+
+    // If the 'ten_transport_connect' directly returns error, it could be due to
+    // invalid parameters or other errors which cannot be solved by retrying. So
+    // we close the timer here.
+    ten_timer_stop_async(protocol->retry_timer);
+    ten_timer_close_async(protocol->retry_timer);
+  }
+}
+
+static void ten_protocol_integrated_on_retry_timer_closed(ten_timer_t *timer,
+                                                          void *user_data) {
+  TEN_ASSERT(timer, "Should not happen.");
+
+  ten_protocol_integrated_connect_to_context_t *connect_to_context = user_data;
+  TEN_ASSERT(connect_to_context, "Should not happen.");
+
+  ten_protocol_integrated_t *protocol = connect_to_context->protocol;
+  TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
+             "Should not happen.");
+
+  if (connect_to_context->on_server_connected) {
+    TEN_LOGD(
+        "Retry timer is closed, but the connection to %s is not established "
+        "yet",
+        ten_string_get_raw_str(&connect_to_context->server_uri));
+    ten_protocol_integrated_on_server_finally_connected(connect_to_context,
+                                                        false);
+  } else {
+    ten_protocol_integrated_connect_to_context_destroy(connect_to_context);
+  }
+
+  protocol->retry_timer = NULL;
+
+  if (ten_protocol_is_closing(&protocol->base)) {
+    ten_protocol_integrated_on_close(protocol);
+  }
+}
+
+static void ten_transport_on_server_connected(ten_transport_t *transport,
+                                              ten_stream_t *stream,
+                                              int status) {
+  ten_protocol_integrated_t *protocol = transport->user_data;
+
+  // Since the transport is created with the runloop of the engine, it is
+  // currently in the engine thread.
+  TEN_ASSERT(protocol && ten_protocol_check_integrity(&protocol->base, true),
+             "Should not happen.");
+  TEN_ASSERT(ten_protocol_role_is_communication(&protocol->base),
+             "Should not happen.");
+
+  TEN_ASSERT(!protocol->retry_timer, "Should not happen.");
+
+  ten_protocol_integrated_connect_to_context_t *cb_data =
+      transport->on_server_connected_data;
+  TEN_ASSERT(cb_data, "Should not happen.");
+  TEN_ASSERT(cb_data->on_server_connected, "Should not happen.");
+
+  if (ten_protocol_is_closing(&protocol->base)) {
+    ten_stream_close(stream);
+
+    ten_protocol_integrated_on_server_finally_connected(cb_data, false);
     return;
   }
 
   bool success = status >= 0;
 
   if (success) {
+    ten_protocol_integrated_on_server_finally_connected(cb_data, success);
+
     ten_protocol_integrated_set_stream(protocol, stream);
-  }
-
-  if (protocol->base.on_server_connected) {
-    protocol->base.on_server_connected(&protocol->base, success);
-  }
-
-  if (success) {
     ten_stream_start_read(stream);
   } else {
     ten_stream_close(stream);
+
+    bool need_retry =
+        protocol->retry_config.enable && protocol->retry_config.max_retries > 0;
+
+    if (!need_retry) {
+      ten_protocol_integrated_on_server_finally_connected(cb_data, success);
+      return;
+    }
+
+    ten_runloop_t *loop = ten_protocol_get_attached_runloop(&protocol->base);
+    TEN_ASSERT(loop, "Should not happen.");
+
+    ten_timer_t *timer = ten_timer_create(
+        loop, (uint64_t)protocol->retry_config.interval_ms * 1000,
+        (int32_t)protocol->retry_config.max_retries, false);
+    TEN_ASSERT(timer, "Should not happen.");
+
+    protocol->retry_timer = timer;
+
+    // Note that the ownership of the 'cb_data' is transferred to the timer.
+    // The 'cb_data' will be freed when the timer is closed.
+    ten_timer_set_on_triggered(
+        timer, ten_protocol_integrated_on_retry_timer_triggered, cb_data);
+    ten_timer_set_on_closed(
+        timer, ten_protocol_integrated_on_retry_timer_closed, cb_data);
+
+    ten_timer_enable(timer);
   }
 }
 
-static bool ten_protocol_integrated_connect_to(ten_protocol_integrated_t *self,
-                                               const char *uri) {
+static void ten_protocol_integrated_connect_to(
+    ten_protocol_t *self_, const char *uri,
+    ten_protocol_on_server_connected_func_t on_server_connected) {
+  ten_protocol_integrated_t *self = (ten_protocol_integrated_t *)self_;
   TEN_ASSERT(self && ten_protocol_check_integrity(&self->base, true),
              "Should not happen.");
   TEN_ASSERT(uri, "Should not happen.");
@@ -493,25 +695,41 @@ static bool ten_protocol_integrated_connect_to(ten_protocol_integrated_t *self,
           self->base.attached_target.connection->attached_target.remote->engine,
           true),
       "Should not happen.");
+  TEN_ASSERT(!self->retry_timer, "Should not happen.");
 
   ten_runloop_t *loop = ten_remote_get_attached_runloop(
       self->base.attached_target.connection->attached_target.remote);
   TEN_ASSERT(loop, "Should not happen.");
 
-  ten_transport_t *transport = ten_transport_create(loop);
-  transport->user_data = self;
-  transport->on_server_connected = on_server_connected;
-
   ten_string_t *transport_uri = ten_protocol_uri_to_transport_uri(uri);
   TEN_ASSERT(transport_uri, "Should not happen.");
-  if (ten_transport_connect(transport, transport_uri)) {
-    TEN_LOGW("Failed to connect to %s", ten_string_get_raw_str(transport_uri));
-    // Something wrong when connecting.
-    ten_transport_close(transport);
-    return false;
-  }
+
+  // Note that if connection fails, the transport needs to be closed.
+  ten_transport_t *transport = ten_transport_create(loop);
+  transport->user_data = self;
+  transport->on_server_connected = ten_transport_on_server_connected;
+
+  // The 'connect_to_server_context' will be freed once the
+  // 'on_server_connected' callback is called.
+  ten_protocol_integrated_connect_to_context_t *connect_to_server_context =
+      ten_protocol_integrated_connect_to_context_create(
+          self, ten_string_get_raw_str(transport_uri), on_server_connected,
+          NULL);
+  transport->on_server_connected_data = connect_to_server_context;
+
+  int rc = ten_transport_connect(transport, transport_uri);
   ten_string_destroy(transport_uri);
-  return true;
+
+  if (rc) {
+    TEN_LOGW("Failed to connect to %s", ten_string_get_raw_str(transport_uri));
+    // If the 'ten_transport_connect' directly returns error, it could be due to
+    // invalid parameters or other errors which cannot be solved by retrying. So
+    // we don't need to retry here.
+    ten_protocol_integrated_on_server_finally_connected(
+        connect_to_server_context, false);
+
+    ten_transport_close(transport);
+  }
 }
 
 static void ten_protocol_integrated_on_stream_cleaned(
@@ -662,8 +880,7 @@ void ten_protocol_integrated_init(
       &self->base, name,
       (ten_protocol_close_func_t)ten_protocol_integrated_close,
       (ten_protocol_on_output_func_t)ten_protocol_integrated_on_output_async,
-      (ten_protocol_listen_func_t)ten_protocol_integrated_listen,
-      (ten_protocol_connect_to_func_t)ten_protocol_integrated_connect_to,
+      ten_protocol_integrated_listen, ten_protocol_integrated_connect_to,
       (ten_protocol_migrate_func_t)ten_protocol_integrated_migrate,
       (ten_protocol_clean_func_t)ten_protocol_integrated_clean);
 
@@ -676,4 +893,38 @@ void ten_protocol_integrated_init(
 
   self->on_input = on_input;
   self->on_output = on_output;
+  ten_protocol_integrated_retry_config_init(&self->retry_config);
+  self->retry_timer = NULL;
+}
+
+ten_protocol_integrated_connect_to_context_t *
+ten_protocol_integrated_connect_to_context_create(
+    ten_protocol_integrated_t *self, const char *server_uri,
+    ten_protocol_on_server_connected_func_t on_server_connected,
+    void *user_data) {
+  TEN_ASSERT(server_uri, "Invalid argument.");
+  TEN_ASSERT(on_server_connected, "Invalid argument.");
+
+  ten_protocol_integrated_connect_to_context_t *context =
+      (ten_protocol_integrated_connect_to_context_t *)TEN_MALLOC(
+          sizeof(ten_protocol_integrated_connect_to_context_t));
+  TEN_ASSERT(context, "Failed to allocate memory.");
+
+  ten_string_init_from_c_str(&context->server_uri, server_uri,
+                             strlen(server_uri));
+  context->on_server_connected = on_server_connected;
+  context->user_data = user_data;
+  context->protocol = self;
+
+  return context;
+}
+
+void ten_protocol_integrated_connect_to_context_destroy(
+    ten_protocol_integrated_connect_to_context_t *context) {
+  TEN_ASSERT(context, "Invalid argument.");
+  // Ensure the callback has been called and reset to NULL.
+  TEN_ASSERT(!context->on_server_connected, "Invalid argument.");
+
+  ten_string_deinit(&context->server_uri);
+  TEN_FREE(context);
 }

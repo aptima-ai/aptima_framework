@@ -156,8 +156,6 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
   auto *app_thread_1 =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
 
-  ten_sleep(300);
-
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;
 

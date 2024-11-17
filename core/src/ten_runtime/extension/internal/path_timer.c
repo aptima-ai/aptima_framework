@@ -116,7 +116,7 @@ ten_timer_t *ten_extension_create_timer_for_in_path(ten_extension_t *self) {
 
   ten_timer_t *timer = ten_timer_create(
       ten_extension_thread_get_attached_runloop(extension_thread),
-      self->path_timeout_info.check_interval, TEN_TIMER_INFINITE);
+      self->path_timeout_info.check_interval, TEN_TIMER_INFINITE, true);
 
   ten_timer_set_on_triggered(timer, ten_extension_in_path_timer_on_triggered,
                              self);
@@ -136,7 +136,7 @@ ten_timer_t *ten_extension_create_timer_for_out_path(ten_extension_t *self) {
 
   ten_timer_t *timer = ten_timer_create(
       ten_extension_thread_get_attached_runloop(extension_thread),
-      self->path_timeout_info.check_interval, TEN_TIMER_INFINITE);
+      self->path_timeout_info.check_interval, TEN_TIMER_INFINITE, true);
 
   ten_timer_set_on_triggered(timer, ten_extension_out_path_timer_on_triggered,
                              self);

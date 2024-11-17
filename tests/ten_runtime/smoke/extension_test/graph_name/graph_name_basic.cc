@@ -5,7 +5,6 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include <nlohmann/json.hpp>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -124,8 +123,6 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
       ten_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_thread_1 =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
-
-  ten_sleep(300);
 
   // extension1(app1) --> extension3(app2) --> extension2(app1) --> return
   ten::msgpack_tcp_client_t *client = nullptr;

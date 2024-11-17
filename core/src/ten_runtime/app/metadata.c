@@ -180,6 +180,10 @@ bool ten_app_handle_ten_namespace_properties(ten_app_t *self) {
   self->one_event_loop_per_engine = false;
   self->long_running_mode = false;
 
+  // First, set the log-related configuration to default values. This way, if
+  // there are no log-related properties under the `ten` namespace, the default
+  // values will be used.
+  ten_log_global_set_output_to_stderr();
   ten_log_global_set_output_level(DEFAULT_LOG_OUTPUT_LEVEL);
 
   if (!ten_app_determine_ten_namespace_properties(self,

@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -130,8 +129,6 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
       ten_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_thread_1 =
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
-
-  ten_sleep(300);
 
   for (size_t i = 0; i < SEQUENTIAL_CLIENT_CNT; ++i) {
     ten::msgpack_tcp_client_t *client = nullptr;

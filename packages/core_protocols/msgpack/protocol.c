@@ -78,6 +78,11 @@ static void ten_protocol_msgpack_on_create_instance(
       (ten_protocol_integrated_on_input_func_t)ten_protocol_msgpack_on_input,
       (ten_protocol_integrated_on_output_func_t)ten_protocol_msgpack_on_output);
 
+  // Configure the retry mechanism.
+  self->base.retry_config.enable = true;
+  self->base.retry_config.interval_ms = 500;
+  self->base.retry_config.max_retries = 5;
+
   ten_msgpack_parser_init(&self->parser);
 
   ten_env_on_create_instance_done(ten_env, self, context, NULL);

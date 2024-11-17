@@ -111,17 +111,19 @@ typedef void (*ten_protocol_close_func_t)(ten_protocol_t *self);
 typedef void (*ten_protocol_on_output_func_t)(ten_protocol_t *self,
                                               ten_list_t *output);
 
-typedef void (*ten_protocol_listen_func_t)(ten_protocol_t *self,
-                                           const char *uri);
-
 typedef ten_connection_t *(*ten_protocol_on_client_accepted_func_t)(
     ten_protocol_t *self, ten_protocol_t *new_protocol);
 
-typedef bool (*ten_protocol_connect_to_func_t)(ten_protocol_t *self,
-                                               const char *uri);
+typedef void (*ten_protocol_listen_func_t)(
+    ten_protocol_t *self, const char *uri,
+    ten_protocol_on_client_accepted_func_t on_client_accepted);
 
 typedef void (*ten_protocol_on_server_connected_func_t)(ten_protocol_t *self,
                                                         bool success);
+
+typedef void (*ten_protocol_connect_to_func_t)(
+    ten_protocol_t *self, const char *uri,
+    ten_protocol_on_server_connected_func_t on_server_connected);
 
 typedef void (*ten_protocol_migrate_func_t)(ten_protocol_t *self,
                                             ten_engine_t *engine,

@@ -139,20 +139,6 @@ typedef struct ten_protocol_t {
   // Used to handle the output TEN messages to the remote.
   ten_protocol_on_output_func_t on_output;
 
-  // This is the callback function when a client connects to this protocol.
-  // Note that this function pointer can only be set in 'ten_protocol_listen'
-  // and the 'listen' method should be able to call back this function when
-  // the client successfully establishes a connection.
-  ten_protocol_on_client_accepted_func_t on_client_accepted;
-
-  // This is the callback function when this protocol connected to the remote
-  // server.
-  // Note that this function pointer can only be set in
-  // 'ten_protocol_connect_to' and the 'connect_to' method should be able to
-  // call back this function when the connection to the remote server is
-  // established.
-  ten_protocol_on_server_connected_func_t on_server_connected;
-
   // This is the callback function when this protocol is migrated to the new
   // runloop.
   ten_protocol_on_migrated_func_t on_migrated;
@@ -211,7 +197,7 @@ TEN_RUNTIME_PRIVATE_API void ten_protocol_listen(
     ten_protocol_t *self, const char *uri,
     ten_protocol_on_client_accepted_func_t on_client_accepted);
 
-TEN_RUNTIME_PRIVATE_API bool ten_protocol_connect_to(
+TEN_RUNTIME_PRIVATE_API void ten_protocol_connect_to(
     ten_protocol_t *self, const char *uri,
     ten_protocol_on_server_connected_func_t on_server_connected);
 

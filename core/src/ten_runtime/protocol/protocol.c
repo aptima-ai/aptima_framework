@@ -118,10 +118,7 @@ void ten_protocol_init(ten_protocol_t *self, const char *name,
   self->on_output = on_output;
 
   self->listen = listen;
-  self->on_client_accepted = NULL;
-
   self->connect_to = connect_to;
-  self->on_server_connected = NULL;
 
   self->migrate = migrate;
   self->on_migrated = NULL;
@@ -202,8 +199,7 @@ void ten_protocol_listen(
   TEN_ASSERT(app && ten_app_check_integrity(app, true),
              "Access across threads.");
 
-  self->on_client_accepted = on_client_accepted;
-  self->listen(self, uri);
+  self->listen(self, uri, on_client_accepted);
 }
 
 bool ten_protocol_cascade_close_upward(ten_protocol_t *self) {
@@ -348,7 +344,7 @@ void ten_protocol_send_msg(ten_protocol_t *self, ten_shared_ptr_t *msg) {
   }
 }
 
-bool ten_protocol_connect_to(
+void ten_protocol_connect_to(
     ten_protocol_t *self, const char *uri,
     ten_protocol_on_server_connected_func_t on_server_connected) {
   TEN_ASSERT(self && ten_protocol_check_integrity(self, true),
@@ -356,6 +352,7 @@ bool ten_protocol_connect_to(
   TEN_ASSERT(ten_protocol_role_is_communication(self),
              "Only the communication protocol could connect to remote.");
   TEN_ASSERT(uri, "Should not happen.");
+  TEN_ASSERT(on_server_connected, "Should not happen.");
 
   if (self->attach_to == TEN_PROTOCOL_ATTACH_TO_CONNECTION &&
       ten_connection_attach_to(self->attached_target.connection) ==
@@ -367,11 +364,13 @@ bool ten_protocol_connect_to(
         "Should not happen.");
   }
 
-  self->on_server_connected = on_server_connected;
   if (self->connect_to) {
-    return self->connect_to(self, uri);
+    self->connect_to(self, uri, on_server_connected);
+  } else {
+    // The protocol doesn't implement the 'connect_to' function, so the
+    // 'on_server_connected' callback is called directly.
+    on_server_connected(self, false);
   }
-  return false;
 }
 
 void ten_protocol_migrate(ten_protocol_t *self, ten_engine_t *engine,

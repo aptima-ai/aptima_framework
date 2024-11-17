@@ -56,12 +56,14 @@ struct ten_transport_t {
    */
   void (*on_server_connected)(ten_transport_t *transport, ten_stream_t *stream,
                               int status);
+  void *on_server_connected_data;
 
   /**
    * Callback when a new rx stream is created
    */
   void (*on_client_accepted)(ten_transport_t *transport, ten_stream_t *stream,
                              int status);
+  void *on_client_accepted_data;
 
   /**
    * Callback when transport closed

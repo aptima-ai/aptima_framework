@@ -134,8 +134,6 @@ TEST(GraphTest, GroupNodeMissing2Apps) {  // NOLINT
     app2_thread = ten_thread_create("app thread 2", app_thread_2_main, nullptr);
     app1_thread = ten_thread_create("app thread 1", app_thread_1_main, nullptr);
 
-    ten_sleep(300);
-
     // In a scenario which contains multiple TEN app, the construction of a
     // graph might failed because not all TEN app has already been launched
     // successfully.
