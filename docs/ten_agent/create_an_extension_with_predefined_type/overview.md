@@ -1,17 +1,3 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: false
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: true
----
-
 # Overview
 
 ## Extension types
@@ -20,8 +6,8 @@ When developing Extensions, we often notice that implementations for Extensions 
 
 Currently, TEN Agent supports the following Extension types:
 
-- AsyncLLMBaseExtension: Designed for implementing large language model Extensions, such as those similar to OpenAI.
-- AsyncLLMToolBaseExtension: Used to implement tool Extensions for large language models. These are Extensions that provide tool capabilities based on Function Call mechanisms.
+- `AsyncLLMBaseExtension`: Designed for implementing large language model Extensions, such as those similar to OpenAI.
+- `AsyncLLMToolBaseExtension`: Used to implement tool Extensions for large language models. These are Extensions that provide tool capabilities based on Function Call mechanisms.
 
 This abstraction helps standardize development while reducing repetitive work.
 
