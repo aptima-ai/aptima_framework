@@ -21,6 +21,7 @@ use ten_rust::pkg_info::PkgInfo;
 use super::config::TmanConfig;
 use super::registry::{get_package_list, SearchCriteria};
 use super::utils::pathbuf_to_string;
+use crate::log::tman_verbose_println;
 use crate::package_info::pkg_info_from_find_package_data;
 
 // TODO(Wei): Should use the union of the semantic versioning rather than the
@@ -169,6 +170,12 @@ async fn process_dependencies_to_get_candidates(
             candidate_pkg_info.url = pathbuf_to_string(result.url)?;
             candidate_pkg_info.is_local_installed = false;
 
+            tman_verbose_println!(
+                tman_config,
+                "Collect candidate: {:?}",
+                candidate_pkg_info
+            );
+
             candidate_pkg_infos.push(candidate_pkg_info);
         }
 
@@ -182,12 +189,24 @@ async fn process_dependencies_to_get_candidates(
         if let Some(candidates) = all_candidates.get(&dependency.pkg_identity) {
             for candidate in candidates {
                 if dependency.version_req.matches(&candidate.version) {
+                    tman_verbose_println!(
+                        tman_config,
+                        "Collect candidate: {:?}",
+                        candidate
+                    );
+
                     candidate_pkg_infos.push(candidate.clone());
                 }
             }
         }
 
         for mut candidate_pkg_info in candidate_pkg_infos {
+            tman_verbose_println!(
+                tman_config,
+                "Check candidate support: {:?}",
+                candidate_pkg_info
+            );
+
             let compatible_score = is_pkg_supports_compatible_with(
                 &candidate_pkg_info.supports,
                 support,
@@ -199,6 +218,12 @@ async fn process_dependencies_to_get_candidates(
                 // Record the package's compatible_score so that we can later
                 // select the most appropriate one.
                 candidate_pkg_info.compatible_score = compatible_score;
+
+                tman_verbose_println!(
+                    tman_config,
+                    "Found a candidate: {:?}",
+                    candidate_pkg_info
+                );
 
                 all_candidates
                     .entry(dependency.pkg_identity.clone())

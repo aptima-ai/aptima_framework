@@ -302,11 +302,24 @@ fn filter_compatible_pkgs_to_candidates(
     support: &PkgSupport,
 ) {
     for existed_pkg in all_existing_local_pkgs.to_owned().iter_mut() {
+        tman_verbose_println!(
+            tman_config,
+            "Check support score for {:?}",
+            existed_pkg
+        );
+
         let compatible_score =
             is_pkg_supports_compatible_with(&existed_pkg.supports, support);
 
         if compatible_score >= 0 {
             existed_pkg.compatible_score = compatible_score;
+
+            tman_verbose_println!(
+                tman_config,
+                "The existed {} package {} is compatible with the current system.",
+                existed_pkg.pkg_identity.pkg_type,
+                existed_pkg.pkg_identity.name
+            );
 
             all_candidates
                 .entry(existed_pkg.pkg_identity.clone())

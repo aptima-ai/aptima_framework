@@ -37,10 +37,6 @@ template("ten_package_publish") {
       rebase_path(published_results),
     ]
 
-    if (!ten_package_manager_enable_publish) {
-      args += [ "--no-enable-publish" ]
-    }
-
     args += [
       "--os",
       target_os,

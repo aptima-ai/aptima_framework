@@ -5,10 +5,5 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 declare_args() {
-  ten_package_manager_enable_publish = target_cpu != "arm64"
-}
-
-declare_args() {
-  ten_package_manager_enable_tests = (is_linux && target_cpu == "x64") ||
-                                     is_win || (is_mac && target_cpu == "x64")
+  ten_package_manager_enable_tests = true
 }

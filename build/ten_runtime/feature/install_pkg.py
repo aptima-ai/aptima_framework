@@ -141,6 +141,9 @@ if __name__ == "__main__":
             args.tman_path,
         ]
 
+        if args.log_level > 0:
+            cmd += ["--verbose"]
+
         if args.config_file is not None:
             list.append(cmd, "--config-file=" + args.config_file)
 
@@ -167,8 +170,13 @@ if __name__ == "__main__":
         if args.build_type is not None:
             list.append(cmd, "--build-type=" + args.build_type)
 
-        returncode, _ = cmd_exec.run_cmd(cmd, args.log_level)
+        if args.log_level > 0:
+            print(f"> {cmd}")
+
+        returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
         if returncode:
+            if args.log_level > 0:
+                print(output_text)
             raise Exception("Failed to install app.")
         else:
             timestamp_proxy.touch_timestamp_proxy_file(

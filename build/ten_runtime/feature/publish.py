@@ -20,7 +20,6 @@ class ArgumentInfo(argparse.Namespace):
         self.base_dir: str
         self.config_file: str
         self.log_level: int
-        self.enable_publish: bool
         self.os: str
         self.cpu: str
 
@@ -101,19 +100,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--log-level", type=int, required=False, help="specify log level"
     )
-    parser.add_argument(
-        "--enable-publish",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-    )
     parser.add_argument("--os", type=str, required=True)
     parser.add_argument("--cpu", type=str, required=True)
 
     arg_info = ArgumentInfo()
     args = parser.parse_args(namespace=arg_info)
-
-    if args.enable_publish is False:
-        sys.exit(0)
 
     # The action of adding the `supports` field is currently handled within the
     # GitHub CI flow. In the future, if there is a need to perform this in the

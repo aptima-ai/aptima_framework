@@ -37,8 +37,10 @@ def test_invalid_package_type():
             f"--config-file={config_file}",
             "install",
         ]
-        returncode, _ = cmd_exec.get_cmd_output(" ".join(cmds))
-        assert returncode == 1
+        returncode, output_text = cmd_exec.get_cmd_output(" ".join(cmds))
+        if returncode != 1:
+            print(output_text)
+            raise Exception("Incorrect return code")
     finally:
         os.chdir(origin_wd)
 

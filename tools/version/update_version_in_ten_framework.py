@@ -260,6 +260,7 @@ def update_dependencies_version(
 
     manifests = __collect_manifest_files(system_package_dir_path)
 
+    # Collect manifest.json from all package directories.
     for root, dirs, files in os.walk(packages_dir_path, followlinks=True):
         for dir in dirs:
             manifests += __collect_manifest_files(
@@ -271,11 +272,31 @@ def update_dependencies_version(
 
         break
 
+    # Define the blacklist of manifest.json files to skip.
+    blacklist = [
+        os.path.join(
+            test_dir_path,
+            "ten_manager",
+            "error_context",
+            "package_version_not_found",
+            "test_app",
+            MANIFEST_JSON_FILE,
+        ),
+        # Add more paths as needed.
+    ]
+
+    # Iterate through test files and apply blacklist.
     for root, dirs, files in os.walk(test_dir_path, followlinks=True):
         for file in files:
             if file == MANIFEST_JSON_FILE:
-                manifests.append(os.path.join(root, file))
+                manifest_path = os.path.join(root, file)
+                # Blacklist Check.
+                if manifest_path not in blacklist:
+                    manifests.append(manifest_path)
+                else:
+                    print(f"Skipping blacklisted manifest: {manifest_path}")
 
+    # Update dependency versions in all collected manifest.json.
     for manifest in manifests:
         update_dependency_version_in_manifest_json_file(
             log_level,

@@ -45,7 +45,7 @@ jobs:
           go env -w GOFLAGS="-buildvcs=false"
           go1.20.12 download
           rustup default nightly
-          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_tests=false ten_package_manager_enable_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
+          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
           tgn build linux x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
@@ -78,6 +78,53 @@ jobs:
         run: |
           chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
           out/linux/x64/tests/standalone/ten_runtime_smoke_test || { echo "test failed"; exit 1; }
+
+      - name: Run Tests (ten_rust standalone tests)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          cd out/linux/x64/tests/standalone/ten_rust
+
+          chmod +x unit_test
+          chmod +x integration_test
+
+          ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
+          ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
+
+      - name: Run Tests (ten_manager standalone tests)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          cd out/linux/x64/tests/standalone/ten_manager
+
+          chmod +x unit_test
+
+          ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Python dependencies via script
+        run: |
+          python .github/tools/setup_pytest_dependencies.py
+
+      - name: Run Tests (ten_manager pytest tests)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          cd out/linux/x64/
+          pytest -s tests/ten_manager/
 
       - name: Update supports before upload or publish
         run: |
