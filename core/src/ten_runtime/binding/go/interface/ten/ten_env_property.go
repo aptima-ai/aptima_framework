@@ -399,214 +399,216 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 		return err
 	}
 
-	// Create a channel to wait for the async operation in C to complete.
-	done := make(chan error, 1)
-	callbackHandle := newGoHandle(done)
+	return withCGO(func() error {
+		// Create a channel to wait for the async operation in C to complete.
+		done := make(chan error, 1)
+		callbackHandle := newGoHandle(done)
 
-	var err error
-	switch pt {
-	case propTypeBool:
-		apiStatus := C.ten_go_ten_env_set_property_bool(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.bool(value.(bool)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeInt8:
-		apiStatus := C.ten_go_ten_env_set_property_int8(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.int8_t(value.(int8)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeInt16:
-		apiStatus := C.ten_go_ten_env_set_property_int16(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.int16_t(value.(int16)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeInt32:
-		apiStatus := C.ten_go_ten_env_set_property_int32(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.int32_t(value.(int32)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeInt64:
-		apiStatus := C.ten_go_ten_env_set_property_int64(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.int64_t(value.(int64)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeInt:
-		if is64bit {
-			apiStatus := C.ten_go_ten_env_set_property_int64(
+		var err error
+		switch pt {
+		case propTypeBool:
+			apiStatus := C.ten_go_ten_env_set_property_bool(
 				p.cPtr,
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
-				C.int64_t(value.(int)),
+				C.bool(value.(bool)),
 				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
-		} else {
+
+		case propTypeInt8:
+			apiStatus := C.ten_go_ten_env_set_property_int8(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.int8_t(value.(int8)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeInt16:
+			apiStatus := C.ten_go_ten_env_set_property_int16(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.int16_t(value.(int16)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeInt32:
 			apiStatus := C.ten_go_ten_env_set_property_int32(
 				p.cPtr,
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
-				C.int32_t(value.(int)),
+				C.int32_t(value.(int32)),
 				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
-		}
 
-	case propTypeUint8:
-		apiStatus := C.ten_go_ten_env_set_property_uint8(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.uint8_t(value.(uint8)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeUint16:
-		apiStatus := C.ten_go_ten_env_set_property_uint16(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.uint16_t(value.(uint16)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeUint32:
-		apiStatus := C.ten_go_ten_env_set_property_uint32(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.uint32_t(value.(uint32)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeUint64:
-		apiStatus := C.ten_go_ten_env_set_property_uint64(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.uint64_t(value.(uint64)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeUint:
-		if is64bit {
-			apiStatus := C.ten_go_ten_env_set_property_uint64(
+		case propTypeInt64:
+			apiStatus := C.ten_go_ten_env_set_property_int64(
 				p.cPtr,
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
-				C.uint64_t(value.(uint)),
+				C.int64_t(value.(int64)),
 				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
-		} else {
+
+		case propTypeInt:
+			if is64bit {
+				apiStatus := C.ten_go_ten_env_set_property_int64(
+					p.cPtr,
+					unsafe.Pointer(unsafe.StringData(path)),
+					C.int(len(path)),
+					C.int64_t(value.(int)),
+					C.uintptr_t(callbackHandle),
+				)
+				err = withGoStatus(&apiStatus)
+			} else {
+				apiStatus := C.ten_go_ten_env_set_property_int32(
+					p.cPtr,
+					unsafe.Pointer(unsafe.StringData(path)),
+					C.int(len(path)),
+					C.int32_t(value.(int)),
+					C.uintptr_t(callbackHandle),
+				)
+				err = withGoStatus(&apiStatus)
+			}
+
+		case propTypeUint8:
+			apiStatus := C.ten_go_ten_env_set_property_uint8(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.uint8_t(value.(uint8)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeUint16:
+			apiStatus := C.ten_go_ten_env_set_property_uint16(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.uint16_t(value.(uint16)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeUint32:
 			apiStatus := C.ten_go_ten_env_set_property_uint32(
 				p.cPtr,
 				unsafe.Pointer(unsafe.StringData(path)),
 				C.int(len(path)),
-				C.uint32_t(value.(uint)),
+				C.uint32_t(value.(uint32)),
 				C.uintptr_t(callbackHandle),
 			)
 			err = withGoStatus(&apiStatus)
+
+		case propTypeUint64:
+			apiStatus := C.ten_go_ten_env_set_property_uint64(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.uint64_t(value.(uint64)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeUint:
+			if is64bit {
+				apiStatus := C.ten_go_ten_env_set_property_uint64(
+					p.cPtr,
+					unsafe.Pointer(unsafe.StringData(path)),
+					C.int(len(path)),
+					C.uint64_t(value.(uint)),
+					C.uintptr_t(callbackHandle),
+				)
+				err = withGoStatus(&apiStatus)
+			} else {
+				apiStatus := C.ten_go_ten_env_set_property_uint32(
+					p.cPtr,
+					unsafe.Pointer(unsafe.StringData(path)),
+					C.int(len(path)),
+					C.uint32_t(value.(uint)),
+					C.uintptr_t(callbackHandle),
+				)
+				err = withGoStatus(&apiStatus)
+			}
+
+		case propTypeFloat32:
+			apiStatus := C.ten_go_ten_env_set_property_float32(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.float(value.(float32)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeFloat64:
+			apiStatus := C.ten_go_ten_env_set_property_float64(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				C.double(value.(float64)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeStr:
+			vs := value.(string)
+			apiStatus := C.ten_go_ten_env_set_property_string(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				unsafe.Pointer(unsafe.StringData(vs)),
+				C.int(len(vs)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypeBuf:
+			vb := value.([]byte)
+			apiStatus := C.ten_go_ten_env_set_property_buf(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				unsafe.Pointer(unsafe.SliceData(vb)),
+				C.int(len(vb)),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		case propTypePtr:
+			vh := newGoHandle(value)
+			apiStatus := C.ten_go_ten_env_set_property_ptr(
+				p.cPtr,
+				unsafe.Pointer(unsafe.StringData(path)),
+				C.int(len(path)),
+				cHandle(vh),
+				C.uintptr_t(callbackHandle),
+			)
+			err = withGoStatus(&apiStatus)
+
+		default:
+			// Should not happen.
+			err = newTenError(ErrnoInvalidType, "")
 		}
 
-	case propTypeFloat32:
-		apiStatus := C.ten_go_ten_env_set_property_float32(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.float(value.(float32)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
+		if err != nil {
+			// Clean up the handle if there was an error.
+			loadAndDeleteGoHandle(callbackHandle)
+			return err
+		}
 
-	case propTypeFloat64:
-		apiStatus := C.ten_go_ten_env_set_property_float64(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			C.double(value.(float64)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
+		// Wait for the async operation to complete.
+		err = <-done
 
-	case propTypeStr:
-		vs := value.(string)
-		apiStatus := C.ten_go_ten_env_set_property_string(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			unsafe.Pointer(unsafe.StringData(vs)),
-			C.int(len(vs)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypeBuf:
-		vb := value.([]byte)
-		apiStatus := C.ten_go_ten_env_set_property_buf(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			unsafe.Pointer(unsafe.SliceData(vb)),
-			C.int(len(vb)),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	case propTypePtr:
-		vh := newGoHandle(value)
-		apiStatus := C.ten_go_ten_env_set_property_ptr(
-			p.cPtr,
-			unsafe.Pointer(unsafe.StringData(path)),
-			C.int(len(path)),
-			cHandle(vh),
-			C.uintptr_t(callbackHandle),
-		)
-		err = withGoStatus(&apiStatus)
-
-	default:
-		// Should not happen.
-		err = newTenError(ErrnoInvalidType, "")
-	}
-
-	if err != nil {
-		// Clean up the handle if there was an error.
-		loadAndDeleteGoHandle(callbackHandle)
 		return err
-	}
-
-	// Wait for the async operation to complete.
-	err = <-done
-
-	return err
+	})
 }
 
 // SetPropertyString sets a string as property in the ten. This function has one
@@ -622,29 +624,31 @@ func (p *tenEnv) SetPropertyString(
 		)
 	}
 
-	// Create a channel to wait for the async operation in C to complete.
-	done := make(chan error, 1)
-	callbackHandle := newGoHandle(done)
+	return withCGO(func() error {
+		// Create a channel to wait for the async operation in C to complete.
+		done := make(chan error, 1)
+		callbackHandle := newGoHandle(done)
 
-	apiStatus := C.ten_go_ten_env_set_property_string(
-		p.cPtr,
-		unsafe.Pointer(unsafe.StringData(path)),
-		C.int(len(path)),
-		unsafe.Pointer(unsafe.StringData(value)),
-		C.int(len(value)),
-		C.uintptr_t(callbackHandle),
-	)
-	err := withGoStatus(&apiStatus)
-	if err != nil {
-		// Clean up the handle if there was an error.
-		loadAndDeleteGoHandle(callbackHandle)
+		apiStatus := C.ten_go_ten_env_set_property_string(
+			p.cPtr,
+			unsafe.Pointer(unsafe.StringData(path)),
+			C.int(len(path)),
+			unsafe.Pointer(unsafe.StringData(value)),
+			C.int(len(value)),
+			C.uintptr_t(callbackHandle),
+		)
+		err := withGoStatus(&apiStatus)
+		if err != nil {
+			// Clean up the handle if there was an error.
+			loadAndDeleteGoHandle(callbackHandle)
+			return err
+		}
+
+		// Wait for the async operation to complete.
+		err = <-done
+
 		return err
-	}
-
-	// Wait for the async operation to complete.
-	err = <-done
-
-	return err
+	})
 }
 
 // SetPropertyBytes sets a []byte as property in the ten. This function has one
@@ -660,32 +664,34 @@ func (p *tenEnv) SetPropertyBytes(
 		)
 	}
 
-	// Create a channel to wait for the async operation in C to complete.
-	done := make(chan error, 1)
-	callbackHandle := newGoHandle(done)
+	return withCGO(func() error {
+		// Create a channel to wait for the async operation in C to complete.
+		done := make(chan error, 1)
+		callbackHandle := newGoHandle(done)
 
-	apiStatus := C.ten_go_ten_env_set_property_buf(
-		p.cPtr,
-		unsafe.Pointer(unsafe.StringData(path)),
-		C.int(len(path)),
-		// Using either `unsafe.SliceData()` or `&value[0]` works fine. And
-		// `unsafe.SliceData()` reduces one memory allocation, while
-		// `runtime.convTslice` will be called if using `&value[0]`.
-		unsafe.Pointer(unsafe.SliceData(value)),
-		C.int(len(value)),
-		C.uintptr_t(callbackHandle),
-	)
-	err := withGoStatus(&apiStatus)
-	if err != nil {
-		// Clean up the handle if there was an error.
-		loadAndDeleteGoHandle(callbackHandle)
+		apiStatus := C.ten_go_ten_env_set_property_buf(
+			p.cPtr,
+			unsafe.Pointer(unsafe.StringData(path)),
+			C.int(len(path)),
+			// Using either `unsafe.SliceData()` or `&value[0]` works fine. And
+			// `unsafe.SliceData()` reduces one memory allocation, while
+			// `runtime.convTslice` will be called if using `&value[0]`.
+			unsafe.Pointer(unsafe.SliceData(value)),
+			C.int(len(value)),
+			C.uintptr_t(callbackHandle),
+		)
+		err := withGoStatus(&apiStatus)
+		if err != nil {
+			// Clean up the handle if there was an error.
+			loadAndDeleteGoHandle(callbackHandle)
+			return err
+		}
+
+		// Wait for the async operation to complete.
+		err = <-done
+
 		return err
-	}
-
-	// Wait for the async operation to complete.
-	err = <-done
-
-	return err
+	})
 }
 
 func (p *tenEnv) setPropertyFromJSONBytes(path string, value []byte) error {

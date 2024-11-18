@@ -40,6 +40,15 @@ func (p *extensionB) OnCmd(
 		if cmdName == "B" {
 			var count uint32 = 0
 
+			// An empty string in cmd is permitted.
+			if em, err := cmd.GetPropertyString("empty_string"); err != nil || em != "" {
+				panic("Should not happen.")
+			}
+
+			if em, err := cmd.GetPropertyBytes("some_bytes"); err != nil || len(em) != 3 {
+				panic("Should not happen.")
+			}
+
 			done := make(chan struct{}, 1)
 			defer close(done)
 

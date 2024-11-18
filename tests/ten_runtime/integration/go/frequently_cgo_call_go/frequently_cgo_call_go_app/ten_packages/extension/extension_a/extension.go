@@ -49,6 +49,14 @@ func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
 		wg.Wait()
 		tenEnv.OnStartDone()
 	}()
+
+	if err := tenEnv.SetPropertyString("empty_string", ""); err != nil {
+		panic("Should not happen")
+	}
+
+	if em, err := tenEnv.GetPropertyString("empty_string"); err != nil || em != "" {
+		panic("Should not happen")
+	}
 }
 
 func (p *extensionA) OnCmd(
@@ -89,6 +97,21 @@ func (p *extensionA) OnCmd(
 			}(i % 100)
 		}
 		<-done
+
+		// Set an empty string to cmd is permitted.
+		if err := cmdB.SetPropertyString("empty_string", ""); err != nil {
+			panic("Should not happen.")
+		}
+
+		// Set an empty bytes to cmd is not permitted.
+		if err := cmdB.SetPropertyBytes("empty_bytes", []byte{}); err == nil {
+			panic("Should not happen.")
+		}
+
+		some_bytes := []byte{1, 2, 3}
+		if err := cmdB.SetPropertyBytes("some_bytes", some_bytes); err != nil {
+			panic("Should not happen.")
+		}
 
 		tenEnv.SendCmd(cmdB, func(r ten.TenEnv, cs ten.CmdResult) {
 			detail, err := cs.GetPropertyString("detail")

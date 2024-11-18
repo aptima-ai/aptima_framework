@@ -65,6 +65,11 @@ func (p *msg) getPropertyString(path string) (string, error) {
 		)
 	}
 
+	if pSize == 0 {
+		// We can not allocate a []byte with size 0, so just return "".
+		return "", nil
+	}
+
 	return getPropStr(
 		uintptr(pSize),
 		func(v unsafe.Pointer) C.ten_go_status_t {
@@ -114,6 +119,11 @@ func (p *msg) getPropertyBytes(path string) ([]byte, error) {
 			ErrnoInvalidType,
 			fmt.Sprintf("expected: []byte, actual: %s", realPt),
 		)
+	}
+
+	if pSize == 0 {
+		// We can not allocate a []byte with size 0, so just return nil.
+		return nil, nil
 	}
 
 	return getPropBytes(
