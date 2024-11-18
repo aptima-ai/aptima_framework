@@ -127,7 +127,7 @@ class extension_t {
   friend class extension_group_t;
 
   using cpp_extension_on_cmd_func_t =
-      void (extension_t::*)(ten_env_t &, std::unique_ptr<cmd_t>);
+      void (extension_t:: *)(ten_env_t &, std::unique_ptr<cmd_t>);
 
   static void issue_stop_graph_cmd(ten_env_t &ten_env) {
     // Issue a 'close engine' command, and in order to gain the maximum
@@ -290,12 +290,16 @@ class extension_t {
     try {
       on_configure(ten_env);
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_configure(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_configure()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGW("Caught a exception of type '%s' in extension on_configure().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env,
+                       (std::string("Caught an exception of type '") +
+                        curr_exception_type_name() + "in on_configure().")
+                           .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -314,12 +318,15 @@ class extension_t {
     try {
       on_init(ten_env);
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_init(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_init()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGW("Caught a exception of type '%s' in extension on_init().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception of type '") +
+                                 curr_exception_type_name() + "in on_init().")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -338,12 +345,15 @@ class extension_t {
     try {
       on_start(ten_env);
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_start(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_start()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGW("Caught a exception of type '%s' in extension on_start().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception of type '") +
+                                 curr_exception_type_name() + "in on_start().")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -362,12 +372,15 @@ class extension_t {
     try {
       on_stop(ten_env);
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_stop(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_stop()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGD("Caught a exception '%s' in extension on_stop().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception of type '") +
+                                 curr_exception_type_name() + "in on_stop().")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -386,12 +399,15 @@ class extension_t {
     try {
       on_deinit(ten_env);
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_deinit(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_deinit()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGD("Caught a exception '%s' in extension on_deinit().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception of type '") +
+                                 curr_exception_type_name() + "in on_deinit().")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -412,12 +428,16 @@ class extension_t {
     try {
       (this->*on_cmd_func)(ten_env, std::move(cmd));
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_cmd(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_cmd()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGE("Caught a exception '%s' in extension on_cmd().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception of type '") +
+                                 curr_exception_type_name() + "in on_cmd().")
+                                    .c_str());
+
       issue_stop_graph_cmd(ten_env);
     }
   }
@@ -436,12 +456,15 @@ class extension_t {
     try {
       on_data(ten_env, std::move(data));
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_data(), %s", e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_data()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGD("Caught a exception '%s' in extension on_data().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception of type '") +
+                                 curr_exception_type_name() + "in on_data().")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -461,13 +484,16 @@ class extension_t {
     try {
       on_audio_frame(ten_env, std::move(frame));
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_audio_frame(), %s",
-               e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_audio_frame()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGD("Caught a exception '%s' in extension on_audio_frame().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env,
+                       (std::string("Caught an exception of type '") +
+                        curr_exception_type_name() + "in on_audio_frame().")
+                           .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }
@@ -487,13 +513,16 @@ class extension_t {
     try {
       on_video_frame(ten_env, std::move(frame));
     } catch (std::exception &e) {
-      TEN_LOGW("Caught a exception in extension on_video_frame(), %s",
-               e.what());
+      TEN_ENV_LOG_WARN(ten_env, (std::string("Caught an exception '") +
+                                 e.what() + "' in on_video_frame()")
+                                    .c_str());
 
       issue_stop_graph_cmd(ten_env);
     } catch (...) {
-      TEN_LOGD("Caught a exception '%s' in extension on_video_frame().",
-               curr_exception_type_name().c_str());
+      TEN_ENV_LOG_WARN(ten_env,
+                       (std::string("Caught an exception of type '") +
+                        curr_exception_type_name() + "in on_video_frame().")
+                           .c_str());
 
       issue_stop_graph_cmd(ten_env);
     }

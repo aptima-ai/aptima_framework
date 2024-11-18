@@ -54,7 +54,8 @@ func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
 		panic("Should not happen")
 	}
 
-	if em, err := tenEnv.GetPropertyString("empty_string"); err != nil || em != "" {
+	if em, err := tenEnv.GetPropertyString("empty_string"); err != nil ||
+		em != "" {
 		panic("Should not happen")
 	}
 }
