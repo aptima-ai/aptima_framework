@@ -12,8 +12,8 @@
 #include <nlohmann/json.hpp>
 #include <thread>
 
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "include_internal/ten_utils/lib/buf.h"
+#include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/lib/buf.h"
 
 #define DEFAULT_BUF_CAPACITY 512
