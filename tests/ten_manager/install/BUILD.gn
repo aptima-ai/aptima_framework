@@ -6,7 +6,9 @@
 #
 group("install") {
   deps = [
-    "app:mock_app",
-    "extension:mock_extension",
+    "mock_app",
+    "mock_extension",
+
+    # "template_mode_with_same_name_extension",
   ]
 }
