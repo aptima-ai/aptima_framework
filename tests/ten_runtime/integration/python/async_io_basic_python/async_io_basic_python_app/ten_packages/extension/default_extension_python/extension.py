@@ -33,7 +33,7 @@ class DefaultExtension(Extension):
 
     async def send_cmd_async(self, ten_env: TenEnv, cmd: Cmd) -> CmdResult:
         print("DefaultExtension send_cmd_async")
-        q = asyncio.Queue(1)
+        q = asyncio.Queue(maxsize=10)
         ten_env.send_cmd(
             cmd,
             lambda ten_env, result: asyncio.run_coroutine_threadsafe(
