@@ -7,7 +7,6 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -28,19 +27,12 @@ class test_extension : public ten::extension_t {
       auto cmd_shared =
           std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 
-      ten_env.send_json(
-          R"({
-               "_ten": {
-                   "name": "test",
-                   "dest":[{
-                     "app": "msgpack://127.0.0.1:8001/",
-                     "graph": "incorrect_graph_id",
-                     "extension_group": "extension_send_msg_to_incorrect_engine",
-                     "extension": "test_extension"
-                   }]
-                 }
-               })"_json.dump()
-              .c_str(),
+      auto test_cmd = ten::cmd_t::create("test");
+      test_cmd->set_dest("msgpack://127.0.0.1:8001/", "incorrect_graph_id",
+                         "extension_send_msg_to_incorrect_engine",
+                         "test_extension");
+      ten_env.send_cmd(
+          std::move(test_cmd),
           [cmd_shared](ten::ten_env_t &ten_env,
                        std::unique_ptr<ten::cmd_result_t> cmd_result) {
             ten_env.return_result(std::move(cmd_result),

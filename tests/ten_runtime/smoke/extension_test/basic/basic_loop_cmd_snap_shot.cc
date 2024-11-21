@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -27,23 +26,18 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd_name) == "hello_world") {
       // Save the command for later using.
       hello_world_cmd = std::move(cmd);
-
-      ten_env.send_json(
-          R"({
-               "_ten": {
-                 "name": "hello_world_1"
-               }
-             })"_json.dump()
-              .c_str(),
-          [this](ten::ten_env_t &ten_env,
-                 std::unique_ptr<ten::cmd_result_t> cmd) {
-            // Got result of 'hello world 1',
-            // Now return result for 'hello world'
-            auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
-            cmd_result->set_property("detail", "hello world, too");
-            ten_env.return_result(std::move(cmd_result),
-                                  std::move(hello_world_cmd));
-          });
+      auto hello_world_1_cmd = ten::cmd_t::create("hello_world_1");
+      ten_env.send_cmd(std::move(hello_world_1_cmd),
+                       [this](ten::ten_env_t &ten_env,
+                              std::unique_ptr<ten::cmd_result_t> cmd) {
+                         // Got result of 'hello world 1',
+                         // Now return result for 'hello world'
+                         auto cmd_result =
+                             ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+                         cmd_result->set_property("detail", "hello world, too");
+                         ten_env.return_result(std::move(cmd_result),
+                                               std::move(hello_world_cmd));
+                       });
     } else if (std::string(cmd_name) == "hello_world_2") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
@@ -64,14 +58,9 @@ class test_extension_2 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world_1") {
       // waiting for result
       pending_request = std::move(cmd);
-
-      ten_env.send_json(
-          R"({
-                         "_ten": {
-                           "name": "hello_world_2"
-                         }
-                       })"_json.dump()
-              .c_str(),
+      auto hello_world_2_cmd = ten::cmd_t::create("hello_world_2");
+      ten_env.send_cmd(
+          std::move(hello_world_2_cmd),
           [this](TEN_UNUSED ten::ten_env_t &ten_env,
                  TEN_UNUSED std::unique_ptr<ten::cmd_result_t> cmd) {
             // Got result of 'hello world 2'.

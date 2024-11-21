@@ -17,6 +17,17 @@ class Msg(_Msg):
     def get_name(self) -> str:
         return _Msg.get_name(self)
 
+    def set_dest(
+        self,
+        app_uri: str | None,
+        graph_id: str | None,
+        extension_group: str | None,
+        extension: str | None,
+    ) -> None:
+        return _Msg.set_dest(
+            self, app_uri, graph_id, extension_group, extension
+        )
+
     def set_property_from_json(self, key: str, json: str) -> None:
         return _Msg.set_property_from_json(self, key, json)
 

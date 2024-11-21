@@ -4,8 +4,11 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+#include <cstddef>
+
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -47,50 +50,35 @@ class test_predefined_graph : public ten::extension_t {
   static void start_graph_and_greet(
       std::string graph_name, ten::ten_env_t &ten_env,
       const std::function<void(ten::ten_env_t &)> &cb) {
-    auto start_graph_json = R"({
-             "_ten": {
-               "type": "start_graph",
-               "seq_id": "222",
-               "dest": [{
-                 "app": "localhost"
-               }]
-             }
-          })"_json;
-    start_graph_json["_ten"]["predefined_graph"] = graph_name;
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+    start_graph_cmd->set_predefined_graph_name(graph_name.c_str());
 
-    ten_env.send_json(
-        start_graph_json.dump().c_str(),
+    ten_env.send_cmd(
+        std::move(start_graph_cmd),
         [cb](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> cmd) {
           auto status_code = cmd->get_status_code();
           ASSERT_EQ(status_code, TEN_STATUS_CODE_OK);
 
           auto graph_id = cmd->get_property_string("detail");
 
-          nlohmann::json hello_cmd =
-              R"({
-                   "_ten": {
-                     "name": "hello_world",
-                     "seq_id": "137",
-                     "dest":[{
-                       "app": "msgpack://127.0.0.1:8001/",
-                       "extension_group": "start_two_predefined_graphs__normal_extension_group",
-                       "extension": "normal_extension_1"
-                     }]
-                   }
-                 })"_json;
-          hello_cmd["_ten"]["dest"][0]["graph"] = graph_id;
+          auto hello_world_cmd = ten::cmd_t::create("hello_world");
+          hello_world_cmd->set_dest(
+              "msgpack://127.0.0.1:8001/", graph_id.c_str(),
+              "start_two_predefined_graphs__normal_extension_group",
+              "normal_extension_1");
 
-          ten_env.send_json(hello_cmd.dump().c_str(),
-                            [cb](ten::ten_env_t &ten_env,
-                                 std::unique_ptr<ten::cmd_result_t> cmd) {
-                              auto status_code = cmd->get_status_code();
-                              ASSERT_EQ(status_code, TEN_STATUS_CODE_OK);
+          ten_env.send_cmd(std::move(hello_world_cmd),
+                           [cb](ten::ten_env_t &ten_env,
+                                std::unique_ptr<ten::cmd_result_t> cmd) {
+                             auto status_code = cmd->get_status_code();
+                             ASSERT_EQ(status_code, TEN_STATUS_CODE_OK);
 
-                              auto detail = cmd->get_property_string("detail");
-                              ASSERT_EQ(detail, "hello world, too");
+                             auto detail = cmd->get_property_string("detail");
+                             ASSERT_EQ(detail, "hello world, too");
 
-                              cb(ten_env);
-                            });
+                             cb(ten_env);
+                           });
         });
   }
 

@@ -23,24 +23,23 @@ class test_predefined_graph : public ten::extension_t {
       : ten::extension_t(name) {}
 
   void on_start(ten::ten_env_t &ten_env) override {
-    ten_env.send_json(
-        R"({
-             "_ten": {
-               "type": "start_graph",
-               "seq_id": "222",
-               "dest": [{
-                 "app": "localhost"
-               }],
-               "nodes": [{
-                 "type": "extension",
-                 "name": "normal_extension",
-                 "addon": "start_graph_from_extension__normal_extension",
-                 "app": "msgpack://127.0.0.1:8001/",
-                "extension_group": "start_graph_from_extension__normal_extension_group"
-               }]
-             }
-          })"_json.dump()
-            .c_str(),
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+    start_graph_cmd->set_nodes_and_connections_from_json(R"({
+    "_ten": {
+      "nodes": [{
+        "type": "extension",
+        "name": "normal_extension",
+        "addon": "start_graph_from_extension__normal_extension",
+        "app": "msgpack://127.0.0.1:8001/",
+        "extension_group": "start_graph_from_extension__normal_extension_group"
+      }]
+      }
+    })"_json.dump()
+                                                             .c_str());
+
+    ten_env.send_cmd(
+        std::move(start_graph_cmd),
         [this](ten::ten_env_t &ten_env,
                std::unique_ptr<ten::cmd_result_t> cmd) {
           // result for the 'start_graph' command

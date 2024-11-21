@@ -69,13 +69,6 @@ class ten_env_t {
   ten_env_t &operator=(const ten_env_t &&) = delete;
   // @}
 
-  bool send_cmd_ex(std::unique_ptr<cmd_t> &&cmd,
-                   result_handler_func_t &&result_handler = nullptr,
-                   error_t *err = nullptr) {
-    return send_cmd_internal(std::move(cmd), std::move(result_handler), true,
-                             err);
-  }
-
   bool send_cmd(std::unique_ptr<cmd_t> &&cmd,
                 result_handler_func_t &&result_handler = nullptr,
                 error_t *err = nullptr) {
@@ -83,69 +76,11 @@ class ten_env_t {
                              err);
   }
 
-  bool send_json_ex(const char *json_str,
-                    result_handler_func_t &&result_handler = nullptr,
-                    error_t *err = nullptr) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-
-    if (json_str == nullptr) {
-      TEN_ASSERT(0, "Invalid argument.");
-      return false;
-    }
-
-    ten_json_t *c_json = ten_json_from_string(
-        json_str,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-    if (c_json == nullptr) {
-      return false;
-    }
-
-    bool rc = false;
-
-    if (result_handler == nullptr) {
-      rc = ten_env_send_json(
-          c_ten_env, c_json, nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
-    } else {
-      auto *result_handler_ptr =
-          new result_handler_func_t(std::move(result_handler));
-
-      rc = ten_env_send_json(
-          c_ten_env, c_json, proxy_handle_result, result_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
-
-      if (!rc) {
-        delete result_handler_ptr;
-      }
-    }
-
-    ten_json_destroy(c_json);
-
-    if (!rc) {
-      TEN_LOGE("Failed to send_json: %s", json_str);
-    }
-
-    return rc;
-  }
-
-  bool send_json(const char *json_str,
-                 result_handler_func_t &&result_handler = nullptr,
-                 error_t *err = nullptr) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-
-    if (result_handler) {
-      return send_json_ex(
-          json_str,
-          [result_handler](ten::ten_env_t &ten_env,
-                           std::unique_ptr<ten::cmd_result_t> cmd_result) {
-            if (cmd_result->is_completed()) {
-              result_handler(ten_env, std::move(cmd_result));
-            }
-          },
-          err);
-    } else {
-      return send_json_ex(json_str, nullptr, err);
-    }
+  bool send_cmd_ex(std::unique_ptr<cmd_t> &&cmd,
+                   result_handler_func_t &&result_handler = nullptr,
+                   error_t *err = nullptr) {
+    return send_cmd_internal(std::move(cmd), std::move(result_handler), true,
+                             err);
   }
 
   bool send_data(std::unique_ptr<data_t> &&data, error_t *err = nullptr) {

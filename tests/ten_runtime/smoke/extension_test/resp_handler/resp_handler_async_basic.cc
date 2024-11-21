@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -61,8 +60,10 @@ class test_extension_1 : public ten::extension_t {
           });
     } else if (json["_ten"]["name"] == "hello_world_4") {
       hello_world_4_cmd = std::move(cmd);
-      ten_env.send_json(
-          R"({"_ten": { "name": "hello_world_5" }})"_json.dump().c_str(),
+
+      auto hello_world_5_cmd = ten::cmd_t::create("hello_world_5");
+      ten_env.send_cmd(
+          std::move(hello_world_5_cmd),
           [&](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> cmd) {
             nlohmann::json json = nlohmann::json::parse(cmd->to_json());
             if (json.value("detail", "") == "hello world, too") {
@@ -77,8 +78,9 @@ class test_extension_1 : public ten::extension_t {
       auto cmd_shared =
           std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 
-      ten_env.send_json(
-          R"({"_ten": { "name": "hello_world_6" }})"_json.dump().c_str(),
+      auto hello_world_6_cmd = ten::cmd_t::create("hello_world_6");
+      ten_env.send_cmd(
+          std::move(hello_world_6_cmd),
           [cmd_shared](ten::ten_env_t &ten_env,
                        std::unique_ptr<ten::cmd_result_t> cmd_result) {
             nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());

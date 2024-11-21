@@ -40,6 +40,20 @@ class cmd_start_graph_t : public cmd_t {
       : cmd_t(ten_cmd_start_graph_create()) {};
   ~cmd_start_graph_t() override = default;
 
+  bool set_predefined_graph_name(const char *predefined_graph_name,
+                                 error_t *err = nullptr) {
+    return ten_cmd_start_graph_set_predefined_graph_name(
+        c_msg, predefined_graph_name,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
+  bool set_nodes_and_connections_from_json(const char *json_str,
+                                           error_t *err = nullptr) {
+    return ten_cmd_start_graph_init_from_json_str(
+        c_msg, json_str,
+        err != nullptr ? err->get_internal_representation() : nullptr);
+  }
+
   // @{
   cmd_start_graph_t(cmd_start_graph_t &other) = delete;
   cmd_start_graph_t(cmd_start_graph_t &&other) = delete;

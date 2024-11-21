@@ -103,6 +103,35 @@ bool ten_raw_cmd_start_graph_as_msg_init_from_json(ten_msg_t *self,
                                                 json, err);
 }
 
+static bool ten_raw_cmd_start_graph_as_msg_init_from_json_str(
+    ten_msg_t *self, const char *json_str, ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
+             "Invalid argument.");
+  TEN_ASSERT(json_str, "Invalid argument.");
+
+  ten_json_t *json = ten_json_from_string(json_str, err);
+  if (!json) {
+    return false;
+  }
+
+  bool rc = ten_raw_cmd_start_graph_init_from_json(
+      (ten_cmd_start_graph_t *)self, json, err);
+
+  ten_json_destroy(json);
+
+  return rc;
+}
+
+bool ten_cmd_start_graph_init_from_json_str(ten_shared_ptr_t *self,
+                                            const char *json_str,
+                                            ten_error_t *err) {
+  TEN_ASSERT(self && ten_cmd_check_integrity(self), "Invalid argument.");
+  TEN_ASSERT(json_str, "Invalid argument.");
+
+  return ten_raw_cmd_start_graph_as_msg_init_from_json_str(
+      ten_msg_get_raw_msg(self), json_str, err);
+}
+
 static ten_cmd_start_graph_t *ten_raw_cmd_start_graph_create_from_json(
     ten_json_t *json, ten_error_t *err) {
   TEN_ASSERT(json, "Should not happen.");
@@ -377,14 +406,15 @@ bool ten_cmd_start_graph_get_long_running_mode(ten_shared_ptr_t *self) {
   return ten_raw_cmd_start_graph_get_long_running_mode(get_raw_cmd(self));
 }
 
-void ten_cmd_start_graph_set_predefined_graph_name(
-    ten_shared_ptr_t *self, const char *predefined_graph_name) {
+bool ten_cmd_start_graph_set_predefined_graph_name(
+    ten_shared_ptr_t *self, const char *predefined_graph_name,
+    ten_error_t *err) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self) &&
                  ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_START_GRAPH,
              "Should not happen.");
 
-  ten_value_set_string(&get_raw_cmd(self)->predefined_graph_name,
-                       predefined_graph_name);
+  return ten_value_set_string(&get_raw_cmd(self)->predefined_graph_name,
+                              predefined_graph_name);
 }
 
 ten_string_t *ten_raw_cmd_start_graph_get_predefined_graph_name(

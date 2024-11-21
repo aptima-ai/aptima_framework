@@ -33,7 +33,6 @@ group("python") {
       "send_cmd_discard_result_python",
       "send_cmd_python",
       "send_data_python",
-      "send_json_python",
       "send_recv_image_python",
       "send_recv_pcm_python",
       "standalone_test_python",

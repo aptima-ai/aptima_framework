@@ -37,13 +37,9 @@ class HttpServerExtension(AsyncExtension):
         else:
             # If the command is a 'close_app' command, send it to the app.
             if "type" in data["_ten"] and data["_ten"]["type"] == "close_app":
-                close_app_cmd_json = (
-                    '{"_ten":{"type":"close_app",'
-                    '"dest":[{"app":"localhost"}]}}'
-                )
-                asyncio.create_task(
-                    anext(self.ten_env.send_json(close_app_cmd_json))
-                )
+                close_app_cmd = Cmd.create("ten:close_app")
+                close_app_cmd.set_dest("localhost", None, None, None)
+                asyncio.create_task(self.ten_env.send_cmd(close_app_cmd))
                 return web.Response(status=200, text="OK")
             elif "name" in data["_ten"]:
                 # Send the command to the TEN runtime.

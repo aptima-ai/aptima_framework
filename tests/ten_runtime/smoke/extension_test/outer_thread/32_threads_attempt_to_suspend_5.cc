@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "gtest/gtest.h"
+#include "include_internal/ten_runtime/binding/cpp/internal/msg/cmd/timer.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lang/cpp/lib/value.h"
@@ -355,19 +356,14 @@ class test_extension_2 : public ten::extension_t {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "ok");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
-      nlohmann::json timer_cmd_json =
-          R"({
-               "_ten": {
-                 "type": "timer",
-                 "dest": [{
-                   "app": "localhost"
-                 }],
-                 "timer_id": 55,
-                 "timeout_in_us": 100,
-                 "times": 1
-               }
-             })"_json;
-      ten_env.send_json(timer_cmd_json.dump().c_str());
+
+      auto timer_cmd = ten::cmd_timer_t::create();
+      timer_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+      timer_cmd->set_timer_id(55);
+      timer_cmd->set_timeout_in_us(100);
+      timer_cmd->set_times(1);
+
+      ten_env.send_cmd(std::move(timer_cmd));
     } else if (cmd->get_type() == TEN_MSG_TYPE_CMD_TIMEOUT &&
                static_cast<ten::cmd_timeout_t *>(cmd.get())->get_timer_id() ==
                    55) {

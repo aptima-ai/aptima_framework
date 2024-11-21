@@ -35,11 +35,11 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_timer_check_type_and_name(
     ten_msg_t *self, const char *type_str, const char *name_str,
     ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_timer_set_timer_id(
+TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_timer_set_timer_id(
     ten_cmd_timer_t *self, uint32_t timer_id);
 
-TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_timer_set_times(ten_cmd_timer_t *self,
-                                                         int32_t times);
+TEN_RUNTIME_API bool ten_raw_cmd_timer_set_times(ten_cmd_timer_t *self,
+                                                 int32_t times);
 
 TEN_RUNTIME_PRIVATE_API uint32_t
 ten_raw_cmd_timer_get_timer_id(ten_cmd_timer_t *self);
@@ -47,8 +47,8 @@ ten_raw_cmd_timer_get_timer_id(ten_cmd_timer_t *self);
 TEN_RUNTIME_PRIVATE_API uint32_t
 ten_cmd_timer_get_timer_id(ten_shared_ptr_t *self);
 
-TEN_RUNTIME_PRIVATE_API void ten_cmd_timer_set_timer_id(ten_shared_ptr_t *self,
-                                                        uint32_t timer_id);
+TEN_RUNTIME_API bool ten_cmd_timer_set_timer_id(ten_shared_ptr_t *self,
+                                                uint32_t timer_id);
 
 TEN_RUNTIME_PRIVATE_API uint64_t
 ten_raw_cmd_timer_get_timeout_in_us(ten_cmd_timer_t *self);
@@ -56,13 +56,16 @@ ten_raw_cmd_timer_get_timeout_in_us(ten_cmd_timer_t *self);
 TEN_RUNTIME_PRIVATE_API uint64_t
 ten_cmd_timer_get_timeout_in_us(ten_shared_ptr_t *self);
 
+TEN_RUNTIME_API bool ten_cmd_timer_set_timeout_in_us(ten_shared_ptr_t *self,
+                                                     uint64_t timeout_in_us);
+
 TEN_RUNTIME_PRIVATE_API int32_t
 ten_raw_cmd_timer_get_times(ten_cmd_timer_t *self);
 
 TEN_RUNTIME_PRIVATE_API int32_t ten_cmd_timer_get_times(ten_shared_ptr_t *self);
 
-TEN_RUNTIME_PRIVATE_API void ten_cmd_timer_set_times(ten_shared_ptr_t *self,
-                                                     int32_t times);
+TEN_RUNTIME_API bool ten_cmd_timer_set_times(ten_shared_ptr_t *self,
+                                             int32_t times);
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_timer_as_msg_init_from_json(
     ten_msg_t *self, ten_json_t *json, ten_error_t *err);

@@ -57,22 +57,6 @@ class AsyncTenEnv(TenEnv):
                 break
             yield result
 
-    async def send_json(self, json_str: str) -> AsyncGenerator[CmdResult, None]:
-        q = asyncio.Queue(maxsize=10)
-        self._internal.send_json(
-            json_str,
-            lambda ten_env, result: asyncio.run_coroutine_threadsafe(
-                q.put(result), self._ten_loop
-            ),
-        )
-        while True:
-            result: CmdResult = await q.get()
-            if result.is_completed():
-                yield result
-                # This is the final result, so break the while loop.
-                break
-            yield result
-
     def _deinit_routine(self) -> None:
         # Wait for the internal thread to finish.
         self._ten_thread.join()

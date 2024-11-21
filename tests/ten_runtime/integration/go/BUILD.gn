@@ -20,7 +20,6 @@ group("go") {
       "prepare_to_stop_go",
       "return_result_go",
       "return_value_go",
-      "send_json_go",
       "start_app_sync_go",
       "three_extension_cmd_go",
       "transfer_pointer_go",

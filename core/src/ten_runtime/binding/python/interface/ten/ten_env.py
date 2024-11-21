@@ -81,9 +81,6 @@ class TenEnv:
     def send_audio_frame(self, audio_frame: AudioFrame) -> None:
         return self._internal.send_audio_frame(audio_frame)
 
-    def send_json(self, json_str: str, result_handler: ResultHandler) -> None:
-        return self._internal.send_json(json_str, result_handler)
-
     def return_result(self, result: CmdResult, target_cmd: Cmd) -> None:
         return self._internal.return_result(result, target_cmd)
 

@@ -174,6 +174,50 @@ PyObject *ten_py_msg_set_name(PyObject *self, TEN_UNUSED PyObject *args) {
   }
 }
 
+PyObject *ten_py_msg_set_dest(PyObject *self, TEN_UNUSED PyObject *args) {
+  ten_py_msg_t *py_msg = (ten_py_msg_t *)self;
+
+  TEN_ASSERT(py_msg && ten_py_msg_check_integrity(py_msg), "Invalid argument.");
+
+  if (PyTuple_GET_SIZE(args) != 4) {
+    return ten_py_raise_py_value_error_exception(
+        "Invalid argument count when set_dest.");
+  }
+
+  ten_shared_ptr_t *c_msg = py_msg->c_msg;
+  if (!c_msg) {
+    TEN_ASSERT(0, "Should not happen.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
+  }
+
+  const char *app_uri = NULL;
+  const char *graph_id = NULL;
+  const char *extension_group_name = NULL;
+  const char *extension_name = NULL;
+  if (!PyArg_ParseTuple(args, "zzzz", &app_uri, &graph_id,
+                        &extension_group_name, &extension_name)) {
+    return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
+  }
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool rc = ten_msg_clear_and_set_dest(
+      c_msg, app_uri, graph_id, extension_group_name, extension_name, &err);
+
+  if (!rc) {
+    ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
+  }
+
+  ten_error_deinit(&err);
+
+  if (rc) {
+    Py_RETURN_NONE;
+  } else {
+    return NULL;
+  }
+}
+
 PyObject *ten_py_msg_set_property_string(PyObject *self, PyObject *args) {
   ten_py_msg_t *py_msg = (ten_py_msg_t *)self;
 

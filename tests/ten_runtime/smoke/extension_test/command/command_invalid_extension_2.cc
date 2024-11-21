@@ -7,7 +7,6 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -30,20 +29,10 @@ class test_extension : public ten::extension_t {
 
       // We send out a request with invalid extension, the extension thread will
       // return the error result.
-      nlohmann::json request = R"({
-        "_ten": {
-        "name": "test",
-        "dest": [
-          {
-            "app": "localhost",
-            "extension": "a",
-            "extension_group": "test_extension_group"
-          }
-        ]
-              }
-        })"_json;
-      ten_env.send_json(
-          request.dump().c_str(),
+      auto test_cmd = ten::cmd_t::create("test");
+      test_cmd->set_dest("localhost", nullptr, "test_extension_group", "a");
+      ten_env.send_cmd(
+          std::move(test_cmd),
           [this](ten::ten_env_t &ten_env,
                  std::unique_ptr<ten::cmd_result_t> result) {
             nlohmann::json json = nlohmann::json::parse(result->to_json());
@@ -53,7 +42,6 @@ class test_extension : public ten::extension_t {
             ten_env.return_result(std::move(cmd_result),
                                   std::move(requested_cmd));
           });
-      return;
     }
   }
 

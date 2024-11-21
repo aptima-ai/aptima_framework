@@ -440,9 +440,9 @@
       "name": "app (C/C++) (lldb, launch)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/hello_world/hello_world_app/bin/hello_world_app_source",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/check_start_graph/check_start_graph_app/bin/check_start_graph_source",
       "args": [],
-      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/hello_world/hello_world_app",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/check_start_graph/check_start_graph_app",
       "env": {
         "ASAN_OPTIONS": "use_sigaltstack=0",
       },

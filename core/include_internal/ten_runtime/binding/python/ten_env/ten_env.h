@@ -26,7 +26,7 @@ typedef struct ten_py_ten_env_t {
 
   // Mark whether the gil state need to be released after 'on_deinit_done'.
   bool need_to_release_gil_state;
-  PyThreadState* py_thread_state;
+  PyThreadState *py_thread_state;
 } ten_py_ten_env_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_py_ten_env_check_integrity(
@@ -60,9 +60,6 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_on_deinit_done(PyObject *self,
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_on_create_instance_done(
     PyObject *self, PyObject *args);
 
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_send_json(PyObject *self,
-                                                           PyObject *args);
-
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_send_cmd(PyObject *self,
                                                           PyObject *args);
 
@@ -74,9 +71,6 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_send_video_frame(
 
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_send_audio_frame(
     PyObject *self, PyObject *args);
-
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_return_json(PyObject *self,
-                                                         PyObject *args);
 
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_return_result(PyObject *self,
                                                                PyObject *args);

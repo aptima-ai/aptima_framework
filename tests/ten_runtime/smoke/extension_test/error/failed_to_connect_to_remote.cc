@@ -6,6 +6,7 @@
 //
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
 #include "ten_runtime/common/status_code.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
@@ -17,21 +18,12 @@ class test_predefined_graph : public ten::extension_t {
       : ten::extension_t(name) {}
 
   void on_start(ten::ten_env_t &ten_env) override {
-    std::string start_graph_json = R"({
-             "_ten": {
-               "type": "start_graph",
-               "seq_id": "222",
-               "dest": [{
-                 "app": "localhost"
-               }],
-               "predefined_graph": "graph_1"
-             }
-          })"_json.dump();
-
-    ten_env.send_json(
-        start_graph_json.c_str(),
-        [start_graph_json](ten::ten_env_t &ten_env,
-                           std::unique_ptr<ten::cmd_result_t> cmd) {
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+    start_graph_cmd->set_predefined_graph_name("graph_1");
+    ten_env.send_cmd(
+        std::move(start_graph_cmd),
+        [](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> cmd) {
           auto status_code = cmd->get_status_code();
           ASSERT_EQ(status_code, TEN_STATUS_CODE_ERROR);
 

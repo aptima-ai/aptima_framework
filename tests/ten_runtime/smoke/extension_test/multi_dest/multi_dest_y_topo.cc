@@ -28,13 +28,9 @@ class test_extension_1 : public ten::extension_t {
       // result back to the client.
       client_cmd = std::move(cmd);
 
-      ten_env.send_json(
-          R"({
-        "_ten": {
-        "name": "hello_world"
-              }
-        })"_json.dump()
-              .c_str(),
+      auto hello_world_cmd = ten::cmd_t::create("hello_world");
+      ten_env.send_cmd(
+          std::move(hello_world_cmd),
           [&](ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_result_t> /*cmd*/) {
             // Return to the client to notify that the whole process

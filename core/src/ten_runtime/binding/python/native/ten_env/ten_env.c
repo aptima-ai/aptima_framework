@@ -150,7 +150,6 @@ PyTypeObject *ten_py_ten_env_type(void) {
       {"send_data", ten_py_ten_env_send_data, METH_VARARGS, NULL},
       {"send_video_frame", ten_py_ten_env_send_video_frame, METH_VARARGS, NULL},
       {"send_audio_frame", ten_py_ten_env_send_audio_frame, METH_VARARGS, NULL},
-      {"send_json", ten_py_ten_env_send_json, METH_VARARGS, NULL},
       {"get_property_to_json", ten_py_ten_env_get_property_to_json,
        METH_VARARGS, NULL},
       {"set_property_from_json", ten_py_ten_env_set_property_from_json,

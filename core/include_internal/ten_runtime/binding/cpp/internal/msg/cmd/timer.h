@@ -40,6 +40,18 @@ class cmd_timer_t : public cmd_t {
       : cmd_t(ten_cmd_timer_create()) {}
   ~cmd_timer_t() override = default;
 
+  bool set_timer_id(uint32_t timer_id) {
+    return ten_cmd_timer_set_timer_id(c_msg, timer_id);
+  }
+
+  bool set_times(int32_t times) {
+    return ten_cmd_timer_set_times(c_msg, times);
+  }
+
+  bool set_timeout_in_us(int64_t timeout_in_us) {
+    return ten_cmd_timer_set_timeout_in_us(c_msg, timeout_in_us);
+  }
+
   // @{
   cmd_timer_t(cmd_timer_t &other) = delete;
   cmd_timer_t(cmd_timer_t &&other) = delete;

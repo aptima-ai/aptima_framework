@@ -29,21 +29,13 @@ class test_extension : public ten::extension_t {
       hello_world_cmd = std::move(cmd);
 
       // Start a timer.
-      nlohmann::json timer_cmd_json =
-          R"({
-               "_ten": {
-                 "type": "timer",
-                 "name": "ten:timer",
-                 "dest": [{
-                   "app": "localhost"
-                 }],
-                 "timer_id": 55,
-                 "timeout_in_us": 100
-               }
-             })"_json;
-      timer_cmd_json["_ten"]["times"] = TIMER_TIMES;
+      auto timer_cmd = ten::cmd_timer_t::create();
+      timer_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+      timer_cmd->set_timer_id(55);
+      timer_cmd->set_timeout_in_us(100);
+      timer_cmd->set_times(TIMER_TIMES);
 
-      bool success = ten_env.send_json(timer_cmd_json.dump().c_str());
+      bool success = ten_env.send_cmd(std::move(timer_cmd));
       EXPECT_EQ(success, true);
     } else if (json["_ten"]["type"] == "timeout" &&
                json["_ten"]["timer_id"].get<int64_t>() == 55) {

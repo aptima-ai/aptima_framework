@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "ten_runtime/binding/cpp/internal/msg/cmd/close_app.h"
+#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
 #include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_runtime/binding/cpp/ten.h"
 
@@ -24,13 +25,10 @@ class test_extension : public ten::extension_t {
   void send_invalid_graph(ten::ten_env_t &ten_env) {
     ten::error_t err;
 
-    bool result = ten_env.send_json(
-        R"({
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+    bool result = start_graph_cmd->set_nodes_and_connections_from_json(R"({
           "_ten": {
-            "type": "start_graph",
-            "dest": [{
-              "app": "localhost"
-            }],
             "nodes": [
               {
                 "type": "extension",
@@ -64,8 +62,7 @@ class test_extension : public ten::extension_t {
             ]
           }
         })",
-        nullptr, &err);
-
+                                                                       &err);
     assert(!result && "The graph should be invalid.");
 
     // The extension_info is not found, extension_group:
@@ -85,13 +82,10 @@ class test_extension : public ten::extension_t {
 
       send_invalid_graph(ten_env);
 
-      ten_env.send_json(
-          R"({
+      auto start_graph_cmd = ten::cmd_start_graph_t::create();
+      start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
+      start_graph_cmd->set_nodes_and_connections_from_json(R"({
           "_ten": {
-            "type": "start_graph",
-            "dest": [{
-              "app": "localhost"
-            }],
             "nodes": [
               {
                 "type": "extension",
@@ -101,7 +95,10 @@ class test_extension : public ten::extension_t {
               }
             ]
           }
-        })",
+        })");
+
+      ten_env.send_cmd(
+          std::move(start_graph_cmd),
           [](ten::ten_env_t &env, std::unique_ptr<ten::cmd_result_t> result) {
             // The graph check should be passed.
             if (result->get_status_code() == TEN_STATUS_CODE_OK) {

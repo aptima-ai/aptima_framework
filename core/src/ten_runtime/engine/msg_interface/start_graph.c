@@ -20,6 +20,7 @@
 #include "include_internal/ten_runtime/remote/remote.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "include_internal/ten_utils/value/value.h"
+#include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_ptr.h"
@@ -77,7 +78,7 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
         // The remote app does not recognize the local app's
         // 'predefined_graph_name', so this field should not be included in the
         // 'start_graph' command which will be sent to the remote app.
-        ten_cmd_start_graph_set_predefined_graph_name(child_cmd, "");
+        ten_cmd_start_graph_set_predefined_graph_name(child_cmd, "", err);
 
         // Use the uri of the local app to fill/override the value of 'from'
         // field (even if there is any old value in the 'from' field), so that

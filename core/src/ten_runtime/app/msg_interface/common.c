@@ -374,20 +374,6 @@ static void ten_app_handle_in_msgs_sync(ten_app_t *self) {
     //     NULL. Ex: send the following cmd from extension in engine whose
     //     'graph_id' is A.
     //
-    //     ten_env.send_json(
-    //      {
-    //        "_ten": {
-    //          "name": "demo",
-    //          "dest": [
-    //            {
-    //              "app": "localhost",
-    //              "graph": "graph_id_of_another_engine"
-    //            }
-    //          ]
-    //        }
-    //      }
-    //    )
-    //
     //   * If the 'cmd' is sent to another engine (whose 'graph_id' is B) from
     //     the client side, after the physical connection between the client and
     //     current engine (whose 'graph_id' is A) has been established, the
