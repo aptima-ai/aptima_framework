@@ -14,7 +14,6 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_and_result_conversion.h"
 #include "include_internal/ten_runtime/msg_conversion/msg_conversion_context.h"
-#include "include_internal/ten_runtime/path/result_return_policy.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/error.h"
@@ -34,10 +33,6 @@ ten_json_t *ten_msg_dest_info_to_json(ten_msg_dest_info_t *self,
   ten_json_object_set_new(
       json, TEN_STR_NAME,
       ten_json_create_string(ten_string_get_raw_str(&self->name)));
-
-  ten_json_object_set_new(
-      json, TEN_STR_RESULT_RETURN_POLICY,
-      ten_json_create_string(ten_result_return_policy_to_string(self->policy)));
 
   ten_json_t *dests_json = ten_json_create_array();
   TEN_ASSERT(dests_json, "Should not happen.");
@@ -112,20 +107,6 @@ ten_shared_ptr_t *ten_msg_dest_info_from_json(
   }
 
   ten_msg_dest_info_t *self = ten_msg_dest_info_create(msg_name);
-
-  self->policy = TEN_DEFAULT_RESULT_RETURN_POLICY;
-  ten_json_t *result_return_policy_json =
-      ten_json_object_peek(json, TEN_STR_RESULT_RETURN_POLICY);
-  if (result_return_policy_json) {
-    TEN_ASSERT(ten_json_is_string(result_return_policy_json),
-               "Should not happen.");
-
-    TEN_RESULT_RETURN_POLICY policy = ten_result_return_policy_from_string(
-        ten_json_peek_string_value(result_return_policy_json));
-    if (policy != TEN_RESULT_RETURN_POLICY_INVALID) {
-      self->policy = policy;
-    }
-  }
 
   ten_json_t *dests_json = ten_json_object_peek(json, TEN_STR_DEST);
   TEN_ASSERT(ten_json_is_array(dests_json), "Should not happen.");

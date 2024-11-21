@@ -55,7 +55,7 @@ class HttpServerExtension(AsyncExtension):
                 if cmd is None:
                     return web.Response(status=400, text="Bad request")
 
-                cmd_result = await anext(self.ten_env.send_cmd(cmd))
+                cmd_result = await self.ten_env.send_cmd(cmd)
             else:
                 return web.Response(status=404, text="Not found")
 

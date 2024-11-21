@@ -26,13 +26,27 @@ class AsyncTenEnv(TenEnv):
     def __del__(self) -> None:
         pass
 
-    async def send_cmd(self, cmd: Cmd) -> AsyncGenerator[CmdResult, None]:
+    async def send_cmd(self, cmd: Cmd) -> CmdResult:
+        q = asyncio.Queue(maxsize=1)
+        self._internal.send_cmd(
+            cmd,
+            lambda _, result: asyncio.run_coroutine_threadsafe(
+                q.put(result), self._ten_loop
+            ),
+            False,
+        )
+        result: CmdResult = await q.get()
+        assert result.is_completed()
+        return result
+
+    async def send_cmd_ex(self, cmd: Cmd) -> AsyncGenerator[CmdResult, None]:
         q = asyncio.Queue(maxsize=10)
         self._internal.send_cmd(
             cmd,
             lambda _, result: asyncio.run_coroutine_threadsafe(
                 q.put(result), self._ten_loop
             ),
+            True,
         )
 
         while True:

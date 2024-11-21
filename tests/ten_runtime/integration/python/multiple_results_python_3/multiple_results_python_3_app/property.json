@@ -56,7 +56,6 @@
             "cmd": [
               {
                 "name": "hello",
-                "result_return_policy": "each_ok_and_error",
                 "dest": [
                   {
                     "extension_group": "test2",

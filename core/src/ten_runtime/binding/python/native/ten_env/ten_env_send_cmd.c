@@ -21,10 +21,11 @@
 typedef struct ten_env_notify_send_cmd_info_t {
   ten_shared_ptr_t *c_cmd;
   PyObject *py_cb_func;
+  bool is_ex;
 } ten_env_notify_send_cmd_info_t;
 
 static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
-    ten_shared_ptr_t *c_cmd, PyObject *py_cb_func) {
+    ten_shared_ptr_t *c_cmd, PyObject *py_cb_func, bool is_ex) {
   TEN_ASSERT(c_cmd, "Invalid argument.");
 
   ten_env_notify_send_cmd_info_t *info =
@@ -33,6 +34,7 @@ static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
 
   info->c_cmd = c_cmd;
   info->py_cb_func = py_cb_func;
+  info->is_ex = is_ex;
 
   if (py_cb_func != NULL) {
     Py_INCREF(py_cb_func);
@@ -108,12 +110,19 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   ten_error_t err;
   ten_error_init(&err);
 
+  ten_env_send_cmd_func_t send_cmd_func = NULL;
+  if (notify_info->is_ex) {
+    send_cmd_func = ten_env_send_cmd_ex;
+  } else {
+    send_cmd_func = ten_env_send_cmd;
+  }
+
   TEN_UNUSED bool res = false;
   if (notify_info->py_cb_func == NULL) {
-    res = ten_env_send_cmd(ten_env, notify_info->c_cmd, NULL, NULL, NULL);
+    res = send_cmd_func(ten_env, notify_info->c_cmd, NULL, NULL, NULL);
   } else {
-    res = ten_env_send_cmd(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
-                           notify_info->py_cb_func, NULL);
+    res = send_cmd_func(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
+                        notify_info->py_cb_func, NULL);
   }
 
   ten_error_deinit(&err);
@@ -126,7 +135,7 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
   TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
              "Invalid argument.");
 
-  if (PyTuple_GET_SIZE(args) != 2) {
+  if (PyTuple_GET_SIZE(args) != 3) {
     return ten_py_raise_py_value_error_exception(
         "Invalid argument count when ten_env.send_cmd.");
   }
@@ -138,8 +147,10 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
 
   ten_py_cmd_t *py_cmd = NULL;
   PyObject *cb_func = NULL;
+  int is_ex = false;
 
-  if (!PyArg_ParseTuple(args, "O!O", ten_py_cmd_py_type(), &py_cmd, &cb_func)) {
+  if (!PyArg_ParseTuple(args, "O!Op", ten_py_cmd_py_type(), &py_cmd, &cb_func,
+                        &is_ex)) {
     success = false;
     ten_py_raise_py_type_error_exception(
         "Invalid argument type when send cmd.");
@@ -153,7 +164,7 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
 
   ten_shared_ptr_t *cloned_cmd = ten_shared_ptr_clone(py_cmd->msg.c_msg);
   ten_env_notify_send_cmd_info_t *notify_info =
-      ten_env_notify_send_cmd_info_create(cloned_cmd, cb_func);
+      ten_env_notify_send_cmd_info_create(cloned_cmd, cb_func, is_ex);
 
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_cmd, notify_info, false,

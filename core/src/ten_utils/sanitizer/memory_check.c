@@ -127,6 +127,8 @@ static ten_sanitizer_memory_record_t *ten_sanitizer_memory_record_create(
 
   self->file_name = (char *)malloc(strlen(file_name) + 1);
   TEN_ASSERT(self->file_name, "Failed to allocate memory.");
+  TEN_ASSERT(strlen(file_name) >= TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH,
+             "Should not happen.");
   (void)sprintf(self->file_name, "%.*s",
                 (int)(strlen(file_name) - TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH),
                 file_name + TEN_FILE_PATH_RELATIVE_PREFIX_LENGTH);

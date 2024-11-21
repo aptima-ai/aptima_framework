@@ -5,7 +5,6 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import json
-import warnings
 from libten_runtime_python import _Cmd
 
 
@@ -22,14 +21,6 @@ class Cmd(_Cmd):
 
     @classmethod
     def create_from_json(cls, json_str: str):
-        warnings.warn(
-            (
-                "This method may access the '_ten' field. "
-                "Use caution if '_ten' is provided."
-            ),
-            UserWarning,
-        )
-
         try:
             data = json.loads(json_str)
         except json.JSONDecodeError:

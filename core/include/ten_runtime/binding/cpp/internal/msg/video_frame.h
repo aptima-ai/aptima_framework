@@ -52,10 +52,8 @@ class video_frame_t : public msg_t {
     return std::make_unique<video_frame_t>(c_frame, ctor_passkey_t());
   }
 
-  static std::unique_ptr<video_frame_t> create_from_json(const char *json_str,
-                                                         error_t *err = nullptr)
-      __attribute__((warning("This method may access the '_ten' field. Use "
-                             "caution if '_ten' is provided."))) {
+  static std::unique_ptr<video_frame_t> create_from_json(
+      const char *json_str, error_t *err = nullptr) {
     ten_shared_ptr_t *c_video_frame = ten_video_frame_create_from_json_string(
         json_str,
         err != nullptr ? err->get_internal_representation() : nullptr);

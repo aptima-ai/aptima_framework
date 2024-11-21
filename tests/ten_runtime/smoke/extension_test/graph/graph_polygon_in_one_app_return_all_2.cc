@@ -10,9 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -117,11 +115,11 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
 }
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
-    graph_polygon_in_one_app_return_all__extension, test_extension);
+    graph_polygon_in_one_app_return_all_2__extension, test_extension);
 
 }  // namespace
 
-TEST(ExtensionTest, GraphPolygonInOneAppReturnAll) {  // NOLINT
+TEST(ExtensionTest, GraphPolygonInOneAppReturnAll2) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -139,83 +137,83 @@ TEST(ExtensionTest, GraphPolygonInOneAppReturnAll) {  // NOLINT
              "nodes": [{
                "type": "extension",
                "name": "A",
-               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "addon": "graph_polygon_in_one_app_return_all_2__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "property": {
                  "is_leaf": false
                 }
              },{
                "type": "extension",
                "name": "B",
-               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "addon": "graph_polygon_in_one_app_return_all_2__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "property": {
                  "is_leaf": false
                 }
              },{
                "type": "extension",
                "name": "C",
-               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "addon": "graph_polygon_in_one_app_return_all_2__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "property": {
                  "is_leaf": false
                 }
              },{
                "type": "extension",
                "name": "D",
-               "addon": "graph_polygon_in_one_app_return_all__extension",
+               "addon": "graph_polygon_in_one_app_return_all_2__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "property": {
                  "is_leaf": true
                 }
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "extension": "A",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+                   "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                    "extension": "B"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+                   "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                    "extension": "C"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "extension": "B",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+                   "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                    "extension": "D"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "extension": "C",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+                   "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                    "extension": "D"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "extension": "D"
              }]
            }
@@ -229,7 +227,7 @@ TEST(ExtensionTest, GraphPolygonInOneAppReturnAll) {  // NOLINT
              "seq_id": "137",
              "dest": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all__extension_group",
+               "extension_group": "graph_polygon_in_one_app_return_all_2__extension_group",
                "extension": "A"
              }]
            }

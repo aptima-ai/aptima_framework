@@ -8,7 +8,7 @@
 
 #include "ten_runtime/ten_config.h"
 
-#include "include_internal/ten_runtime/path/path_group.h"
+#include "include_internal/ten_runtime/path/result_return_policy.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/signature.h"

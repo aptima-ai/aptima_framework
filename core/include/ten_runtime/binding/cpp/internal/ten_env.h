@@ -69,63 +69,23 @@ class ten_env_t {
   ten_env_t &operator=(const ten_env_t &&) = delete;
   // @}
 
-  bool send_cmd(std::unique_ptr<cmd_t> &&cmd,
-                result_handler_func_t &&result_handler, error_t *err) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-
-    bool rc = false;
-
-    if (!cmd) {
-      TEN_ASSERT(0, "Invalid argument.");
-      return rc;
-    }
-
-    if (result_handler == nullptr) {
-      rc = ten_env_send_cmd(
-          c_ten_env, cmd->get_underlying_msg(), nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
-    } else {
-      auto *result_handler_ptr =
-          new result_handler_func_t(std::move(result_handler));
-
-      rc = ten_env_send_cmd(
-          c_ten_env, cmd->get_underlying_msg(), proxy_handle_result,
-          result_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
-      if (!rc) {
-        delete result_handler_ptr;
-      }
-    }
-
-    if (rc) {
-      // Only when the cmd has been sent successfully, we should give back the
-      // ownership of the cmd to the TEN runtime.
-      auto *cpp_cmd_ptr = cmd.release();
-      delete cpp_cmd_ptr;
-    } else {
-      TEN_LOGE("Failed to send_cmd: %s", cmd->get_name());
-    }
-
-    return rc;
-  }
-
-  bool send_cmd(std::unique_ptr<cmd_t> &&cmd, error_t *err) {
-    return send_cmd(std::move(cmd), nullptr, err);
+  bool send_cmd_ex(std::unique_ptr<cmd_t> &&cmd,
+                   result_handler_func_t &&result_handler = nullptr,
+                   error_t *err = nullptr) {
+    return send_cmd_internal(std::move(cmd), std::move(result_handler), true,
+                             err);
   }
 
   bool send_cmd(std::unique_ptr<cmd_t> &&cmd,
-                result_handler_func_t &&result_handler) {
-    return send_cmd(std::move(cmd), std::move(result_handler), nullptr);
+                result_handler_func_t &&result_handler = nullptr,
+                error_t *err = nullptr) {
+    return send_cmd_internal(std::move(cmd), std::move(result_handler), false,
+                             err);
   }
 
-  bool send_cmd(std::unique_ptr<cmd_t> &&cmd) {
-    return send_cmd(std::move(cmd), nullptr, nullptr);
-  }
-
-  bool send_json(const char *json_str, result_handler_func_t &&result_handler,
-                 error_t *err)
-      __attribute__((warning("This method may access the '_ten' field. Use "
-                             "caution if '_ten' is provided."))) {
+  bool send_json_ex(const char *json_str,
+                    result_handler_func_t &&result_handler = nullptr,
+                    error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     if (json_str == nullptr) {
@@ -168,19 +128,27 @@ class ten_env_t {
     return rc;
   }
 
-  bool send_json(const char *json_str, result_handler_func_t &&result_handler) {
-    return send_json(json_str, std::move(result_handler), nullptr);
+  bool send_json(const char *json_str,
+                 result_handler_func_t &&result_handler = nullptr,
+                 error_t *err = nullptr) {
+    TEN_ASSERT(c_ten_env, "Should not happen.");
+
+    if (result_handler) {
+      return send_json_ex(
+          json_str,
+          [result_handler](ten::ten_env_t &ten_env,
+                           std::unique_ptr<ten::cmd_result_t> cmd_result) {
+            if (cmd_result->is_completed()) {
+              result_handler(ten_env, std::move(cmd_result));
+            }
+          },
+          err);
+    } else {
+      return send_json_ex(json_str, nullptr, err);
+    }
   }
 
-  bool send_json(const char *json_str, error_t *err) {
-    return send_json(json_str, nullptr, err);
-  }
-
-  bool send_json(const char *json_str) {
-    return send_json(json_str, nullptr, nullptr);
-  }
-
-  bool send_data(std::unique_ptr<data_t> &&data, error_t *err) {
+  bool send_data(std::unique_ptr<data_t> &&data, error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env && data, "Should not happen.");
 
     if (!data) {
@@ -209,11 +177,8 @@ class ten_env_t {
     return rc;
   }
 
-  bool send_data(std::unique_ptr<data_t> &&data) {
-    return send_data(std::move(data), nullptr);
-  }
-
-  bool send_video_frame(std::unique_ptr<video_frame_t> &&frame, error_t *err) {
+  bool send_video_frame(std::unique_ptr<video_frame_t> &&frame,
+                        error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     if (!frame) {
@@ -235,11 +200,8 @@ class ten_env_t {
     return rc;
   }
 
-  bool send_video_frame(std::unique_ptr<video_frame_t> &&frame) {
-    return send_video_frame(std::move(frame), nullptr);
-  }
-
-  bool send_audio_frame(std::unique_ptr<audio_frame_t> &&frame, error_t *err) {
+  bool send_audio_frame(std::unique_ptr<audio_frame_t> &&frame,
+                        error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     if (!frame) {
@@ -261,14 +223,10 @@ class ten_env_t {
     return rc;
   }
 
-  bool send_audio_frame(std::unique_ptr<audio_frame_t> &&frame) {
-    return send_audio_frame(std::move(frame), nullptr);
-  }
-
   // If the 'cmd' has already been a command in the backward path, a extension
   // could use this API to return the 'cmd' further.
   bool return_result_directly(std::unique_ptr<cmd_result_t> &&cmd,
-                              error_t *err) {
+                              error_t *err = nullptr) {
     if (!cmd) {
       TEN_ASSERT(0, "Invalid argument.");
       return false;
@@ -290,12 +248,9 @@ class ten_env_t {
     return rc;
   }
 
-  bool return_result_directly(std::unique_ptr<cmd_result_t> &&cmd) {
-    return return_result_directly(std::move(cmd), nullptr);
-  }
-
   bool return_result(std::unique_ptr<cmd_result_t> &&cmd,
-                     std::unique_ptr<cmd_t> &&target_cmd, error_t *err) {
+                     std::unique_ptr<cmd_t> &&target_cmd,
+                     error_t *err = nullptr) {
     if (!cmd) {
       TEN_ASSERT(0, "Invalid argument.");
       return false;
@@ -327,12 +282,7 @@ class ten_env_t {
     return rc;
   }
 
-  bool return_result(std::unique_ptr<cmd_result_t> &&cmd,
-                     std::unique_ptr<cmd_t> &&target_cmd) {
-    return return_result(std::move(cmd), std::move(target_cmd), nullptr);
-  }
-
-  bool is_property_exist(const char *path, error_t *err) {
+  bool is_property_exist(const char *path, error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     if ((path == nullptr) || (strlen(path) == 0)) {
@@ -348,11 +298,7 @@ class ten_env_t {
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool is_property_exist(const char *path) {
-    return is_property_exist(path, nullptr);
-  }
-
-  bool init_property_from_json(const char *json_str, error_t *err) {
+  bool init_property_from_json(const char *json_str, error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     if (json_str == nullptr) {
@@ -365,11 +311,7 @@ class ten_env_t {
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool init_property_from_json(const char *json_str) {
-    return init_property_from_json(json_str, nullptr);
-  }
-
-  std::string get_property_to_json(const char *path, error_t *err) {
+  std::string get_property_to_json(const char *path, error_t *err = nullptr) {
     std::string result;
 
     if ((path == nullptr) || (strlen(path) == 0)) {
@@ -403,12 +345,8 @@ class ten_env_t {
     return result;
   }
 
-  std::string get_property_to_json(const char *path) {
-    return get_property_to_json(path, nullptr);
-  }
-
   bool set_property_from_json(const char *path, const char *json_str,
-                              error_t *err) {
+                              error_t *err = nullptr) {
     ten_json_t *c_json = ten_json_from_string(
         json_str,
         err != nullptr ? err->get_internal_representation() : nullptr);
@@ -422,11 +360,7 @@ class ten_env_t {
     return set_property_impl(path, value, err);
   }
 
-  bool set_property_from_json(const char *path, const char *json_str) {
-    return set_property_from_json(path, json_str, nullptr);
-  }
-
-  uint8_t get_property_uint8(const char *path, error_t *err) {
+  uint8_t get_property_uint8(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -435,11 +369,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  uint8_t get_property_uint8(const char *path) {
-    return get_property_uint8(path, nullptr);
-  }
-
-  uint16_t get_property_uint16(const char *path, error_t *err) {
+  uint16_t get_property_uint16(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -448,11 +378,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  uint16_t get_property_uint16(const char *path) {
-    return get_property_uint16(path, nullptr);
-  }
-
-  uint32_t get_property_uint32(const char *path, error_t *err) {
+  uint32_t get_property_uint32(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -461,11 +387,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  uint32_t get_property_uint32(const char *path) {
-    return get_property_uint32(path, nullptr);
-  }
-
-  uint64_t get_property_uint64(const char *path, error_t *err) {
+  uint64_t get_property_uint64(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -474,11 +396,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  uint64_t get_property_uint64(const char *path) {
-    return get_property_uint64(path, nullptr);
-  }
-
-  int8_t get_property_int8(const char *path, error_t *err) {
+  int8_t get_property_int8(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -487,11 +405,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  int8_t get_property_int8(const char *path) {
-    return get_property_int8(path, nullptr);
-  }
-
-  int16_t get_property_int16(const char *path, error_t *err) {
+  int16_t get_property_int16(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -500,11 +414,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  int16_t get_property_int16(const char *path) {
-    return get_property_int16(path, nullptr);
-  }
-
-  int32_t get_property_int32(const char *path, error_t *err) {
+  int32_t get_property_int32(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -513,11 +423,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  int32_t get_property_int32(const char *path) {
-    return get_property_int32(path, nullptr);
-  }
-
-  int64_t get_property_int64(const char *path, error_t *err) {
+  int64_t get_property_int64(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -526,11 +432,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  int64_t get_property_int64(const char *path) {
-    return get_property_int64(path, nullptr);
-  }
-
-  float get_property_float32(const char *path, error_t *err) {
+  float get_property_float32(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0.0F;
@@ -539,11 +441,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  float get_property_float32(const char *path) {
-    return get_property_float32(path, nullptr);
-  }
-
-  double get_property_float64(const char *path, error_t *err) {
+  double get_property_float64(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0.0F;
@@ -552,11 +450,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  double get_property_float64(const char *path) {
-    return get_property_float64(path, nullptr);
-  }
-
-  std::string get_property_string(const char *path, error_t *err) {
+  std::string get_property_string(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return "";
@@ -564,11 +458,7 @@ class ten_env_t {
     return ten_value_peek_raw_str(c_value);
   }
 
-  std::string get_property_string(const char *path) {
-    return get_property_string(path, nullptr);
-  }
-
-  void *get_property_ptr(const char *path, error_t *err) {
+  void *get_property_ptr(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return nullptr;
@@ -577,11 +467,7 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  void *get_property_ptr(const char *path) {
-    return get_property_ptr(path, nullptr);
-  }
-
-  bool get_property_bool(const char *path, error_t *err) {
+  bool get_property_bool(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return false;
@@ -591,14 +477,10 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool get_property_bool(const char *path) {
-    return get_property_bool(path, nullptr);
-  }
-
   bool get_property_int32_async(
       const char *path,
       std::function<void(ten_env_t &, int32_t, error_t *err)> &&cb,
-      error_t *err) {
+      error_t *err = nullptr) {
     // Initialized lambda captures are a C++14 extension, and we use the
     // following trick to achieve the same effect.
     auto cb_copy = std::move(cb);
@@ -615,16 +497,10 @@ class ten_env_t {
         err);
   }
 
-  bool get_property_int32_async(
-      const char *path,
-      std::function<void(ten_env_t &, int32_t, error_t *err)> &&cb) {
-    return get_property_int32_async(path, std::move(cb), nullptr);
-  }
-
   bool get_property_string_async(
       const char *path,
       std::function<void(ten_env_t &, const std::string &, error_t *err)> &&cb,
-      error_t *err) {
+      error_t *err = nullptr) {
     // Initialized lambda captures are a C++14 extension, and we use the
     // following trick to achieve the same effect.
     auto cb_copy = std::move(cb);
@@ -637,263 +513,155 @@ class ten_env_t {
         err);
   }
 
-  bool get_property_string_async(
-      const char *path,
-      std::function<void(ten_env_t &, const std::string &, error_t *err)>
-          &&cb) {
-    return get_property_string_async(path, std::move(cb), nullptr);
-  }
-
-  bool set_property(const char *path, int8_t value, error_t *err) {
+  bool set_property(const char *path, int8_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int8(value), err);
   }
 
-  bool set_property(const char *path, int8_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, int16_t value, error_t *err) {
+  bool set_property(const char *path, int16_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int16(value), err);
   }
 
-  bool set_property(const char *path, int16_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, int32_t value, error_t *err) {
+  bool set_property(const char *path, int32_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int32(value), err);
   }
 
-  bool set_property(const char *path, int32_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, int64_t value, error_t *err) {
+  bool set_property(const char *path, int64_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int64(value), err);
   }
 
-  bool set_property(const char *path, int64_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, uint8_t value, error_t *err) {
+  bool set_property(const char *path, uint8_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint8(value), err);
   }
 
-  bool set_property(const char *path, uint8_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, uint16_t value, error_t *err) {
+  bool set_property(const char *path, uint16_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint16(value), err);
   }
 
-  bool set_property(const char *path, uint16_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, uint32_t value, error_t *err) {
+  bool set_property(const char *path, uint32_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint32(value), err);
   }
 
-  bool set_property(const char *path, uint32_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, uint64_t value, error_t *err) {
+  bool set_property(const char *path, uint64_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint64(value), err);
   }
 
-  bool set_property(const char *path, uint64_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, float value, error_t *err) {
+  bool set_property(const char *path, float value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_float32(value), err);
   }
 
-  bool set_property(const char *path, float value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, double value, error_t *err) {
+  bool set_property(const char *path, double value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_float64(value), err);
   }
 
-  bool set_property(const char *path, double value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, bool value, error_t *err) {
+  bool set_property(const char *path, bool value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_bool(value), err);
   }
 
-  bool set_property(const char *path, bool value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, void *value, error_t *err) {
+  bool set_property(const char *path, void *value, error_t *err = nullptr) {
     return set_property_impl(
         path, ten_value_create_ptr(value, nullptr, nullptr, nullptr), err);
   }
 
-  bool set_property(const char *path, void *value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, const char *value, error_t *err) {
+  bool set_property(const char *path, const char *value,
+                    error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_string(value), err);
   }
 
-  bool set_property(const char *path, const char *value) {
-    return set_property(path, value, nullptr);
-  }
-
   // Convenient overloaded function for string type.
-  bool set_property(const char *path, const std::string &value, error_t *err) {
+  bool set_property(const char *path, const std::string &value,
+                    error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_string(value.c_str()), err);
   }
 
-  bool set_property(const char *path, const std::string &value) {
-    return set_property(path, value, nullptr);
-  }
-
-  bool set_property(const char *path, const ten::buf_t &value, error_t *err) {
+  bool set_property(const char *path, const ten::buf_t &value,
+                    error_t *err = nullptr) {
     ten_buf_t buf =
         TEN_BUF_STATIC_INIT_WITH_DATA_OWNED(value.data(), value.size());
     return set_property_impl(path, ten_value_create_buf_with_move(buf), err);
   }
 
-  bool set_property(const char *path, const ten::buf_t &value) {
-    return set_property(path, value, nullptr);
-  }
-
   bool set_property_async(const char *path, int8_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_int8(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, int8_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, int16_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_int16(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, int16_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, int32_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_int32(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, int32_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, int64_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_int64(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, int64_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, uint8_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_uint8(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, uint8_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, uint16_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_uint16(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, uint16_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, uint32_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_uint32(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, uint32_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, uint64_t value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_uint64(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, uint64_t value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   bool set_property_async(const char *path, const char *value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_string(value),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, const char *value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
   // Convenient overloaded function for string type.
   bool set_property_async(const char *path, const std::string &value,
-                          set_property_async_cb_t &&cb, error_t *err) {
+                          set_property_async_cb_t &&cb,
+                          error_t *err = nullptr) {
     return set_property_async_impl(path, ten_value_create_string(value.c_str()),
                                    std::move(cb), err);
   }
 
-  bool set_property_async(const char *path, const std::string &value,
-                          set_property_async_cb_t &&cb) {
-    return set_property_async(path, value, std::move(cb), nullptr);
-  }
-
-  bool is_cmd_connected(const char *cmd_name, error_t *err) {
+  bool is_cmd_connected(const char *cmd_name, error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_is_cmd_connected(
         c_ten_env, cmd_name,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool is_cmd_connected(const char *cmd_name) {
-    return is_cmd_connected(cmd_name, nullptr);
-  }
-
-  bool addon_create_extension_async(const char *addon_name,
-                                    const char *instance_name,
-                                    addon_create_extension_async_cb_t &&cb,
-                                    error_t *err) {
+  bool addon_create_extension_async(
+      const char *addon_name, const char *instance_name,
+      addon_create_extension_async_cb_t &&cb = nullptr,
+      error_t *err = nullptr) {
     if (cb == nullptr) {
       return ten_addon_create_extension(
           c_ten_env, addon_name, instance_name, nullptr, nullptr,
@@ -908,46 +676,15 @@ class ten_env_t {
     }
   }
 
-  bool addon_create_extension_async(const char *addon_name,
-                                    const char *instance_name,
-                                    addon_create_extension_async_cb_t &&cb) {
-    return addon_create_extension_async(addon_name, instance_name,
-                                        std::move(cb), nullptr);
-  }
+  bool addon_destroy_extension(ten::extension_t *extension,
+                               error_t *err = nullptr);
 
-  bool addon_create_extension_async(const char *addon_name,
-                                    const char *instance_name) {
-    return addon_create_extension_async(addon_name, instance_name, nullptr,
-                                        nullptr);
-  }
+  bool addon_destroy_extension_async(
+      ten::extension_t *extension,
+      addon_destroy_extension_async_cb_t &&cb = nullptr,
+      error_t *err = nullptr);
 
-  bool addon_destroy_extension(ten::extension_t *extension, error_t *err);
-
-  bool addon_destroy_extension(ten::extension_t *extension) {
-    return addon_destroy_extension(extension, nullptr);
-  }
-
-  bool addon_destroy_extension_async(ten::extension_t *extension,
-                                     addon_destroy_extension_async_cb_t &&cb,
-                                     error_t *err);
-
-  bool addon_destroy_extension_async(ten::extension_t *extension) {
-    return addon_destroy_extension_async(extension, nullptr, nullptr);
-  }
-
-  bool addon_destroy_extension_async(ten::extension_t *extension,
-                                     addon_destroy_extension_async_cb_t &&cb) {
-    return addon_destroy_extension_async(extension, std::move(cb), nullptr);
-  }
-
-  bool addon_destroy_extension_async(ten::extension_t *extension,
-                                     error_t *err) {
-    return addon_destroy_extension_async(extension, nullptr, err);
-  }
-
-  bool on_configure_done() { return on_configure_done(nullptr); }
-
-  bool on_configure_done(error_t *err) {
+  bool on_configure_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     bool rc = ten_env_on_configure_done(
@@ -957,7 +694,7 @@ class ten_env_t {
     return rc;
   }
 
-  bool on_init_done(error_t *err) {
+  bool on_init_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     bool rc = ten_env_on_init_done(
@@ -967,59 +704,40 @@ class ten_env_t {
     return rc;
   }
 
-  bool on_init_done() { return on_init_done(nullptr); }
-
-  bool on_deinit_done(error_t *err) {
+  bool on_deinit_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_on_deinit_done(
         c_ten_env,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool on_deinit_done() { return on_deinit_done(nullptr); }
-
-  bool on_start_done(error_t *err) {
+  bool on_start_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_on_start_done(
         c_ten_env,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool on_start_done() { return on_start_done(nullptr); }
-
-  bool on_stop_done(error_t *err) {
+  bool on_stop_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_on_stop_done(
         c_ten_env,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool on_stop_done() { return on_stop_done(nullptr); }
-
   bool on_create_extensions_done(const std::vector<extension_t *> &extensions,
-                                 error_t *err);
+                                 error_t *err = nullptr);
 
-  bool on_create_extensions_done(const std::vector<extension_t *> &extensions) {
-    return on_create_extensions_done(extensions, nullptr);
-  }
-
-  bool on_destroy_extensions_done(error_t *err) {
+  bool on_destroy_extensions_done(error_t *err = nullptr) {
     return ten_env_on_destroy_extensions_done(
         c_ten_env,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool on_destroy_extensions_done() {
-    return on_destroy_extensions_done(nullptr);
-  }
+  bool on_create_instance_done(void *instance, void *context,
+                               error_t *err = nullptr);
 
-  bool on_create_instance_done(void *instance, void *context, error_t *err);
-
-  bool on_create_instance_done(void *instance, void *context) {
-    return on_create_instance_done(instance, context, nullptr);
-  }
-
-  bool on_destroy_instance_done(void *context, error_t *err) {
+  bool on_destroy_instance_done(void *context, error_t *err = nullptr) {
     bool rc = ten_env_on_destroy_instance_done(
         c_ten_env, context,
         err != nullptr ? err->get_internal_representation() : nullptr);
@@ -1027,19 +745,13 @@ class ten_env_t {
     return rc;
   }
 
-  bool on_destroy_instance_done(void *context) {
-    return on_destroy_instance_done(context, nullptr);
-  }
-
-  void *get_attached_target(error_t *err) {
+  void *get_attached_target(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     return ten_binding_handle_get_me_in_target_lang(
         reinterpret_cast<ten_binding_handle_t *>(
             ten_env_get_attached_target(c_ten_env)));
   }
-
-  void *get_attached_target() { return get_attached_target(nullptr); }
 
 #define TEN_ENV_LOG_VERBOSE(ten_env, msg)                                      \
   do {                                                                         \
@@ -1107,6 +819,54 @@ class ten_env_t {
   ::ten_env_t *get_c_ten_env() { return c_ten_env; }
 
   bool init_manifest_from_json(const char *json_str, error_t *err);
+
+  bool send_cmd_internal(std::unique_ptr<cmd_t> &&cmd,
+                         result_handler_func_t &&result_handler = nullptr,
+                         bool is_ex = false, error_t *err = nullptr) {
+    TEN_ASSERT(c_ten_env, "Should not happen.");
+
+    bool rc = false;
+
+    if (!cmd) {
+      TEN_ASSERT(0, "Invalid argument.");
+      return rc;
+    }
+
+    ten_env_send_cmd_func_t send_cmd_func = nullptr;
+    if (is_ex) {
+      send_cmd_func = ten_env_send_cmd_ex;
+    } else {
+      send_cmd_func = ten_env_send_cmd;
+    }
+
+    if (result_handler == nullptr) {
+      rc = send_cmd_func(
+          c_ten_env, cmd->get_underlying_msg(), nullptr, nullptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+    } else {
+      auto *result_handler_ptr =
+          new result_handler_func_t(std::move(result_handler));
+
+      rc = send_cmd_func(
+          c_ten_env, cmd->get_underlying_msg(), proxy_handle_result,
+          result_handler_ptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+      if (!rc) {
+        delete result_handler_ptr;
+      }
+    }
+
+    if (rc) {
+      // Only when the cmd has been sent successfully, we should give back the
+      // ownership of the cmd to the TEN runtime.
+      auto *cpp_cmd_ptr = cmd.release();
+      delete cpp_cmd_ptr;
+    } else {
+      TEN_LOGE("Failed to send_cmd: %s", cmd->get_name());
+    }
+
+    return rc;
+  }
 
   ten_value_t *peek_property_value(const char *path, error_t *err) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
@@ -1183,9 +943,21 @@ class ten_env_t {
         // Clone a C shared_ptr to be owned by the C++ instance.
         ten_shared_ptr_clone(c_cmd_result));
 
+    // After being processed by the `result_handler`, the `is_completed` value
+    // of `cmd_result` may change. For example, if a command is passed between
+    // two extensions within the same extension group (thread), the
+    // `result_handler` in the source extension might directly invoke the
+    // `on_cmd` logic of the destination extension. The logic within `on_cmd`
+    // might then call `return_cmd`, which would cause the `is_completed` value
+    // of the _same_ `cmd_result` to be modified. Therefore, before executing
+    // the `result_handler`, the `is_completed` value needed for subsequent
+    // decisions must be cached. After the `result_handler` has finished
+    // executing, processing should be based on this cached value.
+    bool is_completed = ten_cmd_result_is_completed(c_cmd_result, nullptr);
+
     (*result_handler)(*cpp_ten_env, std::move(cmd_result));
 
-    if (ten_cmd_result_is_completed(c_cmd_result, nullptr)) {
+    if (is_completed) {
       // Only when is_final is true should the result handler be cleared.
       // Otherwise, since more result handlers are expected, the result
       // handler should not be cleared.

@@ -64,7 +64,7 @@ class test_extension : public ten::extension_t {
             ]
           }
         })",
-        &err);
+        nullptr, &err);
 
     assert(!result && "The graph should be invalid.");
 

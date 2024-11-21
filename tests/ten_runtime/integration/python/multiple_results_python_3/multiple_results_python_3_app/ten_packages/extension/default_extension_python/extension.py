@@ -46,7 +46,7 @@ class DefaultExtension(Extension):
 
         if self.name == "default_extension_python_1":
             new_cmd = Cmd.create("hello")
-            ten_env.send_cmd(
+            ten_env.send_cmd_ex(
                 new_cmd,
                 lambda ten_env, result: self.check_hello(ten_env, result, cmd),
             )

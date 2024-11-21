@@ -51,7 +51,7 @@ class DefaultExtension(AsyncExtension):
         await asyncio.sleep(1)
 
         new_cmd = Cmd.create("greeting")
-        return await anext(ten_env.send_cmd(new_cmd))
+        return await ten_env.send_cmd(new_cmd)
 
     async def on_cmd(self, ten_env: AsyncTenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.to_json()
@@ -64,7 +64,7 @@ class DefaultExtension(AsyncExtension):
 
         await asyncio.sleep(0.5)
 
-        result = await anext(ten_env.send_cmd(new_cmd))
+        result = await ten_env.send_cmd(new_cmd)
 
         statusCode = result.get_status_code()
         detail = result.get_property_string("detail")

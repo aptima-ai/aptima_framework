@@ -23,7 +23,7 @@ class test_extension_1 : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_world") {
-      ten_env.send_cmd(
+      ten_env.send_cmd_ex(
           std::move(cmd),
           [this](ten::ten_env_t &ten_env,
                  std::unique_ptr<ten::cmd_result_t> cmd_result) {
@@ -150,7 +150,6 @@ TEST(CmdResultTest, MultipleResult3) {  // NOLINT
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
-                 "result_return_policy": "each_ok_and_error",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
                    "extension_group": "basic_extension_group",

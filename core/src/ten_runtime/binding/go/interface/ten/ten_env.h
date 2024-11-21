@@ -126,7 +126,7 @@ ten_go_status_t ten_go_ten_env_send_json(uintptr_t bridge_addr,
 
 ten_go_status_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
                                         uintptr_t cmd_bridge_addr,
-                                        ten_go_handle_t handler_id);
+                                        ten_go_handle_t handler_id, bool is_ex);
 
 ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
                                          uintptr_t data_bridge_addr,

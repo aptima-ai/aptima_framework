@@ -21,7 +21,17 @@ typedef void (*ten_env_cmd_result_handler_func_t)(
     ten_extension_t *extension, ten_env_t *ten_env,
     ten_shared_ptr_t *cmd_result, void *cmd_result_handler_user_data);
 
+typedef bool (*ten_env_send_cmd_func_t)(
+    ten_env_t *self, ten_shared_ptr_t *cmd,
+    ten_env_cmd_result_handler_func_t result_handler,
+    void *result_handler_user_data, ten_error_t *err);
+
 TEN_RUNTIME_API bool ten_env_send_cmd(
+    ten_env_t *self, ten_shared_ptr_t *cmd,
+    ten_env_cmd_result_handler_func_t result_handler,
+    void *result_handler_user_data, ten_error_t *err);
+
+TEN_RUNTIME_API bool ten_env_send_cmd_ex(
     ten_env_t *self, ten_shared_ptr_t *cmd,
     ten_env_cmd_result_handler_func_t result_handler,
     void *result_handler_user_data, ten_error_t *err);

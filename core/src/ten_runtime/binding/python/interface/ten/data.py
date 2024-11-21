@@ -4,7 +4,6 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import warnings
 from libten_runtime_python import _Data
 
 
@@ -20,13 +19,6 @@ class Data(_Data):
 
     @classmethod
     def create_from_json(cls, json_str: str):
-        warnings.warn(
-            (
-                "This method may access the '_ten' field. "
-                "Use caution if '_ten' is provided."
-            ),
-            UserWarning,
-        )
         instance = cls.__new__(cls)
         instance.from_json(json_str)
         return instance

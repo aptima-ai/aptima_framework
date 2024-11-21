@@ -223,6 +223,38 @@ func (p *tenEnv) sendCmd(cmd Cmd, handler ResultHandler) error {
 		p.cPtr,
 		cmd.getCPtr(),
 		cHandle(cb),
+		C.bool(false),
+	)
+
+	return withGoStatus(&cStatus)
+}
+
+func (p *tenEnv) SendCmdEx(cmd Cmd, handler ResultHandler) error {
+	if cmd == nil {
+		return newTenError(
+			ErrnoInvalidArgument,
+			"cmd is required.",
+		)
+	}
+
+	return withCGO(func() error {
+		return p.sendCmdEx(cmd, handler)
+	})
+}
+
+func (p *tenEnv) sendCmdEx(cmd Cmd, handler ResultHandler) error {
+	defer cmd.keepAlive()
+
+	cb := goHandleNil
+	if handler != nil {
+		cb = newGoHandle(handler)
+	}
+
+	cStatus := C.ten_go_ten_env_send_cmd(
+		p.cPtr,
+		cmd.getCPtr(),
+		cHandle(cb),
+		C.bool(true),
 	)
 
 	return withGoStatus(&cStatus)

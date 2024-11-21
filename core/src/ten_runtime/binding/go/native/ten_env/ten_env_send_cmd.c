@@ -13,6 +13,7 @@
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/msg.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
+#include "ten_runtime/ten_env/internal/send.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
@@ -22,10 +23,11 @@
 typedef struct ten_env_notify_send_cmd_info_t {
   ten_shared_ptr_t *c_cmd;
   ten_go_handle_t handler_id;
+  bool is_ex;
 } ten_env_notify_send_cmd_info_t;
 
 static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
-    ten_shared_ptr_t *c_cmd, ten_go_handle_t handler_id) {
+    ten_shared_ptr_t *c_cmd, ten_go_handle_t handler_id, bool is_ex) {
   TEN_ASSERT(c_cmd, "Invalid argument.");
 
   ten_env_notify_send_cmd_info_t *info =
@@ -34,6 +36,7 @@ static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
 
   info->c_cmd = c_cmd;
   info->handler_id = handler_id;
+  info->is_ex = is_ex;
 
   return info;
 }
@@ -62,14 +65,21 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   ten_error_t err;
   ten_error_init(&err);
 
+  ten_env_send_cmd_func_t send_cmd_func = NULL;
+  if (notify_info->is_ex) {
+    send_cmd_func = ten_env_send_cmd_ex;
+  } else {
+    send_cmd_func = ten_env_send_cmd;
+  }
+
   TEN_UNUSED bool res = false;
   if (notify_info->handler_id == TEN_GO_NO_RESPONSE_HANDLER) {
-    res = ten_env_send_cmd(ten_env, notify_info->c_cmd, NULL, NULL, NULL);
+    res = send_cmd_func(ten_env, notify_info->c_cmd, NULL, NULL, NULL);
   } else {
     ten_go_callback_info_t *info =
         ten_go_callback_info_create(notify_info->handler_id);
-    res = ten_env_send_cmd(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
-                           info, NULL);
+    res = send_cmd_func(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
+                        info, NULL);
   }
 
   ten_error_deinit(&err);
@@ -79,7 +89,8 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
 
 ten_go_status_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
                                         uintptr_t cmd_bridge_addr,
-                                        ten_go_handle_t handler_id) {
+                                        ten_go_handle_t handler_id,
+                                        bool is_ex) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -101,7 +112,7 @@ ten_go_status_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
   ten_env_notify_send_cmd_info_t *notify_info =
       ten_env_notify_send_cmd_info_create(
           ten_go_msg_move_c_msg(cmd),
-          handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id);
+          handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id, is_ex);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
                             ten_env_proxy_notify_send_cmd, notify_info, false,

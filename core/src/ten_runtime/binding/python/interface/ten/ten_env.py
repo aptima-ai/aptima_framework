@@ -67,7 +67,10 @@ class TenEnv:
         return self._internal.set_property_from_json(path, json_str)
 
     def send_cmd(self, cmd: Cmd, result_handler: ResultHandler) -> None:
-        return self._internal.send_cmd(cmd, result_handler)
+        return self._internal.send_cmd(cmd, result_handler, False)
+
+    def send_cmd_ex(self, cmd: Cmd, result_handler: ResultHandler) -> None:
+        return self._internal.send_cmd(cmd, result_handler, True)
 
     def send_data(self, data: Data) -> None:
         return self._internal.send_data(data)

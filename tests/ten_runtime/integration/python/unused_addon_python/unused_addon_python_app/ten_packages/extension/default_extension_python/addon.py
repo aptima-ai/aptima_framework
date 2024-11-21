@@ -11,12 +11,12 @@ from ten import Addon, register_addon_as_extension, TenEnv
 class DefaultExtensionAddon(Addon):
 
     def on_init(self, ten_env: TenEnv) -> None:
-        print("DefaultExtensionAddon on_init")
+        ten_env.log_info("DefaultExtensionAddon on_init")
         ten_env.on_init_done()
         return
 
     def on_create_instance(self, ten_env: TenEnv, name: str, context) -> None:
-        print("DefaultExtensionAddon on_create_instance")
+        ten_env.log_info("DefaultExtensionAddon on_create_instance")
         from . import extension
 
         ten_env.on_create_instance_done(
@@ -24,6 +24,6 @@ class DefaultExtensionAddon(Addon):
         )
 
     def on_deinit(self, ten_env: TenEnv) -> None:
-        print("DefaultExtensionAddon on_deinit")
+        ten_env.log_info("DefaultExtensionAddon on_deinit")
         ten_env.on_deinit_done()
         return

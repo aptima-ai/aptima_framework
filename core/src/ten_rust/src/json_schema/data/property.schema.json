@@ -29,14 +29,6 @@
       "minLength": 1,
       "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
     },
-    "result_return_policy": {
-      "type": "string",
-      "enum": [
-        "each_ok_and_error",
-        "first_error_or_first_ok",
-        "first_error_or_last_ok"
-      ]
-    },
     "valueType": {
       "type": "string",
       "enum": [
@@ -318,9 +310,6 @@
           "name": { // The api name should be alphanumericCharacters.
             "$ref": "#/$defs/alphanumericCharacters"
           },
-          "result_return_policy": {
-            "$ref": "#/$defs/result_return_policy"
-          },
           "dest": {
             "$ref": "#/$defs/dataDests"
           }
@@ -339,9 +328,6 @@
         "properties": {
           "name": { // The api name should be alphanumericCharacters.
             "$ref": "#/$defs/alphanumericCharacters"
-          },
-          "result_return_policy": {
-            "$ref": "#/$defs/result_return_policy"
           },
           "dest": {
             "$ref": "#/$defs/cmdDests"
