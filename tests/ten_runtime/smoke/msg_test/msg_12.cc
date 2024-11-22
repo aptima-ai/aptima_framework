@@ -10,8 +10,8 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/macro/macros.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -55,15 +55,8 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world") {
       hello_world_cmd = std::move(cmd);
 
-      std::unique_ptr<ten::cmd_t> test_cmd = ten::cmd_t::create_from_json(
-          R"({
-               "_ten": {
-                 "type": "cmd",
-                 "name": "test"
-               }
-             })");
-
-      test_cmd->set_property_from_json("test_data", TEN_XSTR(TEST_DATA));
+      auto test_cmd = ten::cmd_t::create("test");
+      test_cmd->set_property("test_data", TEST_DATA);
 
       ten_env.send_cmd(
           std::move(test_cmd), [this](ten::ten_env_t &ten_env,

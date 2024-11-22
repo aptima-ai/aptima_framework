@@ -10,6 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/msg/data.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
@@ -25,16 +26,9 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world") {
       hello_world_cmd = std::move(cmd);
 
-      auto data = ten::data_t::create_from_json(
-          // clang-format off
-          R"({
-               "_ten": {
-                 "name": "data"
-               },
-               "payload": 3
-             })"
-          // clang-format on
-      );
+      auto data = ten::data_t::create("data");
+      data->set_property("payload", 3);
+
       ten_env.send_data(std::move(data));
     } else if (std::string(cmd->get_name()) == "data_ack") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);

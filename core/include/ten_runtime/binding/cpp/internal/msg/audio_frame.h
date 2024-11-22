@@ -52,15 +52,6 @@ class audio_frame_t : public msg_t {
     return std::make_unique<audio_frame_t>(c_frame, ctor_passkey_t());
   }
 
-  static std::unique_ptr<audio_frame_t> create_from_json(
-      const char *json_str, error_t *err = nullptr) {
-    ten_shared_ptr_t *c_audio_frame = ten_audio_frame_create_from_json_string(
-        json_str,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-
-    return std::make_unique<audio_frame_t>(c_audio_frame, ctor_passkey_t());
-  }
-
   explicit audio_frame_t(ten_shared_ptr_t *audio_frame,
                          ctor_passkey_t /*unused*/)
       : msg_t(audio_frame) {}

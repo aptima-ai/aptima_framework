@@ -10,6 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/msg/audio_frame.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -26,22 +27,15 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world") {
       hello_world_cmd = std::move(cmd);
 
-      auto audio_frame = ten::audio_frame_t::create_from_json(
-          // clang-format off
-          R"({
-               "_ten": {
-                 "name": "audio_frame",
-                 "data_fmt": 1,
-                 "bytes_per_sample": 3,
-                 "channel_layout": 2,
-                 "line_size": 100,
-                 "number_of_channel": 555,
-                 "sample_rate": 543,
-                 "timestamp": 12341234
-               }
-             })"
-          // clang-format on
-      );
+      auto audio_frame = ten::audio_frame_t::create("audio_frame");
+      audio_frame->set_data_fmt(TEN_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
+      audio_frame->set_bytes_per_sample(3);
+      audio_frame->set_channel_layout(2);
+      audio_frame->set_line_size(100);
+      audio_frame->set_number_of_channels(555);
+      audio_frame->set_sample_rate(543);
+      audio_frame->set_timestamp(12341234);
+
       ten_env.send_audio_frame(std::move(audio_frame));
     } else if (std::string(cmd->get_name()) == "audio_frame_ack") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
