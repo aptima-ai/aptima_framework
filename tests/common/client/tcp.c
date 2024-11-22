@@ -8,8 +8,8 @@
 
 #include <stddef.h>
 
-#include "include_internal/ten_runtime/msg/cmd_base/cmd_result/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_runtime/msg/cmd/close_app/cmd.h"
 #include "ten_runtime/ten.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_str.h"
@@ -17,6 +17,7 @@
 #include "ten_utils/io/socket.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/buf.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/time.h"
 #include "ten_utils/macro/check.h"
@@ -298,51 +299,10 @@ bool ten_test_tcp_client_send_data(ten_test_tcp_client_t *self,
   return rc;
 }
 
-bool ten_test_tcp_client_send_json(ten_test_tcp_client_t *self,
-                                   ten_json_t *cmd_json, ten_error_t *err) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(cmd_json, "Invalid argument.");
-
-  ten_shared_ptr_t *msg = ten_msg_create_from_json(cmd_json, err);
-  if (!msg) {
-    return false;
-  }
-
-  bool rc = ten_test_tcp_client_send_msg(self, msg);
-  ten_shared_ptr_destroy(msg);
-
-  return rc;
-}
-
-ten_json_t *ten_test_tcp_client_send_and_recv_json(ten_test_tcp_client_t *self,
-                                                   ten_json_t *cmd_json,
-                                                   ten_error_t *err) {
-  TEN_ASSERT(self, "Invalid argument.");
-
-  if (ten_test_tcp_client_send_json(self, cmd_json, err)) {
-    ten_shared_ptr_t *cmd_result = ten_test_tcp_client_recv_msg(self);
-    if (cmd_result) {
-      ten_json_t *result = ten_cmd_result_to_json(cmd_result, NULL);
-      ten_shared_ptr_destroy(cmd_result);
-      return result;
-    } else {
-      return NULL;
-    }
-  }
-
-  return NULL;
-}
-
 bool ten_test_tcp_client_close_app(ten_test_tcp_client_t *self) {
-  ten_json_t *command = ten_json_from_string(
-      "{\
-       \"_ten\": {\
-         \"type\": \"close_app\"\
-       }\
-     }",
-      NULL);
-  bool rc = ten_test_tcp_client_send_json(self, command, NULL);
-  ten_json_destroy(command);
+  ten_shared_ptr_t *close_app_cmd = ten_cmd_close_app_create();
+  bool rc = ten_test_tcp_client_send_msg(self, close_app_cmd);
+  ten_shared_ptr_destroy(close_app_cmd);
 
   return rc;
 }

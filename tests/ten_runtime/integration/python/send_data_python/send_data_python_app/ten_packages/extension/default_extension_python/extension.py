@@ -35,11 +35,10 @@ class DefaultExtension(Extension):
         new_data.unlock_buf(buf)
         ten_env.send_data(new_data)
 
-        data_json = """{"test_key": "test_value"}"""
-        from_json_data = Data.create_from_json(data_json)
-        from_json_data.set_name("data2")
+        data = Data.create("data2")
+        data.set_property_string("test_key", "test_value")
 
-        ten_env.send_data(from_json_data)
+        ten_env.send_data(data)
 
         cmd_result = CmdResult.create(StatusCode.OK)
         cmd_result.set_property_string("detail", "send data done")

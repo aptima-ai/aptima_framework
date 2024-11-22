@@ -442,28 +442,6 @@ static ten_audio_frame_t *ten_raw_audio_frame_create_from_json(
   return audio_frame;
 }
 
-static ten_audio_frame_t *ten_raw_audio_frame_create_from_json_string(
-    const char *json_str, ten_error_t *err) {
-  ten_json_t *json = ten_json_from_string(json_str, err);
-  if (json == NULL) {
-    return NULL;
-  }
-
-  ten_audio_frame_t *audio_frame =
-      ten_raw_audio_frame_create_from_json(json, err);
-
-  ten_json_destroy(json);
-
-  return audio_frame;
-}
-
-ten_shared_ptr_t *ten_audio_frame_create_from_json_string(const char *json_str,
-                                                          ten_error_t *err) {
-  ten_audio_frame_t *audio_frame =
-      ten_raw_audio_frame_create_from_json_string(json_str, err);
-  return ten_shared_ptr_create(audio_frame, ten_raw_audio_frame_destroy);
-}
-
 ten_msg_t *ten_raw_audio_frame_as_msg_create_from_json(ten_json_t *json,
                                                        ten_error_t *err) {
   TEN_ASSERT(json, "Should not happen.");

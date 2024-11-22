@@ -13,32 +13,8 @@ class Cmd(_Cmd):
         return super().__new__(cls, name)
 
     def __init__(self):
-        raise NotImplementedError("Use Cmd.create_from_json instead.")
+        raise NotImplementedError("Use Cmd.create instead.")
 
     @classmethod
     def create(cls, name: str):
         return cls.__new__(cls, name)
-
-    @classmethod
-    def create_from_json(cls, json_str: str):
-        try:
-            data = json.loads(json_str)
-        except json.JSONDecodeError:
-            # The JSON is invalid.
-            return None
-
-        ten_data = data.get("_ten")
-        if not isinstance(ten_data, dict):
-            # '_ten' is missing or not an object.
-            return None
-
-        if not isinstance(ten_data.get("name"), str):
-            # 'name' is missing or not a string.
-            return None
-
-        # Extract the 'name' field from the '_ten' object
-        name = ten_data["name"]
-
-        instance = cls.__new__(cls, name)
-        instance.from_json(json_str)
-        return instance

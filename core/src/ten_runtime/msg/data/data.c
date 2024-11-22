@@ -279,26 +279,6 @@ bool ten_raw_data_like_set_ten_property(ten_msg_t *self, ten_list_t *paths,
   return success;
 }
 
-static ten_data_t *ten_raw_data_create_from_json_string(const char *json_str,
-                                                        ten_error_t *err) {
-  ten_json_t *json = ten_json_from_string(json_str, err);
-  if (json == NULL) {
-    return NULL;
-  }
-
-  ten_data_t *data = ten_raw_data_create_from_json(json, err);
-
-  ten_json_destroy(json);
-
-  return data;
-}
-
-ten_shared_ptr_t *ten_data_create_from_json_string(const char *json_str,
-                                                   ten_error_t *err) {
-  ten_data_t *data = ten_raw_data_create_from_json_string(json_str, err);
-  return ten_shared_ptr_create(data, ten_raw_data_destroy);
-}
-
 bool ten_raw_data_check_type_and_name(ten_msg_t *self, const char *type_str,
                                       const char *name_str, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Invalid argument.");

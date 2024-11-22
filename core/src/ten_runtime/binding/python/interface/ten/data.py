@@ -17,12 +17,6 @@ class Data(_Data):
         instance.set_name(msg_name)
         return instance
 
-    @classmethod
-    def create_from_json(cls, json_str: str):
-        instance = cls.__new__(cls)
-        instance.from_json(json_str)
-        return instance
-
     def alloc_buf(self, size: int) -> None:
         return _Data.alloc_buf(self, size)
 

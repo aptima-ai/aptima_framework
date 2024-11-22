@@ -302,9 +302,6 @@ TEN_RUNTIME_API ten_shared_ptr_t *ten_msg_create_from_msg_type(
 TEN_RUNTIME_API ten_shared_ptr_t *ten_msg_create_from_json(ten_json_t *json,
                                                            ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_msg_create_from_json_string(
-    const char *json_str, ten_error_t *err);
-
 TEN_RUNTIME_API void ten_raw_msg_destroy(ten_msg_t *self);
 
 TEN_RUNTIME_API const char *ten_msg_json_get_string_field_in_ten(

@@ -24,6 +24,3 @@ TEN_RUNTIME_API void ten_data_set_buf_with_move(ten_shared_ptr_t *self,
                                               ten_buf_t *buf);
 
 TEN_RUNTIME_API uint8_t *ten_data_alloc_buf(ten_shared_ptr_t *self, size_t size);
-
-TEN_RUNTIME_API ten_shared_ptr_t *ten_data_create_from_json_string(
-    const char *json_str, ten_error_t *err);

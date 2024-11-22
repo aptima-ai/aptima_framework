@@ -43,9 +43,9 @@ class HttpServerExtension(AsyncExtension):
                 return web.Response(status=200, text="OK")
             elif "name" in data["_ten"]:
                 # Send the command to the TEN runtime.
-                data["method"] = method
-                data["url"] = url
-                cmd = Cmd.create_from_json(json.dumps(data))
+                cmd = Cmd.create(data["_ten"]["name"])
+                cmd.set_property_string("method", method)
+                cmd.set_property_string("url", url)
 
                 # Send the command to the TEN runtime and wait for the result.
                 if cmd is None:

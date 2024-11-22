@@ -62,6 +62,3 @@ TEN_RUNTIME_API uint8_t *ten_video_frame_alloc_data(ten_shared_ptr_t *self,
                                                     size_t size);
 
 TEN_RUNTIME_API ten_buf_t *ten_video_frame_peek_data(ten_shared_ptr_t *self);
-
-TEN_RUNTIME_API ten_shared_ptr_t *ten_video_frame_create_from_json_string(
-    const char *json_str, ten_error_t *err);

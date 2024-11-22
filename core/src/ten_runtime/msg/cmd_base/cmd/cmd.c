@@ -17,7 +17,6 @@
 #include "include_internal/ten_runtime/msg/msg_info.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/cmd/cmd.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
@@ -114,44 +113,6 @@ bool ten_raw_cmd_process_field(ten_msg_t *self,
   return true;
 }
 
-static ten_cmd_t *ten_raw_cmd_create_from_json(ten_json_t *json,
-                                               ten_error_t *err) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  const char *type_str = NULL;
-  const char *name_str = NULL;
-
-  ten_json_t *ten_json = ten_json_object_peek(json, TEN_STR_UNDERLINE_TEN);
-  if (ten_json) {
-    type_str = ten_json_object_peek_string(ten_json, TEN_STR_TYPE);
-    name_str = ten_json_object_peek_string(ten_json, TEN_STR_NAME);
-  }
-
-  TEN_MSG_TYPE msg_type =
-      ten_msg_type_from_type_and_name_string(type_str, name_str);
-  switch (msg_type) {
-    case TEN_MSG_TYPE_INVALID:
-    case TEN_MSG_TYPE_DATA:
-    case TEN_MSG_TYPE_VIDEO_FRAME:
-    case TEN_MSG_TYPE_AUDIO_FRAME:
-    case TEN_MSG_TYPE_CMD_RESULT:
-      return NULL;
-
-    default:
-      break;
-  }
-
-  ten_cmd_t *cmd = NULL;
-  ten_raw_msg_create_from_json_func_t create_raw_from_json =
-      ten_msg_info[ten_msg_type_from_type_and_name_string(type_str, name_str)]
-          .create_from_json;
-  if (create_raw_from_json) {
-    cmd = (ten_cmd_t *)create_raw_from_json(json, err);
-  }
-
-  return cmd;
-}
-
 void ten_raw_cmd_destroy(ten_cmd_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
@@ -239,25 +200,5 @@ ten_shared_ptr_t *ten_cmd_create(const char *cmd_name, ten_error_t *err) {
   if (!cmd) {
     return NULL;
   }
-  return ten_shared_ptr_create(cmd, ten_raw_cmd_destroy);
-}
-
-static ten_cmd_t *ten_raw_cmd_create_from_json_string(const char *json_str,
-                                                      ten_error_t *err) {
-  ten_json_t *json = ten_json_from_string(json_str, err);
-  if (json == NULL) {
-    return NULL;
-  }
-
-  ten_cmd_t *cmd = ten_raw_cmd_create_from_json(json, err);
-
-  ten_json_destroy(json);
-
-  return cmd;
-}
-
-ten_shared_ptr_t *ten_cmd_create_from_json_string(const char *json_str,
-                                                  ten_error_t *err) {
-  ten_cmd_t *cmd = ten_raw_cmd_create_from_json_string(json_str, err);
   return ten_shared_ptr_create(cmd, ten_raw_cmd_destroy);
 }

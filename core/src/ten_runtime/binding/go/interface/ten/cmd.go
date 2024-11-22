@@ -11,7 +11,6 @@ package ten
 import "C"
 
 import (
-	"encoding/json"
 	"unsafe"
 )
 
@@ -92,49 +91,6 @@ func NewCmd(cmdName string) (Cmd, error) {
 		cStatus := C.ten_go_cmd_create_cmd(
 			unsafe.Pointer(unsafe.StringData(cmdName)),
 			C.int(len(cmdName)),
-			&bridge,
-		)
-		e := withGoStatus(&cStatus)
-
-		return e
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return newCmd(bridge), nil
-}
-
-// NewCmdFromJSONBytes creates a custom cmd based on the json bytes.
-//
-// Note that the `data` could not be modified before this function returns.
-func NewCmdFromJSONBytes(data []byte) (Cmd, error) {
-	if len(data) == 0 {
-		return nil, newTenError(
-			ErrnoInvalidArgument,
-			"json bytes is required.",
-		)
-	}
-
-	if ok := json.Valid(data); !ok {
-		return nil, newTenError(
-			ErrnoInvalidArgument,
-			"json format is invalid.",
-		)
-	}
-
-	var bridge C.uintptr_t
-	err := withCGO(func() error {
-		// Same as ten_go_cmd_create_cmd above, we pass the underlying
-		// pointer to C directly to improve performance.
-		//
-		// The slice in golang is a piece of array, in other words, the memory
-		// of slice is sequential. So it's safe to read the memory based on the
-		// address and length (i.e., the first and second parameter of
-		// ten_go_cmd_create_cmd_from_json).
-		cStatus := C.ten_go_cmd_create_cmd_from_json(
-			unsafe.Pointer(&data[0]),
-			C.int(len(data)),
 			&bridge,
 		)
 		e := withGoStatus(&cStatus)

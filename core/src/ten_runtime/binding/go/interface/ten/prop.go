@@ -12,7 +12,6 @@ package ten
 import "C"
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"unsafe"
@@ -269,57 +268,6 @@ type iProperty interface {
 
 type iPropertyContainerForAsyncGeneric interface {
 	postAsyncJob(payload job) any
-}
-
-func wrapValueInner(v any) (*value, error) {
-	switch v := (v).(type) {
-	case int:
-		if is64bit {
-			return tenValueCreateInt64(int64(v))
-		}
-		return tenValueCreateInt32(int32(v))
-	case int8:
-		return tenValueCreateInt8(v)
-	case int16:
-		return tenValueCreateInt16(v)
-	case int32:
-		return tenValueCreateInt32(v)
-	case int64:
-		return tenValueCreateInt64(v)
-	case uint:
-		if is64bit {
-			return tenValueCreateUint64(uint64(v))
-		}
-		return tenValueCreateUint32(uint32(v))
-	case uint8:
-		return tenValueCreateUint8(v)
-	case uint16:
-		return tenValueCreateUint16(v)
-	case uint32:
-		return tenValueCreateUint32(v)
-	case uint64:
-		return tenValueCreateUint64(v)
-	case float32:
-		return tenValueCreateFloat32(v)
-	case float64:
-		return tenValueCreateFloat64(v)
-	case bool:
-		return tenValueCreateBool(v)
-	case string:
-		return tenValueCreateString(v)
-	case []byte:
-		return tenValueCreateByteArray(v)
-	default:
-		vType := reflect.TypeOf(v)
-		if vType.Kind() == reflect.Ptr {
-			return tenValueCreatePtr(v)
-		}
-		bytes, err := json.Marshal(v)
-		if err != nil {
-			return nil, err
-		}
-		return tenValueCreateFromJSON(bytes)
-	}
 }
 
 // The purpose of having this function is because there are two types of

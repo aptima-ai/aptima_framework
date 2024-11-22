@@ -8,9 +8,11 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
+#include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/check.h"
@@ -67,11 +69,11 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
   ten_test_msgpack_tcp_client_t *client =
       ten_test_msgpack_tcp_client_create("msgpack://127.0.0.1:8001/");
 
-  std::string invalid_graph = R"(
+  ten_error_t *err = ten_error_create();
+  auto *invalid_graph_cmd = ten_cmd_start_graph_create();
+  bool success = ten_cmd_start_graph_init_from_json_str(invalid_graph_cmd, R"(
     {
       "_ten": {
-        "type": "start_graph",
-        "seq_id": "55",
         "nodes":[
           {
             "type": "extension",
@@ -90,22 +92,16 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
         ]
       }
     }
-  )";
-
-  // Send graph.
-  ten_json_t *graph = ten_json_from_string(invalid_graph.c_str(), nullptr);
-  ten_error_t *err = ten_error_create();
-  ten_json_t *resp =
-      ten_test_msgpack_tcp_client_send_and_recv_json(client, graph, err);
-
-  EXPECT_EQ(resp, nullptr);
+  )",
+                                                        err);
+  EXPECT_EQ(success, false);
   EXPECT_STREQ(ten_error_errmsg(err),
                "extension 'extension_1' is associated with different addon "
                "'error_client_send_json__extension_2', "
                "'error_client_send_json__extension_1'");
 
   ten_error_destroy(err);
-  ten_json_destroy(graph);
+  ten_shared_ptr_destroy(invalid_graph_cmd);
 
   // Strange connection would _not_ cause the TEN app to be closed, so we have
   // to close the TEN app explicitly.

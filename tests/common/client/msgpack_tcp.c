@@ -9,10 +9,8 @@
 #include "core_protocols/msgpack/common/parser.h"
 #include "core_protocols/msgpack/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_runtime/ten.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/check.h"
@@ -106,21 +104,6 @@ bool ten_test_msgpack_tcp_client_send_data(ten_test_msgpack_tcp_client_t *self,
 
   return ten_test_tcp_client_send_data(
       &self->base, graph_id, extension_group_name, extension_name, data, size);
-}
-
-bool ten_test_msgpack_tcp_client_send_json(ten_test_msgpack_tcp_client_t *self,
-                                           ten_json_t *cmd_json,
-                                           ten_error_t *err) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(cmd_json, "Invalid argument.");
-
-  return ten_test_tcp_client_send_json(&self->base, cmd_json, err);
-}
-
-ten_json_t *ten_test_msgpack_tcp_client_send_and_recv_json(
-    ten_test_msgpack_tcp_client_t *self, ten_json_t *cmd_json,
-    ten_error_t *err) {
-  return ten_test_tcp_client_send_and_recv_json(&self->base, cmd_json, err);
 }
 
 bool ten_test_msgpack_tcp_client_close_app(

@@ -336,28 +336,6 @@ static ten_video_frame_t *ten_raw_video_frame_create_from_json(
   return video_frame;
 }
 
-static ten_video_frame_t *ten_raw_video_frame_create_from_json_string(
-    const char *json_str, ten_error_t *err) {
-  ten_json_t *json = ten_json_from_string(json_str, err);
-  if (json == NULL) {
-    return NULL;
-  }
-
-  ten_video_frame_t *video_frame =
-      ten_raw_video_frame_create_from_json(json, err);
-
-  ten_json_destroy(json);
-
-  return video_frame;
-}
-
-ten_shared_ptr_t *ten_video_frame_create_from_json_string(const char *json_str,
-                                                          ten_error_t *err) {
-  ten_video_frame_t *video_frame =
-      ten_raw_video_frame_create_from_json_string(json_str, err);
-  return ten_shared_ptr_create(video_frame, ten_raw_video_frame_destroy);
-}
-
 ten_msg_t *ten_raw_video_frame_as_msg_create_from_json(ten_json_t *json,
                                                        ten_error_t *err) {
   TEN_ASSERT(json, "Should not happen.");
