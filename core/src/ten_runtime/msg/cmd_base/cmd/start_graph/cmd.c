@@ -81,9 +81,9 @@ ten_shared_ptr_t *ten_cmd_start_graph_create(void) {
                                ten_raw_cmd_start_graph_destroy);
 }
 
-static bool ten_raw_cmd_start_graph_init_from_json(ten_cmd_start_graph_t *self,
-                                                   ten_json_t *json,
-                                                   ten_error_t *err) {
+bool ten_raw_cmd_start_graph_init_from_json(ten_cmd_start_graph_t *self,
+                                            ten_json_t *json,
+                                            ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
              "Should not happen.");
   TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
@@ -130,29 +130,6 @@ bool ten_cmd_start_graph_init_from_json_str(ten_shared_ptr_t *self,
 
   return ten_raw_cmd_start_graph_as_msg_init_from_json_str(
       ten_msg_get_raw_msg(self), json_str, err);
-}
-
-static ten_cmd_start_graph_t *ten_raw_cmd_start_graph_create_from_json(
-    ten_json_t *json, ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_cmd_start_graph_t *cmd = ten_raw_cmd_start_graph_create();
-  TEN_ASSERT(cmd && ten_raw_cmd_check_integrity((ten_cmd_t *)cmd),
-             "Should not happen.");
-
-  if (!ten_raw_cmd_start_graph_init_from_json(cmd, json, err)) {
-    ten_raw_cmd_start_graph_destroy(cmd);
-    return NULL;
-  }
-
-  return cmd;
-}
-
-ten_msg_t *ten_raw_cmd_start_graph_as_msg_create_from_json(ten_json_t *json,
-                                                           ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_cmd_start_graph_create_from_json(json, err);
 }
 
 ten_json_t *ten_raw_cmd_start_graph_to_json(ten_msg_t *self, ten_error_t *err) {

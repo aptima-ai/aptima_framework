@@ -286,29 +286,6 @@ bool ten_raw_cmd_result_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
   return ten_raw_cmd_result_init_from_json((ten_cmd_result_t *)self, json, err);
 }
 
-static ten_cmd_result_t *ten_raw_cmd_result_create_from_json(ten_json_t *json,
-                                                             ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_cmd_result_t *cmd = ten_raw_cmd_result_create(TEN_STATUS_CODE_INVALID);
-  TEN_ASSERT(cmd && ten_raw_cmd_base_check_integrity((ten_cmd_base_t *)cmd),
-             "Should not happen.");
-
-  if (!ten_raw_cmd_result_init_from_json(cmd, json, err)) {
-    ten_raw_cmd_result_destroy(cmd);
-    return NULL;
-  }
-
-  return cmd;
-}
-
-ten_msg_t *ten_raw_cmd_result_as_msg_create_from_json(ten_json_t *json,
-                                                      ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_cmd_result_create_from_json(json, err);
-}
-
 static ten_json_t *ten_raw_cmd_result_put_field_to_json(ten_cmd_result_t *self,
                                                         ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==

@@ -30,17 +30,11 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_custom_as_msg_init_from_json(
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_custom_as_msg_destroy(ten_msg_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_custom_as_msg_create_from_json(
-    ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_custom_as_msg_clone(
     ten_msg_t *self, ten_list_t *excluded_field_ids);
 
 TEN_RUNTIME_PRIVATE_API ten_json_t *ten_raw_cmd_custom_to_json(
     ten_msg_t *self, ten_error_t *err);
-
-TEN_RUNTIME_API ten_cmd_t *ten_raw_cmd_custom_create_from_json(
-    ten_json_t *json, ten_error_t *err);
 
 TEN_RUNTIME_API ten_shared_ptr_t *ten_cmd_custom_create(void);
 

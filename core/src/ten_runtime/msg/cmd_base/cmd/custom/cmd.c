@@ -87,29 +87,6 @@ bool ten_raw_cmd_custom_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
   return ten_raw_cmd_custom_init_from_json((ten_cmd_t *)self, json, err);
 }
 
-ten_cmd_t *ten_raw_cmd_custom_create_from_json(ten_json_t *json,
-                                               ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_cmd_t *cmd = ten_raw_cmd_custom_create_empty();
-  TEN_ASSERT(cmd && ten_raw_cmd_check_integrity((ten_cmd_t *)cmd),
-             "Should not happen.");
-
-  if (!ten_raw_cmd_custom_init_from_json(cmd, json, err)) {
-    ten_raw_cmd_custom_destroy(cmd);
-    return NULL;
-  }
-
-  return cmd;
-}
-
-ten_msg_t *ten_raw_cmd_custom_as_msg_create_from_json(ten_json_t *json,
-                                                      ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_cmd_custom_create_from_json(json, err);
-}
-
 // This hack is only used by msgpack when serializing/deserializing the connect
 // command. Eventually, we should remove this hack.
 static void ten_raw_cmd_custom_to_json_msgpack_serialization_hack(

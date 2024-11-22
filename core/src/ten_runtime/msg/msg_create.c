@@ -4,37 +4,13 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/msg/audio_frame/audio_frame.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_result/cmd.h"
+#include "include_internal/ten_runtime/msg/data/data.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "include_internal/ten_runtime/msg/msg_info.h"
+#include "include_internal/ten_runtime/msg/video_frame/video_frame.h"
 #include "ten_runtime/msg/msg.h"
-
-ten_shared_ptr_t *ten_msg_create_from_json(ten_json_t *json, ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  const char *type_str = NULL;
-  const char *name_str = NULL;
-
-  ten_json_t *ten_json = ten_json_object_peek(json, TEN_STR_UNDERLINE_TEN);
-  if (ten_json) {
-    type_str = ten_json_object_peek_string(ten_json, TEN_STR_TYPE);
-    name_str = ten_json_object_peek_string(ten_json, TEN_STR_NAME);
-  }
-
-  ten_shared_ptr_t *msg = NULL;
-  ten_raw_msg_create_from_json_func_t from_json =
-      ten_msg_info[ten_msg_type_from_type_and_name_string(type_str, name_str)]
-          .create_from_json;
-  if (from_json) {
-    ten_msg_t *raw_msg = from_json(json, err);
-    if (raw_msg) {
-      msg = ten_shared_ptr_create(raw_msg, ten_raw_msg_destroy);
-    }
-  }
-
-  return msg;
-}
 
 void ten_raw_msg_destroy(ten_msg_t *self) {
   TEN_ASSERT(self, "Should not happen.");

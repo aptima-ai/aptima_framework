@@ -19,12 +19,16 @@
 #include "include_internal/ten_runtime/extension_group/extension_group_info/extension_group_info.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/json.h"
 #include "include_internal/ten_runtime/extension_group/extension_group_info/value.h"
+#include "include_internal/ten_runtime/msg/cmd_base/cmd/start_graph/cmd.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "ten_runtime/msg/cmd/start_graph/cmd.h"
+#include "ten_runtime/msg/msg.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/json.h"
+#include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
@@ -56,7 +60,8 @@ void ten_predefined_graph_info_destroy(ten_predefined_graph_info_t *self) {
   TEN_FREE(self);
 }
 
-static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
+static ten_shared_ptr_t *
+ten_app_build_start_graph_cmd_to_start_predefined_graph(
     ten_app_t *self, ten_predefined_graph_info_t *predefined_graph_info,
     ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Invalid argument.");
@@ -64,24 +69,16 @@ static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
 
   const char *app_uri = ten_app_get_uri(self);
 
+  ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
+  TEN_ASSERT(start_graph_cmd, "Should not happen.");
+
+  ten_msg_clear_and_set_dest(start_graph_cmd, app_uri, NULL, NULL, NULL, err);
+
   ten_json_t *start_graph_cmd_json = ten_json_create_object();
   TEN_ASSERT(start_graph_cmd_json, "Should not happen.");
 
   ten_json_t *ten_json = ten_json_object_peek_object_forcibly(
       start_graph_cmd_json, TEN_STR_UNDERLINE_TEN);
-
-  ten_json_t *type_json = ten_json_create_string(TEN_STR_START_GRAPH);
-  ten_json_object_set_new(ten_json, TEN_STR_TYPE, type_json);
-
-  ten_json_t *dests_json = ten_json_create_array();
-  ten_json_object_set_new(ten_json, TEN_STR_DEST, dests_json);
-
-  ten_json_t *dest_json = ten_json_create_object();
-  ten_json_object_set_new(dest_json, TEN_STR_APP,
-                          ten_json_create_string(app_uri));
-  ten_json_array_append_new(dests_json, dest_json);
-
-  // Convert to a json first, then dump to a string from the created json.
 
   ten_json_t *nodes_json = ten_json_create_array();
   ten_json_object_set_new(ten_json, TEN_STR_NODES, nodes_json);
@@ -95,6 +92,9 @@ static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
     TEN_ASSERT(
         extension_info_json && ten_json_check_integrity(extension_info_json),
         "Invalid argument.");
+    if (!extension_info_json) {
+      goto error;
+    }
 
     ten_json_array_append_new(nodes_json, extension_info_json);
   }
@@ -108,6 +108,9 @@ static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
     TEN_ASSERT(extension_group_info_json &&
                    ten_json_check_integrity(extension_group_info_json),
                "Invalid argument.");
+    if (!extension_group_info_json) {
+      goto error;
+    }
 
     ten_json_array_append_new(nodes_json, extension_group_info_json);
   }
@@ -123,8 +126,7 @@ static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
     bool rc = ten_extension_info_connections_to_json(extension_info,
                                                      &extension_info_json, err);
     if (!rc) {
-      ten_json_destroy(start_graph_cmd_json);
-      return NULL;
+      goto error;
     }
 
     if (extension_info_json) {
@@ -134,7 +136,19 @@ static ten_json_t *ten_app_build_start_graph_cmd_to_start_predefined_graph(
     }
   }
 
-  return start_graph_cmd_json;
+  ten_raw_cmd_start_graph_init_from_json(
+      (ten_cmd_start_graph_t *)ten_msg_get_raw_msg(start_graph_cmd),
+      start_graph_cmd_json, err);
+
+  goto done;
+
+error:
+  ten_shared_ptr_destroy(start_graph_cmd);
+  start_graph_cmd = NULL;
+
+done:
+  ten_json_destroy(start_graph_cmd_json);
+  return start_graph_cmd;
 }
 
 bool ten_app_start_predefined_graph(
@@ -144,24 +158,19 @@ bool ten_app_start_predefined_graph(
       self && ten_app_check_integrity(self, true) && predefined_graph_info,
       "Should not happen.");
 
-  ten_json_t *start_graph_cmd_json =
+  ten_shared_ptr_t *start_graph_cmd =
       ten_app_build_start_graph_cmd_to_start_predefined_graph(
           self, predefined_graph_info, err);
-  if (!start_graph_cmd_json) {
+  if (!start_graph_cmd) {
     return false;
   }
 
-  if (!ten_app_check_start_graph_cmd_json(self, start_graph_cmd_json, err)) {
+  if (!ten_app_check_start_graph_cmd(self, start_graph_cmd, err)) {
     // TODO(Wei): The graph check does not support message conversion now, so we
     // can not return false here. WIP: issues#160.
     TEN_LOGW("[%s] The predefined graph is invalid, %s", ten_app_get_uri(self),
              ten_error_errmsg(err));
   }
-
-  ten_shared_ptr_t *start_graph_cmd =
-      ten_msg_create_from_json(start_graph_cmd_json, NULL);
-
-  ten_json_destroy(start_graph_cmd_json);
 
   ten_msg_set_src_to_app(start_graph_cmd, self);
 

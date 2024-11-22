@@ -72,9 +72,6 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_timer_as_msg_init_from_json(
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_timer_as_msg_destroy(ten_msg_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_timer_as_msg_create_from_json(
-    ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API ten_json_t *ten_raw_cmd_timer_as_msg_to_json(
     ten_msg_t *self, ten_error_t *err);
 

@@ -35,12 +35,6 @@ static_assert(sizeof(TEN_MSG_TYPE) == sizeof(uint32_t),
 //     must uniquely map to one actual type of the msg instance; otherwise, an
 //     error will be thrown.
 //
-// - msg types do not have `create` functions nor `create_from_json` functions.
-//
-// - Only cmd/data/audio_frame/video_frame and the specialized classes of these
-//   four categories (e.g., connect, stop_graph commands) have `create` and
-//   `create_from_json` functions.
-//
 //   - If the json contains the fields `ten::type` and `ten::name`, these fields
 //     must uniquely map to the actual type of the msg instance; otherwise, an
 //     error will be thrown.
@@ -298,9 +292,6 @@ TEN_RUNTIME_PRIVATE_API void ten_msg_clear_dest(ten_shared_ptr_t *self);
 
 TEN_RUNTIME_API ten_shared_ptr_t *ten_msg_create_from_msg_type(
     TEN_MSG_TYPE msg_type);
-
-TEN_RUNTIME_API ten_shared_ptr_t *ten_msg_create_from_json(ten_json_t *json,
-                                                           ten_error_t *err);
 
 TEN_RUNTIME_API void ten_raw_msg_destroy(ten_msg_t *self);
 

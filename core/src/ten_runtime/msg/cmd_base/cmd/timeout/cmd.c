@@ -85,29 +85,6 @@ bool ten_raw_cmd_timeout_as_msg_init_from_json(ten_msg_t *self,
                                             err);
 }
 
-static ten_cmd_timeout_t *ten_raw_cmd_timeout_create_from_json(
-    ten_json_t *json, ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_cmd_timeout_t *cmd = ten_raw_cmd_timeout_create(0);
-  TEN_ASSERT(cmd && ten_raw_cmd_check_integrity((ten_cmd_t *)cmd),
-             "Should not happen.");
-
-  if (!ten_raw_cmd_timeout_init_from_json(cmd, json, err)) {
-    ten_raw_cmd_timeout_destroy(cmd);
-    return NULL;
-  }
-
-  return cmd;
-}
-
-ten_msg_t *ten_raw_cmd_timeout_as_msg_create_from_json(ten_json_t *json,
-                                                       ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_cmd_timeout_create_from_json(json, err);
-}
-
 static ten_json_t *ten_raw_cmd_timeout_to_json(ten_cmd_timeout_t *self,
                                                ten_error_t *err) {
   TEN_ASSERT(

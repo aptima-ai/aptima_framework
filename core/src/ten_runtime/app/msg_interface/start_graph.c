@@ -59,26 +59,16 @@ static bool ten_app_fill_start_graph_cmd_extensions_info_from_predefined_graph(
   return true;
 }
 
-bool ten_app_check_start_graph_cmd(ten_app_t *self,
-                                   ten_connection_t *connection,
-                                   ten_shared_ptr_t *cmd, ten_error_t *err) {
+static bool ten_app_check_start_graph_cmd_from_connection(
+    ten_app_t *self, ten_connection_t *connection, ten_shared_ptr_t *cmd,
+    ten_error_t *err) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Invalid argument.");
   TEN_ASSERT(cmd && ten_cmd_base_check_integrity(cmd), "Invalid argument.");
   TEN_ASSERT(ten_msg_get_type(cmd) == TEN_MSG_TYPE_CMD_START_GRAPH,
              "Invalid argument.");
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
 
-  ten_json_t *cmd_json = ten_msg_to_json(cmd, err);
-  if (!cmd_json) {
-    TEN_ASSERT(0,
-               "Failed to convert start graph cmd to json, should not happen.");
-    return false;
-  }
-
-  bool rc = ten_app_check_start_graph_cmd_json(self, cmd_json, err);
-
-  ten_json_destroy(cmd_json);
-
+  bool rc = ten_app_check_start_graph_cmd(self, cmd, err);
   if (!rc && connection) {
     ten_shared_ptr_t *ret_cmd =
         ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_ERROR, cmd);
@@ -115,7 +105,8 @@ bool ten_app_handle_start_graph_cmd(ten_app_t *self,
       ten_app_get_engine_based_on_dest_graph_id_from_msg(self, cmd);
   if (engine == NULL) {
     // The graph should be only checked once.
-    if (!ten_app_check_start_graph_cmd(self, connection, cmd, err)) {
+    if (!ten_app_check_start_graph_cmd_from_connection(self, connection, cmd,
+                                                       err)) {
       TEN_LOGE("[%s] Failed to check start_graph cmd, %s",
                ten_app_get_uri(self), ten_error_errmsg(err));
       return false;

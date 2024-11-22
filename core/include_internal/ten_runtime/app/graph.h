@@ -11,9 +11,9 @@
 #include <stdbool.h>
 
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
+#include "ten_utils/lib/smart_ptr.h"
 
 typedef struct ten_app_t ten_app_t;
 
-TEN_RUNTIME_PRIVATE_API bool ten_app_check_start_graph_cmd_json(
-    ten_app_t *self, ten_json_t *start_graph_cmd_json, ten_error_t *err);
+TEN_RUNTIME_PRIVATE_API bool ten_app_check_start_graph_cmd(
+    ten_app_t *self, ten_shared_ptr_t *start_graph_cmd, ten_error_t *err);

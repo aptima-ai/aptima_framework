@@ -319,30 +319,6 @@ static bool ten_raw_video_frame_init_from_json(ten_video_frame_t *self,
       (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
 }
 
-static ten_video_frame_t *ten_raw_video_frame_create_from_json(
-    ten_json_t *json, ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_video_frame_t *video_frame = ten_raw_video_frame_create();
-  TEN_ASSERT(video_frame && ten_raw_video_frame_check_integrity(
-                                (ten_video_frame_t *)video_frame),
-             "Should not happen.");
-
-  if (!ten_raw_video_frame_init_from_json(video_frame, json, err)) {
-    ten_raw_video_frame_destroy(video_frame);
-    return NULL;
-  }
-
-  return video_frame;
-}
-
-ten_msg_t *ten_raw_video_frame_as_msg_create_from_json(ten_json_t *json,
-                                                       ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_video_frame_create_from_json(json, err);
-}
-
 bool ten_raw_video_frame_as_msg_init_from_json(ten_msg_t *self,
                                                ten_json_t *json,
                                                ten_error_t *err) {

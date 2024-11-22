@@ -22,9 +22,6 @@ TEN_RUNTIME_PRIVATE_API void ten_cmd_timeout_set_timer_id(
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_timeout_as_msg_init_from_json(
     ten_msg_t *self, ten_json_t *json, ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_timeout_as_msg_create_from_json(
-    ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_cmd_timeout_create(
     uint32_t timer_id);
 

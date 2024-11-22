@@ -121,35 +121,6 @@ ten_shared_ptr_t *ten_cmd_timer_create(void) {
                                ten_raw_cmd_timer_destroy);
 }
 
-static ten_cmd_timer_t *ten_raw_cmd_timer_create_from_json(ten_json_t *json,
-                                                           ten_error_t *err) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  // 'timeout_in_us' field will not be specified when canceling the timer (times
-  // == -1).
-  TEN_ASSERT(ten_msg_json_get_is_ten_field_exist(json, TEN_STR_TIMER_ID) &&
-                 ten_msg_json_get_is_ten_field_exist(json, TEN_STR_TIMES),
-             "Should not happen.");
-
-  ten_cmd_timer_t *cmd = ten_raw_cmd_timer_create();
-  TEN_ASSERT(cmd && ten_raw_cmd_check_integrity((ten_cmd_t *)cmd),
-             "Should not happen.");
-
-  if (!ten_raw_cmd_timer_init_from_json(cmd, json, err)) {
-    ten_raw_cmd_timer_destroy(cmd);
-    return NULL;
-  }
-
-  return cmd;
-}
-
-ten_msg_t *ten_raw_cmd_timer_as_msg_create_from_json(ten_json_t *json,
-                                                     ten_error_t *err) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_cmd_timer_create_from_json(json, err);
-}
-
 static ten_json_t *ten_raw_cmd_timer_to_json(ten_cmd_timer_t *self,
                                              ten_error_t *err) {
   TEN_ASSERT(

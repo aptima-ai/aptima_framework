@@ -144,29 +144,6 @@ static bool ten_raw_data_init_from_json(ten_data_t *self, ten_json_t *json,
       (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
 }
 
-static ten_data_t *ten_raw_data_create_from_json(ten_json_t *json,
-                                                 ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_data_t *data = ten_raw_data_create();
-  TEN_ASSERT(data && ten_raw_data_check_integrity((ten_data_t *)data),
-             "Should not happen.");
-
-  if (!ten_raw_data_init_from_json(data, json, err)) {
-    ten_raw_data_destroy(data);
-    return NULL;
-  }
-
-  return data;
-}
-
-ten_msg_t *ten_raw_data_as_msg_create_from_json(ten_json_t *json,
-                                                ten_error_t *err) {
-  TEN_ASSERT(json, "Should not happen.");
-
-  return (ten_msg_t *)ten_raw_data_create_from_json(json, err);
-}
-
 bool ten_raw_data_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
                                         ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_data_check_integrity((ten_data_t *)self),
