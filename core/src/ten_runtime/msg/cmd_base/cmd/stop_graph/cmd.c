@@ -55,28 +55,6 @@ ten_shared_ptr_t *ten_cmd_stop_graph_create(void) {
                                ten_raw_cmd_stop_graph_destroy);
 }
 
-static bool ten_raw_cmd_stop_graph_init_from_json(ten_cmd_stop_graph_t *self,
-                                                  ten_json_t *json,
-                                                  ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_stop_graph_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_cmd_stop_graph_as_msg_init_from_json(ten_msg_t *self,
-                                                  ten_json_t *json,
-                                                  ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_stop_graph_init_from_json((ten_cmd_stop_graph_t *)self,
-                                               json, err);
-}
-
 ten_json_t *ten_raw_cmd_stop_graph_to_json(ten_msg_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
                          TEN_MSG_TYPE_CMD_STOP_GRAPH,

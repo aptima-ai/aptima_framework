@@ -266,26 +266,6 @@ void ten_cmd_result_set_status_code(ten_shared_ptr_t *self,
   ten_raw_cmd_result_set_status_code(cmd_result, status_code);
 }
 
-static bool ten_raw_cmd_result_init_from_json(ten_cmd_result_t *self,
-                                              ten_json_t *json,
-                                              ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_base_check_integrity((ten_cmd_base_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_result_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_cmd_result_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
-                                              ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_base_check_integrity((ten_cmd_base_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_result_init_from_json((ten_cmd_result_t *)self, json, err);
-}
-
 static ten_json_t *ten_raw_cmd_result_put_field_to_json(ten_cmd_result_t *self,
                                                         ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_get_type((ten_msg_t *)self) ==
@@ -302,14 +282,6 @@ static ten_json_t *ten_raw_cmd_result_put_field_to_json(ten_cmd_result_t *self,
   }
 
   return json;
-}
-
-ten_json_t *ten_raw_cmd_result_as_msg_to_json(ten_msg_t *self,
-                                              ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD_RESULT,
-             "Should not happen.");
-
-  return ten_raw_cmd_result_put_field_to_json((ten_cmd_result_t *)self, err);
 }
 
 ten_json_t *ten_cmd_result_to_json(ten_shared_ptr_t *self, ten_error_t *err) {

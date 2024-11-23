@@ -13,12 +13,9 @@ int main(int argc, char **argv) {
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "nodes": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"nodes": [{
                "type": "extension",
                "name": "test_extension",
                "addon": "default_extension_cpp",
@@ -29,28 +26,21 @@ int main(int argc, char **argv) {
                }
              }]
            }
-         })"_json);
-  TEN_ASSERT(TEN_STATUS_CODE_OK == resp["_ten"]["status_code"],
+         })");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  TEN_ASSERT(TEN_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
   // Send a user-defined 'hello world' command.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "hello_world",
-             "seq_id": "137",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test_extension_group",
-               "extension": "test_extension"
-             }]
-           }
-       })"_json);
-  TEN_ASSERT(TEN_STATUS_CODE_OK == resp["_ten"]["status_code"],
+  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                            "test_extension_group", "test_extension");
+  cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
+  TEN_ASSERT(TEN_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
-  TEN_ASSERT(static_cast<std::string>("137") == resp["_ten"]["seq_id"],
-             "Should not happen.");
-  TEN_ASSERT(static_cast<std::string>("hello world, too") == resp["detail"],
+  TEN_ASSERT(static_cast<std::string>("hello world, too") ==
+                 cmd_result->get_property_string("detail"),
              "Should not happen.");
 
   delete client;

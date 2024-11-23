@@ -609,10 +609,7 @@ void send_ten_msg_with_req_body(
               cmd = ten::cmd_close_app_t::create();
 
               // Set the destination of the command to the localhost.
-              cmd_json["_ten"].erase("dest");
-              auto dest = nlohmann::json::array();
-              dest.push_back({{"app", "localhost"}});
-              cmd_json["_ten"]["dest"] = dest;
+              cmd->set_dest("localhost", nullptr, nullptr, nullptr);
             } else {
               assert(0 && "Handle more internal command types.");
             }

@@ -13,23 +13,14 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8007/");
 
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-    "_ten": {
-      "name": "start",
-      "seq_id": "238",
-      "dest": [{
-        "app": "msgpack://127.0.0.1:8007/",
-        "graph": "default",
-        "extension_group": "nodetest_group",
-        "extension": "A"
-      }]
-    }
-  })"_json);
-  TEN_ASSERT(TEN_STATUS_CODE_OK == resp["_ten"]["status_code"],
+  auto start_cmd = ten::cmd_t::create("start");
+  start_cmd->set_dest("msgpack://127.0.0.1:8007/", "default", "nodetest_group",
+                      "A");
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(start_cmd));
+  TEN_ASSERT(TEN_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
-  std::string resp_str = resp["detail"];
+  std::string resp_str = cmd_result->get_property_string("detail");
   TEN_LOGD("got result: %s", resp_str.c_str());
   TEN_ASSERT(resp_str == "done", "Should not happen.");
 

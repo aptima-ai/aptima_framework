@@ -75,9 +75,6 @@ TEN_RUNTIME_PRIVATE_API void ten_loc_init_from_loc(ten_loc_t *self,
 TEN_RUNTIME_PRIVATE_API void ten_loc_init_from_value(ten_loc_t *self,
                                                      ten_value_t *value);
 
-TEN_RUNTIME_PRIVATE_API void ten_loc_init_from_json(ten_loc_t *self,
-                                                    ten_json_t *json);
-
 TEN_RUNTIME_PRIVATE_API void ten_loc_deinit(ten_loc_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_loc_set(ten_loc_t *self, const char *app_uri,

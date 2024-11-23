@@ -81,14 +81,8 @@ TEN_RUNTIME_PRIVATE_API void ten_cmd_result_set_original_cmd_type(
 TEN_RUNTIME_PRIVATE_API TEN_MSG_TYPE
 ten_cmd_result_get_original_cmd_type(ten_shared_ptr_t *self);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_as_msg_init_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_result_as_msg_clone(
     ten_msg_t *self, TEN_UNUSED ten_list_t *excluded_field_ids);
-
-TEN_RUNTIME_PRIVATE_API ten_json_t *ten_raw_cmd_result_as_msg_to_json(
-    ten_msg_t *self, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_result_destroy(ten_cmd_result_t *self);
 

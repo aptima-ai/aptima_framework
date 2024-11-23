@@ -14,7 +14,6 @@
 #include "include_internal/ten_runtime/msg/video_frame/field/field_info.h"
 #include "include_internal/ten_utils/value/value_path.h"
 #include "include_internal/ten_utils/value/value_set.h"
-#include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/msg/video_frame/video_frame.h"
 #include "ten_utils/lib/alloc.h"
@@ -257,78 +256,6 @@ ten_msg_t *ten_raw_video_frame_as_msg_clone(ten_msg_t *self,
   }
 
   return (ten_msg_t *)new_frame;
-}
-
-ten_json_t *ten_raw_video_frame_as_msg_to_json(ten_msg_t *self,
-                                               ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self) &&
-                 ten_raw_msg_get_type(self) == TEN_MSG_TYPE_VIDEO_FRAME,
-             "Should not happen.");
-
-  ten_json_t *json = ten_json_create_object();
-  TEN_ASSERT(json, "Should not happen.");
-
-  bool rc = ten_raw_video_frame_loop_all_fields(
-      self, ten_raw_msg_put_one_field_to_json, json, err);
-  if (!rc) {
-    ten_json_destroy(json);
-    return NULL;
-  }
-
-  return json;
-}
-
-bool ten_raw_video_frame_check_type_and_name(ten_msg_t *self,
-                                             const char *type_str,
-                                             const char *name_str,
-                                             ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Invalid argument.");
-
-  if (type_str) {
-    if (strcmp(type_str, TEN_STR_VIDEO_FRAME) != 0) {
-      if (err) {
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Incorrect message type for video frame: %s", type_str);
-      }
-      return false;
-    }
-  }
-
-  if (name_str) {
-    if (strncmp(name_str, TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX,
-                strlen(TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX)) == 0) {
-      if (err) {
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Incorrect message name for video frame: %s", name_str);
-      }
-      return false;
-    }
-  }
-
-  return true;
-}
-
-static bool ten_raw_video_frame_init_from_json(ten_video_frame_t *self,
-                                               ten_json_t *json,
-                                               ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_video_frame_check_integrity(self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_video_frame_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_video_frame_as_msg_init_from_json(ten_msg_t *self,
-                                               ten_json_t *json,
-                                               ten_error_t *err) {
-  TEN_ASSERT(
-      self && ten_raw_video_frame_check_integrity((ten_video_frame_t *)self),
-      "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_video_frame_init_from_json((ten_video_frame_t *)self, json,
-                                            err);
 }
 
 bool ten_raw_video_frame_set_ten_property(ten_msg_t *self, ten_list_t *paths,

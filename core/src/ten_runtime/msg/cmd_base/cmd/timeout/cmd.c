@@ -13,7 +13,6 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_utils/value/value_set.h"
 #include "ten_utils/lib/alloc.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
@@ -61,56 +60,6 @@ static ten_cmd_timeout_t *ten_raw_cmd_timeout_create(const uint32_t timer_id) {
 ten_shared_ptr_t *ten_cmd_timeout_create(const uint32_t timer_id) {
   return ten_shared_ptr_create(ten_raw_cmd_timeout_create(timer_id),
                                ten_raw_cmd_timeout_destroy);
-}
-
-static bool ten_raw_cmd_timeout_init_from_json(ten_cmd_timeout_t *self,
-                                               ten_json_t *json,
-                                               ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_timeout_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_cmd_timeout_as_msg_init_from_json(ten_msg_t *self,
-                                               ten_json_t *json,
-                                               ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_timeout_init_from_json((ten_cmd_timeout_t *)self, json,
-                                            err);
-}
-
-static ten_json_t *ten_raw_cmd_timeout_to_json(ten_cmd_timeout_t *self,
-                                               ten_error_t *err) {
-  TEN_ASSERT(
-      self && ten_raw_cmd_check_integrity((ten_cmd_t *)self) &&
-          ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMEOUT,
-      "Should not happen.");
-
-  ten_json_t *json = ten_json_create_object();
-  TEN_ASSERT(json, "Should not happen.");
-
-  if (!ten_raw_cmd_timeout_loop_all_fields(
-          (ten_msg_t *)self, ten_raw_msg_put_one_field_to_json, json, err)) {
-    ten_json_destroy(json);
-    return NULL;
-  }
-
-  return json;
-}
-
-ten_json_t *ten_raw_cmd_timeout_as_msg_to_json(ten_msg_t *self,
-                                               ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self) &&
-                 ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD_TIMEOUT,
-             "Should not happen.");
-
-  return ten_raw_cmd_timeout_to_json((ten_cmd_timeout_t *)self, err);
 }
 
 uint32_t ten_raw_cmd_timeout_get_timer_id(ten_cmd_timeout_t *self) {

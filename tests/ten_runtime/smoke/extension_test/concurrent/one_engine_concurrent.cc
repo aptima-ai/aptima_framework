@@ -118,22 +118,14 @@ void *client_thread_main(TEN_UNUSED void *args) {
            client_port);
 
   // Send a user-defined 'hello world' command.
-  nlohmann::json request = R"({
-                                "_ten": {
-                                  "name": "test",
-                                  "dest":[{
-                                    "app": "msgpack://127.0.0.1:8001/",
-                                    "extension_group": "extension_group_A",
-                                    "extension": "A"
-                                  }]
-                                }
-                              })"_json;
-  request["_ten"]["dest"][0]["graph"] = graph_id;
-  request["_ten"]["seq_id"] = seq_id_str;
+  auto test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", graph_id.c_str(),
+                     "extension_group_A", "A");
 
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(request);
-  ten_test::check_result_is(resp, seq_id_str, TEN_STATUS_CODE_OK,
-                            R"({"a": "b"})");
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_json(cmd_result, R"({"a": "b"})");
 
   // Destroy the client.
   delete client;
@@ -164,12 +156,11 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
     client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
     // Send graph.
-    nlohmann::json resp = client->send_json_and_recv_resp_in_json(
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_nodes_and_connections_from_json(
         R"({
              "_ten": {
-               "type": "start_graph",
                "long_running_mode": true,
-               "seq_id": "55",
                "nodes": [{
                  "type": "extension",
                  "name": "A",
@@ -197,11 +188,14 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
                  }]
                }]
              }
-           })"_json);
+           })");
 
-    if (!resp.empty()) {
-      ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-      graph_id = resp.value("detail", "");
+    auto cmd_result =
+        client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+
+    if (cmd_result) {
+      ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+      graph_id = cmd_result->get_property_string("detail");
 
       break;
     } else {

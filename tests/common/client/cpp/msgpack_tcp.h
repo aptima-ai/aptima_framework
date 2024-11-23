@@ -11,8 +11,10 @@
 #include <exception>
 #include <nlohmann/json.hpp>
 
+#include "include_internal/ten_runtime/binding/cpp/internal/msg/cmd/cmd_result_internal_accessor.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "include_internal/ten_utils/log/log.h"
+#include "ten_runtime/binding/cpp/internal/msg/cmd_result.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
@@ -49,109 +51,32 @@ class msgpack_tcp_client_t {
     return success;
   }
 
-  bool send_json(const nlohmann::json &cmd_json) {
-    if (cmd_json.contains("_ten")) {
-      if (cmd_json["_ten"].contains("type")) {
-        if (cmd_json["_ten"]["type"] == "start_graph") {
-          std::unique_ptr<cmd_t> cmd = ten::cmd_start_graph_t::create();
-          cmd->from_json(cmd_json.dump().c_str());
-          return send_cmd(std::move(cmd));
-        } else if (cmd_json["_ten"]["type"] == "close_app") {
-          std::unique_ptr<ten::cmd_t> cmd = ten::cmd_close_app_t::create();
-          cmd->from_json(cmd_json.dump().c_str());
-          return send_cmd(std::move(cmd));
-        } else {
-          TEN_ASSERT(0, "Handle more TEN builtin command type.");
-        }
-      } else {
-        std::unique_ptr<ten::cmd_t> cmd = ten::cmd_t::create(
-            cmd_json["_ten"]["name"].get<std::string>().c_str());
-        cmd->from_json(cmd_json.dump().c_str());
-        return send_cmd(std::move(cmd));
-      }
-    } else {
-      TEN_ASSERT(0, "Should not happen.");
-    }
-
-    return false;
-  }
-
-  nlohmann::json send_cmd_and_recv_resp_in_json(
+  std::unique_ptr<ten::cmd_result_t> send_cmd_and_recv_result(
       std::unique_ptr<ten::cmd_t> &&cmd) {
     send_cmd(std::move(cmd));
 
     ten_shared_ptr_t *c_resp = ten_test_msgpack_tcp_client_recv_msg(c_client);
     if (c_resp != nullptr) {
-      ten_json_t *c_json = ten_msg_to_json(c_resp, nullptr);
-
-      bool must_free = false;
-      const char *json_str = ten_json_to_string(c_json, nullptr, &must_free);
-      TEN_ASSERT(json_str, "Failed to get JSON string from JSON.");
-
-      nlohmann::json result = nlohmann::json::parse(json_str);
-
-      ten_json_destroy(c_json);
-      if (must_free) {
-        TEN_FREE(
-            json_str);  // NOLINT(cppcoreguidelines-no-malloc, hicpp-no-malloc)
-      }
-
-      ten_shared_ptr_destroy(c_resp);
-
-      return result;
+      return ten::cmd_result_internal_accessor_t::create(c_resp);
     } else {
-      return nlohmann::json{};
+      return {};
     }
   }
 
-  nlohmann::json send_json_and_recv_resp_in_json(
-      const nlohmann::json &cmd_json) {
-    if (cmd_json.contains("_ten")) {
-      if (cmd_json["_ten"].contains("type")) {
-        if (cmd_json["_ten"]["type"] == "start_graph") {
-          std::unique_ptr<ten::cmd_start_graph_t> start_graph_cmd =
-              ten::cmd_start_graph_t::create();
-          start_graph_cmd->from_json(cmd_json.dump().c_str());
-          return send_cmd_and_recv_resp_in_json(std::move(start_graph_cmd));
-        } else {
-          TEN_ASSERT(0, "Handle more TEN builtin command type.");
-        }
-      } else {
-        std::unique_ptr<ten::cmd_t> custom_cmd = ten::cmd_t::create(
-            cmd_json["_ten"]["name"].get<std::string>().c_str());
-        custom_cmd->from_json(cmd_json.dump().c_str());
-        return send_cmd_and_recv_resp_in_json(std::move(custom_cmd));
-      }
-    } else {
-      TEN_ASSERT(0, "Should not happen.");
-    }
-    return {};
-  }
-
-  std::vector<nlohmann::json> batch_recv_resp_in_json() {
+  std::vector<std::unique_ptr<ten::cmd_result_t>> batch_recv_cmd_results() {
     ten_list_t msgs = TEN_LIST_INIT_VAL;
-
     ten_test_msgpack_tcp_client_recv_msgs_batch(c_client, &msgs);
 
-    std::vector<nlohmann::json> results;
+    std::vector<std::unique_ptr<ten::cmd_result_t>> results;
 
     ten_list_foreach (&msgs, iter) {
-      ten_shared_ptr_t *c_resp = ten_smart_ptr_listnode_get(iter.node);
-      TEN_ASSERT(c_resp, "Should not happen.");
+      ten_shared_ptr_t *c_cmd_result =
+          ten_shared_ptr_clone(ten_smart_ptr_listnode_get(iter.node));
+      TEN_ASSERT(c_cmd_result, "Should not happen.");
 
-      ten_json_t *c_json = ten_msg_to_json(c_resp, nullptr);
-
-      bool must_free = false;
-      const char *json_str = ten_json_to_string(c_json, nullptr, &must_free);
-      TEN_ASSERT(json_str, "Failed to get JSON string from JSON.");
-
-      results.emplace_back(nlohmann::json::parse(json_str));
-
-      ten_json_destroy(c_json);
-      if (must_free) {
-        TEN_FREE(
-            json_str);  // NOLINT(cppcoreguidelines-no-malloc, hicpp-no-malloc)
-      }
+      auto cmd_result =
+          ten::cmd_result_internal_accessor_t::create(c_cmd_result);
+      results.push_back(std::move(cmd_result));
     }
 
     ten_list_clear(&msgs);

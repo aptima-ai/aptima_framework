@@ -63,13 +63,6 @@ TEN_RUNTIME_PRIVATE_API void ten_raw_audio_frame_destroy(
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_audio_frame_as_msg_clone(
     ten_msg_t *self, ten_list_t *excluded_field_ids);
 
-TEN_RUNTIME_PRIVATE_API ten_json_t *ten_raw_audio_frame_as_msg_to_json(
-    ten_msg_t *self, ten_error_t *err);
-
-TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_check_type_and_name(
-    ten_msg_t *self, const char *type_str, const char *name_str,
-    ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API int32_t
 ten_raw_audio_frame_get_samples_per_channel(ten_audio_frame_t *self);
 
@@ -126,9 +119,6 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_data_fmt(
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_set_timestamp(
     ten_audio_frame_t *self, int64_t timestamp);
-
-TEN_RUNTIME_PRIVATE_API bool ten_raw_audio_frame_as_msg_init_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API ten_value_t *ten_raw_audio_frame_peek_ten_property(
     ten_msg_t *self, ten_list_t *paths, ten_error_t *err);

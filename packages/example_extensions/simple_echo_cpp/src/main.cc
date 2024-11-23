@@ -22,11 +22,11 @@ class simple_echo_extension_t : public ten::extension_t {
     // Parse the command and return a new command with the same name but with a
     // suffix ", too" added to it.
 
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    auto cmd_name = json["_ten"]["name"];
+    std::string cmd_name = cmd->get_name();
 
     auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
-    cmd_result->set_property("detail", (cmd_name.get<std::string>() + ", too"));
+    cmd_result->set_property("detail", cmd_name + ", too");
+
     ten_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 

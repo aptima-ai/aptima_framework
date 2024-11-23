@@ -24,9 +24,6 @@ TEN_RUNTIME_PRIVATE_API ten_string_t *ten_cmd_stop_graph_get_graph_id(
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_stop_graph_as_msg_destroy(
     ten_msg_t *self);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_stop_graph_as_msg_init_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API ten_cmd_stop_graph_t *ten_raw_cmd_stop_graph_create(
     void);
 

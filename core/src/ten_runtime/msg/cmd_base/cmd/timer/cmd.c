@@ -14,11 +14,9 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_utils/value/value_path.h"
 #include "include_internal/ten_utils/value/value_set.h"
-#include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
@@ -65,17 +63,6 @@ void ten_raw_cmd_timer_as_msg_destroy(ten_msg_t *self) {
   ten_raw_cmd_timer_destroy((ten_cmd_timer_t *)self);
 }
 
-static bool ten_raw_cmd_timer_init_from_json(ten_cmd_timer_t *self,
-                                             ten_json_t *json,
-                                             ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_timer_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
 bool ten_raw_cmd_timer_loop_all_fields(ten_msg_t *self,
                                        ten_raw_msg_process_one_field_func_t cb,
                                        void *user_data, ten_error_t *err) {
@@ -94,15 +81,6 @@ bool ten_raw_cmd_timer_loop_all_fields(ten_msg_t *self,
   return true;
 }
 
-bool ten_raw_cmd_timer_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
-                                             ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_timer_init_from_json((ten_cmd_timer_t *)self, json, err);
-}
-
 ten_cmd_timer_t *ten_raw_cmd_timer_create(void) {
   ten_cmd_timer_t *raw_cmd = TEN_MALLOC(sizeof(ten_cmd_timer_t));
   TEN_ASSERT(raw_cmd, "Failed to allocate memory.");
@@ -119,32 +97,6 @@ ten_cmd_timer_t *ten_raw_cmd_timer_create(void) {
 ten_shared_ptr_t *ten_cmd_timer_create(void) {
   return ten_shared_ptr_create(ten_raw_cmd_timer_create(),
                                ten_raw_cmd_timer_destroy);
-}
-
-static ten_json_t *ten_raw_cmd_timer_to_json(ten_cmd_timer_t *self,
-                                             ten_error_t *err) {
-  TEN_ASSERT(
-      self && ten_raw_msg_get_type((ten_msg_t *)self) == TEN_MSG_TYPE_CMD_TIMER,
-      "Should not happen.");
-
-  ten_json_t *json = ten_json_create_object();
-  TEN_ASSERT(json, "Should not happen.");
-
-  if (!ten_raw_cmd_timer_loop_all_fields(
-          (ten_msg_t *)self, ten_raw_msg_put_one_field_to_json, json, err)) {
-    ten_json_destroy(json);
-    return NULL;
-  }
-
-  return json;
-}
-
-ten_json_t *ten_raw_cmd_timer_as_msg_to_json(ten_msg_t *self,
-                                             ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD_TIMER,
-             "Should not happen.");
-
-  return ten_raw_cmd_timer_to_json((ten_cmd_timer_t *)self, err);
 }
 
 uint32_t ten_raw_cmd_timer_get_timer_id(ten_cmd_timer_t *self) {
@@ -266,37 +218,6 @@ bool ten_raw_cmd_timer_set_ten_property(ten_msg_t *self, ten_list_t *paths,
   }
 
   return success;
-}
-
-bool ten_raw_cmd_timer_check_type_and_name(ten_msg_t *self,
-                                           const char *type_str,
-                                           const char *name_str,
-                                           ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Invalid argument.");
-
-  if (type_str) {
-    if (strcmp(type_str, TEN_STR_CMD) != 0 &&
-        strcmp(type_str, TEN_STR_TIMER) != 0) {
-      if (err) {
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Incorrect message type for timer cmd: %s", type_str);
-      }
-      return false;
-    }
-  }
-
-  if (name_str) {
-    if (strcmp(name_str, TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX TEN_STR_TIMER) !=
-        0) {
-      if (err) {
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Incorrect message name for timer cmd: %s", name_str);
-      }
-      return false;
-    }
-  }
-
-  return true;
 }
 
 int32_t ten_cmd_timer_get_times(ten_shared_ptr_t *self) {

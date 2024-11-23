@@ -11,10 +11,8 @@
 #include "include_internal/ten_runtime/msg/locked_res.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_utils/value/value_path.h"
-#include "ten_runtime/common/errno.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/buf.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/macro/check.h"
@@ -135,42 +133,6 @@ ten_msg_t *ten_raw_data_as_msg_clone(ten_msg_t *self,
   return (ten_msg_t *)new_data;
 }
 
-static bool ten_raw_data_init_from_json(ten_data_t *self, ten_json_t *json,
-                                        ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_data_check_integrity(self), "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_data_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_data_as_msg_init_from_json(ten_msg_t *self, ten_json_t *json,
-                                        ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_data_check_integrity((ten_data_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_data_init_from_json((ten_data_t *)self, json, err);
-}
-
-ten_json_t *ten_raw_data_as_msg_to_json(ten_msg_t *self, ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self) &&
-                 ten_raw_msg_get_type(self) == TEN_MSG_TYPE_DATA,
-             "Should not happen.");
-
-  ten_json_t *json = ten_json_create_object();
-  TEN_ASSERT(json, "Should not happen.");
-
-  bool rc = ten_raw_data_loop_all_fields(
-      self, ten_raw_msg_put_one_field_to_json, json, err);
-  if (!rc) {
-    ten_json_destroy(json);
-    return NULL;
-  }
-
-  return json;
-}
-
 bool ten_raw_data_loop_all_fields(ten_msg_t *self,
                                   ten_raw_msg_process_one_field_func_t cb,
                                   TEN_UNUSED void *user_data,
@@ -254,32 +216,4 @@ bool ten_raw_data_like_set_ten_property(ten_msg_t *self, ten_list_t *paths,
   }
 
   return success;
-}
-
-bool ten_raw_data_check_type_and_name(ten_msg_t *self, const char *type_str,
-                                      const char *name_str, ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Invalid argument.");
-
-  if (type_str) {
-    if (strcmp(type_str, TEN_STR_DATA) != 0) {
-      if (err) {
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Incorrect message type for data: %s", type_str);
-      }
-      return false;
-    }
-  }
-
-  if (name_str) {
-    if (strncmp(name_str, TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX,
-                strlen(TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX)) == 0) {
-      if (err) {
-        ten_error_set(err, TEN_ERRNO_GENERIC,
-                      "Incorrect message name for data: %s", name_str);
-      }
-      return false;
-    }
-  }
-
-  return true;
 }

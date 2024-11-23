@@ -44,7 +44,7 @@ class test_extension : public ten::extension_t {
     }
 
     std::vector<std::string> edges = {"B", "C"};
-    if (json["_ten"]["name"] == "send") {
+    if (std::string(cmd->get_name()) == "send") {
       json["from"] = name_;
       if (std::find(edges.begin(), edges.end(), name_) != edges.end()) {
         json["source"] = name_;
@@ -126,12 +126,9 @@ TEST(ExtensionTest, GraphPolygonInOneAppReturnAll1) {  // NOLINT
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "dest": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"dest": [{
                "app": "msgpack://127.0.0.1:8001/"
              }],
              "nodes": [{
@@ -217,23 +214,18 @@ TEST(ExtensionTest, GraphPolygonInOneAppReturnAll1) {  // NOLINT
                "extension": "D"
              }]
            }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "send",
-             "seq_id": "137",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
-               "extension": "A"
-             }]
-           }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-  nlohmann::json detail = resp["detail"];
+         })");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  auto send_cmd = ten::cmd_t::create("send");
+  send_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                     "graph_polygon_in_one_app_return_all_1__extension_group",
+                     "A");
+  cmd_result = client->send_cmd_and_recv_result(std::move(send_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  nlohmann::json detail =
+      nlohmann::json::parse(cmd_result->get_property_to_json("detail"));
 
   EXPECT_EQ(detail["return_from"], "A");
   EXPECT_EQ(detail["success"], true);

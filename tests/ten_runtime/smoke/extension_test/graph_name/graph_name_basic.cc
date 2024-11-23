@@ -32,9 +32,11 @@ class test_extension : public ten::extension_t {
 
     // extension1(app1) -> extension3(app2) -> extension2(app1) -> return
     if (name_ == "extension2") {
-      const nlohmann::json resp = {{"id", 1}, {"name", "aa"}};
+      const nlohmann::json detail = {{"id", 1}, {"name", "aa"}};
+
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
-      cmd_result->set_property_from_json("detail", resp.dump().c_str());
+      cmd_result->set_property_from_json("detail", detail.dump().c_str());
+
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     } else {
       ten_env.send_cmd(std::move(cmd),
@@ -132,12 +134,9 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
        ++i) {
     client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
-    nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-        R"({
-             "_ten": {
-               "type": "start_graph",
-               "seq_id": "55",
-               "dest": [{
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"dest": [{
                  "app": "msgpack://127.0.0.1:8001/"
                }],
                "nodes": [{
@@ -185,11 +184,14 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
                  }]
                }]
              }
-           })"_json);
+           })");
 
-    if (!resp.empty()) {
-      ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-      graph_id = resp["detail"].get<std::string>();
+    auto cmd_result =
+        client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+
+    if (cmd_result) {
+      ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+      graph_id = cmd_result->get_property_string("detail");
 
       break;
     } else {
@@ -205,55 +207,35 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
 
   // Send data to extension_1, it will return from extension_2 with json
   // result.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "send_message",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_id_basic__extension_group_1",
-               "extension": "extension1"
-             }]
-           }
-         })"_json);
-  ten_test::check_detail_is(resp, R"({"id": 1, "name": "aa"})");
+  auto send_message_cmd = ten::cmd_t::create("send_message");
+  send_message_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                             "graph_id_basic__extension_group_1", "extension1");
+
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(send_message_cmd));
+
+  ten_test::check_detail_with_json(cmd_result, R"({"id": 1, "name": "aa"})");
 
   // Send data to extension_3, it will return from extension_2 with json
   // result.
   auto *client2 = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8002/");
 
-  nlohmann::json command_2 =
-      R"({
-           "_ten": {
-             "name": "send_message",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8002/",
-               "extension_group": "graph_id_basic__extension_group_2",
-               "extension": "extension3"
-             }]
-           }
-         })"_json;
-  command_2["_ten"]["dest"][0]["graph"] = graph_id;
+  send_message_cmd = ten::cmd_t::create("send_message");
+  send_message_cmd->set_dest("msgpack://127.0.0.1:8002/", graph_id.c_str(),
+                             "graph_id_basic__extension_group_2", "extension3");
 
   // It must be sent directly to 127.0.0.1:8002, not 127.0.0.1:8001
-  resp = client2->send_json_and_recv_resp_in_json(command_2);
-  ten_test::check_detail_is(resp, R"({"id": 1, "name": "aa"})");
+  cmd_result = client2->send_cmd_and_recv_result(std::move(send_message_cmd));
 
-  // Send data to extension_2 directly.
-  nlohmann::json command_3 =
-      R"({
-           "_ten": {
-             "name": "send_message",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_id_basic__extension_group_1",
-               "extension": "extension2"
-             }]
-           }
-         })"_json;
-  command_3["_ten"]["dest"][0]["graph"] = graph_id;
-  resp = client->send_json_and_recv_resp_in_json(command_3);
-  ten_test::check_detail_is(resp, R"({"id": 1, "name": "aa"})");
+  ten_test::check_detail_with_json(cmd_result, R"({"id": 1, "name": "aa"})");
+
+  send_message_cmd = ten::cmd_t::create("send_message");
+  send_message_cmd->set_dest("msgpack://127.0.0.1:8001/", graph_id.c_str(),
+                             "graph_id_basic__extension_group_1", "extension2");
+
+  cmd_result = client->send_cmd_and_recv_result(std::move(send_message_cmd));
+
+  ten_test::check_detail_with_json(cmd_result, R"({"id": 1, "name": "aa"})");
 
   delete client;
   delete client2;

@@ -99,12 +99,6 @@ TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_base_save_cmd_id_to_parent_cmd_id(
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_base_set_seq_id(ten_cmd_base_t *self,
                                                          const char *seq_id);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_base_get_field_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
-TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_base_put_field_to_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API bool ten_cmd_base_cmd_id_is_empty(
     ten_shared_ptr_t *self);
 

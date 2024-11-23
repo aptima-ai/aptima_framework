@@ -117,12 +117,9 @@ TEST(ExtensionTest, PathTimeout2) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "nodes": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"nodes": [{
                "type": "extension",
                "name": "test_extension_1",
                "addon": "path_timeout_2__test_extension_1",
@@ -156,39 +153,26 @@ TEST(ExtensionTest, PathTimeout2) {  // NOLINT
                }]
              }]
            }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
+         })");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
 
   // Send 'hello world' command and wait for the result.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "hello_world",
-             "seq_id": "137",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
-               "extension": "test_extension_1"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "", TEN_STATUS_CODE_ERROR, "Path timeout.");
+  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                            "basic_extension_group", "test_extension_1");
+  cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_ERROR);
+  ten_test::check_detail_with_string(cmd_result, "Path timeout.");
 
   // Send a user-defined 'hello world2' command.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "hello_world2",
-             "seq_id": "138",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
-               "extension": "test_extension_1"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "138", TEN_STATUS_CODE_OK,
-                            "hello world, too");
+  auto hello_world2_cmd = ten::cmd_t::create("hello_world2");
+  hello_world2_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                             "basic_extension_group", "test_extension_1");
+  cmd_result = client->send_cmd_and_recv_result(std::move(hello_world2_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "hello world, too");
 
   delete client;
 

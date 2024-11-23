@@ -24,8 +24,7 @@ class test_extension_1 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "hello_world") {
+    if (std::string(cmd->get_name()) == "hello_world") {
       ten_env.send_cmd(std::move(cmd));
       return;
     }
@@ -38,8 +37,7 @@ class test_extension_2 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "hello_world") {
+    if (std::string(cmd->get_name()) == "hello_world") {
       ten_env.send_cmd(std::move(cmd));
       return;
     }
@@ -52,8 +50,7 @@ class test_extension_3 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "hello_world") {
+    if (std::string(cmd->get_name()) == "hello_world") {
       ten_env.send_cmd(std::move(cmd));
       return;
     }
@@ -66,8 +63,7 @@ class test_extension_4 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "hello_world") {
+    if (std::string(cmd->get_name()) == "hello_world") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail",
                                "must return result before close engine");
@@ -193,12 +189,9 @@ TEST(ExtensionTest, CommandStopGraphActively) {  // NOLINT
     client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
     // Send graph.
-    nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-        R"({
-             "_ten": {
-               "type": "start_graph",
-               "seq_id": "55",
-               "nodes": [{
+    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"nodes": [{
                  "type": "extension",
                  "name": "test_extension_1",
                  "addon": "command_stop_graph_actively__extension_1",
@@ -261,10 +254,13 @@ TEST(ExtensionTest, CommandStopGraphActively) {  // NOLINT
                  }]
                }]
              }
-           })"_json);
+           })");
 
-    if (!resp.empty()) {
-      ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
+    auto cmd_result =
+        client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+
+    if (cmd_result) {
+      ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
       break;
     } else {
       delete client;
@@ -277,17 +273,11 @@ TEST(ExtensionTest, CommandStopGraphActively) {  // NOLINT
 
   TEN_ASSERT(client, "Failed to connect to the TEN app.");
 
-  client->send_json(
-      R"({
-         "_ten": {
-           "name": "hello_world",
-           "dest":[{
-             "app": "msgpack://127.0.0.1:8001/",
-             "extension_group": "command_stop_graph_actively_1",
-             "extension": "test_extension_1"
-           }]
-         }
-       })"_json);
+  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                            "command_stop_graph_actively_1",
+                            "test_extension_1");
+  client->send_cmd(std::move(hello_world_cmd));
 
   delete client;
 

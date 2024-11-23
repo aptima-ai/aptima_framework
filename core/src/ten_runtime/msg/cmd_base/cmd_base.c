@@ -243,23 +243,6 @@ void ten_raw_cmd_base_set_seq_id(ten_cmd_base_t *self, const char *seq_id) {
   ten_string_set_formatted(ten_value_peek_string(&self->seq_id), "%s", seq_id);
 }
 
-bool ten_raw_cmd_base_get_field_from_json(ten_msg_t *self, ten_json_t *json,
-                                          ten_error_t *err) {
-  TEN_ASSERT(self && json, "Should not happen.");
-
-  return ten_raw_cmd_base_process_field(
-      self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_cmd_base_put_field_to_json(ten_msg_t *self, ten_json_t *json,
-                                        ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_msg_check_integrity(self) && json,
-             "Should not happen.");
-
-  return ten_raw_cmd_base_process_field(self, ten_raw_msg_put_one_field_to_json,
-                                        json, err);
-}
-
 static bool ten_raw_cmd_base_cmd_id_is_empty(ten_cmd_base_t *self) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");

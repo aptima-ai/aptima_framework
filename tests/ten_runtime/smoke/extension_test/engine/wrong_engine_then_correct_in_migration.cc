@@ -89,58 +89,37 @@ TEST(ExtensionTest, WrongEngineThenCorrectInMigration) {  // NOLINT
 
   // Send a message to the wrong engine, the connection won't be migrated as the
   // engine is not found.
-  auto resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "test",
-             "seq_id": "1",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "graph": "incorrect_graph_id",
-               "extension_group": "migration_group",
-               "extension": "migration"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "1", TEN_STATUS_CODE_ERROR,
-                            "Graph not found.");
+  auto test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", "incorrect_graph_id",
+                     "migration_group", "migration");
+
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_ERROR);
+  ten_test::check_detail_with_string(cmd_result, "Graph not found.");
 
   // Send a message to the correct engine, the connection will be migrated, and
   // the belonging thread of the connection should be correct.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "test",
-             "seq_id": "2",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "graph": "default",
-               "extension_group": "migration_group",
-               "extension": "migration"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "2", TEN_STATUS_CODE_OK,
-                            R"({"id":1,"name":"a"})");
+  test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default", "migration_group",
+                     "migration");
+
+  cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_json(cmd_result, R"({"id":1,"name":"a"})");
 
   // The connection attaches to the remote now as it is migrated. Then send a
   // message to the wrong engine again, the message should be forwarded to the
   // app.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "test",
-             "seq_id": "3",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "graph": "incorrect_graph_id",
-               "extension_group": "migration_group",
-               "extension": "migration"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "3", TEN_STATUS_CODE_ERROR,
-                            "Graph not found.");
+  test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", "incorrect_graph_id",
+                     "migration_group", "migration");
+
+  cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_ERROR);
+  ten_test::check_detail_with_string(cmd_result, "Graph not found.");
 
   delete client;
 

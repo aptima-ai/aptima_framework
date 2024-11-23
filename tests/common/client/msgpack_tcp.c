@@ -6,6 +6,8 @@
 //
 #include "tests/common/client/msgpack_tcp.h"
 
+#include <string.h>
+
 #include "core_protocols/msgpack/common/parser.h"
 #include "core_protocols/msgpack/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"

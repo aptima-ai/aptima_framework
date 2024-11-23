@@ -15,7 +15,6 @@
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/msgpack_tcp.h"
-#include "tests/ten_runtime/smoke/extension_test/util/check.h"
 
 namespace {
 

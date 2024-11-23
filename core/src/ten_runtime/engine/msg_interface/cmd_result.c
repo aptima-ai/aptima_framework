@@ -162,7 +162,8 @@ static bool ten_engine_handle_cmd_result_for_cmd_start_graph(
     if (err_msg_value) {
       TEN_ASSERT(ten_value_is_string(err_msg_value), "Should not happen.");
       ten_engine_return_error_for_cmd_start_graph(
-          self, original_start_graph_cmd, ten_value_peek_raw_str(err_msg_value));
+          self, original_start_graph_cmd,
+          ten_value_peek_raw_str(err_msg_value));
     } else {
       ten_engine_return_error_for_cmd_start_graph(
           self, original_start_graph_cmd, "Failed to start engine in app [%s].",
@@ -177,9 +178,6 @@ static bool ten_engine_handle_cmd_result_for_cmd_start_graph(
   return true;
 }
 
-/**
- * @return true if command is handled, false otherwise.
- */
 void ten_engine_handle_cmd_result(ten_engine_t *self,
                                   ten_shared_ptr_t *cmd_result,
                                   ten_error_t *err) {

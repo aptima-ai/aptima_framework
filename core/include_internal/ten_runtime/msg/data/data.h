@@ -35,18 +35,8 @@ TEN_RUNTIME_PRIVATE_API void ten_raw_data_buf_copy(
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_data_as_msg_clone(
     ten_msg_t *self, ten_list_t *excluded_field_ids);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_data_as_msg_init_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
-TEN_RUNTIME_PRIVATE_API ten_json_t *ten_raw_data_as_msg_to_json(
-    ten_msg_t *self, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API bool ten_raw_data_loop_all_fields(
     ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
     ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API void ten_raw_data_destroy(ten_data_t *self);
-
-TEN_RUNTIME_PRIVATE_API bool ten_raw_data_check_type_and_name(
-    ten_msg_t *self, const char *type_str, const char *name_str,
-    ten_error_t *err);

@@ -37,7 +37,7 @@ class test_extension_2 : public ten::extension_t {
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_mapping") {
       auto json =
-          nlohmann::json::parse(cmd->get_property_to_json("test_group"));
+          nlohmann::json::parse(cmd->get_property_to_json("dest_test_group"));
       if (json["test_property_name"] == 32) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "hello world, too");
@@ -76,24 +76,24 @@ class test_app : public ten::app_t {
                             "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_1",
-                            "addon": "cmd_mapping_path_nested_1__test_extension_1",
-                            "extension_group": "cmd_mapping_path_nested_1__extension_group"
+                            "addon": "cmd_mapping_path_nested_6__test_extension_1",
+                            "extension_group": "cmd_mapping_path_nested_6__extension_group"
                           },{
                             "app": "msgpack://127.0.0.1:8001/",
                             "type": "extension",
                             "name": "test_extension_2",
-                            "addon": "cmd_mapping_path_nested_1__test_extension_2",
-                            "extension_group": "cmd_mapping_path_nested_1__extension_group"
+                            "addon": "cmd_mapping_path_nested_6__test_extension_2",
+                            "extension_group": "cmd_mapping_path_nested_6__extension_group"
                           }],
                           "connections": [{
                             "app": "msgpack://127.0.0.1:8001/",
-                            "extension_group": "cmd_mapping_path_nested_1__extension_group",
+                            "extension_group": "cmd_mapping_path_nested_6__extension_group",
                             "extension": "test_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
                                 "app": "msgpack://127.0.0.1:8001/",
-                                "extension_group": "cmd_mapping_path_nested_1__extension_group",
+                                "extension_group": "cmd_mapping_path_nested_6__extension_group",
                                 "extension": "test_extension_2",
                                 "msg_conversion": {
                                   "type": "per_property",
@@ -102,9 +102,9 @@ class test_app : public ten::app_t {
                                     "conversion_mode": "fixed_value",
                                     "value": "hello_mapping"
                                   },{
-                                    "path": "test_group.test_property_name",
+                                    "path": "dest_test_group.test_property_name",
                                     "conversion_mode": "from_original",
-                                    "original_path": "test_property"
+                                    "original_path": "test_group[0].aaa.test_property"
                                   }]
                                 }
                               }]
@@ -129,14 +129,14 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_mapping_path_nested_1__test_extension_1,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_mapping_path_nested_6__test_extension_1,
                                     test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_mapping_path_nested_1__test_extension_2,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(cmd_mapping_path_nested_6__test_extension_2,
                                     test_extension_2);
 
 }  // namespace
 
-TEST(CmdConversionTest, CmdConversionPathNested1) {  // NOLINT
+TEST(CmdConversionTest, CmdConversionPathNested6) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -147,9 +147,15 @@ TEST(CmdConversionTest, CmdConversionPathNested1) {  // NOLINT
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
-                            "cmd_mapping_path_nested_1__extension_group",
+                            "cmd_mapping_path_nested_6__extension_group",
                             "test_extension_1");
-  hello_world_cmd->set_property("test_property", 32);
+  hello_world_cmd->from_json(R"({
+           "test_group": [{
+             "aaa": {
+               "test_property": 32
+             }
+           }]
+         })");
 
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(hello_world_cmd));

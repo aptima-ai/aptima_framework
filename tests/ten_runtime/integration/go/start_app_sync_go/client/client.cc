@@ -13,20 +13,11 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8007/");
 
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-    "_ten": {
-      "name": "hello",
-      "seq_id": "238",
-      "dest": [{
-        "app": "msgpack://127.0.0.1:8007/",
-        "graph": "default",
-        "extension_group": "default_extension_group",
-        "extension": "default_extension_go"
-      }]
-    }
-  })"_json);
-  TEN_ASSERT(TEN_STATUS_CODE_OK == resp["_ten"]["status_code"],
+  auto hello_cmd = ten::cmd_t::create("hello");
+  hello_cmd->set_dest("msgpack://127.0.0.1:8007/", "default",
+                      "default_extension_group", "default_extension_go");
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(hello_cmd));
+  TEN_ASSERT(TEN_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
   // NOTE the order: client destroy, then connection lost, then nodejs exits

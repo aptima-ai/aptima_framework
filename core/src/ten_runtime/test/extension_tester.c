@@ -30,7 +30,6 @@
 #include "ten_utils/container/list_str.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/event.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
@@ -172,14 +171,6 @@ static void ten_extension_tester_create_and_start_graph(
   TEN_ASSERT(first_addon_name, "Should not happen.");
   TEN_ASSERT(ten_string_len(first_addon_name), "No addon name is specified.");
 
-  ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
-  TEN_ASSERT(start_graph_cmd, "Should not happen.");
-
-  // Set the destination so that the recipient is the app itself.
-  bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
   ten_string_t start_graph_cmd_json_str;
   ten_string_init_formatted(&start_graph_cmd_json_str,
                             "{\
@@ -281,15 +272,19 @@ static void ten_extension_tester_create_and_start_graph(
                             ten_string_get_raw_str(first_addon_name),
                             ten_string_get_raw_str(first_addon_name));
 
-  ten_json_t *start_graph_cmd_json = ten_json_from_string(
-      ten_string_get_raw_str(&start_graph_cmd_json_str), NULL);
+  ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
+  TEN_ASSERT(start_graph_cmd, "Should not happen.");
 
-  ten_string_deinit(&start_graph_cmd_json_str);
-
-  rc = ten_msg_from_json(start_graph_cmd, start_graph_cmd_json, NULL);
+  // Set the destination so that the recipient is the app itself.
+  bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
+                                       NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
-  ten_json_destroy(start_graph_cmd_json);
+  rc = ten_cmd_start_graph_init_from_json_str(
+      start_graph_cmd, ten_string_get_raw_str(&start_graph_cmd_json_str), NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+
+  ten_string_deinit(&start_graph_cmd_json_str);
 
   rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
                             test_app_ten_env_send_cmd, start_graph_cmd, false,

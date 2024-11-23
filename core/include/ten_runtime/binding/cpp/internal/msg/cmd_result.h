@@ -19,6 +19,7 @@ namespace ten {
 
 class extension_t;
 class ten_env_tester_t;
+class cmd_result_internal_accessor_t;
 
 class cmd_result_t : public msg_t {
  private:
@@ -74,6 +75,7 @@ class cmd_result_t : public msg_t {
   friend extension_t;
   friend ten_env_tester_t;
   friend ten_env_t;
+  friend cmd_result_internal_accessor_t;
 
   static std::unique_ptr<cmd_result_t> create(ten_shared_ptr_t *cmd,
                                               error_t *err = nullptr) {

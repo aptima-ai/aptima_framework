@@ -339,68 +339,6 @@ ten_value_t *ten_loc_to_value(ten_loc_t *self) {
   }
 }
 
-void ten_loc_init_from_json(ten_loc_t *self, ten_json_t *json) {
-  TEN_ASSERT(self && json, "Should not happen.");
-
-  ten_loc_init_empty(self);
-
-  if (ten_json_object_peek(json, TEN_STR_APP)) {
-    ten_string_init_formatted(
-        &self->app_uri, "%s",
-        ten_json_object_peek_string(json, TEN_STR_APP)
-            ? ten_json_object_peek_string(json, TEN_STR_APP)
-            : "");
-  }
-
-  if (ten_json_object_peek(json, TEN_STR_GRAPH)) {
-    ten_string_init_formatted(
-        &self->graph_id, "%s",
-        ten_json_object_peek_string(json, TEN_STR_GRAPH)
-            ? ten_json_object_peek_string(json, TEN_STR_GRAPH)
-            : "");
-  }
-
-  ten_json_t *extension_group_json =
-      ten_json_object_peek(json, TEN_STR_EXTENSION_GROUP);
-  if (extension_group_json) {
-    if (ten_json_is_object(extension_group_json)) {
-      ten_json_t *extension_group_name_json =
-          ten_json_object_peek(extension_group_json, TEN_STR_NAME);
-      TEN_ASSERT(ten_json_is_string(extension_group_name_json),
-                 "name of extension_group must be a string.");
-
-      ten_string_init_formatted(
-          &self->extension_group_name, "%s",
-          ten_json_peek_string_value(extension_group_name_json));
-    } else if (ten_json_is_string(extension_group_json)) {
-      ten_string_init_formatted(
-          &self->extension_group_name, "%s",
-          ten_json_peek_string_value(extension_group_json));
-    } else {
-      TEN_ASSERT(0, "extension_group must be an object or a string.");
-    }
-  }
-
-  ten_json_t *extension_json = ten_json_object_peek(json, TEN_STR_EXTENSION);
-  if (extension_json) {
-    if (ten_json_is_object(extension_json)) {
-      ten_json_t *extension_name_json =
-          ten_json_object_peek(extension_json, TEN_STR_NAME);
-      TEN_ASSERT(ten_json_is_string(extension_name_json),
-                 "name of extension must be a string.");
-
-      ten_string_init_formatted(
-          &self->extension_name, "%s",
-          ten_json_peek_string_value(extension_name_json));
-    } else if (ten_json_is_string(extension_json)) {
-      ten_string_init_formatted(&self->extension_name, "%s",
-                                ten_json_peek_string_value(extension_json));
-    } else {
-      TEN_ASSERT(0, "extension must be an object or a string.");
-    }
-  }
-}
-
 void ten_loc_set_from_value(ten_loc_t *self, ten_value_t *value) {
   TEN_ASSERT(self && value, "Should not happen.");
 

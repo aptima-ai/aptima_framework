@@ -8,27 +8,18 @@
 
 #include <assert.h>
 
+#include <memory>
 #include <string>
 
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
+#include "ten_runtime/binding/cpp/internal/msg/cmd_result.h"
+#include "ten_runtime/common/status_code.h"
 
 namespace ten_test {
 
-static inline void assert_json_equals_integer(const nlohmann::json &actual,
-                                              const int64_t expected) {
-  bool is_equals = false;
-
-  if (actual.is_number()) {
-    is_equals = (actual.get<int64_t>() == expected);
-  }
-
-  EXPECT_EQ(true, is_equals) << "Assertion failed, expected: " << expected
-                             << ", actual: " << actual << std::endl;
-}
-
-static inline void assert_json_equals(const nlohmann::json &actual,
-                                      const std::string &expected) {
+static inline void _assert_json_equals(const nlohmann::json &actual,
+                                       const std::string &expected) {
   // CAUTION: we can not use 'EXPECT_EQ(str1, str2)' here, there will be too
   // many useless logs if assertion failed.
 
@@ -45,42 +36,24 @@ static inline void assert_json_equals(const nlohmann::json &actual,
                              << ", actual: " << actual << std::endl;
 }
 
-static inline void check_status_code_is(const nlohmann::json &json,
-                                        const TEN_STATUS_CODE status_code) {
-  assert_json_equals_integer(json["_ten"]["status_code"], status_code);
+static inline void check_status_code(
+    const std::unique_ptr<ten::cmd_result_t> &cmd_result,
+    const TEN_STATUS_CODE status_code) {
+  EXPECT_EQ(cmd_result->get_status_code(), status_code);
 }
 
-static inline void check_seq_id_is(const nlohmann::json &json,
-                                   const std::string &expect) {
-  assert_json_equals(json["_ten"]["seq_id"], expect);
+static inline void check_detail_with_json(
+    const std::unique_ptr<ten::cmd_result_t> &cmd_result,
+    const nlohmann::json &expected) {
+  _assert_json_equals(
+      nlohmann::json::parse(cmd_result->get_property_to_json("detail")),
+      expected);
 }
 
-static inline void check_detail_is(const nlohmann::json &actual,
-                                   const std::string &expected) {
-  assert_json_equals(actual["detail"], expected);
-}
-
-static inline void check_result_is(const nlohmann::json &resp,
-                                   const std::string &seq_id,
-                                   const TEN_STATUS_CODE status_code,
-                                   const std::string &detail) {
-  check_seq_id_is(resp, seq_id);
-  check_status_code_is(resp, status_code);
-  check_detail_is(resp, detail);
-}
-
-static inline void check_result_json_is(const nlohmann::json &resp,
-                                        const std::string &seq_id,
-                                        const TEN_STATUS_CODE status_code,
-                                        const std::string &detail_field,
-                                        const std::string &detail_value) {
-  check_seq_id_is(resp, seq_id);
-  check_status_code_is(resp, status_code);
-
-  nlohmann::json detail =
-      nlohmann::json::parse(resp["detail"].get<std::string>());
-
-  assert_json_equals(detail[detail_field], detail_value);
+static inline void check_detail_with_string(
+    const std::unique_ptr<ten::cmd_result_t> &cmd_result,
+    const std::string &detail) {
+  EXPECT_EQ(cmd_result->get_property_string("detail"), detail);
 }
 
 }  // namespace ten_test

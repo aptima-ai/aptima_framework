@@ -21,13 +21,6 @@ typedef struct ten_cmd_t ten_cmd_t;
 TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_custom_set_ten_property(
     ten_msg_t *self, ten_list_t *paths, ten_value_t *value, ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_custom_check_type_and_name(
-    ten_msg_t *self, const char *type_str, const char *name_str,
-    ten_error_t *err);
-
-TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_custom_as_msg_init_from_json(
-    ten_msg_t *self, ten_json_t *json, ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API void ten_raw_cmd_custom_as_msg_destroy(ten_msg_t *self);
 
 TEN_RUNTIME_PRIVATE_API ten_msg_t *ten_raw_cmd_custom_as_msg_clone(

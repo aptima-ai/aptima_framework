@@ -6,13 +6,10 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/thread.h"
-#include "ten_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
@@ -24,10 +21,7 @@ class test_extension_1 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-
-    auto cmd_name_str = json["_ten"]["name"].get<std::string>();
-    const auto *cmd_name = cmd_name_str.c_str();
+    const auto *cmd_name = cmd->get_name();
     auto res = ten_env.is_cmd_connected(cmd_name);
     if (res) {
       ten_env.send_cmd(std::move(cmd));
@@ -45,8 +39,7 @@ class test_extension_2 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "hello_world") {
+    if (std::string(cmd->get_name()) == "hello_world") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
@@ -120,10 +113,10 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(command_check_cmd_out_extension_1__extension_1,
-                                    test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(command_check_cmd_out_extension_1__extension_2,
-                                    test_extension_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    command_check_cmd_out_extension_1__extension_1, test_extension_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    command_check_cmd_out_extension_1__extension_2, test_extension_2);
 
 }  // namespace
 
@@ -136,38 +129,21 @@ TEST(ExtensionTest, CommandCheckCmdOut) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send a custom command which no other extensions can deal with.
-  nlohmann::json resp_w = client->send_json_and_recv_resp_in_json(
-      R"({
-         "_ten": {
-           "name": "hello",
-           "seq_id": "136",
-           "dest": [{
-             "app": "msgpack://127.0.0.1:8001/",
-             "graph": "default",
-             "extension_group": "command_check_cmd_out_extension_1",
-             "extension": "test_extension_1"
-           }]
-         }
-       })"_json);
-  ten_test::check_result_is(resp_w, "136", TEN_STATUS_CODE_OK,
-                            "can not find a way out");
+  auto hello_cmd = ten::cmd_t::create("hello");
+  hello_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
+                      "command_check_cmd_out_extension_1", "test_extension_1");
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(hello_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "can not find a way out");
 
   // Send a user-defined 'hello world' command.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-         "_ten": {
-           "name": "hello_world",
-           "seq_id": "137",
-           "dest": [{
-             "app": "msgpack://127.0.0.1:8001/",
-             "graph": "default",
-             "extension_group": "command_check_cmd_out_extension_1",
-             "extension": "test_extension_1"
-           }]
-         }
-       })"_json);
-  ten_test::check_result_is(resp, "137", TEN_STATUS_CODE_OK,
-                            "hello world, too");
+  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
+                            "command_check_cmd_out_extension_1",
+                            "test_extension_1");
+  cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "hello world, too");
 
   delete client;
 

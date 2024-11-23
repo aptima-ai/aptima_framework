@@ -26,21 +26,14 @@ class test_extension_1 : public ten::extension_t {
       hello_world_cmd = std::move(cmd);
 
       auto audio_frame = ten::audio_frame_t::create("audio_frame");
-      audio_frame->from_json(
-          // clang-format off
-          R"({
-               "_ten": {
-                 "data_fmt": 1,
-                 "bytes_per_sample": 3,
-                 "channel_layout": 2,
-                 "line_size": 100,
-                 "number_of_channel": 555,
-                 "sample_rate": 543,
-                 "timestamp": 12341234
-               }
-             })"
-          // clang-format on
-      );
+      audio_frame->set_data_fmt(TEN_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
+      audio_frame->set_bytes_per_sample(3);
+      audio_frame->set_channel_layout(2);
+      audio_frame->set_line_size(100);
+      audio_frame->set_number_of_channels(555);
+      audio_frame->set_sample_rate(543);
+      audio_frame->set_timestamp(12341234);
+
       ten_env.send_audio_frame(std::move(audio_frame));
     } else if (std::string(cmd->get_name()) == "audio_frame_ack") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
@@ -61,10 +54,9 @@ class test_extension_2 : public ten::extension_t {
       ten::ten_env_t &ten_env,
       std::unique_ptr<ten::audio_frame_t> audio_frame) override {
     auto cmd = ten::cmd_t::create("audio_frame_ack");
-    if (audio_frame->get_property_int64("_ten.bytes_per_sample") == 3 &&
-        audio_frame->get_property_int64("_ten.number_of_channel") == 555 &&
-        audio_frame->get_property_int64("_ten.data_fmt") ==
-            TEN_AUDIO_FRAME_DATA_FMT_INTERLEAVE) {
+    if (audio_frame->get_bytes_per_sample() == 3 &&
+        audio_frame->get_number_of_channels() == 555 &&
+        audio_frame->get_data_fmt() == TEN_AUDIO_FRAME_DATA_FMT_INTERLEAVE) {
       ten_env.send_cmd(std::move(cmd));
     }
   }
@@ -114,12 +106,9 @@ TEST(AudioFrameTest, FromJson) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "nodes": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  bool rc = start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"nodes": [{
                 "type": "extension",
                 "name": "test_extension_1",
                 "addon": "audio_frame_from_json__test_extension_1",
@@ -158,24 +147,19 @@ TEST(AudioFrameTest, FromJson) {  // NOLINT
                }]
              }]
            }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
+         })");
+  TEN_ASSERT(rc, "Should not happen.");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "hello_world",
-             "seq_id": "137",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
-               "extension": "test_extension_1"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "137", TEN_STATUS_CODE_OK,
-                            "hello world, too");
+  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                            "basic_extension_group", "test_extension_1");
+  cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "hello world, too");
 
   delete client;
 

@@ -60,28 +60,6 @@ ten_json_t *ten_raw_cmd_close_app_to_json(ten_msg_t *self, ten_error_t *err) {
   return json;
 }
 
-static bool ten_raw_cmd_close_app_init_from_json(ten_cmd_close_app_t *self,
-                                                 ten_json_t *json,
-                                                 ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_close_app_loop_all_fields(
-      (ten_msg_t *)self, ten_raw_msg_get_one_field_from_json, json, err);
-}
-
-bool ten_raw_cmd_close_app_as_msg_init_from_json(ten_msg_t *self,
-                                                 ten_json_t *json,
-                                                 ten_error_t *err) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
-             "Should not happen.");
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  return ten_raw_cmd_close_app_init_from_json((ten_cmd_close_app_t *)self, json,
-                                              err);
-}
-
 bool ten_raw_cmd_close_app_loop_all_fields(
     ten_msg_t *self, ten_raw_msg_process_one_field_func_t cb, void *user_data,
     ten_error_t *err) {

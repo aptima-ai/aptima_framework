@@ -6,7 +6,6 @@
 //
 #include <nlohmann/json.hpp>
 #include <string>
-#include <vector>
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
@@ -24,8 +23,7 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "check_received") {
+    if (std::string(cmd->get_name()) == "check_received") {
       if (received) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");
@@ -91,12 +89,9 @@ TEST(DataTest, Basic) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "nodes": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"nodes": [{
                "type": "extension",
                "name": "test_extension",
                "addon": "data_basic__extension",
@@ -104,27 +99,20 @@ TEST(DataTest, Basic) {  // NOLINT
                "extension_group": "default_extension_group"
              }]
            }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
+         })");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
 
   const char *str = DATA;
   client->send_data("", "default_extension_group", "test_extension",
                     (void *)str, strlen(str) + 1);
-
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "check_received",
-             "seq_id": "137",
-             "dest":[{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "default_extension_group",
-               "extension": "test_extension"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "137", TEN_STATUS_CODE_OK,
-                            "received confirmed");
+  auto check_received_cmd = ten::cmd_t::create("check_received");
+  check_received_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                               "default_extension_group", "test_extension");
+  cmd_result = client->send_cmd_and_recv_result(std::move(check_received_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "received confirmed");
 
   delete client;
 

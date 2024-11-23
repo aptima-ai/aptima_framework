@@ -111,37 +111,24 @@ TEST(ExtensionTest, PropertyAccessAppStore) {  // NOLINT
 
   // Send a request to test_property_access_app_store_1 to make sure
   // it has been initted.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(R"({
-    "_ten": {
-      "name": "test",
-      "seq_id": "110",
-      "dest": [{
-          "app": "msgpack://127.0.0.1:8001/",
-          "graph": "default",
-          "extension_group": "default_extension_group_1",
-          "extension": "test_property_access_app_store_1"
-        }]
-      }
-    })"_json);
-  ten_test::check_result_is(resp, "110", TEN_STATUS_CODE_OK, "success");
+  auto test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
+                     "default_extension_group_1",
+                     "test_property_access_app_store_1");
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "success");
 
   // Do not need to send 'start_graph' command first.
   // The 'graph_id' MUST be "default" (a special string) if we want to send the
   // request to predefined graph.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-         "_ten": {
-           "name": "test",
-           "seq_id": "111",
-           "dest": [{
-             "app": "msgpack://127.0.0.1:8001/",
-             "graph": "default",
-             "extension_group": "default_extension_group_2",
-             "extension": "test_property_access_app_store_2"
-           }]
-         }
-       })"_json);
-  ten_test::check_result_is(resp, "111", TEN_STATUS_CODE_OK, "success");
+  test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
+                     "default_extension_group_2",
+                     "test_property_access_app_store_2");
+  cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "success");
 
   delete client;
 

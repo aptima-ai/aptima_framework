@@ -36,10 +36,8 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-
-    if (json["_ten"]["name"] == "sum") {
-      // TEN_ENV_LOG_ERROR(ten_env, std::to_string(counter_).c_str());
+    if (std::string(cmd->get_name()) == "sum") {
+      nlohmann::json json = nlohmann::json::parse(cmd->to_json());
 
       if (counter_ == 2) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
@@ -112,12 +110,9 @@ TEST(ExtensionTest, GraphLoopMultipleCircle) {  // NOLINT
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "dest": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"dest": [{
                "app": "msgpack://127.0.0.1:8001/"
              }],
              "nodes": [{
@@ -207,24 +202,18 @@ TEST(ExtensionTest, GraphLoopMultipleCircle) {  // NOLINT
                }]
              }]
            }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
+         })");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  auto sum_cmd = ten::cmd_t::create("sum");
+  sum_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                    "graph_loop_multiple_circle__extension_group", "A");
+  cmd_result = client->send_cmd_and_recv_result(std::move(sum_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
 
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "sum",
-             "seq_id": "137",
-             "dest": [{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_multiple_circle__extension_group",
-               "extension": "A"
-             }]
-           }
-         })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
-
-  nlohmann::json detail = resp["detail"];
+  nlohmann::json detail =
+      nlohmann::json::parse(cmd_result->get_property_to_json("detail"));
   EXPECT_EQ((1 + 2 + 3) * 2, std::stoi(detail["total"].get<std::string>()));
 
   delete client;

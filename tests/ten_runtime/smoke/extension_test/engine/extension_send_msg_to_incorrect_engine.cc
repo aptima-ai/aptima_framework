@@ -22,8 +22,7 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
-    if (json["_ten"]["name"] == "hello_world") {
+    if (std::string(cmd->get_name()) == "hello_world") {
       auto cmd_shared =
           std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 
@@ -85,12 +84,9 @@ TEST(ExtensionTest, ExtensionSendMsgToIncorrectEngine) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  nlohmann::json resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "nodes": [{
+  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  start_graph_cmd->set_nodes_and_connections_from_json(R"({
+           "_ten": {"nodes": [{
                "type": "extension",
                "name": "test_extension",
                "addon": "extension_send_msg_to_incorrect_engine__extension",
@@ -98,24 +94,21 @@ TEST(ExtensionTest, ExtensionSendMsgToIncorrectEngine) {  // NOLINT
                "extension_group": "extension_send_msg_to_incorrect_engine"
               }]
             }
-          })"_json);
-  ten_test::check_status_code_is(resp, TEN_STATUS_CODE_OK);
+         })");
+  auto cmd_result =
+      client->send_cmd_and_recv_result(std::move(start_graph_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  resp = client->send_json_and_recv_resp_in_json(
-      R"({
-           "_ten": {
-             "name": "hello_world",
-             "seq_id": "137",
-             "dest":[{
-               "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "extension_send_msg_to_incorrect_engine",
-               "extension": "test_extension"
-             }]
-           }
-         })"_json);
-  ten_test::check_result_is(resp, "137", TEN_STATUS_CODE_ERROR,
-                            "Graph not found.");
+  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
+                            "extension_send_msg_to_incorrect_engine",
+                            "test_extension");
+
+  cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
+
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_ERROR);
+  ten_test::check_detail_with_string(cmd_result, "Graph not found.");
 
   // Destroy the client.
   delete client;
