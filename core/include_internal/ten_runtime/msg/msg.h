@@ -154,9 +154,6 @@ TEN_RUNTIME_PRIVATE_API const char *ten_raw_msg_get_type_string(
 TEN_RUNTIME_PRIVATE_API void ten_msg_clear_and_set_dest_from_extension_info(
     ten_shared_ptr_t *self, ten_extension_info_t *extension_info);
 
-TEN_RUNTIME_PRIVATE_API void ten_msg_clear_and_set_dest_to_extension(
-    ten_shared_ptr_t *self, ten_extension_t *extension);
-
 TEN_RUNTIME_PRIVATE_API void ten_msg_correct_dest(ten_shared_ptr_t *msg,
                                                   ten_engine_t *engine);
 
@@ -264,10 +261,6 @@ TEN_RUNTIME_PRIVATE_API bool ten_msg_validate_schema(
     ten_shared_ptr_t *self, ten_schema_store_t *schema_store, bool is_msg_out,
     ten_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API bool ten_raw_msg_get_one_field_from_json(
-    ten_msg_t *self, ten_msg_field_process_data_t *field, void *user_data,
-    ten_error_t *err);
-
 TEN_RUNTIME_PRIVATE_API bool
 ten_raw_msg_get_one_field_from_json_include_internal_field(
     ten_msg_t *self, ten_msg_field_process_data_t *field, void *user_data,
@@ -302,25 +295,6 @@ TEN_RUNTIME_API ten_shared_ptr_t *ten_msg_create_from_msg_type(
     TEN_MSG_TYPE msg_type);
 
 TEN_RUNTIME_API void ten_raw_msg_destroy(ten_msg_t *self);
-
-TEN_RUNTIME_API const char *ten_msg_json_get_string_field_in_ten(
-    ten_json_t *json, const char *field);
-
-TEN_RUNTIME_PRIVATE_API bool ten_msg_json_get_is_ten_field_exist(
-    ten_json_t *json, const char *field);
-
-TEN_RUNTIME_API int64_t
-ten_msg_json_get_integer_field_in_ten(ten_json_t *json, const char *field);
-
-TEN_RUNTIME_PRIVATE_API TEN_MSG_TYPE
-ten_msg_json_get_msg_type(ten_json_t *json);
-
-TEN_RUNTIME_API const char *ten_raw_msg_get_name(ten_msg_t *self);
-
-TEN_RUNTIME_API bool ten_raw_msg_set_name_with_size(ten_msg_t *self,
-                                                    const char *msg_name,
-                                                    size_t msg_name_len,
-                                                    ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_msg_set_name(ten_msg_t *self,
                                                   const char *msg_name,

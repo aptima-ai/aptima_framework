@@ -211,7 +211,6 @@ TEST(ExtensionTest, MultiDestInOneApp) {  // NOLINT
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   auto start_graph_cmd_content_str = R"({
-           "_ten": {
              "nodes": [],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
@@ -222,11 +221,10 @@ TEST(ExtensionTest, MultiDestInOneApp) {  // NOLINT
                  "dest": []
                }]
              }]
-           }
          })"_json;
 
   for (int i = 1; i <= DEST_EXTENSION_MAX_ID; i++) {
-    start_graph_cmd_content_str["_ten"]["nodes"].push_back({
+    start_graph_cmd_content_str["nodes"].push_back({
         {"type", "extension"},
         {"name", "test_extension_" + std::to_string(i)},
         {"addon", "multi_dest_in_one_app__extension_" + std::to_string(i)},
@@ -236,18 +234,17 @@ TEST(ExtensionTest, MultiDestInOneApp) {  // NOLINT
   }
 
   for (int i = DEST_EXTENSION_MIN_ID; i <= DEST_EXTENSION_MAX_ID; i++) {
-    start_graph_cmd_content_str["_ten"]["connections"][0]["cmd"][0]["dest"]
-        .push_back({
-            {"app", "msgpack://127.0.0.1:8001/"},  // app
-            {"extension_group",
-             "multi_dest_in_one_app__extension_group"},  // extension_group
-            {"extension", "test_extension_" + std::to_string(i)},  // extension
-        });
+    start_graph_cmd_content_str["connections"][0]["cmd"][0]["dest"].push_back({
+        {"app", "msgpack://127.0.0.1:8001/"},  // app
+        {"extension_group",
+         "multi_dest_in_one_app__extension_group"},  // extension_group
+        {"extension", "test_extension_" + std::to_string(i)},  // extension
+    });
   }
 
   // Send graph.
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(
+  start_graph_cmd->set_graph_from_json(
       start_graph_cmd_content_str.dump().c_str());
 
   auto cmd_result =

@@ -149,24 +149,20 @@ TEST(ExtensionTest, PropertyAll) {  // NOLINT
   // Send graph with a property.
   nlohmann::json start_graph_cmd_content_str =
       R"({
-           "_ten": {
-             "type": "start_graph",
-             "seq_id": "55",
-             "nodes": [{
-               "type": "extension",
-               "name": "test_extension",
-               "app": "msgpack://127.0.0.1:8001/",
-               "addon": "property_all__extension",
-               "extension_group": "property_all__extension_group",
-               "property": {}
-             }]
-           }
+           "nodes": [{
+             "type": "extension",
+             "name": "test_extension",
+             "app": "msgpack://127.0.0.1:8001/",
+             "addon": "property_all__extension",
+             "extension_group": "property_all__extension_group",
+             "property": {}
+           }]
          })"_json;
-  start_graph_cmd_content_str["_ten"]["nodes"][0]["property"][CONN_PROP_NAME] =
+  start_graph_cmd_content_str["nodes"][0]["property"][CONN_PROP_NAME] =
       CONN_PROP_VAL;
 
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(
+  start_graph_cmd->set_graph_from_json(
       start_graph_cmd_content_str.dump().c_str());
 
   auto cmd_result =

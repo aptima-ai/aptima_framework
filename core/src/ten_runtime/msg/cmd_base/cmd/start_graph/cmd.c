@@ -11,6 +11,7 @@
 #include <time.h>
 
 #include "include_internal/ten_runtime/app/app.h"
+#include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension/extension_addon_and_instance_name_pair.h"
@@ -81,6 +82,46 @@ ten_shared_ptr_t *ten_cmd_start_graph_create(void) {
                                ten_raw_cmd_start_graph_destroy);
 }
 
+static bool ten_raw_cmd_start_graph_as_msg_get_graph_from_json(
+    ten_msg_t *self, ten_msg_field_process_data_t *field, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
+  TEN_ASSERT(field, "Should not happen.");
+  TEN_ASSERT(
+      field->field_value && ten_value_check_integrity(field->field_value),
+      "Should not happen.");
+
+  if (ten_c_string_is_equal(field->field_name, TEN_STR_NODES) ||
+      ten_c_string_is_equal(field->field_name, TEN_STR_CONNECTIONS)) {
+    ten_json_t *json = (ten_json_t *)user_data;
+    TEN_ASSERT(json, "Should not happen.");
+
+    json = ten_json_object_peek(json, field->field_name);
+    if (!json) {
+      // Some fields are optional, and it is allowed for the corresponding
+      // JSON block to be absent during deserialization.
+      return true;
+    }
+
+    if (!ten_value_set_from_json(field->field_value, json)) {
+      // If the field value cannot be set from the JSON, it means that the
+      // JSON format is incorrect.
+      if (err) {
+        ten_error_set(err, TEN_ERRNO_INVALID_JSON,
+                      "Invalid JSON format for field %s.", field->field_name);
+      }
+
+      return false;
+    }
+  }
+
+  // During JSON deserialization, the field value may be modified, so we set the
+  // value_is_changed_after_process flag.
+  field->value_is_changed_after_process = true;
+
+  return true;
+}
+
 bool ten_raw_cmd_start_graph_init_from_json(ten_cmd_start_graph_t *self,
                                             ten_json_t *json,
                                             ten_error_t *err) {
@@ -88,13 +129,24 @@ bool ten_raw_cmd_start_graph_init_from_json(ten_cmd_start_graph_t *self,
              "Should not happen.");
   TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
 
-  // =-=-=
   return ten_raw_cmd_start_graph_loop_all_fields(
       (ten_msg_t *)self,
       ten_raw_msg_get_one_field_from_json_include_internal_field, json, err);
 }
 
-static bool ten_raw_cmd_start_graph_as_msg_init_from_json_str(
+bool ten_raw_cmd_start_graph_set_graph_from_json(ten_cmd_start_graph_t *self,
+                                                 ten_json_t *json,
+                                                 ten_error_t *err) {
+  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
+             "Should not happen.");
+  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
+
+  return ten_raw_cmd_start_graph_loop_all_fields(
+      (ten_msg_t *)self, ten_raw_cmd_start_graph_as_msg_get_graph_from_json,
+      json, err);
+}
+
+static bool ten_raw_cmd_start_graph_set_graph_from_json_str(
     ten_msg_t *self, const char *json_str, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self),
              "Invalid argument.");
@@ -105,7 +157,7 @@ static bool ten_raw_cmd_start_graph_as_msg_init_from_json_str(
     return false;
   }
 
-  bool rc = ten_raw_cmd_start_graph_init_from_json(
+  bool rc = ten_raw_cmd_start_graph_set_graph_from_json(
       (ten_cmd_start_graph_t *)self, json, err);
 
   ten_json_destroy(json);
@@ -113,13 +165,13 @@ static bool ten_raw_cmd_start_graph_as_msg_init_from_json_str(
   return rc;
 }
 
-bool ten_cmd_start_graph_init_from_json_str(ten_shared_ptr_t *self,
-                                            const char *json_str,
-                                            ten_error_t *err) {
+bool ten_cmd_start_graph_set_graph_from_json_str(ten_shared_ptr_t *self,
+                                                 const char *json_str,
+                                                 ten_error_t *err) {
   TEN_ASSERT(self && ten_cmd_check_integrity(self), "Invalid argument.");
   TEN_ASSERT(json_str, "Invalid argument.");
 
-  return ten_raw_cmd_start_graph_as_msg_init_from_json_str(
+  return ten_raw_cmd_start_graph_set_graph_from_json_str(
       ten_msg_get_raw_msg(self), json_str, err);
 }
 
@@ -383,6 +435,17 @@ bool ten_cmd_start_graph_set_predefined_graph_name(
 
   return ten_value_set_string(&get_raw_cmd(self)->predefined_graph_name,
                               predefined_graph_name);
+}
+
+bool ten_cmd_start_graph_set_long_running_mode(ten_shared_ptr_t *self,
+                                               bool long_running_mode,
+                                               ten_error_t *err) {
+  TEN_ASSERT(self && ten_cmd_base_check_integrity(self) &&
+                 ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_START_GRAPH,
+             "Should not happen.");
+
+  return ten_value_set_bool(&get_raw_cmd(self)->long_running_mode,
+                            long_running_mode);
 }
 
 ten_string_t *ten_raw_cmd_start_graph_get_predefined_graph_name(

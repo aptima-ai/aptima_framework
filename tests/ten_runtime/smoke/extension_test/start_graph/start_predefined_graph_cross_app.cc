@@ -57,20 +57,6 @@ class test_predefined_graph : public ten::extension_t {
 
           auto graph_id = cmd->get_property_string("detail");
 
-          nlohmann::json hello_cmd =
-              R"({
-                   "_ten": {
-                     "name": "hello_world",
-                     "seq_id": "137",
-                     "dest":[{
-                       "app": "msgpack://127.0.0.1:8001/",
-                       "extension_group": "start_predefined_graph_cross_app__normal_extension_group",
-                       "extension": "normal_extension_1"
-                     }]
-                   }
-                 })"_json;
-          hello_cmd["_ten"]["dest"][0]["graph"] = graph_id;
-
           auto hello_world_cmd = ten::cmd_t::create("hello_world");
           hello_world_cmd->set_dest(
               "msgpack://127.0.0.1:8001/", graph_id.c_str(),

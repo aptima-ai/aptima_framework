@@ -33,8 +33,6 @@ typedef void (*ten_msg_engine_handler_func_t)(ten_engine_t *engine,
 typedef ten_msg_t *(*ten_raw_msg_clone_func_t)(ten_msg_t *msg,
                                                ten_list_t *excluded_field_ids);
 
-typedef void (*ten_raw_msg_destroy_func_t)(ten_msg_t *msg);
-
 typedef bool (*ten_raw_msg_loop_all_fields_func_t)(
     ten_msg_t *msg, ten_raw_msg_process_one_field_func_t cb, void *user_data,
     ten_error_t *err);
@@ -58,7 +56,6 @@ typedef struct ten_msg_info_t {
 
   bool create_in_path;
   ten_msg_engine_handler_func_t engine_handler;
-
   ten_raw_msg_clone_func_t clone;
   ten_raw_msg_loop_all_fields_func_t loop_all_fields;
   ten_raw_msg_validate_schema_func_t validate_schema;

@@ -450,8 +450,8 @@ bool ten_schema_is_compatible(ten_schema_t *self, ten_schema_t *target,
   return result;
 }
 
-ten_schema_t *ten_schema_create_from_json_string(const char *json_string,
-                                                 const char **err_msg) {
+ten_schema_t *ten_schema_create_from_json_str(const char *json_string,
+                                              const char **err_msg) {
   TEN_ASSERT(json_string, "Invalid argument.");
 
   ten_schema_t *schema = NULL;
@@ -486,9 +486,9 @@ ten_schema_t *ten_schema_create_from_json_string(const char *json_string,
   return schema;
 }
 
-bool ten_schema_adjust_and_validate_json_string(ten_schema_t *self,
-                                                const char *json_string,
-                                                const char **err_msg) {
+bool ten_schema_adjust_and_validate_json_str(ten_schema_t *self,
+                                             const char *json_string,
+                                             const char **err_msg) {
   TEN_ASSERT(self && ten_schema_check_integrity(self), "Invalid argument.");
   TEN_ASSERT(json_string, "Invalid argument.");
 

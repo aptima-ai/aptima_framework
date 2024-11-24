@@ -400,26 +400,6 @@ void ten_msg_set_dest_engine_if_unspecified_or_predefined_graph_name(
   }
 }
 
-void ten_msg_clear_and_set_dest_to_extension(ten_shared_ptr_t *self,
-                                             ten_extension_t *extension) {
-  TEN_ASSERT(self && ten_msg_check_integrity(self), "Invalid argument.");
-
-  TEN_ASSERT(extension, "Invalid argument.");
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: The graph-related information of the extension remains
-  // unchanged during the lifecycle of engine/graph, allowing safe
-  // cross-thread access.
-  TEN_ASSERT(ten_extension_check_integrity(extension, false),
-             "Invalid use of extension %p.", extension);
-
-  ten_msg_clear_and_set_dest(
-      self, ten_app_get_uri(extension->extension_context->engine->app),
-      ten_engine_get_id(extension->extension_context->engine, true),
-      ten_extension_group_get_name(extension->extension_thread->extension_group,
-                                   true),
-      ten_extension_get_name(extension, true), NULL);
-}
-
 void ten_msg_clear_and_set_dest_from_extension_info(
     ten_shared_ptr_t *self, ten_extension_info_t *extension_info) {
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Invalid argument.");
@@ -657,9 +637,9 @@ static bool ten_raw_msg_get_one_field_from_json_internal(
   return true;
 }
 
-bool ten_raw_msg_get_one_field_from_json(ten_msg_t *self,
-                                         ten_msg_field_process_data_t *field,
-                                         void *user_data, ten_error_t *err) {
+static bool ten_raw_msg_get_one_field_from_json(
+    ten_msg_t *self, ten_msg_field_process_data_t *field, void *user_data,
+    ten_error_t *err) {
   return ten_raw_msg_get_one_field_from_json_internal(self, field, user_data,
                                                       false, err);
 }
@@ -1019,54 +999,6 @@ void ten_msg_correct_dest(ten_shared_ptr_t *msg, ten_engine_t *engine) {
   }
 }
 
-bool ten_msg_json_get_is_ten_field_exist(ten_json_t *json, const char *field) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-  TEN_ASSERT(field, "Should not happen.");
-
-  ten_json_t *ten_json =
-      ten_json_object_peek_object(json, TEN_STR_UNDERLINE_TEN);
-  TEN_ASSERT(ten_json, "Should not happen.");
-
-  return ten_json_object_peek(ten_json, field) != NULL;
-}
-
-int64_t ten_msg_json_get_integer_field_in_ten(ten_json_t *json,
-                                              const char *field) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-  TEN_ASSERT(field, "Should not happen.");
-
-  ten_json_t *ten_json =
-      ten_json_object_peek_object(json, TEN_STR_UNDERLINE_TEN);
-  TEN_ASSERT(ten_json, "Should not happen.");
-
-  return ten_json_object_get_integer(ten_json, field);
-}
-
-const char *ten_msg_json_get_string_field_in_ten(ten_json_t *json,
-                                                 const char *field) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-  TEN_ASSERT(field, "Should not happen.");
-
-  ten_json_t *ten_json =
-      ten_json_object_peek_object(json, TEN_STR_UNDERLINE_TEN);
-  if (!ten_json) {
-    return NULL;
-  }
-
-  return ten_json_object_peek_string(ten_json, field);
-}
-
-TEN_MSG_TYPE ten_msg_json_get_msg_type(ten_json_t *json) {
-  TEN_ASSERT(json && ten_json_check_integrity(json), "Should not happen.");
-
-  const char *type_str =
-      ten_msg_json_get_string_field_in_ten(json, TEN_STR_TYPE);
-  const char *name_str =
-      ten_msg_json_get_string_field_in_ten(json, TEN_STR_NAME);
-
-  return ten_msg_type_from_type_and_name_string(type_str, name_str);
-}
-
 static bool ten_raw_msg_dump_internal(ten_msg_t *msg, ten_error_t *err,
                                       const char *fmt, va_list ap) {
   TEN_ASSERT(msg && ten_raw_msg_check_integrity(msg), "Should not happen.");
@@ -1310,7 +1242,7 @@ bool ten_msg_has_locked_res(ten_shared_ptr_t *self) {
   return ten_raw_msg_has_locked_res(ten_shared_ptr_get_data(self));
 }
 
-const char *ten_raw_msg_get_name(ten_msg_t *self) {
+static const char *ten_raw_msg_get_name(ten_msg_t *self) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
   return ten_value_peek_raw_str(&self->name);
 }
@@ -1324,8 +1256,10 @@ const char *ten_msg_get_name(ten_shared_ptr_t *self) {
   return ten_raw_msg_get_name(raw_msg);
 }
 
-bool ten_raw_msg_set_name_with_size(ten_msg_t *self, const char *msg_name,
-                                    size_t msg_name_len, ten_error_t *err) {
+static bool ten_raw_msg_set_name_with_size(ten_msg_t *self,
+                                           const char *msg_name,
+                                           size_t msg_name_len,
+                                           ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
 
   if (msg_name == NULL) {

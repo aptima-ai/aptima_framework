@@ -174,8 +174,6 @@ static void ten_extension_tester_create_and_start_graph(
   ten_string_t start_graph_cmd_json_str;
   ten_string_init_formatted(&start_graph_cmd_json_str,
                             "{\
-         \"_ten\": {\
-           \"type\": \"start_graph\",\
            \"nodes\": [{\
               \"type\": \"extension\",\
               \"name\": \"ten:test_extension\",\
@@ -262,7 +260,6 @@ static void ten_extension_tester_create_and_start_graph(
                }]\
              }]\
            }]\
-         }\
        }",
                             ten_string_get_raw_str(first_addon_name),
                             ten_string_get_raw_str(first_addon_name),
@@ -280,7 +277,7 @@ static void ten_extension_tester_create_and_start_graph(
                                        NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
-  rc = ten_cmd_start_graph_init_from_json_str(
+  rc = ten_cmd_start_graph_set_graph_from_json_str(
       start_graph_cmd, ten_string_get_raw_str(&start_graph_cmd_json_str), NULL);
   TEN_ASSERT(rc, "Should not happen.");
 

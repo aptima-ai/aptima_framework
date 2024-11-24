@@ -80,22 +80,20 @@ TEST(ExtensionTest, PropertyConnectCmdOverrideExtensionSuccess) {  // NOLINT
   // Send graph.
   nlohmann::json start_graph_cmd_content_str =
       R"({
-           "_ten": {
-             "nodes": [{
-               "type": "extension",
-               "name": "test_extension",
-               "app": "msgpack://127.0.0.1:8001/",
-               "addon": "property_start_graph_cmd_override_extension_success__extension",
-               "extension_group": "property_start_graph_cmd_override_extension_success__extension_group",
-               "property": {}
-             }]
-           }
+           "nodes": [{
+             "type": "extension",
+             "name": "test_extension",
+             "app": "msgpack://127.0.0.1:8001/",
+             "addon": "property_start_graph_cmd_override_extension_success__extension",
+             "extension_group": "property_start_graph_cmd_override_extension_success__extension_group",
+             "property": {}
+           }]
          })"_json;
-  start_graph_cmd_content_str["_ten"]["nodes"][0]["property"]["test_prop"] =
+  start_graph_cmd_content_str["nodes"][0]["property"]["test_prop"] =
       PROP_NEW_VAL;
 
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(
+  start_graph_cmd->set_graph_from_json(
       start_graph_cmd_content_str.dump().c_str());
 
   auto cmd_result =

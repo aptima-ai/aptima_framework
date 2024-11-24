@@ -106,8 +106,8 @@ TEST(ExtensionTest, MsgPropertySendCppString) {  // NOLINT
 
   // Send graph.
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(R"({
-           "_ten": {"nodes": [{
+  start_graph_cmd->set_graph_from_json(R"({
+           "nodes": [{
                "type": "extension",
                "name": "msg_property_send_cpp_string__extension_1",
                "addon": "msg_property_send_cpp_string__extension_1",
@@ -133,8 +133,7 @@ TEST(ExtensionTest, MsgPropertySendCppString) {  // NOLINT
                  }]
                }]
              }]
-           }
-         })");
+           })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);

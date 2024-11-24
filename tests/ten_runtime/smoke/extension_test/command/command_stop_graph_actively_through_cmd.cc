@@ -198,8 +198,8 @@ TEST(ExtensionTest, CommandStopGraphActivelyThroughCmd) {  // NOLINT
 
     // Send graph.
     auto start_graph_cmd = ten::cmd_start_graph_t::create();
-    start_graph_cmd->set_nodes_and_connections_from_json(R"({
-           "_ten": {"nodes": [{
+    start_graph_cmd->set_graph_from_json(R"({
+           "nodes": [{
                  "type": "extension",
                  "name": "test_extension_1",
                  "addon": "command_stop_graph_actively_through_cmd__extension_1",
@@ -261,8 +261,7 @@ TEST(ExtensionTest, CommandStopGraphActivelyThroughCmd) {  // NOLINT
                    }]
                  }]
                }]
-             }
-           })");
+             })");
 
     auto cmd_result =
         client->send_cmd_and_recv_result(std::move(start_graph_cmd));

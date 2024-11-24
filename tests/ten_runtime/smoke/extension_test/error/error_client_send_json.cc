@@ -70,9 +70,8 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
 
   ten_error_t *err = ten_error_create();
   auto *invalid_graph_cmd = ten_cmd_start_graph_create();
-  bool success = ten_cmd_start_graph_init_from_json_str(invalid_graph_cmd, R"(
-    {
-      "_ten": {
+  bool success =
+      ten_cmd_start_graph_set_graph_from_json_str(invalid_graph_cmd, R"({
         "nodes":[
           {
             "type": "extension",
@@ -89,10 +88,8 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
             "extension_group": "extension_group"
           }
         ]
-      }
-    }
-  )",
-                                                        err);
+      })",
+                                                  err);
   EXPECT_EQ(success, false);
   EXPECT_STREQ(ten_error_errmsg(err),
                "extension 'extension_1' is associated with different addon "

@@ -27,8 +27,7 @@ class test_extension : public ten::extension_t {
 
     auto start_graph_cmd = ten::cmd_start_graph_t::create();
     start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
-    bool result = start_graph_cmd->set_nodes_and_connections_from_json(R"({
-          "_ten": {
+    bool result = start_graph_cmd->set_graph_from_json(R"({
             "nodes": [
               {
                 "type": "extension",
@@ -60,9 +59,8 @@ class test_extension : public ten::extension_t {
                 ]
               }
             ]
-          }
         })",
-                                                                       &err);
+                                                       &err);
     assert(!result && "The graph should be invalid.");
 
     // The extension_info is not found, extension_group:
@@ -84,8 +82,7 @@ class test_extension : public ten::extension_t {
 
       auto start_graph_cmd = ten::cmd_start_graph_t::create();
       start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
-      start_graph_cmd->set_nodes_and_connections_from_json(R"({
-          "_ten": {
+      start_graph_cmd->set_graph_from_json(R"({
             "nodes": [
               {
                 "type": "extension",
@@ -94,7 +91,6 @@ class test_extension : public ten::extension_t {
                 "extension_group": "default_extension_group"
               }
             ]
-          }
         })");
 
       ten_env.send_cmd(

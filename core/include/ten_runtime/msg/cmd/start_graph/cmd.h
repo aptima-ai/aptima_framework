@@ -20,5 +20,8 @@ TEN_RUNTIME_API bool ten_cmd_start_graph_set_predefined_graph_name(
     ten_shared_ptr_t *self, const char *predefined_graph_name,
     ten_error_t *err);
 
-TEN_RUNTIME_API bool ten_cmd_start_graph_init_from_json_str(
+TEN_RUNTIME_API bool ten_cmd_start_graph_set_long_running_mode(
+    ten_shared_ptr_t *self, bool long_running_mode, ten_error_t *err);
+
+TEN_RUNTIME_API bool ten_cmd_start_graph_set_graph_from_json_str(
     ten_shared_ptr_t *self, const char *json_str, ten_error_t *err);

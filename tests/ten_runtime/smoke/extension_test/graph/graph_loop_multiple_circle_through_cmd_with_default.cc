@@ -4,6 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+#include <cstddef>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -108,10 +109,9 @@ TEST(ExtensionTest,
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(R"({
-           "_ten": {"dest": [{
-               "app": "msgpack://127.0.0.1:8001/"
-             }],
+  start_graph_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr, nullptr,
+                            nullptr);
+  start_graph_cmd->set_graph_from_json(R"({
              "nodes": [{
                "type": "extension",
                "name": "A",
@@ -198,7 +198,6 @@ TEST(ExtensionTest,
                  }]
                }]
              }]
-           }
          })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));

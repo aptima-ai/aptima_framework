@@ -136,11 +136,11 @@ TEN_UTILS_PRIVATE_API void ten_schema_init(ten_schema_t *self);
 
 TEN_UTILS_PRIVATE_API void ten_schema_deinit(ten_schema_t *self);
 
-TEN_UTILS_PRIVATE_API ten_schema_t *ten_schema_create_from_json_string(
-    const char *json_string, const char **err_msg);
+TEN_UTILS_PRIVATE_API ten_schema_t *ten_schema_create_from_json_str(
+    const char *json_str, const char **err_msg);
 
-TEN_UTILS_PRIVATE_API bool ten_schema_adjust_and_validate_json_string(
-    ten_schema_t *self, const char *json_string, const char **err_msg);
+TEN_UTILS_PRIVATE_API bool ten_schema_adjust_and_validate_json_str(
+    ten_schema_t *self, const char *json_str, const char **err_msg);
 
 TEN_UTILS_API ten_schema_t *ten_schema_create_from_json(ten_json_t *json);
 

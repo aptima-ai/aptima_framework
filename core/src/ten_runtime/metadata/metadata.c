@@ -22,9 +22,9 @@
 #include "include_internal/ten_rust/ten_rust.h"
 #endif
 
-static bool ten_metadata_load_from_json_string(ten_value_t *metadata,
-                                               const char *json_str,
-                                               ten_error_t *err) {
+static bool ten_metadata_load_from_json_str(ten_value_t *metadata,
+                                            const char *json_str,
+                                            ten_error_t *err) {
   TEN_ASSERT(metadata && ten_value_check_integrity(metadata) && json_str,
              "Should not happen.");
 
@@ -57,7 +57,7 @@ static bool ten_metadata_load_from_json_file(ten_value_t *metadata,
     return false;
   }
 
-  bool ret = ten_metadata_load_from_json_string(metadata, buf, err);
+  bool ret = ten_metadata_load_from_json_str(metadata, buf, err);
   if (!ret) {
     TEN_LOGW(
         "Try to load metadata from file '%s', but file content with wrong "
@@ -83,7 +83,7 @@ static bool ten_metadata_load_from_type_ane_value(ten_value_t *metadata,
       break;
 
     case TEN_METADATA_JSON_STR:
-      if (!ten_metadata_load_from_json_string(metadata, value, err)) {
+      if (!ten_metadata_load_from_json_str(metadata, value, err)) {
         result = false;
         goto done;
       }

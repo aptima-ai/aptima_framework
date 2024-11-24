@@ -87,9 +87,8 @@ TEST(CmdConversionTest, CmdConversionConnectCmd) {  // NOLINT
 
   // Send graph.
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(
+  start_graph_cmd->set_graph_from_json(
       R"###({
-          "_ten": {
             "nodes": [{
               "type": "extension",
               "name": "test_extension_1",
@@ -124,7 +123,6 @@ TEST(CmdConversionTest, CmdConversionConnectCmd) {  // NOLINT
                 }]
               }]
             }]
-          }
         })###");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));

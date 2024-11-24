@@ -74,7 +74,7 @@ impl TenSchema {
         unsafe {
             let c_value_str = std::ffi::CString::new(value_str)?;
             let success =
-                bindings::ten_schema_adjust_and_validate_json_string_proxy(
+                bindings::ten_schema_adjust_and_validate_json_str_proxy(
                     self.as_ptr(),
                     c_value_str.as_ptr(),
                     &mut err_msg as *mut _ as *mut *const c_char,
@@ -122,15 +122,15 @@ fn create_schema_from_json(
     schema_json: &serde_json::Value,
 ) -> Result<TenSchema> {
     let schema_str = serde_json::to_string(schema_json)?;
-    create_schema_from_json_string(&schema_str)
+    create_schema_from_json_str(&schema_str)
 }
 
-fn create_schema_from_json_string(schema_json_str: &str) -> Result<TenSchema> {
+fn create_schema_from_json_str(schema_json_str: &str) -> Result<TenSchema> {
     let mut err_msg: *mut c_char = std::ptr::null_mut();
     let schema_ptr: *mut ten_schema_t;
     unsafe {
         let c_schema_str = std::ffi::CString::new(schema_json_str)?;
-        schema_ptr = bindings::ten_schema_create_from_json_string_proxy(
+        schema_ptr = bindings::ten_schema_create_from_json_str_proxy(
             c_schema_str.as_ptr(),
             &mut err_msg as *mut _ as *mut *const c_char,
         );
@@ -176,7 +176,7 @@ mod tests {
     #[test]
     fn test_create_schema_invalid_json() {
         let schema_str = include_str!("test_data_embed/invalid_schema.json");
-        let schema_result = create_schema_from_json_string(schema_str);
+        let schema_result = create_schema_from_json_str(schema_str);
         println!("{:?}", schema_result);
         assert!(schema_result.is_err());
     }

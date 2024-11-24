@@ -72,16 +72,15 @@ TEST(ExtensionTest, BasicHelloWorld2) {  // NOLINT
 
   // Send graph.
   auto start_graph_cmd = ten::cmd_start_graph_t::create();
-  start_graph_cmd->set_nodes_and_connections_from_json(R"({
-           "_ten": {"nodes": [{
+  start_graph_cmd->set_graph_from_json(R"({
+           "nodes": [{
                "type": "extension",
                "name": "test_extension",
                "addon": "basic_hello_world_2__extension",
                "extension_group": "test_extension_group",
                "app": "msgpack://127.0.0.1:8001/"
              }]
-           }
-         })");
+           })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
