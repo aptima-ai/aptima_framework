@@ -247,7 +247,7 @@ class extension_addon_t : public addon_t {
         g_##NAME##_default_extension_group_addon->get_c_addon());                              \
     ten_string_destroy(base_dir);                                                              \
   }                                                                                            \
-  TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_##TYPE##_addon____) {                           \
+  TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_extension_group_addon____) {                    \
     ten_addon_unregister_extension_group(#NAME);                                               \
     delete g_##NAME##_default_extension_group_addon;                                           \
   }
@@ -279,7 +279,7 @@ class extension_addon_t : public addon_t {
         g_##NAME##_default_extension_addon->get_c_addon());                              \
     ten_string_destroy(base_dir);                                                        \
   }                                                                                      \
-  TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_##TYPE##_addon____) {                     \
+  TEN_DESTRUCTOR(____dtor_ten_declare_##NAME##_extension_addon____) {                    \
     ten_addon_unregister_extension(#NAME);                                               \
     delete g_##NAME##_default_extension_addon;                                           \
   }

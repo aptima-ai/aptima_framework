@@ -16,6 +16,7 @@
 #include "include_internal/ten_runtime/app/predefined_graph.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
+#include "include_internal/ten_runtime/metadata/manifest.h"
 #include "include_internal/ten_runtime/metadata/metadata.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/protocol/close.h"
@@ -136,7 +137,7 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
   }
 
   if (!ten_app_handle_ten_namespace_properties(self)) {
-    TEN_LOGW("App determine default prop failed! \n");
+    TEN_LOGW("Failed to determine app default property.");
   }
 
   ten_metadata_init_schema_store(&self->manifest, &self->schema_store);
@@ -147,8 +148,26 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
                               strlen(TEN_STR_LOCALHOST));
   }
 
-  ten_addon_load_all_from_app_base_dir(self, &err);
+  ten_list_t extension_dependencies;
+  ten_list_t extension_group_dependencies;
+  ten_list_t protocol_dependencies;
+
+  ten_list_init(&extension_dependencies);
+  ten_list_init(&extension_group_dependencies);
+  ten_list_init(&protocol_dependencies);
+
+  ten_manifest_get_dependencies_type_and_name(
+      &self->manifest, &extension_dependencies, &extension_group_dependencies,
+      &protocol_dependencies);
+
+  ten_addon_load_all_from_app_base_dir(self, &extension_dependencies,
+                                       &extension_group_dependencies,
+                                       &protocol_dependencies, &err);
   ten_addon_load_all_from_ten_package_base_dirs(self, &err);
+
+  ten_list_clear(&extension_dependencies);
+  ten_list_clear(&extension_group_dependencies);
+  ten_list_clear(&protocol_dependencies);
 
   if (!ten_app_get_predefined_graphs_from_property(self)) {
     goto error;

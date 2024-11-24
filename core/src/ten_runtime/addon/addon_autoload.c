@@ -145,7 +145,8 @@ done:
   ten_string_deinit(&self);
 }
 
-static void load_all_dynamic_libraries(const char *path) {
+static void load_all_dynamic_libraries(const char *path,
+                                       ten_list_t *dependencies) {
   ten_string_t *cur = NULL;
   ten_string_t *short_name = NULL;
   ten_string_t *self = NULL;
@@ -172,6 +173,28 @@ static void load_all_dynamic_libraries(const char *path) {
     }
 
     if (ten_path_is_special_dir(short_name)) {
+      goto continue_loop;
+    }
+
+    // Check if short_name is in dependencies list.
+    bool should_load = false;
+    if (dependencies) {
+      // Iterate over dependencies and check if short_name matches any.
+      ten_list_foreach (dependencies, dep_iter) {
+        ten_string_t *dep_name = ten_str_listnode_get(dep_iter.node);
+        if (ten_string_is_equal(short_name, dep_name)) {
+          should_load = true;
+          break;
+        }
+      }
+    } else {
+      // If dependencies list is NULL, we load all addons.
+      should_load = true;
+    }
+
+    if (!should_load) {
+      TEN_LOGI("Skipping addon '%s' as it's not in dependencies.",
+               ten_string_get_raw_str(short_name));
       goto continue_loop;
     }
 
@@ -216,16 +239,10 @@ done:
   }
 }
 
-typedef struct addon_folder_t {
-  const char *path;
-} addon_folder_t;
-
-void ten_addon_load_from_path(const char *path) {
-  TEN_ASSERT(path, "Invalid argument.");
-  load_all_dynamic_libraries(path);
-}
-
-bool ten_addon_load_all_from_app_base_dir(ten_app_t *app, ten_error_t *err) {
+bool ten_addon_load_all_from_app_base_dir(
+    ten_app_t *app, ten_list_t *extension_dependencies,
+    ten_list_t *extension_group_dependencies, ten_list_t *protocol_dependencies,
+    ten_error_t *err) {
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
 
   bool success = true;
@@ -255,10 +272,13 @@ bool ten_addon_load_all_from_app_base_dir(ten_app_t *app, ten_error_t *err) {
   AddDllDirectory(ten_string_get_raw_str(app_lib_path));
 #endif
 
-  static const addon_folder_t folders[] = {
-      {"/ten_packages/extension"},
-      {"/ten_packages/extension_group"},
-      {"/ten_packages/protocol"},
+  struct {
+    const char *path;
+    ten_list_t *dependencies;
+  } folders[] = {
+      {"/ten_packages/extension", extension_dependencies},
+      {"/ten_packages/extension_group", extension_group_dependencies},
+      {"/ten_packages/protocol", protocol_dependencies},
   };
 
   for (int i = 0; i < sizeof(folders) / sizeof(folders[0]); i++) {
@@ -280,7 +300,8 @@ bool ten_addon_load_all_from_app_base_dir(ten_app_t *app, ten_error_t *err) {
       // The modules (e.g., extensions/protocols) do not exist if only the TEN
       // app has been installed.
       if (ten_path_exists(ten_string_get_raw_str(&module_path))) {
-        load_all_dynamic_libraries(ten_string_get_raw_str(&module_path));
+        load_all_dynamic_libraries(ten_string_get_raw_str(&module_path),
+                                   folders[i].dependencies);
       }
     } while (0);
 

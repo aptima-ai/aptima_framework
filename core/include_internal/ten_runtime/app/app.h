@@ -77,7 +77,7 @@ typedef struct ten_app_t {
   ten_metadata_info_t *manifest_info;
   ten_metadata_info_t *property_info;
 
-  ten_list_t predefined_graph_infos;
+  ten_list_t predefined_graph_infos;  // ten_predefined_graph_info_t*
 
   ten_app_on_configure_func_t on_configure;
   ten_app_on_init_func_t on_init;
