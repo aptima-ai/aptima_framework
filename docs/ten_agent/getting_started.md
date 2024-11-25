@@ -107,7 +107,7 @@ Open up a separate terminal window, build the agent and start the server:
 
 ```bash
 docker exec -it ten_agent_dev bash
-make build
+task use
 ```
 
 {% endcode %}
@@ -119,7 +119,7 @@ Now the server is running at port: 8080.
 {% code title=">_ Bash" %}
 
 ```bash
-make run-server
+task run
 ```
 
 {% endcode %}
