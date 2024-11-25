@@ -45,35 +45,4 @@ inline bool ten_env_t::on_create_instance_done(void *instance, void *context,
   return rc;
 }
 
-inline bool ten_env_t::on_create_extensions_done(
-    const std::vector<extension_t *> &extensions, error_t *err) {
-  ten_list_t c_extensions = TEN_LIST_INIT_VAL;
-
-  for (const auto &extension : extensions) {
-    ten_list_push_ptr_back(&c_extensions, extension->get_c_extension(),
-                           nullptr);
-  }
-
-  return ten_env_on_create_extensions_done(
-      c_ten_env, &c_extensions,
-      err != nullptr ? err->get_internal_representation() : nullptr);
-}
-
-inline bool ten_env_t::addon_destroy_extension_async(
-    ten::extension_t *extension, addon_destroy_extension_async_cb_t &&cb,
-    error_t *err) {
-  if (cb == nullptr) {
-    return ten_addon_destroy_extension(
-        c_ten_env, extension->get_c_extension(), nullptr, nullptr,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-  } else {
-    auto *cb_ptr = new addon_destroy_extension_async_cb_t(std::move(cb));
-
-    return ten_addon_destroy_extension(
-        c_ten_env, extension->get_c_extension(),
-        proxy_addon_destroy_extension_async_cb, cb_ptr,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-  }
-}
-
 }  // namespace ten

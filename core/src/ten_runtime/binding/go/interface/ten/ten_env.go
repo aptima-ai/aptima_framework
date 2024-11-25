@@ -25,9 +25,6 @@ type (
 
 // TenEnv represents the interface for the TEN (Run Time Environment) component.
 type TenEnv interface {
-	postSyncJob(payload job) any
-	postAsyncJob(payload job) any
-
 	SendCmd(cmd Cmd, handler ResultHandler) error
 	SendData(data Data) error
 	SendVideoFrame(videoFrame VideoFrame) error
@@ -41,26 +38,11 @@ type TenEnv interface {
 	OnStartDone() error
 	OnStopDone() error
 	OnDeinitDone() error
-
-	OnCreateExtensionsDone(extensions ...Extension) error
-	OnDestroyExtensionsDone() error
-
 	OnCreateInstanceDone(instance any, context uintptr) error
 
 	IsCmdConnected(cmdName string) (bool, error)
 
-	AddonCreateExtensionAsync(
-		addonName string,
-		instanceName string,
-		callback func(tenEnv TenEnv, p Extension),
-	) error
-	AddonDestroyExtensionAsync(
-		ext Extension,
-		callback func(tenEnv TenEnv),
-	) error
-
 	iProperty
-
 	InitPropertyFromJSONBytes(value []byte) error
 
 	LogVerbose(msg string)
@@ -71,6 +53,9 @@ type TenEnv interface {
 	LogFatal(msg string)
 	Log(level LogLevel, msg string)
 
+	// Private functions.
+	postSyncJob(payload job) any
+	postAsyncJob(payload job) any
 	logInternal(level LogLevel, msg string, skip int)
 }
 
@@ -85,8 +70,7 @@ type TenEnv interface {
 // in my code; I just want to make sure it's true." If 'ten' doesn't implement
 // Ten, you'll know as soon as you try to compile.
 var (
-	_ TenEnv                            = new(tenEnv)
-	_ iPropertyContainerForAsyncGeneric = new(tenEnv)
+	_ TenEnv = new(tenEnv)
 )
 
 type tenAttachTo uint8
@@ -322,36 +306,6 @@ func (p *tenEnv) OnDeinitDone() error {
 	return nil
 }
 
-func (p *tenEnv) OnCreateExtensionsDone(extensions ...Extension) error {
-	if len(extensions) == 0 {
-		return nil
-	}
-
-	var extensionArray []C.uintptr_t
-	for _, v := range extensions {
-		extension, ok := v.(*extension)
-		if !ok {
-			panic("Invalid extension type")
-		}
-
-		extensionArray = append(extensionArray, extension.cPtr)
-	}
-
-	C.ten_go_ten_env_on_create_extensions_done(
-		p.cPtr,
-		unsafe.Pointer(unsafe.SliceData(extensionArray)),
-		C.int(len(extensions)),
-	)
-
-	return nil
-}
-
-func (p *tenEnv) OnDestroyExtensionsDone() error {
-	C.ten_go_ten_env_on_destroy_extensions_done(p.cPtr)
-
-	return nil
-}
-
 func (p *tenEnv) OnCreateInstanceDone(instance any, context uintptr) error {
 	switch instance := instance.(type) {
 	case *extension:
@@ -370,59 +324,6 @@ func (p *tenEnv) IsCmdConnected(cmdName string) (bool, error) {
 
 		return bool(C.ten_go_ten_env_is_cmd_connected(p.cPtr, cName))
 	}).(bool), nil
-}
-
-func (p *tenEnv) AddonCreateExtensionAsync(
-	addonName string,
-	instanceName string,
-	callback func(tenEnv TenEnv, p Extension),
-) error {
-	handlerID := newhandle(callback)
-
-	cAddonName := C.CString(addonName)
-	defer C.free(unsafe.Pointer(cAddonName))
-
-	cInstanceName := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(cInstanceName))
-
-	res := bool(
-		C.ten_go_ten_env_addon_create_extension(
-			p.cPtr,
-			cAddonName,
-			cInstanceName,
-			C.uintptr_t(handlerID),
-		),
-	)
-	if !res {
-		return newTenError(
-			ErrnoGeneric,
-			fmt.Sprintf("failed to find addon: %s", addonName),
-		)
-	}
-
-	return nil
-}
-
-func (p *tenEnv) AddonDestroyExtensionAsync(
-	ext Extension,
-	callback func(tenEnv TenEnv),
-) error {
-	extension, ok := ext.(*extension)
-	if !ok {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"wrong extension type.",
-		)
-	}
-
-	handlerID := newhandle(callback)
-
-	C.ten_go_ten_env_addon_destroy_extension(
-		p.cPtr,
-		extension.cPtr,
-		C.uintptr_t(handlerID),
-	)
-	return nil
 }
 
 func (p *tenEnv) String() string {

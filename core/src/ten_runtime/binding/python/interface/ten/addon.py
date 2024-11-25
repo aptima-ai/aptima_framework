@@ -16,17 +16,48 @@ class Addon(_Addon):
     @classmethod
     def _load_all(cls):
         base_dir = cls._find_app_base_dir()
+
+        # Read manifest.json under base_dir.
+        manifest_path = os.path.join(base_dir, "manifest.json")
+        if not os.path.isfile(manifest_path):
+            raise FileNotFoundError("manifest.json not found in base_dir")
+
+        with open(manifest_path, "r") as f:
+            manifest = json.load(f)
+
+        # Note: The logic for loading extensions based on the `dependencies`
+        # specified in the app's `manifest.json` is currently implemented
+        # separately in both C and Python where addons need to be loaded. Since
+        # the logic is fairly simple, a standalone implementation is directly
+        # written at each required location. In the future, this could be
+        # consolidated into a unified implementation in C, which could then be
+        # reused across multiple languages. However, this would require handling
+        # cross-language information exchange, which may not necessarily be
+        # cost-effective.
+
+        # Collect names of extensions from dependencies.
+        extension_names = []
+        dependencies = manifest.get("dependencies", [])
+        for dep in dependencies:
+            if dep.get("type") == "extension":
+                extension_names.append(dep.get("name"))
+
         for module in glob(os.path.join(base_dir, "ten_packages/extension/*")):
             if os.path.isdir(module):
                 module_name = os.path.basename(module)
-                spec = importlib.util.find_spec(
-                    "ten_packages.extension.{}".format(module_name)
-                )
-                if spec is not None:
-                    _ = importlib.import_module(
+
+                if module_name in extension_names:
+                    # Proceed to load the module.
+                    spec = importlib.util.find_spec(
                         "ten_packages.extension.{}".format(module_name)
                     )
-                    print("imported module: {}".format(module_name))
+                    if spec is not None:
+                        _ = importlib.import_module(
+                            "ten_packages.extension.{}".format(module_name)
+                        )
+                        print("imported module: {}".format(module_name))
+                else:
+                    print("Skipping module: {}".format(module_name))
 
     @classmethod
     def _load_from_path(cls, path):

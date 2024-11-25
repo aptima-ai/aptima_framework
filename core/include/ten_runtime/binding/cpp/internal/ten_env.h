@@ -49,11 +49,6 @@ class ten_env_internal_accessor_t;
 using result_handler_func_t =
     std::function<void(ten_env_t &, std::unique_ptr<cmd_result_t>)>;
 
-using addon_create_extension_async_cb_t =
-    std::function<void(ten_env_t &, ten::extension_t &)>;
-
-using addon_destroy_extension_async_cb_t = std::function<void(ten_env_t &)>;
-
 using set_property_async_cb_t =
     std::function<void(ten_env_t &, bool, error_t *err)>;
 
@@ -593,32 +588,6 @@ class ten_env_t {
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool addon_create_extension_async(
-      const char *addon_name, const char *instance_name,
-      addon_create_extension_async_cb_t &&cb = nullptr,
-      error_t *err = nullptr) {
-    if (cb == nullptr) {
-      return ten_addon_create_extension(
-          c_ten_env, addon_name, instance_name, nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
-    } else {
-      auto *cb_ptr = new addon_create_extension_async_cb_t(std::move(cb));
-
-      return ten_addon_create_extension(
-          c_ten_env, addon_name, instance_name,
-          proxy_addon_create_extension_async_cb, cb_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
-    }
-  }
-
-  bool addon_destroy_extension(ten::extension_t *extension,
-                               error_t *err = nullptr);
-
-  bool addon_destroy_extension_async(
-      ten::extension_t *extension,
-      addon_destroy_extension_async_cb_t &&cb = nullptr,
-      error_t *err = nullptr);
-
   bool on_configure_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
@@ -656,15 +625,6 @@ class ten_env_t {
   bool on_stop_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_on_stop_done(
-        c_ten_env,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-  }
-
-  bool on_create_extensions_done(const std::vector<extension_t *> &extensions,
-                                 error_t *err = nullptr);
-
-  bool on_destroy_extensions_done(error_t *err = nullptr) {
-    return ten_env_on_destroy_extensions_done(
         c_ten_env,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
@@ -898,35 +858,6 @@ class ten_env_t {
       // handler should not be cleared.
       delete result_handler;
     }
-  }
-
-  static void proxy_addon_create_extension_async_cb(::ten_env_t *ten_env,
-                                                    void *instance,
-                                                    void *cb_data) {
-    auto *addon_create_extension_async_cb =
-        static_cast<addon_create_extension_async_cb_t *>(cb_data);
-    auto *cpp_ten_env =
-        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
-
-    (*addon_create_extension_async_cb)(
-        *cpp_ten_env,
-        *static_cast<ten::extension_t *>(
-            ten_binding_handle_get_me_in_target_lang(
-                reinterpret_cast<ten_binding_handle_t *>(instance))));
-    delete addon_create_extension_async_cb;
-  }
-
-  static void proxy_addon_destroy_extension_async_cb(::ten_env_t *ten_env,
-                                                     void *cb_data) {
-    auto *addon_destroy_extension_async_cb =
-        static_cast<addon_destroy_extension_async_cb_t *>(cb_data);
-    auto *cpp_ten_env =
-        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
-
-    (*addon_destroy_extension_async_cb)(*cpp_ten_env);
-    delete addon_destroy_extension_async_cb;
   }
 
   static void proxy_set_property_callback(::ten_env_t *ten_env, bool res,

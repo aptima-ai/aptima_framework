@@ -266,10 +266,6 @@ type iProperty interface {
 	GetPropertyToJSONBytes(path string) ([]byte, error)
 }
 
-type iPropertyContainerForAsyncGeneric interface {
-	postAsyncJob(payload job) any
-}
-
 // The purpose of having this function is because there are two types of
 // getProperty:
 //

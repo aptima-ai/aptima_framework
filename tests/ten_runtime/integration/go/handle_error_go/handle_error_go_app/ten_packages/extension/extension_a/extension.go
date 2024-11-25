@@ -50,7 +50,8 @@ func (p *extensionA) OnCmd(
 				panic("should not happen")
 			}
 
-			fmt.Println("getPropertyAsync agora error, ", err)
+			fmt.Println("GetPropertyString error, ", err)
+
 			statusCode, _ := cs.GetStatusCode()
 			cmdResult, _ := ten.NewCmdResult(statusCode)
 			cmdResult.SetPropertyString("detail", detail)

@@ -31,11 +31,6 @@ void ten_go_ten_env_on_stop_done(uintptr_t bridge_addr);
 
 void ten_go_ten_env_on_deinit_done(uintptr_t bridge_addr);
 
-void ten_go_ten_env_on_create_extensions_done(
-    uintptr_t bridge_addr, const void *extension_bridge_array, int size);
-
-void ten_go_ten_env_on_destroy_extensions_done(uintptr_t bridge_addr);
-
 void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
                                             uintptr_t instance_bridge_addr,
                                             uintptr_t context_addr);
