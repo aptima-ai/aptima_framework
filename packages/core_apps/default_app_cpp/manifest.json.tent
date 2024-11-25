@@ -1,12 +1,12 @@
 {
   "type": "app",
   "name": "{{package_name}}",
-  "version": "0.3.0",
+  "version": "0.4.2",
   "dependencies": [
     {
       "type": "system",
       "name": "ten_runtime",
-      "version": "0.3.0"
+      "version": "0.4.2"
     }
   ]
 }

@@ -3,12 +3,12 @@
     {
       "type": "system",
       "name": "ten_runtime",
-      "version": "0.3.0"
+      "version": "0.4.2"
     },
     {
       "type": "system",
       "name": "ten_runtime_python",
-      "version": "0.3.0"
+      "version": "0.4.2"
     },
     {
       "type": "extension",
@@ -18,12 +18,12 @@
     {
       "type": "extension",
       "name": "default_extension_python",
-      "version": "0.3.0"
+      "version": "0.4.2"
     },
     {
       "type": "extension",
       "name": "py_init_extension_cpp",
-      "version": "0.3.0"
+      "version": "0.4.2"
     },
     {
       "type": "extension",
