@@ -16,6 +16,7 @@
 * [Create an Extension with Predefined Type](ten_agent/create_an_extension_with_predefined_type/overview.md)
   * [LLM Extension](ten_agent/create_an_extension_with_predefined_type/type_llm_extension.md)
   * [LLM Tool Extension](ten_agent/create_an_extension_with_predefined_type/type_llm_tool_extension.md)
+* [FAQs](ten_agent/faqs.md)
 
 ## TEN framework
 
