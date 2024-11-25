@@ -24,6 +24,11 @@ void *ten_module_load(const ten_string_t *name, int as_local) {
     const char *err_msg = dlerror();
     TEN_LOGE("Failed to dlopen %s: %s", ten_string_get_raw_str(name),
              err_msg ? err_msg : "Unknown error");
+
+    // It is necessary to call `dlerror` again to clear the memory allocated for
+    // the previous error string by `dlerror`, to avoid the leak sanitizer
+    // reporting a memory leak for this error string.
+    dlerror();
   }
 
   return handle;
@@ -40,6 +45,13 @@ int ten_module_close(void *handle) {
     const char *err_msg = dlerror();
     TEN_LOGE("Failed to dlclose handle: %s",
              err_msg ? err_msg : "Unknown error");
+
+    // It is necessary to call `dlerror` again to clear the memory allocated for
+    // the previous error string by `dlerror`, to avoid the leak sanitizer
+    // reporting a memory leak for this error string.
+    dlerror();
+
+    return -1;
   }
 
   return result;
@@ -57,6 +69,12 @@ void *ten_module_get_symbol(void *handle, const char *symbol_name) {
   }
 
   // Clear previous errors.
+  //
+  // Since `dlsym` returning `NULL` can be a normal occurrence (e.g., when the
+  // symbol is not defined), the return value of `dlsym` being `NULL` cannot be
+  // used to determine whether it is an error. Therefore, it is necessary to
+  // first call `dlerror` to clear any existing errors, then call `dlsym`, and
+  // finally call `dlerror` again to check if an error has occurred.
   dlerror();
 
   void *symbol = dlsym(handle, symbol_name);
@@ -67,6 +85,12 @@ void *ten_module_get_symbol(void *handle, const char *symbol_name) {
 #if 0
     TEN_LOGD("Failed to find symbol %s: %s", symbol_name, error);
 #endif
+
+    // It is necessary to call `dlerror` again to clear the memory allocated for
+    // the previous error string by `dlerror`, to avoid the leak sanitizer
+    // reporting a memory leak for this error string.
+    dlerror();
+
     return NULL;
   }
 
