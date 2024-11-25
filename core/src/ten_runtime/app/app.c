@@ -210,7 +210,8 @@ bool ten_app_run(ten_app_t *self, bool run_in_background,
   }
 
   if (run_in_background) {
-    ten_thread_create("app thread", ten_app_routine, self);
+    ten_thread_create(ten_string_get_raw_str(&self->uri), ten_app_routine,
+                      self);
     ten_event_wait(self->belonging_thread_is_set, -1);
   } else {
     ten_app_routine(self);

@@ -31,6 +31,7 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/mutex.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
@@ -282,7 +283,8 @@ void ten_extension_thread_start(ten_extension_thread_t *self) {
                  ten_extension_thread_check_integrity(self, false),
              "Should not happen.");
 
-  ten_thread_create("extension thread", ten_extension_thread_main, self);
+  ten_thread_create(ten_string_get_raw_str(&self->extension_group->name),
+                    ten_extension_thread_main, self);
 
   // The runloop of the extension_thread is created within the extension thread
   // itself, which introduces a time gap. If the engine (extension_context)

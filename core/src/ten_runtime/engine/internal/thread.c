@@ -16,6 +16,7 @@
 #include "ten_runtime/app/app.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/event.h"
+#include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
@@ -76,7 +77,8 @@ void ten_engine_create_its_own_thread(ten_engine_t *self) {
   self->belonging_thread_is_set = ten_event_create(0, 0);
   self->engine_thread_ready_for_migration = ten_event_create(0, 0);
 
-  ten_thread_create("engine thread", ten_engine_thread_main, self);
+  ten_thread_create(ten_string_get_raw_str(&self->graph_id),
+                    ten_engine_thread_main, self);
 
   ten_event_set(self->belonging_thread_is_set);
 
