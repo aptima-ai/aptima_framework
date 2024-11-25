@@ -55,7 +55,6 @@ ten_shared_library("ten_runtime_go") {
     "addon",
     "app",
     "extension",
-    "extension_group",
     "internal",
     "msg",
     "ten_env",

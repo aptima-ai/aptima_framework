@@ -8,6 +8,8 @@
 
 #include <Windows.h>
 
+#include "ten_utils/log/log.h"
+
 void *ten_module_load(const ten_string_t *name, int as_local) {
   (void)as_local;
   if (!name || ten_string_is_empty(name)) {
@@ -25,4 +27,40 @@ void *ten_module_load(const ten_string_t *name, int as_local) {
 
 int ten_module_close(void *handle) {
   return FreeLibrary((HMODULE)handle) ? 0 : -1;
+}
+
+void *ten_module_get_symbol(void *handle, const char *symbol_name) {
+  if (!handle) {
+    TEN_LOGE("Invalid argument: handle is null.");
+    return NULL;
+  }
+
+  if (!symbol_name) {
+    TEN_LOGE("Invalid argument: symbol name is null or empty.");
+    return NULL;
+  }
+
+  FARPROC symbol = GetProcAddress((HMODULE)handle, symbol_name);
+  if (!symbol) {
+    DWORD error_code = GetLastError();
+    LPVOID error_message = NULL;
+    FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                       FORMAT_MESSAGE_IGNORE_INSERTS,
+                   NULL, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                   (LPSTR)&error_message, 0, NULL);
+
+    // Enable the code below if debugging is needed.
+#if 0
+    TEN_LOGE("Failed to find symbol %s: %s", symbol_name,
+             error_message ? (char *)error_message : "Unknown error");
+#endif
+
+    if (error_message) {
+      LocalFree(error_message);
+    }
+
+    return NULL;
+  }
+
+  return (void *)symbol;
 }

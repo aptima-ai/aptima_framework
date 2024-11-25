@@ -73,6 +73,8 @@ typedef struct ten_addon_host_t {
   ten_env_t *ten_env;
 
   TEN_ADDON_TYPE type;
+
+  void *user_data;
 } ten_addon_host_t;
 
 typedef struct ten_addon_on_create_instance_info_t {
@@ -101,6 +103,9 @@ TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_host_create(
     TEN_ADDON_TYPE type);
 
 TEN_RUNTIME_API void ten_addon_host_destroy(ten_addon_host_t *self);
+
+TEN_RUNTIME_PRIVATE_API TEN_ADDON_TYPE
+ten_addon_type_from_string(const char *addon_type_str);
 
 TEN_RUNTIME_PRIVATE_API void ten_addon_register(ten_addon_store_t *addon_store,
                                                 ten_addon_host_t *addon_host,

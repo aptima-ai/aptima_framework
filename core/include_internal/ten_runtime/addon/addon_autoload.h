@@ -14,6 +14,8 @@
 
 typedef struct ten_app_t ten_app_t;
 
+typedef void (*ten_addon_register_func_t)(void *register_ctx);
+
 TEN_RUNTIME_PRIVATE_API bool ten_addon_load_all_from_app_base_dir(
     ten_app_t *app, ten_list_t *extension_dependencies,
     ten_list_t *extension_group_dependencies, ten_list_t *protocol_dependencies,

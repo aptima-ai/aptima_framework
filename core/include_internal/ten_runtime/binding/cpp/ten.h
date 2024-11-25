@@ -28,7 +28,6 @@
 // 'extension.h' must be in front of 'addon.h'
 #include "ten_runtime/binding/cpp/internal/extension.h" // IWYU pragma: export
 // clang-format on
-
 #include "include_internal/ten_runtime/binding/cpp/internal/extension_impl.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/internal/ten_env_impl.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/internal/ten_env_internal_accessor.h"  // IWYU pragma: export
@@ -36,5 +35,4 @@
 #include "ten_runtime/addon/extension_group/extension_group.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/addon.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/app.h"    // IWYU pragma: export
-#include "ten_runtime/binding/cpp/internal/extension_group.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/ten_env_impl.h"  // IWYU pragma: export

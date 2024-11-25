@@ -115,13 +115,6 @@ static PyObject *ten_py_decorator_register_addon_as_extension_call(
       ten_addon_register_extension);
 }
 
-static PyObject *ten_py_decorator_register_addon_as_extension_group_call(
-    PyObject *self, PyObject *args, TEN_UNUSED PyObject *kwds) {
-  return ten_py_decorator_register_addon_call(
-      (ten_py_decorator_register_addon_t *)self, args,
-      ten_addon_register_extension_group);
-}
-
 static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type(
     void) {
   static PyMethodDef decorator_methods[] = {
@@ -141,26 +134,6 @@ static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type(
       .tp_call = ten_py_decorator_register_addon_as_extension_call,
       .tp_getset = NULL,
       .tp_methods = decorator_methods,
-  };
-
-  return &py_type;
-}
-
-static PyTypeObject *ten_py_decorator_register_addon_as_extension_group_py_type(
-    void) {
-  static PyTypeObject py_type = {
-      PyVarObject_HEAD_INIT(NULL, 0).tp_name =
-          "libten_runtime_python.register_addon_as_extension_group",
-      .tp_doc = PyDoc_STR("register_addon_as_extension_group"),
-      .tp_basicsize = 0,
-      .tp_itemsize = 0,
-      .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-      .tp_new = ten_py_decorator_register_addon_create,
-      .tp_init = NULL,
-      .tp_dealloc = ten_py_decorator_register_addon_destroy,
-      .tp_call = ten_py_decorator_register_addon_as_extension_group_call,
-      .tp_getset = NULL,
-      .tp_methods = NULL,
   };
 
   return &py_type;
@@ -190,11 +163,4 @@ bool ten_py_decorator_register_addon_as_extension_init_for_module(
   return ten_py_decorator_register_addon_module_init(
       module, ten_py_decorator_register_addon_as_extension_py_type(),
       "_register_addon_as_extension");
-}
-
-bool ten_py_decorator_register_addon_as_extension_group_init_for_module(
-    PyObject *module) {
-  return ten_py_decorator_register_addon_module_init(
-      module, ten_py_decorator_register_addon_as_extension_group_py_type(),
-      "_register_addon_as_extension_group");
 }

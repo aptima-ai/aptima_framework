@@ -28,18 +28,19 @@ static ten_addon_store_t g_protocol_store = {
     TEN_LIST_INIT_VAL,
 };
 
-ten_addon_store_t *ten_protocol_get_store(void) { return &g_protocol_store; }
+ten_addon_store_t *ten_protocol_get_global_store(void) {
+  ten_addon_store_init(&g_protocol_store);
+  return &g_protocol_store;
+}
 
 ten_addon_t *ten_addon_unregister_protocol(const char *name) {
   TEN_ASSERT(name, "Should not happen.");
 
-  return ten_addon_unregister(ten_protocol_get_store(), name);
+  return ten_addon_unregister(ten_protocol_get_global_store(), name);
 }
 
 void ten_addon_register_protocol(const char *name, const char *base_dir,
                                  ten_addon_t *addon) {
-  ten_addon_store_init(ten_protocol_get_store());
-
   ten_addon_host_t *addon_host =
       (ten_addon_host_t *)TEN_MALLOC(sizeof(ten_addon_host_t));
   TEN_ASSERT(addon_host, "Failed to allocate memory.");
@@ -47,8 +48,8 @@ void ten_addon_register_protocol(const char *name, const char *base_dir,
   addon_host->type = TEN_ADDON_TYPE_PROTOCOL;
   ten_addon_host_init(addon_host);
 
-  ten_addon_register(ten_protocol_get_store(), addon_host, name, base_dir,
-                     addon);
+  ten_addon_register(ten_protocol_get_global_store(), addon_host, name,
+                     base_dir, addon);
 }
 
 static bool ten_addon_protocol_match_protocol(ten_addon_host_t *self,
@@ -87,7 +88,7 @@ ten_addon_host_t *ten_addon_protocol_find(const char *protocol) {
 
   ten_addon_host_t *result = NULL;
 
-  ten_addon_store_t *store = ten_protocol_get_store();
+  ten_addon_store_t *store = ten_protocol_get_global_store();
   TEN_ASSERT(store, "Should not happen.");
 
   ten_mutex_lock(store->lock);

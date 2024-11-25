@@ -87,10 +87,19 @@ static ten_env_t *ten_create_with_attach_to(TEN_ENV_ATTACH_TO attach_to_type,
   TEN_ASSERT(attach_to_type != TEN_ENV_ATTACH_TO_INVALID, "Should not happen.");
 
   ten_env_t *self = ten_env_create();
+  TEN_ASSERT(self, "Should not happen.");
 
   ten_env_set_attach_to(self, attach_to_type, attach_to);
 
   return self;
+}
+
+ten_env_t *ten_env_create_for_addon(ten_addon_host_t *addon_host) {
+  TEN_ASSERT(addon_host, "Invalid argument.");
+  TEN_ASSERT(ten_addon_host_check_integrity(addon_host),
+             "Invalid use of addon_host %p.", addon_host);
+
+  return ten_create_with_attach_to(TEN_ENV_ATTACH_TO_ADDON, addon_host);
 }
 
 ten_env_t *ten_env_create_for_extension(ten_extension_t *extension) {

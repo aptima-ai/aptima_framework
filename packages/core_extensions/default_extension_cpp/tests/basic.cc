@@ -4,6 +4,7 @@
 // See the LICENSE file for more information.
 //
 #include "gtest/gtest.h"
+#include "ten_runtime/addon/addon.h"
 #include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/lib/path.h"
 #include "ten_utils/lib/string.h"

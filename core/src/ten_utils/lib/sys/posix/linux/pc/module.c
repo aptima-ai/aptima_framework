@@ -46,3 +46,31 @@ int ten_module_close(void *handle) {
 
   return result;
 }
+
+void *ten_module_get_symbol(void *handle, const char *symbol_name) {
+  if (!handle) {
+    TEN_LOGE("Invalid argument: handle is null.");
+    return NULL;
+  }
+
+  if (!symbol_name) {
+    TEN_LOGE("Invalid argument: symbol name is null or corrupted.");
+    return NULL;
+  }
+
+  // Clear previous errors.
+  dlerror();
+
+  void *symbol = dlsym(handle, symbol_name);
+
+  const char *error = dlerror();
+  if (error != NULL) {
+    // Enable the code below if debugging is needed.
+#if 0
+    TEN_LOGD("Failed to find symbol %s: %s", symbol_name, error);
+#endif
+    return NULL;
+  }
+
+  return symbol;
+}

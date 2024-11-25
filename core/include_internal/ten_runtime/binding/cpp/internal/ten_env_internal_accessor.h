@@ -32,6 +32,8 @@ class ten_env_internal_accessor_t {
     return ten_env->init_manifest_from_json(json_str, nullptr);
   }
 
+  ::ten_env_t *get_c_ten_env() const { return ten_env->get_c_ten_env(); }
+
  private:
   ten_env_t *ten_env;
 };

@@ -12,7 +12,7 @@
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/cpp/internal/common.h"
-#include "ten_runtime/binding/cpp/internal/extension_group.h"
+#include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_runtime/ten.h"
 #include "ten_utils/macro/check.h"
 

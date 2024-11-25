@@ -16,10 +16,10 @@
 #include <sys/types.h>
 
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/path.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 #define FILE_COPY_BUF_SIZE 4096
 
@@ -42,6 +42,31 @@ int ten_file_remove(const char *filename) {
   }
 
   return 0;
+}
+
+static char *ten_file_read_from_open_file(FILE *fp) {
+  TEN_ASSERT(fp, "Invalid argument.");
+
+  if (fseek(fp, 0, SEEK_END) == -1) {
+    TEN_LOGE("Failed to fseek to the end of the file.");
+    return NULL;
+  }
+
+  unsigned long length = ftell(fp);
+  if (length <= 0) {
+    TEN_LOGW("File size is 0.");
+    return NULL;
+  }
+
+  char *buf = (char *)TEN_MALLOC(sizeof(char) * (length + 1));
+  TEN_ASSERT(buf, "Failed to allocate memory.");
+
+  rewind(fp);
+
+  length = fread(buf, 1, length, fp);
+  buf[length] = '\0';
+
+  return buf;
 }
 
 char *ten_file_read(const char *filename) {
@@ -68,31 +93,6 @@ char *ten_file_read(const char *filename) {
   if (fclose(file)) {
     TEN_LOGE("Failed to fclose %s", filename);
   }
-
-  return buf;
-}
-
-char *ten_file_read_from_open_file(FILE *fp) {
-  TEN_ASSERT(fp, "Invalid argument.");
-
-  if (fseek(fp, 0, SEEK_END) == -1) {
-    TEN_LOGE("Failed to fseek to the end of the file.");
-    return NULL;
-  }
-
-  unsigned long length = ftell(fp);
-  if (length <= 0) {
-    TEN_LOGW("File size is 0.");
-    return NULL;
-  }
-
-  char *buf = (char *)TEN_MALLOC(sizeof(char) * (length + 1));
-  TEN_ASSERT(buf, "Failed to allocate memory.");
-
-  rewind(fp);
-
-  length = fread(buf, 1, length, fp);
-  buf[length] = '\0';
 
   return buf;
 }

@@ -22,8 +22,6 @@ TEN_UTILS_API int ten_file_size(const char *filename);
 
 TEN_UTILS_API char *ten_file_read(const char *filename);
 
-TEN_UTILS_API char *ten_file_read_from_open_file(FILE *fp);
-
 TEN_UTILS_API char *ten_symlink_file_read(const char *path);
 
 TEN_UTILS_API int ten_file_write(const char *filename, ten_buf_t buf);

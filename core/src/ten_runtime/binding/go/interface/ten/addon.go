@@ -73,24 +73,6 @@ func NewDefaultExtensionAddon(constructor func(name string) Extension) Addon {
 	}
 }
 
-// NewDefaultExtensionGroupAddon creates a new default extension group addon.
-func NewDefaultExtensionGroupAddon(
-	constructor func(name string) ExtensionGroup,
-) Addon {
-	return &DefaultAddon{
-		onCreateInstanceImpl: func(tenEnv TenEnv, name string, context uintptr) {
-			extGroup := constructor(name)
-			if extGroup == nil {
-				// Should not happen.
-				panic("The extension group constructor returns nil.")
-			}
-
-			extGroupWrapper := WrapExtensionGroup(extGroup, name)
-			tenEnv.OnCreateInstanceDone(extGroupWrapper, context)
-		},
-	}
-}
-
 // RegisterAddonAsExtension registers the addon as an extension.
 func RegisterAddonAsExtension(addonName string, instance Addon) error {
 	if len(addonName) == 0 {

@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/binding/go/addon/addon.h"
 #include "include_internal/ten_runtime/binding/go/extension/extension.h"
-#include "include_internal/ten_runtime/binding/go/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/extension/extension.h"
@@ -203,22 +202,6 @@ static void ten_go_addon_destroy_instance_helper(ten_addon_t *addon,
                  "Invalid argument.");
 
       instance_handle = ten_go_extension_go_handle(extension_bridge);
-      break;
-    }
-
-    case TEN_ADDON_TYPE_EXTENSION_GROUP: {
-      ten_extension_group_t *extension_group =
-          (ten_extension_group_t *)instance;
-      ten_go_extension_group_t *extension_group_bridge =
-          ten_binding_handle_get_me_in_target_lang(
-              (ten_binding_handle_t *)extension_group);
-      TEN_ASSERT(
-          extension_group_bridge &&
-              ten_go_extension_group_check_integrity(extension_group_bridge),
-          "Invalid argument.");
-
-      instance_handle =
-          ten_go_extension_group_go_handle(extension_group_bridge);
       break;
     }
 

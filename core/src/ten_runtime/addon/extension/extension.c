@@ -15,6 +15,7 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/backtrace/backtrace.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
@@ -24,7 +25,10 @@ static ten_addon_store_t g_extension_store = {
     TEN_LIST_INIT_VAL,
 };
 
-ten_addon_store_t *ten_extension_get_store(void) { return &g_extension_store; }
+ten_addon_store_t *ten_extension_get_global_store(void) {
+  ten_addon_store_init(&g_extension_store);
+  return &g_extension_store;
+}
 
 bool ten_addon_create_extension(ten_env_t *ten_env, const char *addon_name,
                                 const char *instance_name,
@@ -120,10 +124,8 @@ ten_addon_host_t *ten_addon_register_extension(const char *name,
     exit(EXIT_FAILURE);
   }
 
-  ten_addon_store_init(ten_extension_get_store());
-
   ten_addon_host_t *addon_host =
-      ten_addon_store_find(ten_extension_get_store(), name);
+      ten_addon_store_find(ten_extension_get_global_store(), name);
   if (addon_host) {
     return addon_host;
   }
@@ -131,14 +133,29 @@ ten_addon_host_t *ten_addon_register_extension(const char *name,
   addon_host = ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION);
   TEN_ASSERT(addon_host, "Should not happen.");
 
-  ten_addon_register(ten_extension_get_store(), addon_host, name, base_dir,
-                     addon);
+  ten_addon_register(ten_extension_get_global_store(), addon_host, name,
+                     base_dir, addon);
 
   return addon_host;
+}
+
+// TODO(Wei): Reconsider the `register` and `unregister` mechanisms of the
+// addon.
+void ten_addon_register_extension_v2(const char *name, const char *base_dir,
+                                     void *register_ctx, ten_addon_t *addon) {
+  if (!name || strlen(name) == 0) {
+    TEN_LOGE("The addon name is required.");
+    exit(EXIT_FAILURE);
+  }
+
+  ten_addon_host_t *addon_host = (ten_addon_host_t *)register_ctx;
+
+  ten_addon_register(ten_extension_get_global_store(), addon_host, name,
+                     base_dir, addon);
 }
 
 ten_addon_t *ten_addon_unregister_extension(const char *name) {
   TEN_ASSERT(name, "Should not happen.");
 
-  return ten_addon_unregister(ten_extension_get_store(), name);
+  return ten_addon_unregister(ten_extension_get_global_store(), name);
 }

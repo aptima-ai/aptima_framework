@@ -27,3 +27,6 @@ TEN_UTILS_API void *ten_module_load(const ten_string_t *name, int as_local);
  * @return 0 on success, or -1 on failure.
  */
 TEN_UTILS_API int ten_module_close(void *handle);
+
+TEN_UTILS_API void *ten_module_get_symbol(void *handle,
+                                          const char *symbol_name);

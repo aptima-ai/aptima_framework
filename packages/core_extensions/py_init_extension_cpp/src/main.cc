@@ -6,9 +6,14 @@
 #include <cstring>
 #include <string>
 
+#include "include_internal/ten_runtime/addon/extension/extension.h"
+#include "include_internal/ten_runtime/app/metadata.h"
+#include "include_internal/ten_runtime/binding/cpp/internal/ten_env_internal_accessor.h"
 #include "include_internal/ten_runtime/binding/python/common.h"
 #include "include_internal/ten_runtime/common/base_dir.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/metadata/manifest.h"
+#include "include_internal/ten_runtime/ten_env/metadata.h"
 #include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/container/list_str.h"
@@ -141,14 +146,10 @@ class py_init_addon_t : public ten::addon_t {
 
     ten_py_mem_free((void *)sys_path);
 
-    // Traverse the addon extensions directory and import module.
-    ten_string_t *addon_extensions_path = get_addon_extensions_path();
-
     start_debugpy_server_if_needed(ten_env);
 
-    load_all_python_modules(ten_env, addon_extensions_path);
-
-    ten_string_destroy(addon_extensions_path);
+    // Traverse `ten_packages/extension` directory and import module.
+    load_python_extensions_according_to_app_manifest_dependencies(ten_env);
 
     // The `app_base_dir` is no longer needed afterwards, so it is released.
     ten_string_destroy(app_base_dir);
@@ -253,6 +254,34 @@ class py_init_addon_t : public ten::addon_t {
     return result;
   }
 
+  void load_python_extensions_according_to_app_manifest_dependencies(
+      ten::ten_env_t &ten_env) {
+    ten_string_t *addon_extensions_path = get_addon_extensions_path();
+
+    // Note: The behavior below is not something a typical user-defined addon
+    // can perform. Through a private API, it accesses the C `ten_env_t`,
+    // enabling special operations that only TEN framework developers are
+    // allowed to execute.
+    ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
+    ten_env_t *c_ten_env = ten_env_internal_accessor.get_c_ten_env();
+    auto *c_app = static_cast<ten_app_t *>(
+        c_ten_env->attached_target.addon_host->user_data);
+    TEN_ASSERT(c_app, "Should not happen.");
+
+    ten_list_t extension_dependencies;
+    ten_list_init(&extension_dependencies);
+
+    ten_app_get_extension_dependencies_for_extension(c_app,
+                                                     &extension_dependencies);
+
+    load_all_python_modules(ten_env, addon_extensions_path,
+                            &extension_dependencies);
+
+    ten_list_clear(&extension_dependencies);
+
+    ten_string_destroy(addon_extensions_path);
+  }
+
   // Start the debugpy server according to the environment variable and wait for
   // the debugger to connect.
   static void start_debugpy_server_if_needed(ten::ten_env_t &ten_env) {
@@ -299,7 +328,8 @@ class py_init_addon_t : public ten::addon_t {
 
   // Load all python addons by import modules.
   static void load_all_python_modules(ten::ten_env_t &ten_env,
-                                      ten_string_t *addon_extensions_path) {
+                                      ten_string_t *addon_extensions_path,
+                                      ten_list_t *extension_dependencies) {
     if (addon_extensions_path == nullptr ||
         ten_string_is_empty(addon_extensions_path)) {
       TEN_ENV_LOG_ERROR(
@@ -334,11 +364,35 @@ class py_init_addon_t : public ten::addon_t {
 
       if (!(ten_string_is_equal_c_str(short_name, ".") ||
             ten_string_is_equal_c_str(short_name, ".."))) {
-        // The full module name is "ten_packages.extension.<short_name>"
-        ten_string_t *full_module_name = ten_string_create_formatted(
-            "ten_packages.extension.%s", ten_string_get_raw_str(short_name));
-        ten_py_import_module(ten_string_get_raw_str(full_module_name));
-        ten_string_destroy(full_module_name);
+        // Check if short_name is in extension_dependencies list.
+        bool should_load = false;
+        if (extension_dependencies != nullptr) {
+          // Iterate over extension_dependencies to check if short_name matches
+          // any.
+          ten_list_foreach (extension_dependencies, dep_iter) {
+            ten_string_t *dep_name = ten_str_listnode_get(dep_iter.node);
+            if (ten_string_is_equal(short_name, dep_name)) {
+              should_load = true;
+              break;
+            }
+          }
+        } else {
+          // If extension_dependencies is NULL, we load all extensions.
+          should_load = true;
+        }
+
+        if (should_load) {
+          // The full module name is "ten_packages.extension.<short_name>"
+          ten_string_t *full_module_name = ten_string_create_formatted(
+              "ten_packages.extension.%s", ten_string_get_raw_str(short_name));
+          ten_py_import_module(ten_string_get_raw_str(full_module_name));
+          ten_string_destroy(full_module_name);
+        } else {
+          TEN_ENV_LOG_INFO(ten_env, (std::string("Skipping python module '") +
+                                     ten_string_get_raw_str(short_name) +
+                                     "' as it's not in extension dependencies.")
+                                        .c_str());
+        }
       }
 
       ten_string_destroy(short_name);
@@ -368,10 +422,11 @@ class py_init_addon_t : public ten::addon_t {
 
 static ten::addon_t *g_py_init_default_extension_addon = nullptr;
 
-TEN_CONSTRUCTOR(____ctor_ten_declare_py_init_extension_addon____) {
+extern "C" void ____ten_addon_py_init_extension_cpp_register____(
+    void *register_ctx) {
   g_py_init_default_extension_addon = new py_init_addon_t();
-  ten_addon_register_extension(
-      "py_init_extension_cpp", nullptr,
+  ten_addon_register_extension_v2(
+      "py_init_extension_cpp", nullptr, register_ctx,
       g_py_init_default_extension_addon->get_c_addon());
 }
 

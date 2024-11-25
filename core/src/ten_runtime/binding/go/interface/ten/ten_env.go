@@ -115,15 +115,6 @@ func (p *tenEnv) attachToExtension(ext *extension) {
 	p.attachTo = unsafe.Pointer(ext)
 }
 
-func (p *tenEnv) attachToExtensionGroup(extGroup *extensionGroup) {
-	if p.attachToType != tenAttachToInvalid {
-		panic("The ten object can only be attached once.")
-	}
-
-	p.attachToType = tenAttachToExtensionGroup
-	p.attachTo = unsafe.Pointer(extGroup)
-}
-
 func (p *tenEnv) postSyncJob(payload job) any {
 	// To prevent deadlock, we refuse to post jobs to the pool. So it's
 	// recommended for developers to call async ten apis in goroutines other
@@ -364,9 +355,7 @@ func (p *tenEnv) OnDestroyExtensionsDone() error {
 func (p *tenEnv) OnCreateInstanceDone(instance any, context uintptr) error {
 	switch instance := instance.(type) {
 	case *extension:
-		C.ten_go_ten_env_on_create_instance_done(p.cPtr, C.bool(true), instance.cPtr, C.uintptr_t(context))
-	case *extensionGroup:
-		C.ten_go_ten_env_on_create_instance_done(p.cPtr, C.bool(false), instance.cPtr, C.uintptr_t(context))
+		C.ten_go_ten_env_on_create_instance_done(p.cPtr, instance.cPtr, C.uintptr_t(context))
 	default:
 		panic("instance must be extension or extension group.")
 	}

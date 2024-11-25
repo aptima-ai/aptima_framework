@@ -11,14 +11,12 @@
 #include "include_internal/ten_runtime/addon/extension/extension.h"
 #include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/addon/protocol/protocol.h"
-#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/base_dir.h"
 #include "include_internal/ten_runtime/common/base_dir.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
-#include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/binding/common.h"
@@ -116,6 +114,8 @@ void ten_addon_host_init(ten_addon_host_t *self) {
 
   self->manifest_info = NULL;
   self->property_info = NULL;
+
+  self->user_data = NULL;
 }
 
 void ten_addon_host_destroy(ten_addon_host_t *self) {
@@ -162,6 +162,20 @@ static void ten_addon_load_metadata(ten_addon_host_t *self, ten_env_t *ten_env,
   }
 }
 
+TEN_ADDON_TYPE ten_addon_type_from_string(const char *addon_type_str) {
+  TEN_ASSERT(addon_type_str, "Invalid argument.");
+
+  if (ten_c_string_is_equal(addon_type_str, TEN_STR_EXTENSION)) {
+    return TEN_ADDON_TYPE_EXTENSION;
+  } else if (ten_c_string_is_equal(addon_type_str, TEN_STR_EXTENSION_GROUP)) {
+    return TEN_ADDON_TYPE_EXTENSION_GROUP;
+  } else if (ten_c_string_is_equal(addon_type_str, TEN_STR_PROTOCOL)) {
+    return TEN_ADDON_TYPE_PROTOCOL;
+  } else {
+    return TEN_ADDON_TYPE_INVALID;
+  }
+}
+
 static const char *ten_addon_type_to_string(TEN_ADDON_TYPE type) {
   switch (type) {
     case TEN_ADDON_TYPE_EXTENSION:
@@ -189,14 +203,13 @@ void ten_addon_register(ten_addon_store_t *addon_store,
                         const char *base_dir, ten_addon_t *addon) {
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
              "Should not happen.");
-  TEN_ASSERT(!addon_host->ten_env, "Invalid argument.");
   TEN_ASSERT(name, "Should not happen.");
 
   addon_host->addon = addon;
   addon_host->store = addon_store;
-  addon_host->ten_env = ten_env_create();
-  ten_env_set_attach_to(addon_host->ten_env, TEN_ENV_ATTACH_TO_ADDON,
-                        addon_host);
+  if (!addon_host->ten_env) {
+    addon_host->ten_env = ten_env_create_for_addon(addon_host);
+  }
 
   ten_string_set_formatted(&addon_host->name, "%s", name);
 
@@ -308,13 +321,14 @@ ten_addon_host_t *ten_addon_host_find(const char *addon_name,
 
   switch (type) {
     case TEN_ADDON_TYPE_EXTENSION:
-      return ten_addon_store_find(ten_extension_get_store(), addon_name);
+      return ten_addon_store_find(ten_extension_get_global_store(), addon_name);
 
     case TEN_ADDON_TYPE_EXTENSION_GROUP:
-      return ten_addon_store_find(ten_extension_group_get_store(), addon_name);
+      return ten_addon_store_find(ten_extension_group_get_global_store(),
+                                  addon_name);
 
     case TEN_ADDON_TYPE_PROTOCOL:
-      return ten_addon_store_find(ten_protocol_get_store(), addon_name);
+      return ten_addon_store_find(ten_protocol_get_global_store(), addon_name);
 
     default:
       TEN_ASSERT(0, "Should not happen.");

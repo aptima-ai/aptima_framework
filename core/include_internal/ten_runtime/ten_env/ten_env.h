@@ -73,6 +73,9 @@ TEN_RUNTIME_PRIVATE_API ten_runloop_t *ten_env_get_attached_runloop(
 TEN_RUNTIME_PRIVATE_API ten_env_t *ten_env_create_for_extension_group(
     ten_extension_group_t *extension_group);
 
+TEN_RUNTIME_PRIVATE_API ten_env_t *ten_env_create_for_addon(
+    ten_addon_host_t *addon_host);
+
 TEN_RUNTIME_PRIVATE_API ten_env_t *ten_env_create_for_extension(
     ten_extension_t *extension);
 

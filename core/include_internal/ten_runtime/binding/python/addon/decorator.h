@@ -21,7 +21,3 @@ typedef struct ten_py_decorator_register_addon_t {
 
 TEN_RUNTIME_PRIVATE_API bool
 ten_py_decorator_register_addon_as_extension_init_for_module(PyObject *module);
-
-TEN_RUNTIME_PRIVATE_API bool
-ten_py_decorator_register_addon_as_extension_group_init_for_module(
-    PyObject *module);

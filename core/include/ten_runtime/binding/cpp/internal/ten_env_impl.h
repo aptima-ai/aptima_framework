@@ -10,7 +10,6 @@
 
 #include "ten_runtime/binding/cpp/internal/addon.h"
 #include "ten_runtime/binding/cpp/internal/extension.h"
-#include "ten_runtime/binding/cpp/internal/extension_group.h"
 #include "ten_runtime/binding/cpp/internal/ten_env.h"
 #include "ten_utils/lang/cpp/lib/error.h"
 
@@ -29,10 +28,6 @@ inline bool ten_env_t::on_create_instance_done(void *instance, void *context,
   switch (cpp_context->task) {
     case ADDON_TASK_CREATE_EXTENSION:
       c_instance = static_cast<extension_t *>(instance)->get_c_extension();
-      break;
-    case ADDON_TASK_CREATE_EXTENSION_GROUP:
-      c_instance =
-          static_cast<extension_group_t *>(instance)->get_c_extension_group();
       break;
     default:
       TEN_ASSERT(0, "Should not happen.");

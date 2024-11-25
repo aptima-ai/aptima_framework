@@ -32,6 +32,5 @@
 #include "ten_runtime/addon/extension_group/extension_group.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/addon.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/app.h"    // IWYU pragma: export
-#include "ten_runtime/binding/cpp/internal/extension_group.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/extension_impl.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/internal/ten_env_impl.h"  // IWYU pragma: export

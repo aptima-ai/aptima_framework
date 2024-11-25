@@ -20,7 +20,8 @@ static ten_addon_store_t g_extension_group_store = {
     TEN_LIST_INIT_VAL,
 };
 
-ten_addon_store_t *ten_extension_group_get_store(void) {
+ten_addon_store_t *ten_extension_group_get_global_store(void) {
+  ten_addon_store_init(&g_extension_group_store);
   return &g_extension_group_store;
 }
 
@@ -32,13 +33,11 @@ ten_addon_host_t *ten_addon_register_extension_group(const char *name,
     exit(EXIT_FAILURE);
   }
 
-  ten_addon_store_init(ten_extension_group_get_store());
-
   ten_addon_host_t *addon_host =
       ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION_GROUP);
   TEN_ASSERT(addon_host, "Should not happen.");
 
-  ten_addon_register(ten_extension_group_get_store(), addon_host, name,
+  ten_addon_register(ten_extension_group_get_global_store(), addon_host, name,
                      base_dir, addon);
 
   return addon_host;
@@ -47,7 +46,7 @@ ten_addon_host_t *ten_addon_register_extension_group(const char *name,
 ten_addon_t *ten_addon_unregister_extension_group(const char *name) {
   TEN_ASSERT(name, "Should not happen.");
 
-  return ten_addon_unregister(ten_extension_group_get_store(), name);
+  return ten_addon_unregister(ten_extension_group_get_global_store(), name);
 }
 
 bool ten_addon_create_extension_group(

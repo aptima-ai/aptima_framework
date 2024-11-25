@@ -10,9 +10,11 @@
 
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/predefined_graph.h"
+#include "include_internal/ten_runtime/app/ten_property.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/common/log.h"
 #include "include_internal/ten_runtime/extension/extension_info/extension_info.h"
+#include "include_internal/ten_runtime/metadata/manifest.h"
 #include "include_internal/ten_utils/log/log.h"
 #include "include_internal/ten_utils/log/output.h"
 #include "ten_runtime/app/app.h"
@@ -201,4 +203,16 @@ void ten_app_handle_metadata(ten_app_t *self) {
 
   // Load custom TEN app metadata.
   ten_metadata_load(ten_app_on_configure, self->ten_env);
+}
+
+// This function is quite special; it is specifically designed for extensions to
+// fetch the read-only app manifest content.
+void ten_app_get_extension_dependencies_for_extension(
+    ten_app_t *self, ten_list_t *extension_dependencies) {
+  TEN_ASSERT(self, "Invalid argument.");
+  TEN_ASSERT(ten_app_check_integrity(self, false), "Invalid use of app %p.",
+             self);
+
+  ten_manifest_get_dependencies_type_and_name(
+      &self->manifest, extension_dependencies, NULL, NULL);
 }

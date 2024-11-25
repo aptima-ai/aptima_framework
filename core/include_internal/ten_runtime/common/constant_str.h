@@ -161,3 +161,8 @@
 
 #define TEN_STR_DEFAULT_EXTENSION_GROUP "default_extension_group"
 #define TEN_STR_TEN_TEST_EXTENSION "ten:test_extension"
+
+#define TEN_STR_ADDON_REGISTER_FUNCTION_PREFIX "____ten_addon_"
+#define TEN_STR_ADDON_REGISTER_FUNCTION_POSTFIX "_register____"
+
+#define TEN_STR_MANIFEST_JSON "manifest.json"
