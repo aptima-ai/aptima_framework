@@ -9,7 +9,7 @@
 
 #include <functional>
 
-#include "ten_runtime/binding/cpp/internal/test/env_tester.h"
+#include "ten_runtime/binding/cpp/detail/test/env_tester.h"
 #include "ten_runtime/test/env_tester_proxy.h"
 
 using ten_env_tester_t = struct ten_env_tester_t;

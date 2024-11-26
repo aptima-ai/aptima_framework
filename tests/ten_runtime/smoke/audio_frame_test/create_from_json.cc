@@ -10,7 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_runtime/binding/cpp/internal/msg/audio_frame.h"
+#include "ten_runtime/binding/cpp/detail/msg/audio_frame.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"

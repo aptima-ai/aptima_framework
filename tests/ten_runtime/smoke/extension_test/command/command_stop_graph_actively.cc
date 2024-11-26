@@ -9,7 +9,7 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd/stop_graph.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/stop_graph.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"

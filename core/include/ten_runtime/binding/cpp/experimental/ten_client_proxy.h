@@ -6,8 +6,8 @@
 //
 #pragma once
 
-#include "ten_runtime/binding/cpp/internal/test/env_tester_proxy.h"
-#include "ten_runtime/binding/cpp/internal/test/extension_tester.h"
+#include "ten_runtime/binding/cpp/detail/test/env_tester_proxy.h"
+#include "ten_runtime/binding/cpp/detail/test/extension_tester.h"
 #include "ten_utils/log/log.h"
 
 namespace ten {

@@ -33,6 +33,9 @@ def test_tman_dependency_resolve():
         cwd=app_dir,
     )
 
+    print(returncode)
+    print(output_text)
+
     assert returncode != 0
     # As the local package 'heiheihei_1' is not compatible with linux os, and
     # the package cannot be found in the registry, so no candidates can be found

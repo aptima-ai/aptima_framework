@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
 #include "ten_runtime/msg/cmd/stop_graph/cmd.h"
 #include "ten_utils/lib/smart_ptr.h"
 

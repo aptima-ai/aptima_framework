@@ -12,9 +12,9 @@
 #include <memory>
 #include <utility>
 
-#include "ten_runtime/binding/cpp/internal/extension.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd/close_app.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
+#include "ten_runtime/binding/cpp/detail/extension.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/close_app.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
 #include "ten_runtime/msg/msg.h"
 
 namespace ten {

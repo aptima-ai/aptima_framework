@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timeout/cmd.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
 
 namespace ten {
 

@@ -24,18 +24,13 @@ class test_property_access_app_store_async_2 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    auto cmd_shared =
-        std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
-    ten_env.get_property_int32_async(
-        "app:aaa", [cmd_shared](ten::ten_env_t &ten_env, int32_t result,
-                                TEN_UNUSED ten::error_t *err) {
-          if (result == 3) {
-            auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
-            cmd_result->set_property("detail", "success");
-            ten_env.return_result(std::move(cmd_result),
-                                  std::move(*cmd_shared));
-          }
-        });
+    auto result = ten_env.get_property_int32("app:aaa");
+
+    if (result == 3) {
+      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      cmd_result->set_property("detail", "success");
+      ten_env.return_result(std::move(cmd_result), std::move(cmd));
+    }
   }
 };
 

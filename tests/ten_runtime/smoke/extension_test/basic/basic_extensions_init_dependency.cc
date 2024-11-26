@@ -95,25 +95,20 @@ class test_extension_2 : public ten::extension_t {
   std::thread fetch_property_thread_;
 
   void get_property(ten::ten_env_t &ten_env) {
-    ten_env.get_property_string_async(
-        EXTENSION_PROP_NAME_GREETING,
-        [this](ten::ten_env_t &ten_env, const std::string &result,
-               TEN_UNUSED ten::error_t *err) {
-          greeting_ = result;
+    greeting_ = ten_env.get_property_string(EXTENSION_PROP_NAME_GREETING);
 
-          auto cmd = ten::cmd_t::create("get_name");
-          ten_env.send_cmd(
-              std::move(cmd),
-              [this](ten::ten_env_t &ten_env,
-                     std::unique_ptr<ten::cmd_result_t> cmd_result) {
-                auto name = cmd_result->get_property_string("detail");
-                greeting_ += name;
+    auto cmd = ten::cmd_t::create("get_name");
+    ten_env.send_cmd(
+        std::move(cmd),
+        [this](ten::ten_env_t &ten_env,
+               std::unique_ptr<ten::cmd_result_t> cmd_result) {
+          auto name = cmd_result->get_property_string("detail");
+          greeting_ += name;
 
-                ten_env.on_init_done();
-                return true;
-              },
-              nullptr);
-        });
+          ten_env.on_init_done();
+          return true;
+        },
+        nullptr);
   }
 };
 

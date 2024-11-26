@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
 
 namespace ten {

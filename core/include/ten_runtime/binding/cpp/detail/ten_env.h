@@ -10,11 +10,11 @@
 #include <memory>
 
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/binding/cpp/internal/msg/audio_frame.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd/cmd.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd_result.h"
-#include "ten_runtime/binding/cpp/internal/msg/data.h"
-#include "ten_runtime/binding/cpp/internal/msg/video_frame.h"
+#include "ten_runtime/binding/cpp/detail/msg/audio_frame.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd_result.h"
+#include "ten_runtime/binding/cpp/detail/msg/data.h"
+#include "ten_runtime/binding/cpp/detail/msg/video_frame.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten.h"
@@ -48,12 +48,6 @@ class ten_env_internal_accessor_t;
 
 using result_handler_func_t =
     std::function<void(ten_env_t &, std::unique_ptr<cmd_result_t>)>;
-
-using set_property_async_cb_t =
-    std::function<void(ten_env_t &, bool, error_t *err)>;
-
-using get_property_async_cb_t =
-    std::function<void(ten_env_t &, ten_value_t *, error_t *err)>;
 
 class ten_env_t {
  public:
@@ -407,42 +401,6 @@ class ten_env_t {
         c_value, err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool get_property_int32_async(
-      const char *path,
-      std::function<void(ten_env_t &, int32_t, error_t *err)> &&cb,
-      error_t *err = nullptr) {
-    // Initialized lambda captures are a C++14 extension, and we use the
-    // following trick to achieve the same effect.
-    auto cb_copy = std::move(cb);
-    return get_property_async_impl(
-        path,
-        [cb_copy](ten_env_t &ten_env, ten_value_t *value, error_t *err) {
-          cb_copy(ten_env,
-                  ten_value_get_int32(
-                      value, err != nullptr ? err->get_internal_representation()
-                                            : nullptr),
-                  err);
-          return;
-        },
-        err);
-  }
-
-  bool get_property_string_async(
-      const char *path,
-      std::function<void(ten_env_t &, const std::string &, error_t *err)> &&cb,
-      error_t *err = nullptr) {
-    // Initialized lambda captures are a C++14 extension, and we use the
-    // following trick to achieve the same effect.
-    auto cb_copy = std::move(cb);
-    return get_property_async_impl(
-        path,
-        [cb_copy](ten_env_t &ten_env, ten_value_t *value, error_t *err) {
-          cb_copy(ten_env, ten_value_peek_raw_str(value), err);
-          return;
-        },
-        err);
-  }
-
   bool set_property(const char *path, int8_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int8(value), err);
   }
@@ -508,77 +466,6 @@ class ten_env_t {
     ten_buf_t buf =
         TEN_BUF_STATIC_INIT_WITH_DATA_OWNED(value.data(), value.size());
     return set_property_impl(path, ten_value_create_buf_with_move(buf), err);
-  }
-
-  bool set_property_async(const char *path, int8_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_int8(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, int16_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_int16(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, int32_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_int32(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, int64_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_int64(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, uint8_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_uint8(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, uint16_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_uint16(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, uint32_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_uint32(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, uint64_t value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_uint64(value),
-                                   std::move(cb), err);
-  }
-
-  bool set_property_async(const char *path, const char *value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_string(value),
-                                   std::move(cb), err);
-  }
-
-  // Convenient overloaded function for string type.
-  bool set_property_async(const char *path, const std::string &value,
-                          set_property_async_cb_t &&cb,
-                          error_t *err = nullptr) {
-    return set_property_async_impl(path, ten_value_create_string(value.c_str()),
-                                   std::move(cb), err);
   }
 
   bool is_cmd_connected(const char *cmd_name, error_t *err = nullptr) {
@@ -788,43 +675,6 @@ class ten_env_t {
     return rc;
   }
 
-  /**
-   * @note Note the move semantics of @a value. The @a value should not be
-   * used after calling this function.
-   */
-  bool set_property_async_impl(const char *path, ten_value_t *value,
-                               set_property_async_cb_t &&cb, error_t *err) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-
-    auto *cb_ptr = new set_property_async_cb_t(cb);
-
-    bool rc = ten_env_set_property_async(
-        c_ten_env, path, value, proxy_set_property_callback, cb_ptr,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-
-    if (!rc) {
-      delete cb_ptr;
-    }
-    return rc;
-  }
-
-  bool get_property_async_impl(const char *path, get_property_async_cb_t &&cb,
-                               error_t *err = nullptr) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-
-    auto *cb_ptr = new get_property_async_cb_t(cb);
-
-    bool rc = ten_env_peek_property_async(
-        c_ten_env, path, proxy_get_property_async_from_peek_cb, cb_ptr,
-        err != nullptr ? err->get_internal_representation() : nullptr);
-
-    if (!rc) {
-      delete cb_ptr;
-    }
-
-    return rc;
-  }
-
   static void proxy_handle_result(TEN_UNUSED ten_extension_t *extension,
                                   ::ten_env_t *ten_env,
                                   ten_shared_ptr_t *c_cmd_result,
@@ -858,44 +708,6 @@ class ten_env_t {
       // handler should not be cleared.
       delete result_handler;
     }
-  }
-
-  static void proxy_set_property_callback(::ten_env_t *ten_env, bool res,
-                                          void *cb_data, ten_error_t *err) {
-    auto *callback = static_cast<set_property_async_cb_t *>(cb_data);
-    auto *cpp_ten_env =
-        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
-
-    error_t *cpp_err = nullptr;
-    if (err != nullptr) {
-      cpp_err = new error_t(err, false);
-    }
-
-    (*callback)(*cpp_ten_env, res, cpp_err);
-
-    delete cpp_err;
-    delete callback;
-  }
-
-  static void proxy_get_property_async_from_peek_cb(::ten_env_t *ten_env,
-                                                    ten_value_t *res,
-                                                    void *cb_data,
-                                                    ten_error_t *err) {
-    auto *callback = static_cast<get_property_async_cb_t *>(cb_data);
-    auto *cpp_ten_env =
-        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
-
-    error_t *cpp_err = nullptr;
-    if (err != nullptr) {
-      cpp_err = new error_t(err, false);
-    }
-
-    (*callback)(*cpp_ten_env, res, cpp_err);
-
-    delete cpp_err;
-    delete callback;
   }
 };
 

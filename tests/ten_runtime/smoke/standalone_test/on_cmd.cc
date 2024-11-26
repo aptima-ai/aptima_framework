@@ -6,7 +6,7 @@
 //
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_runtime/binding/cpp/internal/extension.h"
+#include "ten_runtime/binding/cpp/detail/extension.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"

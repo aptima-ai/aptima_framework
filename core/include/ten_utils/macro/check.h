@@ -40,36 +40,36 @@
 
 #ifndef NDEBUG
 
-#define TEN_ASSERT(expr, fmt, ...)                                            \
-  do {                                                                        \
-    /* NOLINTNEXTLINE */                                                      \
-    if (!(expr)) {                                                            \
-      /* NOLINTNEXTLINE */                                                    \
-      char err_msg[ASSERT_ERR_MSG_MAX_LENGTH];                                \
-      (void)snprintf(err_msg, ASSERT_ERR_MSG_MAX_LENGTH, fmt, ##__VA_ARGS__); \
-      (void)fprintf(stderr, "%s\n", err_msg);                                 \
-      ten_backtrace_dump_global(0);                                           \
-      /* NOLINTNEXTLINE */                                                    \
-      assert(0);                                                              \
-    }                                                                         \
+#define TEN_ASSERT(expr, fmt, ...)                                          \
+  do {                                                                      \
+    /* NOLINTNEXTLINE */                                                    \
+    if (!(expr)) {                                                          \
+      /* NOLINTNEXTLINE */                                                  \
+      char ____err_msg[ASSERT_ERR_MSG_MAX_LENGTH];                          \
+      (void)snprintf(____err_msg, sizeof(____err_msg), fmt, ##__VA_ARGS__); \
+      (void)fprintf(stderr, "%s\n", ____err_msg);                           \
+      ten_backtrace_dump_global(0);                                         \
+      /* NOLINTNEXTLINE */                                                  \
+      assert(0);                                                            \
+    }                                                                       \
   } while (0)
 
 #else  // NDEBUG
 
 // Enable minimal protection if the optimization is enabled.
 
-#define TEN_ASSERT(expr, fmt, ...)                                            \
-  do {                                                                        \
-    /* NOLINTNEXTLINE */                                                      \
-    if (!(expr)) {                                                            \
-      /* NOLINTNEXTLINE */                                                    \
-      char err_msg[ASSERT_ERR_MSG_MAX_LENGTH];                                \
-      (void)snprintf(err_msg, ASSERT_ERR_MSG_MAX_LENGTH, fmt, ##__VA_ARGS__); \
-      (void)fprintf(stderr, "%s\n", err_msg);                                 \
-      ten_backtrace_dump_global(0);                                           \
-      /* NOLINTNEXTLINE */                                                    \
-      abort();                                                                \
-    }                                                                         \
+#define TEN_ASSERT(expr, fmt, ...)                                          \
+  do {                                                                      \
+    /* NOLINTNEXTLINE */                                                    \
+    if (!(expr)) {                                                          \
+      /* NOLINTNEXTLINE */                                                  \
+      char ____err_msg[ASSERT_ERR_MSG_MAX_LENGTH];                          \
+      (void)snprintf(____err_msg, sizeof(____err_msg), fmt, ##__VA_ARGS__); \
+      (void)fprintf(stderr, "%s\n", ____err_msg);                           \
+      ten_backtrace_dump_global(0);                                         \
+      /* NOLINTNEXTLINE */                                                  \
+      abort();                                                              \
+    }                                                                       \
   } while (0)
 
 #endif  // NDEBUG

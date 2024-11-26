@@ -8,9 +8,9 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "ten_runtime/binding/cpp/internal/msg/cmd/close_app.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
-#include "ten_runtime/binding/cpp/internal/ten_env.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/close_app.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
+#include "ten_runtime/binding/cpp/detail/ten_env.h"
 #include "ten_runtime/binding/cpp/ten.h"
 
 bool started = false;

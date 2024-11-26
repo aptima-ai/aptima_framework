@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <memory>
 
-#include "ten_runtime/binding/cpp/internal/msg/msg.h"
+#include "ten_runtime/binding/cpp/detail/msg/msg.h"
 #include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_utils/lib/smart_ptr.h"
 

@@ -12,7 +12,7 @@
 #include <cstring>
 #include <memory>
 
-#include "ten_runtime/binding/cpp/internal/msg/msg.h"
+#include "ten_runtime/binding/cpp/detail/msg/msg.h"
 #include "ten_runtime/msg/data/data.h"
 #include "ten_utils/lang/cpp/lib/buf.h"
 #include "ten_utils/lib/smart_ptr.h"

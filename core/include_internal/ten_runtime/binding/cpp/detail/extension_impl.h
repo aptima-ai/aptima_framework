@@ -9,9 +9,13 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <memory>
-#include <string>
-#include <utility>
+
+#include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timeout.h"
+#include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timer.h"
+#include "ten_runtime/binding/cpp/detail/extension.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/close_app.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/stop_graph.h"
 
 namespace ten {
 

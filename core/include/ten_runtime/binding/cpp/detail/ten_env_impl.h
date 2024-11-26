@@ -8,9 +8,9 @@
 
 #include <vector>
 
-#include "ten_runtime/binding/cpp/internal/addon.h"
-#include "ten_runtime/binding/cpp/internal/extension.h"
-#include "ten_runtime/binding/cpp/internal/ten_env.h"
+#include "ten_runtime/binding/cpp/detail/addon.h"
+#include "ten_runtime/binding/cpp/detail/extension.h"
+#include "ten_runtime/binding/cpp/detail/ten_env.h"
 #include "ten_utils/lang/cpp/lib/error.h"
 
 namespace ten {

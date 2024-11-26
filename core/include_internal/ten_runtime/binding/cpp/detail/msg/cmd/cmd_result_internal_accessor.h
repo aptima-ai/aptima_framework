@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "ten_runtime/binding/cpp/internal/msg/cmd_result.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd_result.h"
 
 namespace ten {
 

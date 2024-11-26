@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "ten_runtime/binding/cpp/internal/msg/msg.h"
+#include "ten_runtime/binding/cpp/detail/msg/msg.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lang/cpp/lib/value.h"

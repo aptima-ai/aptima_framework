@@ -192,7 +192,14 @@ void ten_log_output_to_file_cb(ten_string_t *msg, void *user_data) {
   // TODO(Wei): write() is atomic for buffers less than or equal to PIPE_BUF,
   // therefore we need to have some locking mechanism here to prevent log
   // interleaved.
-  write(fd, ten_string_get_raw_str(msg), ten_string_len(msg));
+  ssize_t bytes_written =
+      write(fd, ten_string_get_raw_str(msg), ten_string_len(msg));
+  if (bytes_written == -1) {
+    perror("write failed");
+  } else if ((size_t)bytes_written < ten_string_len(msg)) {
+    (void)fprintf(stderr, "Partial write: only %zd of %zu bytes written\n",
+                  bytes_written, ten_string_len(msg));
+  }
 #endif
 }
 
@@ -229,7 +236,14 @@ void ten_log_output_to_stderr_cb(ten_string_t *msg, void *user_data) {
   // TODO(Wei): write() is atomic for buffers less than or equal to PIPE_BUF,
   // therefore we need to have some locking mechanism here to prevent log
   // interleaved.
-  write(STDERR_FILENO, ten_string_get_raw_str(msg), ten_string_len(msg));
+  ssize_t bytes_written =
+      write(STDERR_FILENO, ten_string_get_raw_str(msg), ten_string_len(msg));
+  if (bytes_written == -1) {
+    perror("write failed");
+  } else if ((size_t)bytes_written < ten_string_len(msg)) {
+    (void)fprintf(stderr, "Partial write: only %zd of %zu bytes written\n",
+                  bytes_written, ten_string_len(msg));
+  }
 #endif
 }
 

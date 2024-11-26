@@ -12,8 +12,8 @@
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/binding/cpp/internal/common.h"
-#include "ten_runtime/binding/cpp/internal/ten_env.h"
+#include "ten_runtime/binding/cpp/detail/common.h"
+#include "ten_runtime/binding/cpp/detail/ten_env.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/path.h"  // IWYU pragma: export
 

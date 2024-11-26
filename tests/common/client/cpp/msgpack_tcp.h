@@ -11,11 +11,10 @@
 #include <exception>
 #include <nlohmann/json.hpp>
 
-#include "include_internal/ten_runtime/binding/cpp/internal/msg/cmd/cmd_result_internal_accessor.h"
+#include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/cmd_result_internal_accessor.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_runtime/binding/cpp/internal/msg/cmd_result.h"
-#include "ten_utils/lib/json.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd_result.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "tests/common/client/msgpack_tcp.h"

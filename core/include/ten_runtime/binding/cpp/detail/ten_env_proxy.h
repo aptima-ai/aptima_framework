@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "ten_runtime/binding/cpp/internal/ten_env.h"
+#include "ten_runtime/binding/cpp/detail/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 
 using ten_extension_t = struct ten_extension_t;

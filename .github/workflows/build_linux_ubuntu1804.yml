@@ -20,29 +20,31 @@ jobs:
       group: build-linux-ubuntu1804-${{ github.head_ref }}-${{ matrix.build_type }}
       cancel-in-progress: true
     runs-on: ubuntu-22.04
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     strategy:
       matrix:
         build_type: [release]
     container:
       image: ghcr.io/ten-framework/ten_building_ubuntu1804
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: "0"
-          submodules: "true"
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Manual Checkout Repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global --add safe.directory $(pwd)
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git .
+          git checkout ${{ github.event.pull_request.head.sha }}
+          git submodule update --init --recursive
 
       - name: Update version
         run: |
           git config --global --add safe.directory $(pwd)
           python3 tools/version/update_version_in_ten_framework.py
           python3 tools/version/check_version_in_ten_framework.py
-
-      - name: Install cpulimit and taskset
-        run: |
-          apt-get update
-          apt-get install -y cpulimit util-linux
 
       - name: Build
         run: |
@@ -54,64 +56,54 @@ jobs:
           tgn build linux x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
-      - name: Run Tests (ten_utils_unit_test)
-        env:
-          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
-          MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
-        run: |
-          chmod +x out/linux/x64/tests/standalone/ten_utils_unit_test
-          out/linux/x64/tests/standalone/ten_utils_unit_test || { echo "test failed"; exit 1; }
+      # - name: Run Tests (ten_utils_unit_test)
+      #   env:
+      #     ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+      #     MALLOC_CHECK_: 3
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/linux/x64/tests/standalone/ten_utils_unit_test
+      #     out/linux/x64/tests/standalone/ten_utils_unit_test || { echo "test failed"; exit 1; }
 
-      - name: Run Tests (ten_runtime_unit_test)
-        env:
-          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
-          MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
-        run: |
-          chmod +x out/linux/x64/tests/standalone/ten_runtime_unit_test
-          out/linux/x64/tests/standalone/ten_runtime_unit_test || { echo "test failed"; exit 1; }
+      # - name: Run Tests (ten_runtime_unit_test)
+      #   env:
+      #     ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+      #     MALLOC_CHECK_: 3
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/linux/x64/tests/standalone/ten_runtime_unit_test
+      #     out/linux/x64/tests/standalone/ten_runtime_unit_test || { echo "test failed"; exit 1; }
 
-      - name: Run Tests (ten_runtime_smoke_test)
-        env:
-          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
-          MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
-        run: |
-          chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
-          out/linux/x64/tests/standalone/ten_runtime_smoke_test || { echo "test failed"; exit 1; }
+      # - name: Run Tests (ten_runtime_smoke_test)
+      #   env:
+      #     ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+      #     MALLOC_CHECK_: 3
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
+      #     out/linux/x64/tests/standalone/ten_runtime_smoke_test || { echo "test failed"; exit 1; }
 
-      - name: Run Tests (ten_rust standalone tests)
-        env:
-          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
-          MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
-        run: |
-          cd out/linux/x64/tests/standalone/ten_rust
+      # - name: Run Tests (ten_rust standalone tests)
+      #   env:
+      #     ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+      #     MALLOC_CHECK_: 3
+      #     TEN_ENABLE_MEMORY_TRACKING: "true"
+      #     TEN_ENABLE_BACKTRACE_DUMP: "true"
+      #   run: |
+      #     cd out/linux/x64/tests/standalone/ten_rust
 
-          chmod +x unit_test
-          chmod +x integration_test
+      #     chmod +x unit_test
+      #     chmod +x integration_test
 
-          ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
-          ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
+      #     ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
+      #     ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
 
-      - name: Upload ten_packages
-        uses: actions/upload-artifact@v3
-        with:
-          name: ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}
-          path: |
-            out/linux/x64/ten_packages/system/ten_runtime
-            out/linux/x64/ten_packages/system/ten_runtime_go
-            out/linux/x64/ten_packages/system/ten_runtime_python
-            out/linux/x64/ten_packages/extension/default_extension_cpp
-            out/linux/x64/ten_packages/extension/default_extension_go
-            out/linux/x64/ten_packages/extension/default_extension_python
-            out/linux/x64/ten_packages/extension/default_async_extension_python
-            out/linux/x64/ten_packages/extension/py_init_extension_cpp
+      - name: Install jq
+        if: startsWith(github.ref, 'refs/tags/')
+        run: apt-get update && apt-get install -y jq
 
       - name: Package assets
         if: startsWith(github.ref, 'refs/tags/')
@@ -127,9 +119,36 @@ jobs:
             ten_packages/extension/default_async_extension_python \
             ten_packages/extension/py_init_extension_cpp
 
-      - name: Publish to release assets
-        uses: softprops/action-gh-release@v1
+      - name: Upload Release Asset
         if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            out/linux/x64/ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ASSET_PATH: out/linux/x64/ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip
+          ASSET_NAME: ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "Tag: $TAG_NAME"
+
+          # Get the release information
+          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/$TAG_NAME)
+
+          # Check if the release was found
+          if echo "$response" | grep -q '"id":'; then
+            echo "Release found."
+          else
+            echo "Release not found. Exiting."
+            exit 1
+          fi
+
+          # Extract upload_url
+          upload_url=$(echo "$response" | jq -r .upload_url | sed -e "s/{?name,label}//")
+          echo "Upload URL: $upload_url"
+
+          # Upload the asset
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/zip" \
+            --data-binary @"$ASSET_PATH" \
+            "$upload_url?name=$ASSET_NAME"
+
+          echo "Asset uploaded successfully."

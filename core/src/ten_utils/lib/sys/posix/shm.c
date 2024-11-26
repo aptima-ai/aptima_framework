@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include "ten_utils/lib/atomic.h"
+#include "ten_utils/macro/check.h"
 
 static char *__make_abs_path(const char *name) {
   char *abs_path = NULL;
@@ -67,7 +68,8 @@ void *ten_shm_map(const char *name, size_t size) {
     // this is to avoid truncate an existing shm file
     fd = shm_open(abs_path, O_RDWR, S_IRUSR | S_IWUSR);
   } else {
-    ftruncate(fd, size + sizeof(ten_atomic_t));
+    int rc = ftruncate(fd, size + sizeof(ten_atomic_t));
+    TEN_ASSERT(!rc, "Should not happen.");
   }
 
   if (fd < 0) {

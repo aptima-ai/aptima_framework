@@ -9,9 +9,9 @@
 
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
-#include "ten_runtime/binding/cpp/internal/extension.h"
-#include "ten_runtime/binding/cpp/internal/ten_env_proxy.h"
-#include "ten_runtime/binding/cpp/internal/test/env_tester.h"
+#include "ten_runtime/binding/cpp/detail/extension.h"
+#include "ten_runtime/binding/cpp/detail/ten_env_proxy.h"
+#include "ten_runtime/binding/cpp/detail/test/env_tester.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/macro/check.h"

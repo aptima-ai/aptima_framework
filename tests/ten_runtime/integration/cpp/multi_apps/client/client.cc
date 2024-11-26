@@ -6,7 +6,7 @@
 //
 #include <nlohmann/json.hpp>
 
-#include "ten_runtime/binding/cpp/internal/msg/cmd/start_graph.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
 #include "ten_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 

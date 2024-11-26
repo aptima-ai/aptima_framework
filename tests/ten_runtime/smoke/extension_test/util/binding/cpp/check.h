@@ -13,7 +13,7 @@
 
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
-#include "ten_runtime/binding/cpp/internal/msg/cmd_result.h"
+#include "ten_runtime/binding/cpp/detail/msg/cmd_result.h"
 #include "ten_runtime/common/status_code.h"
 
 namespace ten_test {
