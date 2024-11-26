@@ -41,6 +41,11 @@ class extension_tester_t {
     ten_extension_tester_set_test_mode_single(c_extension_tester, addon_name);
   }
 
+  void set_test_mode_graph(const char *graph_json) {
+    TEN_ASSERT(graph_json, "Invalid argument.");
+    ten_extension_tester_set_test_mode_graph(c_extension_tester, graph_json);
+  }
+
   void add_addon_base_dir(const char *addon_path) {
     TEN_ASSERT(addon_path, "Invalid argument.");
     ten_extension_tester_add_addon_base_dir(c_extension_tester, addon_path);

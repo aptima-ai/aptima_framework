@@ -440,43 +440,10 @@ const char *ten_msg_get_src_graph_id(ten_shared_ptr_t *self) {
   return ten_string_get_raw_str(&ten_msg_get_raw_msg(self)->src_loc.graph_id);
 }
 
-// This hack is only used by msgpack when serializing/deserializing the connect
-// command. Eventually, we should remove this hack.
-static void ten_msg_clear_dest_msgpack_serialization_hack(
-    ten_shared_ptr_t *self) {
-  TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
-
-  // If this message contains a JSON, remove the 'dest' information from the
-  // json, too.
-  ten_value_t *value =
-      ten_msg_peek_property(self, TEN_STR_MSGPACK_SERIALIZATION_HACK, NULL);
-  if (value) {
-    TEN_ASSERT(ten_value_is_string(value), "Should not happen.");
-
-    ten_json_t *json =
-        ten_json_from_string(ten_value_peek_raw_str(value), NULL);
-    TEN_ASSERT(ten_json_check_integrity(json), "Should not happen.");
-
-    ten_json_object_del(json, TEN_STR_DEST);
-    TEN_ASSERT(ten_json_check_integrity(json), "Should not happen.");
-
-    bool must_free = false;
-    const char *json_str = ten_json_to_string(json, NULL, &must_free);
-    ten_value_reset_to_string_with_size(value, json_str, strlen(json_str));
-
-    if (must_free) {
-      TEN_FREE(json_str);
-    }
-    ten_json_destroy(json);
-  }
-}
-
 void ten_msg_clear_dest(ten_shared_ptr_t *self) {
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
 
   ten_list_clear(&ten_msg_get_raw_msg(self)->dest_loc);
-
-  ten_msg_clear_dest_msgpack_serialization_hack(self);
 }
 
 ten_loc_t *ten_raw_msg_get_src_loc(ten_msg_t *self) {

@@ -16,7 +16,11 @@ PyObject *ten_py_ten_env_tester_stop_test(PyObject *self,
                  ten_py_ten_env_tester_check_integrity(py_ten_env_tester),
              "Invalid argument.");
 
-  ten_env_tester_stop_test(py_ten_env_tester->c_ten_env_tester);
+  bool rc = ten_env_tester_stop_test(py_ten_env_tester->c_ten_env_tester, NULL);
 
-  Py_RETURN_NONE;
+  if (rc) {
+    Py_RETURN_NONE;
+  } else {
+    return NULL;
+  }
 }

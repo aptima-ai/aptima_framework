@@ -37,19 +37,17 @@ class ten_env_tester_t {
   ten_env_tester_t &operator=(const ten_env_tester_t &&) = delete;
   // @}};
 
-  virtual bool on_start_done(error_t *err) {
+  bool on_start_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
     return ten_env_tester_on_start_done(
         c_ten_env_tester,
         err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
-  bool on_start_done() { return on_start_done(nullptr); }
-
-  virtual bool send_cmd(
+  bool send_cmd(
       std::unique_ptr<cmd_t> &&cmd,
-      ten_env_tester_send_cmd_result_handler_func_t &&result_handler,
-      error_t *err) {
+      ten_env_tester_send_cmd_result_handler_func_t &&result_handler = nullptr,
+      error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
 
     bool rc = false;
@@ -60,15 +58,18 @@ class ten_env_tester_t {
     }
 
     if (result_handler == nullptr) {
-      rc = ten_env_tester_send_cmd(c_ten_env_tester, cmd->get_underlying_msg(),
-                                   nullptr, nullptr);
+      rc = ten_env_tester_send_cmd(
+          c_ten_env_tester, cmd->get_underlying_msg(), nullptr, nullptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
     } else {
       auto *result_handler_ptr =
           new ten_env_tester_send_cmd_result_handler_func_t(
               std::move(result_handler));
 
-      rc = ten_env_tester_send_cmd(c_ten_env_tester, cmd->get_underlying_msg(),
-                                   proxy_handle_result, result_handler_ptr);
+      rc = ten_env_tester_send_cmd(
+          c_ten_env_tester, cmd->get_underlying_msg(), proxy_handle_result,
+          result_handler_ptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
       if (!rc) {
         delete result_handler_ptr;
       }
@@ -86,21 +87,7 @@ class ten_env_tester_t {
     return rc;
   }
 
-  bool send_cmd(std::unique_ptr<cmd_t> &&cmd, error_t *err) {
-    return send_cmd(std::move(cmd), nullptr, err);
-  }
-
-  bool send_cmd(
-      std::unique_ptr<cmd_t> &&cmd,
-      ten_env_tester_send_cmd_result_handler_func_t &&result_handler) {
-    return send_cmd(std::move(cmd), std::move(result_handler), nullptr);
-  }
-
-  bool send_cmd(std::unique_ptr<cmd_t> &&cmd) {
-    return send_cmd(std::move(cmd), nullptr, nullptr);
-  }
-
-  virtual bool send_data(std::unique_ptr<data_t> &&data, error_t *err) {
+  bool send_data(std::unique_ptr<data_t> &&data, error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
 
     bool rc = false;
@@ -110,7 +97,9 @@ class ten_env_tester_t {
       return rc;
     }
 
-    rc = ten_env_tester_send_data(c_ten_env_tester, data->get_underlying_msg());
+    rc = ten_env_tester_send_data(
+        c_ten_env_tester, data->get_underlying_msg(),
+        err != nullptr ? err->get_internal_representation() : nullptr);
 
     if (rc) {
       // Only when the data has been sent successfully, we should give back the
@@ -124,17 +113,70 @@ class ten_env_tester_t {
     return rc;
   }
 
-  bool send_data(std::unique_ptr<data_t> &&data) {
-    return send_data(std::move(data), nullptr);
+  bool send_audio_frame(std::unique_ptr<audio_frame_t> &&audio_frame,
+                        error_t *err = nullptr) {
+    TEN_ASSERT(c_ten_env_tester, "Should not happen.");
+
+    bool rc = false;
+
+    if (!audio_frame) {
+      TEN_ASSERT(0, "Invalid argument.");
+      return rc;
+    }
+
+    rc = ten_env_tester_send_audio_frame(
+        c_ten_env_tester, audio_frame->get_underlying_msg(),
+        err != nullptr ? err->get_internal_representation() : nullptr);
+
+    if (rc) {
+      // Only when the audio_frame has been sent successfully, we should give
+      // back the ownership of the audio_frame to the TEN runtime.
+      auto *cpp_audio_frame_ptr = audio_frame.release();
+      delete cpp_audio_frame_ptr;
+    } else {
+      TEN_LOGE("Failed to send_audio_frame: %s", audio_frame->get_name());
+    }
+
+    return rc;
   }
 
-  void stop_test() {
+  bool send_video_frame(std::unique_ptr<video_frame_t> &&video_frame,
+                        error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
-    ten_env_tester_stop_test(c_ten_env_tester);
+
+    bool rc = false;
+
+    if (!video_frame) {
+      TEN_ASSERT(0, "Invalid argument.");
+      return rc;
+    }
+
+    rc = ten_env_tester_send_video_frame(
+        c_ten_env_tester, video_frame->get_underlying_msg(),
+        err != nullptr ? err->get_internal_representation() : nullptr);
+
+    if (rc) {
+      // Only when the video_frame has been sent successfully, we should give
+      // back the ownership of the video_frame to the TEN runtime.
+      auto *cpp_video_frame_ptr = video_frame.release();
+      delete cpp_video_frame_ptr;
+    } else {
+      TEN_LOGE("Failed to send_video_frame: %s", video_frame->get_name());
+    }
+
+    return rc;
+  }
+
+  bool stop_test(error_t *err = nullptr) {
+    TEN_ASSERT(c_ten_env_tester, "Should not happen.");
+    return ten_env_tester_stop_test(
+        c_ten_env_tester,
+        err != nullptr ? err->get_internal_representation() : nullptr);
   }
 
  private:
   friend extension_tester_t;
+  friend class ten_env_tester_proxy_t;
 
   ::ten_env_tester_t *c_ten_env_tester;
 

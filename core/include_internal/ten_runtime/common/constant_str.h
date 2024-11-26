@@ -132,11 +132,6 @@
 #define TEN_STR_SAMPLE_RATE "sample_rate"
 #define TEN_STR_SAMPLES_PER_CHANNEL "samples_per_channel"
 
-// Msgpack hack.
-#define TEN_STR_SPECIAL_CMD_FOR_SERIALIZATION \
-  "__special_cmd_for_serialization__"
-#define TEN_STR_MSGPACK_SERIALIZATION_HACK "msgpack_serialization_hack"
-
 // Graph.
 #define TEN_STR_AUTO_START "auto_start"
 #define TEN_STR_SINGLETON "singleton"

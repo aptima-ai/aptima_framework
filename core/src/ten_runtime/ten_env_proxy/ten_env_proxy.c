@@ -45,7 +45,7 @@ ten_env_proxy_t *ten_env_proxy_create(ten_env_t *ten_env,
                                       size_t initial_thread_cnt,
                                       ten_error_t *err) {
   if (!ten_env) {
-    const char *err_msg = "Create ten_env_proxy without specifying ten.";
+    const char *err_msg = "Create ten_env_proxy without specifying ten_env.";
     TEN_ASSERT(0, "%s", err_msg);
     if (err) {
       ten_error_set(err, TEN_ERRNO_INVALID_ARGUMENT, err_msg);

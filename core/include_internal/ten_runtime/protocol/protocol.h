@@ -123,9 +123,6 @@ typedef struct ten_protocol_t {
   ten_protocol_listen_func_t listen;
 
   // Used to react the connect_to request.
-  //
-  // TODO(Liu): What's the difference between the return value of this function
-  // and calling 'on_connected(this, true/false)'.
   ten_protocol_connect_to_func_t connect_to;
 
   // Used to react the migration to new runloop request.

@@ -91,8 +91,9 @@ PyObject *ten_py_ten_env_tester_send_cmd(PyObject *self, PyObject *args) {
     Py_INCREF(cb_func);
   }
 
-  ten_env_tester_send_cmd(py_ten_env_tester->c_ten_env_tester,
-                          py_cmd->msg.c_msg, proxy_send_xxx_callback, cb_func);
+  success = ten_env_tester_send_cmd(py_ten_env_tester->c_ten_env_tester,
+                                    py_cmd->msg.c_msg, proxy_send_xxx_callback,
+                                    cb_func, &err);
 
   // Destroy the C message from the Python message as the ownership has been
   // transferred to the notify_info.

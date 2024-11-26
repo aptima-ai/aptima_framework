@@ -13,6 +13,8 @@
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
+#define LOOP_CNT 2
+
 namespace {
 
 /**
@@ -36,7 +38,7 @@ class test_extension : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "sum") {
-      if (counter_ == 2) {
+      if (counter_ == LOOP_CNT) {
         auto json = nlohmann::json::parse(cmd->to_json());
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", json.dump().c_str());
@@ -64,7 +66,7 @@ class test_extension : public ten::extension_t {
 
  private:
   const std::string name_;
-  int value_;
+  int value_{};
   int counter_ = 0;
 };
 
@@ -101,7 +103,19 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
 
 }  // namespace
 
-TEST(ExtensionTest, DISABLED_GraphLoopMultipleCircleThroughCmd) {  // NOLINT
+TEST(ExtensionTest,
+#if defined(__i386__) || defined(__arm__)
+     // In a 32-bit environment, this test case may cause the `on_xxx` or
+     // `result_handler` of the message to be called directly, instead of being
+     // placed into the message queue, because all these extensions are in the
+     // same extension thread. This can potentially lead to the function call
+     // stack becoming too deep and resulting in a stack overflow. Therefore,
+     // disable this test case in a 32-bit environment.
+     DISABLED_GraphLoopMultipleCircleThroughCmd
+#else
+     GraphLoopMultipleCircleThroughCmd
+#endif
+) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -212,7 +226,7 @@ TEST(ExtensionTest, DISABLED_GraphLoopMultipleCircleThroughCmd) {  // NOLINT
 
   nlohmann::json detail =
       nlohmann::json::parse(cmd_result->get_property_to_json("detail"));
-  EXPECT_EQ((1 + 2 + 3) * 2, detail["total"].get<std::int32_t>());
+  EXPECT_EQ((1 + 2 + 3) * LOOP_CNT, detail["total"].get<std::int32_t>());
 
   delete client;
 

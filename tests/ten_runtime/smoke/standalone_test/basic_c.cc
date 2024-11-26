@@ -13,6 +13,7 @@
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/smart_ptr.h"
+#include "ten_utils/macro/check.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
 namespace {
@@ -46,7 +47,8 @@ void hello_world_cmd_result_handler(ten_env_tester_t *ten_env,
                                     ten_shared_ptr_t *cmd_result,
                                     TEN_UNUSED void *user_data) {
   if (ten_cmd_result_get_status_code(cmd_result) == TEN_STATUS_CODE_OK) {
-    ten_env_tester_stop_test(ten_env);
+    bool rc = ten_env_tester_stop_test(ten_env, nullptr);
+    TEN_ASSERT(rc, "Should not happen.");
   }
 }
 
@@ -56,8 +58,9 @@ void ten_extension_tester_on_start(TEN_UNUSED ten_extension_tester_t *tester,
   ten_shared_ptr_t *hello_world_cmd = ten_cmd_create("hello_world", nullptr);
   TEN_ASSERT(hello_world_cmd, "Should not happen.");
 
-  bool rc = ten_env_tester_send_cmd(ten_env, hello_world_cmd,
-                                    hello_world_cmd_result_handler, nullptr);
+  bool rc =
+      ten_env_tester_send_cmd(ten_env, hello_world_cmd,
+                              hello_world_cmd_result_handler, nullptr, nullptr);
 
   if (rc) {
     ten_shared_ptr_destroy(hello_world_cmd);

@@ -16,7 +16,7 @@
 
 #define SEQUENTIAL_CLIENT_CNT 100
 
-#if defined(__i386__)
+#if defined(__i386__) || defined(__arm__)
 #define ONE_ENGINE_ONE_CLIENT_CONCURRENT_CNT 100
 #define ONE_ENGINE_ALL_CLIENT_CONCURRENT_CNT 100
 #else

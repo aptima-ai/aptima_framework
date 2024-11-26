@@ -280,7 +280,6 @@ void ten_extension_thread_dispatch_msg(ten_extension_thread_t *self,
         } else {
           // The message should be handled in the current extension thread, so
           // dispatch the message to the current extension thread.
-
           ten_extension_thread_handle_in_msg_sync(self, msg);
         }
       }

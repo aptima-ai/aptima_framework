@@ -185,7 +185,7 @@ ten_thread_t *ten_thread_create(const char *name,
 
   pthread_attr_t *attr_ptr = NULL;
 
-#if defined(__i386__)
+#if defined(__i386__) || defined(__arm__)
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   size_t stacksize = 256UL * 1024UL;

@@ -32,7 +32,18 @@ struct ten_extension_tester_t {
   ten_env_proxy_t *test_extension_ten_env_proxy;
   ten_event_t *test_extension_ten_env_proxy_create_completed;
 
-  ten_list_t addon_names;
+  TEN_EXTENSION_TESTER_TEST_MODE test_mode;
+
+  union {
+    struct {
+      ten_string_t addon_name;
+    } addon;
+
+    struct {
+      ten_string_t graph_json;
+    } graph;
+  } test_target;
+
   ten_list_t addon_base_dirs;
 
   ten_extension_tester_on_start_func_t on_start;

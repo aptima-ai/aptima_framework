@@ -20,8 +20,8 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
-static ten_notify_data_t *ten_notify_data_create(ten_notify_func_t notify_func,
-                                                 void *user_data) {
+static ten_notify_data_t *ten_notify_data_create(
+    ten_env_proxy_notify_func_t notify_func, void *user_data) {
   TEN_ASSERT(notify_func, "Invalid argument.");
 
   ten_notify_data_t *self =
@@ -86,7 +86,8 @@ static void ten_notify_to_extension_group_task(void *self_, void *arg) {
   ten_notify_data_destroy(notify_data);
 }
 
-bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
+bool ten_env_proxy_notify(ten_env_proxy_t *self,
+                          ten_env_proxy_notify_func_t notify_func,
                           void *user_data, bool sync, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(notify_func, "Invalid argument.");
@@ -150,10 +151,12 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
 
           ten_mutex_unlock(self->lock);
         } else {
-          ten_runloop_post_task_tail(
+          int rc = ten_runloop_post_task_tail(
               ten_extension_get_attached_runloop(extension),
               ten_notify_to_extension_task, extension,
               ten_notify_data_create(notify_func, user_data));
+
+          result = rc == 0;
         }
       }
       break;
@@ -183,10 +186,12 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
       } else {
         TEN_ASSERT(sync == false, "Unsupported operation.");
 
-        ten_runloop_post_task_tail(
+        int rc = ten_runloop_post_task_tail(
             ten_extension_group_get_attached_runloop(extension_group),
             ten_notify_to_extension_group_task, extension_group,
             ten_notify_data_create(notify_func, user_data));
+
+        result = rc == 0;
       }
       break;
     }
@@ -203,9 +208,11 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
       } else {
         TEN_ASSERT(sync == false, "Unsupported operation.");
 
-        ten_runloop_post_task_tail(
+        int rc = ten_runloop_post_task_tail(
             ten_app_get_attached_runloop(app), ten_notify_to_app_task, app,
             ten_notify_data_create(notify_func, user_data));
+
+        result = rc == 0;
       }
       break;
     }
@@ -220,8 +227,8 @@ bool ten_env_proxy_notify(ten_env_proxy_t *self, ten_notify_func_t notify_func,
 }
 
 bool ten_env_proxy_notify_async(ten_env_proxy_t *self,
-                                ten_notify_func_t notify_func, void *user_data,
-                                ten_error_t *err) {
+                                ten_env_proxy_notify_func_t notify_func,
+                                void *user_data, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(notify_func, "Invalid argument.");
 

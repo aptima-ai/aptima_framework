@@ -36,8 +36,8 @@ PyObject *ten_py_ten_env_tester_send_data(PyObject *self, PyObject *args) {
     goto done;
   }
 
-  ten_env_tester_send_data(py_ten_env_tester->c_ten_env_tester,
-                           py_data->msg.c_msg);
+  success = ten_env_tester_send_data(py_ten_env_tester->c_ten_env_tester,
+                                     py_data->msg.c_msg, &err);
 
   // Destroy the C message from the Python message as the ownership has been
   // transferred to the notify_info.

@@ -38,8 +38,8 @@ PyObject *ten_py_ten_env_tester_send_video_frame(PyObject *self,
     goto done;
   }
 
-  ten_env_tester_send_video_frame(py_ten_env_tester->c_ten_env_tester,
-                                  py_video_frame->msg.c_msg);
+  success = ten_env_tester_send_video_frame(py_ten_env_tester->c_ten_env_tester,
+                                            py_video_frame->msg.c_msg, &err);
 
   // Destroy the C message from the Python message as the ownership has been
   // transferred to the notify_info.

@@ -67,38 +67,6 @@ ten_cmd_t *ten_raw_cmd_custom_create(const char *cmd_name) {
   return cmd;
 }
 
-// This hack is only used by msgpack when serializing/deserializing the connect
-// command. Eventually, we should remove this hack.
-static void ten_raw_cmd_custom_to_json_msgpack_serialization_hack(
-    ten_msg_t *self, ten_json_t *json) {
-  TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self) &&
-                 ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD,
-             "Should not happen.");
-  TEN_ASSERT(json, "Should not happen.");
-
-  ten_value_t *json_value =
-      ten_raw_msg_peek_property(self, TEN_STR_MSGPACK_SERIALIZATION_HACK, NULL);
-  if (json_value) {
-    // If there is a 'json' attached to this custom command, add all the
-    // fields in that json to the json returned.
-
-    ten_json_t *payload_json =
-        ten_json_from_string(ten_value_peek_raw_str(json_value), NULL);
-    TEN_ASSERT(ten_json_check_integrity(payload_json), "Should not happen.");
-
-    ten_json_object_update_missing(json, payload_json);
-
-    if (ten_json_object_peek(payload_json, TEN_STR_NAME)) {
-      ten_json_object_set_new(
-          json, TEN_STR_NAME,
-          ten_json_create_string(
-              ten_json_object_peek_string(payload_json, TEN_STR_NAME)));
-    }
-
-    ten_json_destroy(payload_json);
-  }
-}
-
 ten_json_t *ten_raw_cmd_custom_to_json(ten_msg_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_cmd_check_integrity((ten_cmd_t *)self) &&
                  ten_raw_msg_get_type(self) == TEN_MSG_TYPE_CMD,
@@ -112,8 +80,6 @@ ten_json_t *ten_raw_cmd_custom_to_json(ten_msg_t *self, ten_error_t *err) {
     ten_json_destroy(json);
     return NULL;
   }
-
-  ten_raw_cmd_custom_to_json_msgpack_serialization_hack(self, json);
 
   return json;
 }

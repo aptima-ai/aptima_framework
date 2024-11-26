@@ -25,8 +25,6 @@
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/container/list.h"
-#include "ten_utils/container/list_node.h"
-#include "ten_utils/container/list_node_str.h"
 #include "ten_utils/container/list_str.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/lib/event.h"
@@ -71,7 +69,6 @@ ten_extension_tester_t *ten_extension_tester_create(
   ten_signature_set(&self->signature, TEN_EXTENSION_TESTER_SIGNATURE);
   ten_sanitizer_thread_check_init_with_current_thread(&self->thread_check);
 
-  ten_list_init(&self->addon_names);
   ten_list_init(&self->addon_base_dirs);
 
   self->on_start = on_start;
@@ -92,6 +89,8 @@ ten_extension_tester_t *ten_extension_tester_create(
   self->test_app_thread = NULL;
   self->user_data = NULL;
 
+  self->test_mode = TEN_EXTENSION_TESTER_TEST_MODE_INVALID;
+
   return self;
 }
 
@@ -101,7 +100,20 @@ void ten_extension_tester_set_test_mode_single(ten_extension_tester_t *self,
              "Invalid argument.");
   TEN_ASSERT(addon_name, "Invalid argument.");
 
-  ten_list_push_str_back(&self->addon_names, addon_name);
+  self->test_mode = TEN_EXTENSION_TESTER_TEST_MODE_SINGLE;
+  ten_string_init_from_c_str(&self->test_target.addon.addon_name, addon_name,
+                             strlen(addon_name));
+}
+
+void ten_extension_tester_set_test_mode_graph(ten_extension_tester_t *self,
+                                              const char *graph_json) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
+  TEN_ASSERT(graph_json, "Invalid argument.");
+
+  self->test_mode = TEN_EXTENSION_TESTER_TEST_MODE_GRAPH;
+  ten_string_init_from_c_str(&self->test_target.graph.graph_json, graph_json,
+                             strlen(graph_json));
 }
 
 void ten_extension_tester_add_addon_base_dir(ten_extension_tester_t *self,
@@ -122,6 +134,18 @@ void test_app_ten_env_send_cmd(ten_env_t *ten_env, void *user_data) {
 
   bool rc = ten_env_send_cmd(ten_env, cmd, NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
+}
+
+static void ten_extension_tester_destroy_test_target(
+    ten_extension_tester_t *self) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
+
+  if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_SINGLE) {
+    ten_string_deinit(&self->test_target.addon.addon_name);
+  } else if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_GRAPH) {
+    ten_string_deinit(&self->test_target.graph.graph_json);
+  }
 }
 
 void ten_extension_tester_destroy(ten_extension_tester_t *self) {
@@ -145,7 +169,7 @@ void ten_extension_tester_destroy(ten_extension_tester_t *self) {
 
   ten_thread_join(self->test_app_thread, -1);
 
-  ten_list_clear(&self->addon_names);
+  ten_extension_tester_destroy_test_target(self);
   ten_list_clear(&self->addon_base_dirs);
 
   ten_env_tester_destroy(self->ten_env_tester);
@@ -161,19 +185,27 @@ static void ten_extension_tester_create_and_start_graph(
     ten_extension_tester_t *self) {
   TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
              "Invalid argument.");
+  TEN_ASSERT(self->test_mode != TEN_EXTENSION_TESTER_TEST_MODE_INVALID,
+             "Invalid test mode.");
 
-  TEN_ASSERT(!ten_list_is_empty(&self->addon_names),
-             "No addon name is specified.");
-  ten_listnode_t *first_addon_name_node = ten_list_front(&self->addon_names);
-  TEN_ASSERT(first_addon_name_node, "Should not happen.");
+  ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
+  TEN_ASSERT(start_graph_cmd, "Should not happen.");
 
-  ten_string_t *first_addon_name = ten_str_listnode_get(first_addon_name_node);
-  TEN_ASSERT(first_addon_name, "Should not happen.");
-  TEN_ASSERT(ten_string_len(first_addon_name), "No addon name is specified.");
+  // Set the destination so that the recipient is the app itself.
+  bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
+                                       NULL, NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
 
-  ten_string_t start_graph_cmd_json_str;
-  ten_string_init_formatted(&start_graph_cmd_json_str,
-                            "{\
+  if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_SINGLE) {
+    TEN_ASSERT(ten_string_check_integrity(&self->test_target.addon.addon_name),
+               "Invalid test target.");
+
+    const char *addon_name =
+        ten_string_get_raw_str(&self->test_target.addon.addon_name);
+
+    ten_string_t graph_json_str;
+    ten_string_init_formatted(&graph_json_str,
+                              "{\
            \"nodes\": [{\
               \"type\": \"extension\",\
               \"name\": \"ten:test_extension\",\
@@ -261,27 +293,23 @@ static void ten_extension_tester_create_and_start_graph(
              }]\
            }]\
        }",
-                            ten_string_get_raw_str(first_addon_name),
-                            ten_string_get_raw_str(first_addon_name),
-                            ten_string_get_raw_str(first_addon_name),
-                            ten_string_get_raw_str(first_addon_name),
-                            ten_string_get_raw_str(first_addon_name),
-                            ten_string_get_raw_str(first_addon_name),
-                            ten_string_get_raw_str(first_addon_name));
+                              addon_name, addon_name, addon_name, addon_name,
+                              addon_name, addon_name, addon_name);
+    rc = ten_cmd_start_graph_set_graph_from_json_str(
+        start_graph_cmd, ten_string_get_raw_str(&graph_json_str), NULL);
+    TEN_ASSERT(rc, "Should not happen.");
 
-  ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
-  TEN_ASSERT(start_graph_cmd, "Should not happen.");
+    ten_string_deinit(&graph_json_str);
+  } else if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_GRAPH) {
+    TEN_ASSERT(ten_string_check_integrity(&self->test_target.graph.graph_json),
+               "Invalid test target.");
+    TEN_ASSERT(&self->test_target.graph.graph_json, "Should not happen.");
 
-  // Set the destination so that the recipient is the app itself.
-  bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  rc = ten_cmd_start_graph_set_graph_from_json_str(
-      start_graph_cmd, ten_string_get_raw_str(&start_graph_cmd_json_str), NULL);
-  TEN_ASSERT(rc, "Should not happen.");
-
-  ten_string_deinit(&start_graph_cmd_json_str);
+    rc = ten_cmd_start_graph_set_graph_from_json_str(
+        start_graph_cmd,
+        ten_string_get_raw_str(&self->test_target.graph.graph_json), NULL);
+    TEN_ASSERT(rc, "Should not happen.");
+  }
 
   rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
                             test_app_ten_env_send_cmd, start_graph_cmd, false,
@@ -370,25 +398,28 @@ static void ten_extension_tester_on_first_task(void *self_,
   ten_extension_tester_create_and_start_graph(self);
 }
 
-bool ten_extension_tester_run(ten_extension_tester_t *self) {
-  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+static void ten_extension_tester_inherit_thread_ownership(
+    ten_extension_tester_t *self) {
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: The correct threading ownership will be setup soon, so we can
+  // _not_ check thread safety here.
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, false),
              "Invalid argument.");
 
-  if (ten_list_is_empty(&self->addon_names)) {
-    TEN_LOGE("No addon name is specified.");
-    return false;
-  }
+  ten_sanitizer_thread_check_set_belonging_thread_to_current_thread(
+      &self->thread_check);
+}
 
-  ten_listnode_t *first_addon_name_node = ten_list_front(&self->addon_names);
-  TEN_ASSERT(first_addon_name_node, "Should not happen.");
+bool ten_extension_tester_run(ten_extension_tester_t *self) {
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: this function could be called in different threads other than
+  // the creation thread.
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, false),
+             "Invalid argument.");
+  TEN_ASSERT(self->test_mode != TEN_EXTENSION_TESTER_TEST_MODE_INVALID,
+             "Invalid test mode.");
 
-  ten_string_t *first_addon_name = ten_str_listnode_get(first_addon_name_node);
-  TEN_ASSERT(first_addon_name, "Should not happen.");
-
-  if (!ten_string_len(first_addon_name)) {
-    TEN_LOGE("No addon name is specified.");
-    return false;
-  }
+  ten_extension_tester_inherit_thread_ownership(self);
 
   // Inject the task that calls the first task into the runloop of
   // extension_tester, ensuring that the first task is called within the

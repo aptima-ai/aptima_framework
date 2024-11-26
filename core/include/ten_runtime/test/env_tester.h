@@ -4,6 +4,8 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+#pragma once
+
 #include "ten_runtime/ten_config.h"
 
 #include "ten_utils/lib/error.h"
@@ -19,15 +21,18 @@ typedef void (*ten_env_tester_cmd_result_handler_func_t)(
 
 TEN_RUNTIME_API bool ten_env_tester_send_cmd(
     ten_env_tester_t *self, ten_shared_ptr_t *cmd,
-    ten_env_tester_cmd_result_handler_func_t handler, void *user_data);
+    ten_env_tester_cmd_result_handler_func_t handler, void *user_data,
+    ten_error_t *error);
 
 TEN_RUNTIME_API bool ten_env_tester_send_data(ten_env_tester_t *self,
-                                              ten_shared_ptr_t *data);
+                                              ten_shared_ptr_t *data,
+                                              ten_error_t *error);
 
 TEN_RUNTIME_API bool ten_env_tester_send_audio_frame(
-    ten_env_tester_t *self, ten_shared_ptr_t *audio_frame);
+    ten_env_tester_t *self, ten_shared_ptr_t *audio_frame, ten_error_t *error);
 
 TEN_RUNTIME_API bool ten_env_tester_send_video_frame(
-    ten_env_tester_t *self, ten_shared_ptr_t *video_frame);
+    ten_env_tester_t *self, ten_shared_ptr_t *video_frame, ten_error_t *error);
 
-TEN_RUNTIME_API void ten_env_tester_stop_test(ten_env_tester_t *self);
+TEN_RUNTIME_API bool ten_env_tester_stop_test(ten_env_tester_t *self,
+                                              ten_error_t *error);

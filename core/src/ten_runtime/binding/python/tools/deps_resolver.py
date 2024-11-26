@@ -1,6 +1,14 @@
 import argparse
+import json
 import os
 import sys
+
+
+class ArgumentInfo(argparse.Namespace):
+    def __init__(self):
+        self.root: str
+        self.output: str
+        self.index_url: str
 
 
 def install_pip_tools_if_needed(index_url: str) -> bool:
@@ -39,11 +47,36 @@ def install_pip_tools_if_needed(index_url: str) -> bool:
 class DepsManager:
 
     def __collect_requirements_files(self) -> list[str]:
+        # Read manifest.json under self.root.
+        manifest_path = os.path.join(self.root, "manifest.json")
+        if not os.path.isfile(manifest_path):
+            raise FileNotFoundError("manifest.json not found in root directory")
+
+        with open(manifest_path, "r") as f:
+            manifest = json.load(f)
+
+        # Collect names of extensions from dependencies.
+        extension_names = []
+        dependencies = manifest.get("dependencies", [])
+        for dep in dependencies:
+            if dep.get("type") == "extension":
+                extension_names.append(dep.get("name"))
+
         source_dir = os.path.join(self.root, "ten_packages", "extension")
 
         result = []
 
         for root, _, files in os.walk(source_dir):
+            # Get the extension folder name relative to 'source_dir'.
+            rel_path = os.path.relpath(root, source_dir)
+            # Skip subdirectories (if any).
+            if os.path.sep in rel_path:
+                continue
+            extension_name = rel_path
+
+            if extension_name not in extension_names:
+                continue
+
             if "requirements.txt" in files:
                 source_file = os.path.relpath(
                     os.path.join(root, "requirements.txt"), self.root
@@ -126,13 +159,6 @@ class DepsManager:
             return False
 
         return True
-
-
-class ArgumentInfo(argparse.Namespace):
-    def __init__(self):
-        self.root: str
-        self.output: str
-        self.index_url: str
 
 
 if __name__ == "__main__":

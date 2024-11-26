@@ -76,7 +76,8 @@ void ten_extension_tester_on_start(TEN_UNUSED ten_extension_tester_t *tester,
   TEN_ASSERT(hello_world_cmd, "Should not happen.");
 
   bool rc = ten_env_tester_send_cmd(ten_env, hello_world_cmd,
-                                    hello_world_cmd_result_handler, test_info);
+                                    hello_world_cmd_result_handler, test_info,
+                                    nullptr);
 
   if (rc) {
     ten_shared_ptr_destroy(hello_world_cmd);
@@ -96,7 +97,8 @@ void ten_extension_tester_on_cmd(TEN_UNUSED ten_extension_tester_t *tester,
 
   if (test_info->ack_cmd_success && test_info->hello_world_cmd_success) {
     TEN_FREE(test_info);
-    ten_env_tester_stop_test(ten_env);
+    bool rc = ten_env_tester_stop_test(ten_env, nullptr);
+    TEN_ASSERT(rc, "Should not happen.");
   }
 }
 

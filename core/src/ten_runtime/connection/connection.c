@@ -211,9 +211,7 @@ void ten_connection_set_on_closed(ten_connection_t *self,
 }
 
 void ten_connection_send_msg(ten_connection_t *self, ten_shared_ptr_t *msg) {
-  // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: This function is designed to be called in any threads.
-  TEN_ASSERT(self && ten_connection_check_integrity(self, false),
+  TEN_ASSERT(self && ten_connection_check_integrity(self, true),
              "Should not happen.");
 
   // The message sends to connection channel MUST have dest loc.
