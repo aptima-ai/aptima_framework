@@ -131,43 +131,43 @@ class AsyncExtension(_Extension):
         try:
             await self.on_configure(async_ten_env)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_init(self, async_ten_env: AsyncTenEnv):
         try:
             await self.on_init(async_ten_env)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_start(self, async_ten_env: AsyncTenEnv):
         try:
             await self.on_start(async_ten_env)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_stop(self, async_ten_env: AsyncTenEnv):
         try:
             await self.on_stop(async_ten_env)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_deinit(self, async_ten_env: AsyncTenEnv):
         try:
             await self.on_deinit(async_ten_env)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_cmd(self, async_ten_env: AsyncTenEnv, cmd: Cmd):
         try:
             await self.on_cmd(async_ten_env, cmd)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_data(self, async_ten_env: AsyncTenEnv, data: Data):
         try:
             await self.on_data(async_ten_env, data)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_video_frame(
         self, async_ten_env: AsyncTenEnv, video_frame: VideoFrame
@@ -175,7 +175,7 @@ class AsyncExtension(_Extension):
         try:
             await self.on_video_frame(async_ten_env, video_frame)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     async def _wrapper_on_audio_frame(
         self, async_ten_env: AsyncTenEnv, audio_frame: AudioFrame
@@ -183,7 +183,7 @@ class AsyncExtension(_Extension):
         try:
             await self.on_audio_frame(async_ten_env, audio_frame)
         except Exception as e:
-            _exit_on_exception(async_ten_env, e)
+            self._exit_on_exception(async_ten_env, e)
 
     def _exit_on_exception(self, async_ten_env: AsyncTenEnv, e: Exception):
         traceback_info = traceback.format_exc()
