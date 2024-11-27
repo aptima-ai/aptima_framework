@@ -188,7 +188,10 @@ class ten_client_proxy_internal_impl_t : public ten::extension_tester_t {
     }
 
     return ten_env_tester_proxy_->notify(
-        [](ten::ten_env_tester_t &env_tester) { env_tester.stop_test(); },
+        [this](ten::ten_env_tester_t &env_tester) {
+          env_tester.stop_test();
+          ten_env_tester_proxy_ = nullptr;
+        },
         nullptr);
   }
 
@@ -216,11 +219,18 @@ class ten_client_proxy_t {
     impl_.add_addon_base_dir(addon_path);
   }
 
+  void init_app_property_json(const char *app_property_json) {
+    TEN_ASSERT(app_property_json, "Invalid argument.");
+    impl_.init_test_app_property_from_json(app_property_json);
+  }
+
   void start_graph(const char *graph_json) {
     TEN_ASSERT(graph_json, "Invalid argument.");
     impl_.set_test_mode_graph(graph_json);
     impl_.run();
   }
+
+  void stop() { impl_.stop(); }
 
   // These functions should be called after the on_start callback is received.
 

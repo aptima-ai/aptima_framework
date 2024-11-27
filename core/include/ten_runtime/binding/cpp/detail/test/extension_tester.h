@@ -51,6 +51,12 @@ class extension_tester_t {
     ten_extension_tester_add_addon_base_dir(c_extension_tester, addon_path);
   }
 
+  void init_test_app_property_from_json(const char *property_json_str) {
+    TEN_ASSERT(property_json_str, "Invalid argument.");
+    ten_extension_tester_init_test_app_property_from_json(c_extension_tester,
+                                                          property_json_str);
+  }
+
   bool run(error_t *err = nullptr) {
     TEN_ASSERT(c_extension_tester, "Should not happen.");
     return ten_extension_tester_run(c_extension_tester);

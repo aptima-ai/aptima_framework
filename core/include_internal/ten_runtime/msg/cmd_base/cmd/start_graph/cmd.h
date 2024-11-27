@@ -32,7 +32,8 @@ typedef struct ten_cmd_start_graph_t {
   ten_list_t extensions_info;
 } ten_cmd_start_graph_t;
 
-TEN_RUNTIME_PRIVATE_API void ten_cmd_start_graph_get_next_list(
+TEN_RUNTIME_PRIVATE_API void
+ten_cmd_start_graph_collect_all_immediate_connectable_apps(
     ten_shared_ptr_t *self, ten_app_t *app, ten_list_t *next);
 
 TEN_RUNTIME_PRIVATE_API ten_list_t *ten_raw_cmd_start_graph_get_extensions_info(

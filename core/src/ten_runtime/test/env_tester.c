@@ -8,11 +8,13 @@
 
 #include <inttypes.h>
 
-#include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "include_internal/ten_runtime/test/extension_tester.h"
+#include "ten_runtime/app/app.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
 #include "ten_runtime/test/env_tester.h"
@@ -310,19 +312,29 @@ bool ten_env_tester_send_video_frame(ten_env_tester_t *self,
                               send_msg_info, false, err);
 }
 
-bool ten_env_tester_stop_test(ten_env_tester_t *self, ten_error_t *err) {
-  TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
+static void test_app_ten_env_send_close_app_cmd(ten_env_t *ten_env,
+                                                void *user_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_app_t *app = ten_env->attached_target.app;
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
 
   ten_shared_ptr_t *close_app_cmd = ten_cmd_close_app_create();
   TEN_ASSERT(close_app_cmd, "Should not happen.");
 
-  // Set the destination so that the recipient is the app itself.
-  bool rc = ten_msg_clear_and_set_dest(close_app_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL);
+  bool rc = ten_msg_clear_and_set_dest(close_app_cmd, ten_app_get_uri(app),
+                                       NULL, NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
+  rc = ten_env_send_cmd(ten_env, close_app_cmd, NULL, NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
+bool ten_env_tester_stop_test(ten_env_tester_t *self, ten_error_t *err) {
+  TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
   return ten_env_proxy_notify(self->tester->test_app_ten_env_proxy,
-                              test_app_ten_env_send_cmd, close_app_cmd, false,
+                              test_app_ten_env_send_close_app_cmd, NULL, false,
                               err);
 }
 

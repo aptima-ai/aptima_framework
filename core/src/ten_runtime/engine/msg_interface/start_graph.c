@@ -43,10 +43,11 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
 
   ten_cmd_start_graph_add_missing_extension_group_node(cmd);
 
-  ten_list_t next = TEN_LIST_INIT_VAL;
-  ten_cmd_start_graph_get_next_list(cmd, self->app, &next);
+  ten_list_t immediate_connectable_apps = TEN_LIST_INIT_VAL;
+  ten_cmd_start_graph_collect_all_immediate_connectable_apps(
+      cmd, self->app, &immediate_connectable_apps);
 
-  if (ten_list_is_empty(&next)) {
+  if (ten_list_is_empty(&immediate_connectable_apps)) {
     TEN_LOGD(
         "No more extensions need to be connected in the graph, enable the "
         "extension system now.");
@@ -57,7 +58,7 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
     ten_list_t new_works = TEN_LIST_INIT_VAL;
     bool error_occurred = false;
 
-    ten_list_foreach (&next, iter) {
+    ten_list_foreach (&immediate_connectable_apps, iter) {
       ten_string_t *dest_uri = ten_str_listnode_get(iter.node);
       TEN_ASSERT(dest_uri, "Invalid argument.");
 
@@ -149,7 +150,7 @@ void ten_engine_handle_cmd_start_graph(ten_engine_t *self,
     }
   }
 
-  ten_list_clear(&next);
+  ten_list_clear(&immediate_connectable_apps);
 }
 
 void ten_engine_return_ok_for_cmd_start_graph(

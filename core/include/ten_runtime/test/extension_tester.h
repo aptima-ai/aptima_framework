@@ -60,6 +60,9 @@ TEN_RUNTIME_API void ten_extension_tester_set_test_mode_single(
 TEN_RUNTIME_API void ten_extension_tester_set_test_mode_graph(
     ten_extension_tester_t *self, const char *graph_json);
 
+TEN_RUNTIME_API void ten_extension_tester_init_test_app_property_from_json(
+    ten_extension_tester_t *self, const char *property_json_str);
+
 TEN_RUNTIME_API void ten_extension_tester_add_addon_base_dir(
     ten_extension_tester_t *self, const char *addon_base_dir);
 

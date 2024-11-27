@@ -173,7 +173,8 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
     goto error;
   }
 
-  if (!ten_string_is_equal_c_str(&self->uri, TEN_STR_LOCALHOST)) {
+  if (!ten_string_is_equal_c_str(&self->uri, TEN_STR_LOCALHOST) &&
+      !ten_string_starts_with(&self->uri, TEN_STR_CLIENT)) {
     // Create the app listening endpoint protocol if specifying one.
     rc = ten_addon_create_protocol_with_uri(
         self->ten_env, ten_string_get_raw_str(&self->uri),

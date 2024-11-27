@@ -9,7 +9,7 @@
 #include <inttypes.h>
 #include <string.h>
 
-#include "include_internal/ten_runtime/common/constant_str.h"
+#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/extension_group/builtin/builtin_extension_group.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/msg/msg.h"
@@ -85,6 +85,7 @@ ten_extension_tester_t *ten_extension_tester_create(
 
   self->test_app_ten_env_proxy = NULL;
   self->test_app_ten_env_proxy_create_completed = ten_event_create(0, 1);
+  ten_string_init(&self->test_app_property_json);
 
   self->test_app_thread = NULL;
   self->user_data = NULL;
@@ -114,6 +115,16 @@ void ten_extension_tester_set_test_mode_graph(ten_extension_tester_t *self,
   self->test_mode = TEN_EXTENSION_TESTER_TEST_MODE_GRAPH;
   ten_string_init_from_c_str(&self->test_target.graph.graph_json, graph_json,
                              strlen(graph_json));
+}
+
+void ten_extension_tester_init_test_app_property_from_json(
+    ten_extension_tester_t *self, const char *property_json_str) {
+  TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
+             "Invalid argument.");
+  TEN_ASSERT(property_json_str, "Invalid argument.");
+
+  ten_string_set_formatted(&self->test_app_property_json, "%s",
+                           property_json_str);
 }
 
 void ten_extension_tester_add_addon_base_dir(ten_extension_tester_t *self,
@@ -172,6 +183,8 @@ void ten_extension_tester_destroy(ten_extension_tester_t *self) {
   ten_extension_tester_destroy_test_target(self);
   ten_list_clear(&self->addon_base_dirs);
 
+  ten_string_deinit(&self->test_app_property_json);
+
   ten_env_tester_destroy(self->ten_env_tester);
   ten_sanitizer_thread_check_deinit(&self->thread_check);
 
@@ -181,20 +194,37 @@ void ten_extension_tester_destroy(ten_extension_tester_t *self) {
   TEN_FREE(self);
 }
 
+static void test_app_ten_env_send_start_graph_cmd(ten_env_t *ten_env,
+                                                  void *user_data) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_app_t *app = ten_env->attached_target.app;
+  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
+
+  ten_shared_ptr_t *cmd = user_data;
+  TEN_ASSERT(cmd && ten_msg_check_integrity(cmd), "Should not happen.");
+
+  bool rc = ten_msg_clear_and_set_dest(cmd, ten_app_get_uri(app), NULL, NULL,
+                                       NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+
+  rc = ten_env_send_cmd(ten_env, cmd, NULL, NULL, NULL);
+  TEN_ASSERT(rc, "Should not happen.");
+}
+
 static void ten_extension_tester_create_and_start_graph(
     ten_extension_tester_t *self) {
   TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
              "Invalid argument.");
   TEN_ASSERT(self->test_mode != TEN_EXTENSION_TESTER_TEST_MODE_INVALID,
              "Invalid test mode.");
+  TEN_ASSERT(self->test_app_ten_env_proxy, "Invalid test app ten_env_proxy.");
 
   ten_shared_ptr_t *start_graph_cmd = ten_cmd_start_graph_create();
   TEN_ASSERT(start_graph_cmd, "Should not happen.");
 
-  // Set the destination so that the recipient is the app itself.
-  bool rc = ten_msg_clear_and_set_dest(start_graph_cmd, TEN_STR_LOCALHOST, NULL,
-                                       NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+  bool rc = false;
 
   if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_SINGLE) {
     TEN_ASSERT(ten_string_check_integrity(&self->test_target.addon.addon_name),
@@ -312,8 +342,8 @@ static void ten_extension_tester_create_and_start_graph(
   }
 
   rc = ten_env_proxy_notify(self->test_app_ten_env_proxy,
-                            test_app_ten_env_send_cmd, start_graph_cmd, false,
-                            NULL);
+                            test_app_ten_env_send_start_graph_cmd,
+                            start_graph_cmd, false, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   // Wait for the tester extension to create the `ten_env_proxy`.

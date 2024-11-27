@@ -239,7 +239,7 @@ ten_list_t *ten_cmd_start_graph_get_extension_groups_info(
   return ten_raw_cmd_start_graph_get_extension_groups_info(get_raw_cmd(self));
 }
 
-static void ten_cmd_start_graph_get_next_list_through_dests(
+static void ten_cmd_start_graph_collect_connectable_apps(
     ten_shared_ptr_t *self, ten_app_t *app,
     ten_extension_info_t *extension_info, ten_list_t *dests, ten_list_t *next,
     bool from_src_point_of_view) {
@@ -262,6 +262,17 @@ static void ten_cmd_start_graph_get_next_list_through_dests(
       ten_extension_info_t *target_extension_info =
           from_src_point_of_view ? dest_extension_info : extension_info;
 
+      // If the URI of the target app represents a client URI, it means that the
+      // target app cannot allow other apps to actively connect to it (e.g., it
+      // does not have a listening port open). Instead, it can only initiate
+      // connections to other apps. Therefore, what this app should do is avoid
+      // connecting to the target app actively and instead wait for it to
+      // initiate the connection.
+      if (ten_string_starts_with(&target_extension_info->loc.app_uri,
+                                 TEN_STR_CLIENT)) {
+        continue;
+      }
+
       ten_listnode_t *found = ten_list_find_string(
           next, ten_string_get_raw_str(&target_extension_info->loc.app_uri));
       if (!found) {
@@ -273,7 +284,7 @@ static void ten_cmd_start_graph_get_next_list_through_dests(
   }
 }
 
-static void ten_cmd_start_graph_get_next_list_per_extension_info(
+static void ten_cmd_start_graph_collect_all_connectable_apps(
     ten_shared_ptr_t *self, ten_app_t *app,
     ten_extension_info_t *extension_info, ten_list_t *next,
     bool from_src_point_of_view) {
@@ -285,39 +296,39 @@ static void ten_cmd_start_graph_get_next_list_per_extension_info(
   ten_list_foreach (&extension_info->msg_dest_info.cmd, iter_cmd) {
     ten_msg_dest_info_t *cmd_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
-    ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
-                                                    &cmd_dest->dest, next,
-                                                    from_src_point_of_view);
+    ten_cmd_start_graph_collect_connectable_apps(self, app, extension_info,
+                                                 &cmd_dest->dest, next,
+                                                 from_src_point_of_view);
   }
 
   ten_list_foreach (&extension_info->msg_dest_info.video_frame, iter_cmd) {
     ten_msg_dest_info_t *data_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
-    ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
-                                                    &data_dest->dest, next,
-                                                    from_src_point_of_view);
+    ten_cmd_start_graph_collect_connectable_apps(self, app, extension_info,
+                                                 &data_dest->dest, next,
+                                                 from_src_point_of_view);
   }
 
   ten_list_foreach (&extension_info->msg_dest_info.audio_frame, iter_cmd) {
     ten_msg_dest_info_t *data_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
-    ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
-                                                    &data_dest->dest, next,
-                                                    from_src_point_of_view);
+    ten_cmd_start_graph_collect_connectable_apps(self, app, extension_info,
+                                                 &data_dest->dest, next,
+                                                 from_src_point_of_view);
   }
 
   ten_list_foreach (&extension_info->msg_dest_info.data, iter_cmd) {
     ten_msg_dest_info_t *data_dest =
         ten_shared_ptr_get_data(ten_smart_ptr_listnode_get(iter_cmd.node));
-    ten_cmd_start_graph_get_next_list_through_dests(self, app, extension_info,
-                                                    &data_dest->dest, next,
-                                                    from_src_point_of_view);
+    ten_cmd_start_graph_collect_connectable_apps(self, app, extension_info,
+                                                 &data_dest->dest, next,
+                                                 from_src_point_of_view);
   }
 }
 
 // Get the list of the immediate remote apps of the local app.
-void ten_cmd_start_graph_get_next_list(ten_shared_ptr_t *self, ten_app_t *app,
-                                       ten_list_t *next) {
+void ten_cmd_start_graph_collect_all_immediate_connectable_apps(
+    ten_shared_ptr_t *self, ten_app_t *app, ten_list_t *next) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self) &&
                  ten_msg_get_type(self) == TEN_MSG_TYPE_CMD_START_GRAPH &&
                  app && next,
@@ -329,10 +340,10 @@ void ten_cmd_start_graph_get_next_list(ten_shared_ptr_t *self, ten_app_t *app,
 
     if (ten_string_is_equal_c_str(&extension_info->loc.app_uri,
                                   ten_app_get_uri(app))) {
-      ten_cmd_start_graph_get_next_list_per_extension_info(
+      ten_cmd_start_graph_collect_all_connectable_apps(
           self, app, extension_info, next, true);
     } else {
-      ten_cmd_start_graph_get_next_list_per_extension_info(
+      ten_cmd_start_graph_collect_all_connectable_apps(
           self, app, extension_info, next, false);
     }
   }

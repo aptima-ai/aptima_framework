@@ -13,14 +13,31 @@
 
 static void test_app_on_configure(TEN_UNUSED ten_app_t *app,
                                   ten_env_t *ten_env) {
-  bool rc = ten_env_init_property_from_json(ten_env,
-                                            "{\
+  // Since the tester will wait for the
+  // `test_app_ten_env_proxy_create_completed` event after the app starts, it
+  // means the tester is currently in a blocking state and not running, so
+  // accessing the tester instance here is safe.
+  ten_extension_tester_t *tester = app->user_data;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, false),
+             "Should not happen.");
+
+  bool rc = false;
+
+  if (!ten_string_is_empty(&tester->test_app_property_json)) {
+    rc = ten_env_init_property_from_json(
+        ten_env, ten_string_get_raw_str(&tester->test_app_property_json), NULL);
+    TEN_ASSERT(rc, "Should not happen.");
+  } else {
+    // The default property.json content of the test app.
+    rc = ten_env_init_property_from_json(ten_env,
+                                         "{\
                                                \"_ten\": {\
                                                  \"log_level\": 2\
                                                }\
                                              }",
-                                            NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+                                         NULL);
+    TEN_ASSERT(rc, "Should not happen.");
+  }
 
   rc = ten_env_on_configure_done(ten_env, NULL);
   TEN_ASSERT(rc, "Should not happen.");
