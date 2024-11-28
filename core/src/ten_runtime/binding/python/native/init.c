@@ -70,6 +70,12 @@ PyMODINIT_FUNC PyInit_libten_runtime_python(void) {
     return NULL;
   }
 
+  if (!ten_py_decorator_register_addon_as_extension_init_for_module_v2(
+          module)) {
+    Py_DECREF(module);
+    return NULL;
+  }
+
   if (!ten_py_app_init_for_module(module)) {
     Py_DECREF(module);
     return NULL;

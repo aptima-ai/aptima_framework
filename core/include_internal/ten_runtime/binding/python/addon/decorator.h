@@ -19,5 +19,13 @@ typedef struct ten_py_decorator_register_addon_t {
   ten_string_t base_dir;
 } ten_py_decorator_register_addon_t;
 
+typedef struct ten_py_decorator_register_addon_v2_t {
+  PyObject_HEAD
+} ten_py_decorator_register_addon_v2_t;
+
 TEN_RUNTIME_PRIVATE_API bool
 ten_py_decorator_register_addon_as_extension_init_for_module(PyObject *module);
+
+TEN_RUNTIME_PRIVATE_API bool
+ten_py_decorator_register_addon_as_extension_init_for_module_v2(
+    PyObject *module);

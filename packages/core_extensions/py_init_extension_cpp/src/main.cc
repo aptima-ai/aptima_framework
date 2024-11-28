@@ -426,8 +426,8 @@ extern "C" void ____ten_addon_py_init_extension_cpp_register____(
     void *register_ctx) {
   g_py_init_default_extension_addon = new py_init_addon_t();
   ten_addon_register_extension_v2(
-      "py_init_extension_cpp", nullptr, register_ctx,
-      g_py_init_default_extension_addon->get_c_addon());
+      "py_init_extension_cpp", nullptr,
+      g_py_init_default_extension_addon->get_c_addon(), register_ctx);
 }
 
 TEN_DESTRUCTOR(____dtor_ten_declare_py_init_extension_addon____) {

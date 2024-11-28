@@ -15,7 +15,6 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/backtrace/backtrace.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
@@ -139,10 +138,10 @@ ten_addon_host_t *ten_addon_register_extension(const char *name,
   return addon_host;
 }
 
-// TODO(Wei): Reconsider the `register` and `unregister` mechanisms of the
-// addon.
-void ten_addon_register_extension_v2(const char *name, const char *base_dir,
-                                     void *register_ctx, ten_addon_t *addon) {
+ten_addon_host_t *ten_addon_register_extension_v2(const char *name,
+                                                  const char *base_dir,
+                                                  ten_addon_t *addon,
+                                                  void *register_ctx) {
   if (!name || strlen(name) == 0) {
     TEN_LOGE("The addon name is required.");
     exit(EXIT_FAILURE);
@@ -150,8 +149,16 @@ void ten_addon_register_extension_v2(const char *name, const char *base_dir,
 
   ten_addon_host_t *addon_host = (ten_addon_host_t *)register_ctx;
 
+  // If no `addon_host` is provided, create one here. Whether it is created here
+  // or received, pass it out in the end.
+  if (!addon_host) {
+    addon_host = ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION);
+  }
+
   ten_addon_register(ten_extension_get_global_store(), addon_host, name,
                      base_dir, addon);
+
+  return addon_host;
 }
 
 ten_addon_t *ten_addon_unregister_extension(const char *name) {

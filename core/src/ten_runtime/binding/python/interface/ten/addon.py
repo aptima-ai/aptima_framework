@@ -8,13 +8,21 @@ import json
 import os
 import importlib.util
 from glob import glob
+from typing import Callable, Any, Dict
 from libten_runtime_python import _Addon
 from .ten_env import TenEnv
 
 
-class Addon(_Addon):
+class _AddonManager:
+    # Use the simple approach below, similar to a global array, to detect
+    # whether a Python module provides the registration function required by the
+    # TEN runtime. This avoids using `setattr` on the module, which may not be
+    # supported in advanced environments like Cython. The global array method
+    # is simple enough that it should work in all environments.
+    _registration_registry: Dict[str, Callable[[Any], None]] = {}
+
     @classmethod
-    def _load_all(cls):
+    def _load_all(cls, register_ctx: object):
         base_dir = cls._find_app_base_dir()
 
         # Read manifest.json under base_dir.
@@ -47,28 +55,105 @@ class Addon(_Addon):
                 module_name = os.path.basename(module)
 
                 if module_name in extension_names:
-                    # Proceed to load the module.
-                    spec = importlib.util.find_spec(
-                        "ten_packages.extension.{}".format(module_name)
+                    cls._load_module(
+                        module_full_name=(
+                            f"ten_packages.extension.{module_name}"
+                        ),
+                        module_name=module_name,
+                        register_ctx=register_ctx,
                     )
-                    if spec is not None:
-                        _ = importlib.import_module(
-                            "ten_packages.extension.{}".format(module_name)
-                        )
-                        print("imported module: {}".format(module_name))
                 else:
-                    print("Skipping module: {}".format(module_name))
+                    print(f"Skipping module: {module_name}")
 
     @classmethod
-    def _load_from_path(cls, path):
-        module_name = os.path.basename(path)
-        spec = importlib.util.find_spec(module_name)
-        if spec is not None:
-            mod = importlib.import_module(module_name)
+    def _load_module(
+        cls,
+        module_full_name: str,
+        module_name: str,
+        register_ctx: object,
+    ):
+        """
+        Helper method to load a module, check for the special function,
+        invoke it, and unload the module if the special function is missing.
+        """
+        try:
+            spec = importlib.util.find_spec(module_full_name)
+            if spec is None:
+                raise ImportError(f"Cannot find module: {module_full_name}")
+
+            _ = importlib.import_module(module_full_name)
             print(f"Imported module: {module_name}")
-            return mod
-        else:
-            raise ImportError(f"Cannot find module: {module_name}")
+
+            # Retrieve the registration function from the global registry
+            registration_func_name = _AddonManager._get_registration_func_name(
+                module_name
+            )
+
+            registration_func = _AddonManager._get_registration_func(
+                module_name
+            )
+
+            if registration_func:
+                try:
+                    registration_func(register_ctx)
+                    print(f"Successfully registered addon '{module_name}'")
+                except Exception as e:
+                    print(
+                        (
+                            "Error during registration of addon "
+                            f"'{module_name}': {e}"
+                        )
+                    )
+                finally:
+                    # Remove the registration function from the global registry.
+                    if (
+                        registration_func_name
+                        in _AddonManager._registration_registry
+                    ):
+                        del _AddonManager._registration_registry[
+                            registration_func_name
+                        ]
+                        print(
+                            (
+                                "Removed registration function for addon "
+                                f"'{registration_func_name}'"
+                            )
+                        )
+            else:
+                print(f"No {registration_func_name} found in {module_name}")
+
+        except ImportError as e:
+            print(f"Error importing module {module_name}: {e}")
+
+    @staticmethod
+    def _get_registration_func_name(addon_name: str) -> str:
+        return f"____ten_addon_{addon_name}_register____"
+
+    @staticmethod
+    def _get_registration_func(addon_name: str) -> Callable[[Any], None] | None:
+        return _AddonManager._registration_registry.get(
+            _AddonManager._get_registration_func_name(addon_name)
+        )
+
+    @staticmethod
+    def _set_registration_func(
+        addon_name: str,
+        registration_func: Callable[[Any], None],
+    ) -> None:
+        registration_func_name = _AddonManager._get_registration_func_name(
+            addon_name
+        )
+
+        print(
+            (
+                f"Injected registration function '{registration_func_name}' "
+                "into module '{module.__name__}'"
+            )
+        )
+
+        _AddonManager._registration_registry[registration_func_name] = (
+            registration_func
+        )
 
     @staticmethod
     def _find_app_base_dir():
@@ -92,12 +177,10 @@ class Addon(_Addon):
             "App base directory with a valid manifest.json not found."
         )
 
+
+class Addon(_Addon):
     def on_init(self, ten_env: TenEnv) -> None:
         ten_env.on_init_done()
 
     def on_deinit(self, ten_env: TenEnv) -> None:
         ten_env.on_deinit_done()
-
-    def on_create_instance(
-        self, ten_env: TenEnv, name: str, context
-    ) -> None: ...

@@ -6,6 +6,7 @@
 #
 from .ten_env_attach_to_enum import _TenEnvAttachTo
 from .log_level import LogLevel
+from .addon import Addon
 
 class _Msg:
     def to_json(self) -> str: ...
@@ -179,3 +180,6 @@ class _ExtensionTester:
     def run(self) -> None: ...
 
 def _register_addon_as_extension(name: str, base_dir: str | None): ...
+def _register_addon_as_extension_v2(
+    name: str, base_dir: str | None, instance: Addon, register_ctx: object
+): ...

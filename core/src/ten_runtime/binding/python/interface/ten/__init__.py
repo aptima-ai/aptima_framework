@@ -11,6 +11,7 @@ from .async_ten_env import AsyncTenEnv
 from .addon import Addon
 from .decorator import (
     register_addon_as_extension,
+    register_addon_as_extension_v2,
 )
 from .ten_env import TenEnv
 from .cmd import Cmd
@@ -26,6 +27,7 @@ from .test import ExtensionTester, TenEnvTester
 __all__ = [
     "Addon",
     "register_addon_as_extension",
+    "register_addon_as_extension_v2",
     "App",
     "Extension",
     "AsyncExtension",
