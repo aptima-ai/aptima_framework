@@ -33,7 +33,7 @@ class test_extension_1 : public ten::extension_t {
       ten_env.send_cmd(
           std::move(new_cmd),
           [this](ten::ten_env_t &ten_env,
-                 std::unique_ptr<ten::cmd_result_t> result) {
+                 std::unique_ptr<ten::cmd_result_t> result, ten::error_t *err) {
             nlohmann::json json = nlohmann::json::parse(result->to_json());
 
             auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);

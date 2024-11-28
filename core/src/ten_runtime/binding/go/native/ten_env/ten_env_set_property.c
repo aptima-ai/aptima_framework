@@ -66,8 +66,8 @@ static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
   ten_env_notify_set_property_info_t *info = user_data;
   TEN_ASSERT(info, "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   ten_error_t err;
   ten_error_init(&err);
@@ -80,32 +80,32 @@ static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
     info->c_value = NULL;
   } else {
     // Prepare error information to pass to Go.
-    ten_go_status_from_error(&status, &err);
+    ten_go_error_from_error(&cgo_error, &err);
   }
 
   // Call back into Go to signal that the async operation in C is complete.
-  tenGoCAsyncApiCallback(info->callback_handle, status);
+  tenGoCAsyncApiCallback(info->callback_handle, cgo_error);
 
   ten_error_deinit(&err);
 
   ten_env_notify_set_property_info_destroy(info);
 }
 
-static ten_go_status_t ten_go_ten_env_set_property(ten_go_ten_env_t *self,
-                                                   const void *path,
-                                                   int path_len,
-                                                   ten_value_t *value,
-                                                   uintptr_t callback_handle) {
+static ten_go_error_t ten_go_ten_env_set_property(ten_go_ten_env_t *self,
+                                                  const void *path,
+                                                  int path_len,
+                                                  ten_value_t *value,
+                                                  uintptr_t callback_handle) {
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
   TEN_ASSERT(value && ten_value_check_integrity(value), "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(self, {
     ten_value_destroy(value);
-    ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED);
+    ten_go_error_set_errno(&cgo_error, TEN_ERRNO_TEN_IS_CLOSED);
   });
 
   ten_error_t err;
@@ -120,20 +120,20 @@ static ten_go_status_t ten_go_ten_env_set_property(ten_go_ten_env_t *self,
                             &err)) {
     // Failed to invoke ten_env_proxy_notify.
     ten_env_notify_set_property_info_destroy(info);
-    ten_go_status_from_error(&status, &err);
+    ten_go_error_from_error(&cgo_error, &err);
   }
 
   ten_error_deinit(&err);
   TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
-  return status;
+  return cgo_error;
 }
 
-ten_go_status_t ten_go_ten_env_set_property_bool(uintptr_t bridge_addr,
-                                                 const void *path, int path_len,
-                                                 bool value,
-                                                 uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_bool(uintptr_t bridge_addr,
+                                                const void *path, int path_len,
+                                                bool value,
+                                                uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -146,10 +146,10 @@ ten_go_status_t ten_go_ten_env_set_property_bool(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_int8(uintptr_t bridge_addr,
-                                                 const void *path, int path_len,
-                                                 int8_t value,
-                                                 uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_int8(uintptr_t bridge_addr,
+                                                const void *path, int path_len,
+                                                int8_t value,
+                                                uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -162,10 +162,10 @@ ten_go_status_t ten_go_ten_env_set_property_int8(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_int16(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, int16_t value,
-                                                  uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_int16(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int16_t value,
+                                                 uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -178,10 +178,10 @@ ten_go_status_t ten_go_ten_env_set_property_int16(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_int32(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, int32_t value,
-                                                  uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_int32(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int32_t value,
+                                                 uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -194,10 +194,10 @@ ten_go_status_t ten_go_ten_env_set_property_int32(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_int64(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, int64_t value,
-                                                  uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_int64(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int64_t value,
+                                                 uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -210,10 +210,10 @@ ten_go_status_t ten_go_ten_env_set_property_int64(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_uint8(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, uint8_t value,
-                                                  uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_uint8(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 uint8_t value,
+                                                 uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -226,10 +226,10 @@ ten_go_status_t ten_go_ten_env_set_property_uint8(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_uint16(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len, uint16_t value,
-                                                   uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_uint16(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len, uint16_t value,
+                                                  uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -242,10 +242,10 @@ ten_go_status_t ten_go_ten_env_set_property_uint16(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_uint32(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len, uint32_t value,
-                                                   uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_uint32(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len, uint32_t value,
+                                                  uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -258,10 +258,10 @@ ten_go_status_t ten_go_ten_env_set_property_uint32(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_uint64(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len, uint64_t value,
-                                                   uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_uint64(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len, uint64_t value,
+                                                  uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -274,10 +274,10 @@ ten_go_status_t ten_go_ten_env_set_property_uint64(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_float32(uintptr_t bridge_addr,
-                                                    const void *path,
-                                                    int path_len, float value,
-                                                    uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_float32(uintptr_t bridge_addr,
+                                                   const void *path,
+                                                   int path_len, float value,
+                                                   uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -290,10 +290,10 @@ ten_go_status_t ten_go_ten_env_set_property_float32(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_float64(uintptr_t bridge_addr,
-                                                    const void *path,
-                                                    int path_len, double value,
-                                                    uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_float64(uintptr_t bridge_addr,
+                                                   const void *path,
+                                                   int path_len, double value,
+                                                   uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -306,7 +306,7 @@ ten_go_status_t ten_go_ten_env_set_property_float64(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_string(
+ten_go_error_t ten_go_ten_env_set_property_string(
     uintptr_t bridge_addr, const void *path, int path_len, const void *value,
     int value_len, uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -331,10 +331,10 @@ ten_go_status_t ten_go_ten_env_set_property_string(
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_buf(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                void *value, int value_len,
-                                                uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_buf(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               void *value, int value_len,
+                                               uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -347,10 +347,10 @@ ten_go_status_t ten_go_ten_env_set_property_buf(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                ten_go_handle_t value,
-                                                uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               ten_go_handle_t value,
+                                               uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -363,7 +363,7 @@ ten_go_status_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
                                      callback_handle);
 }
 
-ten_go_status_t ten_go_ten_env_set_property_json_bytes(
+ten_go_error_t ten_go_ten_env_set_property_json_bytes(
     uintptr_t bridge_addr, const void *path, int path_len, const void *json_str,
     int json_str_len, uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
@@ -372,12 +372,12 @@ ten_go_status_t ten_go_ten_env_set_property_json_bytes(
   TEN_ASSERT(path_len > 0 && path, "Should not happen.");
   TEN_ASSERT(json_str && json_str_len > 0, "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
-  ten_json_t *json = ten_go_json_loads(json_str, json_str_len, &status);
+  ten_json_t *json = ten_go_json_loads(json_str, json_str_len, &cgo_error);
   if (json == NULL) {
-    return status;
+    return cgo_error;
   }
 
   ten_value_t *value = ten_value_from_json(json);

@@ -28,7 +28,6 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_json.h"
 
@@ -47,7 +46,9 @@ class ten_env_proxy_t;
 class ten_env_internal_accessor_t;
 
 using result_handler_func_t =
-    std::function<void(ten_env_t &, std::unique_ptr<cmd_result_t>)>;
+    std::function<void(ten_env_t &, std::unique_ptr<cmd_result_t>, error_t *)>;
+
+using error_handler_func_t = std::function<void(ten_env_t &, error_t *)>;
 
 class ten_env_t {
  public:
@@ -72,7 +73,9 @@ class ten_env_t {
                              err);
   }
 
-  bool send_data(std::unique_ptr<data_t> &&data, error_t *err = nullptr) {
+  bool send_data(std::unique_ptr<data_t> &&data,
+                 error_handler_func_t &&error_handler = nullptr,
+                 error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env && data, "Should not happen.");
 
     if (!data) {
@@ -88,20 +91,39 @@ class ten_env_t {
       return false;
     }
 
-    auto rc = ten_env_send_data(
-        c_ten_env, data->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    auto rc = false;
+
+    if (error_handler == nullptr) {
+      rc = ten_env_send_data(
+          c_ten_env, data->get_underlying_msg(), nullptr, nullptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+    } else {
+      auto *error_handler_ptr =
+          new error_handler_func_t(std::move(error_handler));
+
+      rc = ten_env_send_data(
+          c_ten_env, data->get_underlying_msg(), proxy_handle_error,
+          error_handler_ptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+      if (!rc) {
+        delete error_handler_ptr;
+      }
+    }
+
     if (rc) {
       // Only when the data has been sent successfully, we should give back
       // the ownership of the data message to the TEN runtime.
       auto *cpp_data_ptr = data.release();
       delete cpp_data_ptr;
+    } else {
+      TEN_LOGE("Failed to send_data: %s.", data->get_name());
     }
 
     return rc;
   }
 
   bool send_video_frame(std::unique_ptr<video_frame_t> &&frame,
+                        error_handler_func_t &&error_handler = nullptr,
                         error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
@@ -110,21 +132,39 @@ class ten_env_t {
       return false;
     }
 
-    auto rc = ten_env_send_video_frame(
-        c_ten_env, frame->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    auto rc = false;
+
+    if (error_handler == nullptr) {
+      rc = ten_env_send_video_frame(
+          c_ten_env, frame->get_underlying_msg(), nullptr, nullptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+    } else {
+      auto *error_handler_ptr =
+          new error_handler_func_t(std::move(error_handler));
+
+      rc = ten_env_send_video_frame(
+          c_ten_env, frame->get_underlying_msg(), proxy_handle_error,
+          error_handler_ptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+      if (!rc) {
+        delete error_handler_ptr;
+      }
+    }
 
     if (rc) {
       // Only when the message has been sent successfully, we should give back
       // the ownership of the message to the TEN runtime.
       auto *cpp_frame_ptr = frame.release();
       delete cpp_frame_ptr;
+    } else {
+      TEN_LOGE("Failed to send_video_frame %s.", frame->get_name());
     }
 
     return rc;
   }
 
   bool send_audio_frame(std::unique_ptr<audio_frame_t> &&frame,
+                        error_handler_func_t &&error_handler = nullptr,
                         error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
@@ -133,15 +173,32 @@ class ten_env_t {
       return false;
     }
 
-    auto rc = ten_env_send_audio_frame(
-        c_ten_env, frame->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    auto rc = false;
+
+    if (error_handler == nullptr) {
+      rc = ten_env_send_audio_frame(
+          c_ten_env, frame->get_underlying_msg(), nullptr, nullptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+    } else {
+      auto *error_handler_ptr =
+          new error_handler_func_t(std::move(error_handler));
+
+      rc = ten_env_send_audio_frame(
+          c_ten_env, frame->get_underlying_msg(), proxy_handle_error,
+          error_handler_ptr,
+          err != nullptr ? err->get_internal_representation() : nullptr);
+      if (!rc) {
+        delete error_handler_ptr;
+      }
+    }
 
     if (rc) {
       // Only when the message has been sent successfully, we should give back
       // the ownership of the message to the TEN runtime.
       auto *cpp_frame_ptr = frame.release();
       delete cpp_frame_ptr;
+    } else {
+      TEN_LOGE("Failed to send_audio_frame %s.", frame->get_name());
     }
 
     return rc;
@@ -675,10 +732,9 @@ class ten_env_t {
     return rc;
   }
 
-  static void proxy_handle_result(TEN_UNUSED ten_extension_t *extension,
-                                  ::ten_env_t *ten_env,
-                                  ten_shared_ptr_t *c_cmd_result,
-                                  void *cb_data) {
+  static void proxy_handle_result(::ten_env_t *ten_env,
+                                  ten_shared_ptr_t *c_cmd_result, void *cb_data,
+                                  ten_error_t *err) {
     auto *result_handler = static_cast<result_handler_func_t *>(cb_data);
     auto *cpp_ten_env =
         static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
@@ -700,7 +756,12 @@ class ten_env_t {
     // executing, processing should be based on this cached value.
     bool is_completed = ten_cmd_result_is_completed(c_cmd_result, nullptr);
 
-    (*result_handler)(*cpp_ten_env, std::move(cmd_result));
+    if (err != nullptr) {
+      error_t cpp_err(err, false);
+      (*result_handler)(*cpp_ten_env, std::move(cmd_result), &cpp_err);
+    } else {
+      (*result_handler)(*cpp_ten_env, std::move(cmd_result), nullptr);
+    }
 
     if (is_completed) {
       // Only when is_final is true should the result handler be cleared.
@@ -709,6 +770,27 @@ class ten_env_t {
       delete result_handler;
     }
   }
+
+  static void proxy_handle_error(::ten_env_t *ten_env,
+                                 ten_shared_ptr_t *c_cmd_result, void *cb_data,
+                                 ten_error_t *err) {
+    TEN_ASSERT(c_cmd_result == nullptr, "Should not happen.");
+
+    auto *error_handler = static_cast<error_handler_func_t *>(cb_data);
+    auto *cpp_ten_env =
+        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
+
+    if (err == nullptr) {
+      (*error_handler)(*cpp_ten_env, nullptr);
+    } else {
+      error_t cpp_err(err, false);
+      (*error_handler)(*cpp_ten_env, &cpp_err);
+    }
+
+    // The error handler should be cleared.
+    delete error_handler;
+  };
 };
 
 }  // namespace ten

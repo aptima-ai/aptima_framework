@@ -87,7 +87,7 @@ func NewVideoFrame(videoFrameName string) (VideoFrame, error) {
 			C.int(len(videoFrameName)),
 			&bridge,
 		)
-		err := withGoStatus(&apiStatus)
+		err := withCGoError(&apiStatus)
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +111,7 @@ func (p *videoFrame) AllocBuf(size int) error {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_video_frame_alloc_buf(p.getCPtr(), C.int(size))
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err == nil {
@@ -132,7 +132,7 @@ func (p *videoFrame) LockBuf() ([]byte, error) {
 			&bufSize,
 		)
 
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -156,7 +156,7 @@ func (p *videoFrame) UnlockBuf(buf *[]byte) error {
 			unsafe.Pointer(unsafe.SliceData(*buf)),
 		)
 
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err == nil {
@@ -180,7 +180,7 @@ func (p *videoFrame) GetBuf() ([]byte, error) {
 			C.int(p.size),
 		)
 
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -200,7 +200,7 @@ func (p *videoFrame) SetWidth(width int32) error {
 			p.getCPtr(),
 			C.int32_t(width),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 
@@ -209,7 +209,7 @@ func (p *videoFrame) GetWidth() (int32, error) {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_video_frame_get_width(p.getCPtr(), &width)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -229,7 +229,7 @@ func (p *videoFrame) SetHeight(height int32) error {
 			p.getCPtr(),
 			C.int32_t(height),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 
@@ -238,7 +238,7 @@ func (p *videoFrame) GetHeight() (int32, error) {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_video_frame_get_height(p.getCPtr(), &height)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -258,7 +258,7 @@ func (p *videoFrame) SetTimestamp(timestamp int64) error {
 			p.getCPtr(),
 			C.int64_t(timestamp),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 
@@ -267,7 +267,7 @@ func (p *videoFrame) GetTimestamp() (int64, error) {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_video_frame_get_timestamp(p.getCPtr(), &timestamp)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -282,7 +282,7 @@ func (p *videoFrame) IsEOF() (bool, error) {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_video_frame_is_eof(p.getCPtr(), &isEOF)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -298,7 +298,7 @@ func (p *videoFrame) SetEOF(isEOF bool) error {
 			p.getCPtr(),
 			C.bool(isEOF),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 
@@ -307,7 +307,7 @@ func (p *videoFrame) GetPixelFmt() (PixelFmt, error) {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_video_frame_get_pixel_fmt(p.getCPtr(), &pixelFmt)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -323,6 +323,6 @@ func (p *videoFrame) SetPixelFmt(pixelFmt PixelFmt) error {
 			p.getCPtr(),
 			C.uint32_t(pixelFmt),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }

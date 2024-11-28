@@ -34,10 +34,10 @@ typedef struct ten_go_bridge_t {
   ten_go_handle_t go_instance;
 } ten_go_bridge_t;
 
-// Return type for functions invoked from GO. The `ten_go_status_t` should
+// Return type for functions invoked from GO. The `ten_go_error_t` should
 // always be instantiated on the stack. This approach eliminates the need for
 // freeing it from the GO side, thereby reducing one cgo call.
-typedef struct ten_go_status_t {
+typedef struct ten_go_error_t {
   // The errno is always 0 if no error.
   // The type of this field must equal to the errno of ten_error_t.
   int64_t errno;
@@ -51,7 +51,7 @@ typedef struct ten_go_status_t {
 
   // The err_msg is always NULL if no error.
   //
-  // All functions invoked from GO return a `ten_go_status_t` instance, not a
+  // All functions invoked from GO return a `ten_go_error_t` instance, not a
   // pointer. The `err_msg` field is defined as a pointer, but not an array with
   // fixed size such as `char err_msg[256]`.
   //
@@ -62,21 +62,21 @@ typedef struct ten_go_status_t {
   //   Advantages: The `err_msg` is always allocated on the stack, so no cgo
   //   call is needed to free it.
   //
-  //   Disadvantages: The size of `ten_go_status_t` is 264, which is too large.
+  //   Disadvantages: The size of `ten_go_error_t` is 264, which is too large.
   //   And as the `err_msg` is always allocated on the stack and the
-  //   `ten_go_status_t` is returned by value not reference, CGO will allocate
-  //   a piece of memory with the same size of `ten_go_status_t`, no matter the
+  //   `ten_go_error_t` is returned by value not reference, CGO will allocate
+  //   a piece of memory with the same size of `ten_go_error_t`, no matter the
   //   `err_msg` is empty or not. In other words, 264 bytes will be allocated in
   //   each cgo call.
   //
-  //   Note that we can retrieve the size of `ten_go_status_t` using
-  //   `unsafe.Sizeof(C.ten_go_status_t{})` in GO.
+  //   Note that we can retrieve the size of `ten_go_error_t` using
+  //   `unsafe.Sizeof(C.ten_go_error_t{})` in GO.
   //
   // - If the declaration is `char* err_msg`.
   //
-  //   Advantages: The size of `ten_go_status_t` is 16. And as the `err_msg` is
+  //   Advantages: The size of `ten_go_error_t` is 16. And as the `err_msg` is
   //   always allocated on the heap, no memory is allocated in returning
-  //   `ten_go_status_t` from C to GO through CGO (after compilation
+  //   `ten_go_error_t` from C to GO through CGO (after compilation
   //   optimization).
   //
   //   Disadvantages: The `err_msg` is always allocated on the heap, so a cgo
@@ -86,7 +86,7 @@ typedef struct ten_go_status_t {
   // is better.
   //
   // BTW, if the declaration is `char err_msg[256]`, the asm code of copying
-  // `ten_go_status_t` in cgo functions is as follows.
+  // `ten_go_error_t` in cgo functions is as follows.
   //
   //   LEAQ type:lPIqNLDo(SB), AX
   //   CALL runtime.newobject(SB)
@@ -106,7 +106,7 @@ typedef struct ten_go_status_t {
   //   CALL 0x5793b2
   //   MOVQ 0(BP), BP
   //
-  // The first line loads the type of `ten_go_status_t` into AX, and the second
+  // The first line loads the type of `ten_go_error_t` into AX, and the second
   // line allocates memory using `runtime.newobject` which definition is as
   // follows.
   //
@@ -114,12 +114,12 @@ typedef struct ten_go_status_t {
   //    return mallocgc(typ.size, typ, true)
   //  }
   //
-  // The first parameter `typ.size` is the size of `ten_go_status_t`.
+  // The first parameter `typ.size` is the size of `ten_go_error_t`.
   //
   // Why is there memory allocation (i.e., CALL runtime.newobject) during cgo
   // call if the declaration is `char err_msg[256]`?
   //
-  // * Cgo will generate a GO type corresponding to `ten_go_status_t` in C, ex:
+  // * Cgo will generate a GO type corresponding to `ten_go_error_t` in C, ex:
   //
   //   type _Ctype_struct_ten_go_status_t struct {
   //     err_no    _Ctype_int
@@ -128,16 +128,16 @@ typedef struct ten_go_status_t {
   //     _         [3]byte
   //   }
   //
-  //   From the GO side, any C function returns `ten_go_status_t`, there will be
+  //   From the GO side, any C function returns `ten_go_error_t`, there will be
   //   a corresponding GO function returns `_Ctype_struct_ten_go_status_t`.
   //   Refer to chapter `cgo` in README.md for more details.
   //
-  // * The C functions return `ten_go_status_t` by value, not reference. So the
+  // * The C functions return `ten_go_error_t` by value, not reference. So the
   //   GO stack frame shall be prepared before calling C functions, and the
   //   memory for returned value will be allocated, i.e.,
   //   sizeof(_Ctype_struct_ten_go_status_t).
   char *err_msg;
-} ten_go_status_t;
+} ten_go_error_t;
 
 /**
  * @brief Copy the C string to the GO slice and free the C string. It's a
@@ -163,5 +163,4 @@ typedef struct ten_go_status_t {
  * - The `memmove` implemented in GO is slower than glibc, refer to
  *   [issue](https://github.com/golang/go/issues/38512).
  */
-ten_go_status_t ten_go_copy_c_str_to_slice_and_free(const char *src,
-                                                    void *dest);
+ten_go_error_t ten_go_copy_c_str_to_slice_and_free(const char *src, void *dest);

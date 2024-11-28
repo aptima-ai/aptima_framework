@@ -259,12 +259,13 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
       ten_msg_clear_dest(actual_msg);
 
       if (ten_msg_get_type(actual_msg) == TEN_MSG_TYPE_CMD_RESULT) {
-        ten_env_cmd_result_handler_func_t result_handler =
+        ten_env_msg_result_handler_func_t result_handler =
             ten_cmd_base_get_raw_cmd_base(actual_msg)->result_handler;
         if (result_handler) {
           result_handler(
-              self, self->ten_env, actual_msg,
-              ten_cmd_base_get_raw_cmd_base(actual_msg)->result_handler_data);
+              self->ten_env, actual_msg,
+              ten_cmd_base_get_raw_cmd_base(actual_msg)->result_handler_data,
+              NULL);
         } else {
           // If the cmd result does not have an associated result handler,
           // TEN runtime will return the cmd result to the upstream extension

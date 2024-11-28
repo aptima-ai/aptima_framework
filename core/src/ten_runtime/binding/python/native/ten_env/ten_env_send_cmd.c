@@ -43,12 +43,9 @@ static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
   return info;
 }
 
-static void proxy_send_xxx_callback(ten_extension_t *extension,
-                                    ten_env_t *ten_env,
+static void proxy_send_xxx_callback(ten_env_t *ten_env,
                                     ten_shared_ptr_t *cmd_result,
-                                    void *callback_info) {
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
+                                    void *callback_info, ten_error_t *err) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
   TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),

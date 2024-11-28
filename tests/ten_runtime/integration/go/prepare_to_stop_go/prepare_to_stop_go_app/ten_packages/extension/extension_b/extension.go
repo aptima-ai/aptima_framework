@@ -37,11 +37,11 @@ func (p *bExtension) OnCmd(
 				cmdName,
 		)
 		if cmdName == "start" {
-			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult) {
+			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult, e error) {
 				r.ReturnResultDirectly(cs)
 			})
 		} else if cmdName == "stop" {
-			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult) {
+			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult, e error) {
 				r.ReturnResultDirectly(cs)
 
 				close(p.stopChan)
@@ -71,7 +71,10 @@ func init() {
 	fmt.Println("call init")
 
 	// Register addon
-	err := ten.RegisterAddonAsExtension("extension_b", ten.NewDefaultExtensionAddon(NewBExtension))
+	err := ten.RegisterAddonAsExtension(
+		"extension_b",
+		ten.NewDefaultExtensionAddon(NewBExtension),
+	)
 	if err != nil {
 		fmt.Println("register addon failed", err)
 	}

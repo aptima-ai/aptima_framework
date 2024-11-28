@@ -238,7 +238,8 @@ class test_extension_1 : public ten::extension_t {
     auto start_to_send_cmd = ten::cmd_t::create("start_to_send");
     ten_env.send_cmd(std::move(start_to_send_cmd),
                      [this](ten::ten_env_t &ten_env,
-                            std::unique_ptr<ten::cmd_result_t> cmd_result) {
+                            std::unique_ptr<ten::cmd_result_t> cmd_result,
+                            ten::error_t *err) {
                        TEN_ASSERT(
                            cmd_result->get_status_code() == TEN_STATUS_CODE_OK,
                            "Failed to send 'start_to_send' command.");
@@ -890,7 +891,8 @@ class test_extension_2 : public ten::extension_t {
                 ten_env.send_cmd(
                     std::move(from_extension_2_cmd),
                     [this](ten::ten_env_t &ten_env,
-                           std::unique_ptr<ten::cmd_result_t> cmd_result) {
+                           std::unique_ptr<ten::cmd_result_t> cmd_result,
+                           ten::error_t *err) {
                       TEN_ASSERT(
                           cmd_result->get_status_code() == TEN_STATUS_CODE_OK,
                           "Failed to send 'from_extension_2' command.");

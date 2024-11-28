@@ -274,50 +274,50 @@ type iProperty interface {
 //
 // Therefore, a closure is used to abstract the way of getting values, sharing
 // the logic of this function.
-func getPropInt8(retrieve func(*C.int8_t) C.ten_go_status_t) (int8, error) {
+func getPropInt8(retrieve func(*C.int8_t) C.ten_go_error_t) (int8, error) {
 	var cv C.int8_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
 	return int8(cv), nil
 }
 
-func getPropInt16(retrieve func(*C.int16_t) C.ten_go_status_t) (int16, error) {
+func getPropInt16(retrieve func(*C.int16_t) C.ten_go_error_t) (int16, error) {
 	var cv C.int16_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
 	return int16(cv), nil
 }
 
-func getPropInt32(retrieve func(*C.int32_t) C.ten_go_status_t) (int32, error) {
+func getPropInt32(retrieve func(*C.int32_t) C.ten_go_error_t) (int32, error) {
 	var cv C.int32_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
 	return int32(cv), nil
 }
 
-func getPropInt64(retrieve func(*C.int64_t) C.ten_go_status_t) (int64, error) {
+func getPropInt64(retrieve func(*C.int64_t) C.ten_go_error_t) (int64, error) {
 	var cv C.int64_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
 	return int64(cv), nil
 }
 
-func getPropUint8(retrieve func(*C.uint8_t) C.ten_go_status_t) (uint8, error) {
+func getPropUint8(retrieve func(*C.uint8_t) C.ten_go_error_t) (uint8, error) {
 	var cv C.uint8_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
@@ -325,11 +325,11 @@ func getPropUint8(retrieve func(*C.uint8_t) C.ten_go_status_t) (uint8, error) {
 }
 
 func getPropUint16(
-	retrieve func(*C.uint16_t) C.ten_go_status_t,
+	retrieve func(*C.uint16_t) C.ten_go_error_t,
 ) (uint16, error) {
 	var cv C.uint16_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
@@ -337,11 +337,11 @@ func getPropUint16(
 }
 
 func getPropUint32(
-	retrieve func(*C.uint32_t) C.ten_go_status_t,
+	retrieve func(*C.uint32_t) C.ten_go_error_t,
 ) (uint32, error) {
 	var cv C.uint32_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
@@ -349,21 +349,21 @@ func getPropUint32(
 }
 
 func getPropUint64(
-	retrieve func(*C.uint64_t) C.ten_go_status_t,
+	retrieve func(*C.uint64_t) C.ten_go_error_t,
 ) (uint64, error) {
 	var cv C.uint64_t
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
 	return uint64(cv), nil
 }
 
-func getPropBool(retrieve func(*C.bool) C.ten_go_status_t) (bool, error) {
+func getPropBool(retrieve func(*C.bool) C.ten_go_error_t) (bool, error) {
 	var cv C.bool
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return false, err
 	}
 
@@ -371,11 +371,11 @@ func getPropBool(retrieve func(*C.bool) C.ten_go_status_t) (bool, error) {
 }
 
 func getPropFloat32(
-	retrieve func(*C.float) C.ten_go_status_t,
+	retrieve func(*C.float) C.ten_go_error_t,
 ) (float32, error) {
 	var cv C.float
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
@@ -383,11 +383,11 @@ func getPropFloat32(
 }
 
 func getPropFloat64(
-	retrieve func(*C.double) C.ten_go_status_t,
+	retrieve func(*C.double) C.ten_go_error_t,
 ) (float64, error) {
 	var cv C.double
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return 0, err
 	}
 
@@ -396,7 +396,7 @@ func getPropFloat64(
 
 func getPropStr(
 	size uintptr,
-	retrieve func(unsafe.Pointer) C.ten_go_status_t,
+	retrieve func(unsafe.Pointer) C.ten_go_error_t,
 ) (string, error) {
 	if size == 0 {
 		panic("Should not happen.")
@@ -455,7 +455,7 @@ func getPropStr(
 	// can simply use make.
 	buf := make([]byte, size)
 	apiStatus := retrieve(unsafe.Pointer(&buf[0]))
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return "", err
 	}
 
@@ -466,7 +466,7 @@ func getPropStr(
 
 func getPropBytes(
 	size uintptr,
-	retrieve func(unsafe.Pointer) C.ten_go_status_t,
+	retrieve func(unsafe.Pointer) C.ten_go_error_t,
 ) ([]byte, error) {
 	if size == 0 {
 		panic("Should not happen.")
@@ -477,7 +477,7 @@ func getPropBytes(
 	// Refer to the comments in getPropStr.
 	buf = buf[:size]
 	apiStatus := retrieve(unsafe.Pointer(&buf[0]))
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		ReleaseBytes(buf)
 		return nil, err
 	}
@@ -486,11 +486,11 @@ func getPropBytes(
 }
 
 func getPropPtr(
-	retrieve func(*cHandle) C.ten_go_status_t,
+	retrieve func(*cHandle) C.ten_go_error_t,
 ) (any, error) {
 	var cv cHandle
 	apiStatus := retrieve(&cv)
-	if err := withGoStatus(&apiStatus); err != nil {
+	if err := withCGoError(&apiStatus); err != nil {
 		return nil, err
 	}
 

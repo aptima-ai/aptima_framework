@@ -222,7 +222,7 @@ func (p *msg) GetName() (string, error) {
 	var msgName *C.char
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_msg_get_name(p.cPtr, &msgName)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {

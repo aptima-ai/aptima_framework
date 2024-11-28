@@ -11,7 +11,7 @@
 
 #include "common.h"
 
-ten_go_status_t ten_go_extension_tester_create(
+ten_go_error_t ten_go_extension_tester_create(
     ten_go_handle_t go_extension_tester, uintptr_t *bridge_addr);
 
 void ten_go_extension_tester_finalize(uintptr_t bridge_addr);

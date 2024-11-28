@@ -880,7 +880,7 @@ void ten_extension_on_data(ten_extension_t *self, ten_shared_ptr_t *msg) {
     self->on_data(self, self->ten_env, msg);
   } else {
     // Bypass the data.
-    ten_env_send_data(self->ten_env, msg, NULL);
+    ten_env_send_data(self->ten_env, msg, NULL, NULL, NULL);
   }
 }
 
@@ -897,7 +897,7 @@ void ten_extension_on_video_frame(ten_extension_t *self,
     self->on_video_frame(self, self->ten_env, msg);
   } else {
     // Bypass the video frame.
-    ten_env_send_video_frame(self->ten_env, msg, NULL);
+    ten_env_send_video_frame(self->ten_env, msg, NULL, NULL, NULL);
   }
 }
 
@@ -914,7 +914,7 @@ void ten_extension_on_audio_frame(ten_extension_t *self,
     self->on_audio_frame(self, self->ten_env, msg);
   } else {
     // Bypass the audio frame.
-    ten_env_send_audio_frame(self->ten_env, msg, NULL);
+    ten_env_send_audio_frame(self->ten_env, msg, NULL, NULL, NULL);
   }
 }
 

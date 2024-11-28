@@ -219,19 +219,19 @@ static void proxy_on_video_frame(ten_extension_tester_t *self,
       ten_go_ten_env_tester_go_handle(ten_env_tester_bridge), msg_bridge_addr);
 }
 
-ten_go_status_t ten_go_extension_tester_create(
+ten_go_error_t ten_go_extension_tester_create(
     ten_go_handle_t go_extension_tester, uintptr_t *bridge_addr) {
   TEN_ASSERT(go_extension_tester > 0 && bridge_addr, "Invalid argument.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   ten_go_extension_tester_t *extension_tester =
       ten_go_extension_tester_create_internal(go_extension_tester);
 
   *bridge_addr = (uintptr_t)extension_tester;
 
-  return status;
+  return cgo_error;
 }
 
 void ten_go_extension_tester_finalize(uintptr_t bridge_addr) {

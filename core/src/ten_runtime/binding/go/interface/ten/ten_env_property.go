@@ -32,7 +32,7 @@ func (p *tenEnv) getPropertyTypeAndSize(
 		size,
 		cValue,
 	)
-	err := withGoStatus(&apiStatus)
+	err := withCGoError(&apiStatus)
 	if err != nil {
 		return propTypeInvalid, err
 	}
@@ -48,7 +48,7 @@ func (p *tenEnv) GetPropertyInt8(path string) (int8, error) {
 		)
 	}
 
-	return getPropInt8(func(v *C.int8_t) C.ten_go_status_t {
+	return getPropInt8(func(v *C.int8_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_int8(
 			p.cPtr,
@@ -67,7 +67,7 @@ func (p *tenEnv) GetPropertyInt16(path string) (int16, error) {
 		)
 	}
 
-	return getPropInt16(func(v *C.int16_t) C.ten_go_status_t {
+	return getPropInt16(func(v *C.int16_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_int16(
 			p.cPtr,
@@ -86,7 +86,7 @@ func (p *tenEnv) GetPropertyInt32(path string) (int32, error) {
 		)
 	}
 
-	return getPropInt32(func(v *C.int32_t) C.ten_go_status_t {
+	return getPropInt32(func(v *C.int32_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_int32(
 			p.cPtr,
@@ -105,7 +105,7 @@ func (p *tenEnv) GetPropertyInt64(path string) (int64, error) {
 		)
 	}
 
-	return getPropInt64(func(v *C.int64_t) C.ten_go_status_t {
+	return getPropInt64(func(v *C.int64_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_int64(
 			p.cPtr,
@@ -124,7 +124,7 @@ func (p *tenEnv) GetPropertyUint8(path string) (uint8, error) {
 		)
 	}
 
-	return getPropUint8(func(v *C.uint8_t) C.ten_go_status_t {
+	return getPropUint8(func(v *C.uint8_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_uint8(
 			p.cPtr,
@@ -143,7 +143,7 @@ func (p *tenEnv) GetPropertyUint16(path string) (uint16, error) {
 		)
 	}
 
-	return getPropUint16(func(v *C.uint16_t) C.ten_go_status_t {
+	return getPropUint16(func(v *C.uint16_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_uint16(
 			p.cPtr,
@@ -162,7 +162,7 @@ func (p *tenEnv) GetPropertyUint32(path string) (uint32, error) {
 		)
 	}
 
-	return getPropUint32(func(v *C.uint32_t) C.ten_go_status_t {
+	return getPropUint32(func(v *C.uint32_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_uint32(
 			p.cPtr,
@@ -181,7 +181,7 @@ func (p *tenEnv) GetPropertyUint64(path string) (uint64, error) {
 		)
 	}
 
-	return getPropUint64(func(v *C.uint64_t) C.ten_go_status_t {
+	return getPropUint64(func(v *C.uint64_t) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_uint64(
 			p.cPtr,
@@ -200,7 +200,7 @@ func (p *tenEnv) GetPropertyFloat32(path string) (float32, error) {
 		)
 	}
 
-	return getPropFloat32(func(v *C.float) C.ten_go_status_t {
+	return getPropFloat32(func(v *C.float) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_float32(
 			p.cPtr,
@@ -219,7 +219,7 @@ func (p *tenEnv) GetPropertyFloat64(path string) (float64, error) {
 		)
 	}
 
-	return getPropFloat64(func(v *C.double) C.ten_go_status_t {
+	return getPropFloat64(func(v *C.double) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_float64(
 			p.cPtr,
@@ -238,7 +238,7 @@ func (p *tenEnv) GetPropertyBool(path string) (bool, error) {
 		)
 	}
 
-	return getPropBool(func(v *C.bool) C.ten_go_status_t {
+	return getPropBool(func(v *C.bool) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_bool(
 			p.cPtr,
@@ -257,7 +257,7 @@ func (p *tenEnv) GetPropertyPtr(path string) (any, error) {
 		)
 	}
 
-	return getPropPtr(func(v *cHandle) C.ten_go_status_t {
+	return getPropPtr(func(v *cHandle) C.ten_go_error_t {
 		defer p.keepAlive()
 		return C.ten_go_ten_env_get_property_ptr(
 			p.cPtr,
@@ -318,7 +318,7 @@ func (p *tenEnv) GetPropertyString(path string) (string, error) {
 
 	return getPropStr(
 		uintptr(pSize),
-		func(v unsafe.Pointer) C.ten_go_status_t {
+		func(v unsafe.Pointer) C.ten_go_error_t {
 			defer p.keepAlive()
 			return C.ten_go_value_get_string(cValue, v)
 		},
@@ -375,7 +375,7 @@ func (p *tenEnv) GetPropertyBytes(path string) ([]byte, error) {
 
 	return getPropBytes(
 		uintptr(pSize),
-		func(v unsafe.Pointer) C.ten_go_status_t {
+		func(v unsafe.Pointer) C.ten_go_error_t {
 			defer p.keepAlive()
 			return C.ten_go_value_get_buf(cValue, v)
 		},
@@ -414,7 +414,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.bool(value.(bool)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeInt8:
 			apiStatus := C.ten_go_ten_env_set_property_int8(
@@ -424,7 +424,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.int8_t(value.(int8)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeInt16:
 			apiStatus := C.ten_go_ten_env_set_property_int16(
@@ -434,7 +434,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.int16_t(value.(int16)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeInt32:
 			apiStatus := C.ten_go_ten_env_set_property_int32(
@@ -444,7 +444,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.int32_t(value.(int32)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeInt64:
 			apiStatus := C.ten_go_ten_env_set_property_int64(
@@ -454,7 +454,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.int64_t(value.(int64)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeInt:
 			if is64bit {
@@ -465,7 +465,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 					C.int64_t(value.(int)),
 					C.uintptr_t(callbackHandle),
 				)
-				err = withGoStatus(&apiStatus)
+				err = withCGoError(&apiStatus)
 			} else {
 				apiStatus := C.ten_go_ten_env_set_property_int32(
 					p.cPtr,
@@ -474,7 +474,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 					C.int32_t(value.(int)),
 					C.uintptr_t(callbackHandle),
 				)
-				err = withGoStatus(&apiStatus)
+				err = withCGoError(&apiStatus)
 			}
 
 		case propTypeUint8:
@@ -485,7 +485,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.uint8_t(value.(uint8)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeUint16:
 			apiStatus := C.ten_go_ten_env_set_property_uint16(
@@ -495,7 +495,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.uint16_t(value.(uint16)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeUint32:
 			apiStatus := C.ten_go_ten_env_set_property_uint32(
@@ -505,7 +505,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.uint32_t(value.(uint32)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeUint64:
 			apiStatus := C.ten_go_ten_env_set_property_uint64(
@@ -515,7 +515,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.uint64_t(value.(uint64)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeUint:
 			if is64bit {
@@ -526,7 +526,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 					C.uint64_t(value.(uint)),
 					C.uintptr_t(callbackHandle),
 				)
-				err = withGoStatus(&apiStatus)
+				err = withCGoError(&apiStatus)
 			} else {
 				apiStatus := C.ten_go_ten_env_set_property_uint32(
 					p.cPtr,
@@ -535,7 +535,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 					C.uint32_t(value.(uint)),
 					C.uintptr_t(callbackHandle),
 				)
-				err = withGoStatus(&apiStatus)
+				err = withCGoError(&apiStatus)
 			}
 
 		case propTypeFloat32:
@@ -546,7 +546,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.float(value.(float32)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeFloat64:
 			apiStatus := C.ten_go_ten_env_set_property_float64(
@@ -556,7 +556,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.double(value.(float64)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeStr:
 			vs := value.(string)
@@ -568,7 +568,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.int(len(vs)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypeBuf:
 			vb := value.([]byte)
@@ -580,7 +580,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				C.int(len(vb)),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		case propTypePtr:
 			vh := newGoHandle(value)
@@ -591,7 +591,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 				cHandle(vh),
 				C.uintptr_t(callbackHandle),
 			)
-			err = withGoStatus(&apiStatus)
+			err = withCGoError(&apiStatus)
 
 		default:
 			// Should not happen.
@@ -637,7 +637,7 @@ func (p *tenEnv) SetPropertyString(
 			C.int(len(value)),
 			C.uintptr_t(callbackHandle),
 		)
-		err := withGoStatus(&apiStatus)
+		err := withCGoError(&apiStatus)
 		if err != nil {
 			// Clean up the handle if there was an error.
 			loadAndDeleteGoHandle(callbackHandle)
@@ -680,7 +680,7 @@ func (p *tenEnv) SetPropertyBytes(
 			C.int(len(value)),
 			C.uintptr_t(callbackHandle),
 		)
-		err := withGoStatus(&apiStatus)
+		err := withCGoError(&apiStatus)
 		if err != nil {
 			// Clean up the handle if there was an error.
 			loadAndDeleteGoHandle(callbackHandle)
@@ -709,7 +709,7 @@ func (p *tenEnv) setPropertyFromJSONBytes(path string, value []byte) error {
 		C.int(len(value)),
 		C.uintptr_t(callbackHandle),
 	)
-	err := withGoStatus(&apiStatus)
+	err := withCGoError(&apiStatus)
 	if err != nil {
 		// Clean up the handle if there was an error.
 		loadAndDeleteGoHandle(callbackHandle)
@@ -753,7 +753,7 @@ func (p *tenEnv) getPropertyToJSONBytes(path string) ([]byte, error) {
 		&cJSONStrLen,
 		&cJSONStr,
 	)
-	err := withGoStatus(&apiStatus)
+	err := withCGoError(&apiStatus)
 	if err != nil {
 		return nil, err
 	}
@@ -769,7 +769,7 @@ func (p *tenEnv) getPropertyToJSONBytes(path string) ([]byte, error) {
 
 	// Refer to the comments in `getPropertyToJSONBytes` in msg.go for the
 	// reason why we do not use `C.GoBytes`.
-	return getPropBytes(size, func(v unsafe.Pointer) C.ten_go_status_t {
+	return getPropBytes(size, func(v unsafe.Pointer) C.ten_go_error_t {
 		return C.ten_go_copy_c_str_to_slice_and_free(cJSONStr, v)
 	})
 }
@@ -798,7 +798,7 @@ func (p *tenEnv) InitPropertyFromJSONBytes(value []byte) error {
 		unsafe.Pointer(unsafe.SliceData(value)),
 		C.int(len(value)),
 	)
-	err := withGoStatus(&apiStatus)
+	err := withCGoError(&apiStatus)
 
 	return err
 }

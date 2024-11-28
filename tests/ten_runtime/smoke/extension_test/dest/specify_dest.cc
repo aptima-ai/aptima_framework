@@ -78,7 +78,8 @@ class business_extension : public ten::extension_t {
     ten_env.send_cmd(
         std::move(cmd_to_plugin_1),
         [this, cmd_shared](ten::ten_env_t &ten_env,
-                           std::unique_ptr<ten::cmd_result_t> cmd_result) {
+                           std::unique_ptr<ten::cmd_result_t> cmd_result,
+                           ten::error_t *err) {
           // Receive the result from plugin_1, and decide the next step based
           // on the content of the result.
           nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
@@ -108,7 +109,8 @@ class business_extension : public ten::extension_t {
     ten_env.send_cmd(
         std::move(cmd_to_plugin_2),
         [cmd_shared](ten::ten_env_t &ten_env,
-                     std::unique_ptr<ten::cmd_result_t> cmd_result) {
+                     std::unique_ptr<ten::cmd_result_t> cmd_result,
+                     ten::error_t *err) {
           // Receive result from plugin_2.
           nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
           if (json["detail"] == "plugin_2_result") {

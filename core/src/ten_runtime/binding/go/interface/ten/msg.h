@@ -37,11 +37,11 @@ const char *ten_go_msg_to_json(uintptr_t bridge_addr);
  * @param size The output for the size of the property. The size is only used if
  * the property is not a primitive type.
  */
-ten_go_status_t ten_go_msg_property_get_type_and_size(uintptr_t bridge_addr,
-                                                      const void *path,
-                                                      int path_len,
-                                                      uint8_t *type,
-                                                      uintptr_t *size);
+ten_go_error_t ten_go_msg_property_get_type_and_size(uintptr_t bridge_addr,
+                                                     const void *path,
+                                                     int path_len,
+                                                     uint8_t *type,
+                                                     uintptr_t *size);
 
 /**
  * @brief Get the value of a property as int8 from the msg.
@@ -55,49 +55,49 @@ ten_go_status_t ten_go_msg_property_get_type_and_size(uintptr_t bridge_addr,
  *
  * @param value The output for the value of the property.
  */
-ten_go_status_t ten_go_msg_property_get_int8(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_get_int8(uintptr_t bridge_addr,
+                                            const void *path, int path_len,
+                                            int8_t *value);
+
+ten_go_error_t ten_go_msg_property_get_int16(uintptr_t bridge_addr,
                                              const void *path, int path_len,
-                                             int8_t *value);
+                                             int16_t *value);
 
-ten_go_status_t ten_go_msg_property_get_int16(uintptr_t bridge_addr,
-                                              const void *path, int path_len,
-                                              int16_t *value);
-
-ten_go_status_t ten_go_msg_property_get_int32(uintptr_t bridge_addr,
-                                              const void *path, int path_len,
-                                              int32_t *value);
-
-ten_go_status_t ten_go_msg_property_get_int64(uintptr_t bridge_addr,
-                                              const void *path, int path_len,
-                                              int64_t *value);
-
-ten_go_status_t ten_go_msg_property_get_uint8(uintptr_t bridge_addr,
-                                              const void *path, int path_len,
-                                              uint8_t *value);
-
-ten_go_status_t ten_go_msg_property_get_uint16(uintptr_t bridge_addr,
-                                               const void *path, int path_len,
-                                               uint16_t *value);
-
-ten_go_status_t ten_go_msg_property_get_uint32(uintptr_t bridge_addr,
-                                               const void *path, int path_len,
-                                               uint32_t *value);
-
-ten_go_status_t ten_go_msg_property_get_uint64(uintptr_t bridge_addr,
-                                               const void *path, int path_len,
-                                               uint64_t *value);
-
-ten_go_status_t ten_go_msg_property_get_float32(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                float *value);
-
-ten_go_status_t ten_go_msg_property_get_float64(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                double *value);
-
-ten_go_status_t ten_go_msg_property_get_bool(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_get_int32(uintptr_t bridge_addr,
                                              const void *path, int path_len,
-                                             bool *value);
+                                             int32_t *value);
+
+ten_go_error_t ten_go_msg_property_get_int64(uintptr_t bridge_addr,
+                                             const void *path, int path_len,
+                                             int64_t *value);
+
+ten_go_error_t ten_go_msg_property_get_uint8(uintptr_t bridge_addr,
+                                             const void *path, int path_len,
+                                             uint8_t *value);
+
+ten_go_error_t ten_go_msg_property_get_uint16(uintptr_t bridge_addr,
+                                              const void *path, int path_len,
+                                              uint16_t *value);
+
+ten_go_error_t ten_go_msg_property_get_uint32(uintptr_t bridge_addr,
+                                              const void *path, int path_len,
+                                              uint32_t *value);
+
+ten_go_error_t ten_go_msg_property_get_uint64(uintptr_t bridge_addr,
+                                              const void *path, int path_len,
+                                              uint64_t *value);
+
+ten_go_error_t ten_go_msg_property_get_float32(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               float *value);
+
+ten_go_error_t ten_go_msg_property_get_float64(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               double *value);
+
+ten_go_error_t ten_go_msg_property_get_bool(uintptr_t bridge_addr,
+                                            const void *path, int path_len,
+                                            bool *value);
 
 /**
  * @brief Get the value of a property as string from the msg.
@@ -117,9 +117,9 @@ ten_go_status_t ten_go_msg_property_get_bool(uintptr_t bridge_addr,
  * copied to @a value, then it's safe to create a GO string based on @a value in
  * GO side after this cgo call.
  */
-ten_go_status_t ten_go_msg_property_get_string(uintptr_t bridge_addr,
-                                               const void *path, int path_len,
-                                               void *value);
+ten_go_error_t ten_go_msg_property_get_string(uintptr_t bridge_addr,
+                                              const void *path, int path_len,
+                                              void *value);
 
 /**
  * @brief Get the value of a property as buffer from the msg.
@@ -138,9 +138,9 @@ ten_go_status_t ten_go_msg_property_get_string(uintptr_t bridge_addr,
  * returned by ten_go_msg_property_get_type_and_size. The buffer value will be
  * copied to @a value.
  */
-ten_go_status_t ten_go_msg_property_get_buf(uintptr_t bridge_addr,
-                                            const void *path, int path_len,
-                                            void *value);
+ten_go_error_t ten_go_msg_property_get_buf(uintptr_t bridge_addr,
+                                           const void *path, int path_len,
+                                           void *value);
 
 /**
  * @brief Get the value of a property as pointer from the msg.
@@ -154,53 +154,53 @@ ten_go_status_t ten_go_msg_property_get_buf(uintptr_t bridge_addr,
  *
  * @param value The output for the value of the property.
  */
-ten_go_status_t ten_go_msg_property_get_ptr(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_get_ptr(uintptr_t bridge_addr,
+                                           const void *path, int path_len,
+                                           ten_go_handle_t *value);
+
+ten_go_error_t ten_go_msg_property_set_bool(uintptr_t bridge_addr,
                                             const void *path, int path_len,
-                                            ten_go_handle_t *value);
+                                            bool value);
 
-ten_go_status_t ten_go_msg_property_set_bool(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_int8(uintptr_t bridge_addr,
+                                            const void *path, int path_len,
+                                            int8_t value);
+
+ten_go_error_t ten_go_msg_property_set_int16(uintptr_t bridge_addr,
                                              const void *path, int path_len,
-                                             bool value);
+                                             int16_t value);
 
-ten_go_status_t ten_go_msg_property_set_int8(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_int32(uintptr_t bridge_addr,
                                              const void *path, int path_len,
-                                             int8_t value);
+                                             int32_t value);
 
-ten_go_status_t ten_go_msg_property_set_int16(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_int64(uintptr_t bridge_addr,
+                                             const void *path, int path_len,
+                                             int64_t value);
+
+ten_go_error_t ten_go_msg_property_set_uint8(uintptr_t bridge_addr,
+                                             const void *path, int path_len,
+                                             uint8_t value);
+
+ten_go_error_t ten_go_msg_property_set_uint16(uintptr_t bridge_addr,
                                               const void *path, int path_len,
-                                              int16_t value);
+                                              uint16_t value);
 
-ten_go_status_t ten_go_msg_property_set_int32(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_uint32(uintptr_t bridge_addr,
                                               const void *path, int path_len,
-                                              int32_t value);
+                                              uint32_t value);
 
-ten_go_status_t ten_go_msg_property_set_int64(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_uint64(uintptr_t bridge_addr,
                                               const void *path, int path_len,
-                                              int64_t value);
+                                              uint64_t value);
 
-ten_go_status_t ten_go_msg_property_set_uint8(uintptr_t bridge_addr,
-                                              const void *path, int path_len,
-                                              uint8_t value);
-
-ten_go_status_t ten_go_msg_property_set_uint16(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_float32(uintptr_t bridge_addr,
                                                const void *path, int path_len,
-                                               uint16_t value);
+                                               float value);
 
-ten_go_status_t ten_go_msg_property_set_uint32(uintptr_t bridge_addr,
+ten_go_error_t ten_go_msg_property_set_float64(uintptr_t bridge_addr,
                                                const void *path, int path_len,
-                                               uint32_t value);
-
-ten_go_status_t ten_go_msg_property_set_uint64(uintptr_t bridge_addr,
-                                               const void *path, int path_len,
-                                               uint64_t value);
-
-ten_go_status_t ten_go_msg_property_set_float32(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                float value);
-
-ten_go_status_t ten_go_msg_property_set_float64(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                double value);
+                                               double value);
 
 /**
  * @brief Set a GO string as a property of the msg.
@@ -220,10 +220,9 @@ ten_go_status_t ten_go_msg_property_set_float64(uintptr_t bridge_addr,
  *
  * @param value_len The length of the underlying buffer of @a value.
  */
-ten_go_status_t ten_go_msg_property_set_string(uintptr_t bridge_addr,
-                                               const void *path, int path_len,
-                                               const void *value,
-                                               int value_len);
+ten_go_error_t ten_go_msg_property_set_string(uintptr_t bridge_addr,
+                                              const void *path, int path_len,
+                                              const void *value, int value_len);
 
 /**
  * @brief Set a []byte as a property of the msg.
@@ -247,9 +246,9 @@ ten_go_status_t ten_go_msg_property_set_string(uintptr_t bridge_addr,
  *
  * @param value_len The length of the underlying buffer of @a value.
  */
-ten_go_status_t ten_go_msg_property_set_buf(uintptr_t bridge_addr,
-                                            const void *path, int path_len,
-                                            void *value, int value_len);
+ten_go_error_t ten_go_msg_property_set_buf(uintptr_t bridge_addr,
+                                           const void *path, int path_len,
+                                           void *value, int value_len);
 
 /**
  * @brief Set a GO Pointer as a property of the msg.
@@ -266,9 +265,9 @@ ten_go_status_t ten_go_msg_property_set_buf(uintptr_t bridge_addr,
  * @param value A GO handle pointing to the GO Pointer in the handle map in the
  * GO world.
  */
-ten_go_status_t ten_go_msg_property_set_ptr(uintptr_t bridge_addr,
-                                            const void *path, int path_len,
-                                            ten_go_handle_t value);
+ten_go_error_t ten_go_msg_property_set_ptr(uintptr_t bridge_addr,
+                                           const void *path, int path_len,
+                                           ten_go_handle_t value);
 
 /**
  * @brief Get the json string and the size of the json string of a property.
@@ -281,11 +280,11 @@ ten_go_status_t ten_go_msg_property_set_ptr(uintptr_t bridge_addr,
  * and @a json_str will be copied to the slice and destroy using
  * ten_go_copy_c_str_to_slice_and_free.
  */
-ten_go_status_t ten_go_msg_property_get_json_and_size(uintptr_t bridge_addr,
-                                                      const void *path,
-                                                      int path_len,
-                                                      uintptr_t *json_str_len,
-                                                      const char **json_str);
+ten_go_error_t ten_go_msg_property_get_json_and_size(uintptr_t bridge_addr,
+                                                     const void *path,
+                                                     int path_len,
+                                                     uintptr_t *json_str_len,
+                                                     const char **json_str);
 
 /**
  * @brief Parse @a json_str as a json object and set it as a property.
@@ -294,11 +293,11 @@ ten_go_status_t ten_go_msg_property_get_json_and_size(uintptr_t bridge_addr,
  * it points to must be a valid json data.
  * @param json_str_len The length of the underlying array of the GO slice.
  */
-ten_go_status_t ten_go_msg_property_set_json_bytes(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len,
-                                                   const void *json_str,
-                                                   int json_str_len);
+ten_go_error_t ten_go_msg_property_set_json_bytes(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len,
+                                                  const void *json_str,
+                                                  int json_str_len);
 
 /**
  * @brief Finalizes the Go message.
@@ -308,4 +307,4 @@ ten_go_status_t ten_go_msg_property_set_json_bytes(uintptr_t bridge_addr,
  */
 void ten_go_msg_finalize(uintptr_t bridge_addr);
 
-ten_go_status_t ten_go_msg_get_name(uintptr_t bridge_addr, const char **name);
+ten_go_error_t ten_go_msg_get_name(uintptr_t bridge_addr, const char **name);

@@ -17,7 +17,7 @@
 
 static void proxy_send_xxx_callback(ten_env_tester_t *ten_env_tester,
                                     ten_shared_ptr_t *cmd_result,
-                                    void *callback_info) {
+                                    void *callback_info, ten_error_t *error) {
   TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
              "Should not happen.");
   TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),

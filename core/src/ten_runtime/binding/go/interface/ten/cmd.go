@@ -93,7 +93,7 @@ func NewCmd(cmdName string) (Cmd, error) {
 			C.int(len(cmdName)),
 			&bridge,
 		)
-		e := withGoStatus(&cStatus)
+		e := withCGoError(&cStatus)
 
 		return e
 	})

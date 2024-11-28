@@ -15,7 +15,6 @@
 #include "include_internal/ten_runtime/msg/field/field_info.h"
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "include_internal/ten_runtime/remote/remote.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/uuid.h"
@@ -341,7 +340,7 @@ void ten_cmd_base_set_seq_id(ten_shared_ptr_t *self, const char *seq_id) {
 }
 
 static void ten_raw_cmd_base_set_result_handler(
-    ten_cmd_base_t *self, ten_env_cmd_result_handler_func_t result_handler,
+    ten_cmd_base_t *self, ten_env_msg_result_handler_func_t result_handler,
     void *result_handler_data) {
   TEN_ASSERT(self && ten_raw_cmd_base_check_integrity(self),
              "Should not happen.");
@@ -351,7 +350,7 @@ static void ten_raw_cmd_base_set_result_handler(
 }
 
 void ten_cmd_base_set_result_handler(
-    ten_shared_ptr_t *self, ten_env_cmd_result_handler_func_t result_handler,
+    ten_shared_ptr_t *self, ten_env_msg_result_handler_func_t result_handler,
     void *result_handler_data) {
   TEN_ASSERT(self && ten_cmd_base_check_integrity(self), "Should not happen.");
   ten_raw_cmd_base_set_result_handler(ten_cmd_base_get_raw_cmd_base(self),

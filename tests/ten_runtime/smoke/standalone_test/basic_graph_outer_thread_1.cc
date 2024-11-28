@@ -120,7 +120,8 @@ class extension_tester_1 : public ten::extension_tester_t {
 
             ten_env.send_cmd(std::move(process_cmd),
                              [this](ten::ten_env_tester_t & /*ten_env*/,
-                                    std::unique_ptr<ten::cmd_result_t> result) {
+                                    std::unique_ptr<ten::cmd_result_t> result,
+                                    ten::error_t *err) {
                                calculated_result =
                                    result->get_property_int64("data");
                              });

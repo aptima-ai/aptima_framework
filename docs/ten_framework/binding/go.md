@@ -7,6 +7,7 @@ Let's build a Go application using the TEN framework.
 First, we'll create a basic TEN Go app by integrating several pre-built TEN packages. Follow these steps:
 
 {% code title=">_ Terminal" %}
+
 ```shell
 tman install app default_app_go
 cd default_app_go
@@ -14,6 +15,7 @@ cd default_app_go
 tman install protocol msgpack
 tman install extension_group default_extension_group
 ```
+
 {% endcode %}
 
 ### Installing a Default TEN Extension
@@ -21,17 +23,19 @@ tman install extension_group default_extension_group
 Next, install a default TEN extension written in Go:
 
 {% code title=">_ Terminal" %}
+
 ```shell
 tman install extension default_extension_go
 ```
-{% endcode %}
 
+{% endcode %}
 
 ### Declaring the Prebuilt Graph for Auto-Start
 
 Now, we'll modify the `property.json` file of the TEN app to include a graph declaration. This will ensure the default extension starts automatically when the TEN app is launched.
 
 {% code title=".json" %}
+
 ```json
 "predefined_graphs": [
   {
@@ -53,6 +57,7 @@ Now, we'll modify the `property.json` file of the TEN app to include a graph dec
   }
 ]
 ```
+
 {% endcode %}
 
 ## Building the App
@@ -60,9 +65,11 @@ Now, we'll modify the `property.json` file of the TEN app to include a graph dec
 Unlike standard Go projects, the TEN Go app uses CGo, so you need to set up certain environment variables before building. A build script is already provided in the TEN runtime Go binding system package, so you can build the app with a single command:
 
 {% code title=">_ Terminal" %}
+
 ```shell
 go run ten_packages/system/ten_runtime_go/tools/build/main.go
 ```
+
 {% endcode %}
 
 The compiled binary, `main`, will be generated in the `/bin` folder.
@@ -76,6 +83,7 @@ Since some environment variables need to be set, it is recommended to start the 
 ```shell
 ./bin/start
 ```
+
 {% endcode %}
 
 ## Debugging
@@ -85,6 +93,7 @@ If you are using Visual Studio Code (VSCode) as your development environment, yo
 ### Debugging Go Code
 
 {% code title=".json" %}
+
 ```json
 {
     "version": "0.2.0",
@@ -106,11 +115,13 @@ If you are using Visual Studio Code (VSCode) as your development environment, yo
     ]
 }
 ```
+
 {% endcode %}
 
 ### Debugging C Code
 
 {% code title=".json" %}
+
 ```json
 {
     "version": "0.2.0",
@@ -130,6 +141,7 @@ If you are using Visual Studio Code (VSCode) as your development environment, yo
     ]
 }
 ```
+
 {% endcode %}
 
 ## CGO
@@ -141,10 +153,12 @@ When interfacing Go with C, the cgo tool is crucial. When a C function is called
 Use the following command to generate these C/Go source files:
 
 {% code title=">_ Terminal" %}
+
 ```bash
 mkdir out
 go tool cgo -objdir out
 ```
+
 {% endcode %}
 
 Example:
@@ -154,11 +168,13 @@ Example:
 ```bash
 go tool cgo -objdir out cmd.go error.go
 ```
+
 {% endcode %}
 
 The generated files include:
 
 {% code title=".bash" %}
+
 ```bash
 ├── _cgo_export.c
 ├── _cgo_export.h
@@ -171,6 +187,7 @@ The generated files include:
 ├── error.cgo1.go
 └── error.cgo2.c
 ```
+
 {% endcode %}
 
 - **_cgo_export.h** is key to the interoperability between Go and C within the cgo context. It contains necessary declarations for Go functions accessible from C.
@@ -179,8 +196,8 @@ The generated files include:
 
   Example of type definitions:
 
-
 {% code title=".h" %}
+
   ```c
   typedef signed char GoInt8;
   typedef unsigned char GoUint8;
@@ -196,13 +213,15 @@ The generated files include:
   typedef float GoFloat32;
   typedef double GoFloat64;
   ```
+
 {% endcode %}
 
 - **_cgo_gotypes.go** contains the corresponding Go types defined in C and used in Go.
 
-  For example, if you define a struct `ten_go_status_t` in a header file `common.h` and use `C.ten_go_status_t` in Go, there will be a corresponding Go type in `_cgo_gotypes.go`:
+  For example, if you define a struct `ten_go_error_t` in a header file `common.h` and use `C.ten_go_error_t` in Go, there will be a corresponding Go type in `_cgo_gotypes.go`:
 
 {% code title=".go" %}
+
   ```go
   package ten
 
@@ -215,6 +234,7 @@ The generated files include:
       _        [3]byte
   }
   ```
+
 {% endcode %}
 
 - **cmd.cgo1.go** is a cgo-generated counterpart to the original Go source file `cmd.go`. It replaces direct calls to C functions and types with calls to the generated Go functions and types provided by cgo.
@@ -222,6 +242,7 @@ The generated files include:
   Example:
 
   {% code title=".go" %}
+
   ```go
   package ten
 
@@ -238,6 +259,7 @@ The generated files include:
       // ...
   }
   ```
+
 {% endcode %}
 
 - **cmd.cgo2.c** is a wrapper of the original C function called from Go.
@@ -245,6 +267,7 @@ The generated files include:
   Example:
 
   {% code title=".c" %}
+
   ```c
   CGO_NO_SANITIZE_THREAD void _cgo_cb1b98e39356_Cfunc_ten_go_cmd_create_custom_cmd(void *v) {
       struct {
@@ -252,7 +275,7 @@ The generated files include:
           int p1;
           char __pad12[4];
           ten_go_msg_t** p2;
-          ten_go_status_t r;
+          ten_go_error_t r;
       } __attribute__((__packed__, __gcc_struct__)) *_cgo_a = v;
       char *_cgo_stktop = _cgo_topofstack();
       __typeof__(_cgo_a->r) _cgo_r;
@@ -264,6 +287,7 @@ The generated files include:
       _cgo_msan_write(&_cgo_a->r, sizeof(_cgo_a->r));
   }
   ```
+
 {% endcode %}
 
 So, the calling sequence of `C.ten_go_cmd_create_cmd()` from Go is:
@@ -294,18 +318,22 @@ As mentioned earlier, the cgo tool generates corresponding Go types in `_cgo_got
 Example of an opaque C struct:
 
 {% code title=".h" %}
+
 ```c
 typedef struct ten_go_msg_t ten_go_msg_t;
 ```
+
 {% endcode %}
 
 The cgo tool will generate an incomplete type in Go:
 
 {% code title=".go" %}
+
 ```go
 type _Ctype_ten_go_msg_t = _Ctype_struct_ten_go_msg_t
 type _Ctype_struct_ten_go_msg_t _cgopackage.Incomplete
 ```
+
 {% endcode %}
 
 #### What happens if you use the incomplete type in Go?
@@ -315,10 +343,13 @@ type _Ctype_struct_ten_go_msg_t _cgopackage.Incomplete
   Since `sys.NotInHeap` cannot be allocated on the Go heap, operations like `new` or `make` won't work. Attempting to create a new instance of an opaque struct in Go will result in a compiler error:
 
 {% code title=".go" %}
+
   ```go
   msg := new(C.ten_go_msg_t) // Error: can't be allocated in Go; it is incomplete (or unallocatable)
   ```
+
 {% endcode %}
+
 - **Pointers to incomplete types cannot be passed to C directly.**
 
   If you have a C function with a pointer to an opaque struct as a parameter, passing a Go pointer to this incomplete type directly to a C function will not work according to cgo rules. The Go compiler will require the pointer to be "pinned" to ensure it adheres to Go's garbage collector (GC) constraints.

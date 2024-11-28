@@ -32,10 +32,10 @@ func newTenError(errno uint32, errMsg string) error {
 	}
 }
 
-// withGoStatus creates an TenError based on the api status from C. Note that
+// withCGoError creates an TenError based on the api status from C. Note that
 // the `err_msg` in `status` will be freed after this function, do not access it
 // again.
-func withGoStatus(status *C.ten_go_status_t) error {
+func withCGoError(status *C.ten_go_error_t) error {
 	if status.errno == 0 {
 		// No error.
 		return nil

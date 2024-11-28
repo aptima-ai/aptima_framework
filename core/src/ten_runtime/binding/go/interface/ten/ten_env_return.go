@@ -37,7 +37,7 @@ func (p *tenEnv) ReturnResult(statusCmd CmdResult, cmd Cmd) error {
 			statusCmd.getCPtr(),
 			cmd.getCPtr(),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 
@@ -59,6 +59,6 @@ func (p *tenEnv) ReturnResultDirectly(statusCmd CmdResult) error {
 			p.cPtr,
 			statusCmd.getCPtr(),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }

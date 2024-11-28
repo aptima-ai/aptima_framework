@@ -288,14 +288,14 @@ static ten_go_addon_t *ten_go_addon_register(
   return addon_bridge;
 }
 
-ten_go_status_t ten_go_addon_register_extension(
+ten_go_error_t ten_go_addon_register_extension(
     const void *addon_name, int addon_name_len, const void *base_dir,
     int base_dir_len, uintptr_t go_addon, uintptr_t *bridge_addr) {
   TEN_ASSERT(addon_name && addon_name_len > 0 && go_addon && bridge_addr,
              "Invalid argument.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   ten_go_addon_t *addon_bridge =
       ten_go_addon_register(addon_name, addon_name_len, base_dir, base_dir_len,
@@ -303,17 +303,17 @@ ten_go_status_t ten_go_addon_register_extension(
 
   *bridge_addr = (uintptr_t)addon_bridge;
 
-  return status;
+  return cgo_error;
 }
 
-ten_go_status_t ten_go_addon_register_extension_group(
+ten_go_error_t ten_go_addon_register_extension_group(
     const void *addon_name, int addon_name_len, const void *base_dir,
     int base_dir_len, uintptr_t go_addon, uintptr_t *bridge_addr) {
   TEN_ASSERT(addon_name && addon_name_len > 0 && go_addon && bridge_addr,
              "Invalid argument.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   ten_go_addon_t *addon_bridge =
       ten_go_addon_register(addon_name, addon_name_len, base_dir, base_dir_len,
@@ -321,5 +321,5 @@ ten_go_status_t ten_go_addon_register_extension_group(
 
   *bridge_addr = (uintptr_t)addon_bridge;
 
-  return status;
+  return cgo_error;
 }

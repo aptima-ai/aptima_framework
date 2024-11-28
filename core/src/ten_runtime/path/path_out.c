@@ -6,13 +6,13 @@
 //
 #include "include_internal/ten_runtime/path/path_out.h"
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 
 ten_path_out_t *ten_path_out_create(
     ten_path_table_t *table, const char *cmd_name, const char *parent_cmd_id,
     const char *cmd_id, ten_loc_t *src_loc, ten_loc_t *dest_loc,
-    ten_env_cmd_result_handler_func_t result_handler,
+    ten_env_msg_result_handler_func_t result_handler,
     void *result_handler_data) {
   ten_path_out_t *self = (ten_path_out_t *)TEN_MALLOC(sizeof(ten_path_out_t));
   TEN_ASSERT(self, "Failed to allocate memory.");

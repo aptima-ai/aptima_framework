@@ -98,7 +98,7 @@ func (p *cmdResult) SetFinal(isFinal bool) error {
 			p.getCPtr(),
 			C.bool(isFinal),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 
@@ -109,7 +109,7 @@ func (p *cmdResult) IsFinal() (bool, error) {
 			p.getCPtr(),
 			&isFinal,
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -126,7 +126,7 @@ func (p *cmdResult) IsCompleted() (bool, error) {
 			p.getCPtr(),
 			&isCompleted,
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {

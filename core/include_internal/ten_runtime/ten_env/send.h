@@ -11,6 +11,6 @@
 #include "ten_runtime/ten_env/internal/send.h"
 
 typedef struct ten_cmd_result_handler_for_send_cmd_ctx_t {
-  ten_env_cmd_result_handler_func_t result_handler;
+  ten_env_msg_result_handler_func_t result_handler;
   void *result_handler_user_data;
 } ten_cmd_result_handler_for_send_cmd_ctx_t;

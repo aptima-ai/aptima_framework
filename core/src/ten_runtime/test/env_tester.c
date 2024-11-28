@@ -77,6 +77,7 @@ typedef struct ten_extension_tester_send_cmd_info_t {
   ten_shared_ptr_t *cmd_result;
   ten_env_tester_cmd_result_handler_func_t handler;
   void *handler_user_data;
+  ten_error_t *err;
 } ten_env_tester_send_cmd_info_t;
 
 typedef struct ten_extension_tester_send_msg_info_t {
@@ -87,7 +88,8 @@ typedef struct ten_extension_tester_send_msg_info_t {
 static ten_env_tester_send_cmd_info_t *
 ten_extension_tester_send_cmd_info_create(
     ten_extension_tester_t *tester, ten_shared_ptr_t *cmd,
-    ten_env_tester_cmd_result_handler_func_t handler, void *handler_user_data) {
+    ten_env_tester_cmd_result_handler_func_t handler, void *handler_user_data,
+    ten_error_t *err) {
   TEN_ASSERT(
       tester && ten_extension_tester_check_integrity(tester, true) && cmd,
       "Invalid argument.");
@@ -101,6 +103,7 @@ ten_extension_tester_send_cmd_info_create(
   self->cmd_result = NULL;
   self->handler = handler;
   self->handler_user_data = handler_user_data;
+  self->err = err;
 
   return self;
 }
@@ -150,16 +153,13 @@ static void ten_extension_tester_execute_cmd_result_handler_task(void *self,
   TEN_ASSERT(send_cmd_info, "Invalid argument.");
 
   send_cmd_info->handler(tester->ten_env_tester, send_cmd_info->cmd_result,
-                         send_cmd_info->handler_user_data);
+                         send_cmd_info->handler_user_data, send_cmd_info->err);
 
   ten_extension_tester_send_cmd_info_destroy(send_cmd_info);
 }
 
-static void send_cmd_callback(ten_extension_t *extension, ten_env_t *ten_env,
-                              ten_shared_ptr_t *cmd_result,
-                              void *callback_user_data) {
-  TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
-             "Should not happen.");
+static void send_cmd_callback(ten_env_t *ten_env, ten_shared_ptr_t *cmd_result,
+                              void *callback_user_data, ten_error_t *err) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
   TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
@@ -210,7 +210,7 @@ static void test_extension_ten_env_send_data(ten_env_t *ten_env,
   TEN_ASSERT(send_msg_info->msg && ten_msg_check_integrity(send_msg_info->msg),
              "Should not happen.");
 
-  bool rc = ten_env_send_data(ten_env, send_msg_info->msg, NULL);
+  bool rc = ten_env_send_data(ten_env, send_msg_info->msg, NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_shared_ptr_destroy(send_msg_info->msg);
@@ -228,7 +228,8 @@ static void test_extension_ten_env_send_audio_frame(ten_env_t *ten_env,
   TEN_ASSERT(send_msg_info->msg && ten_msg_check_integrity(send_msg_info->msg),
              "Should not happen.");
 
-  bool rc = ten_env_send_audio_frame(ten_env, send_msg_info->msg, NULL);
+  bool rc =
+      ten_env_send_audio_frame(ten_env, send_msg_info->msg, NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_shared_ptr_destroy(send_msg_info->msg);
@@ -246,7 +247,8 @@ static void test_extension_ten_env_send_video_frame(ten_env_t *ten_env,
   TEN_ASSERT(send_msg_info->msg && ten_msg_check_integrity(send_msg_info->msg),
              "Should not happen.");
 
-  bool rc = ten_env_send_video_frame(ten_env, send_msg_info->msg, NULL);
+  bool rc =
+      ten_env_send_video_frame(ten_env, send_msg_info->msg, NULL, NULL, NULL);
   TEN_ASSERT(rc, "Should not happen.");
 
   ten_shared_ptr_destroy(send_msg_info->msg);
@@ -260,7 +262,7 @@ bool ten_env_tester_send_cmd(ten_env_tester_t *self, ten_shared_ptr_t *cmd,
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
   ten_env_tester_send_cmd_info_t *send_cmd_info =
       ten_extension_tester_send_cmd_info_create(
-          self->tester, ten_shared_ptr_clone(cmd), handler, user_data);
+          self->tester, ten_shared_ptr_clone(cmd), handler, user_data, err);
 
   TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
   return ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,

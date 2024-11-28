@@ -17,6 +17,7 @@ group("go") {
       "expired_ten_go",
       "frequently_cgo_call_go",
       "handle_error_go",
+      "no_dest_go",
       "prepare_to_stop_go",
       "return_result_go",
       "return_value_go",

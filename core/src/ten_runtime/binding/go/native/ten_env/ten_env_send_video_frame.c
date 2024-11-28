@@ -60,15 +60,15 @@ static void ten_env_proxy_notify_send_video_frame(ten_env_t *ten_env,
   ten_error_t err;
   ten_error_init(&err);
 
-  TEN_UNUSED bool res =
-      ten_env_send_video_frame(ten_env, notify_info->c_video_frame, NULL);
+  TEN_UNUSED bool res = ten_env_send_video_frame(
+      ten_env, notify_info->c_video_frame, NULL, NULL, NULL);
 
   ten_error_deinit(&err);
 
   ten_env_notify_send_video_frame_info_destroy(notify_info);
 }
 
-ten_go_status_t ten_go_ten_env_send_video_frame(
+ten_go_error_t ten_go_ten_env_send_video_frame(
     uintptr_t bridge_addr, uintptr_t video_frame_bridge_addr) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
@@ -78,11 +78,11 @@ ten_go_status_t ten_go_ten_env_send_video_frame(
   TEN_ASSERT(video_frame && ten_go_msg_check_integrity(video_frame),
              "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
-      self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
+      self, { ten_go_error_set_errno(&cgo_error, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_error_t err;
   ten_error_init(&err);
@@ -95,11 +95,11 @@ ten_go_status_t ten_go_ten_env_send_video_frame(
                             ten_env_proxy_notify_send_video_frame, notify_info,
                             false, &err)) {
     ten_env_notify_send_video_frame_info_destroy(notify_info);
-    ten_go_status_from_error(&status, &err);
+    ten_go_error_from_error(&cgo_error, &err);
   }
 
   ten_error_deinit(&err);
   TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 ten_is_close:
-  return status;
+  return cgo_error;
 }

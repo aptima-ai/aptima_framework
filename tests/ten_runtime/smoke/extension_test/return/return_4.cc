@@ -32,8 +32,9 @@ class test_extension_1 : public ten::extension_t {
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_world") {
       ten_env.send_cmd(
-          std::move(cmd), [this](ten::ten_env_t &ten_env,
-                                 std::unique_ptr<ten::cmd_result_t> result) {
+          std::move(cmd),
+          [this](ten::ten_env_t &ten_env,
+                 std::unique_ptr<ten::cmd_result_t> result, ten::error_t *err) {
             EXPECT_EQ(received_cmd_results_cnt, static_cast<size_t>(1));
             received_cmd_results_cnt--;
 

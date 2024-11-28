@@ -71,7 +71,7 @@ func WrapExtensionTester(
 		cHandle(extTesterObjID),
 		&bridge,
 	)
-	if err := withGoStatus(&status); err != nil {
+	if err := withCGoError(&status); err != nil {
 		log.Printf("Failed to create extension tester, %v\n", err)
 		return nil
 	}

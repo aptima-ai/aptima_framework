@@ -13,4 +13,4 @@
 
 TEN_RUNTIME_PRIVATE_API bool ten_go_ten_return_status_value(
     ten_go_ten_env_t *self, ten_go_msg_t *cmd, TEN_STATUS_CODE status_code,
-    ten_value_t *status_value, ten_go_status_t *api_status);
+    ten_value_t *status_value, ten_go_error_t *api_status);

@@ -101,7 +101,8 @@ class test_extension_2 : public ten::extension_t {
     ten_env.send_cmd(
         std::move(cmd),
         [this](ten::ten_env_t &ten_env,
-               std::unique_ptr<ten::cmd_result_t> cmd_result) {
+               std::unique_ptr<ten::cmd_result_t> cmd_result,
+               ten::error_t *err) {
           auto name = cmd_result->get_property_string("detail");
           greeting_ += name;
 

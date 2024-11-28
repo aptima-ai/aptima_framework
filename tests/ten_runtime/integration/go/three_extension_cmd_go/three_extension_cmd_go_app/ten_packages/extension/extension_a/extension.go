@@ -46,12 +46,12 @@ func (p *aExtension) OnCmd(
 			}
 			err = tenEnv.SendCmd(
 				cmdB,
-				func(tenEnv ten.TenEnv, cmdStatus ten.CmdResult) {
-					detail, err := cmdStatus.GetPropertyString("detail")
+				func(tenEnv ten.TenEnv, cmdResult ten.CmdResult, e error) {
+					detail, err := cmdResult.GetPropertyString("detail")
 					if err != nil {
 						panic("Should not happen.")
 					}
-					statusCode, _ := cmdStatus.GetStatusCode()
+					statusCode, _ := cmdResult.GetStatusCode()
 					fmt.Println(
 						"statusCode:",
 						statusCode,
@@ -59,9 +59,9 @@ func (p *aExtension) OnCmd(
 						detail,
 					)
 
-					cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-					cmdResult.SetPropertyString("detail", detail)
-					err = tenEnv.ReturnResult(cmdResult, cmd)
+					cmdResult2, _ := ten.NewCmdResult(ten.StatusCodeOk)
+					cmdResult2.SetPropertyString("detail", detail)
+					err = tenEnv.ReturnResult(cmdResult2, cmd)
 					if err != nil {
 						panic("Should not happen.")
 					}

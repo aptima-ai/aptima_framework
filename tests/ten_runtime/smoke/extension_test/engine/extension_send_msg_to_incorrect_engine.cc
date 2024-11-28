@@ -33,7 +33,8 @@ class test_extension : public ten::extension_t {
       ten_env.send_cmd(
           std::move(test_cmd),
           [cmd_shared](ten::ten_env_t &ten_env,
-                       std::unique_ptr<ten::cmd_result_t> cmd_result) {
+                       std::unique_ptr<ten::cmd_result_t> cmd_result,
+                       ten::error_t *err) {
             ten_env.return_result(std::move(cmd_result),
                                   std::move(*cmd_shared));
             return true;

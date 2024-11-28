@@ -55,7 +55,8 @@ typedef struct test_info_t {
 
 void hello_world_cmd_result_handler(ten_env_tester_t *ten_env,
                                     ten_shared_ptr_t *cmd_result,
-                                    void *user_data) {
+                                    void *user_data,
+                                    TEN_UNUSED ten_error_t *err) {
   if (ten_cmd_result_get_status_code(cmd_result) == TEN_STATUS_CODE_OK) {
     auto *test_info = static_cast<test_info_t *>(user_data);
     test_info->hello_world_cmd_success = true;

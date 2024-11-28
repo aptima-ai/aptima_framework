@@ -17,6 +17,6 @@ void ten_go_ten_env_tester_finalize(uintptr_t bridge_addr);
 
 void ten_go_ten_env_tester_on_start_done(uintptr_t bridge_addr);
 
-ten_go_status_t ten_go_ten_env_tester_send_cmd(uintptr_t bridge_addr,
-                                               uintptr_t cmd_bridge_addr,
-                                               ten_go_handle_t handler_id);
+ten_go_error_t ten_go_ten_env_tester_send_cmd(uintptr_t bridge_addr,
+                                              uintptr_t cmd_bridge_addr,
+                                              ten_go_handle_t handler_id);

@@ -39,11 +39,12 @@ class test_extension : public ten::extension_t {
 
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     } else {
-      ten_env.send_cmd(std::move(cmd),
-                       [](ten::ten_env_t &ten_env,
-                          std::unique_ptr<ten::cmd_result_t> result) {
-                         ten_env.return_result_directly(std::move(result));
-                       });
+      ten_env.send_cmd(
+          std::move(cmd),
+          [](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> result,
+             ten::error_t *err) {
+            ten_env.return_result_directly(std::move(result));
+          });
     }
   }
 

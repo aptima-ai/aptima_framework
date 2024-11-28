@@ -12,5 +12,5 @@
 #include "ten_utils/lib/json.h"
 
 TEN_RUNTIME_PRIVATE_API ten_json_t *ten_go_json_loads(const void *json_bytes,
-                                                    int json_bytes_len,
-                                                    ten_go_status_t *status);
+                                                      int json_bytes_len,
+                                                      ten_go_error_t *status);

@@ -47,8 +47,8 @@ class test_predefined_graph : public ten::extension_t {
 
     ten_env.send_cmd(
         std::move(start_graph_cmd),
-        [this](ten::ten_env_t &ten_env,
-               std::unique_ptr<ten::cmd_result_t> cmd) {
+        [this](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> cmd,
+               ten::error_t *err) {
           auto graph_id = cmd->get_property_string("detail");
 
           auto hello_world_cmd = ten::cmd_t::create("hello_world");
@@ -59,7 +59,8 @@ class test_predefined_graph : public ten::extension_t {
           ten_env.send_cmd(
               std::move(hello_world_cmd),
               [this](ten::ten_env_t &ten_env,
-                     std::unique_ptr<ten::cmd_result_t> cmd) {
+                     std::unique_ptr<ten::cmd_result_t> cmd,
+                     ten::error_t *err) {
                 received_hello_world_resp = true;
 
                 if (test_cmd != nullptr) {

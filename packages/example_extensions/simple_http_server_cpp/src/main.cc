@@ -645,7 +645,8 @@ void send_ten_msg_with_req_body(
         ten_env.send_cmd(
             std::move(cmd),
             [http_session_data](ten::ten_env_t &ten_env,
-                                std::unique_ptr<ten::cmd_result_t> cmd) {
+                                std::unique_ptr<ten::cmd_result_t> cmd,
+                                ten::error_t * /*error*/) {
               auto *ext = static_cast<http_server_extension_t *>(
                   ten_env.get_attached_target());
               assert(ext && "Failed to get the attached extension.");
@@ -683,7 +684,8 @@ void send_ten_msg_without_req_body(
         ten_env.send_cmd(
             std::move(cmd),
             [http_session_data](ten::ten_env_t &ten_env,
-                                std::unique_ptr<ten::cmd_result_t> cmd) {
+                                std::unique_ptr<ten::cmd_result_t> cmd,
+                                ten::error_t * /*error*/) {
               auto *ext = static_cast<http_server_extension_t *>(
                   ten_env.get_attached_target());
               assert(ext && "Failed to get the attached extension.");

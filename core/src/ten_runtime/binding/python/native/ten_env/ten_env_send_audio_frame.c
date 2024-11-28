@@ -48,7 +48,8 @@ static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
 
   ten_env_notify_send_audio_frame_info_t *notify_info = user_data;
 
-  ten_env_send_audio_frame(ten_env, notify_info->c_audio_frame, NULL);
+  ten_env_send_audio_frame(ten_env, notify_info->c_audio_frame, NULL, NULL,
+                           NULL);
 
   ten_env_notify_send_audio_frame_info_destroy(notify_info);
 }

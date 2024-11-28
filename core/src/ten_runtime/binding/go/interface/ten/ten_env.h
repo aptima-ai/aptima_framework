@@ -35,22 +35,22 @@ void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,
                                             uintptr_t instance_bridge_addr,
                                             uintptr_t context_addr);
 
-ten_go_status_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
-                                             uintptr_t cmd_result_bridge_addr,
-                                             uintptr_t cmd_bridge_addr);
+ten_go_error_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
+                                            uintptr_t cmd_result_bridge_addr,
+                                            uintptr_t cmd_bridge_addr);
 
-ten_go_status_t ten_go_ten_env_return_result_directly(
+ten_go_error_t ten_go_ten_env_return_result_directly(
     uintptr_t bridge_addr, uintptr_t cmd_result_bridge_addr);
 
-ten_go_status_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
-                                        uintptr_t cmd_bridge_addr,
-                                        ten_go_handle_t handler_id, bool is_ex);
+ten_go_error_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
+                                       uintptr_t cmd_bridge_addr,
+                                       ten_go_handle_t handler_id, bool is_ex);
 
-ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
-                                         uintptr_t data_bridge_addr,
-                                         uintptr_t callback_handle);
+ten_go_error_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
+                                        uintptr_t data_bridge_addr,
+                                        uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_send_video_frame(
+ten_go_error_t ten_go_ten_env_send_video_frame(
     uintptr_t bridge_addr, uintptr_t video_frame_bridge_addr);
 
 bool ten_go_ten_env_send_audio_frame(uintptr_t bridge_addr,
@@ -106,7 +106,7 @@ const char *ten_go_ten_env_debug_info(uintptr_t bridge_addr);
  *
  * @param value_addr The output for the ten_value_t* of the property.
  */
-ten_go_status_t ten_go_ten_env_get_property_type_and_size(
+ten_go_error_t ten_go_ten_env_get_property_type_and_size(
     uintptr_t bridge_addr, const void *path, int path_len, uint8_t *type,
     uintptr_t *size, uintptr_t *value_addr);
 
@@ -122,126 +122,125 @@ ten_go_status_t ten_go_ten_env_get_property_type_and_size(
  *
  * @param value The output for the value of the property.
  */
-ten_go_status_t ten_go_ten_env_get_property_int8(uintptr_t bridge_addr,
-                                                 const void *path, int path_len,
-                                                 int8_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_int16(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, int16_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_int32(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, int32_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_int64(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, int64_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_uint8(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, uint8_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_uint16(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len,
-                                                   uint16_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_uint32(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len,
-                                                   uint32_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_uint64(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len,
-                                                   uint64_t *value);
-
-ten_go_status_t ten_go_ten_env_get_property_float32(uintptr_t bridge_addr,
-                                                    const void *path,
-                                                    int path_len, float *value);
-
-ten_go_status_t ten_go_ten_env_get_property_float64(uintptr_t bridge_addr,
-                                                    const void *path,
-                                                    int path_len,
-                                                    double *value);
-
-ten_go_status_t ten_go_ten_env_get_property_bool(uintptr_t bridge_addr,
-                                                 const void *path, int path_len,
-                                                 bool *value);
-
-ten_go_status_t ten_go_ten_env_get_property_ptr(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_get_property_int8(uintptr_t bridge_addr,
                                                 const void *path, int path_len,
-                                                ten_go_handle_t *value);
+                                                int8_t *value);
 
-ten_go_status_t ten_go_ten_env_set_property_bool(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_get_property_int16(uintptr_t bridge_addr,
                                                  const void *path, int path_len,
-                                                 bool value,
+                                                 int16_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_int32(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int32_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_int64(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int64_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_uint8(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 uint8_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_uint16(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len,
+                                                  uint16_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_uint32(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len,
+                                                  uint32_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_uint64(uintptr_t bridge_addr,
+                                                  const void *path,
+                                                  int path_len,
+                                                  uint64_t *value);
+
+ten_go_error_t ten_go_ten_env_get_property_float32(uintptr_t bridge_addr,
+                                                   const void *path,
+                                                   int path_len, float *value);
+
+ten_go_error_t ten_go_ten_env_get_property_float64(uintptr_t bridge_addr,
+                                                   const void *path,
+                                                   int path_len, double *value);
+
+ten_go_error_t ten_go_ten_env_get_property_bool(uintptr_t bridge_addr,
+                                                const void *path, int path_len,
+                                                bool *value);
+
+ten_go_error_t ten_go_ten_env_get_property_ptr(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               ten_go_handle_t *value);
+
+ten_go_error_t ten_go_ten_env_set_property_bool(uintptr_t bridge_addr,
+                                                const void *path, int path_len,
+                                                bool value,
+                                                uintptr_t callback_handle);
+
+ten_go_error_t ten_go_ten_env_set_property_int8(uintptr_t bridge_addr,
+                                                const void *path, int path_len,
+                                                int8_t value,
+                                                uintptr_t callback_handle);
+
+ten_go_error_t ten_go_ten_env_set_property_int16(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int16_t value,
                                                  uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_int8(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_set_property_int32(uintptr_t bridge_addr,
                                                  const void *path, int path_len,
-                                                 int8_t value,
+                                                 int32_t value,
                                                  uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_int16(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_set_property_int64(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 int64_t value,
+                                                 uintptr_t callback_handle);
+
+ten_go_error_t ten_go_ten_env_set_property_uint8(uintptr_t bridge_addr,
+                                                 const void *path, int path_len,
+                                                 uint8_t value,
+                                                 uintptr_t callback_handle);
+
+ten_go_error_t ten_go_ten_env_set_property_uint16(uintptr_t bridge_addr,
                                                   const void *path,
-                                                  int path_len, int16_t value,
+                                                  int path_len, uint16_t value,
                                                   uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_int32(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_set_property_uint32(uintptr_t bridge_addr,
                                                   const void *path,
-                                                  int path_len, int32_t value,
+                                                  int path_len, uint32_t value,
                                                   uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_int64(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_set_property_uint64(uintptr_t bridge_addr,
                                                   const void *path,
-                                                  int path_len, int64_t value,
+                                                  int path_len, uint64_t value,
                                                   uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_uint8(uintptr_t bridge_addr,
-                                                  const void *path,
-                                                  int path_len, uint8_t value,
-                                                  uintptr_t callback_handle);
-
-ten_go_status_t ten_go_ten_env_set_property_uint16(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_set_property_float32(uintptr_t bridge_addr,
                                                    const void *path,
-                                                   int path_len, uint16_t value,
+                                                   int path_len, float value,
                                                    uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_uint32(uintptr_t bridge_addr,
+ten_go_error_t ten_go_ten_env_set_property_float64(uintptr_t bridge_addr,
                                                    const void *path,
-                                                   int path_len, uint32_t value,
+                                                   int path_len, double value,
                                                    uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_uint64(uintptr_t bridge_addr,
-                                                   const void *path,
-                                                   int path_len, uint64_t value,
-                                                   uintptr_t callback_handle);
-
-ten_go_status_t ten_go_ten_env_set_property_float32(uintptr_t bridge_addr,
-                                                    const void *path,
-                                                    int path_len, float value,
-                                                    uintptr_t callback_handle);
-
-ten_go_status_t ten_go_ten_env_set_property_float64(uintptr_t bridge_addr,
-                                                    const void *path,
-                                                    int path_len, double value,
-                                                    uintptr_t callback_handle);
-
-ten_go_status_t ten_go_ten_env_set_property_string(
+ten_go_error_t ten_go_ten_env_set_property_string(
     uintptr_t bridge_addr, const void *path, int path_len, const void *value,
     int value_len, uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_buf(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                void *value, int value_len,
-                                                uintptr_t callback_handle);
+ten_go_error_t ten_go_ten_env_set_property_buf(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               void *value, int value_len,
+                                               uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
-                                                const void *path, int path_len,
-                                                ten_go_handle_t value,
-                                                uintptr_t callback_handle);
+ten_go_error_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
+                                               const void *path, int path_len,
+                                               ten_go_handle_t value,
+                                               uintptr_t callback_handle);
 
 /**
  * @brief Get the json string and the size of the json string of a property.
@@ -255,7 +254,7 @@ ten_go_status_t ten_go_ten_env_set_property_ptr(uintptr_t bridge_addr,
  * and @a json_str will be copied to the slice and destroy using
  * ten_go_copy_c_str_to_slice_and_free.
  */
-ten_go_status_t ten_go_ten_env_get_property_json_and_size(
+ten_go_error_t ten_go_ten_env_get_property_json_and_size(
     uintptr_t bridge_addr, const void *path, int path_len,
     uintptr_t *json_str_len, const char **json_str);
 
@@ -266,11 +265,11 @@ ten_go_status_t ten_go_ten_env_get_property_json_and_size(
  * it points to must be a valid json data.
  * @param json_str_len The length of the underlying array of the GO slice.
  */
-ten_go_status_t ten_go_ten_env_set_property_json_bytes(
+ten_go_error_t ten_go_ten_env_set_property_json_bytes(
     uintptr_t bridge_addr, const void *path, int path_len, const void *json_str,
     int json_str_len, uintptr_t callback_handle);
 
-ten_go_status_t ten_go_ten_env_init_property_from_json_bytes(
+ten_go_error_t ten_go_ten_env_init_property_from_json_bytes(
     uintptr_t bridge_addr, const void *json_str, int json_str_len);
 
 void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,

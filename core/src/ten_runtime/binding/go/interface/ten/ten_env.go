@@ -20,7 +20,7 @@ import (
 type (
 	// ResultHandler is a function type that represents a handler for the result
 	// of a command.
-	ResultHandler func(TenEnv, CmdResult)
+	ResultHandler func(TenEnv, CmdResult, error)
 )
 
 // TenEnv represents the interface for the TEN (Run Time Environment) component.
@@ -138,7 +138,7 @@ func (p *tenEnv) sendCmd(cmd Cmd, handler ResultHandler) error {
 		C.bool(false),
 	)
 
-	return withGoStatus(&cStatus)
+	return withCGoError(&cStatus)
 }
 
 func (p *tenEnv) SendCmdEx(cmd Cmd, handler ResultHandler) error {
@@ -169,7 +169,7 @@ func (p *tenEnv) sendCmdEx(cmd Cmd, handler ResultHandler) error {
 		C.bool(true),
 	)
 
-	return withGoStatus(&cStatus)
+	return withCGoError(&cStatus)
 }
 
 // Exported function to be called from C when the async operation in C
@@ -178,7 +178,7 @@ func (p *tenEnv) sendCmdEx(cmd Cmd, handler ResultHandler) error {
 //export tenGoCAsyncApiCallback
 func tenGoCAsyncApiCallback(
 	callbackHandle C.uintptr_t,
-	apiStatus C.ten_go_status_t,
+	apiStatus C.ten_go_error_t,
 ) {
 	// Start a Go routine for asynchronous processing to prevent blocking C code
 	// on the native thread, which would in turn block the Go code calling the C
@@ -187,7 +187,7 @@ func tenGoCAsyncApiCallback(
 		goHandle := goHandle(callbackHandle)
 		done := loadAndDeleteGoHandle(goHandle).(chan error)
 
-		err := withGoStatus(&apiStatus)
+		err := withCGoError(&apiStatus)
 
 		done <- err
 	}()
@@ -213,7 +213,7 @@ func (p *tenEnv) SendData(data Data) error {
 			data.getCPtr(),
 			C.uintptr_t(callbackHandle),
 		)
-		err := withGoStatus(&apiStatus)
+		err := withCGoError(&apiStatus)
 		return err
 	})
 
@@ -244,7 +244,7 @@ func (p *tenEnv) SendVideoFrame(videoFrame VideoFrame) error {
 			p.cPtr,
 			videoFrame.getCPtr(),
 		)
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 }
 

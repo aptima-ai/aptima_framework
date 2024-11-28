@@ -19,7 +19,8 @@ class extension_tester_1 : public ten::extension_tester_t {
 
     ten_env.send_cmd(std::move(new_cmd),
                      [](ten::ten_env_tester_t &ten_env,
-                        std::unique_ptr<ten::cmd_result_t> result) {
+                        std::unique_ptr<ten::cmd_result_t> result,
+                        ten::error_t * /*error*/) {
                        if (result->get_status_code() == TEN_STATUS_CODE_OK) {
                          ten_env.stop_test();
                        }

@@ -55,7 +55,7 @@ func (p *tenEnvTester) sendCmd(cmd Cmd, handler TesterResultHandler) error {
 		cHandle(cb),
 	)
 
-	return withGoStatus(&cStatus)
+	return withCGoError(&cStatus)
 }
 
 func (p *tenEnvTester) OnStartDone() error {

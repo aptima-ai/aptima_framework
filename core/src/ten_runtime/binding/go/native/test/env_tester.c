@@ -132,9 +132,9 @@ void ten_go_ten_env_tester_on_start_done(uintptr_t bridge_addr) {
              "Should not happen.");
 }
 
-ten_go_status_t ten_go_ten_env_tester_send_cmd(uintptr_t bridge_addr,
-                                               uintptr_t cmd_bridge_addr,
-                                               ten_go_handle_t handler_id) {
+ten_go_error_t ten_go_ten_env_tester_send_cmd(uintptr_t bridge_addr,
+                                              uintptr_t cmd_bridge_addr,
+                                              ten_go_handle_t handler_id) {
   ten_go_ten_env_tester_t *self =
       ten_go_ten_env_tester_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_tester_check_integrity(self),
@@ -144,8 +144,8 @@ ten_go_status_t ten_go_ten_env_tester_send_cmd(uintptr_t bridge_addr,
   TEN_ASSERT(cmd && ten_go_msg_check_integrity(cmd), "Should not happen.");
   TEN_ASSERT(ten_go_msg_c_msg(cmd), "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
-  return status;
+  return cgo_error;
 }

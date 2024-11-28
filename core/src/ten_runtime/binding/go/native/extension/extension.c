@@ -318,14 +318,14 @@ ten_go_extension_t *ten_go_extension_create_internal(
   return extension_bridge;
 }
 
-ten_go_status_t ten_go_extension_create(ten_go_handle_t go_extension,
-                                        const void *name, int name_len,
-                                        uintptr_t *bridge_addr) {
+ten_go_error_t ten_go_extension_create(ten_go_handle_t go_extension,
+                                       const void *name, int name_len,
+                                       uintptr_t *bridge_addr) {
   TEN_ASSERT(go_extension > 0 && name && name_len > 0 && bridge_addr,
              "Invalid argument.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   ten_string_t extension_name;
   ten_string_init_formatted(&extension_name, "%.*s", name_len, name);
@@ -337,7 +337,7 @@ ten_go_status_t ten_go_extension_create(ten_go_handle_t go_extension,
 
   *bridge_addr = (uintptr_t)extension;
 
-  return status;
+  return cgo_error;
 }
 
 ten_extension_t *ten_go_extension_c_extension(ten_go_extension_t *self) {

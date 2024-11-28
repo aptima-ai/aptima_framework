@@ -25,4 +25,4 @@ TEN_RUNTIME_PRIVATE_API ten_go_handle_t
 ten_go_ten_env_go_handle(ten_go_ten_env_t *self);
 
 extern void tenGoCAsyncApiCallback(ten_go_handle_t callback,
-                                   ten_go_status_t status);
+                                   ten_go_error_t cgo_error);

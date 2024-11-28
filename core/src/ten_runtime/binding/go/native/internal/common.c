@@ -61,7 +61,7 @@ void ten_go_bridge_destroy_go_part(ten_go_bridge_t *self) {
   }
 }
 
-void ten_go_status_init_with_errno(ten_go_status_t *self, ten_errno_t errno) {
+void ten_go_error_init_with_errno(ten_go_error_t *self, ten_errno_t errno) {
   TEN_ASSERT(self, "Should not happen.");
 
   self->errno = errno;
@@ -69,20 +69,20 @@ void ten_go_status_init_with_errno(ten_go_status_t *self, ten_errno_t errno) {
   self->err_msg = NULL;
 }
 
-void ten_go_status_from_error(ten_go_status_t *self, ten_error_t *err) {
+void ten_go_error_from_error(ten_go_error_t *self, ten_error_t *err) {
   TEN_ASSERT(self && err, "Should not happen.");
 
-  ten_go_status_set(self, ten_error_errno(err), ten_error_errmsg(err));
+  ten_go_error_set(self, ten_error_errno(err), ten_error_errmsg(err));
 }
 
-void ten_go_status_set_errno(ten_go_status_t *self, ten_errno_t errno) {
+void ten_go_error_set_errno(ten_go_error_t *self, ten_errno_t errno) {
   TEN_ASSERT(self, "Should not happen.");
 
   self->errno = errno;
 }
 
-void ten_go_status_set(ten_go_status_t *self, ten_errno_t errno,
-                       const char *msg) {
+void ten_go_error_set(ten_go_error_t *self, ten_errno_t errno,
+                      const char *msg) {
   TEN_ASSERT(self, "Should not happen.");
 
   self->errno = errno;
@@ -95,21 +95,21 @@ void ten_go_status_set(ten_go_status_t *self, ten_errno_t errno,
 
   // This allocated memory space will be freed in the GO world.
   //
-  // `C.free(unsafe.Pointer(status.err_msg))`
+  // `C.free(unsafe.Pointer(error.err_msg))`
   self->err_msg = (char *)TEN_MALLOC(self->err_msg_size + 1);
   strncpy(self->err_msg, msg, self->err_msg_size);
   self->err_msg[self->err_msg_size] = '\0';
 }
 
-ten_go_status_t ten_go_copy_c_str_to_slice_and_free(const char *src,
-                                                    void *dest) {
+ten_go_error_t ten_go_copy_c_str_to_slice_and_free(const char *src,
+                                                   void *dest) {
   TEN_ASSERT(src && dest, "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   strcpy(dest, src);
   TEN_FREE(src);
 
-  return status;
+  return cgo_error;
 }

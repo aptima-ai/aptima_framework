@@ -37,9 +37,12 @@ func (s *Endpoint) defaultHandler(
 		statusChan := make(chan ten.CmdResult, 1)
 		cmd, _ := ten.NewCmd("demo")
 
-		s.tenEnv.SendCmd(cmd, func(tenEnv ten.TenEnv, cmdStatus ten.CmdResult) {
-			statusChan <- cmdStatus
-		})
+		s.tenEnv.SendCmd(
+			cmd,
+			func(tenEnv ten.TenEnv, cmdResult ten.CmdResult, e error) {
+				statusChan <- cmdResult
+			},
+		)
 
 		select {
 		case status := <-statusChan:

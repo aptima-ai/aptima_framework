@@ -33,6 +33,6 @@ void ten_go_value_destroy(uintptr_t value_addr);
  * @param value_addr The bit pattern of the pointer to a ten_value_t. Note that
  * there is no bridge for ten_value_t.
  */
-ten_go_status_t ten_go_value_get_string(uintptr_t value_addr, void *value);
+ten_go_error_t ten_go_value_get_string(uintptr_t value_addr, void *value);
 
-ten_go_status_t ten_go_value_get_buf(uintptr_t value_addr, void *value);
+ten_go_error_t ten_go_value_get_buf(uintptr_t value_addr, void *value);

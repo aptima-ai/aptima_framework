@@ -32,7 +32,8 @@ class test_extension_1 : public ten::extension_t {
 
       auto audio_frame_no_dest =
           ten::audio_frame_t::create("audio_frame_no_dest");
-      bool rc = ten_env.send_audio_frame(std::move(audio_frame_no_dest), &err);
+      bool rc = ten_env.send_audio_frame(std::move(audio_frame_no_dest),
+                                         nullptr, &err);
       ASSERT_EQ(rc, false);
       ASSERT_EQ(err.is_success(), false);
 

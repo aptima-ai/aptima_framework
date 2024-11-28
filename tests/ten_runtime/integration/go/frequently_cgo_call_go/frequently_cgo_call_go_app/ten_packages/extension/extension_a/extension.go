@@ -114,7 +114,7 @@ func (p *extensionA) OnCmd(
 			panic("Should not happen.")
 		}
 
-		tenEnv.SendCmd(cmdB, func(r ten.TenEnv, cs ten.CmdResult) {
+		tenEnv.SendCmd(cmdB, func(r ten.TenEnv, cs ten.CmdResult, e error) {
 			detail, err := cs.GetPropertyString("detail")
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)

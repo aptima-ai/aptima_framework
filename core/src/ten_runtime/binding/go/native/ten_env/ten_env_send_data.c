@@ -56,13 +56,14 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
 
   ten_env_notify_send_data_info_t *notify_info = user_data;
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   ten_error_t err;
   ten_error_init(&err);
 
-  bool res = ten_env_send_data(ten_env, notify_info->data_bridge->c_msg, &err);
+  bool res = ten_env_send_data(ten_env, notify_info->data_bridge->c_msg, NULL,
+                               NULL, &err);
   if (res) {
     // `send_data` succeeded, transferring the ownership of the data message out
     // of the Go data message.
@@ -70,20 +71,20 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
     notify_info->data_bridge->c_msg = NULL;
   } else {
     // Prepare error information to pass to Go.
-    ten_go_status_from_error(&status, &err);
+    ten_go_error_from_error(&cgo_error, &err);
   }
 
   // Call back into Go to signal that the async operation in C is complete.
-  tenGoCAsyncApiCallback(notify_info->callback_handle, status);
+  tenGoCAsyncApiCallback(notify_info->callback_handle, cgo_error);
 
   ten_error_deinit(&err);
 
   ten_env_notify_send_data_info_destroy(notify_info);
 }
 
-ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
-                                         uintptr_t data_bridge_addr,
-                                         uintptr_t callback_handle) {
+ten_go_error_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
+                                        uintptr_t data_bridge_addr,
+                                        uintptr_t callback_handle) {
   ten_go_ten_env_t *self = ten_go_ten_env_reinterpret(bridge_addr);
   TEN_ASSERT(self && ten_go_ten_env_check_integrity(self),
              "Should not happen.");
@@ -91,11 +92,11 @@ ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
   ten_go_msg_t *data = ten_go_msg_reinterpret(data_bridge_addr);
   TEN_ASSERT(data && ten_go_msg_check_integrity(data), "Should not happen.");
 
-  ten_go_status_t status;
-  ten_go_status_init_with_errno(&status, TEN_ERRNO_OK);
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
   TEN_GO_TEN_ENV_IS_ALIVE_REGION_BEGIN(
-      self, { ten_go_status_set_errno(&status, TEN_ERRNO_TEN_IS_CLOSED); });
+      self, { ten_go_error_set_errno(&cgo_error, TEN_ERRNO_TEN_IS_CLOSED); });
 
   ten_error_t err;
   ten_error_init(&err);
@@ -108,12 +109,12 @@ ten_go_status_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
                             &err)) {
     // Failed to invoke ten_env_proxy_notify.
     ten_env_notify_send_data_info_destroy(notify_info);
-    ten_go_status_from_error(&status, &err);
+    ten_go_error_from_error(&cgo_error, &err);
   }
 
   ten_error_deinit(&err);
   TEN_GO_TEN_ENV_IS_ALIVE_REGION_END(self);
 
 ten_is_close:
-  return status;
+  return cgo_error;
 }

@@ -100,7 +100,8 @@ class test_extension_1 : public ten::extension_t {
     ten_env.send_cmd(
         std::move(start_to_send_cmd),
         [this](ten::ten_env_t &ten_env,
-               std::unique_ptr<ten::cmd_result_t> cmd_result) {
+               std::unique_ptr<ten::cmd_result_t> cmd_result,
+               ten::error_t *err) {
           TEN_ASSERT(cmd_result->get_status_code() == TEN_STATUS_CODE_OK,
                      "Failed to send 'start_to_send' command.");
 

@@ -25,8 +25,8 @@ namespace ten {
 class ten_env_tester_t;
 class extension_tester_t;
 
-using ten_env_tester_send_cmd_result_handler_func_t =
-    std::function<void(ten_env_tester_t &, std::unique_ptr<cmd_result_t>)>;
+using ten_env_tester_send_cmd_result_handler_func_t = std::function<void(
+    ten_env_tester_t &, std::unique_ptr<cmd_result_t>, error_t *)>;
 
 class ten_env_tester_t {
  public:
@@ -194,19 +194,28 @@ class ten_env_tester_t {
   }
 
   static void proxy_handle_result(::ten_env_tester_t *c_ten_env_tester,
-                                  ten_shared_ptr_t *c_cmd_result,
-                                  void *cb_data) {
+                                  ten_shared_ptr_t *c_cmd_result, void *cb_data,
+                                  ten_error_t *err) {
     auto *result_handler =
         static_cast<ten_env_tester_send_cmd_result_handler_func_t *>(cb_data);
     auto *cpp_ten_env_tester = static_cast<ten_env_tester_t *>(
         ten_binding_handle_get_me_in_target_lang(
             reinterpret_cast<ten_binding_handle_t *>(c_ten_env_tester)));
 
-    auto cmd_result = cmd_result_t::create(
-        // Clone a C shared_ptr to be owned by the C++ instance.
-        ten_shared_ptr_clone(c_cmd_result));
+    std::unique_ptr<cmd_result_t> cmd_result = nullptr;
 
-    (*result_handler)(*cpp_ten_env_tester, std::move(cmd_result));
+    if (c_cmd_result != nullptr) {
+      cmd_result = cmd_result_t::create(
+          // Clone a C shared_ptr to be owned by the C++ instance.
+          ten_shared_ptr_clone(c_cmd_result));
+    }
+
+    if (err != nullptr) {
+      error_t cpp_err(err, false);
+      (*result_handler)(*cpp_ten_env_tester, std::move(cmd_result), &cpp_err);
+    } else {
+      (*result_handler)(*cpp_ten_env_tester, std::move(cmd_result), nullptr);
+    }
 
     if (ten_cmd_result_is_final(c_cmd_result, nullptr)) {
       // Only when is_final is true should the result handler be cleared.

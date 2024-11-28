@@ -50,7 +50,7 @@ func NewData(dataName string) (Data, error) {
 			C.int(len(dataName)),
 			&bridge,
 		)
-		e := withGoStatus(&cStatus)
+		e := withCGoError(&cStatus)
 
 		return e
 	})
@@ -76,7 +76,7 @@ func (p *data) AllocBuf(size int) error {
 
 	err := withCGOLimiter(func() error {
 		apiStatus := C.ten_go_data_alloc_buf(p.getCPtr(), C.int(size))
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err == nil {
@@ -97,7 +97,7 @@ func (p *data) LockBuf() ([]byte, error) {
 			&bufSize,
 		)
 
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {
@@ -121,7 +121,7 @@ func (p *data) UnlockBuf(buf *[]byte) error {
 			unsafe.Pointer(unsafe.SliceData(*buf)),
 		)
 
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err == nil {
@@ -145,7 +145,7 @@ func (p *data) GetBuf() ([]byte, error) {
 			C.int(p.size),
 		)
 
-		return withGoStatus(&apiStatus)
+		return withCGoError(&apiStatus)
 	})
 
 	if err != nil {

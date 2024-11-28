@@ -32,16 +32,17 @@ class test_extension_1 : public ten::extension_t {
       auto new_cmd = ten::cmd_t::create("send_ptr");
       new_cmd->set_property("test data", test_data);
 
-      ten_env.send_cmd(
-          std::move(new_cmd),
-          [this](ten::ten_env_t &ten_env,
-                 TEN_UNUSED std::unique_ptr<ten::cmd_result_t> cmd) {
-            auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
-            cmd_result->set_property("detail",
-                                     cmd->get_property_string("detail"));
-            ten_env.return_result(std::move(cmd_result),
-                                  std::move(hello_world_cmd));
-          });
+      ten_env.send_cmd(std::move(new_cmd),
+                       [this](ten::ten_env_t &ten_env,
+                              TEN_UNUSED std::unique_ptr<ten::cmd_result_t> cmd,
+                              ten::error_t *err) {
+                         auto cmd_result =
+                             ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+                         cmd_result->set_property(
+                             "detail", cmd->get_property_string("detail"));
+                         ten_env.return_result(std::move(cmd_result),
+                                               std::move(hello_world_cmd));
+                       });
     }
   }
 

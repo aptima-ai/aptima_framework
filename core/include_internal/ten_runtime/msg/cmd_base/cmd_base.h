@@ -40,7 +40,7 @@ typedef struct ten_cmd_base_t {
   // is being processed, the origin must be alive.
   ten_connection_t *original_connection;
 
-  ten_env_cmd_result_handler_func_t result_handler;
+  ten_env_msg_result_handler_func_t result_handler;
   void *result_handler_data;
 } ten_cmd_base_t;
 
@@ -118,7 +118,7 @@ TEN_RUNTIME_PRIVATE_API ten_string_t *ten_raw_cmd_base_get_seq_id(
     ten_cmd_base_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_cmd_base_set_result_handler(
-    ten_shared_ptr_t *self, ten_env_cmd_result_handler_func_t result_handler,
+    ten_shared_ptr_t *self, ten_env_msg_result_handler_func_t result_handler,
     void *result_handler_data);
 
 /**

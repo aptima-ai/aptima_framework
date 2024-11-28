@@ -113,7 +113,7 @@ func RegisterAddonAsExtension(addonName string, instance Addon) error {
 		&bridge,
 	)
 
-	if err := withGoStatus(&status); err != nil {
+	if err := withCGoError(&status); err != nil {
 		loadAndDeleteImmutableHandle(addonID)
 		return err
 	}
@@ -164,7 +164,7 @@ func RegisterAddonAsExtensionGroup(addonName string, instance Addon) error {
 		&bridge,
 	)
 
-	if err := withGoStatus(&status); err != nil {
+	if err := withCGoError(&status); err != nil {
 		loadAndDeleteImmutableHandle(addonID)
 		return err
 	}

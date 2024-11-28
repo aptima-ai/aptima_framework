@@ -104,7 +104,7 @@ func WrapExtension(
 		C.int(len(name)),
 		&bridge,
 	)
-	if err := withGoStatus(&status); err != nil {
+	if err := withCGoError(&status); err != nil {
 		log.Printf("Failed to create extension, %v\n", err)
 		return nil
 	}
