@@ -48,13 +48,15 @@ ten_go_error_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
 
 ten_go_error_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
                                         uintptr_t data_bridge_addr,
-                                        uintptr_t callback_handle);
+                                        ten_go_handle_t handler_id);
 
 ten_go_error_t ten_go_ten_env_send_video_frame(
-    uintptr_t bridge_addr, uintptr_t video_frame_bridge_addr);
+    uintptr_t bridge_addr, uintptr_t video_frame_bridge_addr,
+    ten_go_handle_t handler_id);
 
-bool ten_go_ten_env_send_audio_frame(uintptr_t bridge_addr,
-                                     uintptr_t audio_frame_bridge_addr);
+ten_go_error_t ten_go_ten_env_send_audio_frame(
+    uintptr_t bridge_addr, uintptr_t audio_frame_bridge_addr,
+    ten_go_handle_t handler_id);
 
 bool ten_go_ten_env_is_cmd_connected(uintptr_t bridge_addr,
                                      const char *cmd_name);

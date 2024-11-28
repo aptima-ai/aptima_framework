@@ -86,6 +86,33 @@ func tenGoOnCmdResult(
 	cb.(ResultHandler)(tenEnvObj, cr, err)
 }
 
+//export tenGoOnError
+func tenGoOnError(
+	tenEnvObjID C.uintptr_t,
+	errorHandler C.uintptr_t,
+	cgoError C.ten_go_error_t,
+) {
+	tenEnvObj, ok := handle(tenEnvObjID).get().(TenEnv)
+	if !ok {
+		panic(
+			fmt.Sprintf(
+				"Failed to get ten env from handle map, id: %d.",
+				uintptr(tenEnvObjID),
+			),
+		)
+	}
+
+	cb := loadAndDeleteGoHandle(goHandle(errorHandler))
+	if cb == nil || cb == goHandleNil {
+		// Should not happen.
+		panic("The error handler is not found from handle map.")
+	}
+
+	err := withCGoError(&cgoError)
+
+	cb.(ErrorHandler)(tenEnvObj, err)
+}
+
 //export tenGoSetPropertyCallback
 func tenGoSetPropertyCallback(
 	tenEnvObjID C.uintptr_t,

@@ -92,7 +92,7 @@ func (p *aExtension) OnCmd(
 			panic("data SetPropertyBytes failed")
 		}
 
-		err = tenEnv.SendData(data)
+		err = tenEnv.SendData(data, nil)
 		if err != nil {
 			panic("aExtension SendData failed")
 		}

@@ -41,11 +41,13 @@ func (p *extensionB) OnCmd(
 			var count uint32 = 0
 
 			// An empty string in cmd is permitted.
-			if em, err := cmd.GetPropertyString("empty_string"); err != nil || em != "" {
+			if em, err := cmd.GetPropertyString("empty_string"); err != nil ||
+				em != "" {
 				panic("Should not happen.")
 			}
 
-			if em, err := cmd.GetPropertyBytes("some_bytes"); err != nil || len(em) != 3 {
+			if em, err := cmd.GetPropertyBytes("some_bytes"); err != nil ||
+				len(em) != 3 {
 				panic("Should not happen.")
 			}
 
@@ -66,7 +68,12 @@ func (p *extensionB) OnCmd(
 						panic("should not happen")
 					}
 
-					if atomic.AddUint32(&count, 1) == concurrency {
+					total := atomic.AddUint32(&count, 1)
+					if total%5000 == 0 {
+						fmt.Printf("extension_b %d goroutine done\n", total)
+					}
+
+					if total == concurrency {
 						done <- struct{}{}
 					}
 				}(i % 100)

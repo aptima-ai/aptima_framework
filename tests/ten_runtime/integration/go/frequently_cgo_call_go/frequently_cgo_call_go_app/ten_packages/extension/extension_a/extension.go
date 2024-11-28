@@ -28,6 +28,7 @@ func newExtensionA(name string) ten.Extension {
 func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
 	go func() {
 		var wg sync.WaitGroup
+		var counter int32
 
 		wg.Add(concurrency)
 
@@ -43,6 +44,11 @@ func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
 				if err != nil {
 					fmt.Printf("Error in goroutine %d: %v\n", i, err)
 				}
+
+				if atomic.AddInt32(&counter, 1)%5000 == 0 {
+					fmt.Printf("extension_a %d goroutines completed\n", counter)
+				}
+
 			}(i % 100)
 		}
 
