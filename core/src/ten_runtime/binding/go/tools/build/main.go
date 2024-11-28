@@ -1061,6 +1061,20 @@ func (ab *AppBuilder) autoDetectExtensions() error {
 		return nil
 	}
 
+	// Load the app's `manifest.json` to get the list of extension dependencies.
+	manifest, err := LoadManifest(ab.options.AppDir)
+	if err != nil {
+		return fmt.Errorf("Failed to load manifest.json: %v", err)
+	}
+
+	// Collect names of extensions from dependencies.
+	extensionNames := make(map[string]bool)
+	for _, dep := range manifest.Dependencies {
+		if dep.Type == "extension" {
+			extensionNames[dep.Name] = true
+		}
+	}
+
 	entries, err := os.ReadDir(extBaseDir)
 	if err != nil {
 		return err
@@ -1072,6 +1086,18 @@ func (ab *AppBuilder) autoDetectExtensions() error {
 
 	for _, entry := range entries {
 		if !entry.IsDir() {
+			continue
+		}
+
+		// Check if the extension is in the list of extension dependencies.
+		extensionName := entry.Name()
+		if _, ok := extensionNames[extensionName]; !ok {
+			if ab.options.Verbose {
+				log.Printf(
+					"Skipping extension [%s], not in manifest dependencies.\n",
+					extensionName,
+				)
+			}
 			continue
 		}
 
@@ -1113,8 +1139,17 @@ func (ab *AppBuilder) autoDetectExtensions() error {
 
 // -------------- manifest ---------------
 
+type Dependency struct {
+	Type    string `json:"type"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
 type TenPackageManifest struct {
-	Type string `json:"type"`
+	Type         string       `json:"type"`
+	Name         string       `json:"name"`
+	Version      string       `json:"version"`
+	Dependencies []Dependency `json:"dependencies"`
 }
 
 func LoadManifest(pkgDir string) (*TenPackageManifest, error) {
