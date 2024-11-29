@@ -17,6 +17,7 @@ ten_go_error_t ten_go_addon_register_extension(
     const void *addon_name, int addon_name_len, const void *base_dir,
     int base_dir_len, uintptr_t go_addon, uintptr_t *bridge_addr);
 
-ten_go_error_t ten_go_addon_register_extension_group(
+ten_go_error_t ten_go_addon_register_extension_v2(
     const void *addon_name, int addon_name_len, const void *base_dir,
-    int base_dir_len, uintptr_t go_addon, uintptr_t *bridge_addr);
+    int base_dir_len, uintptr_t go_addon, uintptr_t *register_ctx,
+    uintptr_t *bridge_addr);

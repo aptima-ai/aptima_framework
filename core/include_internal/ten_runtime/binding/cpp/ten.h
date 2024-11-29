@@ -9,13 +9,13 @@
 // This header file should be the only header file where outside world should
 // include in the C++ programming language.
 
+#include "include_internal/ten_runtime/addon/extension_group/extension_group.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/extension_impl.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timeout.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timer.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/ten_env_impl.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/ten_env_internal_accessor.h"  // IWYU pragma: export
-#include "ten_runtime/addon/extension/extension.h"  // IWYU pragma: export
-#include "ten_runtime/addon/extension_group/extension_group.h"  // IWYU pragma: export
+#include "ten_runtime/addon/extension/extension.h"     // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/addon.h"      // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/app.h"        // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/common.h"     // IWYU pragma: export

@@ -7,7 +7,8 @@
 import os
 import sys
 from typing import Type
-from .addon import _AddonManager, Addon
+from .addon import Addon
+from .addon_manager import _AddonManager
 from libten_runtime_python import (
     _register_addon_as_extension,
     _register_addon_as_extension_v2,

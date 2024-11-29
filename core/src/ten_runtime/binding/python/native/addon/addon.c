@@ -15,7 +15,6 @@
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "ten_runtime/addon/extension/extension.h"
-#include "ten_runtime/addon/extension_group/extension_group.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env/ten_env.h"

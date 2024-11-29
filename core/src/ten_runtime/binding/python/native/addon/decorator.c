@@ -9,7 +9,6 @@
 #include "include_internal/ten_runtime/binding/python/addon/addon.h"
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "ten_runtime/addon/extension/extension.h"
-#include "ten_runtime/addon/extension_group/extension_group.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/mark.h"
 

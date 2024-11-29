@@ -12,9 +12,6 @@ import "C"
 
 import (
 	"fmt"
-	"path/filepath"
-	"runtime"
-	"unsafe"
 )
 
 // Addon is the interface for the addon.
@@ -71,118 +68,6 @@ func NewDefaultExtensionAddon(constructor func(name string) Extension) Addon {
 			tenEnv.OnCreateInstanceDone(extWrapper, context)
 		},
 	}
-}
-
-// RegisterAddonAsExtension registers the addon as an extension.
-func RegisterAddonAsExtension(addonName string, instance Addon) error {
-	if len(addonName) == 0 {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"addon name is empty",
-		)
-	}
-
-	_, file, _, ok := runtime.Caller(1)
-	if !ok {
-		return newTenError(ErrnoGeneric, "Failed to get the caller information")
-	}
-
-	baseDir := filepath.Dir(file)
-
-	absBaseDir, err := filepath.Abs(baseDir)
-	if err != nil {
-		return newTenError(
-			ErrnoGeneric,
-			fmt.Sprintf("Failed to get the absolute file path: %v", err),
-		)
-	}
-
-	addonWrapper := &addon{
-		Addon: instance,
-	}
-
-	addonID := newImmutableHandle(addonWrapper)
-
-	var bridge C.uintptr_t
-	status := C.ten_go_addon_register_extension(
-		unsafe.Pointer(unsafe.StringData(addonName)),
-		C.int(len(addonName)),
-		unsafe.Pointer(unsafe.StringData(absBaseDir)),
-		C.int(len(absBaseDir)),
-		cHandle(addonID),
-		&bridge,
-	)
-
-	if err := withCGoError(&status); err != nil {
-		loadAndDeleteImmutableHandle(addonID)
-		return err
-	}
-
-	addonWrapper.cPtr = bridge
-
-	return nil
-}
-
-// RegisterAddonAsExtensionGroup registers the addon as an extension group.
-func RegisterAddonAsExtensionGroup(addonName string, instance Addon) error {
-	if len(addonName) == 0 {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"addon name is empty",
-		)
-	}
-
-	_, file, _, ok := runtime.Caller(1)
-	if !ok {
-		return newTenError(ErrnoGeneric, "Failed to get the caller information")
-	}
-
-	baseDir := filepath.Dir(file)
-
-	absBaseDir, err := filepath.Abs(baseDir)
-	if err != nil {
-		return newTenError(
-			ErrnoGeneric,
-			fmt.Sprintf("Failed to get the absolute file path: %v",
-				err),
-		)
-	}
-
-	addonWrapper := &addon{
-		Addon: instance,
-	}
-
-	addonID := newImmutableHandle(addonWrapper)
-
-	var bridge C.uintptr_t
-	status := C.ten_go_addon_register_extension_group(
-		unsafe.Pointer(unsafe.StringData(addonName)),
-		C.int(len(addonName)),
-		unsafe.Pointer(unsafe.StringData(absBaseDir)),
-		C.int(len(absBaseDir)),
-		cHandle(addonID),
-		&bridge,
-	)
-
-	if err := withCGoError(&status); err != nil {
-		loadAndDeleteImmutableHandle(addonID)
-		return err
-	}
-
-	addonWrapper.cPtr = bridge
-
-	return nil
-}
-
-// unloadAllAddons unloads all addons.
-func unloadAllAddons() error {
-	clearImmutableHandles(func(value any) {
-		if addon, ok := value.(*addon); ok {
-			C.ten_go_addon_unregister(addon.cPtr)
-		}
-	})
-
-	return nil
 }
 
 //export tenGoAddonOnInit

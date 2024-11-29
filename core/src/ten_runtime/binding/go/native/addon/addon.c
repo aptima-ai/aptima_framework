@@ -6,6 +6,7 @@
 //
 #include "ten_runtime/binding/go/interface/ten/addon.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,7 +20,6 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/addon/extension/extension.h"
-#include "ten_runtime/addon/extension_group/extension_group.h"
 #include "ten_runtime/binding/common.h"
 #include "ten_runtime/binding/go/interface/ten/common.h"
 #include "ten_runtime/binding/go/interface/ten/ten_env.h"
@@ -73,11 +73,6 @@ void ten_go_addon_unregister(uintptr_t bridge_addr) {
   switch (addon_bridge->type) {
     case TEN_ADDON_TYPE_EXTENSION:
       ten_addon_unregister_extension(
-          ten_string_get_raw_str(&addon_bridge->addon_name));
-      break;
-
-    case TEN_ADDON_TYPE_EXTENSION_GROUP:
-      ten_addon_unregister_extension_group(
           ten_string_get_raw_str(&addon_bridge->addon_name));
       break;
 
@@ -272,12 +267,6 @@ static ten_go_addon_t *ten_go_addon_register(
           ten_string_get_raw_str(&base_dir_str), &addon_bridge->c_addon);
       break;
 
-    case TEN_ADDON_TYPE_EXTENSION_GROUP:
-      ten_addon_register_extension_group(
-          ten_string_get_raw_str(&addon_bridge->addon_name),
-          ten_string_get_raw_str(&base_dir_str), &addon_bridge->c_addon);
-      break;
-
     default:
       TEN_ASSERT(0, "Not support.");
       break;
@@ -306,9 +295,10 @@ ten_go_error_t ten_go_addon_register_extension(
   return cgo_error;
 }
 
-ten_go_error_t ten_go_addon_register_extension_group(
+ten_go_error_t ten_go_addon_register_extension_v2(
     const void *addon_name, int addon_name_len, const void *base_dir,
-    int base_dir_len, uintptr_t go_addon, uintptr_t *bridge_addr) {
+    int base_dir_len, uintptr_t go_addon, uintptr_t *register_ctx,
+    uintptr_t *bridge_addr) {
   TEN_ASSERT(addon_name && addon_name_len > 0 && go_addon && bridge_addr,
              "Invalid argument.");
 
@@ -317,7 +307,7 @@ ten_go_error_t ten_go_addon_register_extension_group(
 
   ten_go_addon_t *addon_bridge =
       ten_go_addon_register(addon_name, addon_name_len, base_dir, base_dir_len,
-                            go_addon, TEN_ADDON_TYPE_EXTENSION_GROUP);
+                            go_addon, TEN_ADDON_TYPE_EXTENSION);
 
   *bridge_addr = (uintptr_t)addon_bridge;
 
