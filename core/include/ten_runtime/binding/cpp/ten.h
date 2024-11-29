@@ -9,8 +9,9 @@
 // This header file should be the only header file where outside world should
 // include in the C++ programming language.
 
-#include "ten_runtime/addon/extension/extension.h"     // IWYU pragma: export
-#include "ten_runtime/binding/cpp/detail/addon.h"      // IWYU pragma: export
+#include "ten_runtime/addon/extension/extension.h"  // IWYU pragma: export
+#include "ten_runtime/binding/cpp/detail/addon.h"   // IWYU pragma: export
+#include "ten_runtime/binding/cpp/detail/addon_manager.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/app.h"        // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/common.h"     // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/extension.h"  // IWYU pragma: export

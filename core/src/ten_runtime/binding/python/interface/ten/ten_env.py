@@ -49,7 +49,7 @@ class TenEnv:
             # simply passing `None` is sufficient. If needed in the future, we
             # can consider what information should be passed to the registration
             # function of the Python addon.
-            _AddonManager._load_all_addons(None)
+            _AddonManager.load_all_addons(None)
         return self._internal.on_configure_done()
 
     def on_init_done(self) -> None:

@@ -9,7 +9,7 @@ from .extension import Extension
 from .async_extension import AsyncExtension
 from .async_ten_env import AsyncTenEnv
 from .addon import Addon
-from .decorator import (
+from .addon_manager import (
     register_addon_as_extension,
     register_addon_as_extension_v2,
 )

@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/binding/python/addon/decorator.h"
+#include "include_internal/ten_runtime/binding/python/addon/addon_manager.h"
 
 #include "include_internal/ten_runtime/binding/python/addon/addon.h"
 #include "include_internal/ten_runtime/binding/python/common/error.h"
@@ -12,10 +12,10 @@
 #include "ten_utils/lib/string.h"
 #include "ten_utils/macro/mark.h"
 
-static PyObject *ten_py_decorator_register_addon_create(
+static PyObject *ten_py_addon_manager_register_addon_decorator_create(
     PyTypeObject *ty, PyObject *args, TEN_UNUSED PyObject *kwds) {
-  ten_py_decorator_register_addon_t *py_decorator =
-      (ten_py_decorator_register_addon_t *)ty->tp_alloc(ty, 0);
+  ten_py_addon_manager_register_addon_decorator_t *py_decorator =
+      (ten_py_addon_manager_register_addon_decorator_t *)ty->tp_alloc(ty, 0);
   if (!py_decorator) {
     PyObject *result = ten_py_raise_py_memory_error_exception(
         "Failed to allocate memory for addon decorator.");
@@ -29,10 +29,10 @@ static PyObject *ten_py_decorator_register_addon_create(
   return (PyObject *)py_decorator;
 }
 
-static PyObject *ten_py_decorator_register_addon_create_v2(
+static PyObject *ten_py_addon_manager_register_addon_decorator_create_v2(
     PyTypeObject *ty, PyObject *args, TEN_UNUSED PyObject *kwds) {
-  ten_py_decorator_register_addon_v2_t *py_decorator =
-      (ten_py_decorator_register_addon_v2_t *)ty->tp_alloc(ty, 0);
+  ten_py_addon_manager_register_addon_decorator_v2_t *py_decorator =
+      (ten_py_addon_manager_register_addon_decorator_v2_t *)ty->tp_alloc(ty, 0);
   if (!py_decorator) {
     PyObject *result = ten_py_raise_py_memory_error_exception(
         "Failed to allocate memory for addon decorator.");
@@ -43,10 +43,10 @@ static PyObject *ten_py_decorator_register_addon_create_v2(
   return (PyObject *)py_decorator;
 }
 
-static int ten_py_decorator_register_addon_init(PyObject *self, PyObject *args,
-                                                TEN_UNUSED PyObject *kwds) {
-  ten_py_decorator_register_addon_t *py_decorator =
-      (ten_py_decorator_register_addon_t *)self;
+static int ten_py_addon_manager_register_addon_decorator_init(
+    PyObject *self, PyObject *args, TEN_UNUSED PyObject *kwds) {
+  ten_py_addon_manager_register_addon_decorator_t *py_decorator =
+      (ten_py_addon_manager_register_addon_decorator_t *)self;
 
   const char *name = NULL;
   const char *base_dir = NULL;
@@ -64,15 +64,15 @@ static int ten_py_decorator_register_addon_init(PyObject *self, PyObject *args,
   return 0;
 }
 
-static int ten_py_decorator_register_addon_init_v2(PyObject *self,
-                                                   PyObject *args,
-                                                   TEN_UNUSED PyObject *kwds) {
+static int ten_py_addon_manager_register_addon_decorator_init_v2(
+    PyObject *self, PyObject *args, TEN_UNUSED PyObject *kwds) {
   return 0;
 }
 
-static void ten_py_decorator_register_addon_destroy(PyObject *self) {
-  ten_py_decorator_register_addon_t *py_decorator =
-      (ten_py_decorator_register_addon_t *)self;
+static void ten_py_addon_manager_register_addon_decorator_destroy(
+    PyObject *self) {
+  ten_py_addon_manager_register_addon_decorator_t *py_decorator =
+      (ten_py_addon_manager_register_addon_decorator_t *)self;
 
   TEN_ASSERT(py_decorator, "Invalid argument.");
 
@@ -82,16 +82,17 @@ static void ten_py_decorator_register_addon_destroy(PyObject *self) {
   Py_TYPE(self)->tp_free(self);
 }
 
-static void ten_py_decorator_register_addon_destroy_v2(PyObject *self) {
-  ten_py_decorator_register_addon_v2_t *py_decorator =
-      (ten_py_decorator_register_addon_v2_t *)self;
+static void ten_py_addon_manager_register_addon_decorator_destroy_v2(
+    PyObject *self) {
+  ten_py_addon_manager_register_addon_decorator_v2_t *py_decorator =
+      (ten_py_addon_manager_register_addon_decorator_v2_t *)self;
   TEN_ASSERT(py_decorator, "Invalid argument.");
 
   Py_TYPE(self)->tp_free(self);
 }
 
-static PyObject *ten_py_decorator_register_addon_call(
-    ten_py_decorator_register_addon_t *self, PyObject *args,
+static PyObject *ten_py_addon_manager_register_addon_decorator_call(
+    ten_py_addon_manager_register_addon_decorator_t *self, PyObject *args,
     ten_addon_register_extension_func_t register_addon_func) {
   PyTypeObject *py_addon_type_object = NULL;
 
@@ -132,15 +133,16 @@ static PyObject *ten_py_decorator_register_addon_call(
   return py_addon_object;
 }
 
-static PyObject *ten_py_decorator_register_addon_as_extension_call(
+static PyObject *
+ten_py_addon_manager_register_addon_as_extension_decorator_call(
     PyObject *self, PyObject *args, TEN_UNUSED PyObject *kwds) {
-  return ten_py_decorator_register_addon_call(
-      (ten_py_decorator_register_addon_t *)self, args,
+  return ten_py_addon_manager_register_addon_decorator_call(
+      (ten_py_addon_manager_register_addon_decorator_t *)self, args,
       ten_addon_register_extension);
 }
 
-static PyObject *ten_py_decorator_register_addon_call_v2(
-    ten_py_decorator_register_addon_v2_t *self, PyObject *args,
+static PyObject *ten_py_addon_manager_register_addon_decorator_call_v2(
+    ten_py_addon_manager_register_addon_decorator_v2_t *self, PyObject *args,
     ten_addon_register_extension_v2_func_t register_addon_func) {
   const char *name = NULL;
   const char *base_dir = NULL;
@@ -174,15 +176,16 @@ static PyObject *ten_py_decorator_register_addon_call_v2(
   return py_addon_object;
 }
 
-static PyObject *ten_py_decorator_register_addon_as_extension_call_v2(
+static PyObject *
+ten_py_addon_manager_register_addon_as_extension_decorator_call_v2(
     PyObject *self, PyObject *args, TEN_UNUSED PyObject *kwds) {
-  return ten_py_decorator_register_addon_call_v2(
-      (ten_py_decorator_register_addon_v2_t *)self, args,
+  return ten_py_addon_manager_register_addon_decorator_call_v2(
+      (ten_py_addon_manager_register_addon_decorator_v2_t *)self, args,
       ten_addon_register_extension_v2);
 }
 
-static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type(
-    void) {
+static PyTypeObject *
+ten_py_addon_manager_register_addon_as_extension_decorator_py_type(void) {
   static PyMethodDef decorator_methods[] = {
       {NULL, NULL, 0, NULL},
   };
@@ -191,13 +194,14 @@ static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type(
       PyVarObject_HEAD_INIT(NULL, 0).tp_name =
           "libten_runtime_python.register_addon_as_extension",
       .tp_doc = PyDoc_STR("register_addon_as_extension"),
-      .tp_basicsize = sizeof(ten_py_decorator_register_addon_t),
+      .tp_basicsize = sizeof(ten_py_addon_manager_register_addon_decorator_t),
       .tp_itemsize = 0,
       .tp_flags = Py_TPFLAGS_DEFAULT,
-      .tp_new = ten_py_decorator_register_addon_create,
-      .tp_init = ten_py_decorator_register_addon_init,
-      .tp_dealloc = ten_py_decorator_register_addon_destroy,
-      .tp_call = ten_py_decorator_register_addon_as_extension_call,
+      .tp_new = ten_py_addon_manager_register_addon_decorator_create,
+      .tp_init = ten_py_addon_manager_register_addon_decorator_init,
+      .tp_dealloc = ten_py_addon_manager_register_addon_decorator_destroy,
+      .tp_call =
+          ten_py_addon_manager_register_addon_as_extension_decorator_call,
       .tp_getset = NULL,
       .tp_methods = decorator_methods,
   };
@@ -205,8 +209,8 @@ static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type(
   return &py_type;
 }
 
-static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type_v2(
-    void) {
+static PyTypeObject *
+ten_py_addon_manager_register_addon_as_extension_decorator_py_type_v2(void) {
   static PyMethodDef decorator_methods[] = {
       {NULL, NULL, 0, NULL},
   };
@@ -215,13 +219,14 @@ static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type_v2(
       PyVarObject_HEAD_INIT(NULL, 0).tp_name =
           "libten_runtime_python.register_addon_as_extension_v2",
       .tp_doc = PyDoc_STR("register_addon_as_extension_v2"),
-      .tp_basicsize = sizeof(ten_py_decorator_register_addon_t),
+      .tp_basicsize = sizeof(ten_py_addon_manager_register_addon_decorator_t),
       .tp_itemsize = 0,
       .tp_flags = Py_TPFLAGS_DEFAULT,
-      .tp_new = ten_py_decorator_register_addon_create_v2,
-      .tp_init = ten_py_decorator_register_addon_init_v2,
-      .tp_dealloc = ten_py_decorator_register_addon_destroy_v2,
-      .tp_call = ten_py_decorator_register_addon_as_extension_call_v2,
+      .tp_new = ten_py_addon_manager_register_addon_decorator_create_v2,
+      .tp_init = ten_py_addon_manager_register_addon_decorator_init_v2,
+      .tp_dealloc = ten_py_addon_manager_register_addon_decorator_destroy_v2,
+      .tp_call =
+          ten_py_addon_manager_register_addon_as_extension_decorator_call_v2,
       .tp_getset = NULL,
       .tp_methods = decorator_methods,
   };
@@ -229,9 +234,8 @@ static PyTypeObject *ten_py_decorator_register_addon_as_extension_py_type_v2(
   return &py_type;
 }
 
-static bool ten_py_decorator_register_addon_module_init(PyObject *module,
-                                                        PyTypeObject *py_type,
-                                                        const char *name) {
+static bool ten_py_addon_manager_register_addon_decorator_module_init(
+    PyObject *module, PyTypeObject *py_type, const char *name) {
   if (PyType_Ready(py_type) < 0) {
     ten_py_raise_py_system_error_exception(
         "Failed to ready Python type for decorator.");
@@ -248,16 +252,18 @@ static bool ten_py_decorator_register_addon_module_init(PyObject *module,
   return true;
 }
 
-bool ten_py_decorator_register_addon_as_extension_init_for_module(
+bool ten_py_addon_manager_register_addon_as_extension_decorator_init_for_module(
     PyObject *module) {
-  return ten_py_decorator_register_addon_module_init(
-      module, ten_py_decorator_register_addon_as_extension_py_type(),
+  return ten_py_addon_manager_register_addon_decorator_module_init(
+      module,
+      ten_py_addon_manager_register_addon_as_extension_decorator_py_type(),
       "_register_addon_as_extension");
 }
 
-bool ten_py_decorator_register_addon_as_extension_init_for_module_v2(
+bool ten_py_addon_manager_register_addon_as_extension_decorator_init_for_module_v2(
     PyObject *module) {
-  return ten_py_decorator_register_addon_module_init(
-      module, ten_py_decorator_register_addon_as_extension_py_type_v2(),
+  return ten_py_addon_manager_register_addon_decorator_module_init(
+      module,
+      ten_py_addon_manager_register_addon_as_extension_decorator_py_type_v2(),
       "_register_addon_as_extension_v2");
 }

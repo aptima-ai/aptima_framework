@@ -5,7 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/binding/python/addon/addon.h"
-#include "include_internal/ten_runtime/binding/python/addon/decorator.h"
+#include "include_internal/ten_runtime/binding/python/addon/addon_manager.h"
 #include "include_internal/ten_runtime/binding/python/app/app.h"
 #include "include_internal/ten_runtime/binding/python/common/buf.h"
 #include "include_internal/ten_runtime/binding/python/common/error.h"
@@ -65,12 +65,13 @@ PyMODINIT_FUNC PyInit_libten_runtime_python(void) {
     return NULL;
   }
 
-  if (!ten_py_decorator_register_addon_as_extension_init_for_module(module)) {
+  if (!ten_py_addon_manager_register_addon_as_extension_decorator_init_for_module(
+          module)) {
     Py_DECREF(module);
     return NULL;
   }
 
-  if (!ten_py_decorator_register_addon_as_extension_init_for_module_v2(
+  if (!ten_py_addon_manager_register_addon_as_extension_decorator_init_for_module_v2(
           module)) {
     Py_DECREF(module);
     return NULL;
