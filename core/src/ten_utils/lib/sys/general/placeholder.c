@@ -186,16 +186,21 @@ bool ten_placeholder_resolve(ten_placeholder_t *self,
         // Environment variable not found, use default value.
         if (!ten_value_is_valid(&self->default_value)) {
           // If no default value is provided, use 'null' value.
-          TEN_LOGI(
+          TEN_LOGE(
               "Environment variable %s is not found, neither default value is "
-              "provided, set property to null.",
+              "provided.",
               variable_name);
+          exit(-1);
+
           ten_value_reset_to_null(placeholder_value);
         } else {
-          TEN_LOGI("Environment variable %s is not found, using default value.",
-                   variable_name);
           const char *default_value =
               ten_value_peek_raw_str(&self->default_value);
+
+          TEN_LOGI(
+              "Environment variable %s is not found, using default value %s.",
+              variable_name, default_value);
+
           ten_value_reset_to_string_with_size(placeholder_value, default_value,
                                               strlen(default_value));
         }
