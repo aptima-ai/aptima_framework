@@ -85,20 +85,12 @@ bool ten_type_is_compatible(TEN_TYPE actual, TEN_TYPE expected) {
     return true;
   }
 
-  if ((expected == TEN_TYPE_UINT8 || expected == TEN_TYPE_INT8 ||
-       expected == TEN_TYPE_UINT16 || expected == TEN_TYPE_INT16 ||
-       expected == TEN_TYPE_UINT32 || expected == TEN_TYPE_INT32 ||
-       expected == TEN_TYPE_UINT64 || expected == TEN_TYPE_INT64) &&
-      (actual == TEN_TYPE_UINT8 || actual == TEN_TYPE_INT8 ||
-       actual == TEN_TYPE_UINT16 || actual == TEN_TYPE_INT16 ||
-       actual == TEN_TYPE_UINT32 || actual == TEN_TYPE_INT32 ||
-       actual == TEN_TYPE_UINT64 || actual == TEN_TYPE_INT64)) {
-    return true;
+  if (TEN_IS_INTEGER_TYPE(expected)) {
+    return TEN_IS_INTEGER_TYPE(actual);
   }
 
-  if ((expected == TEN_TYPE_FLOAT32 || expected == TEN_TYPE_FLOAT64) &&
-      (actual == TEN_TYPE_FLOAT32 || actual == TEN_TYPE_FLOAT64)) {
-    return true;
+  if (TEN_IS_FLOAT_TYPE(expected)) {
+    return TEN_IS_INTEGER_TYPE(actual) || TEN_IS_FLOAT_TYPE(actual);
   }
 
   switch (expected) {

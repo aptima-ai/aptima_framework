@@ -119,7 +119,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_extension__extension,
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyExtension) {  // NOLINT
+TEST(PropertyTest, Extension) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);

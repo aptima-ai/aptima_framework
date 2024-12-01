@@ -84,7 +84,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_start_graph_cmd__extension,
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyConnectCmd) {  // NOLINT
+TEST(PropertyTest, ConnectCmd) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);

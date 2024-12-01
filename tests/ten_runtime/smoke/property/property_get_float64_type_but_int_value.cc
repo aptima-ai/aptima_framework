@@ -16,7 +16,7 @@
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
 #define PROP_NAME "test_prop"
-#define PROP_VAL 123.45
+#define PROP_VAL 123
 
 namespace {
 
@@ -78,12 +78,12 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_get_float64__extension,
-                                    test_extension);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
+    property_get_float64_type_but_int_value__extension, test_extension);
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyGetFloat64) {  // NOLINT
+TEST(PropertyTest, GetFloat64TypeButIntValue) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -97,9 +97,9 @@ TEST(ExtensionTest, PropertyGetFloat64) {  // NOLINT
            "nodes": [{
                "type": "extension",
                "name": "test_extension",
-               "addon": "property_get_float64__extension",
+               "addon": "property_get_float64_type_but_int_value__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "property_get_float64__extension_group"
+               "extension_group": "property_get_float64_type_but_int_value__extension_group"
              }]
            })");
   auto cmd_result =
@@ -108,9 +108,10 @@ TEST(ExtensionTest, PropertyGetFloat64) {  // NOLINT
 
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
-  hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
-                            "property_get_float64__extension_group",
-                            "test_extension");
+  hello_world_cmd->set_dest(
+      "msgpack://127.0.0.1:8001/", nullptr,
+      "property_get_float64_type_but_int_value__extension_group",
+      "test_extension");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
   ten_test::check_detail_with_string(cmd_result, "hello world, too");

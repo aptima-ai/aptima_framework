@@ -41,6 +41,7 @@ ten_executable("ten_runtime_smoke_test") {
     "log_test",
     "msg_test",
     "notify_test",
+    "property",
     "result_conversion",
     "standalone_test",
     "ten_env_call_timing",

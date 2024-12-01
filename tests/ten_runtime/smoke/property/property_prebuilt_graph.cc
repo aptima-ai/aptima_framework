@@ -22,7 +22,7 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    auto mode = ten_env.get_property_string("from_env");
+    auto mode = ten_env.get_property_string("widget_props");
     if (mode.empty()) {
       mode = "default";
     }
@@ -62,17 +62,17 @@ class test_app : public ten::app_t {
                            "singleton": true,
                            "nodes": [{
                              "type": "extension",
-                             "name": "property_in_graph_use_env_2",
-                             "addon": "property_in_graph_use_env_2__extension",
-                             "extension_group": "property_in_graph_use_env_2",
+                             "name": "property_predefined_graph",
+                             "addon": "property_predefined_graph__extension",
+                             "extension_group": "property_predefined_graph",
                              "property": {
-                               "from_env": "${env:TEST_ENV_VAR|}"
+                               "widget_props": "1"
                              }
                            },{
                              "type": "extension",
-                             "name": "property_in_graph_use_env_2_no_prop",
-                             "addon": "property_in_graph_use_env_2__extension",
-                             "extension_group": "property_in_graph_use_env_2"
+                             "name": "property_predefined_graph_no_prop",
+                             "addon": "property_predefined_graph__extension",
+                             "extension_group": "property_predefined_graph"
                            }]
                          }]
                         }
@@ -93,12 +93,12 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_in_graph_use_env_2__extension,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_predefined_graph__extension,
                                     test_extension);
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyInGraphUseEnv2) {  // NOLINT
+TEST(PropertyTest, PredefinedGraph) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -109,17 +109,17 @@ TEST(ExtensionTest, PropertyInGraphUseEnv2) {  // NOLINT
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
-                            "property_in_graph_use_env_2",
-                            "property_in_graph_use_env_2");
+                            "property_predefined_graph",
+                            "property_predefined_graph");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(hello_world_cmd));
 
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
-  ten_test::check_detail_with_string(cmd_result, "default");
+  ten_test::check_detail_with_string(cmd_result, "1");
   hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
-                            "property_in_graph_use_env_2",
-                            "property_in_graph_use_env_2_no_prop");
+                            "property_predefined_graph",
+                            "property_predefined_graph_no_prop");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
 
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);

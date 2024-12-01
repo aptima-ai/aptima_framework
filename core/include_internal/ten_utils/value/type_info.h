@@ -18,6 +18,14 @@
     "This file contains C99 array designated initializer, and Visual Studio C++ compiler can only support up to C89 by default, so we enable this checking to prevent any wrong inclusion of this file."
 #endif
 
+#define TEN_IS_INTEGER_TYPE(t)                                               \
+  ((t) == TEN_TYPE_INT8 || (t) == TEN_TYPE_UINT8 || (t) == TEN_TYPE_INT16 || \
+   (t) == TEN_TYPE_UINT16 || (t) == TEN_TYPE_INT32 ||                        \
+   (t) == TEN_TYPE_UINT32 || (t) == TEN_TYPE_INT64 || (t) == TEN_TYPE_UINT64)
+
+#define TEN_IS_FLOAT_TYPE(t) \
+  ((t) == TEN_TYPE_FLOAT32 || (t) == TEN_TYPE_FLOAT64)
+
 typedef struct ten_type_info_t {
   const char *name;
 } ten_type_info_t;

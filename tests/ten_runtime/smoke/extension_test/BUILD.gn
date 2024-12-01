@@ -43,7 +43,6 @@ glob("extension_test") {
     "path",
     "predefined_graph",
     "prepare_to_stop",
-    "property",
     "resp_handler",
     "return",
     "same_thread_ext_on_xxx",

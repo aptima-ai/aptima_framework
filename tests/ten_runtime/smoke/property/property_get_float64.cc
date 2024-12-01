@@ -16,7 +16,7 @@
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
 #define PROP_NAME "test_prop"
-#define PROP_VAL 12345
+#define PROP_VAL 123.45
 
 namespace {
 
@@ -27,8 +27,8 @@ class test_extension : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_world") {
-      auto prop_value = ten_env.get_property_int32("app:" PROP_NAME);
-      if (prop_value == PROP_VAL) {
+      auto prop_value = ten_env.get_property_float64("app:" PROP_NAME);
+      if (fabs(prop_value - PROP_VAL) < 0.01) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "hello world, too");
         ten_env.return_result(std::move(cmd_result), std::move(cmd));
@@ -50,7 +50,7 @@ class test_app : public ten::app_t {
                     \"api\": {\
                       \"property\": {\
                         \"" PROP_NAME "\": {\
-                          \"type\": \"int32\"\
+                          \"type\": \"float64\"\
                         }\
                       }\
                     }\
@@ -78,12 +78,12 @@ void *test_app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_get_int32__extension,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_get_float64__extension,
                                     test_extension);
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyGetInt32) {  // NOLINT
+TEST(PropertyTest, GetFloat64) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -97,9 +97,9 @@ TEST(ExtensionTest, PropertyGetInt32) {  // NOLINT
            "nodes": [{
                "type": "extension",
                "name": "test_extension",
-               "addon": "property_get_int32__extension",
+               "addon": "property_get_float64__extension",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "property_get_int32__extension_group"
+               "extension_group": "property_get_float64__extension_group"
              }]
            })");
   auto cmd_result =
@@ -109,7 +109,7 @@ TEST(ExtensionTest, PropertyGetInt32) {  // NOLINT
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
-                            "property_get_int32__extension_group",
+                            "property_get_float64__extension_group",
                             "test_extension");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);

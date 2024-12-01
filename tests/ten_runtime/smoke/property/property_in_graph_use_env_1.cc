@@ -98,7 +98,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(property_in_graph_use_env_1__extension,
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyInGraphUseEnv1) {  // NOLINT
+TEST(PropertyTest, InGraphUseEnv1) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);

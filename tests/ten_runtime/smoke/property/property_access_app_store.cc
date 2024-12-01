@@ -11,21 +11,27 @@
 
 namespace {
 
-class test_property_access_app_store_async_1 : public ten::extension_t {
+class test_property_access_app_store_1 : public ten::extension_t {
  public:
-  explicit test_property_access_app_store_async_1(const std::string &name)
+  explicit test_property_access_app_store_1(const std::string &name)
       : ten::extension_t(name) {}
+
+  void on_cmd(ten::ten_env_t &ten_env,
+              std::unique_ptr<ten::cmd_t> cmd) override {
+    auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+    cmd_result->set_property("detail", "success");
+    ten_env.return_result(std::move(cmd_result), std::move(cmd));
+  }
 };
 
-class test_property_access_app_store_async_2 : public ten::extension_t {
+class test_property_access_app_store_2 : public ten::extension_t {
  public:
-  explicit test_property_access_app_store_async_2(const std::string &name)
+  explicit test_property_access_app_store_2(const std::string &name)
       : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     auto result = ten_env.get_property_int32("app:aaa");
-
     if (result == 3) {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "success");
@@ -61,13 +67,13 @@ class test_app : public ten::app_t {
                           "singleton": true,
                           "nodes": [{
                             "type": "extension",
-                            "name": "test_property_access_app_store_async_1",
-                            "addon": "test_property_access_app_store_async_1",
+                            "name": "test_property_access_app_store_1",
+                            "addon": "test_property_access_app_store_1",
                             "extension_group": "default_extension_group_1"
                           },{
                             "type": "extension",
-                            "name": "test_property_access_app_store_async_2",
-                            "addon": "test_property_access_app_store_async_2",
+                            "name": "test_property_access_app_store_2",
+                            "addon": "test_property_access_app_store_2",
                             "extension_group": "default_extension_group_2"
                           }]
                         }]
@@ -90,27 +96,37 @@ void *app_thread_main(TEN_UNUSED void *args) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(test_property_access_app_store_async_1,
-                                    test_property_access_app_store_async_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(test_property_access_app_store_async_2,
-                                    test_property_access_app_store_async_2);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(test_property_access_app_store_1,
+                                    test_property_access_app_store_1);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(test_property_access_app_store_2,
+                                    test_property_access_app_store_2);
 
 }  // namespace
 
-TEST(ExtensionTest, PropertyAccessAppStoreAsync) {  // NOLINT
+TEST(PropertyTest, AccessAppStore) {  // NOLINT
   auto *app_thread = ten_thread_create("app thread", app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
+  // Send a request to test_property_access_app_store_1 to make sure
+  // it has been initted.
+  auto test_cmd = ten::cmd_t::create("test");
+  test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
+                     "default_extension_group_1",
+                     "test_property_access_app_store_1");
+  auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+  ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
+  ten_test::check_detail_with_string(cmd_result, "success");
+
   // Do not need to send 'start_graph' command first.
   // The 'graph_id' MUST be "default" (a special string) if we want to send the
   // request to predefined graph.
-  auto test_cmd = ten::cmd_t::create("test");
+  test_cmd = ten::cmd_t::create("test");
   test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                      "default_extension_group_2",
-                     "test_property_access_app_store_async_2");
-  auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
+                     "test_property_access_app_store_2");
+  cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
   ten_test::check_detail_with_string(cmd_result, "success");
 
