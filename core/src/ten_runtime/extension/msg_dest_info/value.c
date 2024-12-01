@@ -145,7 +145,7 @@ ten_shared_ptr_t *ten_msg_dest_info_from_value(
 
   const char *name = "";
   if (name_value) {
-    name = ten_value_peek_raw_str(name_value);
+    name = ten_value_peek_raw_str(name_value, err);
   }
 
   self = ten_msg_dest_info_create(name);

@@ -91,9 +91,10 @@ bool ten_msg_conversion_per_property_rule_from_original_from_value(
   TEN_ASSERT(value, "Invalid argument.");
 
   ten_msg_conversion_per_property_rule_from_original_init(self);
-  ten_string_set_formatted(&self->original_path,
-                           ten_value_peek_raw_str(ten_value_object_peek(
-                               value, TEN_STR_ORIGINAL_PATH)));
+  ten_string_set_formatted(
+      &self->original_path,
+      ten_value_peek_raw_str(
+          ten_value_object_peek(value, TEN_STR_ORIGINAL_PATH), err));
 
   return true;
 }

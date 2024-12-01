@@ -38,7 +38,7 @@ inline bool ten_env_t::on_create_instance_done(void *instance, void *context,
 
   bool rc = ten_env_on_create_instance_done(
       c_ten_env, c_instance, cpp_context->c_context,
-      err != nullptr ? err->get_internal_representation() : nullptr);
+      err != nullptr ? err->get_c_error() : nullptr);
 
   delete cpp_context;
 

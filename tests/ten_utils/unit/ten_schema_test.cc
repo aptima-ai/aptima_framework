@@ -413,7 +413,7 @@ TEST(SchemaTest, AdjustArray) {  // NOLINT
   ten_error_t err;
   ten_error_init(&err);
 
-  auto *value_one = ten_value_array_peek(value, 0);
+  auto *value_one = ten_value_array_peek(value, 0, &err);
   ASSERT_EQ(true, ten_value_get_int32(value_one, &err) == 1);
 
   bool success = ten_schema_adjust_value_type(schema, value, &err);

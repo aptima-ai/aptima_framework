@@ -33,9 +33,8 @@ class cmd_t : public msg_t {
  public:
   static std::unique_ptr<cmd_t> create(const char *cmd_name,
                                        error_t *err = nullptr) {
-    ten_shared_ptr_t *c_cmd = ten_cmd_create(
-        cmd_name,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    ten_shared_ptr_t *c_cmd =
+        ten_cmd_create(cmd_name, err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<cmd_t>(c_cmd, ctor_passkey_t());
   }

@@ -38,17 +38,16 @@ class data_t : public msg_t {
   static std::unique_ptr<data_t> create(const char *data_name,
                                         error_t *err = nullptr) {
     if (data_name == nullptr || strlen(data_name) == 0) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Data name cannot be empty.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Data name cannot be empty.");
       }
       return nullptr;
     }
 
     auto *c_data = ten_data_create();
-    ten_msg_set_name(
-        c_data, data_name,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    ten_msg_set_name(c_data, data_name,
+                     err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<data_t>(c_data, ctor_passkey_t());
   }
@@ -65,7 +64,7 @@ class data_t : public msg_t {
   buf_t lock_buf(error_t *err = nullptr) {
     if (!ten_msg_add_locked_res_buf(
             c_msg, ten_data_peek_buf(c_msg)->data,
-            err != nullptr ? err->get_internal_representation() : nullptr)) {
+            err != nullptr ? err->get_c_error() : nullptr)) {
       return {};
     }
 
@@ -77,8 +76,7 @@ class data_t : public msg_t {
 
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     if (!ten_msg_remove_locked_res_buf(
-            c_msg, buf.data(),
-            err != nullptr ? err->get_internal_representation() : nullptr)) {
+            c_msg, buf.data(), err != nullptr ? err->get_c_error() : nullptr)) {
       return false;
     }
 

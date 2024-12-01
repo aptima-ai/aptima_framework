@@ -191,7 +191,7 @@ static bool ten_extension_graph_property_resolve_placeholders(
       return true;
 
     case TEN_TYPE_STRING: {
-      const char *str_value = ten_value_peek_raw_str(curr_value);
+      const char *str_value = ten_value_peek_raw_str(curr_value, err);
       if (ten_c_str_is_placeholder(str_value)) {
         ten_placeholder_t placeholder;
         ten_placeholder_init(&placeholder);

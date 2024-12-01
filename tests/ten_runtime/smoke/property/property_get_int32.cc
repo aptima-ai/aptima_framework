@@ -27,8 +27,46 @@ class test_extension : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_world") {
-      auto prop_value = ten_env.get_property_int32("app:" PROP_NAME);
-      if (prop_value == PROP_VAL) {
+      auto int8_prop_value = ten_env.get_property_int8("app:" PROP_NAME);
+      EXPECT_EQ(int8_prop_value, 0);
+
+      auto int16_prop_value = ten_env.get_property_int16("app:" PROP_NAME);
+      EXPECT_EQ(int16_prop_value, PROP_VAL);
+
+      auto int32_prop_value = ten_env.get_property_int32("app:" PROP_NAME);
+      EXPECT_EQ(int32_prop_value, PROP_VAL);
+
+      auto int64_prop_value = ten_env.get_property_int64("app:" PROP_NAME);
+      EXPECT_EQ(int64_prop_value, PROP_VAL);
+
+      auto uint8_prop_value = ten_env.get_property_uint8("app:" PROP_NAME);
+      EXPECT_EQ(uint8_prop_value, 0);
+
+      auto uint16_prop_value = ten_env.get_property_uint16("app:" PROP_NAME);
+      EXPECT_EQ(uint16_prop_value, PROP_VAL);
+
+      auto uint32_prop_value = ten_env.get_property_uint32("app:" PROP_NAME);
+      EXPECT_EQ(uint32_prop_value, PROP_VAL);
+
+      auto uint64_prop_value = ten_env.get_property_uint64("app:" PROP_NAME);
+      EXPECT_EQ(uint64_prop_value, PROP_VAL);
+
+      auto float32_prop_value = ten_env.get_property_float32("app:" PROP_NAME);
+      EXPECT_EQ(float32_prop_value, 0.0);
+
+      auto float64_prop_value = ten_env.get_property_float64("app:" PROP_NAME);
+      EXPECT_EQ(float64_prop_value, 0.0);
+
+      auto string_prop_value = ten_env.get_property_string("app:" PROP_NAME);
+      EXPECT_EQ(string_prop_value, "");
+
+      auto *ptr_prop_value = ten_env.get_property_ptr("app:" PROP_NAME);
+      EXPECT_EQ(ptr_prop_value, nullptr);
+
+      auto bool_prop_value = ten_env.get_property_bool("app:" PROP_NAME);
+      EXPECT_EQ(bool_prop_value, false);
+
+      if (int32_prop_value == PROP_VAL) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "hello world, too");
         ten_env.return_result(std::move(cmd_result), std::move(cmd));

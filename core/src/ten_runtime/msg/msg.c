@@ -973,7 +973,7 @@ static bool ten_raw_msg_dump_internal(ten_msg_t *msg, ten_error_t *err,
   ten_json_t *msg_json = ten_raw_msg_to_json_include_internal_field(msg, err);
   TEN_ASSERT(msg_json, "Failed to convert msg type(%s), name(%s) to JSON.",
              ten_msg_type_to_string(msg->type),
-             ten_value_peek_raw_str(&msg->name));
+             ten_value_peek_raw_str(&msg->name, err));
   if (!msg_json) {
     return false;
   }
@@ -1211,7 +1211,7 @@ bool ten_msg_has_locked_res(ten_shared_ptr_t *self) {
 
 static const char *ten_raw_msg_get_name(ten_msg_t *self) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
-  return ten_value_peek_raw_str(&self->name);
+  return ten_value_peek_raw_str(&self->name, NULL);
 }
 
 const char *ten_msg_get_name(ten_shared_ptr_t *self) {

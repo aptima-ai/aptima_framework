@@ -37,7 +37,6 @@ glob("extension_test") {
     "graph",
     "graph_name",
     "lock",
-    "msg_property",
     "multi_dest",
     "outer_thread",
     "path",

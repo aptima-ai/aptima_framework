@@ -44,19 +44,18 @@ class cmd_start_graph_t : public cmd_t {
                                  error_t *err = nullptr) {
     return ten_cmd_start_graph_set_predefined_graph_name(
         c_msg, predefined_graph_name,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool set_graph_from_json(const char *json_str, error_t *err = nullptr) {
     return ten_cmd_start_graph_set_graph_from_json_str(
-        c_msg, json_str,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, json_str, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool set_long_running_mode(bool long_running_mode, error_t *err = nullptr) {
     return ten_cmd_start_graph_set_long_running_mode(
         c_msg, long_running_mode,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
   }
 
   // @{

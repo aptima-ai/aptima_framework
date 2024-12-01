@@ -351,8 +351,8 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
     }
     ten_string_set_from_c_str(
         &predefined_graph_info->name,
-        ten_value_peek_raw_str(predefined_graph_info_name_value),
-        strlen(ten_value_peek_raw_str(predefined_graph_info_name_value)));
+        ten_value_peek_raw_str(predefined_graph_info_name_value, &err),
+        strlen(ten_value_peek_raw_str(predefined_graph_info_name_value, &err)));
 
     ten_value_t *predefined_graph_info_auto_start_value =
         ten_value_object_peek(predefined_graph_info_value, TEN_STR_AUTO_START);
@@ -399,7 +399,7 @@ bool ten_app_get_predefined_graphs_from_property(ten_app_t *self) {
           goto done;
         }
 
-        const char *type = ten_value_peek_raw_str(type_value);
+        const char *type = ten_value_peek_raw_str(type_value, &err);
 
         // Only the extension node is preferred.
         result = ten_c_string_is_equal(type, TEN_STR_EXTENSION);

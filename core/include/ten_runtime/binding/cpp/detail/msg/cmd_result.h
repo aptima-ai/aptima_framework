@@ -50,18 +50,17 @@ class cmd_result_t : public msg_t {
 
   bool is_final(error_t *err = nullptr) const {
     return ten_cmd_result_is_final(
-        c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool is_completed(error_t *err = nullptr) const {
     return ten_cmd_result_is_completed(
-        c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool set_final(bool final, error_t *err = nullptr) {
     return ten_cmd_result_set_final(
-        c_msg, final,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, final, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   // @{

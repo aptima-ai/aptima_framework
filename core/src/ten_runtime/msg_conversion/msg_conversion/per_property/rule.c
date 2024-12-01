@@ -223,10 +223,10 @@ ten_msg_conversion_per_property_rule_from_value(ten_value_t *value,
 
   ten_string_set_formatted(
       &self->property_path, "%s",
-      ten_value_peek_raw_str(ten_value_object_peek(value, TEN_STR_PATH)));
+      ten_value_peek_raw_str(ten_value_object_peek(value, TEN_STR_PATH), err));
 
   const char *conversion_mode_str = ten_value_peek_raw_str(
-      ten_value_object_peek(value, TEN_STR_CONVERSION_MODE));
+      ten_value_object_peek(value, TEN_STR_CONVERSION_MODE), err);
 
   self->conversion_mode =
       ten_msg_conversion_per_property_rule_conversion_mode_from_string(

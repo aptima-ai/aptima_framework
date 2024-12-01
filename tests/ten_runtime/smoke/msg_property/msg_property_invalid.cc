@@ -7,7 +7,7 @@
 #include "gtest/gtest.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 
-TEST(ExtensionTest, MsgPropertyInvalid) {  // NOLINT
+TEST(MsgPropertyTest, Invalid) {  // NOLINT
   auto cmd = ten::cmd_t::create("test");
 
   auto result = cmd->set_property("b", static_cast<void *>(nullptr));

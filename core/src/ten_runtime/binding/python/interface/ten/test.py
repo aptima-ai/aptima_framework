@@ -65,7 +65,8 @@ class ExtensionTester(_ExtensionTester):
             sys.path.insert(0, str(addon_base_dir.parent))
         importlib.import_module(addon_base_dir.name)
 
-        # =-=-=
+        # TODO(Wei): This should be done during the `on_configure_done` of the
+        # test app.
         _AddonManager.register_all_addons(None)
 
     @final

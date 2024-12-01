@@ -73,7 +73,8 @@ static bool ten_addon_protocol_match_protocol(ten_addon_host_t *self,
         addon_protocol_value && ten_value_check_integrity(addon_protocol_value),
         "Should not happen.");
 
-    const char *addon_protocol = ten_value_peek_raw_str(addon_protocol_value);
+    const char *addon_protocol =
+        ten_value_peek_raw_str(addon_protocol_value, NULL);
     if (!strcmp(addon_protocol, protocol)) {
       found = true;
       break;

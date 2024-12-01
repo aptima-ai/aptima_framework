@@ -20,7 +20,7 @@ void ten_cmd_base_copy_seq_id(ten_msg_t *self, ten_msg_t *src,
 
   ten_string_set_formatted(
       ten_value_peek_string(&((ten_cmd_base_t *)self)->seq_id), "%s",
-      ten_value_peek_raw_str(&((ten_cmd_base_t *)src)->seq_id));
+      ten_value_peek_raw_str(&((ten_cmd_base_t *)src)->seq_id, NULL));
 }
 
 bool ten_cmd_base_process_seq_id(ten_msg_t *self,

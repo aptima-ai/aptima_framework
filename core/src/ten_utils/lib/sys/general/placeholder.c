@@ -195,7 +195,7 @@ bool ten_placeholder_resolve(ten_placeholder_t *self,
           ten_value_reset_to_null(placeholder_value);
         } else {
           const char *default_value =
-              ten_value_peek_raw_str(&self->default_value);
+              ten_value_peek_raw_str(&self->default_value, err);
 
           TEN_LOGI(
               "Environment variable %s is not found, using default value %s.",

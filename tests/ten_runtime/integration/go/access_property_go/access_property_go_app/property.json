@@ -14,7 +14,6 @@
             "addon": "extension_a",
             "extension_group": "nodetest",
             "property": {
-              "env_not_set": "${env:ENV_NOT_SET}",
               "env_not_set_has_default": "${env:ENV_NOT_SET|}"
             }
           }

@@ -36,7 +36,7 @@ class error_t {
   const char *errmsg() { return ten_error_errmsg(c_error); }
 
   // Internal use only.
-  ten_error_t *get_internal_representation() { return c_error; }
+  ten_error_t *get_c_error() { return c_error; }
 
  private:
   ten_error_t *c_error;

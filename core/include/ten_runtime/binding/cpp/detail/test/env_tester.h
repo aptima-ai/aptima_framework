@@ -40,8 +40,7 @@ class ten_env_tester_t {
   bool on_start_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
     return ten_env_tester_on_start_done(
-        c_ten_env_tester,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env_tester, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool send_cmd(
@@ -60,7 +59,7 @@ class ten_env_tester_t {
     if (result_handler == nullptr) {
       rc = ten_env_tester_send_cmd(
           c_ten_env_tester, cmd->get_underlying_msg(), nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+          err != nullptr ? err->get_c_error() : nullptr);
     } else {
       auto *result_handler_ptr =
           new ten_env_tester_send_cmd_result_handler_func_t(
@@ -68,8 +67,7 @@ class ten_env_tester_t {
 
       rc = ten_env_tester_send_cmd(
           c_ten_env_tester, cmd->get_underlying_msg(), proxy_handle_result,
-          result_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+          result_handler_ptr, err != nullptr ? err->get_c_error() : nullptr);
       if (!rc) {
         delete result_handler_ptr;
       }
@@ -97,9 +95,9 @@ class ten_env_tester_t {
       return rc;
     }
 
-    rc = ten_env_tester_send_data(
-        c_ten_env_tester, data->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    rc =
+        ten_env_tester_send_data(c_ten_env_tester, data->get_underlying_msg(),
+                                 err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
       // Only when the data has been sent successfully, we should give back the
@@ -126,7 +124,7 @@ class ten_env_tester_t {
 
     rc = ten_env_tester_send_audio_frame(
         c_ten_env_tester, audio_frame->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
       // Only when the audio_frame has been sent successfully, we should give
@@ -153,7 +151,7 @@ class ten_env_tester_t {
 
     rc = ten_env_tester_send_video_frame(
         c_ten_env_tester, video_frame->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
       // Only when the video_frame has been sent successfully, we should give
@@ -170,8 +168,7 @@ class ten_env_tester_t {
   bool stop_test(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env_tester, "Should not happen.");
     return ten_env_tester_stop_test(
-        c_ten_env_tester,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env_tester, err != nullptr ? err->get_c_error() : nullptr);
   }
 
  private:

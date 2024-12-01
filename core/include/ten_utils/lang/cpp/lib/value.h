@@ -359,7 +359,7 @@ class value_t {
     std::vector<value_t> result;
     auto size = ten_value_array_size(c_value_);
     for (size_t i = 0; i < size; ++i) {
-      auto *v = ten_value_array_peek(c_value_, i);
+      auto *v = ten_value_array_peek(c_value_, i, nullptr);
       TEN_ASSERT(v, "Invalid argument.");
 
       result.push_back(value_t(ten_value_clone(v)));
@@ -397,7 +397,7 @@ class value_t {
     (void)err;
 
     // TODO(Liu): pass `err` to the underlying function.
-    const char *result = ten_value_peek_raw_str(c_value_);
+    const char *result = ten_value_peek_raw_str(c_value_, err);
     if (result != nullptr) {
       return result;
     } else {

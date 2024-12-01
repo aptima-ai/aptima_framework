@@ -14,25 +14,9 @@
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
-#define TEST_DATA 12344321
+#define TEST_DATA "hello TEN in C!"
 
 namespace {
-
-class test_data_t {
- public:
-  explicit test_data_t(int32_t v) : v_(new int32_t(v)) {}
-
-  // This class done _not_ support move/copy constructor.
-  test_data_t(const test_data_t &other) = delete;
-  test_data_t(test_data_t &&other) = delete;
-
-  ~test_data_t() { delete v_; };
-
-  test_data_t &operator=(const test_data_t &other) = delete;
-  test_data_t &operator=(test_data_t &&other) = delete;
-
-  int32_t *v_;
-};
 
 class test_extension_1 : public ten::extension_t {
  public:
@@ -42,12 +26,7 @@ class test_extension_1 : public ten::extension_t {
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_world") {
       auto new_cmd = ten::cmd_t::create("send_ptr");
-
-      // Create a C++ object.
-      auto *test_data = new test_data_t(TEST_DATA);
-
-      // _Move_ the C++ object to the TEN message.
-      new_cmd->set_property("test data", test_data);
+      new_cmd->set_property("test data", TEST_DATA);
 
       hello_world_cmd = std::move(cmd);
 
@@ -75,12 +54,8 @@ class test_extension_2 : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "send_ptr") {
-      // Get the TEN message property.
-      auto *test_data =
-          static_cast<test_data_t *>(cmd->get_property_ptr("test data"));
-      TEN_ASSERT(*test_data->v_ == TEST_DATA, "Invalid argument.");
-
-      delete test_data;
+      auto test_data = cmd->get_property_string("test data");
+      TEN_ASSERT(test_data == TEST_DATA, "Invalid argument.");
 
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
@@ -117,14 +92,14 @@ void *test_app_thread_main(TEN_UNUSED void *arg) {
   return nullptr;
 }
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(msg_property_send_cpp_ptr__extension_1,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(msg_property_send_c_string__extension_1,
                                     test_extension_1);
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION(msg_property_send_cpp_ptr__extension_2,
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION(msg_property_send_c_string__extension_2,
                                     test_extension_2);
 
 }  // namespace
 
-TEST(ExtensionTest, MsgPropertySendCppPtr) {  // NOLINT
+TEST(MsgPropertyTest, SendCString) {  // NOLINT
   // Start app.
   auto *app_thread =
       ten_thread_create("app thread", test_app_thread_main, nullptr);
@@ -137,27 +112,27 @@ TEST(ExtensionTest, MsgPropertySendCppPtr) {  // NOLINT
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
-               "name": "msg_property_send_cpp_ptr__extension_1",
-               "addon": "msg_property_send_cpp_ptr__extension_1",
+               "name": "msg_property_send_c_string__extension_1",
+               "addon": "msg_property_send_c_string__extension_1",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "msg_property_send_cpp_ptr__extension_group_1"
+               "extension_group": "msg_property_send_c_string__extension_group_1"
              },{
                "type": "extension",
-               "name": "msg_property_send_cpp_ptr__extension_2",
-               "addon": "msg_property_send_cpp_ptr__extension_2",
+               "name": "msg_property_send_c_string__extension_2",
+               "addon": "msg_property_send_c_string__extension_2",
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "msg_property_send_cpp_ptr__extension_group_2"
+               "extension_group": "msg_property_send_c_string__extension_group_2"
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "msg_property_send_cpp_ptr__extension_group_1",
-               "extension": "msg_property_send_cpp_ptr__extension_1",
+               "extension_group": "msg_property_send_c_string__extension_group_1",
+               "extension": "msg_property_send_c_string__extension_1",
                "cmd": [{
                  "name": "send_ptr",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "msg_property_send_cpp_ptr__extension_group_2",
-                   "extension": "msg_property_send_cpp_ptr__extension_2"
+                   "extension_group": "msg_property_send_c_string__extension_group_2",
+                   "extension": "msg_property_send_c_string__extension_2"
                  }]
                }]
              }]
@@ -169,8 +144,8 @@ TEST(ExtensionTest, MsgPropertySendCppPtr) {  // NOLINT
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
-                            "msg_property_send_cpp_ptr__extension_group_1",
-                            "msg_property_send_cpp_ptr__extension_1");
+                            "msg_property_send_c_string__extension_group_1",
+                            "msg_property_send_c_string__extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
   ten_test::check_detail_with_string(cmd_result, "hello world, too");

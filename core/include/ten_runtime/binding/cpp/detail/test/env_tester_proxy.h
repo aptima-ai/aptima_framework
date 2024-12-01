@@ -105,7 +105,7 @@ class ten_env_tester_proxy_t {
 
     auto rc = ten_env_tester_proxy_notify(
         c_ten_env_tester_proxy, proxy_notify, info,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
     if (!rc) {
       delete info;
     }

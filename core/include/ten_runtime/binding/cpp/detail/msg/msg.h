@@ -59,9 +59,9 @@ class msg_t {
 
   TEN_MSG_TYPE get_type(error_t *err = nullptr) const {
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid TEN message.");
       }
       return TEN_MSG_TYPE_INVALID;
     }
@@ -73,8 +73,8 @@ class msg_t {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
       }
       return "";
@@ -89,35 +89,35 @@ class msg_t {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid TEN message.");
       }
       return false;
     }
 
     return ten_msg_clear_and_set_dest(
         c_msg, uri, graph, extension_group_name, extension_name,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
   }
 
   std::string to_json(error_t *err = nullptr) const {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
       }
       return "";
     }
 
-    ten_json_t *c_json = ten_msg_to_json(
-        c_msg, err != nullptr ? err->get_internal_representation() : nullptr);
+    ten_json_t *c_json =
+        ten_msg_to_json(c_msg, err != nullptr ? err->get_c_error() : nullptr);
     TEN_ASSERT(c_json, "Failed to get json from TEN C message.");
     if (c_json == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
       }
       return "";
@@ -140,8 +140,8 @@ class msg_t {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(), TEN_ERRNO_GENERIC,
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
                       "Invalid TEN message.");
       }
       return false;
@@ -150,16 +150,14 @@ class msg_t {
     bool result = true;
 
     ten_json_t *c_json = ten_json_from_string(
-        json_str,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        json_str, err != nullptr ? err->get_c_error() : nullptr);
     if (c_json == nullptr) {
       result = false;
       goto done;  // NOLINT(hicpp-avoid-goto,cppcoreguidelines-avoid-goto)
     }
 
-    result = ten_msg_from_json(
-        c_msg, c_json,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    result = ten_msg_from_json(c_msg, c_json,
+                               err != nullptr ? err->get_c_error() : nullptr);
     if (!result) {
       TEN_LOGW("Failed to set message content.");
       goto done;  // NOLINT(hicpp-avoid-goto,cppcoreguidelines-avoid-goto)
@@ -177,16 +175,15 @@ class msg_t {
     TEN_ASSERT(path && strlen(path), "path should not be empty.");
 
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid TEN message.");
       }
       return false;
     }
 
     return ten_msg_is_property_exist(
-        c_msg, path,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, path, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   virtual uint8_t get_property_uint8(const char *path, error_t *err) {
@@ -194,8 +191,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint8(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_uint8(c_value,
+                               err != nullptr ? err->get_c_error() : nullptr);
   }
 
   uint8_t get_property_uint8(const char *path) {
@@ -207,8 +204,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint16(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_uint16(c_value,
+                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
   uint16_t get_property_uint16(const char *path) {
@@ -220,8 +217,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint32(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_uint32(c_value,
+                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
   uint32_t get_property_uint32(const char *path) {
@@ -233,8 +230,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint64(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_uint64(c_value,
+                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
   uint64_t get_property_uint64(const char *path) {
@@ -246,8 +243,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int8(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_int8(c_value,
+                              err != nullptr ? err->get_c_error() : nullptr);
   }
 
   int8_t get_property_int8(const char *path) {
@@ -259,8 +256,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int16(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_int16(c_value,
+                               err != nullptr ? err->get_c_error() : nullptr);
   }
 
   int16_t get_property_int16(const char *path) {
@@ -272,8 +269,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int32(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_int32(c_value,
+                               err != nullptr ? err->get_c_error() : nullptr);
   }
 
   int32_t get_property_int32(const char *path) {
@@ -285,8 +282,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int64(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_int64(c_value,
+                               err != nullptr ? err->get_c_error() : nullptr);
   }
 
   int64_t get_property_int64(const char *path) {
@@ -298,8 +295,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0.0F;
     }
-    return ten_value_get_float32(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_float32(c_value,
+                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
   float get_property_float32(const char *path) {
@@ -311,8 +308,8 @@ class msg_t {
     if (c_value == nullptr) {
       return 0.0F;
     }
-    return ten_value_get_float64(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_float64(c_value,
+                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
   double get_property_float64(const char *path) {
@@ -324,7 +321,8 @@ class msg_t {
     if (c_value == nullptr) {
       return "";
     }
-    return ten_value_peek_raw_str(c_value);
+    return ten_value_peek_raw_str(
+        c_value, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   std::string get_property_string(const char *path) {
@@ -336,8 +334,8 @@ class msg_t {
     if (c_value == nullptr) {
       return nullptr;
     }
-    return ten_value_get_ptr(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_ptr(c_value,
+                             err != nullptr ? err->get_c_error() : nullptr);
   }
 
   void *get_property_ptr(const char *path) {
@@ -349,8 +347,8 @@ class msg_t {
     if (c_value == nullptr) {
       return false;
     }
-    return ten_value_get_bool(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_value_get_bool(c_value,
+                              err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool get_property_bool(const char *path) {
@@ -381,9 +379,9 @@ class msg_t {
     TEN_ASSERT(path && strlen(path), "path should not be empty.");
 
     if (c_msg == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid TEN message.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid TEN message.");
       }
       return "";
     }
@@ -503,9 +501,9 @@ class msg_t {
 
   virtual bool set_property(const char *path, void *value, error_t *err) {
     if (value == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid argment.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid argment.");
       }
       return false;
     }
@@ -519,9 +517,9 @@ class msg_t {
 
   virtual bool set_property(const char *path, const char *value, error_t *err) {
     if (value == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid argment.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid argment.");
       }
       return false;
     }
@@ -545,9 +543,9 @@ class msg_t {
   virtual bool set_property(const char *path, const ten::buf_t &value,
                             error_t *err) {
     if (value.data() == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid argment.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid argment.");
       }
       return false;
     }
@@ -565,7 +563,7 @@ class msg_t {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     ten_json_t *c_json = ten_json_from_string(
-        json, err != nullptr ? err->get_internal_representation() : nullptr);
+        json, err != nullptr ? err->get_c_error() : nullptr);
     if (c_json == nullptr) {
       return false;
     }
@@ -599,8 +597,7 @@ class msg_t {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     bool rc = ten_msg_set_property(
-        c_msg, path, value,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_msg, path, value, err != nullptr ? err->get_c_error() : nullptr);
 
     if (!rc) {
       ten_value_destroy(value);
@@ -621,9 +618,8 @@ class msg_t {
   ten_value_t *peek_property_value(const char *path, error_t *err) const {
     TEN_ASSERT(c_msg, "Should not happen.");
 
-    return ten_msg_peek_property(
-        c_msg, path,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_msg_peek_property(c_msg, path,
+                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 };
 

@@ -84,9 +84,9 @@ class ten_env_t {
     }
 
     if (data->get_underlying_msg() == nullptr) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "Invalid data.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid data.");
       }
       return false;
     }
@@ -94,17 +94,16 @@ class ten_env_t {
     auto rc = false;
 
     if (error_handler == nullptr) {
-      rc = ten_env_send_data(
-          c_ten_env, data->get_underlying_msg(), nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+      rc = ten_env_send_data(c_ten_env, data->get_underlying_msg(), nullptr,
+                             nullptr,
+                             err != nullptr ? err->get_c_error() : nullptr);
     } else {
       auto *error_handler_ptr =
           new error_handler_func_t(std::move(error_handler));
 
-      rc = ten_env_send_data(
-          c_ten_env, data->get_underlying_msg(), proxy_handle_error,
-          error_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+      rc = ten_env_send_data(c_ten_env, data->get_underlying_msg(),
+                             proxy_handle_error, error_handler_ptr,
+                             err != nullptr ? err->get_c_error() : nullptr);
       if (!rc) {
         delete error_handler_ptr;
       }
@@ -137,15 +136,14 @@ class ten_env_t {
     if (error_handler == nullptr) {
       rc = ten_env_send_video_frame(
           c_ten_env, frame->get_underlying_msg(), nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+          err != nullptr ? err->get_c_error() : nullptr);
     } else {
       auto *error_handler_ptr =
           new error_handler_func_t(std::move(error_handler));
 
       rc = ten_env_send_video_frame(
           c_ten_env, frame->get_underlying_msg(), proxy_handle_error,
-          error_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+          error_handler_ptr, err != nullptr ? err->get_c_error() : nullptr);
       if (!rc) {
         delete error_handler_ptr;
       }
@@ -178,15 +176,14 @@ class ten_env_t {
     if (error_handler == nullptr) {
       rc = ten_env_send_audio_frame(
           c_ten_env, frame->get_underlying_msg(), nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+          err != nullptr ? err->get_c_error() : nullptr);
     } else {
       auto *error_handler_ptr =
           new error_handler_func_t(std::move(error_handler));
 
       rc = ten_env_send_audio_frame(
           c_ten_env, frame->get_underlying_msg(), proxy_handle_error,
-          error_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+          error_handler_ptr, err != nullptr ? err->get_c_error() : nullptr);
       if (!rc) {
         delete error_handler_ptr;
       }
@@ -215,7 +212,7 @@ class ten_env_t {
 
     auto rc = ten_env_return_result_directly(
         c_ten_env, cmd->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
       // The 'cmd' has been returned, so we should release the ownership of
@@ -243,7 +240,7 @@ class ten_env_t {
 
     auto rc = ten_env_return_result(
         c_ten_env, cmd->get_underlying_msg(), target_cmd->get_underlying_msg(),
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
       if (cmd->is_final()) {
@@ -267,16 +264,15 @@ class ten_env_t {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     if ((path == nullptr) || (strlen(path) == 0)) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "path should not be empty.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "path should not be empty.");
       }
       return false;
     }
 
     return ten_env_is_property_exist(
-        c_ten_env, path,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, path, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool init_property_from_json(const char *json_str, error_t *err = nullptr) {
@@ -288,17 +284,16 @@ class ten_env_t {
     }
 
     return ten_env_init_property_from_json(
-        c_ten_env, json_str,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, json_str, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   std::string get_property_to_json(const char *path, error_t *err = nullptr) {
     std::string result;
 
     if ((path == nullptr) || (strlen(path) == 0)) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT, "path should not be empty.");
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "path should not be empty.");
       }
       return result;
     }
@@ -329,8 +324,7 @@ class ten_env_t {
   bool set_property_from_json(const char *path, const char *json_str,
                               error_t *err = nullptr) {
     ten_json_t *c_json = ten_json_from_string(
-        json_str,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        json_str, err != nullptr ? err->get_c_error() : nullptr);
     if (c_json == nullptr) {
       return false;
     }
@@ -346,8 +340,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint8(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_uint8(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   uint16_t get_property_uint16(const char *path, error_t *err = nullptr) {
@@ -355,8 +358,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint16(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_uint16(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   uint32_t get_property_uint32(const char *path, error_t *err = nullptr) {
@@ -364,8 +376,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint32(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_uint32(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   uint64_t get_property_uint64(const char *path, error_t *err = nullptr) {
@@ -373,8 +394,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_uint64(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_uint64(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   int8_t get_property_int8(const char *path, error_t *err = nullptr) {
@@ -382,8 +412,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int8(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_int8(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   int16_t get_property_int16(const char *path, error_t *err = nullptr) {
@@ -391,8 +430,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int16(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_int16(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   int32_t get_property_int32(const char *path, error_t *err = nullptr) {
@@ -400,8 +448,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int32(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_int32(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   int64_t get_property_int64(const char *path, error_t *err = nullptr) {
@@ -409,8 +466,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0;
     }
-    return ten_value_get_int64(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_int64(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   float get_property_float32(const char *path, error_t *err = nullptr) {
@@ -418,8 +484,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0.0F;
     }
-    return ten_value_get_float32(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_float32(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   double get_property_float64(const char *path, error_t *err = nullptr) {
@@ -427,8 +502,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return 0.0F;
     }
-    return ten_value_get_float64(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto result = ten_value_get_float64(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   std::string get_property_string(const char *path, error_t *err = nullptr) {
@@ -436,7 +520,21 @@ class ten_env_t {
     if (c_value == nullptr) {
       return "";
     }
-    return ten_value_peek_raw_str(c_value);
+
+    error_t cpp_err;
+    const auto *result = ten_value_peek_raw_str(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    if (result != nullptr) {
+      return result;
+    } else {
+      return "";
+    }
   }
 
   void *get_property_ptr(const char *path, error_t *err = nullptr) {
@@ -444,8 +542,17 @@ class ten_env_t {
     if (c_value == nullptr) {
       return nullptr;
     }
-    return ten_value_get_ptr(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+
+    error_t cpp_err;
+    auto *result = ten_value_get_ptr(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   bool get_property_bool(const char *path, error_t *err = nullptr) {
@@ -454,8 +561,16 @@ class ten_env_t {
       return false;
     }
 
-    return ten_value_get_bool(
-        c_value, err != nullptr ? err->get_internal_representation() : nullptr);
+    error_t cpp_err;
+    auto result = ten_value_get_bool(c_value, cpp_err.get_c_error());
+    if (!cpp_err.is_success()) {
+      TEN_LOGW("Failed to get property %s because of incorrect type.", path);
+    }
+    if (err != nullptr) {
+      ten_error_copy(err->get_c_error(), cpp_err.get_c_error());
+    }
+
+    return result;
   }
 
   bool set_property(const char *path, int8_t value, error_t *err = nullptr) {
@@ -528,16 +643,14 @@ class ten_env_t {
   bool is_cmd_connected(const char *cmd_name, error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_is_cmd_connected(
-        c_ten_env, cmd_name,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, cmd_name, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool on_configure_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     bool rc = ten_env_on_configure_done(
-        c_ten_env,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, err != nullptr ? err->get_c_error() : nullptr);
 
     return rc;
   }
@@ -546,8 +659,7 @@ class ten_env_t {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     bool rc = ten_env_on_init_done(
-        c_ten_env,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, err != nullptr ? err->get_c_error() : nullptr);
 
     return rc;
   }
@@ -555,22 +667,19 @@ class ten_env_t {
   bool on_deinit_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
     return ten_env_on_deinit_done(
-        c_ten_env,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool on_start_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
-    return ten_env_on_start_done(
-        c_ten_env,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_env_on_start_done(c_ten_env,
+                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool on_stop_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
-    return ten_env_on_stop_done(
-        c_ten_env,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_env_on_stop_done(c_ten_env,
+                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool on_create_instance_done(void *instance, void *context,
@@ -578,8 +687,7 @@ class ten_env_t {
 
   bool on_destroy_instance_done(void *context, error_t *err = nullptr) {
     bool rc = ten_env_on_destroy_instance_done(
-        c_ten_env, context,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, context, err != nullptr ? err->get_c_error() : nullptr);
 
     return rc;
   }
@@ -679,17 +787,15 @@ class ten_env_t {
     }
 
     if (result_handler == nullptr) {
-      rc = send_cmd_func(
-          c_ten_env, cmd->get_underlying_msg(), nullptr, nullptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+      rc = send_cmd_func(c_ten_env, cmd->get_underlying_msg(), nullptr, nullptr,
+                         err != nullptr ? err->get_c_error() : nullptr);
     } else {
       auto *result_handler_ptr =
           new result_handler_func_t(std::move(result_handler));
 
-      rc = send_cmd_func(
-          c_ten_env, cmd->get_underlying_msg(), proxy_handle_result,
-          result_handler_ptr,
-          err != nullptr ? err->get_internal_representation() : nullptr);
+      rc = send_cmd_func(c_ten_env, cmd->get_underlying_msg(),
+                         proxy_handle_result, result_handler_ptr,
+                         err != nullptr ? err->get_c_error() : nullptr);
       if (!rc) {
         delete result_handler_ptr;
       }
@@ -710,9 +816,8 @@ class ten_env_t {
   ten_value_t *peek_property_value(const char *path, error_t *err) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
-    return ten_env_peek_property(
-        c_ten_env, path,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_env_peek_property(c_ten_env, path,
+                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
   /**
@@ -723,8 +828,7 @@ class ten_env_t {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 
     bool rc = ten_env_set_property(
-        c_ten_env, path, value,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env, path, value, err != nullptr ? err->get_c_error() : nullptr);
 
     if (!rc) {
       ten_value_destroy(value);

@@ -209,7 +209,7 @@ PyObject *ten_py_ten_env_get_property_string(PyObject *self, PyObject *args) {
                                                  path);
   }
 
-  const char *str_value = ten_value_peek_raw_str(value);
+  const char *str_value = ten_value_peek_raw_str(value, NULL);
   if (!str_value) {
     ten_value_destroy(value);
 

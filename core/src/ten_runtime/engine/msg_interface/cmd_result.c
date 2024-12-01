@@ -163,7 +163,7 @@ static bool ten_engine_handle_cmd_result_for_cmd_start_graph(
       TEN_ASSERT(ten_value_is_string(err_msg_value), "Should not happen.");
       ten_engine_return_error_for_cmd_start_graph(
           self, original_start_graph_cmd,
-          ten_value_peek_raw_str(err_msg_value));
+          ten_value_peek_raw_str(err_msg_value, err));
     } else {
       ten_engine_return_error_for_cmd_start_graph(
           self, original_start_graph_cmd, "Failed to start engine in app [%s].",

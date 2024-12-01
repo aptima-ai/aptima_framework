@@ -36,6 +36,8 @@ TEN_UTILS_API void ten_error_deinit(ten_error_t *self);
 
 TEN_UTILS_API ten_error_t *ten_error_create(void);
 
+TEN_UTILS_API void ten_error_copy(ten_error_t *self, ten_error_t *other);
+
 // Set error info, return true if set success, false otherwise.
 TEN_UTILS_API bool ten_error_set(ten_error_t *self, ten_errno_t err_no,
                                  const char *fmt, ...);

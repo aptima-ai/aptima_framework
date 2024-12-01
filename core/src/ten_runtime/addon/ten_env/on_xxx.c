@@ -57,15 +57,15 @@ void ten_addon_on_init_done(ten_env_t *self) {
     exit(EXIT_FAILURE);
   }
 
-  ten_error_deinit(&err);
-
   ten_value_t *manifest_name_value =
       ten_value_object_peek(&addon_host->manifest, TEN_STR_NAME);
 
   const char *manifest_name = NULL;
   if (manifest_name_value) {
-    manifest_name = ten_value_peek_raw_str(manifest_name_value);
+    manifest_name = ten_value_peek_raw_str(manifest_name_value, &err);
   }
+
+  ten_error_deinit(&err);
 
   if (manifest_name) {
     TEN_ASSERT(manifest_name, "Should not happen.");

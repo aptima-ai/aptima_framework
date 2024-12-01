@@ -20,8 +20,7 @@ inline bool ten_env_t::init_manifest_from_json(const char *json, error_t *err) {
   }
 
   return ten_env_init_manifest_from_json(
-      c_ten_env, json,
-      err != nullptr ? err->get_internal_representation() : nullptr);
+      c_ten_env, json, err != nullptr ? err->get_c_error() : nullptr);
 }
 
 }  // namespace ten

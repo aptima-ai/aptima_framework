@@ -286,7 +286,7 @@ bool ten_raw_video_frame_set_ten_property(ten_msg_t *self, ten_list_t *paths,
       case TEN_VALUE_PATH_ITEM_TYPE_OBJECT_ITEM: {
         if (!strcmp(TEN_STR_PIXEL_FMT,
                     ten_string_get_raw_str(&item->obj_item_str))) {
-          const char *pixel_fmt_str = ten_value_peek_raw_str(value);
+          const char *pixel_fmt_str = ten_value_peek_raw_str(value, err);
           ten_raw_video_frame_set_pixel_fmt(
               video_frame,
               ten_video_frame_pixel_fmt_from_string(pixel_fmt_str));

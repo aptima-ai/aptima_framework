@@ -607,8 +607,9 @@ void ten_msgpack_value_serialize(ten_value_t *value, msgpack_packer *pck) {
       TEN_ASSERT(rc == 0, "Should not happen.");
       break;
     case TEN_TYPE_STRING:
-      rc = msgpack_pack_str_with_body(pck, ten_value_peek_raw_str(value),
-                                      strlen(ten_value_peek_raw_str(value)));
+      rc = msgpack_pack_str_with_body(
+          pck, ten_value_peek_raw_str(value, &err),
+          strlen(ten_value_peek_raw_str(value, &err)));
       TEN_ASSERT(rc == 0, "Should not happen.");
       break;
     case TEN_TYPE_BOOL:

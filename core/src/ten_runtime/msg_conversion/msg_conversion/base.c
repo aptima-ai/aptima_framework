@@ -81,7 +81,7 @@ ten_msg_conversion_t *ten_msg_conversion_from_value(ten_value_t *value,
     return NULL;
   }
 
-  const char *type_str = ten_value_peek_raw_str(type_value);
+  const char *type_str = ten_value_peek_raw_str(type_value, err);
   if (!type_str) {
     TEN_ASSERT(0, "Should not happen.");
     return NULL;

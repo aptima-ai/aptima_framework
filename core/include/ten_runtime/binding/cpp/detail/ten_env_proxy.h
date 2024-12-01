@@ -109,8 +109,7 @@ class ten_env_proxy_t {
     }
 
     return ten_env_proxy_acquire_lock_mode(
-        c_ten_env_proxy,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env_proxy, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool acquire_lock_mode() { return acquire_lock_mode(nullptr); }
@@ -122,8 +121,7 @@ class ten_env_proxy_t {
     }
 
     return ten_env_proxy_release_lock_mode(
-        c_ten_env_proxy,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+        c_ten_env_proxy, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool release_lock_mode() { return release_lock_mode(nullptr); }
@@ -131,9 +129,9 @@ class ten_env_proxy_t {
   bool notify(notify_std_func_t &&notify_func, bool sync, error_t *err) {
     auto *info = new proxy_notify_info_t(std::move(notify_func));
 
-    auto rc = ten_env_proxy_notify(
-        c_ten_env_proxy, proxy_notify, info, sync,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    auto rc =
+        ten_env_proxy_notify(c_ten_env_proxy, proxy_notify, info, sync,
+                             err != nullptr ? err->get_c_error() : nullptr);
     if (!rc) {
       delete info;
     }
@@ -157,9 +155,9 @@ class ten_env_proxy_t {
               bool sync, error_t *err) {
     auto *info = new proxy_notify_info_t(std::move(notify_func), user_data);
 
-    auto rc = ten_env_proxy_notify(
-        c_ten_env_proxy, proxy_notify, info, sync,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    auto rc =
+        ten_env_proxy_notify(c_ten_env_proxy, proxy_notify, info, sync,
+                             err != nullptr ? err->get_c_error() : nullptr);
     if (!rc) {
       delete info;
     }
@@ -194,7 +192,7 @@ class ten_env_proxy_t {
   //   }
   //   return ten_proxy_acquire(
   //       c_ten_env_proxy,
-  //       err != nullptr ? err->get_internal_representation() : nullptr);
+  //       err != nullptr ? err->get_c_error() : nullptr);
   // }
   //
   // bool release(error_t *err = nullptr) {
@@ -204,7 +202,7 @@ class ten_env_proxy_t {
   //   }
   //   bool rc = ten_proxy_release(
   //       c_ten_env_proxy,
-  //       err != nullptr ? err->get_internal_representation() : nullptr);
+  //       err != nullptr ? err->get_c_error() : nullptr);
   //   TEN_ASSERT(rc, "Should not happen.");
   //   return rc;
   // }

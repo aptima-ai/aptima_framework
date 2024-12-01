@@ -8,9 +8,9 @@
 
 #include <stdarg.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 bool ten_error_check_integrity(ten_error_t *self) {
@@ -44,6 +44,14 @@ ten_error_t *ten_error_create(void) {
   ten_error_init(self);
 
   return self;
+}
+
+void ten_error_copy(ten_error_t *self, ten_error_t *other) {
+  TEN_ASSERT(self && ten_error_check_integrity(self), "Invalid argument");
+  TEN_ASSERT(other && ten_error_check_integrity(other), "Invalid argument");
+
+  self->err_no = other->err_no;
+  ten_string_copy(&self->err_msg, &other->err_msg);
 }
 
 bool ten_error_prepend_errmsg(ten_error_t *self, const char *fmt, ...) {

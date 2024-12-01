@@ -303,7 +303,7 @@ PyObject *ten_py_msg_get_property_string(PyObject *self, PyObject *args) {
     return NULL;
   }
 
-  const char *value = ten_value_peek_raw_str(c_value);
+  const char *value = ten_value_peek_raw_str(c_value, &err);
 
   PyObject *res = Py_BuildValue("s", value);
 

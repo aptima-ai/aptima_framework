@@ -36,18 +36,16 @@ class audio_frame_t : public msg_t {
   static std::unique_ptr<audio_frame_t> create(const char *audio_frame_name,
                                                error_t *err = nullptr) {
     if (audio_frame_name == nullptr || strlen(audio_frame_name) == 0) {
-      if (err != nullptr && err->get_internal_representation() != nullptr) {
-        ten_error_set(err->get_internal_representation(),
-                      TEN_ERRNO_INVALID_ARGUMENT,
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
                       "audio frame name cannot be empty.");
       }
       return nullptr;
     }
 
     auto *c_frame = ten_audio_frame_create();
-    ten_msg_set_name(
-        c_frame, audio_frame_name,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    ten_msg_set_name(c_frame, audio_frame_name,
+                     err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<audio_frame_t>(c_frame, ctor_passkey_t());
   }
@@ -130,8 +128,7 @@ class audio_frame_t : public msg_t {
     ten_buf_t *data = ten_audio_frame_peek_buf(c_msg);
 
     if (!ten_msg_add_locked_res_buf(
-            c_msg, data->data,
-            err != nullptr ? err->get_internal_representation() : nullptr)) {
+            c_msg, data->data, err != nullptr ? err->get_c_error() : nullptr)) {
       return buf_t{};
     }
 
@@ -143,8 +140,7 @@ class audio_frame_t : public msg_t {
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     const uint8_t *data = buf.data();
     if (!ten_msg_remove_locked_res_buf(
-            c_msg, data,
-            err != nullptr ? err->get_internal_representation() : nullptr)) {
+            c_msg, data, err != nullptr ? err->get_c_error() : nullptr)) {
       return false;
     }
 

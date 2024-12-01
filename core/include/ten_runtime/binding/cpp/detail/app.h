@@ -52,19 +52,16 @@ class app_t {
       return false;
     }
 
-    return ten_app_run(
-        c_app, run_in_background,
-        err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_app_run(c_app, run_in_background,
+                       err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool close(error_t *err = nullptr) {
-    return ten_app_close(
-        c_app, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_app_close(c_app, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool wait(error_t *err = nullptr) {
-    return ten_app_wait(
-        c_app, err != nullptr ? err->get_internal_representation() : nullptr);
+    return ten_app_wait(c_app, err != nullptr ? err->get_c_error() : nullptr);
   }
 
  protected:

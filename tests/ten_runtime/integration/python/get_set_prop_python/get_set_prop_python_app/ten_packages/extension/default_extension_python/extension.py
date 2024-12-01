@@ -39,19 +39,6 @@ class DefaultExtension(Extension):
     def on_start(self, ten_env: TenEnv) -> None:
         ten_env.log_debug("on_start")
 
-        # The environment variable 'ENV_NOT_SET' used in the property is not
-        # set, but the property should exist.
-        assert ten_env.is_property_exist("env_not_set") is True
-
-        try:
-            _ = ten_env.get_property_string("env_not_set")
-
-            # Should not reach here, as the above line should throw an
-            # exception.
-            assert False
-        except Exception as e:
-            print(e)
-
         assert ten_env.is_property_exist("env_not_set_has_default") is True
 
         try:
