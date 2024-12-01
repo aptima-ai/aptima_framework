@@ -95,7 +95,13 @@ done:
 
 static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
   TEN_ASSERT(addon, "Invalid argument.");
-  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+  // TODO(Wei): In the context of Python standalone tests, the Python addon is
+  // registered into the TEN world within the extension tester thread (i.e., the
+  // Python thread) but is unregistered in the test app thread. It should be
+  // modified to also perform the Python addon registration within the test
+  // app's `on_configure_done`. This change will allow the underlying thread
+  // check to be set to `true`.
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, false),
              "Invalid argument.");
 
   // About to call the Python function, so it's necessary to ensure that the GIL
@@ -236,7 +242,7 @@ static PyObject *ten_py_addon_create(PyTypeObject *type,
   py_addon->type = TEN_ADDON_TYPE_EXTENSION;  // Now we only support extension.
   py_addon->c_addon_host = NULL;
 
-  ten_addon_init(&py_addon->c_addon, proxy_on_init, proxy_on_deinit, NULL,
+  ten_addon_init(&py_addon->c_addon, proxy_on_init, proxy_on_deinit, NULL, NULL,
                  NULL);
 
   py_addon->c_addon.on_create_instance = proxy_on_create_instance_async;

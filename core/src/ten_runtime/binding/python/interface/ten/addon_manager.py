@@ -9,12 +9,9 @@ import os
 import sys
 import importlib.util
 from glob import glob
-from typing import Callable, Any, Dict, Type
+from typing import Callable, Dict, Type
 from .addon import Addon
-from libten_runtime_python import (
-    _register_addon_as_extension,
-    _register_addon_as_extension_v2,
-)
+from libten_runtime_python import _register_addon_as_extension
 
 
 class _AddonManager:
@@ -23,10 +20,10 @@ class _AddonManager:
     # TEN runtime. This avoids using `setattr` on the module, which may not be
     # supported in advanced environments like Cython. The global array method
     # is simple enough that it should work in all environments.
-    _registration_registry: Dict[str, Callable[[Any], None]] = {}
+    _registry: Dict[str, Callable[[object], None]] = {}
 
     @classmethod
-    def load_all_addons(cls, register_ctx: object):
+    def load_all_addons(cls):
         base_dir = cls._find_app_base_dir()
 
         # Read manifest.json under base_dir.
@@ -64,7 +61,6 @@ class _AddonManager:
                             f"ten_packages.extension.{module_name}"
                         ),
                         module_name=module_name,
-                        register_ctx=register_ctx,
                     )
                 else:
                     print(f"Skipping module: {module_name}")
@@ -74,12 +70,7 @@ class _AddonManager:
         cls,
         module_full_name: str,
         module_name: str,
-        register_ctx: object,
     ):
-        """
-        Helper method to load a module, check for the special function,
-        invoke it, and unload the module if the special function is missing.
-        """
         try:
             spec = importlib.util.find_spec(module_full_name)
             if spec is None:
@@ -88,76 +79,36 @@ class _AddonManager:
             _ = importlib.import_module(module_full_name)
             print(f"Imported module: {module_name}")
 
-            # Retrieve the registration function from the global registry
-            registration_func_name = _AddonManager._get_registration_func_name(
-                module_name
-            )
+        except ImportError as e:
+            print(f"Error importing module {module_name}: {e}")
 
-            registration_func = _AddonManager._get_registration_func(
-                module_name
-            )
+    @classmethod
+    def register_all_addons(cls, register_ctx: object):
+        registry_keys = list(cls._registry.keys())
 
-            if registration_func:
+        for register_key in registry_keys:
+            register_handler = cls._registry.get(register_key)
+            if register_handler:
                 try:
-                    registration_func(register_ctx)
-                    print(f"Successfully registered addon '{module_name}'")
+                    register_handler(register_ctx)
+
+                    print(f"Successfully registered addon '{register_key}'")
                 except Exception as e:
                     print(
                         (
                             "Error during registration of addon "
-                            f"'{module_name}': {e}"
+                            f"'{register_key}': {e}"
                         )
                     )
-                finally:
-                    # Remove the registration function from the global registry.
-                    if (
-                        registration_func_name
-                        in _AddonManager._registration_registry
-                    ):
-                        del _AddonManager._registration_registry[
-                            registration_func_name
-                        ]
-                        print(
-                            (
-                                "Removed registration function for addon "
-                                f"'{registration_func_name}'"
-                            )
-                        )
-            else:
-                print(f"No {registration_func_name} found in {module_name}")
 
-        except ImportError as e:
-            print(f"Error importing module {module_name}: {e}")
+        cls._registry.clear()
 
     @staticmethod
-    def _get_registration_func_name(addon_name: str) -> str:
-        return f"____ten_addon_{addon_name}_register____"
-
-    @staticmethod
-    def _get_registration_func(addon_name: str) -> Callable[[Any], None] | None:
-        return _AddonManager._registration_registry.get(
-            _AddonManager._get_registration_func_name(addon_name)
-        )
-
-    @staticmethod
-    def _set_registration_func(
+    def _set_register_handler(
         addon_name: str,
-        registration_func: Callable[[Any], None],
+        register_handler: Callable[[object], None],
     ) -> None:
-        registration_func_name = _AddonManager._get_registration_func_name(
-            addon_name
-        )
-
-        print(
-            (
-                f"Injected registration function '{registration_func_name}' "
-                "into module '{module.__name__}'"
-            )
-        )
-
-        _AddonManager._registration_registry[registration_func_name] = (
-            registration_func
-        )
+        _AddonManager._registry[addon_name] = register_handler
 
     @staticmethod
     def _find_app_base_dir():
@@ -183,37 +134,6 @@ class _AddonManager:
 
 
 def register_addon_as_extension(name: str, base_dir: str | None = None):
-    if base_dir is None:
-        try:
-            # Attempt to get the caller's file path using sys._getframe()
-            caller_frame = sys._getframe(1)
-            base_dir = os.path.dirname(caller_frame.f_code.co_filename)
-        except (AttributeError, ValueError):
-            # Fallback in case sys._getframe() is not available or fails.
-            # Ex: in cython.
-            base_dir = None
-
-    # If base_dir is not None, convert it to its directory name.
-    if base_dir is not None:
-        base_dir = os.path.dirname(base_dir)
-
-    return _register_addon_as_extension(name, base_dir)
-
-
-def register_addon_as_extension_v2(name: str, base_dir: str | None = None):
-    """
-    Decorator to register a class as an addon extension and create a special
-    registration function required by the Addon loader.
-
-    Args:
-        name (str): The name of the addon extension.
-        base_dir (str, optional): The base directory of the addon. Defaults to
-            None.
-
-    Returns:
-        Callable: The decorator function.
-    """
-
     def decorator(cls: Type[Addon]) -> Type[Addon]:
         # Resolve base_dir.
         if base_dir is None:
@@ -231,31 +151,20 @@ def register_addon_as_extension_v2(name: str, base_dir: str | None = None):
             # If base_dir is provided, ensure it's the directory name
             resolved_base_dir = os.path.dirname(base_dir)
 
-        # Define the registration function that will be called by the Addon
-        # loader.
-        def registration_func(register_ctx):
-            """
-            Registration function injected into the module to handle addon
-            registration.
-
-            Args:
-                register_ctx: An opaque parameter provided by the Addon loader.
-            """
+        # Define the register_handler that will be called by the Addon manager.
+        def register_handler(register_ctx):
             # Instantiate the addon class.
-            instance = cls()
+            addon_instance = cls()
 
             try:
-                _register_addon_as_extension_v2(
-                    name, resolved_base_dir, instance, register_ctx
-                )
-                print(
-                    f"Called '_register_addon_as_extension' for addon '{name}'"
+                _register_addon_as_extension(
+                    name, resolved_base_dir, addon_instance, register_ctx
                 )
             except Exception as e:
                 print(f"Failed to register addon '{name}': {e}")
 
         # Define the registration function name based on the addon name.
-        _AddonManager._set_registration_func(name, registration_func)
+        _AddonManager._set_register_handler(name, register_handler)
 
         # Return the original class without modification.
         return cls

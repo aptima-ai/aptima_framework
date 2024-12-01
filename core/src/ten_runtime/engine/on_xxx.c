@@ -258,10 +258,9 @@ void ten_engine_thread_on_addon_create_protocol_done(void *self, void *arg) {
   ten_addon_context_t *addon_context = info->addon_context;
   TEN_ASSERT(addon_context, "Should not happen.");
 
-  if (addon_context->addon_on_create_instance_async_cb) {
-    addon_context->addon_on_create_instance_async_cb(
-        engine->ten_env, protocol,
-        addon_context->addon_on_create_instance_async_cb_data);
+  if (addon_context->create_instance_done_cb) {
+    addon_context->create_instance_done_cb(
+        engine->ten_env, protocol, addon_context->create_instance_done_cb_data);
   }
 
   ten_addon_context_destroy(addon_context);

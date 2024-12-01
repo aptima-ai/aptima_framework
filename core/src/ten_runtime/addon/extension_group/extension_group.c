@@ -26,7 +26,8 @@ ten_addon_store_t *ten_extension_group_get_global_store(void) {
 
 ten_addon_host_t *ten_addon_register_extension_group(const char *name,
                                                      const char *base_dir,
-                                                     ten_addon_t *addon) {
+                                                     ten_addon_t *addon,
+                                                     void *register_ctx) {
   if (!name || strlen(name) == 0) {
     TEN_LOGE("The addon name is required.");
     exit(EXIT_FAILURE);
@@ -50,7 +51,7 @@ ten_addon_t *ten_addon_unregister_extension_group(const char *name) {
 
 bool ten_addon_create_extension_group(
     ten_env_t *ten_env, const char *addon_name, const char *instance_name,
-    ten_env_addon_on_create_instance_async_cb_t cb, void *user_data) {
+    ten_env_addon_create_instance_done_cb_t cb, void *user_data) {
   TEN_ASSERT(addon_name && instance_name, "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
@@ -74,7 +75,7 @@ bool ten_addon_create_extension_group(
 
 bool ten_addon_destroy_extension_group(
     ten_env_t *ten_env, ten_extension_group_t *extension_group,
-    ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data) {
+    ten_env_addon_destroy_instance_done_cb_t cb, void *cb_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true) && cb,
              "Should not happen.");
   TEN_ASSERT(extension_group &&

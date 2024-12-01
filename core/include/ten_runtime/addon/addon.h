@@ -44,15 +44,19 @@ typedef void (*ten_addon_on_destroy_instance_func_t)(ten_addon_t *addon,
                                                      void *instance,
                                                      void *context);
 
+typedef void (*ten_addon_on_destroy_func_t)(ten_addon_t *addon);
+
 TEN_RUNTIME_API ten_addon_t *ten_addon_create(
     ten_addon_on_init_func_t on_init, ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
-    ten_addon_on_destroy_instance_func_t on_destroy_instance);
+    ten_addon_on_destroy_instance_func_t on_destroy_instance,
+    ten_addon_on_destroy_func_t on_destroy);
 
 TEN_RUNTIME_API void ten_addon_init(
     ten_addon_t *self, ten_addon_on_init_func_t on_init,
     ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
-    ten_addon_on_destroy_instance_func_t on_destroy_instance);
+    ten_addon_on_destroy_instance_func_t on_destroy_instance,
+    ten_addon_on_destroy_func_t on_destroy);
 
 TEN_RUNTIME_API void ten_addon_destroy(ten_addon_t *self);

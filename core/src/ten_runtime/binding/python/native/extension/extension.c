@@ -429,7 +429,7 @@ PyTypeObject *ten_py_extension_py_type(void) {
 
   static PyTypeObject py_extension_type = {
       PyVarObject_HEAD_INIT(NULL, 0).tp_name =
-          "libten_runtime_python.Extension",
+          "libten_runtime_python._Extension",
       .tp_doc = PyDoc_STR("Extension"),
       .tp_basicsize = sizeof(ten_py_extension_t),
       .tp_itemsize = 0,

@@ -101,6 +101,18 @@ ten_addon_t *ten_addon_store_del(ten_addon_store_t *store, const char *name) {
   return addon;
 }
 
+void ten_addon_store_del_all(ten_addon_store_t *store) {
+  TEN_ASSERT(store, "Invalid argument.");
+
+  ten_mutex_lock(store->lock);
+
+  // Clear the store's list, which will call the destroy function for each node,
+  // properly decreasing the refcount of each addon.
+  ten_list_clear(&store->store);
+
+  ten_mutex_unlock(store->lock);
+}
+
 ten_addon_host_t *ten_addon_store_find(ten_addon_store_t *store,
                                        const char *name) {
   TEN_ASSERT(store, "Invalid argument.");

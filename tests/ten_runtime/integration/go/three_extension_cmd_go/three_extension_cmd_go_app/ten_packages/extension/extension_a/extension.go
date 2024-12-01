@@ -30,12 +30,11 @@ func (p *aExtension) OnCmd(
 ) {
 	go func() {
 		cmdName, _ := cmd.GetName()
-		fmt.Println(
-			"aExtension receive command: ",
-			cmdName,
+		tenEnv.LogInfo(
+			"aExtension receive command: " + cmdName,
 		)
 		if cmd.GetType() != ten.MsgTypeCmdResult {
-			fmt.Println(p.name, "onCmd: ", cmdName)
+			tenEnv.LogInfo("onCmd: " + cmdName)
 		}
 
 		if cmdName == "A" {
@@ -52,11 +51,11 @@ func (p *aExtension) OnCmd(
 						panic("Should not happen.")
 					}
 					statusCode, _ := cmdResult.GetStatusCode()
-					fmt.Println(
-						"statusCode:",
-						statusCode,
-						" detail: ",
-						detail,
+					tenEnv.LogInfo(
+						"statusCode:" + fmt.Sprintf(
+							"%d",
+							statusCode,
+						) + " detail: " + detail,
 					)
 
 					cmdResult2, _ := ten.NewCmdResult(ten.StatusCodeOk)

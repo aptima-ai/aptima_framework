@@ -29,11 +29,5 @@ TEN_RUNTIME_PRIVATE_API ten_go_extension_t *ten_go_extension_reinterpret(
 TEN_RUNTIME_PRIVATE_API ten_go_handle_t
 ten_go_extension_go_handle(ten_go_extension_t *self);
 
-TEN_RUNTIME_PRIVATE_API ten_go_extension_t *ten_go_extension_create_internal(
-    ten_go_handle_t go_extension, const char *name);
-
 TEN_RUNTIME_PRIVATE_API ten_extension_t *ten_go_extension_c_extension(
     ten_go_extension_t *self);
-
-TEN_RUNTIME_PRIVATE_API void ten_go_extension_set_go_handle(
-    ten_go_extension_t *self, ten_go_handle_t go_handle);

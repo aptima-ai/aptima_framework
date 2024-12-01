@@ -83,7 +83,6 @@ func (p *DefaultExtension) OnAudioFrame(
 // Via embedding, the `extension` struct "inherits" all methods of Extension.
 type extension struct {
 	Extension
-
 	baseTenObject[C.uintptr_t]
 }
 
@@ -98,13 +97,13 @@ func WrapExtension(
 	extObjID := newImmutableHandle(extInstance)
 
 	var bridge C.uintptr_t
-	status := C.ten_go_extension_create(
+	cgo_error := C.ten_go_extension_create(
 		cHandle(extObjID),
 		unsafe.Pointer(unsafe.StringData(name)),
 		C.int(len(name)),
 		&bridge,
 	)
-	if err := withCGoError(&status); err != nil {
+	if err := withCGoError(&cgo_error); err != nil {
 		log.Printf("Failed to create extension, %v\n", err)
 		return nil
 	}

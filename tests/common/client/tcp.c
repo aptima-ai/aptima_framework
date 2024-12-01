@@ -135,8 +135,8 @@ bool ten_test_tcp_client_init(
     ten_socket_destroy(self->socket);
     self->socket = NULL;
 
-    // Wait 10 ms between retry.
-    ten_sleep(10);
+    // Wait 100 ms between retry.
+    ten_sleep(100);
   }
 
   if (!self->socket) {

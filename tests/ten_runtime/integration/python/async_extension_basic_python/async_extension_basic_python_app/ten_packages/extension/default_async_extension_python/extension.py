@@ -13,10 +13,6 @@ from ten import (
 
 
 class DefaultAsyncExtension(AsyncExtension):
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
-        self.name = name
-
     async def on_configure(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
 

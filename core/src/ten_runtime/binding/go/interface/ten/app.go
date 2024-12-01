@@ -12,7 +12,6 @@ import "C"
 
 import (
 	"fmt"
-	"log"
 	"runtime"
 	"unsafe"
 )
@@ -67,10 +66,6 @@ type App interface {
 }
 
 func (p *app) Run(runInBackground bool) {
-	if err := LoadAllAddons(nil); err != nil {
-		log.Fatalf("Failed to load all GO addons: %v", err)
-	}
-
 	C.ten_go_app_run(p.cPtr, C.bool(runInBackground))
 }
 
@@ -135,6 +130,14 @@ func tenGoAppOnConfigure(
 			),
 		)
 	}
+
+	tenEnvInstance, ok := tenEnvObj.(*tenEnv)
+	if !ok {
+		// Should not happen.
+		panic("Invalid ten object type.")
+	}
+
+	tenEnvInstance.attachToApp(appObj)
 
 	appObj.OnConfigure(tenEnvObj)
 }

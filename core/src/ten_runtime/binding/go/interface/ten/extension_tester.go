@@ -67,11 +67,11 @@ func WrapExtensionTester(
 	extTesterObjID := newImmutableHandle(extTesterInstance)
 
 	var bridge C.uintptr_t
-	status := C.ten_go_extension_tester_create(
+	cgo_error := C.ten_go_extension_tester_create(
 		cHandle(extTesterObjID),
 		&bridge,
 	)
-	if err := withCGoError(&status); err != nil {
+	if err := withCGoError(&cgo_error); err != nil {
 		log.Printf("Failed to create extension tester, %v\n", err)
 		return nil
 	}

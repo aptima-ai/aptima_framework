@@ -49,7 +49,8 @@ bool ten_addon_check_integrity(ten_addon_t *self) {
 void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
                     ten_addon_on_deinit_func_t on_deinit,
                     ten_addon_on_create_instance_func_t on_create_instance,
-                    ten_addon_on_destroy_instance_func_t on_destroy_instance) {
+                    ten_addon_on_destroy_instance_func_t on_destroy_instance,
+                    ten_addon_on_destroy_func_t on_destroy) {
   ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)self, NULL);
   ten_signature_set(&self->signature, TEN_ADDON_SIGNATURE);
 
@@ -57,6 +58,7 @@ void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
   self->on_deinit = on_deinit;
   self->on_create_instance = on_create_instance;
   self->on_destroy_instance = on_destroy_instance;
+  self->on_destroy = on_destroy;
 
   self->user_data = NULL;
 }
@@ -64,12 +66,13 @@ void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
 ten_addon_t *ten_addon_create(
     ten_addon_on_init_func_t on_init, ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
-    ten_addon_on_destroy_instance_func_t on_destroy_instance) {
+    ten_addon_on_destroy_instance_func_t on_destroy_instance,
+    ten_addon_on_destroy_func_t on_destroy) {
   ten_addon_t *self = TEN_MALLOC(sizeof(ten_addon_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_addon_init(self, on_init, on_deinit, on_create_instance,
-                 on_destroy_instance);
+                 on_destroy_instance, on_destroy);
 
   return self;
 }
@@ -207,9 +210,9 @@ void ten_addon_register(ten_addon_store_t *addon_store,
 
   addon_host->addon = addon;
   addon_host->store = addon_store;
-  if (!addon_host->ten_env) {
-    addon_host->ten_env = ten_env_create_for_addon(addon_host);
-  }
+
+  TEN_ASSERT(!addon_host->ten_env, "Should not happen.");
+  addon_host->ten_env = ten_env_create_for_addon(addon_host);
 
   ten_string_set_formatted(&addon_host->name, "%s", name);
 
@@ -217,7 +220,7 @@ void ten_addon_register(ten_addon_store_t *addon_store,
   // require a base directory at all, so `NULL` might be passed as the base_dir
   // parameter value.
   if (base_dir) {
-    TEN_LOGI("Addon %s base_dir: %s", name, base_dir);
+    TEN_LOGD("Addon %s base_dir: %s", name, base_dir);
     ten_addon_find_and_set_base_dir(addon_host, base_dir);
   }
   TEN_LOGI("Register addon: %s as %s", name,
@@ -229,7 +232,7 @@ void ten_addon_register(ten_addon_store_t *addon_store,
 
 ten_addon_on_create_instance_info_t *ten_addon_on_create_instance_info_create(
     const char *addon_name, const char *instance_name,
-    TEN_ADDON_TYPE addon_type, ten_env_addon_on_create_instance_async_cb_t cb,
+    TEN_ADDON_TYPE addon_type, ten_env_addon_create_instance_done_cb_t cb,
     void *cb_data) {
   TEN_ASSERT(addon_name && instance_name, "Should not happen.");
 
@@ -260,7 +263,7 @@ void ten_addon_on_create_instance_info_destroy(
 ten_addon_on_destroy_instance_info_t *
 ten_addon_host_on_destroy_instance_info_create(
     ten_addon_host_t *self, void *instance,
-    ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data) {
+    ten_env_addon_destroy_instance_done_cb_t cb, void *cb_data) {
   TEN_ASSERT(self && instance, "Should not happen.");
 
   ten_addon_on_destroy_instance_info_t *info =
@@ -367,9 +370,9 @@ void ten_addon_context_destroy(ten_addon_context_t *self) {
  * later in the call flow when the 'ten' object at that time belongs to a more
  * specific scope, so that we can minimize the parameters count then.
  */
-static void ten_addon_host_on_create_instance_async(
+static void ten_addon_host_create_instance_async(
     ten_addon_host_t *self, ten_env_t *ten_env, const char *name,
-    ten_env_addon_on_create_instance_async_cb_t cb, void *cb_data) {
+    ten_env_addon_create_instance_done_cb_t cb, void *cb_data) {
   TEN_ASSERT(self && ten_addon_host_check_integrity(self) && name,
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
@@ -377,8 +380,8 @@ static void ten_addon_host_on_create_instance_async(
 
   ten_addon_context_t *addon_context = ten_addon_context_create();
   addon_context->caller_ten = ten_env;
-  addon_context->addon_on_create_instance_async_cb = cb;
-  addon_context->addon_on_create_instance_async_cb_data = cb_data;
+  addon_context->create_instance_done_cb = cb;
+  addon_context->create_instance_done_cb_data = cb_data;
 
   if (self->addon->on_create_instance) {
     TEN_ASSERT(self->addon->on_create_instance, "Should not happen.");
@@ -408,10 +411,11 @@ static void ten_addon_host_on_create_instance_async(
  * later in the call flow when the 'ten' object at that time belongs to a more
  * specific scope, so that we can minimize the parameters count then.
  */
-bool ten_addon_create_instance_async(
-    ten_env_t *ten_env, const char *addon_name, const char *instance_name,
-    TEN_ADDON_TYPE type, ten_env_addon_on_create_instance_async_cb_t cb,
-    void *cb_data) {
+bool ten_addon_create_instance_async(ten_env_t *ten_env, const char *addon_name,
+                                     const char *instance_name,
+                                     TEN_ADDON_TYPE type,
+                                     ten_env_addon_create_instance_done_cb_t cb,
+                                     void *cb_data) {
   // We increase the refcount of the 'addon' here, and will decrease the
   // refcount in "ten_(extension/extension_group)_set_addon" after the
   // extension/extension_group instance has been created.
@@ -425,8 +429,8 @@ bool ten_addon_create_instance_async(
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_addon_host_on_create_instance_async(addon, ten_env, instance_name, cb,
-                                          cb_data);
+  ten_addon_host_create_instance_async(addon, ten_env, instance_name, cb,
+                                       cb_data);
 
   return true;
 }
@@ -449,7 +453,7 @@ bool ten_addon_create_instance_async(
  */
 bool ten_addon_host_destroy_instance_async(
     ten_addon_host_t *self, ten_env_t *ten_env, void *instance,
-    ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data) {
+    ten_env_addon_destroy_instance_done_cb_t cb, void *cb_data) {
   TEN_ASSERT(self && ten_addon_host_check_integrity(self),
              "Should not happen.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
@@ -458,8 +462,8 @@ bool ten_addon_host_destroy_instance_async(
 
   ten_addon_context_t *addon_context = ten_addon_context_create();
   addon_context->caller_ten = ten_env;
-  addon_context->addon_on_destroy_instance_async_cb = cb;
-  addon_context->addon_on_destroy_instance_async_cb_data = cb_data;
+  addon_context->destroy_instance_done_cb = cb;
+  addon_context->destroy_instance_done_cb_data = cb_data;
 
   if (self->addon->on_destroy_instance) {
     TEN_ASSERT(self->addon->on_destroy_instance, "Should not happen.");

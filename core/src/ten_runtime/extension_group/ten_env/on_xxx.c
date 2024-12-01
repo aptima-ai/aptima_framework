@@ -201,9 +201,9 @@ void ten_extension_group_on_addon_create_extension_done(
 
   // This happens on the extension thread, so it's thread safe.
 
-  if (addon_context->addon_on_create_instance_async_cb) {
-    addon_context->addon_on_create_instance_async_cb(
-        self, instance, addon_context->addon_on_create_instance_async_cb_data);
+  if (addon_context->create_instance_done_cb) {
+    addon_context->create_instance_done_cb(
+        self, instance, addon_context->create_instance_done_cb_data);
   }
 
   if (addon_context) {
@@ -226,9 +226,9 @@ void ten_extension_group_on_addon_destroy_extension_done(
                  ten_extension_group_check_integrity(extension_group, true),
              "Should not happen.");
 
-  if (addon_context->addon_on_destroy_instance_async_cb) {
-    addon_context->addon_on_destroy_instance_async_cb(
-        self, addon_context->addon_on_destroy_instance_async_cb_data);
+  if (addon_context->destroy_instance_done_cb) {
+    addon_context->destroy_instance_done_cb(
+        self, addon_context->destroy_instance_done_cb_data);
   }
 
   ten_addon_context_destroy(addon_context);

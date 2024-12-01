@@ -124,8 +124,7 @@ static void ten_builtin_extension_group_on_create_extensions(
     bool res = ten_addon_create_extension(
         ten_env, ten_string_get_raw_str(extension_addon_name),
         ten_string_get_raw_str(extension_instance_name),
-        (ten_env_addon_on_create_instance_async_cb_t)
-            on_addon_create_instance_done,
+        (ten_env_addon_create_instance_done_cb_t)on_addon_create_instance_done,
         result, NULL);
 
     if (!res) {
@@ -212,11 +211,12 @@ static ten_addon_t builtin_extension_group_addon = {
     ten_builtin_extension_group_addon_create_instance,
     ten_builtin_extension_group_addon_destroy_instance,
     NULL,
+    NULL,
 };
 
 void ten_builtin_extension_group_addon_register(void) {
   ten_addon_register_extension_group(TEN_STR_DEFAULT_EXTENSION_GROUP, NULL,
-                                     &builtin_extension_group_addon);
+                                     &builtin_extension_group_addon, NULL);
 }
 
 void ten_builtin_extension_group_addon_unregister(void) {

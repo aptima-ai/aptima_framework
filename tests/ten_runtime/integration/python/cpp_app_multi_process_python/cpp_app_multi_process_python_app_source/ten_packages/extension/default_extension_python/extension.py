@@ -20,6 +20,7 @@ class DefaultExtension(Extension):
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.name = name
+
         mp.set_start_method("spawn", force=True)
         print("start method", mp.get_start_method())
         self.ready = mp.Value("b", False)
@@ -29,7 +30,6 @@ class DefaultExtension(Extension):
         assert self.name == "default_extension_python"
 
         ten_env.init_property_from_json('{"testKey": "testValue"}')
-
         ten_env.on_configure_done()
 
     def on_start(self, ten_env: TenEnv) -> None:

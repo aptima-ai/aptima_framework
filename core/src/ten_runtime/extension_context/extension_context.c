@@ -572,7 +572,7 @@ bool ten_extension_context_start_extension_group(
               &extension_group_info->extension_group_addon_name),
           ten_string_get_raw_str(
               &extension_group_info->loc.extension_group_name),
-          (ten_env_addon_on_create_instance_async_cb_t)
+          (ten_env_addon_create_instance_done_cb_t)
               ten_extension_context_create_extension_group_done,
           NULL);
 

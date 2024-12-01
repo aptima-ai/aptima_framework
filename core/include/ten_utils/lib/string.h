@@ -18,13 +18,22 @@
 
 #define TEN_STRING_SIGNATURE 0x178445C0402E320DU
 
+#define MAX_BUFFER_SIZE (10 * 1024 * 1024)  // 10 M
+
 #if defined(NDEBUG)
 #define TEN_STRING_PRE_BUF_SIZE 256
+#define BUFFER_ENLARGE_RATIO 2
 #else
 // In debug mode, significantly reduce the size of `prebuf` so that
 // `ten_string_reserve` is actually triggered. This way, we can test that even
 // if `malloc` occurs within `ten_string_reserve`, there will be no memory leak.
 #define TEN_STRING_PRE_BUF_SIZE 8
+
+// Because the initial buffer size of a string in debug mode is relatively
+// small, the enlargement ratio is set higher each time capacity needs to be
+// reserved. This helps avoid frequent capacity reservations, which could
+// otherwise lead to poor performance.
+#define BUFFER_ENLARGE_RATIO 30
 #endif
 
 typedef struct ten_list_t ten_list_t;

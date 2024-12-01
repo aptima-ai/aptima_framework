@@ -18,12 +18,12 @@
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_extension_group_t ten_extension_group_t;
 
-typedef void (*ten_env_addon_on_create_instance_async_cb_t)(ten_env_t *ten_env,
-                                                            void *instance,
-                                                            void *cb_data);
+typedef void (*ten_env_addon_create_instance_done_cb_t)(ten_env_t *ten_env,
+                                                        void *instance,
+                                                        void *cb_data);
 
-typedef void (*ten_env_addon_on_destroy_instance_async_cb_t)(ten_env_t *ten_env,
-                                                             void *cb_data);
+typedef void (*ten_env_addon_destroy_instance_done_cb_t)(ten_env_t *ten_env,
+                                                         void *cb_data);
 
 typedef void (*ten_env_is_cmd_connected_async_cb_t)(ten_env_t *ten_env,
                                                     bool result, void *cb_data,

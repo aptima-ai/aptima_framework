@@ -74,7 +74,6 @@ ten_executable("ten_runtime_smoke_test") {
   public_deps = [
     "//third_party/googlemock",
     "//third_party/googletest",
-    "//third_party/googletest:gtest_main",
   ]
 }
 

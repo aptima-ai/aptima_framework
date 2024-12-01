@@ -10,8 +10,8 @@
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 
@@ -45,9 +45,9 @@ void ten_extension_context_on_addon_create_extension_group_done(
 
   // This happens on the engine thread, so it's thread safe.
 
-  if (addon_context->addon_on_create_instance_async_cb) {
-    addon_context->addon_on_create_instance_async_cb(
-        self, instance, addon_context->addon_on_create_instance_async_cb_data);
+  if (addon_context->create_instance_done_cb) {
+    addon_context->create_instance_done_cb(
+        self, instance, addon_context->create_instance_done_cb_data);
   }
 
   if (addon_context) {
@@ -67,9 +67,9 @@ void ten_extension_context_on_addon_destroy_extension_group_done(
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
              "Should not happen.");
 
-  if (addon_context->addon_on_destroy_instance_async_cb) {
-    addon_context->addon_on_destroy_instance_async_cb(
-        self, addon_context->addon_on_destroy_instance_async_cb_data);
+  if (addon_context->destroy_instance_done_cb) {
+    addon_context->destroy_instance_done_cb(
+        self, addon_context->destroy_instance_done_cb_data);
   }
 
   ten_addon_context_destroy(addon_context);

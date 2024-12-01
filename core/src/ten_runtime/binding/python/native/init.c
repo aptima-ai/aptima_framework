@@ -36,21 +36,25 @@
 // the TEN Memory Sanitizer.
 
 static PyModuleDef *ten_py_runtime_module(void) {
-  static struct PyMethodDef empty_methods[] = {{NULL, NULL, 0, NULL}};
+  static struct PyMethodDef module_methods[] = {
+      {"_register_addon_as_extension",
+       ten_py_addon_manager_register_addon_as_extension, METH_VARARGS,
+       "Register an addon as an extension"},
+      {NULL, NULL, 0, NULL}};
 
-  static struct PyModuleDef ten_module_def = {
+  static struct PyModuleDef module_def = {
       PyModuleDef_HEAD_INIT,
       "libten_runtime_python",
       NULL,
       -1,
-      empty_methods,
+      module_methods,
       NULL,
       0,
       0,
       0,
   };
 
-  return &ten_module_def;
+  return &module_def;
 }
 
 PyMODINIT_FUNC PyInit_libten_runtime_python(void) {
@@ -61,18 +65,6 @@ PyMODINIT_FUNC PyInit_libten_runtime_python(void) {
   }
 
   if (!ten_py_addon_init_for_module(module)) {
-    Py_DECREF(module);
-    return NULL;
-  }
-
-  if (!ten_py_addon_manager_register_addon_as_extension_decorator_init_for_module(
-          module)) {
-    Py_DECREF(module);
-    return NULL;
-  }
-
-  if (!ten_py_addon_manager_register_addon_as_extension_decorator_init_for_module_v2(
-          module)) {
     Py_DECREF(module);
     return NULL;
   }

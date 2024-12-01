@@ -23,7 +23,7 @@ class addon_t {
   addon_t()
       : c_addon(ten_addon_create(proxy_on_init, proxy_on_deinit,
                                  proxy_on_create_instance,
-                                 proxy_on_destroy_instance)) {
+                                 proxy_on_destroy_instance, proxy_on_destroy)) {
     ten_binding_handle_set_me_in_target_lang(
         reinterpret_cast<ten_binding_handle_t *>(c_addon), this);
   }
@@ -173,6 +173,16 @@ class addon_t {
 
     cpp_addon->invoke_cpp_addon_on_destroy_instance(*cpp_ten_env, cpp_instance,
                                                     context);
+  }
+
+  static void proxy_on_destroy(ten_addon_t *addon) {
+    TEN_ASSERT(addon, "Invalid argument.");
+
+    auto *cpp_addon =
+        static_cast<addon_t *>(ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(addon)));
+
+    delete cpp_addon;
   }
 };
 

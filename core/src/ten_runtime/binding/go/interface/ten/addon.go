@@ -54,8 +54,10 @@ type addon struct {
 	baseTenObject[C.uintptr_t]
 }
 
+type ExtensionConstructor func(name string) Extension
+
 // NewDefaultExtensionAddon creates a new default extension addon.
-func NewDefaultExtensionAddon(constructor func(name string) Extension) Addon {
+func NewDefaultExtensionAddon(constructor ExtensionConstructor) Addon {
 	return &DefaultAddon{
 		onCreateInstanceImpl: func(tenEnv TenEnv, name string, context uintptr) {
 			ext := constructor(name)

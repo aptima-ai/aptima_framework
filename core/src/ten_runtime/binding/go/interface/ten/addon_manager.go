@@ -22,69 +22,19 @@ type AddonManager struct {
 	// Define a registry map to store addon registration functions.
 	// The key is the addonName (string), and the value is a function that takes
 	// a registerCtx (interface{}) and returns an error.
-	addonRegistry map[string]func(interface{}) error
+	registry map[string]func(interface{}) error
 
-	addonRegistryMutex sync.RWMutex
+	registryMutex sync.RWMutex
 }
 
 func newAddonManager() *AddonManager {
 	return &AddonManager{
-		addonRegistry: make(map[string]func(interface{}) error),
+		registry: make(map[string]func(interface{}) error),
 	}
 }
 
 // RegisterAddonAsExtension registers the addon as an extension.
-func RegisterAddonAsExtension(addonName string, instance Addon) error {
-	if len(addonName) == 0 {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"addon name is empty",
-		)
-	}
-
-	_, file, _, ok := runtime.Caller(1)
-	if !ok {
-		return newTenError(ErrnoGeneric, "Failed to get the caller information")
-	}
-
-	baseDir := filepath.Dir(file)
-
-	absBaseDir, err := filepath.Abs(baseDir)
-	if err != nil {
-		return newTenError(
-			ErrnoGeneric,
-			fmt.Sprintf("Failed to get the absolute file path: %v", err),
-		)
-	}
-
-	addonWrapper := &addon{
-		Addon: instance,
-	}
-
-	addonID := newImmutableHandle(addonWrapper)
-
-	var bridge C.uintptr_t
-	status := C.ten_go_addon_register_extension(
-		unsafe.Pointer(unsafe.StringData(addonName)),
-		C.int(len(addonName)),
-		unsafe.Pointer(unsafe.StringData(absBaseDir)),
-		C.int(len(absBaseDir)),
-		cHandle(addonID),
-		&bridge,
-	)
-
-	if err := withCGoError(&status); err != nil {
-		loadAndDeleteImmutableHandle(addonID)
-		return err
-	}
-
-	addonWrapper.cPtr = bridge
-
-	return nil
-}
-
-// RegisterAddonAsExtensionV2 registers the addon as an extension.
-func (am *AddonManager) RegisterAddonAsExtensionV2(
+func (am *AddonManager) RegisterAddonAsExtension(
 	addonName string,
 	instance Addon,
 ) error {
@@ -111,7 +61,7 @@ func (am *AddonManager) RegisterAddonAsExtensionV2(
 	}
 
 	// Define the registration function that will be stored in the registry.
-	registerFunc := func(registerCtx interface{}) error {
+	registerHandler := func(registerCtx interface{}) error {
 		addonWrapper := &addon{
 			Addon: instance,
 		}
@@ -119,18 +69,23 @@ func (am *AddonManager) RegisterAddonAsExtensionV2(
 		addonID := newImmutableHandle(addonWrapper)
 
 		var bridge C.uintptr_t
-		status := C.ten_go_addon_register_extension_v2(
+		cgo_error := C.ten_go_addon_register_extension(
 			unsafe.Pointer(unsafe.StringData(addonName)),
 			C.int(len(addonName)),
 			unsafe.Pointer(unsafe.StringData(absBaseDir)),
 			C.int(len(absBaseDir)),
 			cHandle(addonID),
-			// TODO(Wei): Pass `register_ctx` to the actual cgo function.
+			// In the current use of the TEN framework's GO environment, there
+			// is no need to pass any `register_ctx` object into the register
+			// handler of the GO addon. Therefore, for now, simply passing `nil`
+			// is sufficient. If needed in the future, we can consider what
+			// information should be passed to the register handler of the GO
+			// addon.
 			nil,
 			&bridge,
 		)
 
-		if err := withCGoError(&status); err != nil {
+		if err := withCGoError(&cgo_error); err != nil {
 			loadAndDeleteImmutableHandle(addonID)
 			return err
 		}
@@ -141,34 +96,34 @@ func (am *AddonManager) RegisterAddonAsExtensionV2(
 	}
 
 	// Store the registration function in the registry map.
-	am.addonRegistryMutex.Lock()
-	defer am.addonRegistryMutex.Unlock()
+	am.registryMutex.Lock()
+	defer am.registryMutex.Unlock()
 
-	if _, exists := am.addonRegistry[addonName]; exists {
+	if _, exists := am.registry[addonName]; exists {
 		return newTenError(
 			ErrnoInvalidArgument,
-			fmt.Sprintf("addon '%s' is already registered", addonName),
+			fmt.Sprintf("Addon '%s' is already registered", addonName),
 		)
 	}
 
-	am.addonRegistry[addonName] = registerFunc
+	am.registry[addonName] = registerHandler
 
 	return nil
 }
 
-// LoadAllAddons executes all registered addon registration functions.
-func (am *AddonManager) LoadAllAddons(registerCtx interface{}) error {
-	am.addonRegistryMutex.Lock()
-	defer am.addonRegistryMutex.Unlock()
+// RegisterAllAddons executes all registered addon registration functions.
+func (am *AddonManager) RegisterAllAddons(registerCtx interface{}) error {
+	am.registryMutex.Lock()
+	defer am.registryMutex.Unlock()
 
-	for name, registerFunc := range am.addonRegistry {
-		if err := registerFunc(registerCtx); err != nil {
-			return fmt.Errorf("failed to register addon %s: %w", name, err)
+	for name, registerHandler := range am.registry {
+		if err := registerHandler(registerCtx); err != nil {
+			return fmt.Errorf("Failed to register addon %s: %w", name, err)
 		}
 	}
 
-	// Clear the addonRegistry to free up memory.
-	am.addonRegistry = make(map[string]func(interface{}) error)
+	// Clear the registry to free up memory.
+	am.registry = make(map[string]func(interface{}) error)
 
 	return nil
 }
@@ -186,10 +141,10 @@ func (am *AddonManager) unloadAllAddons() error {
 
 var defaultAddonManager = newAddonManager()
 
-func RegisterAddonAsExtensionV2(addonName string, instance Addon) error {
-	return defaultAddonManager.RegisterAddonAsExtensionV2(addonName, instance)
+func RegisterAddonAsExtension(addonName string, instance Addon) error {
+	return defaultAddonManager.RegisterAddonAsExtension(addonName, instance)
 }
 
-func LoadAllAddons(registerCtx interface{}) error {
-	return defaultAddonManager.LoadAllAddons(registerCtx)
+func RegisterAllAddons(registerCtx interface{}) error {
+	return defaultAddonManager.RegisterAllAddons(registerCtx)
 }

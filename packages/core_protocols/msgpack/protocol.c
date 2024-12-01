@@ -115,6 +115,7 @@ static ten_addon_t msgpack_protocol_factory = {
     ten_protocol_msgpack_on_create_instance,
     ten_protocol_msgpack_on_destroy_instance,
     NULL,
+    NULL,
 };
 
 TEN_REGISTER_ADDON_AS_PROTOCOL(msgpack, &msgpack_protocol_factory);

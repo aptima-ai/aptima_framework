@@ -102,6 +102,15 @@ func (p *tenEnv) attachToExtension(ext *extension) {
 	p.attachTo = unsafe.Pointer(ext)
 }
 
+func (p *tenEnv) attachToApp(app *app) {
+	if p.attachToType != tenAttachToInvalid {
+		panic("The ten object can only be attached once.")
+	}
+
+	p.attachToType = tenAttachToApp
+	p.attachTo = unsafe.Pointer(app)
+}
+
 func (p *tenEnv) postSyncJob(payload job) any {
 	// To prevent deadlock, we refuse to post jobs to the pool. So it's
 	// recommended for developers to call async ten apis in goroutines other
@@ -301,6 +310,14 @@ func (p *tenEnv) SendAudioFrame(
 
 func (p *tenEnv) OnConfigureDone() error {
 	p.LogDebug("OnConfigureDone")
+
+	if p.attachToType == tenAttachToApp {
+		if err := RegisterAllAddons(nil); err != nil {
+			p.LogFatal("Failed to register all GO addons: " + err.Error())
+			return nil
+		}
+	}
+
 	C.ten_go_ten_env_on_configure_done(p.cPtr)
 
 	return nil

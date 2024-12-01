@@ -32,12 +32,11 @@ typedef enum TEN_ADDON_TYPE {
 typedef struct ten_addon_context_t {
   ten_env_t *caller_ten;
 
-  ten_env_addon_on_create_instance_async_cb_t addon_on_create_instance_async_cb;
-  void *addon_on_create_instance_async_cb_data;
+  ten_env_addon_create_instance_done_cb_t create_instance_done_cb;
+  void *create_instance_done_cb_data;
 
-  ten_env_addon_on_destroy_instance_async_cb_t
-      addon_on_destroy_instance_async_cb;
-  void *addon_on_destroy_instance_async_cb_data;
+  ten_env_addon_destroy_instance_done_cb_t destroy_instance_done_cb;
+  void *destroy_instance_done_cb_data;
 } ten_addon_context_t;
 
 typedef struct ten_addon_t {
@@ -50,6 +49,8 @@ typedef struct ten_addon_t {
 
   ten_addon_on_create_instance_func_t on_create_instance;
   ten_addon_on_destroy_instance_func_t on_destroy_instance;
+
+  ten_addon_on_destroy_func_t on_destroy;
 
   void *user_data;
 } ten_addon_t;
@@ -81,14 +82,14 @@ typedef struct ten_addon_on_create_instance_info_t {
   ten_string_t addon_name;
   ten_string_t instance_name;
   TEN_ADDON_TYPE addon_type;  // Used to retrieve addon from the correct store.
-  ten_env_addon_on_create_instance_async_cb_t cb;
+  ten_env_addon_create_instance_done_cb_t cb;
   void *cb_data;
 } ten_addon_on_create_instance_info_t;
 
 typedef struct ten_addon_on_destroy_instance_info_t {
   ten_addon_host_t *addon_host;
   void *instance;
-  ten_env_addon_on_destroy_instance_async_cb_t cb;
+  ten_env_addon_destroy_instance_done_cb_t cb;
   void *cb_data;
 } ten_addon_on_destroy_instance_info_t;
 
@@ -125,7 +126,7 @@ TEN_RUNTIME_API ten_addon_host_t *ten_addon_host_find(const char *addon_name,
 TEN_RUNTIME_PRIVATE_API ten_addon_on_create_instance_info_t *
 ten_addon_on_create_instance_info_create(
     const char *addon_name, const char *instance_name,
-    TEN_ADDON_TYPE addon_type, ten_env_addon_on_create_instance_async_cb_t cb,
+    TEN_ADDON_TYPE addon_type, ten_env_addon_create_instance_done_cb_t cb,
     void *cb_data);
 
 TEN_RUNTIME_PRIVATE_API void ten_addon_on_create_instance_info_destroy(
@@ -134,7 +135,7 @@ TEN_RUNTIME_PRIVATE_API void ten_addon_on_create_instance_info_destroy(
 TEN_RUNTIME_PRIVATE_API ten_addon_on_destroy_instance_info_t *
 ten_addon_host_on_destroy_instance_info_create(
     ten_addon_host_t *self, void *instance,
-    ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data);
+    ten_env_addon_destroy_instance_done_cb_t cb, void *cb_data);
 
 TEN_RUNTIME_PRIVATE_API void ten_addon_on_destroy_instance_info_destroy(
     ten_addon_on_destroy_instance_info_t *self);
@@ -143,12 +144,12 @@ TEN_RUNTIME_PRIVATE_API ten_addon_store_t *ten_addon_get_store(void);
 
 TEN_RUNTIME_PRIVATE_API bool ten_addon_create_instance_async(
     ten_env_t *ten_env, const char *addon_name, const char *instance_name,
-    TEN_ADDON_TYPE type, ten_env_addon_on_create_instance_async_cb_t cb,
+    TEN_ADDON_TYPE type, ten_env_addon_create_instance_done_cb_t cb,
     void *cb_data);
 
 TEN_RUNTIME_PRIVATE_API bool ten_addon_host_destroy_instance_async(
     ten_addon_host_t *self, ten_env_t *ten_env, void *instance,
-    ten_env_addon_on_destroy_instance_async_cb_t cb, void *cb_data);
+    ten_env_addon_destroy_instance_done_cb_t cb, void *cb_data);
 
 TEN_RUNTIME_PRIVATE_API bool ten_addon_host_destroy_instance(
     ten_addon_host_t *self, ten_env_t *ten_env, void *instance);

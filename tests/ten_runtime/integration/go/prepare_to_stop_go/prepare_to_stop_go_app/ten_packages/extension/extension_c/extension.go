@@ -76,7 +76,10 @@ func init() {
 	fmt.Println("call init")
 
 	// Register addon
-	err := ten.RegisterAddonAsExtension("extension_c", ten.NewDefaultExtensionAddon(NewCExtension))
+	err := ten.RegisterAddonAsExtension(
+		"extension_c",
+		ten.NewDefaultExtensionAddon(NewCExtension),
+	)
 	if err != nil {
 		fmt.Println("register addon failed", err)
 	}

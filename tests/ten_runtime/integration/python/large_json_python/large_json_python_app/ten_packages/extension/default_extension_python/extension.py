@@ -22,14 +22,14 @@ class DefaultExtension(Extension):
         self.name = name
 
     def on_configure(self, ten_env: TenEnv) -> None:
-        print("DefaultExtension on_init, name", self.name)
+        ten_env.log_info("on_init")
         assert self.name == "default_extension_python"
 
         ten_env.init_property_from_json('{"testKey": "testValue"}')
         ten_env.on_configure_done()
 
     def __routine(self, ten_env: TenEnv):
-        start = self.queue.get()
+        self.queue.get()
 
         i = 0
         for _ in range(0, 10000):
@@ -42,7 +42,7 @@ class DefaultExtension(Extension):
 
             assert throw_exception == True
 
-        stop = self.queue.get()
+        self.queue.get()
 
         print("DefaultExtension __test_thread_routine done")
 

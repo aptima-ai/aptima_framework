@@ -54,11 +54,11 @@ func (p *bExtension) OnCmd(
 						panic("Should not happen.")
 					}
 					statusCode, _ := cmdResult.GetStatusCode()
-					fmt.Println(
-						"statusCode:",
-						statusCode,
-						" detail: ",
-						detail,
+					tenEnv.LogInfo(
+						"statusCode:" + fmt.Sprintf(
+							"%d",
+							statusCode,
+						) + " detail: " + detail,
 					)
 
 					cmdResult2, _ := ten.NewCmdResult(ten.StatusCodeOk)

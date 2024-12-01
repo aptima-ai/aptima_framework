@@ -41,10 +41,9 @@ void ten_app_thread_on_addon_create_protocol_done(void *self, void *arg) {
 
   TEN_ASSERT(addon_context, "Invalid argument.");
 
-  if (addon_context->addon_on_create_instance_async_cb) {
-    addon_context->addon_on_create_instance_async_cb(
-        app->ten_env, protocol,
-        addon_context->addon_on_create_instance_async_cb_data);
+  if (addon_context->create_instance_done_cb) {
+    addon_context->create_instance_done_cb(
+        app->ten_env, protocol, addon_context->create_instance_done_cb_data);
   }
 
   ten_addon_context_destroy(addon_context);

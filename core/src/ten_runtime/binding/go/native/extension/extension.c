@@ -288,7 +288,7 @@ static void proxy_on_audio_frame(ten_extension_t *self, ten_env_t *ten_env,
                              msg_bridge_addr);
 }
 
-ten_go_extension_t *ten_go_extension_create_internal(
+static ten_go_extension_t *ten_go_extension_create_internal(
     ten_go_handle_t go_extension, const char *name) {
   TEN_ASSERT(name, "Invalid argument.");
 
@@ -351,14 +351,4 @@ void ten_go_extension_finalize(uintptr_t bridge_addr) {
   TEN_ASSERT(ten_go_extension_check_integrity(self), "Should not happen.");
 
   ten_go_bridge_destroy_go_part(&self->bridge);
-}
-
-void ten_go_extension_set_go_handle(ten_go_extension_t *self,
-                                    ten_go_handle_t go_handle) {
-  TEN_ASSERT(self && ten_go_extension_check_integrity(self),
-             "Invalid argument.");
-  TEN_ASSERT(go_handle > 0, "Invalid argument.");
-  TEN_ASSERT(self->bridge.go_instance == 0, "Invalid argument.");
-
-  self->bridge.go_instance = go_handle;
 }

@@ -114,6 +114,10 @@ void ten_addon_on_deinit_done(ten_env_t *self) {
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
              "Should not happen.");
 
+  if (addon_host->addon->on_destroy) {
+    addon_host->addon->on_destroy(addon_host->addon);
+  }
+
   ten_addon_host_destroy(addon_host);
 }
 
@@ -142,8 +146,7 @@ static void ten_addon_extension_on_create_instance_done(ten_env_t *self,
   TEN_ASSERT(ten_env_check_integrity(caller_ten, false),
              "Invalid use of ten_env %p.", caller_ten);
 
-  TEN_ASSERT(addon_context->addon_on_create_instance_async_cb,
-             "Should not happen.");
+  TEN_ASSERT(addon_context->create_instance_done_cb, "Should not happen.");
 
   switch (caller_ten->attach_to) {
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
@@ -223,8 +226,7 @@ static void ten_addon_extension_group_on_create_instance_done(ten_env_t *self,
   TEN_ASSERT(ten_env_check_integrity(caller_ten, false),
              "Invalid use of ten_env %p.", caller_ten);
 
-  TEN_ASSERT(addon_context->addon_on_create_instance_async_cb,
-             "Should not happen.");
+  TEN_ASSERT(addon_context->create_instance_done_cb, "Should not happen.");
 
   switch (caller_ten->attach_to) {
     case TEN_ENV_ATTACH_TO_ENGINE: {
@@ -300,8 +302,7 @@ void ten_addon_protocol_on_create_instance_done(ten_env_t *self,
   TEN_ASSERT(ten_env_check_integrity(caller_ten, true),
              "Invalid use of ten_env %p.", caller_ten);
 
-  TEN_ASSERT(addon_context->addon_on_create_instance_async_cb,
-             "Should not happen.");
+  TEN_ASSERT(addon_context->create_instance_done_cb, "Should not happen.");
 
   switch (caller_ten->attach_to) {
     case TEN_ENV_ATTACH_TO_ENGINE: {
@@ -418,8 +419,7 @@ void ten_addon_on_destroy_instance_done(ten_env_t *self, void *context) {
   TEN_ASSERT(ten_env_check_integrity(caller_ten, false),
              "Invalid use of ten_env %p.", caller_ten);
 
-  TEN_ASSERT(addon_context->addon_on_destroy_instance_async_cb,
-             "Should not happen.");
+  TEN_ASSERT(addon_context->destroy_instance_done_cb, "Should not happen.");
 
   switch (caller_ten->attach_to) {
     case TEN_ENV_ATTACH_TO_ENGINE: {

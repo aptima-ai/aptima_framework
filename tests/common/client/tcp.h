@@ -9,11 +9,9 @@
 #include "ten_runtime/ten_config.h"
 
 #include "ten_utils/io/socket.h"
-#include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
 
-#define TCP_CLIENT_CONNECT_RETRY_TIMES 100
+#define TCP_CLIENT_CONNECT_RETRY_TIMES 200
 
 typedef struct ten_test_tcp_client_t ten_test_tcp_client_t;
 

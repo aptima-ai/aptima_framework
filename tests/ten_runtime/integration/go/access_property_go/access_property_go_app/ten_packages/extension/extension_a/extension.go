@@ -217,7 +217,7 @@ func (p *aExtension) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtensionV2(
+	err := ten.RegisterAddonAsExtension(
 		"extension_a",
 		ten.NewDefaultExtensionAddon(newAExtension),
 	)

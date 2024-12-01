@@ -17,7 +17,6 @@ class DefaultExtension(Extension):
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.name = name
-
         self.__counter = 0
 
     def on_init(self, ten_env: TenEnv) -> None:
