@@ -201,18 +201,51 @@ class ten_env_t {
     return rc;
   }
 
+  static void proxy_handle_return_error(::ten_env_t *ten_env, void *user_data,
+                                        ::ten_error_t *err) {
+    TEN_ASSERT(ten_env, "Should not happen.");
+
+    auto *error_handler = static_cast<error_handler_func_t *>(user_data);
+    auto *cpp_ten_env =
+        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
+
+    if (err != nullptr) {
+      error_t cpp_err(err, false);
+      (*error_handler)(*cpp_ten_env, &cpp_err);
+    } else {
+      (*error_handler)(*cpp_ten_env, nullptr);
+    }
+
+    delete error_handler;
+  }
+
   // If the 'cmd' has already been a command in the backward path, a extension
   // could use this API to return the 'cmd' further.
   bool return_result_directly(std::unique_ptr<cmd_result_t> &&cmd,
+                              error_handler_func_t &&error_handler = nullptr,
                               error_t *err = nullptr) {
     if (!cmd) {
       TEN_ASSERT(0, "Invalid argument.");
       return false;
     }
 
-    auto rc = ten_env_return_result_directly(
-        c_ten_env, cmd->get_underlying_msg(),
-        err != nullptr ? err->get_c_error() : nullptr);
+    bool rc = false;
+    if (error_handler == nullptr) {
+      rc = ten_env_return_result_directly(
+          c_ten_env, cmd->get_underlying_msg(), nullptr, nullptr,
+          err != nullptr ? err->get_c_error() : nullptr);
+    } else {
+      auto *error_handler_ptr =
+          new error_handler_func_t(std::move(error_handler));
+
+      rc = ten_env_return_result_directly(
+          c_ten_env, cmd->get_underlying_msg(), proxy_handle_return_error,
+          error_handler_ptr, err != nullptr ? err->get_c_error() : nullptr);
+      if (!rc) {
+        delete error_handler_ptr;
+      }
+    }
 
     if (rc) {
       // The 'cmd' has been returned, so we should release the ownership of
@@ -228,6 +261,7 @@ class ten_env_t {
 
   bool return_result(std::unique_ptr<cmd_result_t> &&cmd,
                      std::unique_ptr<cmd_t> &&target_cmd,
+                     error_handler_func_t &&error_handler = nullptr,
                      error_t *err = nullptr) {
     if (!cmd) {
       TEN_ASSERT(0, "Invalid argument.");
@@ -238,9 +272,25 @@ class ten_env_t {
       return false;
     }
 
-    auto rc = ten_env_return_result(
-        c_ten_env, cmd->get_underlying_msg(), target_cmd->get_underlying_msg(),
-        err != nullptr ? err->get_c_error() : nullptr);
+    bool rc = false;
+
+    if (error_handler == nullptr) {
+      rc = ten_env_return_result(c_ten_env, cmd->get_underlying_msg(),
+                                 target_cmd->get_underlying_msg(), nullptr,
+                                 nullptr,
+                                 err != nullptr ? err->get_c_error() : nullptr);
+    } else {
+      auto *error_handler_ptr =
+          new error_handler_func_t(std::move(error_handler));
+
+      rc = ten_env_return_result(c_ten_env, cmd->get_underlying_msg(),
+                                 target_cmd->get_underlying_msg(),
+                                 proxy_handle_return_error, error_handler_ptr,
+                                 err != nullptr ? err->get_c_error() : nullptr);
+      if (!rc) {
+        delete error_handler_ptr;
+      }
+    }
 
     if (rc) {
       if (cmd->is_final()) {

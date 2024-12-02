@@ -47,7 +47,7 @@ func (p *httpExtension) OnCmd(
 
 	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 	cmdResult.SetPropertyString("detail", "This is default go extension.")
-	tenEnv.ReturnResult(cmdResult, cmd)
+	tenEnv.ReturnResult(cmdResult, cmd, nil)
 }
 
 func init() {

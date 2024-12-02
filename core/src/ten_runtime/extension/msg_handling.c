@@ -282,7 +282,8 @@ void ten_extension_handle_in_msg(ten_extension_t *self, ten_shared_ptr_t *msg) {
           // ExtensionB only needs to send the received cmdA to ExtensionC and
           // does not need to handle the result of cmdA. The TEN runtime will
           // help ExtensionB to return the result of cmdA to ExtensionA.
-          ten_env_return_result_directly(self->ten_env, actual_msg, NULL);
+          ten_env_return_result_directly(self->ten_env, actual_msg, NULL, NULL,
+                                         NULL);
         }
       } else {
         switch (ten_msg_get_type(msg)) {

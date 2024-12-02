@@ -45,7 +45,7 @@ func (p *aExtension) OnCmd(
 		)
 		if cmdName == "start" {
 			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult, e error) {
-				r.ReturnResultDirectly(cs)
+				r.ReturnResultDirectly(cs, nil)
 			})
 		}
 	}()

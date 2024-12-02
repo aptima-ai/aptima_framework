@@ -36,11 +36,11 @@ func (p *extensionB) OnCmd(
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				tenEnv.ReturnResult(cmdResult, cmd)
+				tenEnv.ReturnResult(cmdResult, cmd, nil)
 			} else {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 				cmdResult.SetPropertyString("detail", res)
-				tenEnv.ReturnResult(cmdResult, cmd)
+				tenEnv.ReturnResult(cmdResult, cmd, nil)
 			}
 
 		} else {

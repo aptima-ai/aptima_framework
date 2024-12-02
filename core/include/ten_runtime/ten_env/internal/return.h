@@ -14,11 +14,16 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
 
-TEN_RUNTIME_API bool ten_env_return_result(ten_env_t *self,
-                                         ten_shared_ptr_t *result,
-                                         ten_shared_ptr_t *target_cmd,
-                                         ten_error_t *err);
+typedef void (*ten_env_return_result_error_handler_func_t)(ten_env_t *self,
+                                                           void *user_data,
+                                                           ten_error_t *err);
 
-TEN_RUNTIME_API bool ten_env_return_result_directly(ten_env_t *self,
-                                                  ten_shared_ptr_t *cmd,
-                                                  ten_error_t *err);
+TEN_RUNTIME_API bool ten_env_return_result(
+    ten_env_t *self, ten_shared_ptr_t *result, ten_shared_ptr_t *target_cmd,
+    ten_env_return_result_error_handler_func_t error_handler,
+    void *error_handler_user_data, ten_error_t *err);
+
+TEN_RUNTIME_API bool ten_env_return_result_directly(
+    ten_env_t *self, ten_shared_ptr_t *cmd,
+    ten_env_return_result_error_handler_func_t error_handler,
+    void *error_handler_user_data, ten_error_t *err);

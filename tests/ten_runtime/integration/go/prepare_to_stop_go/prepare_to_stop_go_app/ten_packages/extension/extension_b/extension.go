@@ -38,11 +38,11 @@ func (p *bExtension) OnCmd(
 		)
 		if cmdName == "start" {
 			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult, e error) {
-				r.ReturnResultDirectly(cs)
+				r.ReturnResultDirectly(cs, nil)
 			})
 		} else if cmdName == "stop" {
 			tenEnv.SendCmd(cmd, func(r ten.TenEnv, cs ten.CmdResult, e error) {
-				r.ReturnResultDirectly(cs)
+				r.ReturnResultDirectly(cs, nil)
 
 				close(p.stopChan)
 				tenEnv.LogInfo("Stop command is processed.")
@@ -50,7 +50,7 @@ func (p *bExtension) OnCmd(
 		} else {
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 			cmdResult.SetPropertyString("detail", "unknown cmd")
-			tenEnv.ReturnResult(cmdResult, cmd)
+			tenEnv.ReturnResult(cmdResult, cmd, nil)
 		}
 	}()
 }

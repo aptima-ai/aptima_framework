@@ -99,7 +99,7 @@ func (p *aExtension) OnCmd(
 
 		cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 		cmdResult.SetPropertyString("detail", "world")
-		err = tenEnv.ReturnResult(cmdResult, cmd)
+		err = tenEnv.ReturnResult(cmdResult, cmd, nil)
 		if err != nil {
 			panic("aExtension ReturnResult failed")
 		}

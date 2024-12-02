@@ -39,7 +39,7 @@ func (e *defaultExtension) OnCmd(
 	tenEnv.LogDebug("OnCmd")
 
 	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-	tenEnv.ReturnResult(cmdResult, cmd)
+	tenEnv.ReturnResult(cmdResult, cmd, nil)
 }
 
 func init() {

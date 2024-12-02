@@ -125,14 +125,14 @@ func (p *extensionA) OnCmd(
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				r.ReturnResult(cmdResult, cmd)
+				r.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
 			if detail != "this is extensionB." {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", "wrong detail")
-				r.ReturnResult(cmdResult, cmd)
+				r.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
@@ -140,13 +140,13 @@ func (p *extensionA) OnCmd(
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				r.ReturnResult(cmdResult, cmd)
+				r.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 			cmdResult.SetPropertyString("detail", password)
-			r.ReturnResult(cmdResult, cmd)
+			r.ReturnResult(cmdResult, cmd, nil)
 		})
 	}()
 }

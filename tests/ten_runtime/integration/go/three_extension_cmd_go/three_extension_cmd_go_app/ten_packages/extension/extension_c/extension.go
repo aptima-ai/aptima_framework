@@ -53,7 +53,7 @@ func (p *cExtension) OnCmd(
 
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 			cmdResult.SetPropertyString("detail", string(res))
-			err = tenEnv.ReturnResult(cmdResult, cmd)
+			err = tenEnv.ReturnResult(cmdResult, cmd, nil)
 			if err != nil {
 				panic("Should not happen.")
 			}

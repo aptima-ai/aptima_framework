@@ -10,7 +10,11 @@ package ten
 //#include "ten_env.h"
 import "C"
 
-func (p *tenEnv) ReturnResult(statusCmd CmdResult, cmd Cmd) error {
+func (p *tenEnv) ReturnResult(
+	statusCmd CmdResult,
+	cmd Cmd,
+	handler ErrorHandler,
+) error {
 	if statusCmd == nil {
 		return newTenError(
 			ErrnoInvalidArgument,
@@ -25,23 +29,39 @@ func (p *tenEnv) ReturnResult(statusCmd CmdResult, cmd Cmd) error {
 		)
 	}
 
+	cb := goHandleNil
+	if handler != nil {
+		cb = newGoHandle(handler)
+	}
+
 	defer func() {
 		p.keepAlive()
 		cmd.keepAlive()
 		statusCmd.keepAlive()
 	}()
 
-	return withCGO(func() error {
+	err := withCGO(func() error {
 		apiStatus := C.ten_go_ten_env_return_result(
 			p.cPtr,
 			statusCmd.getCPtr(),
 			cmd.getCPtr(),
+			cHandle(cb),
 		)
 		return withCGoError(&apiStatus)
 	})
+
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(cb)
+	}
+
+	return err
 }
 
-func (p *tenEnv) ReturnResultDirectly(statusCmd CmdResult) error {
+func (p *tenEnv) ReturnResultDirectly(
+	statusCmd CmdResult,
+	handler ErrorHandler,
+) error {
 	if statusCmd == nil {
 		return newTenError(
 			ErrnoInvalidArgument,
@@ -54,11 +74,24 @@ func (p *tenEnv) ReturnResultDirectly(statusCmd CmdResult) error {
 		statusCmd.keepAlive()
 	}()
 
-	return withCGO(func() error {
+	cb := goHandleNil
+	if handler != nil {
+		cb = newGoHandle(handler)
+	}
+
+	err := withCGO(func() error {
 		apiStatus := C.ten_go_ten_env_return_result_directly(
 			p.cPtr,
 			statusCmd.getCPtr(),
+			cHandle(cb),
 		)
 		return withCGoError(&apiStatus)
 	})
+
+	if err != nil {
+		// Clean up the handle if there was an error.
+		loadAndDeleteGoHandle(cb)
+	}
+
+	return err
 }

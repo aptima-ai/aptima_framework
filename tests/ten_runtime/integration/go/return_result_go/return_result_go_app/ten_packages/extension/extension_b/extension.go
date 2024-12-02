@@ -38,13 +38,13 @@ func (p *extensionB) OnCmd(
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				tenEnv.ReturnResult(cmdResult, cmd)
+				tenEnv.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
 			statusCmd.SetProperty("detail", "this is extensionB.")
 			statusCmd.SetProperty("password", "password")
-			tenEnv.ReturnResult(statusCmd, cmd)
+			tenEnv.ReturnResult(statusCmd, cmd, nil)
 		}
 	}()
 }

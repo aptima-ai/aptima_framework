@@ -49,13 +49,13 @@ func (p *extensionA) OnCmd(
 			if err != nil {
 				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
-				r.ReturnResult(cmdResult, cmd)
+				r.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
 			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
 			cmdResult.SetPropertyString("detail", detail)
-			r.ReturnResult(cmdResult, cmd)
+			r.ReturnResult(cmdResult, cmd, nil)
 		})
 	}()
 }

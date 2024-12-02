@@ -76,10 +76,11 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
   bool rc = false;
   if (info->py_cb_func == NULL) {
     if (info->c_target_cmd) {
-      rc =
-          ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd, &err);
+      rc = ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd, NULL,
+                                 NULL, &err);
     } else {
-      rc = ten_env_return_result_directly(ten_env, info->c_cmd, &err);
+      rc = ten_env_return_result_directly(ten_env, info->c_cmd, NULL, NULL,
+                                          &err);
     }
 
     if (!rc) {
@@ -92,10 +93,11 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
     // TODO(xilin) : Transform the return_xxx C function into an async API and
     // set the callback here. Wait for the PR 357 to be merged.
     if (info->c_target_cmd) {
-      rc =
-          ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd, &err);
+      rc = ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd, NULL,
+                                 NULL, &err);
     } else {
-      rc = ten_env_return_result_directly(ten_env, info->c_cmd, &err);
+      rc = ten_env_return_result_directly(ten_env, info->c_cmd, NULL, NULL,
+                                          &err);
     }
 
     ten_py_error_t *py_err = NULL;
