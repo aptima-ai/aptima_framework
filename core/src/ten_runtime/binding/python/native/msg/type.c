@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/binding/python/common/buf.h"
+#include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/msg/audio_frame.h"
 #include "include_internal/ten_runtime/binding/python/msg/cmd.h"
 #include "include_internal/ten_runtime/binding/python/msg/cmd_result.h"
@@ -229,6 +230,30 @@ PyTypeObject *ten_py_buf_py_type(void) {
       .tp_flags = Py_TPFLAGS_DEFAULT,
       .tp_dealloc = ten_py_buf_destroy,
       .tp_as_buffer = &py_buffer_procs,
+  };
+
+  return &py_type;
+}
+
+PyTypeObject *ten_py_error_py_type(void) {
+  static PyMethodDef py_methods[] = {
+      {"errno", ten_py_error_get_errno, METH_VARARGS, NULL},
+      {"err_msg", ten_py_error_get_errmsg, METH_VARARGS, NULL},
+      {NULL, NULL, 0, NULL},
+  };
+
+  static PyTypeObject py_type = {
+      PyVarObject_HEAD_INIT(NULL, 0).tp_name =
+          "libten_runtime_python._TenError",
+      .tp_doc = PyDoc_STR("_TenError"),
+      .tp_basicsize = sizeof(ten_py_error_t),
+      .tp_itemsize = 0,
+      .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+      .tp_dealloc = ten_py_error_destroy,
+      .tp_methods = py_methods,
+      .tp_init = NULL,
+      .tp_getset = NULL,
+      .tp_new = NULL,
   };
 
   return &py_type;

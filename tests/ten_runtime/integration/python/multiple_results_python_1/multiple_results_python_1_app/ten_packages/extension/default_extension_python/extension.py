@@ -4,13 +4,8 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    StatusCode,
-    CmdResult,
-)
+from typing import Optional
+from ten import Extension, TenEnv, Cmd, StatusCode, CmdResult, TenError
 
 
 class DefaultExtension(Extension):
@@ -23,7 +18,18 @@ class DefaultExtension(Extension):
         ten_env.log_debug("on_init")
         ten_env.on_init_done()
 
-    def check_hello(self, ten_env: TenEnv, result: CmdResult, receivedCmd: Cmd):
+    def check_hello(
+        self,
+        ten_env: TenEnv,
+        result: Optional[CmdResult],
+        error: Optional[TenError],
+        receivedCmd: Cmd,
+    ):
+        if error is not None:
+            assert False, error
+
+        assert result is not None
+
         self.__counter += 1
 
         if self.__counter == 1:
@@ -45,7 +51,9 @@ class DefaultExtension(Extension):
             new_cmd = Cmd.create("hello")
             ten_env.send_cmd_ex(
                 new_cmd,
-                lambda ten_env, result: self.check_hello(ten_env, result, cmd),
+                lambda ten_env, result, error: self.check_hello(
+                    ten_env, result, error, cmd
+                ),
             )
         elif self.name == "default_extension_python_2":
             ten_env.log_info("create respCmd 1")

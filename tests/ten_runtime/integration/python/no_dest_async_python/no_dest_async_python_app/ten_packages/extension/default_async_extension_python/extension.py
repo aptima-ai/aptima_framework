@@ -5,11 +5,7 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import asyncio
-from ten import (
-    AsyncExtension,
-    AsyncTenEnv,
-    Cmd,
-)
+from ten import AsyncExtension, AsyncTenEnv, Cmd, Data, AudioFrame, VideoFrame
 
 
 class DefaultAsyncExtension(AsyncExtension):
@@ -28,6 +24,46 @@ class DefaultAsyncExtension(AsyncExtension):
         ten_env.set_property_string("string_field", "hello")
         assert ten_env.is_property_exist("string_field") is True
 
+        exception_caught = False
+        try:
+            result = await ten_env.send_cmd(Cmd.create("unknown_cmd"))
+        except Exception as e:
+            ten_env.log_error(f"Error: {e}")
+            exception_caught = True
+
+        assert exception_caught is True
+        exception_caught = False
+
+        try:
+            result = await ten_env.send_data(Data.create("unknown_data"))
+        except Exception as e:
+            ten_env.log_error(f"Error: {e}")
+            exception_caught = True
+
+        assert exception_caught is True
+        exception_caught = False
+
+        try:
+            result = await ten_env.send_audio_frame(
+                AudioFrame.create("unknown_audio_frame")
+            )
+        except Exception as e:
+            ten_env.log_error(f"Error: {e}")
+            exception_caught = True
+
+        assert exception_caught is True
+        exception_caught = False
+
+        try:
+            result = await ten_env.send_video_frame(
+                VideoFrame.create("unknown_video_frame")
+            )
+        except Exception as e:
+            ten_env.log_error(f"Error: {e}")
+            exception_caught = True
+
+        assert exception_caught is True
+
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
 
@@ -37,6 +73,9 @@ class DefaultAsyncExtension(AsyncExtension):
 
         # Mock async operation, e.g. network, file I/O.
         await asyncio.sleep(0.5)
+
+        assert ten_env.is_cmd_connected("hello") is True
+        assert ten_env.is_cmd_connected("unknown_cmd") is False
 
         # Send a new command to other extensions and wait for the result. The
         # result will be returned to the original sender.

@@ -85,4 +85,4 @@ class DefaultExtension(AsyncExtension):
         respCmd.set_property_string("detail", "received response")
         ten_env.log_info("create respCmd")
 
-        ten_env.return_result(respCmd, cmd)
+        await ten_env.return_result(respCmd, cmd)

@@ -4,9 +4,11 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from typing import Callable
 import inspect
+from typing import Callable, Optional
+
 from libten_runtime_python import _Extension, _TenEnv
+from .error import TenError
 from .ten_env_attach_to_enum import _TenEnvAttachTo
 from .cmd_result import CmdResult
 from .cmd import Cmd
@@ -19,7 +21,11 @@ from .log_level import LogLevel
 class TenEnv: ...  # type: ignore
 
 
-ResultHandler = Callable[[TenEnv, CmdResult], None] | None
+ResultHandler = (
+    Callable[[TenEnv, Optional[CmdResult], Optional[TenError]], None] | None
+)
+
+ErrorHandler = Callable[[TenEnv, Optional[TenError]], None] | None
 
 
 class TenEnv:
@@ -80,20 +86,31 @@ class TenEnv:
     def send_cmd_ex(self, cmd: Cmd, result_handler: ResultHandler) -> None:
         return self._internal.send_cmd(cmd, result_handler, True)
 
-    def send_data(self, data: Data) -> None:
-        return self._internal.send_data(data)
+    def send_data(self, data: Data, error_handler: ErrorHandler = None) -> None:
+        return self._internal.send_data(data, error_handler)
 
-    def send_video_frame(self, video_frame: VideoFrame) -> None:
-        return self._internal.send_video_frame(video_frame)
+    def send_video_frame(
+        self, video_frame: VideoFrame, error_handler: ErrorHandler = None
+    ) -> None:
+        return self._internal.send_video_frame(video_frame, error_handler)
 
-    def send_audio_frame(self, audio_frame: AudioFrame) -> None:
-        return self._internal.send_audio_frame(audio_frame)
+    def send_audio_frame(
+        self, audio_frame: AudioFrame, error_handler: ErrorHandler = None
+    ) -> None:
+        return self._internal.send_audio_frame(audio_frame, error_handler)
 
-    def return_result(self, result: CmdResult, target_cmd: Cmd) -> None:
-        return self._internal.return_result(result, target_cmd)
+    def return_result(
+        self,
+        result: CmdResult,
+        target_cmd: Cmd,
+        error_handler: ErrorHandler = None,
+    ) -> None:
+        return self._internal.return_result(result, target_cmd, error_handler)
 
-    def return_result_directly(self, result: CmdResult) -> None:
-        return self._internal.return_result_directly(result)
+    def return_result_directly(
+        self, result: CmdResult, error_handler: ErrorHandler = None
+    ) -> None:
+        return self._internal.return_result_directly(result, error_handler)
 
     def is_property_exist(self, path: str) -> bool:
         return self._internal.is_property_exist(path)

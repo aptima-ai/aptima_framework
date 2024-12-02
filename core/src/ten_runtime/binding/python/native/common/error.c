@@ -4,11 +4,66 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+#include "include_internal/ten_runtime/binding/python/common/error.h"
+
 #include <stdbool.h>
 
 #include "include_internal/ten_runtime/binding/python/common/python_stuff.h"
+#include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/log/log.h"
+#include "ten_utils/macro/check.h"
+
+ten_py_error_t *ten_py_error_wrap(ten_error_t *error) {
+  if (!error) {
+    return NULL;
+  }
+
+  ten_py_error_t *py_error = (ten_py_error_t *)ten_py_error_py_type()->tp_alloc(
+      ten_py_error_py_type(), 0);
+  if (!py_error) {
+    return NULL;
+  }
+
+  ten_error_init(&py_error->c_error);
+  ten_error_copy(&py_error->c_error, error);
+
+  return py_error;
+}
+
+void ten_py_error_invalidate(ten_py_error_t *py_error) {
+  TEN_ASSERT(py_error, "Invalid argument.");
+  Py_DECREF(py_error);
+}
+
+void ten_py_error_destroy(PyObject *self) {
+  ten_py_error_t *py_error = (ten_py_error_t *)self;
+  if (!py_error) {
+    return;
+  }
+
+  ten_error_deinit(&py_error->c_error);
+
+  Py_TYPE(self)->tp_free(self);
+}
+
+PyObject *ten_py_error_get_errno(PyObject *self, PyObject *args) {
+  ten_py_error_t *py_error = (ten_py_error_t *)self;
+  if (!py_error) {
+    return ten_py_raise_py_value_error_exception("Invalid argument.");
+  }
+
+  return PyLong_FromLong(ten_error_errno(&py_error->c_error));
+}
+
+PyObject *ten_py_error_get_errmsg(PyObject *self, PyObject *args) {
+  ten_py_error_t *py_error = (ten_py_error_t *)self;
+  if (!py_error) {
+    return ten_py_raise_py_value_error_exception("Invalid argument.");
+  }
+
+  return PyUnicode_FromString(ten_error_errmsg(&py_error->c_error));
+}
 
 static void ten_py_print_py_error(void) {
   PyObject *ptype = NULL;
@@ -129,4 +184,25 @@ PyObject *ten_py_raise_py_not_implemented_error_exception(const char *msg) {
   PyErr_SetString(PyExc_NotImplementedError, msg);
 
   return NULL;
+}
+
+bool ten_py_error_init_for_module(PyObject *module) {
+  PyTypeObject *py_type = ten_py_error_py_type();
+
+  if (PyType_Ready(py_type) < 0) {
+    ten_py_raise_py_system_error_exception("Python Error class is not ready.");
+
+    TEN_ASSERT(0, "Should not happen.");
+    return false;
+  }
+
+  if (PyModule_AddObjectRef(module, "_TenError", (PyObject *)py_type) < 0) {
+    ten_py_raise_py_import_error_exception(
+        "Failed to add Python type to module.");
+
+    TEN_ASSERT(0, "Should not happen.");
+    return false;
+  }
+
+  return true;
 }

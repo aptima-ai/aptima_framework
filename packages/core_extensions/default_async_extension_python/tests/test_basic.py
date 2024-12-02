@@ -5,11 +5,29 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 from pathlib import Path
-from ten import ExtensionTester, TenEnvTester, Cmd, CmdResult, StatusCode
+from typing import Optional
+from ten import (
+    ExtensionTester,
+    TenEnvTester,
+    Cmd,
+    CmdResult,
+    StatusCode,
+    TenError,
+)
 
 
 class ExtensionTesterBasic(ExtensionTester):
-    def check_hello(self, ten_env: TenEnvTester, result: CmdResult):
+    def check_hello(
+        self,
+        ten_env: TenEnvTester,
+        result: Optional[CmdResult],
+        error: Optional[TenError],
+    ):
+        if error is not None:
+            assert False, error.err_msg()
+
+        assert result is not None
+
         statusCode = result.get_status_code()
         print("receive hello_world, status:" + str(statusCode))
 
@@ -22,7 +40,9 @@ class ExtensionTesterBasic(ExtensionTester):
         print("send hello_world")
         ten_env.send_cmd(
             new_cmd,
-            lambda ten_env, result: self.check_hello(ten_env, result),
+            lambda ten_env, result, error: self.check_hello(
+                ten_env, result, error
+            ),
         )
 
         print("tester on_start_done")

@@ -14,8 +14,9 @@
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/lib/error.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 
 typedef struct ten_env_notify_send_cmd_info_t {
@@ -59,11 +60,23 @@ static void proxy_send_xxx_callback(ten_env_t *ten_env,
   PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
-  ten_py_cmd_result_t *cmd_result_bridge = ten_py_cmd_result_wrap(cmd_result);
-
   PyObject *cb_func = callback_info;
-  PyObject *arglist =
-      Py_BuildValue("(OO)", py_ten_env->actual_py_ten_env, cmd_result_bridge);
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+  ten_py_cmd_result_t *cmd_result_bridge = NULL;
+
+  if (err) {
+    py_error = ten_py_error_wrap(err);
+
+    arglist = Py_BuildValue("(OOO)", py_ten_env->actual_py_ten_env, Py_None,
+                            py_error);
+  } else {
+    cmd_result_bridge = ten_py_cmd_result_wrap(cmd_result);
+
+    arglist = Py_BuildValue("(OOO)", py_ten_env->actual_py_ten_env,
+                            cmd_result_bridge, Py_None);
+  }
 
   PyObject *result = PyObject_CallObject(cb_func, arglist);
   Py_XDECREF(result);  // Ensure cleanup if an error occurred.
@@ -78,7 +91,13 @@ static void proxy_send_xxx_callback(ten_env_t *ten_env,
     Py_XDECREF(cb_func);
   }
 
-  ten_py_cmd_result_invalidate(cmd_result_bridge);
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  if (cmd_result_bridge) {
+    ten_py_cmd_result_invalidate(cmd_result_bridge);
+  }
 
   ten_py_gil_state_release(prev_state);
 }
@@ -114,12 +133,43 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
     send_cmd_func = ten_env_send_cmd;
   }
 
-  TEN_UNUSED bool res = false;
+  bool res = false;
   if (notify_info->py_cb_func == NULL) {
-    res = send_cmd_func(ten_env, notify_info->c_cmd, NULL, NULL, NULL);
+    res = send_cmd_func(ten_env, notify_info->c_cmd, NULL, NULL, &err);
+    if (!res) {
+      TEN_LOGE(
+          "Failed to send cmd, but no callback function is provided. errno: "
+          "%s, err_msg: %s",
+          ten_error_errno(&err), ten_error_errmsg(&err));
+    }
   } else {
     res = send_cmd_func(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
-                        notify_info->py_cb_func, NULL);
+                        notify_info->py_cb_func, &err);
+    if (!res) {
+      // About to call the Python function, so it's necessary to ensure that the
+      // GIL has been acquired.
+      //
+      // Allows C codes to work safely with Python objects.
+      PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+      ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
+      ten_py_error_t *py_err = ten_py_error_wrap(&err);
+
+      PyObject *arglist = Py_BuildValue("(OOO)", py_ten_env->actual_py_ten_env,
+                                        Py_None, py_err);
+
+      PyObject *result = PyObject_CallObject(notify_info->py_cb_func, arglist);
+      Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+      bool err_occurred = ten_py_check_and_clear_py_error();
+      TEN_ASSERT(!err_occurred, "Should not happen.");
+
+      Py_XDECREF(arglist);
+
+      ten_py_error_invalidate(py_err);
+
+      ten_py_gil_state_release(prev_state);
+    }
   }
 
   ten_error_deinit(&err);

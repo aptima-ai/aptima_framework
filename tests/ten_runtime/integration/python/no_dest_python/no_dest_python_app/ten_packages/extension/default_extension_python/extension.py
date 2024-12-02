@@ -9,6 +9,9 @@ from ten import (
     Extension,
     TenEnv,
     Cmd,
+    Data,
+    AudioFrame,
+    VideoFrame,
     StatusCode,
     CmdResult,
     LogLevel,
@@ -30,22 +33,58 @@ class DefaultExtension(Extension):
         ten_env.init_property_from_json('{"testKey": "testValue"}')
         ten_env.on_configure_done()
 
+    def handle_error(self, ten_env: TenEnv, error: Optional[TenError]) -> None:
+        assert error is not None
+        ten_env.log_error("DefaultExtension handle_error: " + error.err_msg())
+
+        self.no_dest_error_recv_count += 1
+        if self.no_dest_error_recv_count == 4:
+            ten_env.on_start_done()
+
     def on_start(self, ten_env: TenEnv) -> None:
         ten_env.log_debug("on_start")
+
+        self.no_dest_error_recv_count = 0
 
         ten_env.set_property_from_json("testKey2", '"testValue2"')
         testValue = ten_env.get_property_to_json("testKey")
         testValue2 = ten_env.get_property_to_json("testKey2")
-        ten_env.log_info(f"testValue: {testValue}, testValue2: {testValue2}")
+        print("testValue: ", testValue, " testValue2: ", testValue2)
 
-        ten_env.on_start_done()
+        # Send an unconnected command
+        cmd = Cmd.create("unconnected_cmd")
+        ten_env.send_cmd(
+            cmd,
+            lambda ten_env, result, error: self.handle_error(ten_env, error),
+        )
+
+        # Send an unconnected data
+        data = Data.create("unconnected_data")
+        ten_env.send_data(
+            data,
+            lambda ten_env, error: self.handle_error(ten_env, error),
+        )
+
+        # Send an unconnected video frame
+        video_frame = VideoFrame.create("unconnected_video_frame")
+        ten_env.send_video_frame(
+            video_frame,
+            lambda ten_env, error: self.handle_error(ten_env, error),
+        )
+
+        # Send an unconnected audio frame
+        audio_frame = AudioFrame.create("unconnected_audio_frame")
+        ten_env.send_audio_frame(
+            audio_frame,
+            lambda ten_env, error: self.handle_error(ten_env, error),
+        )
 
     def on_stop(self, ten_env: TenEnv) -> None:
-        ten_env.log_info("on_stop")
+        print("DefaultExtension on_stop")
         ten_env.on_stop_done()
 
     def on_deinit(self, ten_env: TenEnv) -> None:
-        ten_env.log_info("on_deinit")
+        print("DefaultExtension on_deinit")
         ten_env.on_deinit_done()
 
     def check_hello(
@@ -56,32 +95,35 @@ class DefaultExtension(Extension):
         receivedCmd: Cmd,
     ):
         if error is not None:
-            assert False, error
+            assert False, error.err_msg()
 
         assert result is not None
 
         statusCode = result.get_status_code()
         detail = result.get_property_string("detail")
-        ten_env.log_info(
-            "check_hello: status:" + str(statusCode) + " detail:" + detail
+        print(
+            "DefaultExtension check_hello: status:"
+            + str(statusCode)
+            + " detail:"
+            + detail
         )
 
         respCmd = CmdResult.create(StatusCode.OK)
         respCmd.set_property_string("detail", detail + " nbnb")
-        ten_env.log_info("create respCmd")
+        print("DefaultExtension create respCmd")
 
         ten_env.return_result(respCmd, receivedCmd)
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
-        ten_env.log_info("on_cmd")
+        print("DefaultExtension on_cmd")
 
         cmd_json = cmd.to_json()
-        ten_env.log_info("on_cmd json: " + cmd_json)
+        print("DefaultExtension on_cmd json: " + cmd_json)
 
         new_cmd = Cmd.create("hello")
         new_cmd.set_property_from_json("test", '"testValue2"')
         test_value = new_cmd.get_property_to_json("test")
-        ten_env.log_info("on_cmd test_value: " + test_value)
+        print("DefaultExtension on_cmd test_value: " + test_value)
 
         ten_env.send_cmd(
             new_cmd,

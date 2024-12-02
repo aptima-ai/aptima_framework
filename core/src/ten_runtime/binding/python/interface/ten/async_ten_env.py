@@ -4,13 +4,17 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from asyncio import AbstractEventLoop
 import asyncio
 import threading
+from asyncio import AbstractEventLoop
+from typing import AsyncGenerator
+
 from .cmd import Cmd
+from .data import Data
+from .video_frame import VideoFrame
+from .audio_frame import AudioFrame
 from .cmd_result import CmdResult
 from .ten_env import TenEnv
-from typing import AsyncGenerator
 
 
 class AsyncTenEnv(TenEnv):
@@ -30,12 +34,17 @@ class AsyncTenEnv(TenEnv):
         q = asyncio.Queue(maxsize=1)
         self._internal.send_cmd(
             cmd,
-            lambda _, result: asyncio.run_coroutine_threadsafe(
-                q.put(result), self._ten_loop
-            ),
+            lambda _, result, error: asyncio.run_coroutine_threadsafe(
+                q.put([result, error]),
+                self._ten_loop,
+            ),  # type: ignore
             False,
         )
-        result: CmdResult = await q.get()
+
+        [result, error] = await q.get()
+        if error is not None:
+            raise Exception(error.err_msg())
+
         assert result.is_completed()
         return result
 
@@ -43,19 +52,94 @@ class AsyncTenEnv(TenEnv):
         q = asyncio.Queue(maxsize=10)
         self._internal.send_cmd(
             cmd,
-            lambda _, result: asyncio.run_coroutine_threadsafe(
-                q.put(result), self._ten_loop
-            ),
+            lambda _, result, error: asyncio.run_coroutine_threadsafe(
+                q.put([result, error]),
+                self._ten_loop,
+            ),  # type: ignore
             True,
         )
 
         while True:
-            result: CmdResult = await q.get()
-            if result.is_completed():
+            [result, error] = await q.get()
+            if error is not None:
+                raise Exception(error.err_msg())
+            else:
+                if result.is_completed():
+                    yield result
+                    # This is the final result, so break the while loop.
+                    break
                 yield result
-                # This is the final result, so break the while loop.
-                break
-            yield result
+
+    async def send_data(self, data: Data) -> None:
+        q = asyncio.Queue(maxsize=1)
+        self._internal.send_data(
+            data,
+            lambda _, error: asyncio.run_coroutine_threadsafe(
+                q.put(error),
+                self._ten_loop,
+            ),  # type: ignore
+        )
+
+        error = await q.get()
+        if error is not None:
+            raise Exception(error.err_msg())
+
+    async def send_video_frame(self, video_frame: VideoFrame) -> None:
+        q = asyncio.Queue(maxsize=1)
+        self._internal.send_video_frame(
+            video_frame,
+            lambda _, error: asyncio.run_coroutine_threadsafe(
+                q.put(error),
+                self._ten_loop,
+            ),  # type: ignore
+        )
+
+        error = await q.get()
+        if error is not None:
+            raise Exception(error.err_msg())
+
+    async def send_audio_frame(self, audio_frame: AudioFrame) -> None:
+        q = asyncio.Queue(maxsize=1)
+        self._internal.send_audio_frame(
+            audio_frame,
+            lambda _, error: asyncio.run_coroutine_threadsafe(
+                q.put(error),
+                self._ten_loop,
+            ),  # type: ignore
+        )
+
+        error = await q.get()
+        if error is not None:
+            raise Exception(error.err_msg())
+
+    async def return_result(self, result: CmdResult, target_cmd: Cmd) -> None:
+        q = asyncio.Queue(maxsize=1)
+        self._internal.return_result(
+            result,
+            target_cmd,
+            lambda _, error: asyncio.run_coroutine_threadsafe(
+                q.put(error),
+                self._ten_loop,
+            ),  # type: ignore
+        )
+
+        error = await q.get()
+        if error is not None:
+            raise Exception(error.err_msg())
+
+    async def return_result_directly(self, result: CmdResult) -> None:
+        q = asyncio.Queue(maxsize=1)
+        self._internal.return_result_directly(
+            result,
+            lambda _, error: asyncio.run_coroutine_threadsafe(
+                q.put(error),
+                self._ten_loop,
+            ),  # type: ignore
+        )
+
+        error = await q.get()
+        if error is not None:
+            raise Exception(error.err_msg())
 
     async def on_configure_done(self) -> None:
         raise NotImplementedError(

@@ -42,7 +42,7 @@ class DefaultExtension(AsyncExtension):
         # result will be returned to the original sender.
         new_cmd = Cmd.create("hello")
         cmd_result = await ten_env.send_cmd(new_cmd)
-        ten_env.return_result(cmd_result, cmd)
+        await ten_env.return_result(cmd_result, cmd)
 
     async def on_stop(self, ten_env: AsyncTenEnv) -> None:
         ten_env.log_debug("on_stop")

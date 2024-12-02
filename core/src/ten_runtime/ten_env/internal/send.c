@@ -184,17 +184,23 @@ bool ten_env_send_cmd(ten_env_t *self, ten_shared_ptr_t *cmd,
              self);
   TEN_ASSERT(cmd, "Should not happen.");
 
+  bool rc = false;
+
   if (result_handler) {
     ten_cmd_result_handler_for_send_cmd_ctx_t *ctx =
         ten_cmd_result_handler_for_send_cmd_ctx_create(
             result_handler, result_handler_user_data);
 
-    return ten_send_msg_internal(self, cmd, cmd_result_handler_for_send_cmd,
-                                 ctx, err);
+    rc = ten_send_msg_internal(self, cmd, cmd_result_handler_for_send_cmd, ctx,
+                               err);
+    if (!rc) {
+      ten_cmd_result_handler_for_send_cmd_ctx_destroy(ctx);
+    }
   } else {
-    return ten_send_msg_internal(self, cmd, NULL, result_handler_user_data,
-                                 err);
+    rc = ten_send_msg_internal(self, cmd, NULL, result_handler_user_data, err);
   }
+
+  return rc;
 }
 
 bool ten_env_send_cmd_ex(ten_env_t *self, ten_shared_ptr_t *cmd,

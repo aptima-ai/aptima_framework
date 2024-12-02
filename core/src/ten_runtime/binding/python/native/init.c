@@ -129,5 +129,10 @@ PyMODINIT_FUNC PyInit_libten_runtime_python(void) {
     return NULL;
   }
 
+  if (!ten_py_error_init_for_module(module)) {
+    Py_DECREF(module);
+    return NULL;
+  }
+
   return module;
 }
