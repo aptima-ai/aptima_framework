@@ -640,12 +640,6 @@ class ten_env_t {
     return set_property_impl(path, ten_value_create_buf_with_move(buf), err);
   }
 
-  bool is_cmd_connected(const char *cmd_name, error_t *err = nullptr) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-    return ten_env_is_cmd_connected(
-        c_ten_env, cmd_name, err != nullptr ? err->get_c_error() : nullptr);
-  }
-
   bool on_configure_done(error_t *err = nullptr) {
     TEN_ASSERT(c_ten_env, "Should not happen.");
 

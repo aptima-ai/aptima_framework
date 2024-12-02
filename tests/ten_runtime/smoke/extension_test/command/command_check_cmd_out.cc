@@ -21,11 +21,8 @@ class test_extension_1 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    const auto *cmd_name = cmd->get_name();
-    auto res = ten_env.is_cmd_connected(cmd_name);
-    if (res) {
-      ten_env.send_cmd(std::move(cmd));
-    } else {
+    auto rc = ten_env.send_cmd(std::move(cmd));
+    if (!rc) {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "can not find a way out");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));

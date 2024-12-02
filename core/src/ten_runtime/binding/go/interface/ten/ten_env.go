@@ -43,8 +43,6 @@ type TenEnv interface {
 	OnDeinitDone() error
 	OnCreateInstanceDone(instance any, context uintptr) error
 
-	IsCmdConnected(cmdName string) (bool, error)
-
 	iProperty
 	InitPropertyFromJSONBytes(value []byte) error
 
@@ -357,15 +355,6 @@ func (p *tenEnv) OnCreateInstanceDone(instance any, context uintptr) error {
 	}
 
 	return nil
-}
-
-func (p *tenEnv) IsCmdConnected(cmdName string) (bool, error) {
-	return p.process(func() any {
-		cName := C.CString(cmdName)
-		defer C.free(unsafe.Pointer(cName))
-
-		return bool(C.ten_go_ten_env_is_cmd_connected(p.cPtr, cName))
-	}).(bool), nil
 }
 
 func (p *tenEnv) String() string {

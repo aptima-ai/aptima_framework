@@ -87,9 +87,6 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_from_json(
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_is_property_exist(
     PyObject *self, PyObject *args);
 
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_is_cmd_connected(
-    PyObject *self, PyObject *args);
-
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_get_property_int(
     PyObject *self, PyObject *args);
 

@@ -38,9 +38,6 @@ class DefaultAsyncExtension(AsyncExtension):
         # Mock async operation, e.g. network, file I/O.
         await asyncio.sleep(0.5)
 
-        assert ten_env.is_cmd_connected("hello") is True
-        assert ten_env.is_cmd_connected("unknown_cmd") is False
-
         # Send a new command to other extensions and wait for the result. The
         # result will be returned to the original sender.
         new_cmd = Cmd.create("hello")

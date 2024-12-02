@@ -98,9 +98,6 @@ class TenEnv:
     def is_property_exist(self, path: str) -> bool:
         return self._internal.is_property_exist(path)
 
-    def is_cmd_connected(self, msg_name: str) -> bool:
-        return self._internal.is_cmd_connected(msg_name)
-
     def get_property_int(self, path: str) -> int:
         return self._internal.get_property_int(path)
 
