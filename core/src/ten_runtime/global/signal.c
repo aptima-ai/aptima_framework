@@ -146,10 +146,57 @@ void ten_global_setup_signal_stuff(void) {
 
 #else
 
-void ten_global_setup_signal_stuff(void) {}
+#include <windows.h>
 
-void ten_global_signal_alt_stack_create(void) {}
+static volatile LONG ctrl_c_count = 0;
 
-void ten_global_signal_alt_stack_destroy(void) {}
+BOOL WINAPI ConsoleHandler(DWORD dwCtrlType) {
+  switch (dwCtrlType) {
+    case CTRL_C_EVENT:
+    case CTRL_BREAK_EVENT:
+      TEN_LOGW("Received CTRL+C/CTRL+BREAK.");
+
+      ten_mutex_lock(g_apps_mutex);
+
+      ten_list_foreach (&g_apps, iter) {
+        ten_app_t *app = ten_ptr_listnode_get(iter.node);
+        TEN_ASSERT(app, "Invalid argument.");
+
+        ten_app_close(app, NULL);
+      }
+
+      ten_mutex_unlock(g_apps_mutex);
+
+      ctrl_c_count++;
+      if (ctrl_c_count >= 2) {
+        TEN_LOGW("Received CTRL+C/CTRL+BREAK twice, exit directly.");
+        exit(EXIT_FAILURE);
+      }
+      return TRUE;  // Signal has been handled.
+
+    default:
+      return FALSE;  // Signal has _not_ been handled.
+  }
+}
+
+void ten_global_setup_signal_stuff(void) {
+  const char *disable_signal_trap = getenv("TEN_DISABLE_SIGNAL_TRAP");
+  if (disable_signal_trap && !strcmp(disable_signal_trap, "true")) {
+    // No trap signal, for nodejs / python / java bindings
+  } else {
+    if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
+      TEN_LOGF("Failed to set control handler.");
+      exit(-TEN_ERRNO_GENERIC);
+    }
+  }
+}
+
+void ten_global_signal_alt_stack_create(void) {
+  // Windows does not support alternate signal stacks, so no need to implement.
+}
+
+void ten_global_signal_alt_stack_destroy(void) {
+  // Windows does not support alternate signal stacks, so no need to implement.
+}
 
 #endif
