@@ -24,6 +24,7 @@
 #include "include_internal/ten_runtime/protocol/close.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/schema_store/store.h"
+#include "include_internal/ten_runtime/ten_env/log.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/app/app.h"
@@ -317,7 +318,7 @@ void ten_app_on_deinit_done(ten_env_t *ten_env) {
   self->state = TEN_APP_STATE_CLOSED;
   ten_mutex_unlock(self->state_lock);
 
-  TEN_LOGD("app::on_deinit_done().");
+  TEN_ENV_LOG_DEBUG_INTERNAL(ten_env, "app on_deinit_done().");
 
   ten_env_close(self->ten_env);
   ten_runloop_stop(self->loop);

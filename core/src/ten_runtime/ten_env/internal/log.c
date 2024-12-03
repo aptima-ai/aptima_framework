@@ -102,3 +102,16 @@ void ten_env_log_with_size_formatted(ten_env_t *self, TEN_LOG_LEVEL level,
 
   va_end(ap);
 }
+
+void ten_env_log_formatted(ten_env_t *self, TEN_LOG_LEVEL level,
+                           const char *func_name, const char *file_name,
+                           size_t line_no, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+
+  ten_env_log_with_size_formatted(self, level, func_name, strlen(func_name),
+                                  file_name, strlen(file_name), line_no, fmt,
+                                  ap);
+
+  va_end(ap);
+}

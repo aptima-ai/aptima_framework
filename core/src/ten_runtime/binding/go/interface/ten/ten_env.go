@@ -52,7 +52,6 @@ type TenEnv interface {
 	LogWarn(msg string)
 	LogError(msg string)
 	LogFatal(msg string)
-	Log(level LogLevel, msg string)
 
 	// Private functions.
 	postSyncJob(payload job) any
@@ -387,10 +386,6 @@ func (p *tenEnv) LogError(msg string) {
 
 func (p *tenEnv) LogFatal(msg string) {
 	p.logInternal(LogLevelFatal, msg, 2)
-}
-
-func (p *tenEnv) Log(level LogLevel, msg string) {
-	p.logInternal(level, msg, 1)
 }
 
 func (p *tenEnv) logInternal(level LogLevel, msg string, skip int) {

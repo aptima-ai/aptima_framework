@@ -163,9 +163,6 @@ class TenEnv:
     def log_fatal(self, msg: str) -> None:
         self._log_internal(LogLevel.FATAL, msg, 2)
 
-    def log(self, level: LogLevel, msg: str) -> None:
-        self._log_internal(level, msg, 1)
-
     def _log_internal(self, level: LogLevel, msg: str, skip: int) -> None:
         # Get the current frame.
         frame = inspect.currentframe()
