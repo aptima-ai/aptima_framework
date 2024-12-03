@@ -8,6 +8,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timer.h"
 #include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -27,11 +28,11 @@ class test_extension : public ten::extension_t {
       hello_world_cmd = std::move(cmd);
 
       // Start a timer.
-      std::unique_ptr<ten::cmd_t> timer_cmd = ten::cmd_timer_t::create();
+      std::unique_ptr<ten::cmd_timer_t> timer_cmd = ten::cmd_timer_t::create();
       timer_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
-      timer_cmd->set_property("_ten.timer_id", 55);
-      timer_cmd->set_property("_ten.timeout_in_us", 100);
-      timer_cmd->set_property("_ten.times", TIMER_TIMES);
+      timer_cmd->set_timer_id(55);
+      timer_cmd->set_timeout_in_us(100);
+      timer_cmd->set_times(TIMER_TIMES);
 
       bool success = ten_env.send_cmd(std::move(timer_cmd));
       EXPECT_EQ(success, true);

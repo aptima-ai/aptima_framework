@@ -51,9 +51,8 @@ class test_extension_2 : public ten::extension_t {
       ten::ten_env_t &ten_env,
       std::unique_ptr<ten::video_frame_t> video_frame) override {
     auto cmd = ten::cmd_t::create("video_frame_ack");
-    if (video_frame->get_property_int64("_ten.width") == 345 &&
-        video_frame->get_property_int64("_ten.pixel_fmt") ==
-            TEN_PIXEL_FMT_RGB24) {
+    if (video_frame->get_width() == 345 &&
+        video_frame->get_pixel_fmt() == TEN_PIXEL_FMT_RGB24) {
       ten_env.send_cmd(std::move(cmd));
     }
   }
