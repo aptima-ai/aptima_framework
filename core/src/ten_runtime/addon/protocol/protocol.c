@@ -198,7 +198,8 @@ bool ten_addon_create_protocol_with_uri(
   if (!addon_host) {
     TEN_ENV_LOG_ERROR_INTERNAL(
         ten_env,
-        "Can not handle protocol '%s' because no addon installed for it", uri);
+        "Failed to handle protocol '%s' because no addon installed for it",
+        uri);
     ten_string_destroy(protocol_str);
 
     if (err) {
@@ -208,8 +209,8 @@ bool ten_addon_create_protocol_with_uri(
     return false;
   }
 
-  TEN_ENV_LOG_ERROR_INTERNAL(ten_env, "Loading protocol addon: %s",
-                             ten_string_get_raw_str(&addon_host->name));
+  TEN_ENV_LOG_INFO_INTERNAL(ten_env, "Loading protocol addon: %s",
+                            ten_string_get_raw_str(&addon_host->name));
 
   ten_string_destroy(protocol_str);
 

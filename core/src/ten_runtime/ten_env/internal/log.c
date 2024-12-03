@@ -109,9 +109,9 @@ void ten_env_log_formatted(ten_env_t *self, TEN_LOG_LEVEL level,
   va_list ap;
   va_start(ap, fmt);
 
-  ten_env_log_with_size_formatted(self, level, func_name, strlen(func_name),
-                                  file_name, strlen(file_name), line_no, fmt,
-                                  ap);
+  ten_env_log_with_size_formatted_internal(
+      self, level, func_name, strlen(func_name), file_name, strlen(file_name),
+      line_no, true, fmt, ap);
 
   va_end(ap);
 }
