@@ -61,6 +61,48 @@ static void ten_env_notify_return_result_info_destroy(
   TEN_FREE(info);
 }
 
+static void proxy_return_result_callback(ten_env_t *ten_env,
+                                         void *callback_info,
+                                         ten_error_t *err) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+  TEN_ASSERT(callback_info, "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
+  PyObject *cb_func = callback_info;
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+
+  if (err) {
+    py_error = ten_py_error_wrap(err);
+    arglist = Py_BuildValue("(OO)", py_ten_env->actual_py_ten_env, py_error);
+  } else {
+    arglist = Py_BuildValue("(OO)", py_ten_env->actual_py_ten_env, Py_None);
+  }
+
+  PyObject *result = PyObject_CallObject(cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(cb_func);
+
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  ten_py_gil_state_release(prev_state);
+}
+
 static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
                                                void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
@@ -90,45 +132,44 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
           ten_error_errno(&err), ten_error_errmsg(&err));
     }
   } else {
-    // TODO(xilin) : Transform the return_xxx C function into an async API and
-    // set the callback here. Wait for the PR 357 to be merged.
     if (info->c_target_cmd) {
-      rc = ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd, NULL,
-                                 NULL, &err);
+      rc = ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd,
+                                 proxy_return_result_callback, info->py_cb_func,
+                                 &err);
     } else {
-      rc = ten_env_return_result_directly(ten_env, info->c_cmd, NULL, NULL,
-                                          &err);
+      rc = ten_env_return_result_directly(ten_env, info->c_cmd,
+                                          proxy_return_result_callback,
+                                          info->py_cb_func, &err);
     }
-
-    ten_py_error_t *py_err = NULL;
-
-    // About to call the Python function, so it's necessary to ensure that the
-    // GIL has been acquired.
-    //
-    // Allows C codes to work safely with Python objects.
-    PyGILState_STATE prev_state = ten_py_gil_state_ensure();
 
     if (!rc) {
-      py_err = ten_py_error_wrap(&err);
+      // About to call the Python function, so it's necessary to ensure that the
+      // GIL has been acquired.
+      //
+      // Allows C codes to work safely with Python objects.
+      PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+      ten_py_error_t *py_err = ten_py_error_wrap(&err);
+
+      ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
+
+      PyObject *arglist =
+          Py_BuildValue("(OO)", py_ten_env->actual_py_ten_env, py_err);
+
+      PyObject *result = PyObject_CallObject(info->py_cb_func, arglist);
+      Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+      bool err_occurred = ten_py_check_and_clear_py_error();
+      TEN_ASSERT(!err_occurred, "Should not happen.");
+
+      Py_XDECREF(arglist);
+
+      if (py_err) {
+        ten_py_error_invalidate(py_err);
+      }
+
+      ten_py_gil_state_release(prev_state);
     }
-    ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
-
-    PyObject *arglist = Py_BuildValue("(OO)", py_ten_env->actual_py_ten_env,
-                                      py_err ? (PyObject *)py_err : Py_None);
-
-    PyObject *result = PyObject_CallObject(info->py_cb_func, arglist);
-    Py_XDECREF(result);  // Ensure cleanup if an error occurred.
-
-    bool err_occurred = ten_py_check_and_clear_py_error();
-    TEN_ASSERT(!err_occurred, "Should not happen.");
-
-    Py_XDECREF(arglist);
-
-    if (py_err) {
-      ten_py_error_invalidate(py_err);
-    }
-
-    ten_py_gil_state_release(prev_state);
   }
 
   ten_error_deinit(&err);
