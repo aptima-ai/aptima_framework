@@ -29,6 +29,15 @@
       "minLength": 1,
       "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
     },
+    "path_in_msg_conversion": {
+      "type": "string",
+      // 1. Using X.Y.Z as a pattern, this represents object access.
+      //    The number of connections with `.` can be unlimited.
+      // 2. The rule for X/Y/Z/... is alphanumeric characters, or alphanumeric
+      //    characters followed by `[]`, where the content inside the `[]` must
+      //    only be numeric. This `[]` pattern represents array access.
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\[\\d+\\])*(\\.[A-Za-z_][A-Za-z0-9_]*(\\[\\d+\\])*)*$"
+    },
     "valueType": {
       "type": "string",
       "enum": [
@@ -92,7 +101,7 @@
                 "additionalProperties": false,
                 "properties": {
                   "path": {
-                    "$ref": "#/$defs/notEmptyString"
+                    "$ref": "#/$defs/path_in_msg_conversion"
                   },
                   "conversion_mode": {
                     "type": "string",
@@ -268,7 +277,7 @@
             "additionalProperties": false,
             "properties": {
               "path": {
-                "$ref": "#/$defs/notEmptyString"
+                "$ref": "#/$defs/path_in_msg_conversion"
               },
               "conversion_mode": {
                 "type": "string",
