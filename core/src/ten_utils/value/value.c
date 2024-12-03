@@ -864,14 +864,52 @@ bool ten_value_is_equal(ten_value_t *self, ten_value_t *target) {
           ten_list_size(&target->content.object)) {
         return false;
       }
-      // TODO(Wei): Implement the equality check for object-type value.
+
+      ten_list_foreach (&self->content.object, iter_self) {
+        ten_value_kv_t *kv_self = ten_ptr_listnode_get(iter_self.node);
+        TEN_ASSERT(kv_self && ten_value_kv_check_integrity(kv_self),
+                   "Invalid argument.");
+
+        // Peek the corresponding value in the target object.
+        ten_value_t *kv_target = ten_value_object_peek(
+            target, ten_string_get_raw_str(&kv_self->key));
+        if (!kv_target) {
+          // Key does not exist in target
+          return false;
+        }
+
+        // Recursively check equality of the values.
+        if (!ten_value_is_equal(kv_self->value, kv_target)) {
+          return false;
+        }
+      }
       break;
     case TEN_TYPE_ARRAY:
       if (ten_list_size(&self->content.array) !=
           ten_list_size(&target->content.array)) {
         return false;
       }
-      // TODO(Wei): Implement the equality check for array-type value.
+
+      {
+        ten_list_iterator_t iter_self = ten_list_begin(&self->content.array);
+        ten_list_iterator_t iter_target =
+            ten_list_begin(&target->content.array);
+
+        while (!ten_list_iterator_is_end(iter_self) &&
+               !ten_list_iterator_is_end(iter_target)) {
+          ten_value_t *value_self =
+              (ten_value_t *)ten_list_iterator_to_listnode(iter_self);
+          ten_value_t *value_target =
+              (ten_value_t *)ten_list_iterator_to_listnode(iter_target);
+
+          if (!ten_value_is_equal(value_self, value_target)) {
+            return false;
+          }
+
+          iter_self = ten_list_iterator_next(iter_self);
+          iter_target = ten_list_iterator_next(iter_target);
+        }
+      }
       break;
     case TEN_TYPE_INT8:
       return self->content.int8 == target->content.int8;
