@@ -4,10 +4,7 @@
 # See the LICENSE file for more information.
 #
 config("gtest_header") {
-  include_dirs = [
-    ".",
-    "include",
-  ]
+  include_dirs = [ "include" ]
 }
 
 source_set("googletest") {
