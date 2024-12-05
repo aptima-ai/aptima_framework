@@ -75,7 +75,8 @@ class test_extension : public ten::extension_t {
 };
 
 void extension_on_notify(ten::ten_env_t &ten_env) {
-  auto *ext = static_cast<test_extension *>(ten_env.get_attached_target());
+  auto *ext = static_cast<test_extension *>(
+      ten::ten_env_internal_accessor_t::get_attached_target(ten_env));
   auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
   cmd_result->set_property("detail", "hello world, too");
   ten_env.return_result(std::move(cmd_result), std::move(ext->hello_world_cmd));

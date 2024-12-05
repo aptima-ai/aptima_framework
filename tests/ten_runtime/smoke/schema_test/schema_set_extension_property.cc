@@ -22,8 +22,8 @@ class test_extension : public ten::extension_t {
   explicit test_extension(const std::string &name) : ten::extension_t(name) {}
 
   void on_configure(ten::ten_env_t &ten_env) override {
-    ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    bool rc = ten_env_internal_accessor.init_manifest_from_json(
+    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+        ten_env,
         // clang-format off
                  R"({
                       "type": "extension",

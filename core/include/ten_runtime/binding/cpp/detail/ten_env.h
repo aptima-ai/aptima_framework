@@ -201,25 +201,6 @@ class ten_env_t {
     return rc;
   }
 
-  static void proxy_handle_return_error(::ten_env_t *ten_env, void *user_data,
-                                        ::ten_error_t *err) {
-    TEN_ASSERT(ten_env, "Should not happen.");
-
-    auto *error_handler = static_cast<error_handler_func_t *>(user_data);
-    auto *cpp_ten_env =
-        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
-
-    if (err != nullptr) {
-      error_t cpp_err(err, false);
-      (*error_handler)(*cpp_ten_env, &cpp_err);
-    } else {
-      (*error_handler)(*cpp_ten_env, nullptr);
-    }
-
-    delete error_handler;
-  }
-
   // If the 'cmd' has already been a command in the backward path, a extension
   // could use this API to return the 'cmd' further.
   bool return_result_directly(std::unique_ptr<cmd_result_t> &&cmd,
@@ -736,14 +717,6 @@ class ten_env_t {
     return rc;
   }
 
-  void *get_attached_target(error_t *err = nullptr) {
-    TEN_ASSERT(c_ten_env, "Should not happen.");
-
-    return ten_binding_handle_get_me_in_target_lang(
-        reinterpret_cast<ten_binding_handle_t *>(
-            ten_env_get_attached_target(c_ten_env)));
-  }
-
 #define TEN_ENV_LOG_VERBOSE(ten_env, msg)                                      \
   do {                                                                         \
     (ten_env).log(TEN_LOG_LEVEL_VERBOSE, __func__, __FILE__, __LINE__, (msg)); \
@@ -804,7 +777,34 @@ class ten_env_t {
 
   ::ten_env_t *get_c_ten_env() { return c_ten_env; }
 
+  void *get_attached_target(error_t *err = nullptr) {
+    TEN_ASSERT(c_ten_env, "Should not happen.");
+
+    return ten_binding_handle_get_me_in_target_lang(
+        reinterpret_cast<ten_binding_handle_t *>(
+            ten_env_get_attached_target(c_ten_env)));
+  }
+
   bool init_manifest_from_json(const char *json_str, error_t *err);
+
+  static void proxy_handle_return_error(::ten_env_t *ten_env, void *user_data,
+                                        ::ten_error_t *err) {
+    TEN_ASSERT(ten_env, "Should not happen.");
+
+    auto *error_handler = static_cast<error_handler_func_t *>(user_data);
+    auto *cpp_ten_env =
+        static_cast<ten_env_t *>(ten_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<ten_binding_handle_t *>(ten_env)));
+
+    if (err != nullptr) {
+      error_t cpp_err(err, false);
+      (*error_handler)(*cpp_ten_env, &cpp_err);
+    } else {
+      (*error_handler)(*cpp_ten_env, nullptr);
+    }
+
+    delete error_handler;
+  }
 
   bool send_cmd_internal(std::unique_ptr<cmd_t> &&cmd,
                          result_handler_func_t &&result_handler = nullptr,

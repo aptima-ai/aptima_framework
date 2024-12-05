@@ -172,8 +172,9 @@ class business_app : public ten::app_t {
     // The graph merely describes which extensions are included, nothing more.
     // It does not contain any logic for interaction; all logic for interaction
     // is written in the code.
-    ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    bool rc = ten_env_internal_accessor.init_manifest_from_json(
+
+    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+        ten_env,
         // clang-format off
                  R"({
                       "type": "app",

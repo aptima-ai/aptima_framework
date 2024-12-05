@@ -21,8 +21,8 @@ class test_extension_1 : public ten::extension_t {
   explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
 
   void on_configure(ten::ten_env_t &ten_env) override {
-    ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    bool rc = ten_env_internal_accessor.init_manifest_from_json(
+    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+        ten_env,
         // clang-format off
                  R"({
                       "type": "extension",
@@ -65,8 +65,8 @@ class test_extension_2 : public ten::extension_t {
 
   void on_configure(ten::ten_env_t &ten_env) override {
     // clang-format off
-        ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    bool rc = ten_env_internal_accessor.init_manifest_from_json(
+
+    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(ten_env,
                 R"({
                       "type": "extension",
                       "name": "schema_cmd_result_error__test_extension_2",

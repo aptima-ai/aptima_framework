@@ -12,8 +12,8 @@
 #include <nlohmann/json.hpp>
 #include <thread>
 
+#include "include_internal/ten_runtime/binding/cpp/ten.h"
 #include "include_internal/ten_utils/lib/buf.h"
-#include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/lib/buf.h"
 
 #define DEFAULT_BUF_CAPACITY 512
@@ -648,7 +648,8 @@ void send_ten_msg_with_req_body(
               }
 
               auto *ext = static_cast<http_server_extension_t *>(
-                  ten_env.get_attached_target());
+                  ten::ten_env_internal_accessor_t::get_attached_target(
+                      ten_env));
               assert(ext && "Failed to get the attached extension.");
 
               if (!ext->is_stopping) {
@@ -687,7 +688,8 @@ void send_ten_msg_without_req_body(
               }
 
               auto *ext = static_cast<http_server_extension_t *>(
-                  ten_env.get_attached_target());
+                  ten::ten_env_internal_accessor_t::get_attached_target(
+                      ten_env));
               assert(ext && "Failed to get the attached extension.");
 
               if (!ext->is_stopping) {

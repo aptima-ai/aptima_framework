@@ -25,8 +25,8 @@ class test_extension_1 : public ten::extension_t {
 
   void on_configure(ten::ten_env_t &ten_env) override {
     // clang-format off
-        ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    bool rc = ten_env_internal_accessor.init_manifest_from_json(
+
+    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(ten_env,
                  R"({
                       "type": "extension",
                       "name": "msg_12__extension_1",

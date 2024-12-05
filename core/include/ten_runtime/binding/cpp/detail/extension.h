@@ -55,11 +55,6 @@ class extension_t {
   extension_t &operator=(const extension_t &&) = delete;
   // @}
 
-  // @{
-  // Internal use only.
-  ::ten_extension_t *get_c_extension() const { return c_extension; }
-  // @}
-
  protected:
   explicit extension_t(const std::string &name)
       :  // In order to keep type safety in C++, the type of the 'ten'
@@ -125,6 +120,9 @@ class extension_t {
  private:
   friend class ten_env_t;
   friend class extension_group_t;
+  friend class extension_internal_accessor_t;
+
+  ::ten_extension_t *get_c_extension() const { return c_extension; }
 
   using cpp_extension_on_cmd_func_t =
       void (extension_t:: *)(ten_env_t &, std::unique_ptr<cmd_t>);
@@ -530,6 +528,13 @@ class extension_t {
 
   ::ten_extension_t *c_extension;
   ten_env_t *cpp_ten_env;
+};
+
+class extension_internal_accessor_t {
+ public:
+  static ::ten_extension_t *get_c_extension(const extension_t *extension) {
+    return extension->get_c_extension();
+  }
 };
 
 }  // namespace ten

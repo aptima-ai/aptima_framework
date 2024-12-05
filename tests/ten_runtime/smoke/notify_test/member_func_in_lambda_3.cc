@@ -75,9 +75,7 @@ void outer_thread_main(test_extension *ext,
                        ten::ten_env_proxy_t *ten_env_proxy) {
   while (true) {
     if (ext->trigger) {
-      ten_env_proxy->notify([](ten::ten_env_t &ten_env) {
-        auto *ext =
-            static_cast<test_extension *>(ten_env.get_attached_target());
+      ten_env_proxy->notify([ext](ten::ten_env_t &ten_env) {
         ext->extension_on_notify(ten_env);
       });
 

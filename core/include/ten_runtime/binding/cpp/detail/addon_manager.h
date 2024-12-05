@@ -31,8 +31,10 @@
         ten_path_get_module_path(/* NOLINTNEXTLINE */                            \
                                  (void *)                                        \
                                      ____ten_addon_##NAME##_register_handler__); \
-    ten_addon_register_extension(#NAME, ten_string_get_raw_str(base_dir),        \
-                                 addon_instance->get_c_addon(), register_ctx);   \
+    ten_addon_register_extension(                                                \
+        #NAME, ten_string_get_raw_str(base_dir),                                 \
+        ten::addon_internal_accessor_t::get_c_addon(addon_instance),             \
+        register_ctx);                                                           \
     ten_string_destroy(base_dir);                                                \
   }                                                                              \
   TEN_CONSTRUCTOR(____ten_addon_##NAME##_registrar____) {                        \

@@ -14,6 +14,7 @@
 #include "include_internal/ten_runtime/metadata/manifest.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/addon_manager.h"
+#include "ten_runtime/binding/cpp/detail/addon.h"
 #include "ten_runtime/binding/cpp/detail/ten_env.h"
 #include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/container/list_str.h"
@@ -262,8 +263,8 @@ class py_init_addon_t : public ten::addon_t {
     // can perform. Through a private API, it accesses the C `ten_env_t`,
     // enabling special operations that only TEN framework developers are
     // allowed to execute.
-    ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    ten_env_t *c_ten_env = ten_env_internal_accessor.get_c_ten_env();
+    ten_env_t *c_ten_env =
+        ten::ten_env_internal_accessor_t::get_c_ten_env(ten_env);
     auto *c_app = static_cast<ten_app_t *>(
         c_ten_env->attached_target.addon_host->user_data);
     TEN_ASSERT(c_app, "Should not happen.");
@@ -435,9 +436,10 @@ static void ____ten_addon_py_init_extension_cpp_register_handler____(
       ten_path_get_module_path(/* NOLINTNEXTLINE */
                                (void *)
                                    ____ten_addon_py_init_extension_cpp_register_handler____);
-  ten_addon_register_extension("py_init_extension_cpp",
-                               ten_string_get_raw_str(base_dir),
-                               addon_instance->get_c_addon(), register_ctx);
+  ten_addon_register_extension(
+      "py_init_extension_cpp", ten_string_get_raw_str(base_dir),
+      ten::addon_internal_accessor_t::get_c_addon(addon_instance),
+      register_ctx);
   ten_string_destroy(base_dir);
 }
 

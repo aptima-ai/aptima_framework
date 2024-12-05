@@ -43,12 +43,12 @@ class test_extension_2 : public ten::extension_t {
   explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
 
   void on_configure(ten::ten_env_t &ten_env) override {
-    ten::ten_env_internal_accessor_t ten_env_internal_accessor(&ten_env);
-    bool rc = ten_env_internal_accessor.init_manifest_from_json(
-        "invalid json string");
+    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+        ten_env, "invalid json string");
     ASSERT_EQ(rc, false);
 
-    rc = ten_env_internal_accessor.init_manifest_from_json(
+    rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+        ten_env,
         // clang-format off
                  R"({
                       "type": "extension",

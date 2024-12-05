@@ -43,11 +43,6 @@ class addon_t {
   addon_t &operator=(const addon_t &&) = delete;
   // @}
 
-  // @{
-  // Internal use only.
-  ::ten_addon_t *get_c_addon() const { return c_addon; }
-  // @}
-
  protected:
   virtual void on_init(ten_env_t &ten_env) { ten_env.on_init_done(); }
 
@@ -61,6 +56,10 @@ class addon_t {
  private:
   ten_addon_t *c_addon;
   ten_env_t *cpp_ten_env{};
+
+  friend class addon_internal_accessor_t;
+
+  ::ten_addon_t *get_c_addon() const { return c_addon; }
 
   virtual void on_create_instance_impl(ten_env_t &ten_env, const char *name,
                                        void *context) = 0;
@@ -201,6 +200,13 @@ struct addon_context_t {
 };
 
 }  // namespace
+
+class addon_internal_accessor_t {
+ public:
+  static ::ten_addon_t *get_c_addon(const addon_t *addon) {
+    return addon->get_c_addon();
+  }
+};
 
 class extension_addon_t : public addon_t {
  private:
