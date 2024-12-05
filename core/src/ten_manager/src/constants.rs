@@ -37,3 +37,10 @@ pub const PROPERTY_JSON_FILENAME: &str = "property.json";
 pub const INSTALL_PATHS_APP_PREFIX: &str = "@app";
 
 pub const TEN_PACKAGE_FILE_EXTENSION: &str = "tpkg";
+
+// Maximum number of retry attempts.
+pub const REMOTE_REGISTRY_MAX_RETRIES: u32 = 30;
+// Delay between retries in milliseconds.
+pub const REMOTE_REGISTRY_RETRY_DELAY_MS: u64 = 500;
+// Timeout duration for requests in seconds.
+pub const REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS: u64 = 10;

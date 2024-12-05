@@ -22,6 +22,10 @@ use ten_rust::pkg_info::{
 };
 
 use super::{FoundResult, SearchCriteria};
+use crate::constants::{
+    REMOTE_REGISTRY_MAX_RETRIES, REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS,
+    REMOTE_REGISTRY_RETRY_DELAY_MS,
+};
 use crate::{
     config::TmanConfig, error::TmanError, log::tman_verbose_println,
     registry::found_result::RegistryPackageData,
@@ -90,8 +94,8 @@ async fn get_package_upload_info(
     // Add a new environments field, or perhaps directly upload the content of
     // manifest.json to the cloud store.
 
-    let max_retries = 3;
-    let retry_delay = Duration::from_millis(100);
+    let max_retries = REMOTE_REGISTRY_MAX_RETRIES;
+    let retry_delay = Duration::from_millis(REMOTE_REGISTRY_RETRY_DELAY_MS);
 
     retry_async(tman_config, max_retries, retry_delay, || {
         let base_url = base_url.to_string();
@@ -146,6 +150,9 @@ async fn get_package_upload_info(
             let response = client
                 .post(base_url)
                 .headers(headers)
+                .timeout(Duration::from_secs(
+                    REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS,
+                ))
                 .json(&payload)
                 .send()
                 .await
@@ -184,8 +191,8 @@ async fn upload_package_to_remote(
     package_file_path: &str,
     url: &str,
 ) -> Result<()> {
-    let max_retries = 3;
-    let retry_delay = Duration::from_millis(100);
+    let max_retries = REMOTE_REGISTRY_MAX_RETRIES;
+    let retry_delay = Duration::from_millis(REMOTE_REGISTRY_RETRY_DELAY_MS);
 
     retry_async(tman_config, max_retries, retry_delay, || {
         let client = client.clone();
@@ -241,8 +248,8 @@ async fn ack_of_uploading(
     client: &reqwest::Client,
     resource_id: &str,
 ) -> Result<()> {
-    let max_retries = 3;
-    let retry_delay = Duration::from_millis(100);
+    let max_retries = REMOTE_REGISTRY_MAX_RETRIES;
+    let retry_delay = Duration::from_millis(REMOTE_REGISTRY_RETRY_DELAY_MS);
 
     retry_async(tman_config, max_retries, retry_delay, || {
         let base_url = base_url.to_string();
@@ -260,7 +267,14 @@ async fn ack_of_uploading(
 
             let body = json!({ "resourceId": resource_id });
 
-            let response = client.patch(url).json(&body).send().await;
+            let response = client
+                .patch(url)
+                .timeout(Duration::from_secs(
+                    REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS,
+                ))
+                .json(&body)
+                .send()
+                .await;
 
             match response {
                 Ok(resp) => {
@@ -331,8 +345,8 @@ pub async fn get_package<'a>(
 
     let temp_file = Arc::new(RwLock::new(temp_file));
 
-    let max_retries = 3;
-    let retry_delay = Duration::from_millis(100);
+    let max_retries = REMOTE_REGISTRY_MAX_RETRIES;
+    let retry_delay = Duration::from_millis(REMOTE_REGISTRY_RETRY_DELAY_MS);
 
     let download_complete = Arc::new(RwLock::new(false));
 
@@ -365,6 +379,9 @@ pub async fn get_package<'a>(
             let response = client
                 .get(&url)
                 .headers(headers)
+                .timeout(Duration::from_secs(
+                    REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS,
+                ))
                 .send()
                 .await
                 .with_context(|| {
@@ -464,8 +481,8 @@ pub async fn get_package_list(
     pkg_identity: &PkgIdentity,
     criteria: &SearchCriteria,
 ) -> Result<Vec<FoundResult>> {
-    let max_retries = 3;
-    let retry_delay = Duration::from_millis(100);
+    let max_retries = REMOTE_REGISTRY_MAX_RETRIES;
+    let retry_delay = Duration::from_millis(REMOTE_REGISTRY_RETRY_DELAY_MS);
 
     retry_async(tman_config, max_retries, retry_delay, || {
         let base_url = base_url.to_string();
@@ -486,7 +503,13 @@ pub async fn get_package_list(
                     .append_pair("pageSize", "10")
                     .append_pair("page", &current_page.to_string());
 
-                let response = client.get(url).send().await;
+                let response = client
+                    .get(url)
+                    .timeout(Duration::from_secs(
+                        REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS,
+                    ))
+                    .send()
+                    .await;
 
                 let response = match response {
                     Ok(response) => response,
@@ -563,8 +586,8 @@ pub async fn delete_package(
     version: &Version,
     hash: &str,
 ) -> Result<()> {
-    let max_retries = 3;
-    let retry_delay = Duration::from_millis(100);
+    let max_retries = REMOTE_REGISTRY_MAX_RETRIES;
+    let retry_delay = Duration::from_millis(REMOTE_REGISTRY_RETRY_DELAY_MS);
 
     retry_async(tman_config, max_retries, retry_delay, || {
         let base_url = base_url.to_string();
@@ -619,7 +642,14 @@ pub async fn delete_package(
             }
 
             // Sending the DELETE request.
-            let response = client.delete(url).headers(headers).send().await;
+            let response = client
+                .delete(url)
+                .headers(headers)
+                .timeout(Duration::from_secs(
+                    REMOTE_REGISTRY_REQUEST_TIMEOUT_SECS,
+                ))
+                .send()
+                .await;
 
             match response {
                 Ok(resp) => {

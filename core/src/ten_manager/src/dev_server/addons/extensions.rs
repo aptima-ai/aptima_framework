@@ -23,7 +23,6 @@ use crate::dev_server::{
     DevServerState,
 };
 
-
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 struct DevServerExtensionAddon {
     #[serde(rename = "name")]
