@@ -15,8 +15,13 @@ group("cpp") {
     "hello_world",
     "http_basic",
     "large_result",
-    "standalone_test_cpp",
   ]
+
+  if (ten_enable_package_manager) {
+    # The standalone testing for the C++ extension depends on the Googletest
+    # system package.
+    deps += [ "standalone_test_cpp" ]
+  }
 
   if (ten_enable_ffmpeg_extensions) {
     deps += [

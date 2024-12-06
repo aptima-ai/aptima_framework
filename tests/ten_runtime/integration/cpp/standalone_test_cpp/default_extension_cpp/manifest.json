@@ -7,6 +7,11 @@
       "type": "system",
       "name": "ten_runtime",
       "version": "0.4.2"
+    },
+    {
+      "type": "system",
+      "name": "googletest",
+      "version": "0.1.0"
     }
   ],
   "package": {

@@ -18,18 +18,31 @@ ten_package("default_extension_cpp") {
   ]
 
   sources = [ "src/main.cc" ]
-  include_dirs = [ "//core/include" ]
+  include_dirs = [
+    "include",
+    "include/nlohmann_json",
+  ]
 }
 
 if (ten_enable_standalone_test) {
+  # Note: To perform gtest standalone testing, need to first install the
+  # googletest system package.
+  #
+  # ```shell
+  # tman install system googletest
+  # ```
   ten_package_test("default_extension_cpp_test") {
     package_kind = "extension"
 
-    sources = [ "tests/basic.cc" ]
+    sources = [
+      ".ten/app/ten_packages/system/googletest/src/gtest-all.cc",
+      ".ten/app/ten_packages/system/googletest/src/gtest_main.cc",
+      "tests/basic.cc",
+    ]
 
-    public_deps = [
-      "third_party/googletest",
-      "third_party/googletest:gtest_main",
+    include_dirs = [
+      ".ten/app/ten_packages/system/googletest",
+      ".ten/app/ten_packages/system/googletest/include",
     ]
   }
 }

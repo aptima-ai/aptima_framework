@@ -17,6 +17,12 @@ ten_package_test_prepare_auxiliary_resources("standalone_test_cpp_files") {
   if (enable_sanitizer && !is_clang) {
     resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
   }
+
+  if (ten_enable_package_manager) {
+    # The standalone testing for the C++ extension depends on the Googletest
+    # system package.
+    deps = [ "//third_party/googletest:googletest_system_package" ]
+  }
 }
 
 group("standalone_test_cpp") {

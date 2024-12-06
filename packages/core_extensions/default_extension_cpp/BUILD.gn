@@ -26,7 +26,6 @@ ten_package("default_extension_cpp") {
     "src/main.cc",
     "src/main.cc.tent",
     "tests",
-    "third_party",
   ]
 
   deps = [ ":copy_nlohmann_headers_for_default_extension_cpp" ]
