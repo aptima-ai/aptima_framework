@@ -59,3 +59,20 @@ To see updated changes during development, follow these steps:
 1. Stop the server
 2. Save changes to the `.env` file
 3. Run `source .env` to refresh the environment variables
+
+## Line-ending Issues on Windows
+
+Windows users occasionally encounter line-ending issues, which may result in errors like "agent/bin/start is not a valid directory".
+
+To fix this:
+1. Configure Git to automatically convert line endings to LF on Windows:
+
+{% code title=">_ Terminal" %}
+```bash
+git config --global core.autocrlf false
+```
+{% endcode %}
+
+2. Re-clone the repository
+
+Alternatively, you can download and extract the ZIP file directly from GitHub.
