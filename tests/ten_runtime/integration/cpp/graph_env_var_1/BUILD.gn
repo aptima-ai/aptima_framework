@@ -58,9 +58,6 @@ ten_package_test_prepare_auxiliary_resources("graph_env_var_1_app_test_files") {
     "__init__.py",
     "test_case.py",
   ]
-  if (enable_sanitizer && !is_clang) {
-    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
-  }
 }
 
 group("graph_env_var_1") {

@@ -7,7 +7,7 @@ import os
 import sys
 import pytest
 from sys import stdout
-from .common import http
+from .common import http, build_config, build_pkg
 
 
 def http_request():
@@ -86,7 +86,27 @@ def test_send_recv_image_python():
             base_path, "send_recv_image_python_app/lib"
         )
 
-    app_root_path = os.path.join(base_path, "send_recv_image_python_app")
+    source_pkg_name = "send_recv_image_python_app"
+    app_root_path = os.path.join(base_path, source_pkg_name)
+    app_language = "python"
+
+    build_config_args = build_config.parse_build_config(
+        os.path.join(root_dir, "tgn_args.txt"),
+    )
+
+    if build_config_args.ten_enable_integration_tests_prebuilt is False:
+        print('Assembling and building package "{}".'.format(source_pkg_name))
+
+        rc = build_pkg.prepare_and_build_app(
+            build_config_args,
+            root_dir,
+            base_path,
+            app_root_path,
+            source_pkg_name,
+            app_language,
+        )
+        if rc != 0:
+            assert False, "Failed to build package."
 
     tman_install_cmd = [
         os.path.join(root_dir, "ten_manager/bin/tman"),
@@ -114,7 +134,7 @@ def test_send_recv_image_python():
     bootstrap_process.wait()
 
     if sys.platform == "linux":
-        if os.path.exists(os.path.join(base_path, "use_asan_lib_marker")):
+        if build_config_args.enable_sanitizer:
             libasan_path = os.path.join(
                 base_path,
                 "send_recv_image_python_app/ten_packages/system/ten_runtime/lib/libasan.so",
@@ -161,3 +181,10 @@ def test_send_recv_image_python():
         print("The exit code of send_recv_image_python: ", exit_code)
 
         assert exit_code == 0
+
+        if build_config_args.ten_enable_integration_tests_prebuilt is False:
+            source_root_path = os.path.join(base_path, source_pkg_name)
+
+            # Testing complete. If builds are only created during the testing
+            # phase, we  can clear the build results to save disk space.
+            build_pkg.cleanup(source_root_path, app_root_path)

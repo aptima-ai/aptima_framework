@@ -16,10 +16,6 @@
 TEN_RUNTIME_PRIVATE_API void ten_py_initialize_with_config(
     const char *program, ten_list_t *module_search_path);
 
-TEN_RUNTIME_PRIVATE_API void ten_py_set_program_name(const char *program_name);
-
-TEN_RUNTIME_PRIVATE_API void ten_py_set_argv(int argc, char **argv);
-
 TEN_RUNTIME_PRIVATE_API void ten_py_run_file(const char *file_path);
 
 // This function is meant to ensure that the current thread is ready to call

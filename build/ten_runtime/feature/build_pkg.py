@@ -178,30 +178,7 @@ def build_extension(args: ArgumentInfo) -> int:
     return returncode
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--pkg-src-root-dir", type=str, required=True)
-    parser.add_argument("--pkg-run-root-dir", type=str, required=False)
-    parser.add_argument("--tg-timestamp-proxy-file", type=str, required=True)
-    parser.add_argument("--pkg-name", type=str, required=True)
-    parser.add_argument("--pkg-language", type=str, required=True)
-    parser.add_argument("--os", type=str, required=True)
-    parser.add_argument("--cpu", type=str, required=True)
-    parser.add_argument("--build", type=str, required=True)
-    parser.add_argument("--tgn-path", type=str, required=False)
-    parser.add_argument("--is-clang", action=argparse.BooleanOptionalAction)
-    parser.add_argument(
-        "--enable-sanitizer", action=argparse.BooleanOptionalAction
-    )
-    parser.add_argument("--vs-version", type=str, required=False)
-    parser.add_argument(
-        "--log-level", type=int, required=True, help="specify log level"
-    )
-
-    arg_info = ArgumentInfo()
-    args = parser.parse_args(namespace=arg_info)
-
+def build(args: ArgumentInfo) -> int:
     if args.log_level > 0:
         msg = (
             f"> Start to build package({args.pkg_name})"
@@ -227,18 +204,51 @@ if __name__ == "__main__":
 
         # Success to build the app, update the stamp file to represent this
         # fact.
-        timestamp_proxy.touch_timestamp_proxy_file(args.tg_timestamp_proxy_file)
+        if args.tg_timestamp_proxy_file:
+            timestamp_proxy.touch_timestamp_proxy_file(
+                args.tg_timestamp_proxy_file
+            )
 
         if args.log_level > 0:
             print(f"Build {pkg_type}({args.pkg_name}) success")
 
     except Exception as e:
         returncode = 1
-        timestamp_proxy.remove_timestamp_proxy_file(
-            args.tg_timestamp_proxy_file
-        )
+        if args.tg_timestamp_proxy_file:
+            timestamp_proxy.remove_timestamp_proxy_file(
+                args.tg_timestamp_proxy_file
+            )
         print(f"Build package({args.pkg_name}) failed: {repr(e)}")
 
     finally:
         os.chdir(origin_wd)
-        sys.exit(returncode)
+
+    return returncode
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--pkg-src-root-dir", type=str, required=True)
+    parser.add_argument("--pkg-run-root-dir", type=str, required=False)
+    parser.add_argument("--tg-timestamp-proxy-file", type=str, required=False)
+    parser.add_argument("--pkg-name", type=str, required=True)
+    parser.add_argument("--pkg-language", type=str, required=True)
+    parser.add_argument("--os", type=str, required=True)
+    parser.add_argument("--cpu", type=str, required=True)
+    parser.add_argument("--build", type=str, required=True)
+    parser.add_argument("--tgn-path", type=str, required=False)
+    parser.add_argument("--is-clang", action=argparse.BooleanOptionalAction)
+    parser.add_argument(
+        "--enable-sanitizer", action=argparse.BooleanOptionalAction
+    )
+    parser.add_argument("--vs-version", type=str, required=False)
+    parser.add_argument(
+        "--log-level", type=int, required=True, help="specify log level"
+    )
+
+    arg_info = ArgumentInfo()
+    args = parser.parse_args(namespace=arg_info)
+
+    return_code = build(arg_info)
+    sys.exit(return_code)

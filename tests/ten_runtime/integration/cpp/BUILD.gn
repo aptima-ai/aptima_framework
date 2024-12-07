@@ -23,7 +23,7 @@ group("cpp") {
     deps += [ "standalone_test_cpp" ]
   }
 
-  if (ten_enable_ffmpeg_extensions) {
+  if (ten_enable_ffmpeg_extensions && ten_enable_integration_tests_prebuilt) {
     deps += [
       "ffmpeg_basic",
       "ffmpeg_bypass",

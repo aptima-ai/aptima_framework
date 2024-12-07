@@ -42,9 +42,6 @@ ten_package_test_prepare_auxiliary_resources(
     "test_case.py",
     "test_data",
   ]
-  if (enable_sanitizer) {
-    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
-  }
 }
 
 group("send_recv_image_python") {

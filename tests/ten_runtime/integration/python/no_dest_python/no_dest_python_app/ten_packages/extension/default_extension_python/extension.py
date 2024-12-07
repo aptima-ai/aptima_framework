@@ -14,7 +14,6 @@ from ten import (
     VideoFrame,
     StatusCode,
     CmdResult,
-    LogLevel,
     TenError,
 )
 

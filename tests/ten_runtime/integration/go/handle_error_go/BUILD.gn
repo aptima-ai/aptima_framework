@@ -51,9 +51,6 @@ ten_package_test_prepare_auxiliary_resources("handle_error_go_app_test_files") {
     "__init__.py",
     "test_case.py",
   ]
-  if (enable_sanitizer && !is_clang) {
-    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
-  }
 }
 
 group("handle_error_go") {

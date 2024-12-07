@@ -44,11 +44,16 @@ group("python") {
 
     if (ten_enable_python_binding && ten_enable_go_binding) {
       deps += [
-        "go_app_cythonize",
-        "go_app_partially_cythonize",
         "go_app_python",
         "unused_addon_python",
       ]
+
+      if (ten_enable_integration_tests_prebuilt) {
+        deps += [
+          "go_app_cythonize",
+          "go_app_partially_cythonize",
+        ]
+      }
     }
   }
 

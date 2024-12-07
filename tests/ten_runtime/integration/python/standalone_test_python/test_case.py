@@ -6,6 +6,7 @@ import subprocess
 import os
 import sys
 from sys import stdout
+from .common import build_config
 
 
 def test_standalone_test_python():
@@ -46,7 +47,11 @@ def test_standalone_test_python():
     my_env["PYTHONDEVMODE"] = "1"
 
     if sys.platform == "linux":
-        if os.path.exists(os.path.join(base_path, "use_asan_lib_marker")):
+        build_config_args = build_config.parse_build_config(
+            os.path.join(root_dir, "tgn_args.txt"),
+        )
+
+        if build_config_args.enable_sanitizer:
             libasan_path = os.path.join(
                 base_path,
                 (

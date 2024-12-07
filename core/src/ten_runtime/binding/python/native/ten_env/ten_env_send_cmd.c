@@ -44,6 +44,20 @@ static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
   return info;
 }
 
+static void ten_env_notify_send_cmd_info_destroy(
+    ten_env_notify_send_cmd_info_t *info) {
+  TEN_ASSERT(info, "Invalid argument.");
+
+  if (info->c_cmd) {
+    ten_shared_ptr_destroy(info->c_cmd);
+    info->c_cmd = NULL;
+  }
+
+  info->py_cb_func = NULL;
+
+  TEN_FREE(info);
+}
+
 static void proxy_send_xxx_callback(ten_env_t *ten_env,
                                     ten_shared_ptr_t *cmd_result,
                                     void *callback_info, ten_error_t *err) {
@@ -102,20 +116,6 @@ static void proxy_send_xxx_callback(ten_env_t *ten_env,
   ten_py_gil_state_release(prev_state);
 }
 
-static void ten_env_notify_send_cmd_info_destroy(
-    ten_env_notify_send_cmd_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
-
-  if (info->c_cmd) {
-    ten_shared_ptr_destroy(info->c_cmd);
-    info->c_cmd = NULL;
-  }
-
-  info->py_cb_func = NULL;
-
-  TEN_FREE(info);
-}
-
 static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(user_data, "Invalid argument.");
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
@@ -165,6 +165,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
       TEN_ASSERT(!err_occurred, "Should not happen.");
 
       Py_XDECREF(arglist);
+      Py_XDECREF(notify_info->py_cb_func);
 
       ten_py_error_invalidate(py_err);
 
@@ -216,6 +217,10 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_cmd, notify_info, false,
                             &err)) {
+    if (cb_func) {
+      Py_XDECREF(cb_func);
+    }
+
     ten_env_notify_send_cmd_info_destroy(notify_info);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to send cmd.");

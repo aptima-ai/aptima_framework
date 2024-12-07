@@ -74,24 +74,6 @@ void ten_py_initialize_with_config(const char *program,
 
 int ten_py_finalize(void) { return Py_FinalizeEx(); }
 
-void ten_py_set_program_name(const char *program_name) {
-  Py_SetProgramName(Py_DecodeLocale(program_name, NULL));
-}
-
-void ten_py_set_argv(int argc, char **argv) {
-  // Convert char** to wchar_t**
-  wchar_t **argv_wide = PyMem_Malloc(sizeof(wchar_t *) * argc);
-  for (int i = 0; i < argc; i++) {
-    argv_wide[i] = Py_DecodeLocale(argv[i], NULL);
-  }
-
-  PySys_SetArgv(argc, argv_wide);
-
-  for (int i = 0; i < argc; i++) {
-    PyMem_Free(argv_wide[i]);
-  }
-}
-
 void ten_py_add_paths_to_sys(ten_list_t *paths) {
   PyObject *sys_module = PyImport_ImportModule("sys");
   if (sys_module == NULL) {

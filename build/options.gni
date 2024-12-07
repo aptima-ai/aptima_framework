@@ -18,4 +18,6 @@ declare_args() {
   ten_enable_package_manager = true
 
   ten_enable_cargo_clean = false
+
+  ten_enable_integration_tests_prebuilt = false
 }

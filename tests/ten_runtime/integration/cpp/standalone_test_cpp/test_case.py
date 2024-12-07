@@ -38,7 +38,7 @@ def test_standalone_test_cpp():
     assert tman_install_rc == 0
 
     build_config_args = build_config.parse_build_config(
-        os.path.join(root_dir, "args.gn"),
+        os.path.join(root_dir, "tgn_args.txt"),
     )
 
     # Step 2:

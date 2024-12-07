@@ -37,9 +37,6 @@ ten_package_test_prepare_auxiliary_resources(
     "__init__.py",
     "test_case.py",
   ]
-  if (enable_sanitizer) {
-    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
-  }
 }
 
 group("async_extension_basic_python") {

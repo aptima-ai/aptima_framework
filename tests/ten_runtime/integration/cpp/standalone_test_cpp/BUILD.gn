@@ -9,17 +9,14 @@ import("//build/ten_runtime/ten.gni")
 
 ten_package_test_prepare_auxiliary_resources("standalone_test_cpp_files") {
   resources = [
-    "//tests/ten_runtime/integration/common/build_config.py=>common/build_config.py",
+    "//tests/ten_runtime/integration/common=>common",
     "//tests/ten_runtime/integration/cpp/standalone_test_cpp/default_extension_cpp=>default_extension_cpp",
     "__init__.py",
     "test_case.py",
   ]
-  if (enable_sanitizer && !is_clang) {
-    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
-  }
 
   if (ten_enable_package_manager) {
-    # The standalone testing for the C++ extension depends on the Googletest
+    # The standalone testing for the C++ extension depends on the googletest
     # system package.
     deps = [ "//third_party/googletest:googletest_system_package" ]
   }

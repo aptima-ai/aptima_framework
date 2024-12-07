@@ -38,6 +38,19 @@ jobs:
           python3 tools/version/update_version_in_ten_framework.py
           python3 tools/version/check_version_in_ten_framework.py
 
+      - name: Set ulimit and sysctl
+        run: |
+          # Because there are concurrent test cases which involves many
+          # concurrent socket connections, we need to enlarge the maximum number
+          # of the opened file descriptor.
+          ulimit -n 102400
+
+          # Because there are concurrent test cases (in 'smoke' and
+          # 'integration') which will create many concurrent connections
+          # simutaneously, we increase the TCP listening backlog value to 8192.
+          sysctl -w net.core.somaxconn=8192
+        shell: bash
+
       - name: Build
         run: |
           export PATH=$(pwd)/core/ten_gn:$PATH
@@ -45,7 +58,7 @@ jobs:
           go env -w GOFLAGS="-buildvcs=false"
           go1.20.12 download
           rustup default nightly
-          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_integration_tests=false ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
+          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
           tgn build linux x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
@@ -125,6 +138,17 @@ jobs:
         run: |
           cd out/linux/x64/
           pytest -s tests/ten_manager/
+
+      - name: Run tests (ten_runtime integration tests)
+        env:
+          ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          export PATH=$(pwd)/core/ten_gn:$PATH
+          cd out/linux/x64/
+          pytest -s tests/ten_runtime/integration/ || { echo "ten_runtime integration test failed"; exit 1; }
 
       - name: Update supports before upload or publish
         run: |

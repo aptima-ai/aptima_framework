@@ -140,6 +140,7 @@ static void ten_env_proxy_notify_send_video_frame(ten_env_t *ten_env,
       TEN_ASSERT(!err_occurred, "Should not happen.");
 
       Py_XDECREF(arglist);
+      Py_XDECREF(notify_info->py_cb_func);
 
       ten_py_error_invalidate(py_err);
 
@@ -186,6 +187,10 @@ PyObject *ten_py_ten_env_send_video_frame(PyObject *self, PyObject *args) {
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_video_frame, notify_info,
                             false, &err)) {
+    if (cb_func) {
+      Py_XDECREF(cb_func);
+    }
+
     ten_env_notify_send_video_frame_info_destroy(notify_info);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to send video_frame.");

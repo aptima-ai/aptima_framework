@@ -31,12 +31,10 @@ ten_package_test_prepare_app("exit_signal_app") {
 
 ten_package_test_prepare_auxiliary_resources("exit_signal_app_test_files") {
   resources = [
+    "//tests/ten_runtime/integration/common=>common",
     "__init__.py",
     "test_case.py",
   ]
-  if (enable_sanitizer && !is_clang) {
-    resources += [ "//tests/ten_runtime/integration/tools/use_asan_lib_marker=>use_asan_lib_marker" ]
-  }
 }
 
 group("exit_signal") {
