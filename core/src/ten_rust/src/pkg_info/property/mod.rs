@@ -102,6 +102,19 @@ pub struct TenInProperty {
 impl TenInProperty {
     pub fn validate_and_complete(&mut self) -> Result<()> {
         if let Some(graphs) = &mut self.predefined_graphs {
+            {
+                let mut seen_graph_names = std::collections::HashSet::new();
+                for graph in graphs.iter() {
+                    if !seen_graph_names.insert(&graph.name) {
+                        return Err(anyhow::anyhow!(
+                            "Duplicate predefined graph name detected: '{}'. \
+                            Each predefined_graph must have a unique 'name'.",
+                            graph.name
+                        ));
+                    }
+                }
+            }
+
             for graph in graphs {
                 graph.validate_and_complete()?;
             }
