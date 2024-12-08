@@ -90,6 +90,9 @@ def test_cpp_app_multi_process_python():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     bootstrap_cmd = os.path.join(
         base_path, "cpp_app_multi_process_python_app/bin/bootstrap"
@@ -117,6 +120,10 @@ def test_cpp_app_multi_process_python():
         base_path, "cpp_app_multi_process_python_app/bin/start"
     )
 
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -128,7 +135,7 @@ def test_cpp_app_multi_process_python():
     is_started = http.is_app_started("127.0.0.1", 8002, 30)
     if not is_started:
         print(
-            "The cpp_app_multi_process_python is not started after 30 seconds."
+            "The cpp_app_multi_process_python is not started after 10 seconds."
         )
 
         server.kill()
@@ -136,7 +143,7 @@ def test_cpp_app_multi_process_python():
         print("The exit code of cpp_app_multi_process_python: ", exit_code)
 
         assert exit_code == 0
-        assert 0
+        assert False
 
         return
 

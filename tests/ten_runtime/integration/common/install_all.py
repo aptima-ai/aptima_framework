@@ -21,9 +21,6 @@ class ArgumentInfo(argparse.Namespace):
 
 
 def main(args: ArgumentInfo) -> int:
-    if args.log_level > 0:
-        print(f"> Install_all: {args.pkg_src_root_dir}")
-
     origin_wd = os.getcwd()
     returncode = 0
 

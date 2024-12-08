@@ -61,5 +61,5 @@ def run_cmd_with_retry(cmd: list[str], cnt: int = 10):
             return rc, output
         else:
             time.sleep(1)
-    assert 0
+    assert False
     return []

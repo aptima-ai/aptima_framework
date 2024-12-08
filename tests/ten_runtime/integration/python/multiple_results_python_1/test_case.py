@@ -90,6 +90,9 @@ def test_multiple_results_python_1():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     bootstrap_cmd = os.path.join(
         base_path, "multiple_results_python_1_app/bin/bootstrap"
@@ -114,6 +117,10 @@ def test_multiple_results_python_1():
         base_path, "multiple_results_python_1_app/bin/start"
     )
 
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -124,14 +131,14 @@ def test_multiple_results_python_1():
 
     is_started = http.is_app_started("127.0.0.1", 8002, 30)
     if not is_started:
-        print("The multiple_results_python_1 is not started after 30 seconds.")
+        print("The multiple_results_python_1 is not started after 10 seconds.")
 
         server.kill()
         exit_code = server.wait()
         print("The exit code of multiple_results_python_1: ", exit_code)
 
         assert exit_code == 0
-        assert 0
+        assert False
 
         return
 

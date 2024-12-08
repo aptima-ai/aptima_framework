@@ -35,8 +35,10 @@ def test_standalone_test_python():
         env=my_env,
         cwd=extension_root_path,
     )
-    tman_install_rc = tman_install_process.wait()
-    assert tman_install_rc == 0
+    tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     # Step 2:
     #

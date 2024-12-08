@@ -53,6 +53,9 @@ def test_graph_env_var_2_app():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     if sys.platform == "win32":
         my_env["PATH"] = (
@@ -102,6 +105,10 @@ def test_graph_env_var_2_app():
             if os.path.exists(libasan_path):
                 my_env["LD_PRELOAD"] = libasan_path
 
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -112,7 +119,7 @@ def test_graph_env_var_2_app():
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8001, 10)
     if not is_started:
-        print("The graph_env_var_2_app is not started after 30 seconds.")
+        print("The graph_env_var_2_app is not started after 10 seconds.")
 
         server.kill()
         exit_code = server.wait()
@@ -122,7 +129,7 @@ def test_graph_env_var_2_app():
         )
 
         assert exit_code == 0
-        assert 0
+        assert False
 
         return
 

@@ -53,6 +53,9 @@ def test_two_extension_on_group_cmd_go():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     if sys.platform == "win32":
         print("test_two_extension_on_group_cmd_go doesn't support win32")
@@ -87,6 +90,15 @@ def test_two_extension_on_group_cmd_go():
     client_cmd = os.path.join(
         base_path, "two_extension_one_group_cmd_go_app_client"
     )
+
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
+    if not os.path.isfile(client_cmd):
+        print(f"Client command '{client_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -107,7 +119,7 @@ def test_two_extension_on_group_cmd_go():
         print("The exit code of two_extension_one_group_cmd_go: ", exit_code)
 
         assert exit_code == 0
-        assert 0
+        assert False
 
         return
 

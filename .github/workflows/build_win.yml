@@ -74,9 +74,6 @@ jobs:
           out/win/x64/tests/standalone/ten_runtime_smoke_test
 
       - name: Run Tests (ten_rust standalone tests)
-        env:
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           cd out/win/x64/tests/standalone/ten_rust
 
@@ -87,9 +84,6 @@ jobs:
           ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
 
       - name: Run Tests (ten_manager standalone tests)
-        env:
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           cd out/win/x64/tests/standalone/ten_manager
 
@@ -107,9 +101,18 @@ jobs:
           python .github/tools/setup_pytest_dependencies.py
 
       - name: Run Tests (ten_manager pytest tests)
-        env:
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           cd out/win/x64/
           pytest -s tests/ten_manager/
+
+      - name: Run Tests (ten_runtime pytest tests)
+        env:
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          $ENV:PATH += ";$PWD/core/ten_gn"
+          cd out/win/x64/
+          pytest -s tests/ten_runtime/integration/
+      #   continue-on-error: true
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3

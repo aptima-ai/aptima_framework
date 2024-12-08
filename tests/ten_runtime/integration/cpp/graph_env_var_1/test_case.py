@@ -53,6 +53,9 @@ def test_graph_env_var_1_app():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     if sys.platform == "win32":
         my_env["PATH"] = (
@@ -102,6 +105,10 @@ def test_graph_env_var_1_app():
 
     my_env["TEST_ENV_VAR"] = "set_from_real_env_var"
 
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -112,16 +119,15 @@ def test_graph_env_var_1_app():
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8001, 10)
     if not is_started:
-        print("The graph_env_var_1_app is not started after 30 seconds.")
+        print("The graph_env_var_1_app is not started after 10 seconds.")
 
         server.kill()
-        exit_code = server.wait()
-        print("The exit code of graph_env_var_1_app: ", exit_code)
+        server_rc = server.wait()
 
-        assert exit_code == 0
-        assert 0
+        print("The exit code of graph_env_var_1_app: ", server_rc)
 
-        return
+        assert server_rc == 0, f"Server exited with code {server_rc}"
+        assert False
 
     client = subprocess.Popen(
         client_cmd, stdout=stdout, stderr=subprocess.STDOUT, env=my_env
@@ -139,8 +145,8 @@ def test_graph_env_var_1_app():
     server_rc = server.wait()
     print("server: ", server_rc)
     print("client: ", client_rc)
-    assert server_rc == 0
-    assert client_rc == 0
+    assert server_rc == 0, f"Server exited with code {server_rc}"
+    assert client_rc == 0, f"Client exited with code {client_rc}"
 
     if build_config_args.ten_enable_integration_tests_prebuilt is False:
         source_root_path = os.path.join(base_path, source_pkg_name)

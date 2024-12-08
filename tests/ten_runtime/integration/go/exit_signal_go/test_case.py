@@ -1,5 +1,5 @@
 """
-Test exit_signal.
+Test exit_signal_go.
 """
 
 import json
@@ -9,17 +9,19 @@ import sys
 from sys import stdout
 import signal
 import time
+import pytest
 from .common import build_config, build_pkg
 
 
-def start_app():
-    """Test client and app server."""
+@pytest.fixture(scope="session", autouse=True)
+def build_and_install_app():
+    """Session-scoped fixture to build and install the application once."""
     base_path = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.join(base_path, "../../../../../")
 
     my_env = os.environ.copy()
 
-    source_pkg_name = "exit_signal_app"
+    source_pkg_name = "exit_signal_go_app"
     app_root_path = os.path.join(base_path, source_pkg_name)
     app_language = "go"
 
@@ -27,10 +29,9 @@ def start_app():
         os.path.join(root_dir, "tgn_args.txt"),
     )
 
-    if build_config_args.ten_enable_integration_tests_prebuilt is False:
-        print('Assembling and building package "{}".'.format(source_pkg_name))
+    if not build_config_args.ten_enable_integration_tests_prebuilt:
+        print(f'Assembling and building package "{source_pkg_name}".')
 
-        source_root_path = os.path.join(base_path, source_pkg_name)
         rc = build_pkg.prepare_and_build_app(
             build_config_args,
             root_dir,
@@ -40,7 +41,7 @@ def start_app():
             app_language,
         )
         if rc != 0:
-            assert False, "Failed to build package."
+            pytest.fail("Failed to build package.")
 
     tman_install_cmd = [
         os.path.join(root_dir, "ten_manager/bin/tman"),
@@ -57,19 +58,22 @@ def start_app():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        pytest.fail("Failed to install package.")
 
+    # Skip tests on unsupported platforms
     if sys.platform == "win32":
-        print("test_exit_signal doesn't support win32")
-        assert False
-    elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        pytest.skip("test_exit_signal doesn't support win32")
+
+    # Set environment variables based on platform
+    if sys.platform == "darwin":
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
-            base_path, "exit_signal_app/lib"
+            base_path, "exit_signal_go_app/lib"
         )
     else:
-        # client depends on some libraries in the TEN app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
-            base_path, "exit_signal_app/lib"
+            base_path, "exit_signal_go_app/lib"
         )
 
         if (
@@ -78,59 +82,80 @@ def start_app():
         ):
             libasan_path = os.path.join(
                 base_path,
-                "exit_signal_app/ten_packages/system/ten_runtime/lib/libasan.so",
+                "exit_signal_go_app/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
                 my_env["LD_PRELOAD"] = libasan_path
 
-    server_cmd = os.path.join(base_path, "exit_signal_app/bin/start")
-    server = subprocess.Popen(
+    # Store environment and paths for use in starting the server
+    return {
+        "env": my_env,
+        "app_root_path": app_root_path,
+        "server_cmd": os.path.join(base_path, "exit_signal_go_app/bin/start"),
+    }
+
+
+@pytest.fixture
+def server(build_and_install_app):
+    """Function-scoped fixture to start the server for each test."""
+    env = build_and_install_app["env"]
+    app_root_path = build_and_install_app["app_root_path"]
+    server_cmd = build_and_install_app["server_cmd"]
+
+    if not os.path.isfile(server_cmd):
+        pytest.fail(f"Server command '{server_cmd}' does not exist.")
+
+    server_process = subprocess.Popen(
         server_cmd,
         stdout=stdout,
         stderr=subprocess.STDOUT,
-        env=my_env,
+        env=env,
         cwd=app_root_path,
     )
 
-    # Wait for the extensions to start.
+    # Wait for the server to start
     time.sleep(3)
 
-    return server
+    yield server_process
+
+    # Teardown: Ensure the server is terminated
+    if server_process.poll() is None:
+        server_process.terminate()
+        try:
+            server_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            server_process.kill()
 
 
 def check_if_extension_stops():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    app_dir = os.path.join(base_dir, "exit_signal_app")
+    app_dir = os.path.join(base_dir, "exit_signal_go_app")
     exit_file = os.path.join(app_dir, "exit_signal.json")
     if not os.path.exists(exit_file):
-        assert False
+        pytest.fail("Exit file does not exist.")
 
     with open(exit_file, "r") as f:
         data = json.load(f)
         assert "extension" in data and data["extension"] == "exit_signal"
 
 
-def test_sigint():
-    server = start_app()
-
-    # Send Ctrl+C to stop the server.
+def test_sigint(server):
+    """Test sending SIGINT to the server."""
     server.send_signal(signal.SIGINT)
 
     server_rc = server.wait()
-    print("server: ", server_rc)
+    print("server:", server_rc)
     assert server_rc == 0
 
     check_if_extension_stops()
 
 
-def test_sigterm():
-    server = start_app()
-
-    # kill -15 <pid>
+def test_sigterm(server):
+    """Test sending SIGTERM to the server."""
     server.send_signal(signal.SIGTERM)
 
     server_rc = server.wait()
-    print("server: ", server_rc)
+    print("server:", server_rc)
     assert server_rc == 0
 
     check_if_extension_stops()

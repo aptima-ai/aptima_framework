@@ -49,7 +49,7 @@ def test_tman_dependency_resolve():
     )
     if returncode != 0:
         print(output_text)
-        assert 0
+        assert False
 
     assert get_installed_extensions_count(app_dir) == 3
 
@@ -65,7 +65,7 @@ def test_tman_dependency_resolve():
     )
     if returncode != 0:
         print(output_text)
-        assert 0
+        assert False
 
     assert get_installed_extensions_count(app_dir) == 3
 

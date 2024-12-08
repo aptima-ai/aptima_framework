@@ -101,6 +101,6 @@ def test_tman_install():
     )
     if returncode != 0:
         print(output_text)
-        assert 0
+        assert False
 
     analyze_resolve_result(mock_app_path)

@@ -8,6 +8,7 @@ import argparse
 import json
 import os
 import sys
+import platform
 from datetime import datetime
 from build.scripts import fs_utils, cmd_exec, timestamp_proxy
 
@@ -22,7 +23,6 @@ class ArgumentInfo(argparse.Namespace):
         self.os: str
         self.cpu: str
         self.build: str
-        self.tgn_path: str
         self.is_clang: bool
         self.enable_sanitizer: bool
         self.vs_version: str
@@ -50,16 +50,17 @@ def construct_extra_args_for_cpp_ag(args: ArgumentInfo) -> list[str]:
 
 def build_cpp_app(args: ArgumentInfo) -> int:
     # tgn gen ...
-    cmd = [f"{args.tgn_path}", "gen", args.os, args.cpu, args.build]
+    cmd = ["tgn", "gen", args.os, args.cpu, args.build]
     cmd += construct_extra_args_for_cpp_ag(args)
 
     returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
 
     if returncode:
-        raise Exception("Failed to build c++ app")
+        print(f"Failed to build c++ app: {output}")
+        return 1
 
     # tgn build ...
-    cmd = [f"{args.tgn_path}", "build", args.os, args.cpu, args.build]
+    cmd = ["tgn", "build", args.os, args.cpu, args.build]
 
     t1 = datetime.now()
     returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
@@ -71,7 +72,8 @@ def build_cpp_app(args: ArgumentInfo) -> int:
         print(f"Build c++ app({args.pkg_name}) costs {duration} seconds.")
 
     if returncode:
-        raise Exception("Failed to build c++ app")
+        print(f"Failed to build c++ app: {output}")
+        return 1
 
     # Copy the build result to the specified run folder.
     fs_utils.copy(
@@ -85,23 +87,32 @@ def build_cpp_app(args: ArgumentInfo) -> int:
 
 def build_cpp_extension(args: ArgumentInfo) -> int:
     # tgn gen ...
-    cmd = [f"{args.tgn_path}", "gen", args.os, args.cpu, args.build]
+    cmd = ["tgn", "gen", args.os, args.cpu, args.build]
     cmd += construct_extra_args_for_cpp_ag(args)
 
-    returncode, _ = cmd_exec.run_cmd(cmd, args.log_level)
+    returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
 
     if returncode:
-        raise Exception("Failed to build c++ extension.")
+        print(f"Failed to build c++ extension: {output}")
+        return 1
 
     # tgn build ...
-    cmd = [f"{args.tgn_path}", "build", args.os, args.cpu, args.build]
+    cmd = ["tgn", "build", args.os, args.cpu, args.build]
 
-    returncode, _ = cmd_exec.run_cmd(cmd, args.log_level)
+    returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
 
     if returncode:
-        raise Exception("Failed to build c++ extension.")
+        print(f"Failed to build c++ extension: {output}")
+        return 1
 
     return returncode
+
+
+def is_mac_arm64() -> bool:
+    return (
+        platform.system().lower() == "darwin"
+        and platform.machine().lower() == "arm64"
+    )
 
 
 def build_go_app(args: ArgumentInfo) -> int:
@@ -116,7 +127,8 @@ def build_go_app(args: ArgumentInfo) -> int:
     if args.log_level > 0:
         cmd += ["--verbose"]
 
-    if args.enable_sanitizer:
+    # `-asan` is not supported by go compiler on darwin/arm64.
+    if args.enable_sanitizer and not is_mac_arm64():
         cmd += ["-asan"]
 
     envs = os.environ.copy()
@@ -139,8 +151,8 @@ def build_go_app(args: ArgumentInfo) -> int:
         print(f"Build go app({args.pkg_name}) costs {duration} seconds.")
 
     if returncode:
-        print(output)
-        raise Exception("Failed to build go app.")
+        print(f"Failed to build go app: {output}")
+        return 1
 
     return returncode
 
@@ -162,7 +174,8 @@ def build_app(args: ArgumentInfo) -> int:
     elif args.pkg_language == "python":
         returncode = 0
     else:
-        raise Exception(f"Unknown app language: {args.pkg_language}")
+        print(f"Unknown app language: {args.pkg_language}")
+        returncode = 1
 
     return returncode
 
@@ -182,7 +195,7 @@ def build(args: ArgumentInfo) -> int:
     if args.log_level > 0:
         msg = (
             f"> Start to build package({args.pkg_name})"
-            " in {args.pkg_src_root_dir}"
+            f" in {args.pkg_src_root_dir}"
         )
         print(msg)
 
@@ -200,7 +213,8 @@ def build(args: ArgumentInfo) -> int:
             returncode = 0
 
         if returncode > 0:
-            raise Exception(f"Failed to build {pkg_type}({args.pkg_name})")
+            print(f"Failed to build {pkg_type}({args.pkg_name})")
+            return 1
 
         # Success to build the app, update the stamp file to represent this
         # fact.
@@ -237,7 +251,6 @@ if __name__ == "__main__":
     parser.add_argument("--os", type=str, required=True)
     parser.add_argument("--cpu", type=str, required=True)
     parser.add_argument("--build", type=str, required=True)
-    parser.add_argument("--tgn-path", type=str, required=False)
     parser.add_argument("--is-clang", action=argparse.BooleanOptionalAction)
     parser.add_argument(
         "--enable-sanitizer", action=argparse.BooleanOptionalAction

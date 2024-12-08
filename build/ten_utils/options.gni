@@ -22,5 +22,4 @@ declare_args() {
 
   # If set, including tests
   ten_utils_enable_tests = true
-  ten_utils_enable_unit_tests = is_linux
 }

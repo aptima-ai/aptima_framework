@@ -61,12 +61,7 @@ group("ten_runtime") {
 
   if (ten_enable_tests && ten_enable_integration_tests &&
       # Almost all integration test cases needs ten_manager.
-      ten_enable_package_manager &&
-      # Currently, there is only x64 Mac machine in TEN CI clusters, and we need to
-      # run 'tman' during the preparation phase of each 'dev' test case, and tman of
-      # non-x64 version could not be run in x64 Mac machine, so we have to only
-      # enable 'dev' test cases on Mac for x64 only.
-      (is_linux || is_win || (is_mac && target_cpu == "x64"))) {
+      ten_enable_package_manager) {
     deps += [ "integration" ]
   }
 }

@@ -24,7 +24,7 @@ def main(src_files: list[str], dst_files: list[str]):
             shutil.copytree(
                 src_file,
                 dst_file,
-                False,
+                symlinks=True,
                 ignore=shutil.ignore_patterns("**/tsconfig.tsbuildinfo"),
             )
         else:

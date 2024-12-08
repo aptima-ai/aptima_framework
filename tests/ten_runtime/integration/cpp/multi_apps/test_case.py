@@ -26,7 +26,6 @@ def install_app(app_name: str):
     if build_config_args.ten_enable_integration_tests_prebuilt is False:
         print('Assembling and building package "{}".'.format(source_pkg_name))
 
-        source_root_path = os.path.join(base_path, source_pkg_name)
         rc = build_pkg.prepare_and_build_app(
             build_config_args,
             root_dir,
@@ -53,6 +52,9 @@ def install_app(app_name: str):
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
 
 def start_app(app_name: str, port: int) -> subprocess.Popen:
@@ -104,6 +106,10 @@ def start_app(app_name: str, port: int) -> subprocess.Popen:
             if os.path.exists(libasan_path):
                 my_env["LD_PRELOAD"] = libasan_path
 
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -114,13 +120,13 @@ def start_app(app_name: str, port: int) -> subprocess.Popen:
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", port, 10)
     if not is_started:
-        print(f"The {app_name} is not started after 30 seconds.")
+        print(f"The {app_name} is not started after 10 seconds.")
 
         server.kill()
         exit_code = server.wait()
         print(f"The exit code of {app_name}: {exit_code}")
 
-        assert 0
+        assert False
 
     sock.close()
     return server

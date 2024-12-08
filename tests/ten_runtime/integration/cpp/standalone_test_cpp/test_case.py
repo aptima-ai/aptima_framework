@@ -4,6 +4,7 @@ Test standalone_test_cpp.
 
 import subprocess
 import os
+import sys
 from sys import stdout
 from .common import build_config
 
@@ -34,8 +35,10 @@ def test_standalone_test_cpp():
         env=my_env,
         cwd=extension_root_path,
     )
-    tman_install_rc = tman_install_process.wait()
-    assert tman_install_rc == 0
+    tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     build_config_args = build_config.parse_build_config(
         os.path.join(root_dir, "tgn_args.txt"),
@@ -44,13 +47,8 @@ def test_standalone_test_cpp():
     # Step 2:
     #
     # Execute tgn gen to generate the build files.
-    if build_config_args.target_os == "win":
-        tgn_path = os.getenv("tgn")
-    else:
-        tgn_path = "tgn"
-
     tgn_gen_cmd = [
-        tgn_path,
+        "tgn",
         "gen",
         build_config_args.target_os,
         build_config_args.target_cpu,
@@ -58,6 +56,11 @@ def test_standalone_test_cpp():
         "--",
         "ten_enable_standalone_test=true",
     ]
+
+    if sys.platform == "win32":
+        if build_config_args.vs_version:
+            tgn_gen_cmd.append(f"vs_version={build_config_args.vs_version}")
+        tgn_gen_cmd = ["cmd", "/c"] + tgn_gen_cmd
 
     tgn_gen_process = subprocess.Popen(
         tgn_gen_cmd,
@@ -73,12 +76,15 @@ def test_standalone_test_cpp():
     #
     # Execute tgn build to build the extension and its test cases.
     tgn_build_cmd = [
-        tgn_path,
+        "tgn",
         "build",
         build_config_args.target_os,
         build_config_args.target_cpu,
         build_config_args.target_build,
     ]
+
+    if sys.platform == "win32":
+        tgn_build_cmd = ["cmd", "/c"] + tgn_build_cmd
 
     tgn_build_process = subprocess.Popen(
         tgn_build_cmd,

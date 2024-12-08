@@ -58,7 +58,7 @@ def test_tman_publish():
     )
     if returncode != 0:
         print(output_text)
-        assert 0
+        assert False
 
     assert returncode == 0
 
@@ -77,6 +77,6 @@ def test_tman_publish():
     if files:
         first_file_name = files[0]
         if not first_file_name.startswith(package_name):
-            assert 0
+            assert False
     else:
-        assert 0
+        assert False

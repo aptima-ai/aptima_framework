@@ -329,7 +329,7 @@
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
-      "cwd": "${workspaceFolder}/out/linux/x64/app/ffmpeg",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_manager/install/template_mode_with_same_name_extension/mock_app",
       "args": [
         "install",
         "extension",

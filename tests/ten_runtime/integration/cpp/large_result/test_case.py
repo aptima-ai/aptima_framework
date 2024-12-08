@@ -84,6 +84,13 @@ def test_large_result_http():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
+
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
 
     server = subprocess.Popen(
         server_cmd,
@@ -95,14 +102,14 @@ def test_large_result_http():
 
     is_started = http.is_app_started("127.0.0.1", 8001, 30)
     if not is_started:
-        print("The large_result_http is not started after 30 seconds.")
+        print("The large_result_http is not started after 10 seconds.")
 
         server.kill()
         exit_code = server.wait()
         print("The exit code of large_result_http: ", exit_code)
 
         assert exit_code == 0
-        assert 0
+        assert False
 
         return
 

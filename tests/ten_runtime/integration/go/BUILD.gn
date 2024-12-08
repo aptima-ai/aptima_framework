@@ -13,7 +13,6 @@ group("go") {
     deps += [
       "access_property_go",
       "close_app_go",
-      "exit_signal",
       "expired_ten_go",
       "frequently_cgo_call_go",
       "handle_error_go",
@@ -26,5 +25,11 @@ group("go") {
       "transfer_pointer_go",
       "two_extension_one_group_cmd_go",
     ]
+
+    if (target_os != "win") {
+      # The signals in Windows and POSIX are not quite the same, so this case is
+      # only meaningful in a POSIX system.
+      deps += [ "exit_signal_go" ]
+    }
   }
 }

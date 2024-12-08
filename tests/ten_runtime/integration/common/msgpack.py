@@ -1,11 +1,17 @@
+#
+# Copyright © 2024 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
 import socket
 import time
 
 
-def is_app_started(ip, port, timeout=10):
+def is_app_started(ip: str, port: int, timeout=10):
     duration = 0
 
-    while (duration < timeout):
+    while duration < timeout:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((ip, int(port)))

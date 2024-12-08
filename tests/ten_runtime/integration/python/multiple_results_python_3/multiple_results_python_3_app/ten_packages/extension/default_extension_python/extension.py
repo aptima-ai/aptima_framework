@@ -44,7 +44,7 @@ class DefaultExtension(Extension):
             respCmd.set_property_string("detail", "nbnb")
             ten_env.return_result(respCmd, receivedCmd)
         else:
-            assert 0
+            assert False
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.to_json()

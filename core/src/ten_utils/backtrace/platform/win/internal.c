@@ -141,6 +141,7 @@ void ten_backtrace_dump(ten_backtrace_t *self, size_t skip) {
       win_self->SymGetOptions == NULL || win_self->SymSetOptions == NULL ||
       win_self->SymFromAddr == NULL || win_self->SymGetLineFromAddr == NULL ||
       win_self->RtlCaptureStackBackTrace == NULL) {
+    fprintf(stderr, "Failed to retrieve Windows backtrace functions.\n");
     return;
   }
 
@@ -165,7 +166,7 @@ void ten_backtrace_dump(ten_backtrace_t *self, size_t skip) {
 
     rc = win_self->SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
     if (rc == FALSE) {
-      TEN_LOGE("Failed to SymFromAddr(): %ld", GetLastError());
+      fprintf(stderr, "Failed to SymFromAddr(): %ld", GetLastError());
       assert(0);
     }
 

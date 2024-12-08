@@ -102,7 +102,7 @@ def test_tman_dependency_resolve():
     )
     if returncode != 0:
         print(output_text)
-        assert 0
+        assert False
 
     # This test case is used to test that when multiple packages
     # of the same version can be installed, the package specified

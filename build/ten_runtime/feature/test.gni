@@ -352,16 +352,6 @@ template("ten_package_test_prepare_app") {
         args += [ "--no-enable-sanitizer" ]
       }
 
-      if (invoker.src_app_language == "cpp") {
-        args += [ "--tgn-path" ]
-
-        if (is_win) {
-          args += [ rebase_path("//core/ten_gn/tgn.bat") ]
-        } else {
-          args += [ rebase_path("//core/ten_gn/tgn") ]
-        }
-      }
-
       sources = replace_files_after_install_app_dests +
                 replace_files_after_install_all_dests
       outputs = [ build_app_dummy_output_file ]
@@ -805,14 +795,6 @@ template("ten_package_standalone_pkg") {
       args += [ "--enable-sanitizer" ]
     } else {
       args += [ "--no-enable-sanitizer" ]
-    }
-
-    args += [ "--tgn-path" ]
-
-    if (is_win) {
-      args += [ rebase_path("//core/ten_gn/tgn.bat") ]
-    } else {
-      args += [ rebase_path("//core/ten_gn/tgn") ]
     }
 
     outputs = [ build_pkg_dummy_output_file ]

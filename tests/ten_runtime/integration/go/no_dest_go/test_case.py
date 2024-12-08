@@ -53,6 +53,9 @@ def test_no_dest_go():
         cwd=app_root_path,
     )
     tman_install_process.wait()
+    return_code = tman_install_process.returncode
+    if return_code != 0:
+        assert False, "Failed to install package."
 
     if sys.platform == "win32":
         print("test_no_dest_go doesn't support win32")
@@ -83,6 +86,15 @@ def test_no_dest_go():
 
     server_cmd = os.path.join(base_path, "no_dest_go_app/bin/start")
     client_cmd = os.path.join(base_path, "no_dest_go_app_client")
+
+    if not os.path.isfile(server_cmd):
+        print(f"Server command '{server_cmd}' does not exist.")
+        assert False
+
+    if not os.path.isfile(client_cmd):
+        print(f"Client command '{client_cmd}' does not exist.")
+        assert False
+
     server = subprocess.Popen(
         server_cmd,
         stdout=stdout,
@@ -93,14 +105,14 @@ def test_no_dest_go():
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8007, 10)
     if not is_started:
-        print("The no_dest_go is not started after 30 seconds.")
+        print("The no_dest_go is not started after 10 seconds.")
 
         server.kill()
         exit_code = server.wait()
         print("The exit code of no_dest_go: ", exit_code)
 
         assert exit_code == 0
-        assert 0
+        assert False
 
         return
 

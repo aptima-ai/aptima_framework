@@ -6,7 +6,16 @@
 #
 import sys
 import os
+import stat
 import shutil
+
+
+def remove_readonly(func, path, excinfo):
+    if not os.access(path, os.W_OK):
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
+    else:
+        raise
 
 
 def delete_files(files: list[str]):
@@ -17,7 +26,7 @@ def delete_files(files: list[str]):
         if os.path.isfile(file):
             os.remove(file)
         else:
-            shutil.rmtree(file)
+            shutil.rmtree(file, onerror=remove_readonly)
 
 
 if __name__ == "__main__":

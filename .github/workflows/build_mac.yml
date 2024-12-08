@@ -157,6 +157,24 @@ jobs:
           cd out/mac/arm64/
           pytest -s tests/ten_manager/
 
+      - name: Run tests (ten_runtime integration tests)
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
+          MALLOC_CHECK_: 3
+          TEN_ENABLE_MEMORY_TRACKING: "true"
+          TEN_ENABLE_BACKTRACE_DUMP: "true"
+        run: |
+          if [ ${{ matrix.build_type }} == "debug" ]; then
+            export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"
+          fi
+          export PATH=$(pwd)/core/ten_gn:$PATH
+          cd out/mac/arm64/
+          pytest -s tests/ten_runtime/integration/
+      #   continue-on-error: true
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+
   build-mac-x64:
     concurrency:
       group: build-mac-x64-${{ github.head_ref }}-${{ matrix.build_type }}
@@ -308,9 +326,12 @@ jobs:
           TEN_ENABLE_MEMORY_TRACKING: "true"
           TEN_ENABLE_BACKTRACE_DUMP: "true"
         run: |
+          if [ ${{ matrix.build_type }} == "debug" ]; then
+            export PATH="/usr/local/opt/llvm@18/bin:$PATH"
+          fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           cd out/mac/x64/
-          pytest -s tests/ten_runtime/integration/ || { echo "ten_runtime integration test failed"; exit 1; }
+          pytest -s tests/ten_runtime/integration/
 
   # Building ten_runtime without the ten_rust library (i.e., ten_enable_ten_rust_apis=false).
   build-mac-arm64-without-ten-rust:

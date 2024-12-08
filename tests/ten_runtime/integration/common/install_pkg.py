@@ -35,9 +35,6 @@ def get_pkgs_from_local_registry(
 
 
 def main(args: ArgumentInfo) -> int:
-    if args.log_level > 0:
-        print(f"> Install {args.pkg_type}: {args.pkg_src_root_dir}")
-
     origin_wd = os.getcwd()
     returncode = 0
 
@@ -87,8 +84,7 @@ def main(args: ArgumentInfo) -> int:
 
         returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
         if returncode:
-            if args.log_level > 0:
-                print(output_text)
+            print(output_text)
             raise Exception("Failed to install app.")
 
     except Exception as exc:

@@ -6,6 +6,7 @@
 #
 import json
 import os
+import platform
 from datetime import datetime
 from . import (
     cmd_exec,
@@ -26,7 +27,6 @@ class ArgumentInfo:
         self.os: str
         self.cpu: str
         self.build: str
-        self.tgn_path: str
         self.is_clang: bool
         self.enable_sanitizer: bool
         self.vs_version: str
@@ -49,18 +49,17 @@ def _construct_cpp_additional_args(args: ArgumentInfo) -> list[str]:
 
 def _build_cpp_app(args: ArgumentInfo) -> int:
     # tgn gen ...
-    cmd = [f"{args.tgn_path}", "gen", args.os, args.cpu, args.build]
+    cmd = ["tgn", "gen", args.os, args.cpu, args.build]
     cmd += _construct_cpp_additional_args(args)
 
     returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
 
     if returncode:
-        if args.log_level > 0:
-            print(output)
-        raise Exception("Failed to build c++ app")
+        print(output)
+        return 1
 
     # tgn build ...
-    cmd = [f"{args.tgn_path}", "build", args.os, args.cpu, args.build]
+    cmd = ["tgn", "build", args.os, args.cpu, args.build]
 
     t1 = datetime.now()
     returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
@@ -72,9 +71,8 @@ def _build_cpp_app(args: ArgumentInfo) -> int:
         print(f"Build c++ app({args.pkg_name}) costs {duration} seconds.")
 
     if returncode:
-        if args.log_level > 0:
-            print(output)
-        raise Exception("Failed to build c++ app")
+        print(output)
+        return 1
 
     # Copy the build result to the specified run folder.
     fs_utils.copy(
@@ -88,27 +86,32 @@ def _build_cpp_app(args: ArgumentInfo) -> int:
 
 def _build_cpp_extension(args: ArgumentInfo) -> int:
     # tgn gen ...
-    cmd = [f"{args.tgn_path}", "gen", args.os, args.cpu, args.build]
+    cmd = ["tgn", "gen", args.os, args.cpu, args.build]
     cmd += _construct_cpp_additional_args(args)
 
     returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
 
     if returncode:
-        if args.log_level > 0:
-            print(output)
-        raise Exception("Failed to build c++ extension.")
+        print(output)
+        assert False, "Failed to build c++ extension."
 
     # tgn build ...
-    cmd = [f"{args.tgn_path}", "build", args.os, args.cpu, args.build]
+    cmd = ["tgn", "build", args.os, args.cpu, args.build]
 
     returncode, output = cmd_exec.run_cmd(cmd, args.log_level)
 
     if returncode:
-        if args.log_level > 0:
-            print(output)
-        raise Exception("Failed to build c++ extension.")
+        print(output)
+        assert False, "Failed to build c++ extension."
 
     return returncode
+
+
+def is_mac_arm64() -> bool:
+    return (
+        platform.system().lower() == "darwin"
+        and platform.machine().lower() == "arm64"
+    )
 
 
 def _build_go_app(args: ArgumentInfo) -> int:
@@ -123,7 +126,8 @@ def _build_go_app(args: ArgumentInfo) -> int:
     if args.log_level > 0:
         cmd += ["--verbose"]
 
-    if args.enable_sanitizer:
+    # `-asan` is not supported by go compiler on darwin/arm64.
+    if args.enable_sanitizer and not is_mac_arm64():
         cmd += ["-asan"]
 
     envs = os.environ.copy()
@@ -146,9 +150,8 @@ def _build_go_app(args: ArgumentInfo) -> int:
         print(f"Build go app({args.pkg_name}) costs {duration} seconds.")
 
     if returncode:
-        if args.log_level > 0:
-            print(output)
-        raise Exception("Failed to build go app.")
+        print(output)
+        assert False, "Failed to build go app."
 
     return returncode
 
@@ -221,7 +224,7 @@ def prepare_app(
     # ========
     # Step 1: Install app.
     if log_level and log_level > 0:
-        print(f"> Install app to {source_pkg_name}")
+        print(f"> Install app to {app_src_root_dir}")
 
     arg = install_pkg.ArgumentInfo()
     arg.tman_path = tman_path
@@ -233,9 +236,10 @@ def prepare_app(
     arg.log_level = log_level
     arg.local_registry_path = local_registry_path
 
-    install_res = install_pkg.main(arg)
-    if install_res != 0:
-        raise Exception("Failed to install app")
+    rc = install_pkg.main(arg)
+    if rc != 0:
+        print("Failed to install app")
+        return 1
 
     # ========
     # Step 2: Replace files after install app.
@@ -244,12 +248,13 @@ def prepare_app(
 
     rc = _replace_after_install_app(test_case_base_dir, source_pkg_name)
     if rc != 0:
-        raise Exception("Failed to replace files after install app")
+        print("Failed to replace files after install app")
+        return 1
 
     # ========
     # Step 3: Install all.
     if log_level and log_level > 0:
-        print("> Install all")
+        print(f"> Install_all: {app_src_root_dir}")
 
     install_all_args = install_all.ArgumentInfo()
     install_all_args.tman_path = tman_path
@@ -260,6 +265,9 @@ def prepare_app(
     install_all_args.assume_yes = True
 
     rc = install_all.main(install_all_args)
+    if rc != 0:
+        print("Failed to install all")
+        return 1
 
     # ========
     # Step 4: Replace files after install all.
@@ -268,7 +276,8 @@ def prepare_app(
 
     rc = _replace_after_install_all(test_case_base_dir, source_pkg_name)
     if rc != 0:
-        raise Exception("Failed to replace files after install all")
+        print("Failed to replace files after install all")
+        return 1
 
     return rc
 
@@ -304,12 +313,17 @@ def _replace_after_install_app(
         )
 
         if not os.path.exists(src_file):
-            raise Exception(f"{src_file} does not exist.")
+            print(f"{src_file} does not exist.")
+            return 1
 
         dst_file = os.path.join(test_case_base_dir, replace_file)
         replaced_files.append((src_file, dst_file))
 
-    replace.replace_normal_files_or_merge_json_files(replaced_files)
+    try:
+        replace.replace_normal_files_or_merge_json_files(replaced_files)
+    except Exception as exc:
+        print(exc)
+        return 1
 
     return 0
 
@@ -345,12 +359,17 @@ def _replace_after_install_all(
         )
 
         if not os.path.exists(src_file):
-            raise Exception(f"{src_file} does not exist.")
+            print(f"{src_file} does not exist.")
+            return 1
 
         dst_file = os.path.join(test_case_base_dir, replace_file)
         replaced_files.append((src_file, dst_file))
 
-    replace.replace_normal_files_or_merge_json_files(replaced_files)
+    try:
+        replace.replace_normal_files_or_merge_json_files(replaced_files)
+    except Exception as exc:
+        print(exc)
+        return 1
 
     return 0
 
@@ -376,19 +395,10 @@ def build_app(
     args.vs_version = build_config.vs_version
     args.log_level = log_level
 
-    if args.os == "win":
-        tgn_path_in_env = os.getenv("tgn")
-        if tgn_path_in_env:
-            args.tgn_path = tgn_path_in_env
-        else:
-            return 1
-    else:
-        args.tgn_path = "tgn"
-
     if args.log_level > 0:
         msg = (
             f"> Start to build package({args.pkg_name})"
-            " in {args.pkg_src_root_dir}"
+            f" in {args.pkg_src_root_dir}"
         )
         print(msg)
 
@@ -406,14 +416,15 @@ def build_app(
             returncode = 0
 
         if returncode > 0:
-            raise Exception(f"Failed to build {pkg_type}({args.pkg_name})")
+            print(f"Failed to build {pkg_type}({args.pkg_name})")
+            return 1
 
         if args.log_level > 0:
             print(f"Build {pkg_type}({args.pkg_name}) success")
 
-    except Exception as e:
+    except Exception:
         returncode = 1
-        print(f"Build package({args.pkg_name}) failed: {repr(e)}")
+        print(f"Failed to build {pkg_type}({args.pkg_name})")
 
     finally:
         os.chdir(origin_wd)
