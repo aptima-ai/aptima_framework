@@ -31,7 +31,7 @@ static std::string ToHex(const uint8_t *data, size_t size) {
   char buf[3] = {0};
   std::string s;
   for (int i = 0; i < size; i++) {
-    sprintf(buf, "%.2x", data[i]);
+    snprintf(buf, 3, "%.2x", data[i]);
     s += buf;
   }
   return s;

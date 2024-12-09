@@ -750,7 +750,7 @@ TEN_UNUSED static void save_img_frame(
   int height = pFrame->get_height();
 
   // Open file
-  (void)sprintf(szFilename, "encode_frame%d.ppm", index);
+  (void)snprintf(szFilename, 32, "encode_frame%d.ppm", index);
   pFile = fopen(szFilename, "wb");
 
   if (pFile == nullptr) {

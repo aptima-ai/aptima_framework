@@ -20,12 +20,8 @@ declare_args() {
 
 # ten_runtime binding
 declare_args() {
-  # If set, also build go binding
-  ten_enable_go_binding = is_mac || is_linux
-
-  # TODO: enable it on mac and win
-  ten_enable_python_binding =
-      is_linux && (target_cpu == "x64" || target_cpu == "arm64")
+  ten_enable_go_binding = true
+  ten_enable_python_binding = true
 }
 
 # ten_runtime extensions

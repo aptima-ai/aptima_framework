@@ -5,7 +5,6 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include <stdlib.h>
-#include <sys/param.h>
 
 #include "include_internal/ten_runtime/binding/go/internal/common.h"
 #include "include_internal/ten_runtime/binding/go/msg/msg.h"

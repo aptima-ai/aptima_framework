@@ -36,7 +36,7 @@ func newTenError(errno uint32, errMsg string) error {
 // the `err_msg` in `status` will be freed after this function, do not access it
 // again.
 func withCGoError(status *C.ten_go_error_t) error {
-	if status.errno == 0 {
+	if status.err_no == 0 {
 		// No error.
 		return nil
 	}
@@ -44,7 +44,7 @@ func withCGoError(status *C.ten_go_error_t) error {
 	if status.err_msg_size == 0 {
 		// An error occurred, but no error message.
 		return &TenError{
-			errno: uint32(status.errno),
+			errno: uint32(status.err_no),
 		}
 	}
 
@@ -54,7 +54,7 @@ func withCGoError(status *C.ten_go_error_t) error {
 	defer C.free(unsafe.Pointer(status.err_msg))
 
 	return &TenError{
-		errno:  uint32(status.errno),
+		errno:  uint32(status.err_no),
 		errMsg: C.GoString(status.err_msg),
 	}
 }

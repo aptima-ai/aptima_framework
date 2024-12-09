@@ -40,7 +40,7 @@ typedef struct ten_go_bridge_t {
 typedef struct ten_go_error_t {
   // The errno is always 0 if no error.
   // The type of this field must equal to the errno of ten_error_t.
-  int64_t errno;
+  int64_t err_no;
 
   // The actually size of err_msg, not including the null terminator. It can be
   // used directly to determine if err_msg is empty in GO, without any cgo call.

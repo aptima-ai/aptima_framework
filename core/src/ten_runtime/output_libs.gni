@@ -28,6 +28,15 @@ if (is_linux) {
   ten_runtime_go_output_libs = [ "${root_out_dir}/libten_runtime_go.dylib" ]
   ten_runtime_python_output_libs =
       [ "${root_out_dir}/libten_runtime_python.dylib" ]
+} else if (is_win) {
+  ten_runtime_go_output_libs = [
+    "${root_out_dir}/ten_runtime_go.dll",
+    "${root_out_dir}/ten_runtime_go.dll.lib",
+  ]
+  ten_runtime_python_output_libs = [
+    "${root_out_dir}/ten_runtime_python.dll",
+    "${root_out_dir}/ten_runtime_python.dll.lib",
+  ]
 }
 
 template("ten_runtime_copy_deps") {

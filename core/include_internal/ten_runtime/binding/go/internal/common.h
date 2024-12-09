@@ -30,14 +30,14 @@ TEN_RUNTIME_PRIVATE_API void ten_go_bridge_destroy_go_part(
     ten_go_bridge_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_go_error_init_with_errno(ten_go_error_t *self,
-                                                          ten_errno_t errno);
+                                                          ten_errno_t err_no);
 
 TEN_RUNTIME_PRIVATE_API void ten_go_error_from_error(ten_go_error_t *self,
                                                      ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API void ten_go_error_set_errno(ten_go_error_t *self,
-                                                    ten_errno_t errno);
+                                                    ten_errno_t err_no);
 
 TEN_RUNTIME_PRIVATE_API void ten_go_error_set(ten_go_error_t *self,
-                                              ten_errno_t errno,
+                                              ten_errno_t err_no,
                                               const char *msg);

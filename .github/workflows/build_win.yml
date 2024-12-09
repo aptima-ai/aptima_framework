@@ -46,10 +46,26 @@ jobs:
           rustup default nightly
           cargo install --force cbindgen
 
+      - name: Get Python executable path
+        run: |
+          $pythonPath = python -c "import sys; print(sys.executable)"
+          Write-Output "Python executable path: $pythonPath"
+
+          $pythonDir = Split-Path $pythonPath
+          Write-Output "Python directory path: $pythonDir"
+
+          echo "PYTHON3_PATH=$pythonDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      - name: Use Python path
+        run: |
+          Write-Output "The Python directory is located at: $env:PYTHON3_PATH"
+        shell: pwsh
+
       - name: Build
         run: |
           $ENV:PATH += ";$PWD/core/ten_gn"
-          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true
+          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_go_binding=false
           tgn build win x64 ${{ matrix.build_type }}
 
       - name: Run Tests (ten_utils_unit_test)

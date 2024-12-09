@@ -459,7 +459,7 @@ void save_img_frame(ten::video_frame_t &pFrame, int index) {
   int height = pFrame.get_height();
 
   // Open file
-  (void)sprintf(szFilename, "frame%d.ppm", index);
+  (void)snprintf(szFilename, 32, "frame%d.ppm", index);
   pFile = fopen(szFilename, "wb");
 
   if (pFile == nullptr) {
