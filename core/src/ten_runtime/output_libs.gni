@@ -24,10 +24,14 @@ if (is_linux) {
   ten_runtime_go_output_libs = [ "${root_out_dir}/libten_runtime_go.so" ]
   ten_runtime_python_output_libs =
       [ "${root_out_dir}/libten_runtime_python.so" ]
+  ten_runtime_nodejs_output_libs =
+      [ "${root_out_dir}/libten_runtime_nodejs.so" ]
 } else if (is_mac) {
   ten_runtime_go_output_libs = [ "${root_out_dir}/libten_runtime_go.dylib" ]
   ten_runtime_python_output_libs =
       [ "${root_out_dir}/libten_runtime_python.dylib" ]
+  ten_runtime_nodejs_output_libs =
+      [ "${root_out_dir}/libten_runtime_nodejs.dylib" ]
 } else if (is_win) {
   ten_runtime_go_output_libs = [
     "${root_out_dir}/ten_runtime_go.dll",
@@ -36,6 +40,10 @@ if (is_linux) {
   ten_runtime_python_output_libs = [
     "${root_out_dir}/ten_runtime_python.dll",
     "${root_out_dir}/ten_runtime_python.dll.lib",
+  ]
+  ten_runtime_nodejs_output_libs = [
+    "${root_out_dir}/ten_runtime_nodejs.dll",
+    "${root_out_dir}/ten_runtime_nodejs.dll.lib",
   ]
 }
 

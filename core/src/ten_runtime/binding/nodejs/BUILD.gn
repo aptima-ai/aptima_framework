@@ -11,40 +11,38 @@ import("//build/ten_runtime/options.gni")
 import("//build/ten_runtime/ten.gni")
 import("//core/src/ten_runtime/output_libs.gni")
 
-ten_package("ten_python_binding_system_package") {
+ten_package("ten_nodejs_binding_system_package") {
   package_kind = "system"
-  package_output_root_dir_name = "ten_runtime_python"
+  package_output_root_dir_name = "ten_runtime_nodejs"
 
   resources = [
-    "//core/src/ten_runtime/binding/python/interface=>interface",
-    "//core/src/ten_runtime/binding/python/tools=>tools",
-    "BUILD_release.gn=>BUILD.gn",
+    "//core/src/ten_runtime/binding/nodejs/interface=>interface",
     "manifest.json",
   ]
 
-  foreach(lib, ten_runtime_python_output_libs) {
+  foreach(lib, ten_runtime_nodejs_output_libs) {
     libname = get_path_info(rebase_path(lib), "file")
     resources += [ "${lib}=>lib/${libname}" ]
   }
 
-  deps = [ "native:ten_runtime_python" ]
+  deps = [ "native:ten_runtime_nodejs" ]
 }
 
 if (ten_enable_package_manager) {
-  ten_package_publish("upload_ten_python_binding_system_package_to_server") {
+  ten_package_publish("upload_ten_nodejs_binding_system_package_to_server") {
     base_dir =
-        rebase_path("${root_out_dir}/ten_packages/system/ten_runtime_python")
+        rebase_path("${root_out_dir}/ten_packages/system/ten_runtime_nodejs")
     deps = [
-      ":ten_python_binding_system_package",
-      "native:ten_runtime_python",
+      ":ten_nodejs_binding_system_package",
+      "native:ten_runtime_nodejs",
     ]
   }
 }
 
-group("python") {
-  deps = [ "native:ten_runtime_python" ]
+group("nodejs") {
+  deps = [ "native:ten_runtime_nodejs" ]
 
   if (ten_enable_package_manager) {
-    deps += [ ":upload_ten_python_binding_system_package_to_server" ]
+    deps += [ ":upload_ten_nodejs_binding_system_package_to_server" ]
   }
 }

@@ -22,6 +22,7 @@ declare_args() {
 declare_args() {
   ten_enable_go_binding = true
   ten_enable_python_binding = true
+  ten_enable_nodejs_binding = true
 }
 
 # ten_runtime extensions

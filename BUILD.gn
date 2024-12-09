@@ -18,6 +18,7 @@ pool("serialized_action_pool") {
 group("ten_framework_all") {
   deps = [
     "//core/src/ten_runtime",
+    "//core/src/ten_runtime/binding",
     "//core/src/ten_rust",
     "//packages/core_apps",
     "//packages/core_extensions",
