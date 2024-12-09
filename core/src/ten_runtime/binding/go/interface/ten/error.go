@@ -33,29 +33,29 @@ func newTenError(errno uint32, errMsg string) error {
 }
 
 // withCGoError creates an TenError based on the api status from C. Note that
-// the `err_msg` in `status` will be freed after this function, do not access it
-// again.
-func withCGoError(status *C.ten_go_error_t) error {
-	if status.err_no == 0 {
+// the `err_msg` in `cgoError` will be freed after this function, do not access
+// it again.
+func withCGoError(cgoError *C.ten_go_error_t) error {
+	if cgoError.err_no == 0 {
 		// No error.
 		return nil
 	}
 
-	if status.err_msg_size == 0 {
+	if cgoError.err_msg_size == 0 {
 		// An error occurred, but no error message.
 		return &TenError{
-			errno: uint32(status.err_no),
+			errno: uint32(cgoError.err_no),
 		}
 	}
 
 	// It's crucial to free the memory allocated in the C environment to prevent
 	// memory leaks. Since C.GoString creates a copy of the memory content, it
 	// is safe to release the 'err_msg' memory in C after its use.
-	defer C.free(unsafe.Pointer(status.err_msg))
+	defer C.free(unsafe.Pointer(cgoError.err_msg))
 
 	return &TenError{
-		errno:  uint32(status.err_no),
-		errMsg: C.GoString(status.err_msg),
+		errno:  uint32(cgoError.err_no),
+		errMsg: C.GoString(cgoError.err_msg),
 	}
 }
 
