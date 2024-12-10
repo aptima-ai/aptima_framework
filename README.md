@@ -17,13 +17,7 @@
 
 </div>
 
-**TEN** stands for **Transformative Extensions Network** and represents the Next-Gen AI-Agent Framework, the world's first truly real-time multimodal AI agent framework.
-
-## Stay Tuned
-
-Before we get started, be sure to star our repository and get instant notifications for all new releases!
-
-<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/star_ten_w_confetti.gif" alt=""></figure>
+**TEN** stands for **Transformative Extensions Network**, is a voice agent framework to create conversational AI.
 
 ## Features
 
@@ -84,6 +78,12 @@ With the TEN framework, you can easily accomplish the following scenarios. You c
 ## Documentation
 
 Please visit our [TEN framework documentation site](https://doc.theten.ai/) for more information.
+
+## Stay Tuned
+
+Before we get started, be sure to star our repository and get instant notifications for all new releases!
+
+![star_ten_w_confetti](https://github.com/TEN-framework/docs/blob/main/assets/gif/star_ten_w_confetti.gif?raw=true)
 
 ## License Information
 
