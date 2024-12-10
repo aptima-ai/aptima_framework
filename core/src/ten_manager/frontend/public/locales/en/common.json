@@ -1,0 +1,4 @@
+{
+  "current_version": "Current Version: {{version}}",
+  "error_fetching": "Failed to fetch version."
+}

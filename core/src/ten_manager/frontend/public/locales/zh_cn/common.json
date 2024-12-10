@@ -1,0 +1,4 @@
+{
+  "current_version": "当前版本: {{version}}",
+  "error_fetching": "无法获取版本."
+}

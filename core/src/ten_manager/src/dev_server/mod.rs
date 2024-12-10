@@ -6,6 +6,7 @@
 //
 mod addons;
 mod common;
+mod frontend;
 mod get_all_pkgs;
 pub mod graphs;
 mod manifest;
@@ -18,8 +19,10 @@ mod version;
 
 use std::sync::{Arc, RwLock};
 
-use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web::{web, HttpRequest, HttpResponse, Responder};
+use mime_guess::from_path;
 
+use frontend::Asset;
 use ten_rust::pkg_info::PkgInfo;
 
 use super::config::TmanConfig;
@@ -29,6 +32,37 @@ pub struct DevServerState {
     pub base_dir: Option<String>,
     pub all_pkgs: Option<Vec<PkgInfo>>,
     pub tman_config: TmanConfig,
+}
+
+async fn get_frontend_asset(req: HttpRequest) -> impl Responder {
+    let path = req.path().trim_start_matches('/').to_owned();
+
+    if path.is_empty() {
+        // If the root path is requested, return `index.html`.
+        match Asset::get("index.html") {
+            Some(content) => HttpResponse::Ok()
+                .content_type("text/html")
+                .body(content.data.into_owned()),
+            None => HttpResponse::NotFound().body("404 Not Found"),
+        }
+    } else {
+        match Asset::get(&path) {
+            Some(content) => {
+                let mime = from_path(&path).first_or_octet_stream();
+                HttpResponse::Ok()
+                    .content_type(mime.as_ref())
+                    .body(content.data.into_owned())
+            }
+            // If the file is not found, return `index.html` to support React
+            // Router.
+            None => match Asset::get("index.html") {
+                Some(content) => HttpResponse::Ok()
+                    .content_type("text/html")
+                    .body(content.data.into_owned()),
+                None => HttpResponse::NotFound().body("404 Not Found"),
+            },
+        }
+    }
 }
 
 pub fn configure_routes(
@@ -81,11 +115,7 @@ pub fn configure_routes(
             "/api/dev-server/v1/messages/compatible",
             web::post().to(messages::compatible::get_compatible_messages),
         )
-        .default_service(web::route().to(|req: HttpRequest| async move {
-            let path = req.path().to_string();
-            HttpResponse::NotFound()
-                .body(format!("Endpoint '{}' not found", path))
-        }));
+        .default_service(web::route().to(get_frontend_asset));
 }
 
 #[cfg(test)]
