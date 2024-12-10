@@ -480,10 +480,9 @@ ten_remote_t *ten_engine_check_remote_is_existed(ten_engine_t *self,
 #if defined(_DEBUG)
     size_t weak_remote_cnt = ten_list_find_ptr_cnt_custom(
         &self->weak_remotes, uri, ten_remote_is_uri_equal_to);
-    TEN_ASSERT(
-        weak_remote_cnt <= 1,
-        "A remote might appear in 'remote' and 'weak_remote' once when the "
-        "graph contains a loop. This is the case of 'duplicate' connection.");
+    // A remote might appear in 'remote' and 'weak_remote' once when the graph
+    // contains a loop. This is the case of 'duplicate' connection.
+    TEN_ASSERT(weak_remote_cnt <= 1, "Invalid numbers of weak remotes");
 #endif
 
     remote = CONTAINER_OF_FROM_FIELD(hh, ten_remote_t, hh_in_remote_table);

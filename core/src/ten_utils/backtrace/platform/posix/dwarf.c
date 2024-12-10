@@ -694,8 +694,9 @@ static void dwarf_buf_error(ten_backtrace_t *self, struct dwarf_buf *buf,
                             const char *msg, int errnum) {
   char b[200];
 
-  (void)snprintf(b, sizeof b, "%s in %s at %d", msg, buf->name,
-                 (int)(buf->buf - buf->start));
+  int written = snprintf(b, sizeof b, "%s in %s at %d", msg, buf->name,
+                         (int)(buf->buf - buf->start));
+  assert(written > 0);
 
   buf->error_cb(self, b, errnum, NULL);
 }

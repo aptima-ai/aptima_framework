@@ -57,7 +57,9 @@ void get_ffmpeg_error_message_(char *buf, size_t buf_length, int errnum) {
 
   // Get error from ffmpeg.
   if (av_strerror(errnum, buf, buf_length) != 0) {
-    (void)snprintf(buf, buf_length, "Unknown ffmpeg error code: %d", errnum);
+    int written =
+        snprintf(buf, buf_length, "Unknown ffmpeg error code: %d", errnum);
+    TEN_ASSERT(written > 0, "Should not happen.");
   }
 }
 
@@ -750,7 +752,9 @@ TEN_UNUSED static void save_img_frame(
   int height = pFrame->get_height();
 
   // Open file
-  (void)snprintf(szFilename, 32, "encode_frame%d.ppm", index);
+  int written = snprintf(szFilename, 32, "encode_frame%d.ppm", index);
+  TEN_ASSERT(written > 0, "Should not happen.");
+
   pFile = fopen(szFilename, "wb");
 
   if (pFile == nullptr) {

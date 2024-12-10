@@ -76,7 +76,9 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
+
           tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false
+
           tgn build mac arm64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
 
@@ -109,6 +111,9 @@ jobs:
         run: |
           chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
           out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+      #   continue-on-error: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: Run Tests (ten_rust standalone tests)
         env:
@@ -137,11 +142,6 @@ jobs:
           chmod +x unit_test
 
           ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
 
       - name: Install Python dependencies via script
         run: |
@@ -238,9 +238,14 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
+
           tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false
+
           tgn build mac x64 ${{ matrix.build_type }}
           tree -I 'gen|obj' out
+      #   continue-on-error: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: Run Tests (ten_utils_unit_test)
         env:
@@ -300,11 +305,6 @@ jobs:
 
           ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
       - name: Install Python dependencies via script
         run: |
           python .github/tools/setup_pytest_dependencies.py
@@ -332,6 +332,10 @@ jobs:
           export PATH=$(pwd)/core/ten_gn:$PATH
           cd out/mac/x64/
           pytest -s tests/ten_runtime/integration/
+      #   continue-on-error: true
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
   # Building ten_runtime without the ten_rust library (i.e., ten_enable_ten_rust_apis=false).
   build-mac-arm64-without-ten-rust:
@@ -397,8 +401,11 @@ jobs:
           fi
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_ten_rust_apis=false ten_enable_python_binding=false
+
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_private_tests=false ten_rust_enable_gen_cargo_config=false ten_enable_ten_rust_apis=false
+
           tgn build mac arm64 ${{ matrix.build_type }}
+
           tree -I 'gen|obj' out
 
       - name: Run Tests (ten_runtime_smoke_test)
@@ -410,3 +417,7 @@ jobs:
         run: |
           chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
           out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+      #   continue-on-error: true
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3

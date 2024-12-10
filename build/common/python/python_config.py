@@ -11,6 +11,15 @@ import platform
 from build.scripts import cmd_exec
 
 
+# The logic in this file is highly environment-dependent. It is designed to
+# accommodate different CI environments, retrieving the necessary compilation
+# parameters for building Python C extensions in each specific CI environment.
+# Since different environments require different approaches to obtain these
+# parameters, the methods used here are not universally applicable but are
+# instead customized specifically for the CI environments in which the TEN
+# framework currently operates.
+
+
 class ArgumentInfo(argparse.Namespace):
     def __init__(self):
         super().__init__()
@@ -80,29 +89,198 @@ def transform_flags_for_windows(embed_flags):
     return transformed
 
 
-def get_config_flags(config_type: str):
-    config = sysconfig.get_config_vars()
+def python_config_for_win(args: ArgumentInfo) -> None:
+    # Retrieve embed flags using sysconfig.
+    embed_flags = get_embed_flags()
+    transformed_flags = transform_flags_for_windows(embed_flags)
 
-    if config_type == "cflags":
-        return config.get("CFLAGS", "")
-    elif config_type == "ldflags":
-        return config.get("LDFLAGS", "")
-    elif config_type == "libs":
-        libs = config.get("LIBS", "")
-        # Remove '-l' prefixes if necessary.
-        libs = libs.replace("-l", "")
-        return libs
+    if args.config_type == "cflags":
+        # Print include directories and any additional CFLAGS.
+        for flag in transformed_flags["include_dirs"]:
+            print(flag)
+        for flag in transformed_flags["cflags"]:
+            print(flag)
+    elif args.config_type == "ldflags":
+        # Print library directories.
+        for lib_dir in transformed_flags["lib_dirs"]:
+            print(lib_dir)
+    elif args.config_type == "libs":
+        # Print libraries.
+        for lib in transformed_flags["libs"]:
+            print(lib)
     else:
-        raise ValueError(f"Unknown config_type: {config_type}")
+        raise Exception(f"Unknown config_type: {args.config_type}")
 
 
-def build_cmd(config_type):
-    if config_type in ["cflags", "ldflags", "libs"]:
-        flag = get_config_flags(config_type)
-        cmd = flag.split()
-        return cmd
+def python_config_for_mac(args: ArgumentInfo) -> None:
+    is_x86_64 = platform.machine().lower() == "x86_64"
+
+    if args.config_type == "cflags":
+        # Run python-config --embed --cflags
+        cmd = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--cflags",
+        ]
+
+        returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
+        if returncode:
+            raise Exception("Failed to run python-config for cflags.")
+
+        outputs = output_text.split()
+        for output in outputs:
+            print(output)
+
+    elif args.config_type == "ldflags":
+        # Run python-config --embed --ldflags
+        cmd_ldflags = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--ldflags",
+        ]
+
+        returncode, ldflags_output = cmd_exec.run_cmd(
+            cmd_ldflags, args.log_level
+        )
+        if returncode:
+            raise Exception("Failed to run python-config for ldflags.")
+
+        ldflags_outputs = ldflags_output.split()
+
+        # Extract framework pairs from libs. Because the `-framework <library>`
+        # portion needs to be included in the `ldflags` variable in GN.
+        cmd_libs = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--libs",
+        ]
+        returncode, libs_output = cmd_exec.run_cmd(cmd_libs, args.log_level)
+        if returncode:
+            raise Exception("Failed to run python-config for libs.")
+
+        libs_outputs = libs_output.split()
+
+        # Convert the `-framework <library>` portion specified in `libs` into
+        # `ldflags`.
+        frameworks_pairs = []
+        skip_next = False
+        prev_token = None
+        for token in libs_outputs:
+            if skip_next:
+                # 'prev_token' was '-framework', 'token' is the framework name.
+                frameworks_pairs.append((prev_token, token))
+                skip_next = False
+                continue
+            if token == "-framework":
+                prev_token = token
+                skip_next = True
+
+        # Add the framework pairs to ldflags.
+        for pair in frameworks_pairs:
+            ldflags_outputs.append(pair[0])
+            ldflags_outputs.append(pair[1])
+
+        # Add -L<LIBDIR> for x86_64.
+        #
+        # In the macOS x64 CI environment, the library path for `libpython` can
+        # only be obtained using the following method.
+        if is_x86_64:
+            libdir = sysconfig.get_config_var("LIBDIR")
+            if libdir:
+                ldflags_outputs.insert(0, f"-L{libdir}")
+
+        for out in ldflags_outputs:
+            print(out)
+
+    elif args.config_type == "libs":
+        # Run python-config --embed --libs
+        cmd = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--libs",
+        ]
+
+        returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
+        if returncode:
+            raise Exception("Failed to run python-config for libs.")
+
+        outputs = output_text.split()
+
+        # Extract framework pairs from libs. Because the `-framework <library>`
+        # portion needs to be included in the `ldflags` variable in GN.
+        filtered_libs = []
+        skip_next = False
+        for token in outputs:
+            if skip_next:
+                skip_next = False
+                continue
+            if token == "-framework":
+                skip_next = True
+            else:
+                filtered_libs.append(token.replace("-l", ""))  # remove -l
+
+        for lib in filtered_libs:
+            print(lib)
+
     else:
-        raise ValueError(f"Unknown config_type: {config_type}")
+        raise Exception(f"Unknown config_type: {args.config_type}")
+
+
+def python_config_for_linux(args: ArgumentInfo) -> None:
+    if args.config_type == "cflags":
+        # Run python-config --embed --cflags
+        cmd = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--cflags",
+        ]
+
+        returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
+        if returncode:
+            raise Exception("Failed to run python-config for cflags.")
+
+        outputs = output_text.split()
+        for output in outputs:
+            print(output)
+
+    elif args.config_type == "ldflags":
+        # Run python-config --embed --ldflags
+        cmd_ld = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--ldflags",
+        ]
+
+        returncode, ld_output = cmd_exec.run_cmd(cmd_ld, args.log_level)
+        if returncode:
+            raise Exception("Failed to run python-config for ldflags.")
+
+        ld_outputs = ld_output.split()
+
+        for out in ld_outputs:
+            print(out)
+
+    elif args.config_type == "libs":
+        # Run python-config --embed --libs
+        cmd = [
+            f"python{args.python_version}-config",
+            "--embed",
+            "--libs",
+        ]
+
+        returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
+        if returncode:
+            raise Exception("Failed to run python-config for libs.")
+
+        outputs = output_text.split()
+
+        # Remove '-l' prefixes and print
+        filtered_libs = [lib.replace("-l", "") for lib in outputs]
+        for lib in filtered_libs:
+            print(lib)
+
+    else:
+        raise Exception(f"Unknown config_type: {args.config_type}")
 
 
 if __name__ == "__main__":
@@ -119,140 +297,16 @@ if __name__ == "__main__":
     returncode = 0
 
     try:
-        if args.target_os == "win":
-            # Retrieve embed flags using sysconfig.
-            embed_flags = get_embed_flags()
-            transformed_flags = transform_flags_for_windows(embed_flags)
-
-            if args.config_type == "cflags":
-                # Print include directories and any additional CFLAGS.
-                for flag in transformed_flags["include_dirs"]:
-                    print(flag)
-                for flag in transformed_flags["cflags"]:
-                    print(flag)
-            elif args.config_type == "ldflags":
-                # Print library directories.
-                for lib_dir in transformed_flags["lib_dirs"]:
-                    print(lib_dir)
-            elif args.config_type == "libs":
-                # Print libraries.
-                for lib in transformed_flags["libs"]:
-                    print(lib)
-            else:
-                raise Exception(f"Unknown config_type: {args.config_type}")
-        else:
-            is_mac = platform.system().lower() == "darwin"
-
-            if args.config_type == "cflags":
-                # For mac, same as Linux: just run python-config --embed
-                # --cflags
-                cmd = [
-                    f"python{args.python_version}-config",
-                    "--embed",
-                    "--cflags",
-                ]
-
-                returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
-                if returncode:
-                    raise Exception("Failed to run python-config.")
-
-                outputs = output_text.split()
-                for output in outputs:
-                    print(output)
-
-            elif args.config_type == "ldflags":
-                # On mac, in addition to python-config --embed --ldflags, we
-                # also need to add the framework pairs extracted from libs.
-                cmd_ld = [
-                    f"python{args.python_version}-config",
-                    "--embed",
-                    "--ldflags",
-                ]
-
-                returncode, ld_output = cmd_exec.run_cmd(cmd_ld, args.log_level)
-                if returncode:
-                    raise Exception("Failed to run python-config.")
-
-                ld_outputs = ld_output.split()
-
-                if is_mac:
-                    # Extract framework pairs from libs.
-                    cmd_libs = [
-                        f"python{args.python_version}-config",
-                        "--embed",
-                        "--libs",
-                    ]
-                    returncode, libs_output = cmd_exec.run_cmd(
-                        cmd_libs, args.log_level
-                    )
-                    if returncode:
-                        raise Exception("Failed to run python-config for libs.")
-
-                    libs_outputs = libs_output.split()
-
-                    frameworks_pairs = []
-                    skip_next = False
-                    prev_token = None
-                    for token in libs_outputs:
-                        if skip_next:
-                            # 'prev_token' was '-framework', 'token' is the
-                            # framework name.
-                            frameworks_pairs.append((prev_token, token))
-                            skip_next = False
-                            continue
-                        if token == "-framework":
-                            prev_token = token
-                            skip_next = True
-
-                    # Add the framework pairs to ldflags.
-                    for pair in frameworks_pairs:
-                        ld_outputs.append(pair[0])
-                        ld_outputs.append(pair[1])
-
-                for out in ld_outputs:
-                    print(out)
-
-            elif args.config_type == "libs":
-                # On mac, we need to remove -framework <something> pairs from
-                # the output. On linux, just remove the '-l' prefix.
-                cmd = [
-                    f"python{args.python_version}-config",
-                    "--embed",
-                    "--libs",
-                ]
-
-                returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
-                if returncode:
-                    raise Exception("Failed to run python-config.")
-
-                outputs = output_text.split()
-
-                if is_mac:
-                    filtered_libs = []
-                    skip_next = False
-                    for token in outputs:
-                        if skip_next:
-                            skip_next = False
-                            continue
-                        if token == "-framework":
-                            skip_next = True
-                        else:
-                            filtered_libs.append(
-                                token.replace("-l", "")
-                            )  # remove -l
-                    for lib in filtered_libs:
-                        print(lib)
-                else:
-                    # Linux-like behavior.
-                    filtered_libs = [lib.replace("-l", "") for lib in outputs]
-                    for lib in filtered_libs:
-                        print(lib)
-
-            else:
-                raise Exception(f"Unknown option: {args.config_type}")
+        if args.target_os.lower() == "win":
+            python_config_for_win(args)
+        elif args.target_os.lower() == "mac":
+            python_config_for_mac(args)
+        elif args.target_os.lower() == "linux":
+            python_config_for_linux(args)
 
     except Exception as exc:
         print(exc)
+        returncode = 1
 
     finally:
         sys.exit(-1 if returncode != 0 else 0)

@@ -197,8 +197,8 @@ fn solve(
         conf.value_set(heuristic_key, "berkmin")
             .expect("Failed to set heuristic to berkmin.");
 
-        print_configuration(tman_config, conf, root_key, 0);
-        tman_verbose_println!(tman_config, "");
+        // print_configuration(tman_config, conf, root_key, 0);
+        // tman_verbose_println!(tman_config, "");
     }
 
     let main_program = include_str!("main.lp");
@@ -280,7 +280,7 @@ fn solve(
     // recursively.
     let stats = ctl.statistics().unwrap();
     let stats_key = stats.root().unwrap();
-    print_statistics(tman_config, stats, stats_key, 0);
+    // print_statistics(tman_config, stats, stats_key, 0);
 
     Ok((usable_model, non_usable_models))
 }

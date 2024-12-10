@@ -14,6 +14,8 @@
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
 
+#define LOOP_CNT 2
+
 namespace {
 
 /**
@@ -39,7 +41,7 @@ class test_extension : public ten::extension_t {
     if (std::string(cmd->get_name()) == "sum") {
       nlohmann::json json = nlohmann::json::parse(cmd->to_json());
 
-      if (counter_ == 2) {
+      if (counter_ == LOOP_CNT) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", json.dump().c_str());
         ten_env.return_result(std::move(cmd_result), std::move(cmd));
@@ -212,7 +214,8 @@ TEST(ExtensionTest, GraphLoopMultipleCircle) {  // NOLINT
 
   nlohmann::json detail =
       nlohmann::json::parse(cmd_result->get_property_to_json("detail"));
-  EXPECT_EQ((1 + 2 + 3) * 2, std::stoi(detail["total"].get<std::string>()));
+  EXPECT_EQ((1 + 2 + 3) * LOOP_CNT,
+            std::stoi(detail["total"].get<std::string>()));
 
   delete client;
 

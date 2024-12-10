@@ -97,8 +97,9 @@ static int initialize_file_line_mechanism(ten_backtrace_t *self,
         break;
       case 2: {
         char buf[64] = {0};
-        (void)snprintf(buf, sizeof(buf), "/proc/%ld/object/a.out",
-                       (long)getpid());
+        int written = snprintf(buf, sizeof(buf), "/proc/%ld/object/a.out",
+                               (long)getpid());
+        assert(written > 0);
         filename = buf;
         break;
       }

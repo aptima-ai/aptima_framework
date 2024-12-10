@@ -761,17 +761,17 @@ static void ten_stream_migrated(ten_stream_t *stream, void **user_data) {
              "Therefore, this function is called in the engine thread.");
 
   ten_connection_t *connection = user_data[1];
+  // The connection is created in the app thread, and _before_ the cleaning is
+  // completed, the connection should still belongs to the app thread, and only
+  // until the cleaning is completed, we can transfer the connection to the
+  // target thread (e.g.: the engine thread or the client thread). Because this
+  // function is called in the engine thread, so we can not perform thread
+  // checking here, and need to be careful to consider thread safety when access
+  // the connection instance before the cleaning is completed.
   TEN_ASSERT(connection &&
                  // TEN_NOLINTNEXTLINE(thread-check)
                  ten_connection_check_integrity(connection, false),
-             "The connection is created in the app thread, and _before_ the "
-             "cleaning is completed, the connection should still belongs to "
-             "the app thread, and only until the cleaning is completed, we can "
-             "transfer the connection to the target thread (e.g.: the engine "
-             "thread or the client thread). Because this function is called in "
-             "the engine thread, so we can not perform thread checking here, "
-             "and need to be careful to consider thread safety when access the "
-             "connection instance before the cleaning is completed.");
+             "Invalid argument.");
 
   ten_protocol_integrated_t *protocol =
       (ten_protocol_integrated_t *)connection->protocol;

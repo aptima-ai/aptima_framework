@@ -107,7 +107,4 @@ TEN_RUNTIME_PRIVATE_API ten_json_t *ten_loc_to_json(ten_loc_t *self);
 TEN_RUNTIME_PRIVATE_API void ten_loc_to_json_string(ten_loc_t *self,
                                                     ten_string_t *result);
 
-TEN_RUNTIME_PRIVATE_API bool ten_loc_set_value(ten_loc_t *self,
-                                               ten_value_t *value);
-
 TEN_RUNTIME_PRIVATE_API ten_value_t *ten_loc_to_value(ten_loc_t *self);

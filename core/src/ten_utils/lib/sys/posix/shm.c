@@ -19,7 +19,7 @@
 
 static char *__make_abs_path(const char *name) {
   char *abs_path = NULL;
-  long abs_path_size = 0;
+  size_t abs_path_size = 0;
 
   if (name == NULL) {
     return NULL;
@@ -41,7 +41,9 @@ static char *__make_abs_path(const char *name) {
     return NULL;
   }
 
-  snprintf(abs_path, abs_path_size, "/%s", name);
+  int written = snprintf(abs_path, abs_path_size, "/%s", name);
+  TEN_ASSERT(written > 0, "Should not happen.");
+
   return abs_path;
 }
 

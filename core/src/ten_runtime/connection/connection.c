@@ -266,14 +266,12 @@ static void ten_connection_on_protocol_cleaned(ten_protocol_t *protocol) {
 
 void ten_connection_clean(ten_connection_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(
-      self && ten_connection_check_integrity(self, true),
-      "Invalid use of connection %p. The connection belongs to the app "
-      "thread initially, and will be transferred to the engine thread "
-      "after the migration. But now (before the 'cleaning'), the "
-      "connection belongs to the app thread, and this function is "
-      "called in the app thread, so we can perform thread checking here.",
-      self);
+  // The connection belongs to the app thread initially, and will be transferred
+  // to the engine thread after the migration. But now (before the 'cleaning'),
+  // the connection belongs to the app thread, and this function is called in
+  // the app thread, so we can perform thread checking here.
+  TEN_ASSERT(self && ten_connection_check_integrity(self, true),
+             "Invalid use of connection %p.", self);
 
   TEN_ASSERT(self->attach_to == TEN_CONNECTION_ATTACH_TO_APP,
              "Invalid argument.");

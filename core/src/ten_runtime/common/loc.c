@@ -277,7 +277,7 @@ ten_json_t *ten_loc_to_json(ten_loc_t *self) {
   return loc_json;
 }
 
-bool ten_loc_set_value(ten_loc_t *self, ten_value_t *value) {
+static bool ten_loc_set_value(ten_loc_t *self, ten_value_t *value) {
   TEN_ASSERT(self && ten_loc_check_integrity(self), "Should not happen.");
   TEN_ASSERT(value && ten_value_check_integrity(value), "Should not happen.");
 
