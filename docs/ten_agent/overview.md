@@ -1,38 +1,40 @@
 # Overview
 
-## About TEN Agent
-
-<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/features.gif?raw=true" alt=""><figcaption>TEN Agent Features: Voice Vision and RAG</figcaption></figure>
-
-The TEN Agent, built on the TEN framework, is an open-source AI agent project. It can speak, see and access to a knowledge base.
+TEN Agent, built on the TEN framework, is an open-source AI agent project. It can speak, see and access to a knowledge base.
 
 It also serves as a boilerplate for using the TEN framework, offering a great way to fully understand how to use the framework by diving into TEN Agent.
 
-## How TEN Agent Works
+## Architecture
 
-There are three main parts in the TEN Agent:
+The TEN Agent consists of two main parts:
 
-1. An agent worker that defines the TEN Graph using TEN Extensions.
-2. A server that manages the agent worker instances and handles HTTP requests from the client.
-3. A web frontend project that builds the UI for the AI agent.
+1. **Frontend**: **Playground** (Port 3000)
+   - Web interface with API Router and UI
+   - Manages communication and graph control
 
-### Containers
+2. **Backend Services**
+   - DevServer (Port 49463): Handles graph operations
+   - WebServer (Port 8080): Processes commands
+   - AgentApp: Core component with extensions and config
 
-There are three Docker containers in TEN Agent:
+![Components Diagram](https://github.com/TEN-framework/docs/blob/main/assets/jpg/diagram.jpg?raw=true)
+
+## Docker Containers
+
+There are two Docker containers in TEN Agent:
 
 - `astra_agents_dev`: This is the workspace for development. The code repository will be mirrored into the /app folder in the container, and it provides the build environment. The backend service will also run in this container.
 - `astra_playground`: This is a separate service for the web frontend. The compiled frontend files will be mirrored here.
-- `ten_graph_designer`: This is a separate service for visualizing and editing TEN Graphs.
 
-### Agents
+## Agents
 
 The agents directory contains the core runtime of TEN, along with the graphs defined by users and some miscellaneous items like build scripts.
 
-### manifest.json
+## Manifest
 
 The application’s metadata and required extensions are specified here. Please note that `ten_runtime_go`, `py_init_extension_cpp`, and `agora_rtc` must be included. The required items will be stored in the `/ten_packages` directory.
 
-### property.json
+## Property
 
 All graph information is stored in property.json. We recommend using the Graph Designer to create and edit the graphs instead of directly modifying `property.json`. Each graph consists of a list of nodes and connections:
 
@@ -41,15 +43,15 @@ All graph information is stored in property.json. We recommend using the Graph D
 
 For details, see the API reference on interfaces in graphs.
 
-### bin
+## Bin
 
 The build script will compile the graphs into binaries stored in the `bin` folder. The binaries can be called by other services, such as the server. Note that the binary must be restarted for changes in `property.json` to take effect.
 
-### Server
+## Server
 
 The server folder includes a lightweight HTTP server and a module for running agent binaries. Below are the HTTP APIs for use. They can also be integrated with other frontend applications, such as mobile apps.
 
-### Start
+## Start
 
 Starts an agent with the given graph and overridden properties. The started agent will join the specified channel and subscribe to the uid used by your browser/device’s RTC.
 
@@ -83,7 +85,7 @@ curl 'http://localhost:8080/start' \
 ```
 {% endcode %}
 
-### Stop
+## Stop
 
 Stops the agent that was previously started.
 
@@ -105,7 +107,7 @@ curl 'http://localhost:8080/stop' \
 ```
 {% endcode %}
 
-### Ping
+## Ping
 
 Sends a ping to the server to indicate the connection is still alive. This is unnecessary if you specify timeout: -1 when starting the agent. Otherwise, the agent will quit if it doesn’t receive a ping after the specified timeout.
 
@@ -122,7 +124,7 @@ curl 'http://localhost:8080/ping' \
 ```
 {% endcode %}
 
-### Playground
+## Playground
 
 Playground is the UI of TEN Agent. It is built with NextJS. You can preview it online at <https://agent.theten.ai/>.
 
