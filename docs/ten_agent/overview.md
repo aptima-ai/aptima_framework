@@ -132,8 +132,8 @@ The code to handle audio input/output and transcribed text is in src/manager/rtc
 
 Example of joining a channel:
 
-{% code title=">_ Terminal" %}
-```bash
+{% code title="src/manager/rtc/rtc.ts" %}
+```typescript
 async join({ channel, userId }: { channel: string; userId: number }) {
   if (!this._joined) {
     const res = await apiGenAgoraData({ channel, userId });
@@ -146,18 +146,5 @@ async join({ channel, userId }: { channel: string; userId: number }) {
     this._joined = true;
   }
 }
-```
-{% endcode %}
-
-The text message is transmitted from the agent server to the web app via the Stream Message callback:
-
-{% code title=">_ Terminal" %}
-```bash
-const onStreamMessage = (message: any) => {
-  const { text } = message;
-  if (text) {
-    this.setState({ text });
-  }
-};
 ```
 {% endcode %}
