@@ -11,7 +11,7 @@ To fix this:
 
 {% code title=">_ Terminal" %}
 ```bash
-git config --global core.autocrlf true
+git config --global core.autocrlf false
 ```
 {% endcode %}
 

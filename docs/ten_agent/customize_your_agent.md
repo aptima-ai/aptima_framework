@@ -15,15 +15,23 @@ layout:
 # Customize your agent
 
 
-## Using the power of TEN Graph Designer(Beta)
+## Using Playground
 
-<figure><img src="../assets/gif/graph_designer.gif" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/module-example.gif?raw=true" alt=""><figcaption></figcaption></figure>
 
-TEN Graph Designer is a powerful tool that allows you to customize the behavior and responses of the TEN Agent without needing to write code. This approach is recommended for its ease of use.
+Once you have the playground running at [ localhost:3000 ](http://localhost:3000), you can customize your agent through three simple steps:
 
-In the canvas, you can design your flow by dragging and dropping nodes and connecting them with lines.
+1. Graph Type Selection
+   - Choose between Voice Agent, Realtime Agent, or other types
 
-Since the TEN Graph Designer is in Beta now, there are some limitations. For example, the graph you are working on needs to match the graph you are testing with. Otherwise, the changes you make will not be reflected in the results.
+2. Module Selection
+   - Pick a module that matches your chosen graph type
+
+3. Extension Configuration
+   - Select extensions and configure their API keys
+   - Adjust settings as needed
+
+The playground provides an intuitive interface to connect these components without coding.
 
 ## Changing the code yourself
 

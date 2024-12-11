@@ -39,41 +39,23 @@ docker compose up
 Once the command is entered, you should see output similar to this:
 
 <pre class="language-bash" data-title=">_ Terminal"><code class="lang-bash">....
-Attaching to ten_agent_demo, ten_agent_dev, ten_agent_playground, ten_graph_designer
-ten_agent_dev         | >> run graph designer server
+Attaching to ten_agent_dev, ten_agent_playground
 ten_agent_dev         | cd agents && tman dev-server
 ten_agent_dev         | :-)  Starting server at http://0.0.0.0:49483
-ten_agent_demo        |   ▲ Next.js 14.2.4
-ten_agent_demo        |   - Local:        http://localhost:3000
-ten_agent_demo        |   - Network:      http://0.0.0.0:3000
-ten_agent_demo        |
-ten_agent_demo        |  ✓ Starting...
 ten_agent_playground  |   ▲ Next.js 14.2.4
 ten_agent_playground  |   - Local:        http://localhost:3000
 ten_agent_playground  |   - Network:      http://0.0.0.0:3000
 ten_agent_playground  |
 ten_agent_playground  |  ✓ Starting...
-ten_graph_designer    |   ▲ Next.js 14.2.4
-ten_graph_designer    |   - Local:        http://localhost:3000
-ten_graph_designer    |   - Network:      http://0.0.0.0:3000
-ten_graph_designer    |
-ten_graph_designer    |  ✓ Starting...
-ten_agent_demo        |  ✓ Ready in 425ms
 ten_agent_playground  |  ✓ Ready in 429ms
-ten_graph_designer    |  ✓ Ready in 405ms
 ...
 </code></pre>
 
 Now, we’ve got the following services running:
 
-• `ten_agent_dev` at `http://0.0.0.0:49483` (the backend server)
+• `ten_agent_dev` at `http://0.0.0.0:49483` (dev server)
 
-• `ten_agent_playground` at `http://localhost:3000` (the playground of TEN Agent)
-
-• `ten_graph_designer` at `http://localhost:3001` (the frontend of Graph Designer)
-
-• `ten_agent_demo` at `http://localhost:3002` (the frontend of TEN Agent, where the OpenAI Realtime API magic is)
-
+• `ten_agent_playground` at `http://localhost:3000` (TEN Agent playground)
 
 ## 2. Enter the docker container
 
@@ -129,7 +111,7 @@ After running the command, the log will display something like this:
 
 ## 4. Adding API to the extension
 
-Navigate into the `hello_world` directory and open manifest.json. Add the API objects with `data_in` and `cmd_out`, which we will use shortly within the Graph Designer:
+Navigate into the `hello_world` directory and open manifest.json. Add the API objects with `data_in` and `cmd_out`:
 
 <pre class="language-json" data-title="./hello_world/manifest.json"><code class="lang-json">{
   "type": "extension",
@@ -185,7 +167,7 @@ Let's use `cd /app` command to go back to the root of the project, and run `make
 ```bash
 cd /app
 
-make build
+task use
 ```
 
 {% endcode %}
@@ -196,12 +178,6 @@ You don’t need to restart the server when you first build the agent. However, 
 
 <figure><img src="../assets/gif/docker_restart_server.gif" alt=""><figcaption><p>Restart the server for ten_agent_dev</p></figcaption></figure>
 
-## 7. Verify the extension&#x20;
+## 7. Verify the extension
 
-Open `http://localhost:3001` in your browser. You should see `hello_world` in the left menu. Drag it to the canvas, and connect it to the `text_data` input and `flash` output.
-
-You see the green and red color indicting the possible routes of node connecting.&#x20;
-
-<figure><img src="../assets/gif/hello_world_python.gif" alt=""><figcaption><p>hello_world extension</p></figcaption></figure>
-
-Congratulations! You’ve successfully created your first `hello_world` extension, and it’s working seamlessly within the Graph Designer canvas.
+Congratulations! You’ve successfully created your first `hello_world` extension.

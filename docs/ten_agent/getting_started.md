@@ -14,16 +14,16 @@ layout:
 
 # Quickstart
 
-In this chapter, we’ll build the TEN Agent together. For additional help, check out the YouTube video tutorial at the end.
+In this chapter, let's build the TEN Agent playground together.
 
 ## Prerequisites
 
 {% tabs %}
 {% tab title="API Keys" %}
 
-* Agora App ID and App Certificate([read here on how](https://docs.agora.io/en/video-calling/get-started/manage-agora-account?platform=web))
-* Azure [speech-to-text](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text) and [text-to-speech](https://azure.microsoft.com/en-us/products/ai-services/text-to-speech) API keys
+* Agora [ App ID ](https://docs.agora.io/en/video-calling/get-started/manage-agora-account?platform=web#create-an-agora-project) and [ App Certificate ](https://docs.agora.io/en/video-calling/get-started/manage-agora-account?platform=web#create-an-agora-project)(free minutes every month)
 * [OpenAI](https://openai.com/index/openai-api/) API key
+* Azure [speech-to-text](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text) and [text-to-speech](https://azure.microsoft.com/en-us/products/ai-services/text-to-speech) API keys
 {% endtab %}
 
 {% tab title="Installations" %}
@@ -51,7 +51,7 @@ You will need to uncheck "Use Rosetta for x86\_64/amd64 emulation on Apple Silic
 
 **1. Prepare config files**
 
-In the root of the project, use `cd` command to create \`.env\` file from example . It will be used to store information for \`docker compose\` later.
+In the root of the project, use `cd` command to create \`.env\` file from example.
 
 {% code title=">_ Terminal" %}
 
@@ -61,28 +61,15 @@ cp ./.env.example ./.env
 
 {% endcode %}
 
-**2. Setup API keys & Environment variables in .env file**
+**2. Setup Agora App ID and App Certificate in   .env file**
 
-Open the `.env` file and fill in the keys and regions. This is also where you can choose to use any different extensions:
+Open the `.env` file and fill in Agora App ID and App Certificate.These will be used to connect to Agora RTC extension.
 
 {% code title=".env" %}
 
 ```bash
-# Agora App ID and App Certificate
 AGORA_APP_ID=
-# Certificate is only required when enabled within Agora.io account
 AGORA_APP_CERTIFICATE=
-
-# Azure STT key and region
-AZURE_STT_KEY=
-AZURE_STT_REGION=
-
-# Azure TTS key and region
-AZURE_TTS_KEY=
-AZURE_TTS_REGION=
-
-# OpenAI API key
-OPENAI_API_KEY=
 ```
 
 {% endcode %}
@@ -94,27 +81,38 @@ In the same directory, run the `docker` command to compose containers:
 {% code title=">_ Terminal" %}
 
 ```bash
-docker compose up
+docker compose up -d
 ```
 
 {% endcode %}
 
-**4. Build TEN Agent**&#x20;
+**4. Enter container**
 
-Open up a separate terminal window, build the agent and start the server:
+Use the following command to enter the container:
 
 {% code title=">_ Bash" %}
 
 ```bash
 docker exec -it ten_agent_dev bash
+```
+
+{% endcode %}
+
+**5. Build the agent**
+
+Use the following command to build the agent:
+
+{% code title=">_ Bash" %}
+
+```bash
 task use
 ```
 
 {% endcode %}
 
-**5. Start the server**
+**6. Start the web server**
 
-Now the server is running at port: 8080.
+Use the following command to start the web server:
 
 {% code title=">_ Bash" %}
 
@@ -124,22 +122,16 @@ task run
 
 {% endcode %}
 
-## **Finish and verify your agent**
 
-You can open [localhost:3001](https://localhost:3001/) in browser to use your graph designer. Simultaneously, open another tab at [localhost:3000](https://localhost:3000/) to see the customized voice agent up and running.
+**9. Edit playground settings**
 
-Now you have the power of the Graph Designer at your fingertips to perform the magic of agent customization yourself. 🎉
+Open the playground at [localhost:3000](http://localhost:3000) to configure your agent.
+ 1. Select a graph type (e.g. Voice Agent, Realtime Agent)
+ 2. Choose a corresponding module
+ 3. Select an extension and configure its API key settings
 
-**Graph designer**
+![Module Example](https://github.com/TEN-framework/docs/blob/main/assets/gif/module-example.gif?raw=true)
 
-TEN Graph Designer (beta), a tool that requires zero coding knowledge and makes the experience of creating agentic applications smoother.
+## TEN Agent Components
 
-<figure><img src="../assets/gif/graph_designer.gif" alt=""><figcaption><p>Graph Designer</p></figcaption></figure>
-
-## Video tutorials
-
-English:
-<https://www.youtube.com/watch?t=1s&v=_AZ3RedzvRg>
-
-中文:
-<https://www.youtube.com/watch?v=MbqF4c2Myrw>
+![Components Diagram](https://github.com/TEN-framework/docs/blob/main/assets/jpg/diagram.jpg?raw=true)
