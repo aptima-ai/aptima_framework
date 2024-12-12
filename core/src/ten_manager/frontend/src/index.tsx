@@ -11,6 +11,9 @@ import App from "./App";
 // Import and initialize i18n.
 import "./i18n";
 
+// Import react-flow style.
+import "@xyflow/react/dist/style.css";
+
 const rootElement = document.getElementById("root");
 
 if (rootElement) {

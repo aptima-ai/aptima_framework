@@ -10,6 +10,7 @@ use std::{
 };
 
 use actix_cors::Cors;
+use actix_files::Files;
 use actix_web::{http::header, web, App, HttpServer};
 use anyhow::{Ok, Result};
 use clap::{value_parser, Arg, ArgMatches, Command};
@@ -17,7 +18,12 @@ use console::Emoji;
 
 use crate::{
     config::TmanConfig,
-    dev_server::{configure_routes, DevServerState},
+    dev_server::{
+        configure_routes,
+        // TODO(Wei): Enable this.
+        // frontend::get_frontend_asset,
+        DevServerState,
+    },
     error::TmanError,
     log::tman_verbose_println,
     utils::{check_is_app_folder, get_cwd},
@@ -28,6 +34,7 @@ pub struct DevServerCommand {
     pub ip_address: String,
     pub port: u16,
     pub base_dir: Option<String>,
+    pub external_frontend_asset_path: Option<String>,
 }
 
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
@@ -67,6 +74,17 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
                 .help("The base directory")
                 .required(false),
         )
+        // This is a hidden feature that allows the use of frontend asset
+        // resources from the file system instead of the frontend resources
+        // originally bundled into the tman executable, providing a bit more
+        // flexibility.
+        .arg(
+            Arg::new("EXTERNAL_FRONTEND_ASSET_PATH")
+                .long("external-frontend-asset-path")
+                .help("Sets the external frontend asset path")
+                .required(false)
+                .hide(true),
+        )
 }
 
 pub fn parse_sub_cmd(
@@ -79,6 +97,9 @@ pub fn parse_sub_cmd(
             .to_string(),
         port: *sub_cmd_args.get_one::<u16>("PORT").unwrap(),
         base_dir: sub_cmd_args.get_one::<String>("BASE_DIR").cloned(),
+        external_frontend_asset_path: sub_cmd_args
+            .get_one::<String>("EXTERNAL_FRONTEND_ASSET_PATH")
+            .cloned(),
     };
 
     cmd
@@ -121,10 +142,26 @@ pub async fn execute_cmd(
             .allowed_header(header::CONTENT_TYPE)
             .max_age(3600);
 
-        App::new()
+        let mut app = App::new()
             .app_data(state.clone())
             .wrap(cors)
-            .configure(|cfg| configure_routes(cfg, state.clone()))
+            .configure(|cfg| configure_routes(cfg, state.clone()));
+
+        if let Some(external_frontend_asset_path) =
+            &command_data.external_frontend_asset_path
+        {
+            let static_files = Files::new("/", external_frontend_asset_path)
+                .index_file("index.html")
+                .use_last_modified(true)
+                .use_etag(true);
+
+            app = app.service(static_files);
+        } else {
+            // TODO(Wei): Enable this.
+            // app = app.default_service(web::route().to(get_frontend_asset));
+        }
+
+        app
     });
 
     let bind_address =

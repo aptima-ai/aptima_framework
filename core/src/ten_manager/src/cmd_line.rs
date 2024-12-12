@@ -76,13 +76,6 @@ fn create_cmd() -> clap::ArgMatches {
                 .default_value(None),
         )
         .arg(
-            Arg::new("MI")
-                .long("mi")
-                .help("Machine interface")
-                .action(clap::ArgAction::SetTrue)
-                .hide(true),
-        )
-        .arg(
             Arg::new("VERBOSE")
                 .long("verbose")
                 .help("Enable verbose output")
@@ -94,6 +87,13 @@ fn create_cmd() -> clap::ArgMatches {
                 .long("yes")
                 .help("Automatically answer 'yes' to all prompts")
                 .action(clap::ArgAction::SetTrue),
+        )
+        .arg(
+            Arg::new("MI")
+                .long("mi")
+                .help("Machine interface mode")
+                .action(clap::ArgAction::SetTrue)
+                .hide(true),
         )
         .subcommand(crate::cmd::cmd_install::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_uninstall::create_sub_cmd(&args_cfg))
@@ -113,9 +113,9 @@ pub fn parse_cmd(
     tman_config.config_file = matches.get_one::<String>("CONFIG_FILE").cloned();
     tman_config.admin_token = matches.get_one::<String>("ADMIN_TOKEN").cloned();
     tman_config.user_token = matches.get_one::<String>("USER_TOKEN").cloned();
-    tman_config.mi_mode = matches.get_flag("MI");
     tman_config.verbose = matches.get_flag("VERBOSE");
     tman_config.assume_yes = matches.get_flag("ASSUME_YES");
+    tman_config.mi_mode = matches.get_flag("MI");
 
     match matches.subcommand() {
         Some(("install", sub_cmd_args)) => crate::cmd::CommandData::Install(

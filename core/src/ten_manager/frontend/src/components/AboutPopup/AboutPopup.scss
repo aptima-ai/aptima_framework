@@ -1,0 +1,24 @@
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+.about-content {
+  text-align: center;
+  .powered-by {
+    font-style: italic;
+    font-size: 16px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+  }
+
+  p {
+    margin: 5px 0;
+  }
+
+  .about-link {
+    color: blue;
+    text-decoration: underline;
+  }
+}

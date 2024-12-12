@@ -33,6 +33,10 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.scss$/,
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
       // Other loaders (such as images, fonts) can be added here.
     ],
   },

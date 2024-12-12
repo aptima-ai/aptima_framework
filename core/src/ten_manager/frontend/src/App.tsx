@@ -4,8 +4,13 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import AppBar from "./components/AppBar/AppBar";
+import FlowCanvas, { FlowCanvasRef } from "./flow/FlowCanvas";
+import SettingsPopup from "./components/SettingsPopup/SettingsPopup";
+import { useTheme } from "./hooks/useTheme";
+import "./theme/index.scss";
 
 interface ApiResponse<T> {
   status: string;
@@ -18,10 +23,15 @@ interface DevServerVersion {
 }
 
 const App: React.FC = () => {
-  const { t, i18n } = useTranslation("common");
+  const { t } = useTranslation("common");
   const [version, setVersion] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [showSettings, setShowSettings] = useState(false);
+  const { theme, setTheme } = useTheme();
 
+  const flowCanvasRef = useRef<FlowCanvasRef>(null);
+
+  // Get the version of tman.
   useEffect(() => {
     fetch("/api/dev-server/v1/version")
       .then((response) => {
@@ -43,21 +53,25 @@ const App: React.FC = () => {
       });
   }, []);
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
+  const handleAutoLayout = () => {
+    flowCanvasRef.current?.performAutoLayout();
   };
 
   return (
-    <div className="App">
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => changeLanguage("en")}>English</button>
-        <button onClick={() => changeLanguage("zh_cn")}>中文</button>
-      </div>
-
-      {error ? (
-        <p style={{ color: "red" }}>{t("error_fetching")}</p>
-      ) : (
-        <h1>{t("current_version", { version })}</h1>
+    <div className={`theme-${theme}`}>
+      <AppBar
+        version={version}
+        error={error}
+        onOpenSettings={() => setShowSettings(true)}
+        onAutoLayout={handleAutoLayout}
+      />
+      <FlowCanvas ref={flowCanvasRef} />
+      {showSettings && (
+        <SettingsPopup
+          theme={theme}
+          onChangeTheme={setTheme}
+          onClose={() => setShowSettings(false)}
+        />
       )}
     </div>
   );

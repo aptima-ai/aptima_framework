@@ -11,6 +11,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@xyflow/react": "^12.3.6",
+    "dagre": "^0.8.5",
     "i18next": "^24.0.5",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-http-backend": "^3.0.1",
@@ -19,12 +21,15 @@
     "react-i18next": "^15.1.4"
   },
   "devDependencies": {
+    "@types/dagre": "^0.7.52",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
+    "sass": "^1.82.0",
+    "sass-loader": "^16.0.4",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.7.2",

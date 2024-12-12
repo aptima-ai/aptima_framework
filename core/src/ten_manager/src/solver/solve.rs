@@ -51,6 +51,7 @@ fn get_model(
     Some(result)
 }
 
+#[allow(dead_code)]
 fn print_prefix(tman_config: &TmanConfig, depth: u8) {
     tman_verbose_println!(tman_config, "");
     for _ in 0..depth {
@@ -59,6 +60,7 @@ fn print_prefix(tman_config: &TmanConfig, depth: u8) {
 }
 
 // Recursively print the configuration object.
+#[allow(dead_code)]
 fn print_configuration(
     tman_config: &TmanConfig,
     conf: &Configuration,
@@ -102,6 +104,7 @@ fn print_configuration(
 }
 
 // recursively print the statistics object
+#[allow(dead_code)]
 fn print_statistics(
     tman_config: &TmanConfig,
     stats: &Statistics,
@@ -152,6 +155,7 @@ fn print_statistics(
     }
 }
 
+#[allow(unused_assignments)]
 fn solve(
     tman_config: &TmanConfig,
     input: &str,
@@ -278,8 +282,8 @@ fn solve(
 
     // Get the statistics object, get the root key, then print the statistics
     // recursively.
-    let stats = ctl.statistics().unwrap();
-    let stats_key = stats.root().unwrap();
+    // let stats = ctl.statistics().unwrap();
+    // let stats_key = stats.root().unwrap();
     // print_statistics(tman_config, stats, stats_key, 0);
 
     Ok((usable_model, non_usable_models))

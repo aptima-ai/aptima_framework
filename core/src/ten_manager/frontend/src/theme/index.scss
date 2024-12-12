@@ -1,0 +1,22 @@
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+@use "variables";
+@use "light";
+@use "dark";
+@use "reactflow";
+
+// Global style.
+body,
+html,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--popup-bg);
+  color: var(--app-bar-fg);
+  font-family: Arial, sans-serif;
+}

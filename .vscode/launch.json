@@ -207,6 +207,9 @@
         "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/gen/cmake/clingo/install/lib/",
         "RUST_BACKTRACE": "1",
       },
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman test (rust)",
@@ -237,6 +240,9 @@
         "LD_LIBRARY_PATH": "${workspaceFolder}/out/linux/x64/ten_manager/lib/",
         "RUST_BACKTRACE": "1",
       },
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman install (lldb)",
@@ -248,6 +254,9 @@
         "install"
       ],
       "env": {},
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman delete (lldb)",
@@ -262,6 +271,9 @@
         "0.1.1",
       ],
       "env": {},
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman_test (lldb)",
@@ -270,6 +282,9 @@
       "program": "${workspaceFolder}/out/linux/x64/tman_test",
       "cwd": "${workspaceFolder}/out/linux/x64/",
       "args": [],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman check (lldb)",
@@ -279,6 +294,9 @@
       "cwd": "${workspaceFolder}/out/linux/x64/",
       "args": [
         "check"
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
       ],
     },
     {
@@ -292,6 +310,9 @@
         "app",
         "ddd",
         "--mock=${workspaceFolder}/out/linux/x64/tests/local_registry/"
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
       ],
     },
     {
@@ -309,7 +330,10 @@
       "env": {
         "aliyun_oss_access_key_id": "",
         "aliyun_oss_access_key_secret": ""
-      }
+      },
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman install_nodejs_app_mock (lldb)",
@@ -323,6 +347,9 @@
         "app",
         "smart_meeting_minutes",
       ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman install_extension_mock (lldb)",
@@ -334,6 +361,9 @@
         "install",
         "extension",
         "default_extension_cpp"
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
       ],
     },
     {
@@ -349,6 +379,9 @@
         "--build=debug",
         "--mock=${workspaceFolder}/out/linux/x64/tests/local_registry/"
       ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman install_app_mock (lldb)",
@@ -359,6 +392,9 @@
       "args": [
         "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/config.json",
         "install",
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
       ],
     },
     {
@@ -371,18 +407,24 @@
         "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/config.json",
         "install",
       ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman dev-server (lldb)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
-      "cwd": "${workspaceFolder}/out/linux/x64/",
+      "program": "${workspaceFolder}/core/src/ten_manager/target/x86_64-unknown-linux-gnu/debug/tman",
+      "cwd": "${workspaceFolder}/core/src/ten_manager/target/x86_64-unknown-linux-gnu/debug/",
       "args": [
         "--verbose",
         "dev-server",
-        "--base-dir=/home/sunxilin/ten_framework_internal_base/ten_framework/out/linux/x64/tests/ten_runtime/integration/python/two_async_extensions_in_different_groups_python/two_async_extensions_in_different_groups_python_app",
-        "--port=49483"
+        "--frontend-dev",
+        "--base-dir=/home/wei/MyData/MyProject/ten_framework_internal_base/ten_framework/out/linux/x64/tests/ten_runtime/integration/cpp/http_basic/restful_http_app/",
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
       ],
     },
     {
@@ -397,6 +439,9 @@
         "../../../tests/ten_runtime/integration/ten_manager/res/dest_manifest.json",
         "hello_world",
       ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "tman check graph (lldb)",
@@ -408,7 +453,10 @@
         "check",
         "graph",
         "/home/workspace/pcm-pusher"
-      ]
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "ten_rust (rust)",
@@ -434,7 +482,10 @@
       },
       "args": [
         "test_create_schema_invalid_json"
-      ]
+      ],
+      "preRunCommands": [
+        "script import pathlib;import subprocess;import lldb;rustc_sysroot = subprocess.getoutput(\"rustc --print sysroot\");rustlib_etc = pathlib.Path(rustc_sysroot) / \"lib\" / \"rustlib\" / \"etc\";lldb.debugger.HandleCommand(f'command script import \"{rustlib_etc / \"lldb_lookup.py\"}\"');lldb.debugger.HandleCommand(f'command source -s 0 \"{rustlib_etc / \"lldb_commands\"}\"')"
+      ],
     },
     {
       "name": "app (C/C++) (lldb, launch)",
