@@ -51,20 +51,48 @@ static ten_cmd_t *ten_raw_cmd_custom_create_empty(void) {
   return raw_cmd;
 }
 
-ten_shared_ptr_t *ten_cmd_custom_create(void) {
+ten_shared_ptr_t *ten_cmd_custom_create_empty(void) {
   return ten_shared_ptr_create(ten_raw_cmd_custom_create_empty(),
                                ten_raw_cmd_custom_destroy);
 }
 
-ten_cmd_t *ten_raw_cmd_custom_create(const char *cmd_name) {
-  TEN_ASSERT(cmd_name, "Should not happen.");
+ten_cmd_t *ten_raw_cmd_custom_create(const char *name, ten_error_t *err) {
+  TEN_ASSERT(name, "Should not happen.");
 
   ten_cmd_t *cmd = ten_raw_cmd_custom_create_empty();
   TEN_ASSERT(cmd && ten_raw_cmd_check_integrity(cmd), "Should not happen.");
 
-  ten_raw_msg_set_name((ten_msg_t *)cmd, cmd_name, NULL);
+  ten_raw_msg_set_name((ten_msg_t *)cmd, name, err);
 
   return cmd;
+}
+
+static ten_cmd_t *ten_raw_cmd_custom_create_with_name_len(const char *name,
+                                                          size_t name_len,
+                                                          ten_error_t *err) {
+  TEN_ASSERT(name, "Should not happen.");
+
+  ten_cmd_t *cmd = ten_raw_cmd_custom_create_empty();
+  TEN_ASSERT(cmd && ten_raw_cmd_check_integrity(cmd), "Should not happen.");
+
+  ten_raw_msg_set_name_with_len((ten_msg_t *)cmd, name, name_len, err);
+
+  return cmd;
+}
+
+ten_shared_ptr_t *ten_cmd_custom_create(const char *name, ten_error_t *err) {
+  TEN_ASSERT(name, "Should not happen.");
+  return ten_shared_ptr_create(ten_raw_cmd_custom_create(name, err),
+                               ten_raw_cmd_custom_destroy);
+}
+
+ten_shared_ptr_t *ten_cmd_custom_create_with_name_len(const char *name,
+                                                      size_t name_len,
+                                                      ten_error_t *err) {
+  TEN_ASSERT(name, "Should not happen.");
+  return ten_shared_ptr_create(
+      ten_raw_cmd_custom_create_with_name_len(name, name_len, err),
+      ten_raw_cmd_custom_destroy);
 }
 
 ten_json_t *ten_raw_cmd_custom_to_json(ten_msg_t *self, ten_error_t *err) {

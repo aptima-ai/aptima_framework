@@ -30,6 +30,11 @@ typedef struct ten_video_frame_t {
   ten_value_t data;       // buf
 } ten_video_frame_t;
 
+TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_video_frame_create_empty(void);
+
+TEN_RUNTIME_API ten_shared_ptr_t *ten_video_frame_create_with_name_len(
+    const char *name, size_t name_len, ten_error_t *err);
+
 TEN_RUNTIME_PRIVATE_API bool ten_raw_video_frame_check_integrity(
     ten_video_frame_t *self);
 

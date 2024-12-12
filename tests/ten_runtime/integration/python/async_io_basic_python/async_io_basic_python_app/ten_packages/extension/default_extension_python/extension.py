@@ -71,7 +71,7 @@ class DefaultExtension(Extension):
     async def on_cmd_async(self, ten_env: TenEnv, cmd: Cmd) -> None:
         ten_env.log_info("on_cmd_async")
 
-        cmd_json = cmd.to_json()
+        cmd_json = cmd.get_property_to_json()
         ten_env.log_info("on_cmd_async json: " + cmd_json)
 
         # Mock async operation, e.g. network, file I/O

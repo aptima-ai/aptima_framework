@@ -26,12 +26,12 @@ class test_extension_1 : public ten::extension_t {
       hello_world_cmd = std::move(cmd);
 
       auto data = ten::data_t::create("data");
-      data->from_json(
-          // clang-format off
+      data->set_property_from_json(nullptr,
+                                   // clang-format off
           R"({
                "payload": 3
              })"
-          // clang-format on
+                                   // clang-format on
       );
       ten_env.send_data(std::move(data));
     } else if (std::string(cmd->get_name()) == "data_ack") {

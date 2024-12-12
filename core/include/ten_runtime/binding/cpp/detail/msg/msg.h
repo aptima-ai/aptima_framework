@@ -17,7 +17,6 @@
 #include "ten_utils/lib/buf.h"
 #include "ten_utils/lib/json.h"
 #include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_get.h"
@@ -99,75 +98,6 @@ class msg_t {
     return ten_msg_clear_and_set_dest(
         c_msg, uri, graph, extension_group_name, extension_name,
         err != nullptr ? err->get_c_error() : nullptr);
-  }
-
-  std::string to_json(error_t *err = nullptr) const {
-    TEN_ASSERT(c_msg, "Should not happen.");
-
-    if (c_msg == nullptr) {
-      if (err != nullptr && err->get_c_error() != nullptr) {
-        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
-                      "Invalid TEN message.");
-      }
-      return "";
-    }
-
-    ten_json_t *c_json =
-        ten_msg_to_json(c_msg, err != nullptr ? err->get_c_error() : nullptr);
-    TEN_ASSERT(c_json, "Failed to get json from TEN C message.");
-    if (c_json == nullptr) {
-      if (err != nullptr && err->get_c_error() != nullptr) {
-        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
-                      "Invalid TEN message.");
-      }
-      return "";
-    }
-
-    bool must_free = false;
-    const char *json_str = ten_json_to_string(c_json, nullptr, &must_free);
-    TEN_ASSERT(json_str, "Failed to get JSON string from JSON.");
-    std::string res = json_str;
-
-    ten_json_destroy(c_json);
-    if (must_free) {
-      TEN_FREE(
-          json_str);  // NOLINT(cppcoreguidelines-no-malloc, hicpp-no-malloc)
-    }
-    return res;
-  }
-
-  bool from_json(const char *json_str, error_t *err = nullptr) {
-    TEN_ASSERT(c_msg, "Should not happen.");
-
-    if (c_msg == nullptr) {
-      if (err != nullptr && err->get_c_error() != nullptr) {
-        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
-                      "Invalid TEN message.");
-      }
-      return false;
-    }
-
-    bool result = true;
-
-    ten_json_t *c_json = ten_json_from_string(
-        json_str, err != nullptr ? err->get_c_error() : nullptr);
-    if (c_json == nullptr) {
-      result = false;
-      goto done;  // NOLINT(hicpp-avoid-goto,cppcoreguidelines-avoid-goto)
-    }
-
-    result = ten_msg_from_json(c_msg, c_json,
-                               err != nullptr ? err->get_c_error() : nullptr);
-    if (!result) {
-      TEN_LOGW("Failed to set message content.");
-      goto done;  // NOLINT(hicpp-avoid-goto,cppcoreguidelines-avoid-goto)
-    }
-
-  done:
-    if (c_json != nullptr) {
-      ten_json_destroy(c_json);
-    }
-    return result;
   }
 
   bool is_property_exist(const char *path, error_t *err = nullptr) {
@@ -374,10 +304,8 @@ class msg_t {
     return get_property_buf(path, nullptr);
   }
 
-  std::string get_property_to_json(const char *path,
+  std::string get_property_to_json(const char *path = nullptr,
                                    error_t *err = nullptr) const {
-    TEN_ASSERT(path && strlen(path), "path should not be empty.");
-
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
@@ -394,6 +322,10 @@ class msg_t {
     }
     ten_json_t *c_json = ten_value_to_json(value);
     if (c_json == nullptr) {
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
+                      "Invalid TEN message.");
+      }
       return result;
     }
 
@@ -561,6 +493,14 @@ class msg_t {
   bool set_property_from_json(const char *path, const char *json,
                               error_t *err = nullptr) {
     TEN_ASSERT(c_msg, "Should not happen.");
+
+    if (c_msg == nullptr) {
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
+                      "Invalid TEN message.");
+      }
+      return false;
+    }
 
     ten_json_t *c_json = ten_json_from_string(
         json, err != nullptr ? err->get_c_error() : nullptr);

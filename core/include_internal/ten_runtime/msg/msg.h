@@ -300,6 +300,11 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_msg_set_name(ten_msg_t *self,
                                                   const char *msg_name,
                                                   ten_error_t *err);
 
+TEN_RUNTIME_PRIVATE_API bool ten_raw_msg_set_name_with_len(ten_msg_t *self,
+                                                           const char *msg_name,
+                                                           size_t msg_name_len,
+                                                           ten_error_t *err);
+
 /**
  * @brief Set the 'graph_id' in the dest loc to the specified value.
  */
@@ -308,10 +313,10 @@ ten_msg_set_dest_engine_if_unspecified_or_predefined_graph_name(
     ten_shared_ptr_t *self, ten_engine_t *target_engine,
     ten_list_t *predefined_graph_infos);
 
-TEN_RUNTIME_API bool ten_msg_set_name_with_size(ten_shared_ptr_t *self,
-                                                const char *msg_name,
-                                                size_t msg_name_len,
-                                                ten_error_t *err);
+TEN_RUNTIME_PRIVATE_API bool ten_msg_set_name_with_len(ten_shared_ptr_t *self,
+                                                       const char *msg_name,
+                                                       size_t msg_name_len,
+                                                       ten_error_t *err);
 
 inline TEN_MSG_TYPE ten_raw_msg_get_type(ten_msg_t *self) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");

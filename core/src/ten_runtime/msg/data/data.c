@@ -35,7 +35,7 @@ bool ten_raw_data_check_integrity(ten_data_t *self) {
   return true;
 }
 
-static ten_data_t *ten_raw_data_create(void) {
+static ten_data_t *ten_raw_data_create_empty(void) {
   ten_data_t *self = (ten_data_t *)TEN_MALLOC(sizeof(ten_data_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
@@ -43,6 +43,25 @@ static ten_data_t *ten_raw_data_create(void) {
   ten_signature_set(&self->signature, TEN_DATA_SIGNATURE);
   ten_value_init_buf(&self->buf, 0);
 
+  return self;
+}
+
+ten_shared_ptr_t *ten_data_create_empty(void) {
+  ten_data_t *self = ten_raw_data_create_empty();
+  return ten_shared_ptr_create(self, ten_raw_data_destroy);
+}
+
+static ten_data_t *ten_raw_data_create(const char *name, ten_error_t *err) {
+  ten_data_t *self = ten_raw_data_create_empty();
+  ten_raw_msg_set_name((ten_msg_t *)self, name, err);
+  return self;
+}
+
+static ten_data_t *ten_raw_data_create_with_name_len(const char *name,
+                                                     size_t name_len,
+                                                     ten_error_t *err) {
+  ten_data_t *self = ten_raw_data_create_empty();
+  ten_raw_msg_set_name_with_len((ten_msg_t *)self, name, name_len, err);
   return self;
 }
 
@@ -55,8 +74,17 @@ void ten_raw_data_destroy(ten_data_t *self) {
   TEN_FREE(self);
 }
 
-ten_shared_ptr_t *ten_data_create(void) {
-  ten_data_t *self = ten_raw_data_create();
+ten_shared_ptr_t *ten_data_create(const char *name, ten_error_t *err) {
+  TEN_ASSERT(name, "Invalid argument.");
+  ten_data_t *self = ten_raw_data_create(name, err);
+  return ten_shared_ptr_create(self, ten_raw_data_destroy);
+}
+
+ten_shared_ptr_t *ten_data_create_with_name_len(const char *name,
+                                                size_t name_len,
+                                                ten_error_t *err) {
+  TEN_ASSERT(name, "Invalid argument.");
+  ten_data_t *self = ten_raw_data_create_with_name_len(name, name_len, err);
   return ten_shared_ptr_create(self, ten_raw_data_destroy);
 }
 
@@ -104,7 +132,7 @@ ten_msg_t *ten_raw_data_as_msg_clone(ten_msg_t *self,
                  ten_raw_msg_get_type(self) == TEN_MSG_TYPE_DATA,
              "Should not happen.");
 
-  ten_data_t *new_data = ten_raw_data_create();
+  ten_data_t *new_data = ten_raw_data_create_empty();
   TEN_ASSERT(new_data, "Failed to allocate memory.");
 
   for (size_t i = 0; i < ten_data_fields_info_size; ++i) {

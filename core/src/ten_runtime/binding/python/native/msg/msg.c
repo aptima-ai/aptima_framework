@@ -47,81 +47,6 @@ ten_shared_ptr_t *ten_py_msg_move_c_msg(ten_py_msg_t *self) {
   return c_msg;
 }
 
-PyObject *ten_py_msg_to_json(PyObject *self, TEN_UNUSED PyObject *args) {
-  ten_py_msg_t *py_msg = (ten_py_msg_t *)self;
-
-  TEN_ASSERT(py_msg && ten_py_msg_check_integrity(py_msg), "Invalid argument.");
-
-  ten_shared_ptr_t *c_msg = py_msg->c_msg;
-  if (!c_msg) {
-    TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
-  }
-
-  ten_json_t *msg_json = ten_msg_to_json(c_msg, NULL);
-
-  bool must_free = true;
-  const char *json_string = ten_json_to_string(msg_json, NULL, &must_free);
-  PyObject *res = Py_BuildValue("s", json_string);
-  if (must_free) {
-    TEN_FREE(json_string);
-  }
-
-  ten_json_destroy(msg_json);
-
-  return res;
-}
-
-PyObject *ten_py_msg_from_json(PyObject *self, PyObject *args) {
-  ten_py_msg_t *py_msg = (ten_py_msg_t *)self;
-
-  TEN_ASSERT(py_msg && ten_py_msg_check_integrity(py_msg), "Invalid argument.");
-
-  ten_shared_ptr_t *c_msg = py_msg->c_msg;
-  if (!c_msg) {
-    TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
-  }
-
-  bool success = true;
-
-  ten_error_t err;
-  ten_error_init(&err);
-
-  if (PyTuple_GET_SIZE(args) != 1) {
-    ten_py_raise_py_value_error_exception("from_json requires 1 args.");
-
-    success = false;
-    goto done;
-  }
-
-  char *json_str = NULL;
-  if (!PyArg_ParseTuple(args, "s", &json_str)) {
-    success = false;
-    goto done;
-  }
-
-  ten_json_t *c_json = ten_json_from_string(json_str, &err);
-  if (!c_json) {
-    ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
-
-    success = false;
-    goto done;
-  }
-
-  success = ten_msg_from_json(c_msg, c_json, &err);
-  ten_json_destroy(c_json);
-
-done:
-  ten_error_deinit(&err);
-
-  if (success) {
-    Py_RETURN_NONE;
-  } else {
-    return NULL;
-  }
-}
-
 PyObject *ten_py_msg_get_name(PyObject *self, TEN_UNUSED PyObject *args) {
   ten_py_msg_t *py_msg = (ten_py_msg_t *)self;
 
@@ -130,7 +55,7 @@ PyObject *ten_py_msg_get_name(PyObject *self, TEN_UNUSED PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
   const char *name = ten_msg_get_name(c_msg);
@@ -148,7 +73,7 @@ PyObject *ten_py_msg_set_name(PyObject *self, TEN_UNUSED PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
   const char *name = NULL;
@@ -226,20 +151,20 @@ PyObject *ten_py_msg_set_property_string(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
   const char *value = NULL;
 
-  if (!PyArg_ParseTuple(args, "ss", &key, &value)) {
+  if (!PyArg_ParseTuple(args, "ss", &path, &value)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key || !value) {
+  if (!path || !value) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -248,7 +173,7 @@ PyObject *ten_py_msg_set_property_string(PyObject *self, PyObject *args) {
 
   ten_value_t *c_value = ten_value_create_string(value);
 
-  bool rc = ten_msg_set_property(c_msg, key, c_value, &err);
+  bool rc = ten_msg_set_property(c_msg, path, c_value, &err);
   if (!rc) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
   }
@@ -270,26 +195,26 @@ PyObject *ten_py_msg_get_property_string(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
 
-  if (!PyArg_ParseTuple(args, "s", &key)) {
+  if (!PyArg_ParseTuple(args, "s", &path)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
     return NULL;
   }
 
-  ten_value_t *c_value = ten_msg_peek_property(c_msg, key, &err);
+  ten_value_t *c_value = ten_msg_peek_property(c_msg, path, &err);
   if (!c_value) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -318,25 +243,18 @@ PyObject *ten_py_msg_set_property_from_json(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
   const char *json_str = NULL;
 
-  if (!PyArg_ParseTuple(args, "ss", &key, &json_str)) {
+  if (!PyArg_ParseTuple(args, "zs", &path, &json_str)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
-
-  if (!key || !json_str) {
-    ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
-    ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
-    ten_error_deinit(&err);
-    return NULL;
-  }
 
   ten_json_t *c_json = ten_json_from_string(json_str, &err);
   if (!c_json) {
@@ -347,7 +265,7 @@ PyObject *ten_py_msg_set_property_from_json(PyObject *self, PyObject *args) {
 
   ten_value_t *value = ten_value_from_json(c_json);
 
-  bool rc = ten_msg_set_property(c_msg, key, value, &err);
+  bool rc = ten_msg_set_property(c_msg, path, value, &err);
   if (!rc) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_value_destroy(value);
@@ -372,26 +290,24 @@ PyObject *ten_py_msg_get_property_to_json(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
-
-  if (!PyArg_ParseTuple(args, "s", &key)) {
-    return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
+  const char *path = NULL;
+  if (PyTuple_GET_SIZE(args) == 1) {
+    if (!PyArg_ParseTuple(args, "z", &path)) {
+      return ten_py_raise_py_value_error_exception(
+          "Failed to parse arguments.");
+    }
+  } else if (PyTuple_GET_SIZE(args) != 0) {
+    return ten_py_raise_py_value_error_exception(
+        "Invalid argument count when msg.get_property_to_json.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
-    ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
-    ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
-    ten_error_deinit(&err);
-    return NULL;
-  }
-
-  ten_value_t *c_value = ten_msg_peek_property(c_msg, key, &err);
+  ten_value_t *c_value = ten_msg_peek_property(c_msg, path, &err);
   if (!c_value) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -420,26 +336,26 @@ PyObject *ten_py_msg_get_property_int(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
 
-  if (!PyArg_ParseTuple(args, "s", &key)) {
+  if (!PyArg_ParseTuple(args, "s", &path)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
     return NULL;
   }
 
-  ten_value_t *c_value = ten_msg_peek_property(c_msg, key, &err);
+  ten_value_t *c_value = ten_msg_peek_property(c_msg, path, &err);
   if (!c_value) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -466,20 +382,20 @@ PyObject *ten_py_msg_set_property_int(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
   int64_t value = 0;
 
-  if (!PyArg_ParseTuple(args, "sl", &key, &value)) {
+  if (!PyArg_ParseTuple(args, "sl", &path, &value)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -488,7 +404,7 @@ PyObject *ten_py_msg_set_property_int(PyObject *self, PyObject *args) {
 
   ten_value_t *c_value = ten_value_create_int64(value);
 
-  bool rc = ten_msg_set_property(c_msg, key, c_value, &err);
+  bool rc = ten_msg_set_property(c_msg, path, c_value, &err);
   if (!rc) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
   }
@@ -510,26 +426,26 @@ PyObject *ten_py_msg_get_property_bool(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
 
-  if (!PyArg_ParseTuple(args, "s", &key)) {
+  if (!PyArg_ParseTuple(args, "s", &path)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
     return NULL;
   }
 
-  ten_value_t *c_value = ten_msg_peek_property(c_msg, key, &err);
+  ten_value_t *c_value = ten_msg_peek_property(c_msg, path, &err);
   if (!c_value) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -554,20 +470,20 @@ PyObject *ten_py_msg_set_property_bool(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
   int value = 0;
 
-  if (!PyArg_ParseTuple(args, "si", &key, &value)) {
+  if (!PyArg_ParseTuple(args, "si", &path, &value)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -576,7 +492,7 @@ PyObject *ten_py_msg_set_property_bool(PyObject *self, PyObject *args) {
 
   ten_value_t *c_value = ten_value_create_bool(value > 0);
 
-  bool rc = ten_msg_set_property(c_msg, key, c_value, &err);
+  bool rc = ten_msg_set_property(c_msg, path, c_value, &err);
   if (!rc) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
   }
@@ -598,26 +514,26 @@ PyObject *ten_py_msg_get_property_float(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
 
-  if (!PyArg_ParseTuple(args, "s", &key)) {
+  if (!PyArg_ParseTuple(args, "s", &path)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
     return NULL;
   }
 
-  ten_value_t *c_value = ten_msg_peek_property(c_msg, key, &err);
+  ten_value_t *c_value = ten_msg_peek_property(c_msg, path, &err);
   if (!c_value) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -644,20 +560,20 @@ PyObject *ten_py_msg_set_property_float(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
   double value = 0.0;
 
-  if (!PyArg_ParseTuple(args, "sd", &key, &value)) {
+  if (!PyArg_ParseTuple(args, "sd", &path, &value)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -666,7 +582,7 @@ PyObject *ten_py_msg_set_property_float(PyObject *self, PyObject *args) {
 
   ten_value_t *c_value = ten_value_create_float64(value);
 
-  bool rc = ten_msg_set_property(c_msg, key, c_value, &err);
+  bool rc = ten_msg_set_property(c_msg, path, c_value, &err);
   if (!rc) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
   }
@@ -687,26 +603,26 @@ PyObject *ten_py_msg_get_property_buf(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
 
-  if (!PyArg_ParseTuple(args, "s", &key)) {
+  if (!PyArg_ParseTuple(args, "s", &path)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
   ten_error_t err;
   ten_error_init(&err);
 
-  if (!key) {
+  if (!path) {
     ten_error_set(&err, TEN_ERRNO_INVALID_ARGUMENT, "Invalid argument.");
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
     return NULL;
   }
 
-  ten_value_t *c_value = ten_msg_peek_property(c_msg, key, &err);
+  ten_value_t *c_value = ten_msg_peek_property(c_msg, path, &err);
   if (!c_value) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_error_deinit(&err);
@@ -735,13 +651,13 @@ PyObject *ten_py_msg_set_property_buf(PyObject *self, PyObject *args) {
   ten_shared_ptr_t *c_msg = py_msg->c_msg;
   if (!c_msg) {
     TEN_ASSERT(0, "Should not happen.");
-    return ten_py_raise_py_value_error_exception("Cmd is invalidated.");
+    return ten_py_raise_py_value_error_exception("Msg is invalidated.");
   }
 
-  const char *key = NULL;
+  const char *path = NULL;
   Py_buffer py_buf;
 
-  if (!PyArg_ParseTuple(args, "sy*", &key, &py_buf)) {
+  if (!PyArg_ParseTuple(args, "sy*", &path, &py_buf)) {
     return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
   }
 
@@ -768,7 +684,7 @@ PyObject *ten_py_msg_set_property_buf(PyObject *self, PyObject *args) {
   TEN_ASSERT(c_value && ten_value_check_integrity(c_value),
              "Failed to create value.");
 
-  bool rc = ten_msg_set_property(c_msg, key, c_value, &err);
+  bool rc = ten_msg_set_property(c_msg, path, c_value, &err);
   if (!rc) {
     ten_py_raise_py_value_error_exception(ten_error_errmsg(&err));
     ten_value_destroy(c_value);

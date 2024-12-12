@@ -67,7 +67,8 @@ class muxer_extension_t : public extension_t {
     const auto *cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "start_muxer") {
-      TEN_LOGE("muxer_extension_t::on_cmd, %s", cmd->to_json().c_str());
+      TEN_LOGE("muxer_extension_t::on_cmd, %s",
+               cmd->get_property_to_json().c_str());
 
       auto settings = read_settings(*cmd);
       auto output = cmd->get_property_string("output_stream");

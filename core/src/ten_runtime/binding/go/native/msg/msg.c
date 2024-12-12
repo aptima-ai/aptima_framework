@@ -103,26 +103,6 @@ int ten_go_msg_get_type(uintptr_t bridge_addr) {
   return type;
 }
 
-const char *ten_go_msg_to_json(uintptr_t bridge_addr) {
-  ten_go_msg_t *msg_bridge = ten_go_msg_reinterpret(bridge_addr);
-  TEN_ASSERT(msg_bridge && ten_go_msg_check_integrity(msg_bridge),
-             "Should not happen.");
-
-  ten_json_t *json = ten_msg_to_json(msg_bridge->c_msg, NULL);
-  if (!json) {
-    return NULL;
-  }
-
-  TEN_ASSERT(json, "Failed to get json from TEN C message.");
-
-  bool must_free = false;
-  const char *json_str = ten_json_to_string(json, NULL, &must_free);
-  TEN_ASSERT(json_str, "Failed to get JSON string from JSON.");
-
-  ten_json_destroy(json);
-  return json_str;
-}
-
 static ten_value_t *ten_go_msg_property_get_and_check_if_exists(
     ten_go_msg_t *self, const void *path, ten_go_handle_t path_len,
     ten_go_error_t *status) {

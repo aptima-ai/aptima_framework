@@ -58,7 +58,6 @@ declare_args() {
   ten_enable_unit_tests = true
   ten_enable_smoke_tests = true
   ten_enable_integration_tests = true
-  ten_enable_private_tests = false
 }
 
 ten_runtime_common_defines = common_defines

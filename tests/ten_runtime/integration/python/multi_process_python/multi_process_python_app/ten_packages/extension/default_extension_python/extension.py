@@ -62,7 +62,7 @@ class DefaultExtension(Extension):
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
         ten_env.log_info("on_cmd")
 
-        cmd_json = cmd.to_json()
+        cmd_json = cmd.get_property_to_json()
         ten_env.log_info("on_cmd json: " + cmd_json)
 
         new_cmd = Cmd.create("hello")

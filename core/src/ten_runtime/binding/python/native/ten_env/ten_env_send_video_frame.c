@@ -112,8 +112,7 @@ static void ten_env_proxy_notify_send_video_frame(ten_env_t *ten_env,
     if (!res) {
       TEN_LOGE(
           "Failed to send video_frame, but no callback function is provided. "
-          "errno: "
-          "%s, err_msg: %s",
+          "errno: %d, err_msg: %s",
           ten_error_errno(&err), ten_error_errmsg(&err));
     }
   } else {

@@ -27,13 +27,10 @@
 #include "include_internal/ten_utils/value/value_path.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/common/errno.h"
-#include "ten_runtime/msg/audio_frame/audio_frame.h"
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
 #include "ten_runtime/msg/cmd/stop_graph/cmd.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
-#include "ten_runtime/msg/data/data.h"
 #include "ten_runtime/msg/msg.h"
-#include "ten_runtime/msg/video_frame/video_frame.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
@@ -846,7 +843,7 @@ ten_shared_ptr_t *ten_msg_create_from_msg_type(TEN_MSG_TYPE msg_type) {
     case TEN_MSG_TYPE_CMD_CLOSE_APP:
       return ten_cmd_close_app_create();
     case TEN_MSG_TYPE_CMD:
-      return ten_cmd_custom_create();
+      return ten_cmd_custom_create_empty();
     case TEN_MSG_TYPE_CMD_START_GRAPH:
       return ten_cmd_start_graph_create();
     case TEN_MSG_TYPE_CMD_STOP_GRAPH:
@@ -856,11 +853,11 @@ ten_shared_ptr_t *ten_msg_create_from_msg_type(TEN_MSG_TYPE msg_type) {
     case TEN_MSG_TYPE_CMD_RESULT:
       return ten_cmd_result_create_from_cmd(TEN_STATUS_CODE_OK, NULL);
     case TEN_MSG_TYPE_DATA:
-      return ten_data_create();
+      return ten_data_create_empty();
     case TEN_MSG_TYPE_AUDIO_FRAME:
-      return ten_audio_frame_create();
+      return ten_audio_frame_create_empty();
     case TEN_MSG_TYPE_VIDEO_FRAME:
-      return ten_video_frame_create();
+      return ten_video_frame_create_empty();
     default:
       return NULL;
   }
@@ -1056,11 +1053,16 @@ static bool ten_raw_msg_set_property(ten_msg_t *self, const char *path,
   TEN_ASSERT(value && ten_value_check_integrity(value), "Should not happen.");
 
   if (!path || !strlen(path)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_INVALID_ARGUMENT,
-                    "path should not be empty.");
+    // If the path is empty, clear and set all properties.
+    ten_value_deinit(&self->properties);
+    bool result = ten_value_init_object_with_move(&self->properties,
+                                                  ten_value_peek_object(value));
+    if (result) {
+      // The contents of `value` have been completely moved into `properties`,
+      // so the outer `value` wrapper is removed to avoid memory leaks.
+      ten_value_destroy(value);
     }
-    return NULL;
+    return result;
   }
 
   bool success = true;
@@ -1119,14 +1121,6 @@ bool ten_msg_set_property(ten_shared_ptr_t *self, const char *path,
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
   TEN_ASSERT(value && ten_value_check_integrity(value), "Should not happen.");
 
-  if (!path || !strlen(path)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_INVALID_ARGUMENT,
-                    "path should not be empty.");
-    }
-    return NULL;
-  }
-
   return ten_raw_msg_set_property(ten_shared_ptr_get_data(self), path, value,
                                   err);
 }
@@ -1136,11 +1130,8 @@ ten_value_t *ten_raw_msg_peek_property(ten_msg_t *self, const char *path,
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
 
   if (!path || !strlen(path)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_INVALID_ARGUMENT,
-                    "path should not be empty.");
-    }
-    return NULL;
+    // If the path is empty, return all properties.
+    return &self->properties;
   }
 
   ten_value_t *result = NULL;
@@ -1194,7 +1185,6 @@ done:
 ten_value_t *ten_msg_peek_property(ten_shared_ptr_t *self, const char *path,
                                    ten_error_t *err) {
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
-  TEN_ASSERT(path && strlen(path), "path should not be empty.");
 
   return ten_raw_msg_peek_property(ten_msg_get_raw_msg(self), path, err);
 }
@@ -1223,10 +1213,8 @@ const char *ten_msg_get_name(ten_shared_ptr_t *self) {
   return ten_raw_msg_get_name(raw_msg);
 }
 
-static bool ten_raw_msg_set_name_with_size(ten_msg_t *self,
-                                           const char *msg_name,
-                                           size_t msg_name_len,
-                                           ten_error_t *err) {
+bool ten_raw_msg_set_name_with_len(ten_msg_t *self, const char *msg_name,
+                                   size_t msg_name_len, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
 
   if (msg_name == NULL) {
@@ -1245,14 +1233,14 @@ static bool ten_raw_msg_set_name_with_size(ten_msg_t *self,
 bool ten_raw_msg_set_name(ten_msg_t *self, const char *msg_name,
                           ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
-  return ten_raw_msg_set_name_with_size(self, msg_name, strlen(msg_name), err);
+  return ten_raw_msg_set_name_with_len(self, msg_name, strlen(msg_name), err);
 }
 
-bool ten_msg_set_name_with_size(ten_shared_ptr_t *self, const char *msg_name,
-                                size_t msg_name_len, ten_error_t *err) {
+bool ten_msg_set_name_with_len(ten_shared_ptr_t *self, const char *msg_name,
+                               size_t msg_name_len, ten_error_t *err) {
   TEN_ASSERT(self && ten_msg_check_integrity(self), "Should not happen.");
-  return ten_raw_msg_set_name_with_size(ten_shared_ptr_get_data(self), msg_name,
-                                        msg_name_len, err);
+  return ten_raw_msg_set_name_with_len(ten_shared_ptr_get_data(self), msg_name,
+                                       msg_name_len, err);
 }
 
 bool ten_msg_set_name(ten_shared_ptr_t *self, const char *msg_name,

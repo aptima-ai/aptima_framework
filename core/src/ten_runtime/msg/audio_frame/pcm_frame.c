@@ -169,7 +169,7 @@ static void ten_raw_audio_frame_init(ten_audio_frame_t *self) {
   ten_value_init_bool(&self->is_eof, false);
 }
 
-static ten_audio_frame_t *ten_raw_audio_frame_create(void) {
+static ten_audio_frame_t *ten_raw_audio_frame_create_empty(void) {
   ten_audio_frame_t *self = TEN_MALLOC(sizeof(ten_audio_frame_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
@@ -178,10 +178,38 @@ static ten_audio_frame_t *ten_raw_audio_frame_create(void) {
   return self;
 }
 
-ten_shared_ptr_t *ten_audio_frame_create(void) {
-  ten_audio_frame_t *self = ten_raw_audio_frame_create();
+static ten_audio_frame_t *ten_raw_audio_frame_create(const char *name,
+                                                     ten_error_t *err) {
+  ten_audio_frame_t *self = ten_raw_audio_frame_create_empty();
+  ten_raw_msg_set_name((ten_msg_t *)self, name, err);
 
-  return ten_shared_ptr_create(self, ten_raw_audio_frame_destroy);
+  return self;
+}
+
+static ten_audio_frame_t *ten_raw_audio_frame_create_with_len(
+    const char *name, size_t name_len, ten_error_t *err) {
+  ten_audio_frame_t *self = ten_raw_audio_frame_create_empty();
+  ten_raw_msg_set_name_with_len((ten_msg_t *)self, name, name_len, err);
+
+  return self;
+}
+
+ten_shared_ptr_t *ten_audio_frame_create_empty(void) {
+  return ten_shared_ptr_create(ten_raw_audio_frame_create_empty(),
+                               ten_raw_audio_frame_destroy);
+}
+
+ten_shared_ptr_t *ten_audio_frame_create(const char *name, ten_error_t *err) {
+  return ten_shared_ptr_create(ten_raw_audio_frame_create(name, err),
+                               ten_raw_audio_frame_destroy);
+}
+
+ten_shared_ptr_t *ten_audio_frame_create_with_name_len(const char *name,
+                                                       size_t name_len,
+                                                       ten_error_t *err) {
+  return ten_shared_ptr_create(
+      ten_raw_audio_frame_create_with_len(name, name_len, err),
+      ten_raw_audio_frame_destroy);
 }
 
 void ten_raw_audio_frame_destroy(ten_audio_frame_t *self) {

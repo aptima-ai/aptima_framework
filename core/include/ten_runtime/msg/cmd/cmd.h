@@ -11,5 +11,5 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/smart_ptr.h"
 
-TEN_RUNTIME_API ten_shared_ptr_t *ten_cmd_create(const char *cmd_name,
+TEN_RUNTIME_API ten_shared_ptr_t *ten_cmd_create(const char *name,
                                                  ten_error_t *err);

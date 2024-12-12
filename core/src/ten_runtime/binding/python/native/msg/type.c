@@ -14,17 +14,15 @@
 #include "include_internal/ten_runtime/binding/python/msg/video_frame.h"
 
 static PyMethodDef ten_py_msg_type_methods[] = {
-    {"to_json", ten_py_msg_to_json, METH_VARARGS, NULL},
-    {"from_json", ten_py_msg_from_json, METH_VARARGS, NULL},
     {"get_name", ten_py_msg_get_name, METH_VARARGS, NULL},
     {"set_name", ten_py_msg_set_name, METH_VARARGS, NULL},
     {"set_dest", ten_py_msg_set_dest, METH_VARARGS, NULL},
-    {"get_property_string", ten_py_msg_get_property_string, METH_VARARGS, NULL},
-    {"set_property_string", ten_py_msg_set_property_string, METH_VARARGS, NULL},
     {"get_property_to_json", ten_py_msg_get_property_to_json, METH_VARARGS,
      NULL},
     {"set_property_from_json", ten_py_msg_set_property_from_json, METH_VARARGS,
      NULL},
+    {"get_property_string", ten_py_msg_get_property_string, METH_VARARGS, NULL},
+    {"set_property_string", ten_py_msg_set_property_string, METH_VARARGS, NULL},
     {"get_property_int", ten_py_msg_get_property_int, METH_VARARGS, NULL},
     {"set_property_int", ten_py_msg_set_property_int, METH_VARARGS, NULL},
     {"get_property_float", ten_py_msg_get_property_float, METH_VARARGS, NULL},

@@ -57,6 +57,11 @@ typedef struct ten_audio_frame_t {
   ten_value_t is_eof;  // bool
 } ten_audio_frame_t;
 
+TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_audio_frame_create_empty(void);
+
+TEN_RUNTIME_API ten_shared_ptr_t *ten_audio_frame_create_with_name_len(
+    const char *name, size_t name_len, ten_error_t *err);
+
 TEN_RUNTIME_PRIVATE_API void ten_raw_audio_frame_destroy(
     ten_audio_frame_t *self);
 

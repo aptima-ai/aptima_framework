@@ -82,7 +82,8 @@ class business_extension : public ten::extension_t {
                            ten::error_t *err) {
           // Receive the result from plugin_1, and decide the next step based
           // on the content of the result.
-          nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
+          nlohmann::json json =
+              nlohmann::json::parse(cmd_result->get_property_to_json());
           if (json["detail"] == "plugin_1_result") {
             // Successfully completed the interaction with plugin_1, the next
             // step is to interact with plugin_2.
@@ -112,7 +113,8 @@ class business_extension : public ten::extension_t {
                      std::unique_ptr<ten::cmd_result_t> cmd_result,
                      ten::error_t *err) {
           // Receive result from plugin_2.
-          nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
+          nlohmann::json json =
+              nlohmann::json::parse(cmd_result->get_property_to_json());
           if (json["detail"] == "plugin_2_result") {
             // Successfully completed the interaction with plugin_2,
             // the next step is to return a result to the request

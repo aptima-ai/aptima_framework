@@ -78,7 +78,7 @@ class test_extension_4 : public ten::extension_t {
                  }]
                }
              })"_json;
-      stop_graph_cmd->from_json(json.dump().c_str());
+      stop_graph_cmd->set_property_from_json(nullptr, json.dump().c_str());
       ten_env.send_cmd(std::move(stop_graph_cmd));
     }
   }

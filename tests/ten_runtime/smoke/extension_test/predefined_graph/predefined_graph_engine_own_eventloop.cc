@@ -18,7 +18,8 @@ class test_predefined_graph : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json const request = nlohmann::json::parse(cmd->to_json());
+    nlohmann::json const request =
+        nlohmann::json::parse(cmd->get_property_to_json());
     TEN_LOGD("extension receives: %s", request.dump().c_str());
 
     nlohmann::json const detail = {{"id", 1}, {"name", "a"}};

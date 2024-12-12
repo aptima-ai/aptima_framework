@@ -11,12 +11,12 @@
 #include "ten_utils/lib/smart_ptr.h"
 
 TEST(TenMsgTest, create) {
-  ten_shared_ptr_t *data = ten_data_create();
+  ten_shared_ptr_t *data = ten_data_create("test", nullptr);
   ten_shared_ptr_destroy(data);
 
-  ten_shared_ptr_t *audio_frame = ten_audio_frame_create();
+  ten_shared_ptr_t *audio_frame = ten_audio_frame_create("test", nullptr);
   ten_shared_ptr_destroy(audio_frame);
 
-  ten_shared_ptr_t *video_frame = ten_video_frame_create();
+  ten_shared_ptr_t *video_frame = ten_video_frame_create("test", nullptr);
   ten_shared_ptr_destroy(video_frame);
 }

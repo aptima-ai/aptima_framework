@@ -25,10 +25,6 @@ group("tests") {
     "//tests/ten_runtime",
   ]
 
-  if (ten_enable_private_tests) {
-    deps += [ "private" ]
-  }
-
   if (ten_enable_package_manager) {
     deps += [ "local_registry:copy_local_registry" ]
 

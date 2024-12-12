@@ -23,11 +23,12 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json data = nlohmann::json::parse(cmd->to_json());
+    nlohmann::json data = nlohmann::json::parse(cmd->get_property_to_json());
 
     data["send_from"] = name_;
 
-    TEN_UNUSED bool const rc = cmd->from_json(data.dump().c_str());
+    TEN_UNUSED bool const rc =
+        cmd->set_property_from_json(nullptr, data.dump().c_str());
     TEN_ASSERT(rc, "Should not happen.");
 
     // extension1(app1) -> extension3(app2) -> extension2(app1) -> return

@@ -46,7 +46,7 @@ class test_extension : public ten::extension_t {
 
     if (std::string(cmd->get_name()) == "sum") {
       if (counter_ == LOOP_CNT) {
-        auto json = nlohmann::json::parse(cmd->to_json());
+        auto json = nlohmann::json::parse(cmd->get_property_to_json());
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", json.dump().c_str());
         ten_env.return_result(std::move(cmd_result), std::move(cmd));

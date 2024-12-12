@@ -45,9 +45,8 @@ class data_t : public msg_t {
       return nullptr;
     }
 
-    auto *c_data = ten_data_create();
-    ten_msg_set_name(c_data, data_name,
-                     err != nullptr ? err->get_c_error() : nullptr);
+    auto *c_data = ten_data_create(
+        data_name, err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<data_t>(c_data, ctor_passkey_t());
   }

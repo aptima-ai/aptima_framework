@@ -35,7 +35,7 @@ class PilDemoExtension(Extension):
         ten_env.on_deinit_done()
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
-        cmd_json = cmd.to_json()
+        cmd_json = cmd.get_property_to_json()
         ten_env.log_info(f"on_cmd json: {cmd_json}")
 
         cmd_result = CmdResult.create(StatusCode.OK)

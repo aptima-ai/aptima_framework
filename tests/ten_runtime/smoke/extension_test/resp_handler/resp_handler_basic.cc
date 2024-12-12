@@ -24,24 +24,26 @@ class test_extension_1 : public ten::extension_t {
     if (std::string(cmd->get_name()) == "hello_world_1") {
       auto test_string = std::make_shared<std::string>("test test test");
 
-      ten_env.send_cmd(
-          std::move(cmd), [test_string](ten::ten_env_t &ten_env,
-                                        std::unique_ptr<ten::cmd_result_t> cmd,
-                                        ten::error_t *err) {
-            nlohmann::json json = nlohmann::json::parse(cmd->to_json());
+      ten_env.send_cmd(std::move(cmd),
+                       [test_string](ten::ten_env_t &ten_env,
+                                     std::unique_ptr<ten::cmd_result_t> cmd,
+                                     ten::error_t *err) {
+                         nlohmann::json json =
+                             nlohmann::json::parse(cmd->get_property_to_json());
 
-            if (json.value("detail", "") == "hello world 1, too" &&
-                *test_string == "test test test") {
-              cmd->set_property("detail", "hello world 1, too");
-              ten_env.return_result_directly(std::move(cmd));
-            }
-          });
+                         if (json.value("detail", "") == "hello world 1, too" &&
+                             *test_string == "test test test") {
+                           cmd->set_property("detail", "hello world 1, too");
+                           ten_env.return_result_directly(std::move(cmd));
+                         }
+                       });
     } else if (std::string(cmd->get_name()) == "hello_world_2") {
       ten_env.send_cmd(
           std::move(cmd),
           [](ten::ten_env_t &ten_env,
              std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
-            nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
+            nlohmann::json json =
+                nlohmann::json::parse(cmd_result->get_property_to_json());
             if (json.value("detail", "") == "hello world 2, too") {
               cmd_result->set_property("detail", "hello world 2, too");
               ten_env.return_result_directly(std::move(cmd_result));
@@ -52,7 +54,8 @@ class test_extension_1 : public ten::extension_t {
           std::move(cmd),
           [](ten::ten_env_t &ten_env,
              std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
-            nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
+            nlohmann::json json =
+                nlohmann::json::parse(cmd_result->get_property_to_json());
             if (json.value("detail", "") == "hello world 3, too") {
               cmd_result->set_property("detail", "hello world 3, too");
               ten_env.return_result_directly(std::move(cmd_result));
@@ -83,7 +86,8 @@ class test_extension_1 : public ten::extension_t {
           [cmd_shared](ten::ten_env_t &ten_env,
                        std::unique_ptr<ten::cmd_result_t> cmd_result,
                        ten::error_t *err) {
-            nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
+            nlohmann::json json =
+                nlohmann::json::parse(cmd_result->get_property_to_json());
             if (json.value("detail", "") == "hello world 6, too") {
               auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
               cmd_result->set_property("detail", "hello world 5, too");

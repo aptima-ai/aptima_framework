@@ -30,24 +30,26 @@ static ten_py_video_frame_t *ten_py_video_frame_create_internal(
 }
 
 static ten_py_video_frame_t *ten_py_video_frame_init(
-    ten_py_video_frame_t *py_video_frame, TEN_UNUSED PyObject *args,
-    TEN_UNUSED PyObject *kw) {
+    ten_py_video_frame_t *py_video_frame, const char *name) {
   TEN_ASSERT(py_video_frame &&
                  ten_py_msg_check_integrity((ten_py_msg_t *)py_video_frame),
              "Invalid argument.");
 
-  py_video_frame->msg.c_msg =
-      ten_msg_create_from_msg_type(TEN_MSG_TYPE_VIDEO_FRAME);
+  py_video_frame->msg.c_msg = ten_video_frame_create(name, NULL);
 
   return py_video_frame;
 }
 
-PyObject *ten_py_video_frame_create(PyTypeObject *type,
-                                    TEN_UNUSED PyObject *args,
+PyObject *ten_py_video_frame_create(PyTypeObject *type, PyObject *args,
                                     TEN_UNUSED PyObject *kwds) {
+  const char *name = NULL;
+  if (!PyArg_ParseTuple(args, "s", &name)) {
+    return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
+  }
+
   ten_py_video_frame_t *py_video_frame =
       ten_py_video_frame_create_internal(type);
-  return (PyObject *)ten_py_video_frame_init(py_video_frame, args, kwds);
+  return (PyObject *)ten_py_video_frame_init(py_video_frame, name);
 }
 
 void ten_py_video_frame_destroy(PyObject *self) {

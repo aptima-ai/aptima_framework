@@ -14,7 +14,6 @@
 #include "include_internal/ten_runtime/msg/msg.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/lib/json.h"
 
 #define TEN_DATA_SIGNATURE 0xC579EAD75E1BB0FCU
 
@@ -23,6 +22,11 @@ typedef struct ten_data_t {
   ten_signature_t signature;
   ten_value_t buf;
 } ten_data_t;
+
+TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_data_create_empty(void);
+
+TEN_RUNTIME_API ten_shared_ptr_t *ten_data_create_with_name_len(
+    const char *name, size_t name_len, ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API bool ten_raw_data_like_set_ten_property(
     ten_msg_t *self, ten_list_t *paths, ten_value_t *value, ten_error_t *err);

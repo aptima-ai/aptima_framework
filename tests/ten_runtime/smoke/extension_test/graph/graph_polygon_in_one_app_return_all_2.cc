@@ -33,7 +33,7 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    nlohmann::json json = nlohmann::json::parse(cmd->to_json());
+    nlohmann::json json = nlohmann::json::parse(cmd->get_property_to_json());
 
     if (is_leaf_node_) {
       json["return_from"] = name_;
@@ -50,7 +50,8 @@ class test_extension : public ten::extension_t {
         json["source"] = name_;
       }
 
-      TEN_UNUSED bool const rc = cmd->from_json(json.dump().c_str());
+      TEN_UNUSED bool const rc =
+          cmd->set_property_from_json(nullptr, json.dump().c_str());
       TEN_ASSERT(rc, "Should not happen.");
 
       ten_env.send_cmd(
@@ -58,7 +59,8 @@ class test_extension : public ten::extension_t {
           [this, edges](ten::ten_env_t &ten_env,
                         std::unique_ptr<ten::cmd_result_t> result,
                         ten::error_t *err) {
-            nlohmann::json json = nlohmann::json::parse(result->to_json());
+            nlohmann::json json =
+                nlohmann::json::parse(result->get_property_to_json());
             receive_count++;
 
             nlohmann::json detail = json["detail"];

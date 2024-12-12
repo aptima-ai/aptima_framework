@@ -21,21 +21,21 @@ class ffmpeg_client_extension : public ten::extension_t {
                            std::unique_ptr<ten::cmd_result_t> cmd_result,
                            ten::error_t * /*error*/) {
           nlohmann::json cmd_result_json =
-              nlohmann::json::parse(cmd_result->to_json());
+              nlohmann::json::parse(cmd_result->get_property_to_json());
           if (cmd_result->get_status_code() != TEN_STATUS_CODE_OK) {
             TEN_ASSERT(0, "should not happen.");
           }
 
           auto start_muxer_cmd = ten::cmd_t::create("start_muxer");
-          start_muxer_cmd->from_json(
-              nlohmann::to_string(cmd_result_json).c_str());
+          start_muxer_cmd->set_property_from_json(
+              nullptr, nlohmann::to_string(cmd_result_json).c_str());
           ten_env.send_cmd(
               std::move(start_muxer_cmd),
               [](ten::ten_env_t &ten_env,
                  std::unique_ptr<ten::cmd_result_t> cmd_result,
                  ten::error_t * /*error*/) {
                 nlohmann::json json =
-                    nlohmann::json::parse(cmd_result->to_json());
+                    nlohmann::json::parse(cmd_result->get_property_to_json());
                 if (cmd_result->get_status_code() != TEN_STATUS_CODE_OK) {
                   TEN_ASSERT(0, "should not happen.");
                 }

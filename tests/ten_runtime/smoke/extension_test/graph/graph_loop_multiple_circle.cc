@@ -39,7 +39,7 @@ class test_extension : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "sum") {
-      nlohmann::json json = nlohmann::json::parse(cmd->to_json());
+      nlohmann::json json = nlohmann::json::parse(cmd->get_property_to_json());
 
       if (counter_ == LOOP_CNT) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
@@ -56,7 +56,8 @@ class test_extension : public ten::extension_t {
 
         json["total"] = std::to_string(total);
 
-        TEN_UNUSED bool const rc = cmd->from_json(json.dump().c_str());
+        TEN_UNUSED bool const rc =
+            cmd->set_property_from_json(nullptr, json.dump().c_str());
         TEN_ASSERT(rc, "Should not happen.");
 
         ten_env.send_cmd(std::move(cmd));

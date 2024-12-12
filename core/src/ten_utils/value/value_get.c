@@ -18,6 +18,7 @@
 #include "ten_utils/value/type.h"
 #include "ten_utils/value/type_operation.h"
 #include "ten_utils/value/value.h"
+#include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_kv.h"
 
 int8_t ten_value_get_int8(ten_value_t *self, ten_error_t *err) {
@@ -569,6 +570,19 @@ ten_list_t *ten_value_peek_array(ten_value_t *self) {
 
   if (ten_value_is_array(self)) {
     return &self->content.array;
+  }
+  return NULL;
+}
+
+ten_list_t *ten_value_peek_object(ten_value_t *self) {
+  if (!self) {
+    return NULL;
+  }
+
+  TEN_ASSERT(ten_value_check_integrity(self), "Invalid argument.");
+
+  if (ten_value_is_object(self)) {
+    return &self->content.object;
   }
   return NULL;
 }

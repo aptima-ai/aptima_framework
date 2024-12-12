@@ -47,7 +47,7 @@ class DefaultExtension(Extension):
             assert False
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
-        cmd_json = cmd.to_json()
+        cmd_json = cmd.get_property_to_json()
         ten_env.log_debug(f"on_cmd json: {cmd_json}")
 
         if self.name == "default_extension_python_1":

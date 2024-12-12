@@ -632,7 +632,7 @@ void send_ten_msg_with_req_body(
 
         // Parse the full content of the request and set it to the
         // command.
-        cmd->from_json(cmd_json.dump().c_str());
+        cmd->set_property_from_json(nullptr, cmd_json.dump().c_str());
 
         // Send out the command to the TEN runtime.
         ten_env.send_cmd(

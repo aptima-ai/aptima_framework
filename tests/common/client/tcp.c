@@ -283,7 +283,7 @@ bool ten_test_tcp_client_send_data(ten_test_tcp_client_t *self,
   TEN_ASSERT(graph_id && extension_group_name && extension_name && data,
              "Invalid argument.");
 
-  ten_shared_ptr_t *msg = ten_data_create();
+  ten_shared_ptr_t *msg = ten_data_create("test", NULL);
 
   ten_buf_t buf;
   ten_buf_init_with_copying_data(&buf, data, size);

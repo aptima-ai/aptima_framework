@@ -32,23 +32,25 @@ static ten_py_audio_frame_t *ten_py_audio_frame_create_internal(
 }
 
 static ten_py_audio_frame_t *ten_py_audio_frame_init(
-    ten_py_audio_frame_t *py_audio_frame, TEN_UNUSED PyObject *args,
-    TEN_UNUSED PyObject *kw) {
+    ten_py_audio_frame_t *py_audio_frame, const char *name) {
   TEN_ASSERT(py_audio_frame &&
                  ten_py_msg_check_integrity((ten_py_msg_t *)py_audio_frame),
              "Invalid argument.");
 
-  py_audio_frame->msg.c_msg =
-      ten_msg_create_from_msg_type(TEN_MSG_TYPE_AUDIO_FRAME);
+  py_audio_frame->msg.c_msg = ten_audio_frame_create(name, NULL);
 
   return py_audio_frame;
 }
 
-PyObject *ten_py_audio_frame_create(PyTypeObject *type,
-                                    TEN_UNUSED PyObject *args,
+PyObject *ten_py_audio_frame_create(PyTypeObject *type, PyObject *args,
                                     TEN_UNUSED PyObject *kwds) {
+  const char *name = NULL;
+  if (!PyArg_ParseTuple(args, "s", &name)) {
+    return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
+  }
+
   ten_py_audio_frame_t *audio_frame = ten_py_audio_frame_create_internal(type);
-  return (PyObject *)ten_py_audio_frame_init(audio_frame, args, kwds);
+  return (PyObject *)ten_py_audio_frame_init(audio_frame, name);
 }
 
 void ten_py_audio_frame_destroy(PyObject *self) {

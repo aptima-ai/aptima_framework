@@ -9,11 +9,11 @@
 #include "include_internal/ten_runtime/binding/python/common/error.h"
 #include "include_internal/ten_runtime/binding/python/msg/msg.h"
 #include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_utils/macro/check.h"
 #include "pyport.h"
 #include "ten_runtime/msg/data/data.h"
 #include "ten_runtime/msg/msg.h"
 #include "ten_utils/lib/buf.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 static ten_py_data_t *ten_py_data_create_internal(PyTypeObject *py_type) {
@@ -30,20 +30,24 @@ static ten_py_data_t *ten_py_data_create_internal(PyTypeObject *py_type) {
 }
 
 static ten_py_data_t *ten_py_data_init(ten_py_data_t *py_data,
-                                       TEN_UNUSED PyObject *args,
-                                       TEN_UNUSED PyObject *kw) {
+                                       const char *name) {
   TEN_ASSERT(py_data && ten_py_msg_check_integrity((ten_py_msg_t *)py_data),
              "Invalid argument.");
 
-  py_data->msg.c_msg = ten_msg_create_from_msg_type(TEN_MSG_TYPE_DATA);
+  py_data->msg.c_msg = ten_data_create(name, NULL);
 
   return py_data;
 }
 
-PyObject *ten_py_data_create(PyTypeObject *type, TEN_UNUSED PyObject *args,
+PyObject *ten_py_data_create(PyTypeObject *type, PyObject *args,
                              TEN_UNUSED PyObject *kwds) {
+  const char *name = NULL;
+  if (!PyArg_ParseTuple(args, "s", &name)) {
+    return ten_py_raise_py_value_error_exception("Failed to parse arguments.");
+  }
+
   ten_py_data_t *py_data = ten_py_data_create_internal(type);
-  return (PyObject *)ten_py_data_init(py_data, args, kwds);
+  return (PyObject *)ten_py_data_init(py_data, name);
 }
 
 void ten_py_data_destroy(PyObject *self) {

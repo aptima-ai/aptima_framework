@@ -21,7 +21,7 @@ class DefaultExtension(Extension):
         ten_env.on_configure_done()
 
     def on_cmd(self, ten_env: TenEnv, cmd: Cmd) -> None:
-        cmd_json = cmd.to_json()
+        cmd_json = cmd.get_property_to_json()
         print("DefaultExtension on_cmd json: " + cmd_json)
 
         new_data = Data.create("data")

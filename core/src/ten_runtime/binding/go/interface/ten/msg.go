@@ -12,7 +12,6 @@ import "C"
 
 import (
 	"runtime"
-	"unsafe"
 )
 
 // MsgType is an alias of `TEN_MSG_TYPE` from TEN runtime.
@@ -47,7 +46,6 @@ type Msg interface {
 
 	GetType() MsgType
 	GetName() (string, error)
-	ToJSON() string
 
 	iProperty
 }
@@ -199,21 +197,6 @@ func (p *msg) getType() MsgType {
 	defer p.keepAlive()
 
 	return (MsgType)(C.ten_go_msg_get_type(p.cPtr))
-}
-
-func (p *msg) ToJSON() string {
-	return p.process(func() any {
-		return p.toJSON()
-	}).(string)
-}
-
-func (p *msg) toJSON() string {
-	defer p.keepAlive()
-
-	cString := C.ten_go_msg_to_json(p.cPtr)
-	defer C.free(unsafe.Pointer(cString))
-
-	return C.GoString(cString)
 }
 
 func (p *msg) GetName() (string, error) {

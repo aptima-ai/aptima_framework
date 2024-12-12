@@ -23,17 +23,16 @@
 
 ten_go_handle_t tenGoCreateCmdResult(uintptr_t);
 
-ten_go_error_t ten_go_cmd_create_cmd(const void *cmd_name, int cmd_name_len,
+ten_go_error_t ten_go_cmd_create_cmd(const void *name, int name_len,
                                      uintptr_t *bridge) {
-  TEN_ASSERT(cmd_name && cmd_name_len > 0, "Should not happen.");
+  TEN_ASSERT(name && name_len > 0, "Should not happen.");
 
   ten_go_error_t cgo_error;
   ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
 
-  ten_shared_ptr_t *cmd = ten_cmd_custom_create();
+  ten_shared_ptr_t *cmd =
+      ten_cmd_custom_create_with_name_len(name, name_len, NULL);
   TEN_ASSERT(cmd && ten_cmd_check_integrity(cmd), "Should not happen.");
-
-  ten_msg_set_name_with_size(cmd, cmd_name, cmd_name_len, NULL);
 
   ten_go_msg_t *msg_bridge = ten_go_msg_create(cmd);
   TEN_ASSERT(msg_bridge, "Should not happen.");

@@ -56,5 +56,7 @@ TEN_UTILS_API ten_buf_t *ten_value_peek_buf(ten_value_t *self);
 
 TEN_UTILS_API ten_list_t *ten_value_peek_array(ten_value_t *self);
 
+TEN_UTILS_API ten_list_t *ten_value_peek_object(ten_value_t *self);
+
 TEN_UTILS_API ten_value_t *ten_value_array_peek(ten_value_t *self, size_t index,
                                                 ten_error_t *err);

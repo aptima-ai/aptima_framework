@@ -149,7 +149,7 @@ TEST(CmdConversionTest, CmdConversionPathNested6) {  // NOLINT
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                             "cmd_mapping_path_nested_6__extension_group",
                             "test_extension_1");
-  hello_world_cmd->from_json(R"({
+  hello_world_cmd->set_property_from_json(nullptr, R"({
            "test_group": [{
              "aaa": {
                "test_property": 32

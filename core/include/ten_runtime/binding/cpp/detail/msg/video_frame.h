@@ -33,9 +33,9 @@ class video_frame_t : public msg_t {
   };
 
  public:
-  static std::unique_ptr<video_frame_t> create(const char *video_frame_name,
+  static std::unique_ptr<video_frame_t> create(const char *name,
                                                error_t *err = nullptr) {
-    if (video_frame_name == nullptr || strlen(video_frame_name) == 0) {
+    if (name == nullptr || strlen(name) == 0) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
                       "Video frame name cannot be empty.");
@@ -43,9 +43,8 @@ class video_frame_t : public msg_t {
       return nullptr;
     }
 
-    auto *c_frame = ten_video_frame_create();
-    ten_msg_set_name(c_frame, video_frame_name,
-                     err != nullptr ? err->get_c_error() : nullptr);
+    auto *c_frame = ten_video_frame_create(
+        name, err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<video_frame_t>(c_frame, ctor_passkey_t());
   }

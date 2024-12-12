@@ -115,11 +115,31 @@ void ten_raw_video_frame_init(ten_video_frame_t *self) {
   ten_value_init_buf(&self->data, 0);
 }
 
-static ten_video_frame_t *ten_raw_video_frame_create(void) {
+static ten_video_frame_t *ten_raw_video_frame_create_empty(void) {
   ten_video_frame_t *self = TEN_MALLOC(sizeof(ten_video_frame_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_raw_video_frame_init(self);
+
+  return self;
+}
+
+static ten_video_frame_t *ten_raw_video_frame_create(const char *name,
+                                                     ten_error_t *err) {
+  TEN_ASSERT(name, "Invalid argument.");
+
+  ten_video_frame_t *self = ten_raw_video_frame_create_empty();
+  ten_raw_msg_set_name((ten_msg_t *)self, name, err);
+
+  return self;
+}
+
+static ten_video_frame_t *ten_raw_video_frame_create_with_name_len(
+    const char *name, size_t name_len, ten_error_t *err) {
+  TEN_ASSERT(name, "Invalid argument.");
+
+  ten_video_frame_t *self = ten_raw_video_frame_create_empty();
+  ten_raw_msg_set_name_with_len((ten_msg_t *)self, name, name_len, err);
 
   return self;
 }
@@ -134,9 +154,22 @@ void ten_raw_video_frame_destroy(ten_video_frame_t *self) {
   TEN_FREE(self);
 }
 
-ten_shared_ptr_t *ten_video_frame_create(void) {
-  return ten_shared_ptr_create(ten_raw_video_frame_create(),
+ten_shared_ptr_t *ten_video_frame_create_empty(void) {
+  return ten_shared_ptr_create(ten_raw_video_frame_create_empty(),
                                ten_raw_video_frame_destroy);
+}
+
+ten_shared_ptr_t *ten_video_frame_create(const char *name, ten_error_t *err) {
+  return ten_shared_ptr_create(ten_raw_video_frame_create(name, err),
+                               ten_raw_video_frame_destroy);
+}
+
+ten_shared_ptr_t *ten_video_frame_create_with_name_len(const char *name,
+                                                       size_t name_len,
+                                                       ten_error_t *err) {
+  return ten_shared_ptr_create(
+      ten_raw_video_frame_create_with_name_len(name, name_len, err),
+      ten_raw_video_frame_destroy);
 }
 
 int32_t ten_video_frame_get_width(ten_shared_ptr_t *self) {

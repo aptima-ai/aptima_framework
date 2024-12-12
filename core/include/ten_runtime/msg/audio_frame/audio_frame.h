@@ -29,7 +29,8 @@ typedef enum TEN_AUDIO_FRAME_DATA_FMT {
 
 typedef struct ten_audio_frame_t ten_audio_frame_t;
 
-TEN_RUNTIME_API ten_shared_ptr_t *ten_audio_frame_create(void);
+TEN_RUNTIME_API ten_shared_ptr_t *ten_audio_frame_create(const char *name,
+                                                         ten_error_t *err);
 
 TEN_RUNTIME_API int64_t ten_audio_frame_get_timestamp(ten_shared_ptr_t *self);
 TEN_RUNTIME_API bool ten_audio_frame_set_timestamp(ten_shared_ptr_t *self,

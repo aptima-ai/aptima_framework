@@ -698,13 +698,6 @@ func (p *msg) setPropertyFromJSONBytes(path string, value []byte) error {
 // structure is already known beforehand through certain methods, GetProperty
 // can be used to retrieve individual fields.
 func (p *msg) SetPropertyFromJSONBytes(path string, value []byte) error {
-	if len(path) == 0 || len(value) == 0 {
-		return newTenError(
-			ErrnoInvalidArgument,
-			"the property path and value are required",
-		)
-	}
-
 	return withCGO(func() error {
 		return p.setPropertyFromJSONBytes(path, value)
 	})
@@ -775,13 +768,6 @@ func (p *msg) getPropertyToJSONBytes(path string) ([]byte, error) {
 // This function uses a bytes pool to improve the performance. ReleaseBytes is
 // recommended to be called after the []byte is no longer used.
 func (p *msg) GetPropertyToJSONBytes(path string) ([]byte, error) {
-	if len(path) == 0 {
-		return nil, newTenError(
-			ErrnoInvalidArgument,
-			"the property path is required.",
-		)
-	}
-
 	return withCGOLimiterHasReturnValue[[]byte](func() ([]byte, error) {
 		return p.getPropertyToJSONBytes(path)
 	})

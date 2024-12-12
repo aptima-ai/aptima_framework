@@ -50,7 +50,8 @@ class test_predefined_graph : public ten::extension_t {
         std::move(start_graph_cmd),
         [&](ten::ten_env_t &ten_env,
             std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
-          nlohmann::json json = nlohmann::json::parse(cmd_result->to_json());
+          nlohmann::json json =
+              nlohmann::json::parse(cmd_result->get_property_to_json());
           if (cmd_result->get_status_code() == TEN_STATUS_CODE_OK) {
             auto hello_world_cmd = ten::cmd_t::create("hello_world");
             hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/",
@@ -63,7 +64,7 @@ class test_predefined_graph : public ten::extension_t {
                     std::unique_ptr<ten::cmd_result_t> cmd_result,
                     ten::error_t *err) {
                   nlohmann::json json =
-                      nlohmann::json::parse(cmd_result->to_json());
+                      nlohmann::json::parse(cmd_result->get_property_to_json());
                   if (cmd_result->get_status_code() == TEN_STATUS_CODE_OK) {
                     normal_extension_is_ready = true;
 

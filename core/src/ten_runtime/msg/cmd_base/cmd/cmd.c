@@ -166,8 +166,8 @@ static TEN_MSG_TYPE ten_cmd_type_from_name_string(const char *name_str) {
   }
 }
 
-static ten_cmd_t *ten_raw_cmd_create(const char *cmd_name, ten_error_t *err) {
-  if (!cmd_name) {
+static ten_cmd_t *ten_raw_cmd_create(const char *name, ten_error_t *err) {
+  if (!name) {
     if (err) {
       ten_error_set(err, TEN_ERRNO_GENERIC,
                     "Failed to create cmd without a name.");
@@ -175,11 +175,11 @@ static ten_cmd_t *ten_raw_cmd_create(const char *cmd_name, ten_error_t *err) {
     return NULL;
   }
 
-  TEN_MSG_TYPE cmd_type = ten_cmd_type_from_name_string(cmd_name);
+  TEN_MSG_TYPE cmd_type = ten_cmd_type_from_name_string(name);
 
   switch (cmd_type) {
     case TEN_MSG_TYPE_CMD:
-      return ten_raw_cmd_custom_create(cmd_name);
+      return ten_raw_cmd_custom_create(name, err);
     case TEN_MSG_TYPE_CMD_STOP_GRAPH:
       return (ten_cmd_t *)ten_raw_cmd_stop_graph_create();
     case TEN_MSG_TYPE_CMD_CLOSE_APP:
@@ -195,8 +195,8 @@ static ten_cmd_t *ten_raw_cmd_create(const char *cmd_name, ten_error_t *err) {
   }
 }
 
-ten_shared_ptr_t *ten_cmd_create(const char *cmd_name, ten_error_t *err) {
-  ten_cmd_t *cmd = ten_raw_cmd_create(cmd_name, err);
+ten_shared_ptr_t *ten_cmd_create(const char *name, ten_error_t *err) {
+  ten_cmd_t *cmd = ten_raw_cmd_create(name, err);
   if (!cmd) {
     return NULL;
   }

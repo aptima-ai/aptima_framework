@@ -34,7 +34,8 @@ class test_extension_1 : public ten::extension_t {
           std::move(new_cmd),
           [this](ten::ten_env_t &ten_env,
                  std::unique_ptr<ten::cmd_result_t> result, ten::error_t *err) {
-            nlohmann::json json = nlohmann::json::parse(result->to_json());
+            nlohmann::json json =
+                nlohmann::json::parse(result->get_property_to_json());
 
             auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
             cmd_result->set_property("detail", json.value("detail", ""));
