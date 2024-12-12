@@ -1,15 +1,12 @@
-import { memo, CSSProperties } from "react";
-import {
-  Handle,
-  Position,
-  NodeProps,
-  Connection,
-  Edge,
-  Node,
-} from "@xyflow/react";
-
-const targetHandleStyle: CSSProperties = { background: "#555" };
-const sourceHandleStyle: CSSProperties = { ...targetHandleStyle };
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+import { memo } from "react";
+import { Position, NodeProps, Connection, Edge, Node } from "@xyflow/react";
+import CustomHandle from "./CustomHandle";
 
 const onConnect = (params: Connection | Edge) =>
   console.log("Handle onConnect", params);
@@ -22,33 +19,39 @@ export type CustomNodeType = Node<
 export function CustomNode({ data, isConnectable }: NodeProps<CustomNodeType>) {
   return (
     <div>
-      {/* Render target handles (for incoming edges) */}
-      {data.targetCmds.map((cmd, index) => {
-        return (
-          <Handle
-            key={`target-${cmd}`}
-            type="target"
-            position={Position.Left}
-            id={`target-${cmd}`}
-            style={{ ...targetHandleStyle, top: 10 + index * 15 }}
-            isConnectable={isConnectable}
-            onConnect={onConnect}
-          />
-        );
-      })}
-
       <div>{data.label}</div>
 
       {/* Render source handles (for outgoing edges) */}
       {data.sourceCmds.map((cmd, index) => {
         return (
-          <Handle
+          <CustomHandle
             key={`source-${cmd}`}
             type="source"
             position={Position.Right}
             id={`source-${cmd}`}
-            style={{ ...sourceHandleStyle, top: 10 + index * 15 }}
+            label={cmd}
+            labelOffsetX={0}
+            labelOffsetY={index * 20}
+            style={{ top: index * 20, background: "#555" }}
             isConnectable={isConnectable}
+          />
+        );
+      })}
+
+      {/* Render target handles (for incoming edges) */}
+      {data.targetCmds.map((cmd, index) => {
+        return (
+          <CustomHandle
+            key={`target-${cmd}`}
+            type="target"
+            position={Position.Left}
+            id={`target-${cmd}`}
+            label={cmd}
+            labelOffsetX={0}
+            labelOffsetY={index * 20}
+            style={{ top: index * 20, background: "#555" }}
+            isConnectable={isConnectable}
+            onConnect={onConnect}
           />
         );
       })}

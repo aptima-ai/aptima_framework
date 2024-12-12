@@ -1,4 +1,11 @@
 {
-  "current_version": "Current Version: {{version}}",
-  "error_fetching": "Failed to fetch version."
+  "error_fetching": "Failed to fetch version.",
+  "Settings": "Settings",
+  "Theme": "Theme",
+  "Switch to": "Switch to",
+  "Dark": "Dark",
+  "Light": "Light",
+  "Language": "Language",
+  "Edit": "Edit",
+  "Delete": "Delete"
 }

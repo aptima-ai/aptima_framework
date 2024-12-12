@@ -23,46 +23,19 @@ import {
   applyEdgeChanges,
   Connection,
   MarkerType,
-  BuiltInNode,
 } from "@xyflow/react";
 import dagre from "dagre";
 import CustomNode, { CustomNodeType } from "./CustomNode";
-
-interface ApiResponse<T> {
-  status: string;
-  data: T;
-  meta?: any;
-}
-
-interface BackendNode {
-  addon: string;
-  name: string;
-  extension_group: string;
-  app: string;
-  property: any;
-  api?: any;
-}
-
-interface BackendConnection {
-  app: string;
-  extension_group: string;
-  extension: string;
-  cmd?: {
-    name: string;
-    dest: {
-      app: string;
-      extension_group: string;
-      extension: string;
-    }[];
-  }[];
-}
+import CustomEdge, { CustomEdgeType } from "./CustomEdge";
+import { ApiResponse, BackendNode, BackendConnection } from "../api/interface";
+import ContextMenu from "./ContextMenu";
 
 const nodeWidth = 172;
 const nodeHeight = 36;
 
 const getLayoutedElements = (
-  nodes: MyNodeType[],
-  edges: Edge[],
+  nodes: CustomNodeType[],
+  edges: CustomEdgeType[],
   direction = "TB"
 ) => {
   const dagreGraph = new dagre.graphlib.Graph();
@@ -97,11 +70,9 @@ export interface FlowCanvasRef {
   performAutoLayout: () => void;
 }
 
-export type MyNodeType = BuiltInNode | CustomNodeType;
-
 const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
-  const [nodes, setNodes] = useState<MyNodeType[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes] = useState<CustomNodeType[]>([]);
+  const [edges, setEdges] = useState<CustomEdgeType[]>([]);
   const [error, setError] = useState<string>("");
 
   const [contextMenu, setContextMenu] = useState<{
@@ -112,12 +83,12 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
     data?: any;
   }>({ visible: false, x: 0, y: 0 });
 
-  // Close the context menu.
+  // Close context menu.
   const closeContextMenu = useCallback(() => {
     setContextMenu({ visible: false, x: 0, y: 0 });
   }, []);
 
-  // Click on the blank space to close the context menu.
+  // Click empty space to close context menu.
   useEffect(() => {
     const handleClick = () => {
       closeContextMenu();
@@ -126,7 +97,7 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
     return () => window.removeEventListener("click", handleClick);
   }, [closeContextMenu]);
 
-  // Export performAutoLayout function.
+  // Export `performAutoLayout`.
   const performAutoLayout = useCallback(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       nodes,
@@ -143,16 +114,14 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const nodesRes = await fetch(
-          `/api/dev-server/v1/graphs/http_service/nodes`
-        );
+        const nodesRes = await fetch(`/api/dev-server/v1/graphs/default/nodes`);
         if (!nodesRes.ok) {
           throw new Error(`Failed to fetch nodes: ${nodesRes.status}`);
         }
         const nodesPayload: ApiResponse<BackendNode[]> = await nodesRes.json();
 
         const connectionsRes = await fetch(
-          `/api/dev-server/v1/graphs/http_service/connections`
+          `/api/dev-server/v1/graphs/default/connections`
         );
         if (!connectionsRes.ok) {
           throw new Error(
@@ -162,21 +131,23 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
         const connectionsPayload: ApiResponse<BackendConnection[]> =
           await connectionsRes.json();
 
-        // Create initial node.
-        let initialNodes: MyNodeType[] = nodesPayload.data.map((n, index) => ({
-          id: n.name,
-          position: { x: index * 200, y: 100 },
-          type: "customNode",
-          data: {
-            label: `${n.name}`,
-            sourceCmds: [],
-            targetCmds: [],
-          },
-        }));
+        // Create initial nodes.
+        let initialNodes: CustomNodeType[] = nodesPayload.data.map(
+          (n, index) => ({
+            id: n.name,
+            position: { x: index * 200, y: 100 },
+            type: "customNode",
+            data: {
+              label: `${n.name}`,
+              sourceCmds: [],
+              targetCmds: [],
+            },
+          })
+        );
 
-        // Analyze edges, collect cmds for all nodes, so that we can generate
-        // corresponding handles later.
-        let initialEdges: Edge[] = [];
+        // Parse connections to collect cmds for all nodes, so that the correct
+        // handles could be generated later.
+        let initialEdges: CustomEdgeType[] = [];
         const nodeSourceCmdMap: Record<string, Set<string>> = {};
         const nodeTargetCmdMap: Record<string, Set<string>> = {};
 
@@ -205,7 +176,7 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
                   id: edgeId,
                   source: sourceNodeId,
                   target: targetNodeId,
-                  type: "default",
+                  type: "customEdge",
                   label: cmdName,
                   sourceHandle: `source-${cmdName}`,
                   targetHandle: `target-${cmdName}`,
@@ -218,8 +189,8 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
           }
         });
 
-        // Write cmds back to Nodes's data to let CustomNode dynamically
-        // generate handles.
+        // Write back the cmd information to nodes, so that CustomNode could
+        // generate corresponding handles.
         initialNodes = initialNodes.map((node) => {
           const sourceCmds = nodeSourceCmdMap[node.id]
             ? Array.from(nodeSourceCmdMap[node.id])
@@ -253,13 +224,13 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
   }, []);
 
   const onConnect = useCallback(
-    (params: Connection | Edge) => {
+    (params: Connection | CustomEdgeType) => {
       setEdges((eds) => addEdge(params, eds));
     },
     [setEdges]
   );
 
-  // Right-click Node.
+  // Right click nodes.
   const onNodeContextMenu = useCallback((event: MouseEvent, node: Node) => {
     event.preventDefault();
     setContextMenu({
@@ -271,7 +242,7 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
     });
   }, []);
 
-  // Right-click Edge.
+  // Right click Edges.
   const onEdgeContextMenu = useCallback((event: MouseEvent, edge: Edge) => {
     event.preventDefault();
     setContextMenu({
@@ -291,6 +262,9 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        edgeTypes={{
+          customEdge: CustomEdge,
+        }}
         nodeTypes={{
           customNode: CustomNode,
         }}
@@ -313,22 +287,14 @@ const FlowCanvas = forwardRef<FlowCanvasRef, {}>((props, ref) => {
       </ReactFlow>
       {error && <div style={{ color: "red" }}>{error}</div>}
 
-      {contextMenu.visible && (
-        <div
-          className="context-menu"
-          style={{
-            position: "fixed",
-            left: contextMenu.x,
-            top: contextMenu.y,
-            backgroundColor: "#fff",
-            border: "1px solid #ccc",
-            padding: "5px",
-            zIndex: 9999,
-          }}
-        >
-          <div>Fake Menu Item</div>
-        </div>
-      )}
+      <ContextMenu
+        visible={contextMenu.visible}
+        x={contextMenu.x}
+        y={contextMenu.y}
+        type={contextMenu.type}
+        data={contextMenu.data}
+        onClose={closeContextMenu}
+      />
     </div>
   );
 });

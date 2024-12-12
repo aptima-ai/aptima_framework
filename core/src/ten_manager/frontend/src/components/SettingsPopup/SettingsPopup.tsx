@@ -7,6 +7,7 @@
 import React from "react";
 import Popup from "../Popup/Popup";
 import "./SettingsPopup.scss";
+import { useTranslation } from "react-i18next";
 
 interface SettingsPopupProps {
   theme: string;
@@ -19,17 +20,36 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
   onChangeTheme,
   onClose,
 }) => {
+  const { t, i18n } = useTranslation();
+
   const toggleTheme = () => {
     onChangeTheme(theme === "light" ? "dark" : "light");
   };
 
+  const handleLanguageChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedLanguage = event.target.value;
+    i18n.changeLanguage(selectedLanguage);
+  };
+
   return (
-    <Popup title="Settings" onClose={onClose}>
+    <Popup title={t("Settings")} onClose={onClose}>
       <div className="theme-toggle">
-        <span>Theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
+        <span>
+          {t("Theme")}: {theme.charAt(0).toUpperCase() + theme.slice(1)}
+        </span>{" "}
         <button onClick={toggleTheme}>
-          Switch to {theme === "light" ? "Dark" : "Light"} Theme
+          {t("Switch to")} {theme === "light" ? t("Dark") : t("Light")}{" "}
+          {t("Theme")}
         </button>
+      </div>
+      <div className="language-selector">
+        <span>{t("Language")}: </span>
+        <select value={i18n.language} onChange={handleLanguageChange}>
+          <option value="en">English</option>
+          <option value="zh_cn">简体中文</option>
+        </select>
       </div>
     </Popup>
   );
