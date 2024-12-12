@@ -95,9 +95,9 @@ class ten_env_tester_t {
       return rc;
     }
 
-    rc =
-        ten_env_tester_send_data(c_ten_env_tester, data->get_underlying_msg(),
-                                 err != nullptr ? err->get_c_error() : nullptr);
+    rc = ten_env_tester_send_data(
+        c_ten_env_tester, data->get_underlying_msg(), nullptr, nullptr,
+        err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
       // Only when the data has been sent successfully, we should give back the
@@ -123,7 +123,7 @@ class ten_env_tester_t {
     }
 
     rc = ten_env_tester_send_audio_frame(
-        c_ten_env_tester, audio_frame->get_underlying_msg(),
+        c_ten_env_tester, audio_frame->get_underlying_msg(), nullptr, nullptr,
         err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
@@ -150,7 +150,7 @@ class ten_env_tester_t {
     }
 
     rc = ten_env_tester_send_video_frame(
-        c_ten_env_tester, video_frame->get_underlying_msg(),
+        c_ten_env_tester, video_frame->get_underlying_msg(), nullptr, nullptr,
         err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {

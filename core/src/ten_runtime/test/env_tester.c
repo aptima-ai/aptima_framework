@@ -19,6 +19,7 @@
 #include "ten_runtime/msg/cmd/close_app/cmd.h"
 #include "ten_runtime/test/env_tester.h"
 #include "ten_utils/io/runloop.h"
+#include "ten_utils/lib/error.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/macro/memory.h"
 
@@ -83,13 +84,15 @@ typedef struct ten_extension_tester_send_cmd_info_t {
 typedef struct ten_extension_tester_send_msg_info_t {
   ten_extension_tester_t *tester;
   ten_shared_ptr_t *msg;
+  ten_env_tester_error_handler_func_t handler;
+  void *handler_user_data;
+  ten_error_t *err;
 } ten_env_tester_send_msg_info_t;
 
 static ten_env_tester_send_cmd_info_t *
 ten_extension_tester_send_cmd_info_create(
     ten_extension_tester_t *tester, ten_shared_ptr_t *cmd,
-    ten_env_tester_cmd_result_handler_func_t handler, void *handler_user_data,
-    ten_error_t *err) {
+    ten_env_tester_cmd_result_handler_func_t handler, void *handler_user_data) {
   TEN_ASSERT(
       tester && ten_extension_tester_check_integrity(tester, true) && cmd,
       "Invalid argument.");
@@ -103,7 +106,7 @@ ten_extension_tester_send_cmd_info_create(
   self->cmd_result = NULL;
   self->handler = handler;
   self->handler_user_data = handler_user_data;
-  self->err = err;
+  self->err = NULL;
 
   return self;
 }
@@ -112,16 +115,25 @@ static void ten_extension_tester_send_cmd_info_destroy(
     ten_env_tester_send_cmd_info_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
+  if (self->cmd) {
+    ten_shared_ptr_destroy(self->cmd);
+  }
+
   if (self->cmd_result) {
     ten_shared_ptr_destroy(self->cmd_result);
+  }
+
+  if (self->err) {
+    ten_error_destroy(self->err);
   }
 
   TEN_FREE(self);
 }
 
 static ten_env_tester_send_msg_info_t *
-ten_extension_tester_send_msg_info_create(ten_extension_tester_t *tester,
-                                          ten_shared_ptr_t *msg) {
+ten_extension_tester_send_msg_info_create(
+    ten_extension_tester_t *tester, ten_shared_ptr_t *msg,
+    ten_env_tester_error_handler_func_t handler, void *handler_user_data) {
   TEN_ASSERT(
       tester && ten_extension_tester_check_integrity(tester, true) && msg,
       "Invalid argument.");
@@ -132,6 +144,9 @@ ten_extension_tester_send_msg_info_create(ten_extension_tester_t *tester,
 
   self->tester = tester;
   self->msg = msg;
+  self->handler = handler;
+  self->handler_user_data = handler_user_data;
+  self->err = NULL;
 
   return self;
 }
@@ -140,7 +155,30 @@ static void ten_extension_tester_send_msg_info_destroy(
     ten_env_tester_send_msg_info_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
+  if (self->msg) {
+    ten_shared_ptr_destroy(self->msg);
+  }
+
+  if (self->err) {
+    ten_error_destroy(self->err);
+  }
+
   TEN_FREE(self);
+}
+
+static void ten_extension_tester_execute_error_handler_task(void *self,
+                                                            void *arg) {
+  ten_extension_tester_t *tester = self;
+  TEN_ASSERT(tester && ten_extension_tester_check_integrity(tester, true),
+             "Invalid argument.");
+
+  ten_env_tester_send_msg_info_t *send_msg_info = arg;
+  TEN_ASSERT(send_msg_info, "Invalid argument.");
+
+  send_msg_info->handler(tester->ten_env_tester,
+                         send_msg_info->handler_user_data, send_msg_info->err);
+
+  ten_extension_tester_send_msg_info_destroy(send_msg_info);
 }
 
 static void ten_extension_tester_execute_cmd_result_handler_task(void *self,
@@ -162,16 +200,19 @@ static void send_cmd_callback(ten_env_t *ten_env, ten_shared_ptr_t *cmd_result,
                               void *callback_user_data, ten_error_t *err) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
-  TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
-             "Should not happen.");
-
   ten_env_tester_send_cmd_info_t *send_cmd_info = callback_user_data;
   TEN_ASSERT(send_cmd_info, "Invalid argument.");
 
-  // We are in the extension thread.
-  if (send_cmd_info->handler) {
-    send_cmd_info->cmd_result = ten_shared_ptr_clone(cmd_result);
+  if (!send_cmd_info->handler) {
+    ten_extension_tester_send_cmd_info_destroy(send_cmd_info);
+    return;
+  }
 
+  if (err) {
+    ten_error_t *err_clone = ten_error_create();
+    ten_error_copy(err_clone, err);
+
+    send_cmd_info->err = err_clone;
     // Inject cmd result into the extension_tester thread to ensure thread
     // safety.
     ten_runloop_post_task_tail(
@@ -179,8 +220,44 @@ static void send_cmd_callback(ten_env_t *ten_env, ten_shared_ptr_t *cmd_result,
         ten_extension_tester_execute_cmd_result_handler_task,
         send_cmd_info->tester, send_cmd_info);
   } else {
-    ten_extension_tester_send_cmd_info_destroy(send_cmd_info);
+    TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
+               "Should not happen.");
+
+    send_cmd_info->cmd_result = ten_shared_ptr_clone(cmd_result);
+    // Inject cmd result into the extension_tester thread to ensure thread
+    // safety.
+    ten_runloop_post_task_tail(
+        send_cmd_info->tester->tester_runloop,
+        ten_extension_tester_execute_cmd_result_handler_task,
+        send_cmd_info->tester, send_cmd_info);
   }
+}
+
+static void send_data_like_msg_callback(ten_env_t *ten_env,
+                                        ten_shared_ptr_t *cmd_result,
+                                        void *callback_user_data,
+                                        ten_error_t *err) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_env_tester_send_msg_info_t *send_msg_info = callback_user_data;
+  TEN_ASSERT(send_msg_info, "Invalid argument.");
+
+  if (!send_msg_info->handler) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+    return;
+  }
+
+  if (err) {
+    ten_error_t *err_clone = ten_error_create();
+    ten_error_copy(err_clone, err);
+
+    send_msg_info->err = err_clone;
+  }
+
+  ten_runloop_post_task_tail(send_msg_info->tester->tester_runloop,
+                             ten_extension_tester_execute_error_handler_task,
+                             send_msg_info->tester, send_msg_info);
 }
 
 static void test_extension_ten_env_send_cmd(ten_env_t *ten_env,
@@ -193,11 +270,32 @@ static void test_extension_ten_env_send_cmd(ten_env_t *ten_env,
   TEN_ASSERT(send_cmd_info->cmd && ten_msg_check_integrity(send_cmd_info->cmd),
              "Should not happen.");
 
-  bool rc = ten_env_send_cmd(ten_env, send_cmd_info->cmd, send_cmd_callback,
-                             send_cmd_info, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+  ten_error_t *err = ten_error_create();
 
-  ten_shared_ptr_destroy(send_cmd_info->cmd);
+  bool rc = ten_env_send_cmd(ten_env, send_cmd_info->cmd, send_cmd_callback,
+                             send_cmd_info, err);
+  if (!rc) {
+    if (send_cmd_info->handler) {
+      // Move the error to the send_cmd_info.
+      send_cmd_info->err = err;
+      err = NULL;
+
+      // Inject cmd result into the extension_tester thread to ensure thread
+      // safety.
+      ten_runloop_post_task_tail(
+          send_cmd_info->tester->tester_runloop,
+          ten_extension_tester_execute_cmd_result_handler_task,
+          send_cmd_info->tester, send_cmd_info);
+    }
+  }
+
+  if (err) {
+    ten_error_destroy(err);
+  }
+
+  if (!rc) {
+    ten_extension_tester_send_cmd_info_destroy(send_cmd_info);
+  }
 }
 
 static void test_extension_ten_env_send_data(ten_env_t *ten_env,
@@ -210,12 +308,32 @@ static void test_extension_ten_env_send_data(ten_env_t *ten_env,
   TEN_ASSERT(send_msg_info->msg && ten_msg_check_integrity(send_msg_info->msg),
              "Should not happen.");
 
-  bool rc = ten_env_send_data(ten_env, send_msg_info->msg, NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+  ten_error_t *err = ten_error_create();
 
-  ten_shared_ptr_destroy(send_msg_info->msg);
+  bool rc = ten_env_send_data(ten_env, send_msg_info->msg,
+                              send_data_like_msg_callback, send_msg_info, err);
+  if (!rc) {
+    if (send_msg_info->handler) {
+      // Move the error to the send_msg_info.
+      send_msg_info->err = err;
+      err = NULL;
 
-  ten_extension_tester_send_msg_info_destroy(send_msg_info);
+      // Inject cmd result into the extension_tester thread to ensure thread
+      // safety.
+      ten_runloop_post_task_tail(
+          send_msg_info->tester->tester_runloop,
+          ten_extension_tester_execute_error_handler_task,
+          send_msg_info->tester, send_msg_info);
+    }
+  }
+
+  if (err) {
+    ten_error_destroy(err);
+  }
+
+  if (!rc) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  }
 }
 
 static void test_extension_ten_env_send_audio_frame(ten_env_t *ten_env,
@@ -228,13 +346,33 @@ static void test_extension_ten_env_send_audio_frame(ten_env_t *ten_env,
   TEN_ASSERT(send_msg_info->msg && ten_msg_check_integrity(send_msg_info->msg),
              "Should not happen.");
 
+  ten_error_t *err = ten_error_create();
+
   bool rc =
-      ten_env_send_audio_frame(ten_env, send_msg_info->msg, NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+      ten_env_send_audio_frame(ten_env, send_msg_info->msg,
+                               send_data_like_msg_callback, send_msg_info, err);
+  if (!rc) {
+    if (send_msg_info->handler) {
+      // Move the error to the send_msg_info.
+      send_msg_info->err = err;
+      err = NULL;
 
-  ten_shared_ptr_destroy(send_msg_info->msg);
+      // Inject cmd result into the extension_tester thread to ensure thread
+      // safety.
+      ten_runloop_post_task_tail(
+          send_msg_info->tester->tester_runloop,
+          ten_extension_tester_execute_error_handler_task,
+          send_msg_info->tester, send_msg_info);
+    }
+  }
 
-  ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  if (err) {
+    ten_error_destroy(err);
+  }
+
+  if (!rc) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  }
 }
 
 static void test_extension_ten_env_send_video_frame(ten_env_t *ten_env,
@@ -247,13 +385,33 @@ static void test_extension_ten_env_send_video_frame(ten_env_t *ten_env,
   TEN_ASSERT(send_msg_info->msg && ten_msg_check_integrity(send_msg_info->msg),
              "Should not happen.");
 
+  ten_error_t *err = ten_error_create();
+
   bool rc =
-      ten_env_send_video_frame(ten_env, send_msg_info->msg, NULL, NULL, NULL);
-  TEN_ASSERT(rc, "Should not happen.");
+      ten_env_send_video_frame(ten_env, send_msg_info->msg,
+                               send_data_like_msg_callback, send_msg_info, err);
+  if (!rc) {
+    if (send_msg_info->handler) {
+      // Move the error to the send_msg_info.
+      send_msg_info->err = err;
+      err = NULL;
 
-  ten_shared_ptr_destroy(send_msg_info->msg);
+      // Inject cmd result into the extension_tester thread to ensure thread
+      // safety.
+      ten_runloop_post_task_tail(
+          send_msg_info->tester->tester_runloop,
+          ten_extension_tester_execute_error_handler_task,
+          send_msg_info->tester, send_msg_info);
+    }
+  }
 
-  ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  if (err) {
+    ten_error_destroy(err);
+  }
+
+  if (!rc) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  }
 }
 
 bool ten_env_tester_send_cmd(ten_env_tester_t *self, ten_shared_ptr_t *cmd,
@@ -262,56 +420,79 @@ bool ten_env_tester_send_cmd(ten_env_tester_t *self, ten_shared_ptr_t *cmd,
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
   ten_env_tester_send_cmd_info_t *send_cmd_info =
       ten_extension_tester_send_cmd_info_create(
-          self->tester, ten_shared_ptr_clone(cmd), handler, user_data, err);
-
+          self->tester, ten_shared_ptr_clone(cmd), handler, user_data);
   TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
-  return ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
-                              test_extension_ten_env_send_cmd, send_cmd_info,
-                              false, err);
+
+  bool rc = ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
+                                 test_extension_ten_env_send_cmd, send_cmd_info,
+                                 false, err);
+  if (!rc) {
+    ten_extension_tester_send_cmd_info_destroy(send_cmd_info);
+  }
+
+  return rc;
 }
 
 bool ten_env_tester_send_data(ten_env_tester_t *self, ten_shared_ptr_t *data,
-                              ten_error_t *err) {
-  TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
-
-  ten_env_tester_send_msg_info_t *send_msg_info =
-      ten_extension_tester_send_msg_info_create(self->tester,
-                                                ten_shared_ptr_clone(data));
-
-  TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
-  return ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
-                              test_extension_ten_env_send_data, send_msg_info,
-                              false, err);
-}
-
-bool ten_env_tester_send_audio_frame(ten_env_tester_t *self,
-                                     ten_shared_ptr_t *audio_frame,
-                                     ten_error_t *err) {
+                              ten_env_tester_error_handler_func_t handler,
+                              void *user_data, ten_error_t *err) {
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
 
   ten_env_tester_send_msg_info_t *send_msg_info =
       ten_extension_tester_send_msg_info_create(
-          self->tester, ten_shared_ptr_clone(audio_frame));
+          self->tester, ten_shared_ptr_clone(data), handler, user_data);
 
   TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
-  return ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
-                              test_extension_ten_env_send_audio_frame,
-                              send_msg_info, false, err);
+  bool rc = ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
+                                 test_extension_ten_env_send_data,
+                                 send_msg_info, false, err);
+  if (!rc) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  }
+
+  return rc;
 }
 
-bool ten_env_tester_send_video_frame(ten_env_tester_t *self,
-                                     ten_shared_ptr_t *video_frame,
-                                     ten_error_t *err) {
+bool ten_env_tester_send_audio_frame(
+    ten_env_tester_t *self, ten_shared_ptr_t *audio_frame,
+    ten_env_tester_error_handler_func_t handler, void *user_data,
+    ten_error_t *err) {
   TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
 
   ten_env_tester_send_msg_info_t *send_msg_info =
       ten_extension_tester_send_msg_info_create(
-          self->tester, ten_shared_ptr_clone(video_frame));
+          self->tester, ten_shared_ptr_clone(audio_frame), handler, user_data);
 
   TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
-  return ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
-                              test_extension_ten_env_send_video_frame,
-                              send_msg_info, false, err);
+  bool rc = ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
+                                 test_extension_ten_env_send_audio_frame,
+                                 send_msg_info, false, err);
+  if (!rc) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  }
+
+  return rc;
+}
+
+bool ten_env_tester_send_video_frame(
+    ten_env_tester_t *self, ten_shared_ptr_t *video_frame,
+    ten_env_tester_error_handler_func_t handler, void *user_data,
+    ten_error_t *err) {
+  TEN_ASSERT(self && ten_env_tester_check_integrity(self), "Invalid argument.");
+
+  ten_env_tester_send_msg_info_t *send_msg_info =
+      ten_extension_tester_send_msg_info_create(
+          self->tester, ten_shared_ptr_clone(video_frame), handler, user_data);
+
+  TEN_ASSERT(self->tester->test_extension_ten_env_proxy, "Invalid argument.");
+  bool rc = ten_env_proxy_notify(self->tester->test_extension_ten_env_proxy,
+                                 test_extension_ten_env_send_video_frame,
+                                 send_msg_info, false, err);
+  if (!rc) {
+    ten_extension_tester_send_msg_info_destroy(send_msg_info);
+  }
+
+  return rc;
 }
 
 static void test_app_ten_env_send_close_app_cmd(ten_env_t *ten_env,

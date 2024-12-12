@@ -10,6 +10,9 @@ from ten import (
     ExtensionTester,
     TenEnvTester,
     Cmd,
+    Data,
+    AudioFrame,
+    VideoFrame,
     CmdResult,
     StatusCode,
     TenError,
@@ -44,6 +47,10 @@ class ExtensionTesterBasic(ExtensionTester):
                 ten_env, result, error
             ),
         )
+
+        ten_env.send_data(Data.create("test"))
+        ten_env.send_audio_frame(AudioFrame.create("test"))
+        ten_env.send_video_frame(VideoFrame.create("test"))
 
         print("tester on_start_done")
         ten_env.on_start_done()

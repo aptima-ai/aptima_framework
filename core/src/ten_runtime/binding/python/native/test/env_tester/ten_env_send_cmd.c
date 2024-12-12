@@ -10,19 +10,14 @@
 #include "include_internal/ten_runtime/binding/python/msg/cmd_result.h"
 #include "include_internal/ten_runtime/binding/python/msg/msg.h"
 #include "include_internal/ten_runtime/binding/python/test/env_tester.h"
-#include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/test/env_tester.h"
 #include "ten_utils/macro/check.h"
-#include "ten_utils/macro/mark.h"
 
 static void proxy_send_xxx_callback(ten_env_tester_t *ten_env_tester,
                                     ten_shared_ptr_t *cmd_result,
-                                    void *callback_info,
-                                    TEN_UNUSED ten_error_t *error) {
+                                    void *callback_info, ten_error_t *error) {
   TEN_ASSERT(ten_env_tester && ten_env_tester_check_integrity(ten_env_tester),
-             "Should not happen.");
-  TEN_ASSERT(cmd_result && ten_cmd_base_check_integrity(cmd_result),
              "Should not happen.");
   TEN_ASSERT(callback_info, "Should not happen.");
 
@@ -34,12 +29,25 @@ static void proxy_send_xxx_callback(ten_env_tester_t *ten_env_tester,
 
   ten_py_ten_env_tester_t *py_ten_env_tester =
       ten_py_ten_env_tester_wrap(ten_env_tester);
-  ten_py_cmd_result_t *cmd_result_bridge = ten_py_cmd_result_wrap(cmd_result);
-
   PyObject *cb_func = callback_info;
-  PyObject *arglist =
-      Py_BuildValue("(OOO)", py_ten_env_tester->actual_py_ten_env_tester,
-                    cmd_result_bridge, Py_None);
+
+  PyObject *arglist = NULL;
+  ten_py_cmd_result_t *cmd_result_bridge = NULL;
+  ten_py_error_t *py_error = NULL;
+
+  if (cmd_result) {
+    cmd_result_bridge = ten_py_cmd_result_wrap(cmd_result);
+    arglist =
+        Py_BuildValue("(OOO)", py_ten_env_tester->actual_py_ten_env_tester,
+                      cmd_result_bridge, Py_None);
+  } else {
+    TEN_ASSERT(error, "Should not happen.");
+
+    py_error = ten_py_error_wrap(error);
+    arglist =
+        Py_BuildValue("(OOO)", py_ten_env_tester->actual_py_ten_env_tester,
+                      Py_None, py_error);
+  }
 
   PyObject *result = PyObject_CallObject(cb_func, arglist);
   Py_XDECREF(result);  // Ensure cleanup if an error occurred.
@@ -49,12 +57,18 @@ static void proxy_send_xxx_callback(ten_env_tester_t *ten_env_tester,
 
   Py_XDECREF(arglist);
 
-  bool is_final = ten_cmd_result_is_final(cmd_result, NULL);
-  if (is_final) {
+  bool is_completed = ten_cmd_result_is_completed(cmd_result, NULL);
+  if (is_completed) {
     Py_XDECREF(cb_func);
   }
 
-  ten_py_cmd_result_invalidate(cmd_result_bridge);
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  if (cmd_result_bridge) {
+    ten_py_cmd_result_invalidate(cmd_result_bridge);
+  }
 
   ten_py_gil_state_release(prev_state);
 }
@@ -91,16 +105,30 @@ PyObject *ten_py_ten_env_tester_send_cmd(PyObject *self, PyObject *args) {
   }
 
   if (cb_func) {
+    // Increase the reference count of the callback function to ensure that it
+    // will not be destroyed before the callback is called.
     Py_INCREF(cb_func);
+
+    success = ten_env_tester_send_cmd(py_ten_env_tester->c_ten_env_tester,
+                                      py_cmd->msg.c_msg,
+                                      proxy_send_xxx_callback, cb_func, &err);
+  } else {
+    success = ten_env_tester_send_cmd(py_ten_env_tester->c_ten_env_tester,
+                                      py_cmd->msg.c_msg, NULL, NULL, &err);
   }
 
-  success = ten_env_tester_send_cmd(py_ten_env_tester->c_ten_env_tester,
-                                    py_cmd->msg.c_msg, proxy_send_xxx_callback,
-                                    cb_func, &err);
+  if (!success) {
+    if (cb_func) {
+      Py_XDECREF(cb_func);
+    }
 
-  // Destroy the C message from the Python message as the ownership has been
-  // transferred to the notify_info.
-  ten_py_msg_destroy_c_msg(&py_cmd->msg);
+    ten_py_raise_py_runtime_error_exception("Failed to send cmd.");
+    goto done;
+  } else {
+    // Destroy the C message from the Python message as the ownership has been
+    // transferred to the notify_info.
+    ten_py_msg_destroy_c_msg(&py_cmd->msg);
+  }
 
 done:
   ten_error_deinit(&err);

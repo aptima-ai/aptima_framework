@@ -10,12 +10,12 @@ from pathlib import Path
 from typing import Callable, Optional, final
 
 from libten_runtime_python import _ExtensionTester, _TenEnvTester
-from .error import TenError
+from ten.cmd_result import CmdResult
+from ten.error import TenError
 from .cmd import Cmd
 from .data import Data
 from .audio_frame import AudioFrame
 from .video_frame import VideoFrame
-from .cmd_result import CmdResult
 from .addon_manager import _AddonManager
 
 
@@ -26,6 +26,8 @@ ResultHandler = (
     Callable[[TenEnvTester, Optional[CmdResult], Optional[TenError]], None]
     | None
 )
+
+ErrorHandler = Callable[[TenEnvTester, Optional[TenError]], None] | None
 
 
 class TenEnvTester:
@@ -42,14 +44,18 @@ class TenEnvTester:
     def send_cmd(self, cmd: Cmd, result_handler: ResultHandler) -> None:
         return self._internal.send_cmd(cmd, result_handler)
 
-    def send_data(self, data: Data) -> None:
-        return self._internal.send_data(data)
+    def send_data(self, data: Data, error_handler: ErrorHandler = None) -> None:
+        return self._internal.send_data(data, error_handler)
 
-    def send_audio_frame(self, audio_frame: AudioFrame) -> None:
-        return self._internal.send_audio_frame(audio_frame)
+    def send_audio_frame(
+        self, audio_frame: AudioFrame, error_handler: ErrorHandler = None
+    ) -> None:
+        return self._internal.send_audio_frame(audio_frame, error_handler)
 
-    def send_video_frame(self, video_frame: VideoFrame) -> None:
-        return self._internal.send_video_frame(video_frame)
+    def send_video_frame(
+        self, video_frame: VideoFrame, error_handler: ErrorHandler = None
+    ) -> None:
+        return self._internal.send_video_frame(video_frame, error_handler)
 
     def stop_test(self) -> None:
         return self._internal.stop_test()
