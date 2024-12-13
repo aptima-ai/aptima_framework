@@ -37,6 +37,7 @@ struct ten_extension_tester_t {
   union {
     struct {
       ten_string_t addon_name;
+      ten_string_t property_json;
     } addon;
 
     struct {

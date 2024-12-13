@@ -76,7 +76,7 @@ TEST(StandaloneTest, BasicC) {  // NOLINT
   ten_extension_tester_t *tester = ten_extension_tester_create(
       ten_extension_tester_on_start, nullptr, nullptr, nullptr, nullptr);
   ten_extension_tester_set_test_mode_single(
-      tester, "standalone_test_basic_c__test_extension_1");
+      tester, "standalone_test_basic_c__test_extension_1", nullptr);
 
   bool rc = ten_extension_tester_run(tester);
   TEN_ASSERT(rc, "Should not happen.");

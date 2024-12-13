@@ -19,6 +19,8 @@
 
 namespace ten {
 
+class extension_tester_internal_accessor_t;
+
 class extension_tester_t {
  public:
   virtual ~extension_tester_t() {
@@ -36,9 +38,11 @@ class extension_tester_t {
   extension_tester_t &operator=(const extension_tester_t &&) = delete;
   // @}
 
-  void set_test_mode_single(const char *addon_name) {
+  void set_test_mode_single(const char *addon_name,
+                            const char *property_json_str = nullptr) {
     TEN_ASSERT(addon_name, "Invalid argument.");
-    ten_extension_tester_set_test_mode_single(c_extension_tester, addon_name);
+    ten_extension_tester_set_test_mode_single(c_extension_tester, addon_name,
+                                              property_json_str);
   }
 
   void set_test_mode_graph(const char *graph_json) {
@@ -49,12 +53,6 @@ class extension_tester_t {
   void add_addon_base_dir(const char *addon_path) {
     TEN_ASSERT(addon_path, "Invalid argument.");
     ten_extension_tester_add_addon_base_dir(c_extension_tester, addon_path);
-  }
-
-  void init_test_app_property_from_json(const char *property_json_str) {
-    TEN_ASSERT(property_json_str, "Invalid argument.");
-    ten_extension_tester_init_test_app_property_from_json(c_extension_tester,
-                                                          property_json_str);
   }
 
   bool run(error_t *err = nullptr) {
@@ -102,6 +100,8 @@ class extension_tester_t {
                               std::unique_ptr<video_frame_t> video_frame) {}
 
  private:
+  friend class extension_tester_internal_accessor_t;
+
   void invoke_cpp_extension_tester_on_start(
       ten_env_tester_t &cpp_ten_env_tester) {
     on_start(cpp_ten_env_tester);

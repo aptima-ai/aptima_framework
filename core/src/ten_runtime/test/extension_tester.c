@@ -27,7 +27,9 @@
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_str.h"
 #include "ten_utils/io/runloop.h"
+#include "ten_utils/lib/error.h"
 #include "ten_utils/lib/event.h"
+#include "ten_utils/lib/json.h"
 #include "ten_utils/lib/signature.h"
 #include "ten_utils/lib/smart_ptr.h"
 #include "ten_utils/lib/string.h"
@@ -96,7 +98,8 @@ ten_extension_tester_t *ten_extension_tester_create(
 }
 
 void ten_extension_tester_set_test_mode_single(ten_extension_tester_t *self,
-                                               const char *addon_name) {
+                                               const char *addon_name,
+                                               const char *property_json_str) {
   TEN_ASSERT(self && ten_extension_tester_check_integrity(self, true),
              "Invalid argument.");
   TEN_ASSERT(addon_name, "Invalid argument.");
@@ -104,6 +107,28 @@ void ten_extension_tester_set_test_mode_single(ten_extension_tester_t *self,
   self->test_mode = TEN_EXTENSION_TESTER_TEST_MODE_SINGLE;
   ten_string_init_from_c_str(&self->test_target.addon.addon_name, addon_name,
                              strlen(addon_name));
+
+  if (property_json_str && strlen(property_json_str) > 0) {
+    ten_error_t err;
+    ten_error_init(&err);
+
+    ten_json_t *json = ten_json_from_string(property_json_str, &err);
+    if (json) {
+      ten_json_destroy(json);
+    } else {
+      TEN_ASSERT(0, "Failed to parse property json: %s",
+                 ten_error_errmsg(&err));
+    }
+
+    ten_error_deinit(&err);
+
+    ten_string_init_from_c_str(&self->test_target.addon.property_json,
+                               property_json_str, strlen(property_json_str));
+  } else {
+    const char *empty_json = "{}";
+    ten_string_init_from_c_str(&self->test_target.addon.property_json,
+                               empty_json, strlen(empty_json));
+  }
 }
 
 void ten_extension_tester_set_test_mode_graph(ten_extension_tester_t *self,
@@ -154,6 +179,7 @@ static void ten_extension_tester_destroy_test_target(
 
   if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_SINGLE) {
     ten_string_deinit(&self->test_target.addon.addon_name);
+    ten_string_deinit(&self->test_target.addon.property_json);
   } else if (self->test_mode == TEN_EXTENSION_TESTER_TEST_MODE_GRAPH) {
     ten_string_deinit(&self->test_target.graph.graph_json);
   }
@@ -233,6 +259,9 @@ static void ten_extension_tester_create_and_start_graph(
     const char *addon_name =
         ten_string_get_raw_str(&self->test_target.addon.addon_name);
 
+    const char *property_json_str =
+        ten_string_get_raw_str(&self->test_target.addon.property_json);
+
     ten_string_t graph_json_str;
     ten_string_init_formatted(&graph_json_str,
                               "{\
@@ -247,7 +276,8 @@ static void ten_extension_tester_create_and_start_graph(
               \"name\": \"%s\",\
               \"addon\": \"%s\",\
               \"extension_group\": \"test_extension_group_2\",\
-              \"app\": \"localhost\"\
+              \"app\": \"localhost\",\
+              \"property\": %s\
            }],\
            \"connections\": [{\
              \"app\": \"localhost\",\
@@ -323,8 +353,9 @@ static void ten_extension_tester_create_and_start_graph(
              }]\
            }]\
        }",
+                              addon_name, addon_name, property_json_str,
                               addon_name, addon_name, addon_name, addon_name,
-                              addon_name, addon_name, addon_name);
+                              addon_name);
     rc = ten_cmd_start_graph_set_graph_from_json_str(
         start_graph_cmd, ten_string_get_raw_str(&graph_json_str), NULL);
     TEN_ASSERT(rc, "Should not happen.");

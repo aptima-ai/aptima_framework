@@ -110,7 +110,7 @@ TEST(StandaloneTest, OnCmdC) {  // NOLINT
       ten_extension_tester_on_start, ten_extension_tester_on_cmd, nullptr,
       nullptr, nullptr);
   ten_extension_tester_set_test_mode_single(
-      tester, "standalone_test_on_cmd_c__test_extension_1");
+      tester, "standalone_test_on_cmd_c__test_extension_1", nullptr);
 
   bool rc = ten_extension_tester_run(tester);
   TEN_ASSERT(rc, "Should not happen.");

@@ -15,6 +15,7 @@
 #include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timer.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/ten_env_impl.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/ten_env_internal_accessor.h"  // IWYU pragma: export
+#include "include_internal/ten_runtime/binding/cpp/detail/test/extension_tester_internal_accessor.h"  // IWYU pragma: export
 #include "ten_runtime/addon/extension/extension.h"  // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/addon.h"   // IWYU pragma: export
 #include "ten_runtime/binding/cpp/detail/addon_manager.h"  // IWYU pragma: export

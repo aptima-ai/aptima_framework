@@ -152,8 +152,8 @@ TEST(StandaloneTest, BasicGraphCrossApp) {  // NOLINT
 
   auto *tester = new extension_tester_1();
 
-  tester->init_test_app_property_from_json(
-      R"({
+  ten::extension_tester_internal_accessor_t::init_test_app_property_from_json(
+      *tester, R"({
            "_ten": {
              "uri": "client:aaa"
            }

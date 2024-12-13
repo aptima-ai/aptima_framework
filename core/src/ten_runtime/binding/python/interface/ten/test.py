@@ -85,8 +85,12 @@ class ExtensionTester(_ExtensionTester):
         self.addon_base_dirs.append(base_dir)
 
     @final
-    def set_test_mode_single(self, addon_name: str) -> None:
-        return _ExtensionTester.set_test_mode_single(self, addon_name)
+    def set_test_mode_single(
+        self, addon_name: str, property_json_str: str | None = None
+    ) -> None:
+        return _ExtensionTester.set_test_mode_single(
+            self, addon_name, property_json_str
+        )
 
     @final
     def run(self) -> None:

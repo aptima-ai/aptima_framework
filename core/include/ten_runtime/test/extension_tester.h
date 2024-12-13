@@ -52,7 +52,8 @@ TEN_RUNTIME_API void ten_extension_tester_destroy(ten_extension_tester_t *self);
 // to this extension, and all outputs from the extension will be sent back to
 // the tester.
 TEN_RUNTIME_API void ten_extension_tester_set_test_mode_single(
-    ten_extension_tester_t *self, const char *addon_name);
+    ten_extension_tester_t *self, const char *addon_name,
+    const char *property_json_str);
 
 // Testing a complete graph which must contain exactly one proxy extension. All
 // messages input by the tester will be directed to this proxy extension, and

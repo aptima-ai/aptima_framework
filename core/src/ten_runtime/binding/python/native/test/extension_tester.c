@@ -307,20 +307,21 @@ static PyObject *ten_py_extension_tester_set_test_mode_single(PyObject *self,
                  ten_py_extension_tester_check_integrity(py_extension_tester),
              "Invalid argument.");
 
-  if (PyTuple_GET_SIZE(args) != 1) {
+  if (PyTuple_GET_SIZE(args) != 2) {
     return ten_py_raise_py_value_error_exception(
         "Invalid argument count when extension_tester.set_test_mode_single.");
   }
 
   const char *addon_name = NULL;
-  if (!PyArg_ParseTuple(args, "s", &addon_name)) {
+  const char *property_json_str = NULL;
+  if (!PyArg_ParseTuple(args, "sz", &addon_name, &property_json_str)) {
     return ten_py_raise_py_value_error_exception(
         "Failed to parse arguments when "
         "extension_tester.set_test_mode_single.");
   }
 
   ten_extension_tester_set_test_mode_single(
-      py_extension_tester->c_extension_tester, addon_name);
+      py_extension_tester->c_extension_tester, addon_name, property_json_str);
 
   Py_RETURN_NONE;
 }

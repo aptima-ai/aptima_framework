@@ -63,3 +63,8 @@ class DefaultExtension(Extension):
         if cmd.get_name() == "hello_world":
             self.cached_cmd = cmd
             self.return_if_all_data_received(ten_env)
+        elif cmd.get_name() == "greeting":
+            greeting = ten_env.get_property_string("greeting")
+            cmd_result = CmdResult.create(StatusCode.OK)
+            cmd_result.set_property_string("detail", greeting)
+            ten_env.return_result(cmd_result, cmd)
