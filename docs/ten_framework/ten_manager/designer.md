@@ -428,3 +428,22 @@ Save the `property.json` file, including predefined graphs and other content.
 - **Verb:** PUT
 
 If successful, the client will receive a `200 OK` response; otherwise, a `40x` error code will be returned.
+
+## How to develop designer
+
+The **tman designer** includes both the frontend and backend. Although the frontend of tman designer is directly embedded into the tman executable during compilation, for development convenience, the frontend and backend of tman designer can be run and debugged separately.
+
+To start the tman designer backend, use the following command:
+
+```shell
+cargo run designer --base-dir <app-base-dir>
+```
+
+To independently start the tman designer frontend, use the following commands:
+
+```shell
+$ cd core/src/ten_manager/designer_frontend/
+$ npm run start
+```
+
+Running `npm run start` will start a **webpack dev-server** to serve the tman designer frontend. Open your browser and navigate to `http://<ip>:3000` to view the tman designer frontend.
