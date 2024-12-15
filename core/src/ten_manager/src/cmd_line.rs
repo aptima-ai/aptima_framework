@@ -100,7 +100,7 @@ fn create_cmd() -> clap::ArgMatches {
         .subcommand(crate::cmd::cmd_package::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_publish::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_delete::create_sub_cmd(&args_cfg))
-        .subcommand(crate::cmd::cmd_dev_server::create_sub_cmd(&args_cfg))
+        .subcommand(crate::cmd::cmd_designer::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_check::create_sub_cmd(&args_cfg))
         .get_matches()
 }
@@ -137,7 +137,7 @@ pub fn parse_cmd(
         ),
         Some(("dev-server", sub_cmd_args)) => {
             crate::cmd::CommandData::DevServer(
-                crate::cmd::cmd_dev_server::parse_sub_cmd(sub_cmd_args),
+                crate::cmd::cmd_designer::parse_sub_cmd(sub_cmd_args),
             )
         }
         Some(("check", sub_cmd_args)) => crate::cmd::CommandData::Check(

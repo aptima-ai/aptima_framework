@@ -7,20 +7,24 @@
     "editor.wordWrapColumn": 80
   },
   "[python]": {
-    "editor.tabSize": 4,
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.tabSize": 4
   },
   "black-formatter.args": [
     "--line-length",
     "80"
   ],
   "debug.allowBreakpointsEverywhere": true,
-  "doxdocgen.c.commentPrefix": "/// ",
-  "doxdocgen.c.firstLine": "///",
-  "doxdocgen.c.lastLine": "///",
-  "doxdocgen.c.triggerSequence": "///",
-  "doxdocgen.generic.boolReturnsTrueFalse": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
   "editor.formatOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
   "files.eol": "\n",
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,

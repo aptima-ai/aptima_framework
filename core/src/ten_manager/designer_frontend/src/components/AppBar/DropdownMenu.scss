@@ -1,0 +1,77 @@
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+.menu-container {
+  position: relative;
+  margin-right: 20px;
+  cursor: pointer;
+
+  .menu-title {
+    padding: 0 5px;
+    &:hover {
+      background: var(--menu-hover-bg);
+    }
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--dropdown-bg);
+    border: 1px solid var(--dropdown-border);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: auto;
+    z-index: 100;
+
+    // Ensure the width and border calculation is correct.
+    box-sizing: border-box;
+
+    .separator {
+      height: 1px;
+      background: var(--separator-bg);
+      margin: 5px 0;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+
+      // Prevent text wrapping.
+      white-space: nowrap;
+
+      // Ensure the width and border calculation is correct.
+      box-sizing: border-box;
+
+      &:hover {
+        background: var(--menu-hover-bg);
+      }
+
+      .menu-icon {
+        margin-right: 8px;
+
+        // Ensure the icon is vertically centered.
+        display: flex;
+        align-items: center;
+
+        // If the icon has a specific height, ensure it aligns with the text.
+        // Adjust the following value according to the size of the icon.
+        height: 1em;
+
+        // Prevent the icon to be shrink.
+        flex-shrink: 0;
+
+        width: 20px; // Fixed sized.
+        justify-content: center; // Horizontally center the icon.
+      }
+
+      .menu-label {
+        flex: 1; // Allow the label section to occupy the remaining space.
+        text-align: left; // Ensure the text is left-aligned.
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "error_fetching": "无法获取版本.",
+  "Settings": "设定",
+  "Theme": "主题",
+  "Switch to": "切换至",
+  "Dark": "深色",
+  "Light": "淡色",
+  "Language": "语言",
+  "Edit manifest.json": "编辑 manifest.json",
+  "Edit property.json": "编辑 property.json",
+  "Delete": "删除",
+  "Launch terminal": "开启 terminal",
+  "Official site": "官网"
+}

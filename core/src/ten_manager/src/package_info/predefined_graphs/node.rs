@@ -6,17 +6,17 @@
 //
 use ten_rust::pkg_info::{graph::GraphNode, pkg_type::PkgType};
 
-use crate::dev_server::graphs::nodes::DevServerExtension;
+use crate::designer::graphs::nodes::DevServerExtension;
 
 impl From<DevServerExtension> for GraphNode {
-    fn from(dev_server_extension: DevServerExtension) -> Self {
+    fn from(designer_extension: DevServerExtension) -> Self {
         GraphNode {
             node_type: PkgType::Extension,
-            name: dev_server_extension.name,
-            addon: dev_server_extension.addon,
-            extension_group: Some(dev_server_extension.extension_group.clone()),
-            app: Some(dev_server_extension.app),
-            property: dev_server_extension.property,
+            name: designer_extension.name,
+            addon: designer_extension.addon,
+            extension_group: Some(designer_extension.extension_group.clone()),
+            app: Some(designer_extension.app),
+            property: designer_extension.property,
         }
     }
 }

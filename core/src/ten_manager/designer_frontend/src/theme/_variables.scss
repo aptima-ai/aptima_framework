@@ -1,0 +1,27 @@
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+:root {
+  --app-bar-height: 40px;
+  --app-bar-padding: 0 20px;
+  --app-bar-font-size: 14px;
+
+  // Default theme.
+  --app-bar-bg: #ffffff;
+  --app-bar-fg: #000000;
+  --menu-hover-bg: #f0f0f0;
+  --dropdown-bg: #ffffff;
+  --dropdown-border: #cccccc;
+  --popup-bg: #ffffff;
+  --popup-fg: #000000;
+  --popup-border: #cccccc;
+  --popup-header-bg: #f5f5f5;
+  --button-bg: #e0e0e0;
+  --button-fg: #000000;
+  --button-border: #cccccc;
+  --button-hover-bg: #d5d5d5;
+  --separator-bg: #cccccc;
+}

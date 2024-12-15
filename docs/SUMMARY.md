@@ -61,7 +61,7 @@
 ### TEN Manager
 
 * [Overview](ten_framework/ten_manager/overview.md)
-* [Dev-Server](ten_framework/ten_manager/dev_server_cn.md)
+* [Designer](ten_framework/ten_manager/designer_cn.md)
 * [Check-Graph](ten_framework/ten_manager/check_graph.md)
 
 ## Tutorials

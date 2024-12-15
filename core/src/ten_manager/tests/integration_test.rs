@@ -16,4 +16,4 @@ fn main() {
 
 // Those following mods will be compiled in one executable.
 mod cmd_check_graph;
-mod cmd_dev_server;
+mod cmd_designer;

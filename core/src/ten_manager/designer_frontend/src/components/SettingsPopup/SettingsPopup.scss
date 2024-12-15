@@ -1,0 +1,42 @@
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; // Adds space between sections.
+
+  .theme-toggle,
+  .language-selector {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px; // Adds space between label and button/select.
+
+    button {
+      background: var(--button-bg);
+      color: var(--button-fg);
+      border: 1px solid var(--button-border);
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+
+      &:hover {
+        background: var(--button-hover-bg);
+      }
+    }
+
+    select {
+      margin-left: 10px;
+      padding: 5px;
+      border: 1px solid var(--button-border);
+      border-radius: 4px;
+      background: var(--button-bg);
+      color: var(--button-fg);
+    }
+  }
+}
