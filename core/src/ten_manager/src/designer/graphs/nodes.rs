@@ -396,14 +396,14 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/graphs/{graph_name}/nodes",
+                "/api/designer/v1/graphs/{graph_name}/nodes",
                 web::get().to(get_graph_nodes),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/default/nodes")
+            .uri("/api/designer/v1/graphs/default/nodes")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -601,14 +601,14 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/graphs/{graph_name}/extensions",
+                "/api/designer/v1/graphs/{graph_name}/extensions",
                 web::get().to(get_graph_nodes),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/no_existing_graph/extensions")
+            .uri("/api/designer/v1/graphs/no_existing_graph/extensions")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -662,14 +662,14 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/graphs/{graph_name}/extensions",
+                "/api/designer/v1/graphs/{graph_name}/extensions",
                 web::get().to(get_graph_nodes),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/addon_not_found/extensions")
+            .uri("/api/designer/v1/graphs/addon_not_found/extensions")
             .to_request();
 
         let resp = test::call_service(&app, req).await;

@@ -77,8 +77,8 @@ export default {
     proxy: [
       {
         context: ["/api"],
-        // If the dev-server is started on a different port (default is 49483),
-        // corresponding changes need to be made here as well.
+        // If the tman designer is started on a different port (default is
+        // 49483), corresponding changes need to be made here as well.
         target: "http://localhost:49483",
         changeOrigin: true,
         secure: false,

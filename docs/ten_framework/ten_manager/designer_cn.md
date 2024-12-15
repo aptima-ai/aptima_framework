@@ -12,12 +12,12 @@ tman designer
 
 If the `base-dir` is not specified, the current working directory will be used by default. Regardless, `base-dir` must be the base directory of a TEN app.
 
-The server starts on port 49483 by default, and you can interact with the dev-server using the following URL:
+The server starts on port 49483 by default, and you can interact with the designer using the following URL:
 
 {% code title="https" %}
 
 ```text
-http://127.0.0.1:49483/api/dev-server/v1/
+http://127.0.0.1:49483/api/designer/v1/
 ```
 
 {% endcode %}
@@ -26,9 +26,9 @@ If the requested endpoint URL is not found, the client will receive a `404 Not F
 
 ## Version
 
-Retrieve the version of the dev-server.
+Retrieve the version of the designer.
 
-- **Endpoint:** `/api/dev-server/v1/version`
+- **Endpoint:** `/api/designer/v1/version`
 - **Verb:** GET
 
 You will receive a `200 OK` response, with the body containing a JSON object like this:
@@ -45,9 +45,9 @@ You will receive a `200 OK` response, with the body containing a JSON object lik
 
 ## Installed Extension Addons
 
-Retrieve all installed extension addons recognized by the dev-server under the base directory.
+Retrieve all installed extension addons recognized by the designer under the base directory.
 
-- **Endpoint:** `/api/dev-server/v1/addons/extensions`
+- **Endpoint:** `/api/designer/v1/addons/extensions`
 - **Verb:** GET
 
 You will receive a `200 OK` response, with the body containing a JSON array like this:
@@ -71,7 +71,7 @@ You will receive a `200 OK` response, with the body containing a JSON array like
 
 Retrieve a list of available graphs.
 
-- **Endpoint:** `/api/dev-server/v1/graphs`
+- **Endpoint:** `/api/designer/v1/graphs`
 - **Verb:** GET
 
 You will receive a `200 OK` response, with the body containing a JSON array like this:
@@ -95,7 +95,7 @@ If an error occurs, such as when the App package is not found, you will receive 
 
 Retrieve the list of extensions within a specified graph.
 
-- **Endpoint:** `/api/dev-server/v1/graphs/{graph_id}/nodes`
+- **Endpoint:** `/api/designer/v1/graphs/{graph_id}/nodes`
 - **Verb:** GET
 
 You will receive a `200 OK` response, with the body containing a JSON array. Ex:
@@ -225,7 +225,7 @@ The format of the `cmd_in` and `cmd_out` are same, and compared with the above `
 
 Retrieve the list of connections within a specified graph.
 
-- **Endpoint:** `/api/dev-server/v1/graphs/{graph_id}/connections`
+- **Endpoint:** `/api/designer/v1/graphs/{graph_id}/connections`
 - **Verb:** GET
 
 You will receive a `200 OK` response. Ex:
@@ -306,7 +306,7 @@ The definition of `msg_conversion` is as follows.
 
 Select a message from an extension and retrieve all other messages from different extensions in the graph that are compatible with it.
 
-- **Endpoint:** `/api/dev-server/v1/messages/compatible`
+- **Endpoint:** `/api/designer/v1/messages/compatible`
 - **Verb:** POST
 
 The input body is a JSON object that represents a request to find compatible pins (connections) for an output command from a specific extension within a specified graph.
@@ -358,7 +358,7 @@ You will receive a `200 OK` response, with the body containing a JSON array like
 
 Update the specified graph.
 
-- **Endpoint:** `/api/dev-server/v1/graphs/{graph_id}`
+- **Endpoint:** `/api/designer/v1/graphs/{graph_id}`
 - **Verb:** PUT
 
 Input data (body):
@@ -415,7 +415,7 @@ If successful, the client will receive a `200 OK` response; otherwise, a `40x` e
 
 Save the `manifest.json` file.
 
-- **Endpoint:** `/api/dev-server/v1/manifest`
+- **Endpoint:** `/api/designer/v1/manifest`
 - **Verb:** PUT
 
 If successful, the client will receive a `200 OK` response; otherwise, a `40x` error code will be returned.
@@ -424,7 +424,7 @@ If successful, the client will receive a `200 OK` response; otherwise, a `40x` e
 
 Save the `property.json` file, including predefined graphs and other content.
 
-- **Endpoint:** `/api/dev-server/v1/property`
+- **Endpoint:** `/api/designer/v1/property`
 - **Verb:** PUT
 
 If successful, the client will receive a `200 OK` response; otherwise, a `40x` error code will be returned.

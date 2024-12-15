@@ -49,7 +49,7 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
       uninstall   Uninstall a package. For more detailed usage, run 'uninstall -h'
       package     Create a package file. For more detailed usage, run 'package -h'
       publish     Publish a package. For more detailed usage, run 'publish -h'
-      dev-server  Install a package. For more detailed usage, run 'dev-server -h'
+      designer  Install a package. For more detailed usage, run 'designer -h'
       help        Print this message or the help of the given subcommand(s)
 
     Options:
@@ -99,6 +99,7 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
       --out-dir OUT_DIR  build output dir, default is 'out/'
 
     I recommend you to put /usr/local/ten_gn/.gnfiles into your PATH so that you can run tgn anywhere.
+
     ```
 
     Note

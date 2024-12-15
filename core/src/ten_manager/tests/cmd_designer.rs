@@ -35,12 +35,12 @@ async fn test_cmd_designer_graphs_some_property_invalid() {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(designer_state))
-            .route("/api/dev-server/v1/graphs", web::get().to(get_graphs)),
+            .route("/api/designer/v1/graphs", web::get().to(get_graphs)),
     )
     .await;
 
     let req = test::TestRequest::get()
-        .uri("/api/dev-server/v1/graphs")
+        .uri("/api/designer/v1/graphs")
         .to_request();
     let resp = test::call_service(&app, req).await;
     assert_eq!(resp.status(), StatusCode::NOT_FOUND);
@@ -72,12 +72,12 @@ async fn test_cmd_designer_graphs_app_property_not_exist() {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(designer_state))
-            .route("/api/dev-server/v1/graphs", web::get().to(get_graphs)),
+            .route("/api/designer/v1/graphs", web::get().to(get_graphs)),
     )
     .await;
 
     let req = test::TestRequest::get()
-        .uri("/api/dev-server/v1/graphs")
+        .uri("/api/designer/v1/graphs")
         .to_request();
     let resp = test::call_service(&app, req).await;
     assert_eq!(resp.status(), StatusCode::OK);
@@ -107,14 +107,14 @@ async fn test_cmd_designer_connections_has_msg_conversion() {
     let designer_state = Arc::new(RwLock::new(designer_state));
     let app = test::init_service(
         App::new().app_data(web::Data::new(designer_state)).route(
-            "/api/dev-server/v1/graphs/{graph_name}/connections",
+            "/api/designer/v1/graphs/{graph_name}/connections",
             web::get().to(get_graph_connections),
         ),
     )
     .await;
 
     let req = test::TestRequest::get()
-        .uri("/api/dev-server/v1/graphs/default/connections")
+        .uri("/api/designer/v1/graphs/default/connections")
         .to_request();
     let resp = test::call_service(&app, req).await;
     assert_eq!(resp.status(), StatusCode::OK);

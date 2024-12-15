@@ -38,7 +38,7 @@ const EditorPopup: React.FC<EditorPopupProps> = ({ data, onClose }) => {
       try {
         const encodedUrl = encodeURIComponent(data.url);
         const response = await fetch(
-          `/api/dev-server/v1/file-content/${encodedUrl}`
+          `/api/designer/v1/file-content/${encodedUrl}`
         );
         if (!response.ok) throw new Error("Failed to fetch file content");
         const respData = await response.json();

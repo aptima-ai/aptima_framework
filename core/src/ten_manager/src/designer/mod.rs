@@ -40,57 +40,57 @@ pub fn configure_routes(
     state: web::Data<Arc<RwLock<DesignerState>>>,
 ) {
     cfg.app_data(state.clone())
-        .route("/api/dev-server/v1/version", web::get().to(get_version))
+        .route("/api/designer/v1/version", web::get().to(get_version))
         .route(
-            "/api/dev-server/v1/addons/extensions",
+            "/api/designer/v1/addons/extensions",
             web::get().to(addons::extensions::get_extension_addons),
         )
         .route(
-            "/api/dev-server/v1/addons/extensions/{name}",
+            "/api/designer/v1/addons/extensions/{name}",
             web::get().to(addons::extensions::get_extension_addon_by_name),
         )
         .route(
-            "/api/dev-server/v1/packages/reload",
+            "/api/designer/v1/packages/reload",
             web::post().to(packages::reload::clear_and_reload_pkgs),
         )
         .route(
-            "/api/dev-server/v1/graphs",
+            "/api/designer/v1/graphs",
             web::get().to(graphs::get_graphs),
         )
         .route(
-            "/api/dev-server/v1/graphs/{graph_name}/nodes",
+            "/api/designer/v1/graphs/{graph_name}/nodes",
             web::get().to(graphs::nodes::get_graph_nodes),
         )
         .route(
-            "/api/dev-server/v1/graphs/{graph_name}/connections",
+            "/api/designer/v1/graphs/{graph_name}/connections",
             web::get().to(graphs::connections::get_graph_connections),
         )
         .route(
-            "/api/dev-server/v1/graphs/{graph_name}",
+            "/api/designer/v1/graphs/{graph_name}",
             web::put().to(graphs::update::update_graph),
         )
         .route(
-            "/api/dev-server/v1/manifest",
+            "/api/designer/v1/manifest",
             web::put().to(manifest::dump::dump_manifest),
         )
         .route(
-            "/api/dev-server/v1/manifest/check",
+            "/api/designer/v1/manifest/check",
             web::get().to(manifest::check::check_manifest),
         )
         .route(
-            "/api/dev-server/v1/property",
+            "/api/designer/v1/property",
             web::put().to(property::dump::dump_property),
         )
         .route(
-            "/api/dev-server/v1/property/check",
+            "/api/designer/v1/property/check",
             web::get().to(property::check::check_property),
         )
         .route(
-            "/api/dev-server/v1/messages/compatible",
+            "/api/designer/v1/messages/compatible",
             web::post().to(messages::compatible::get_compatible_messages),
         )
         .route(
-            "/api/dev-server/v1/file-content/{path}",
+            "/api/designer/v1/file-content/{path}",
             web::get().to(file_content::get_file_content),
         )
         .route("/ws/terminal", web::get().to(ws_terminal));

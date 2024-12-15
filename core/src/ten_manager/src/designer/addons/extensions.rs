@@ -241,14 +241,14 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/addons/extensions",
+                "/api/designer/v1/addons/extensions",
                 web::get().to(get_extension_addons),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/addons/extensions")
+            .uri("/api/designer/v1/addons/extensions")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -463,14 +463,14 @@ mod tests {
             App::new()
                 .app_data(web::Data::new(designer_state.clone()))
                 .route(
-                    "/api/dev-server/v1/addons/extensions/{name}",
+                    "/api/designer/v1/addons/extensions/{name}",
                     web::get().to(get_extension_addon_by_name),
                 ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/addons/extensions/extension_addon_1")
+            .uri("/api/designer/v1/addons/extensions/extension_addon_1")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -535,7 +535,7 @@ mod tests {
         assert_eq!(addon.data, expected_addon);
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/addons/extensions/non_existent_addon")
+            .uri("/api/designer/v1/addons/extensions/non_existent_addon")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

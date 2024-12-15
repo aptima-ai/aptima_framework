@@ -52,8 +52,8 @@ cd "$PROJECT_ROOT_DIR" || {
 }
 
 # Build tman rust project.
-echo "Building and running tman dev-server ..."
-cargo run dev-server --base-dir="$BASE_DIR" || {
+echo "Building and running tman designer ..."
+cargo run designer --base-dir="$BASE_DIR" || {
   echo "Error: tman failed to run."
   exit 1
 }

@@ -42,8 +42,8 @@ impl Drop for TenSchemaRawPointer {
 #[derive(Debug, Clone)]
 pub struct TenSchema {
     // The TenSchema needs to implement Clone, and it will be used in tman
-    // dev-server which will be shared between threads. So we use Arc to wrap
-    // the raw_ptr.
+    // designer which will be shared between threads. So we use Arc to wrap the
+    // raw_ptr.
     inner: Arc<TenSchemaRawPointer>,
 }
 

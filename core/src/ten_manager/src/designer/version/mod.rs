@@ -55,14 +55,14 @@ mod tests {
         // Create the App with the routes configured.
         let app =
             test::init_service(App::new().app_data(state.clone()).route(
-                "/api/dev-server/v1/version",
+                "/api/designer/v1/version",
                 web::get().to(get_version),
             ))
             .await;
 
         // Send a request to the version endpoint.
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/version")
+            .uri("/api/designer/v1/version")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

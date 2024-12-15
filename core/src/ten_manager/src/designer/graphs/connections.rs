@@ -219,14 +219,14 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/graphs/{graph_name}/connections",
+                "/api/designer/v1/graphs/{graph_name}/connections",
                 web::get().to(get_graph_connections),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/default/connections")
+            .uri("/api/designer/v1/graphs/default/connections")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -301,14 +301,14 @@ mod tests {
         let designer_state = Arc::new(RwLock::new(designer_state));
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/graphs/{graph_name}/connections",
+                "/api/designer/v1/graphs/{graph_name}/connections",
                 web::get().to(get_graph_connections),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs/default/connections")
+            .uri("/api/designer/v1/graphs/default/connections")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

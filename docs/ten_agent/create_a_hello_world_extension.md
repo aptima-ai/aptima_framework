@@ -40,7 +40,7 @@ Once the command is entered, you should see output similar to this:
 
 <pre class="language-bash" data-title=">_ Terminal"><code class="lang-bash">....
 Attaching to ten_agent_dev, ten_agent_playground
-ten_agent_dev         | cd agents && tman dev-server
+ten_agent_dev         | cd agents && tman designer
 ten_agent_dev         | :-)  Starting server at http://0.0.0.0:49483
 ten_agent_playground  |   ▲ Next.js 14.2.4
 ten_agent_playground  |   - Local:        http://localhost:3000

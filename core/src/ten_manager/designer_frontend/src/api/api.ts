@@ -18,7 +18,7 @@ export interface ExtensionAddon {
 }
 
 export const fetchNodes = async (): Promise<BackendNode[]> => {
-  const response = await fetch(`/api/dev-server/v1/graphs/default/nodes`);
+  const response = await fetch(`/api/designer/v1/graphs/default/nodes`);
   if (!response.ok) {
     throw new Error(`Failed to fetch nodes: ${response.status}`);
   }
@@ -32,7 +32,7 @@ export const fetchNodes = async (): Promise<BackendNode[]> => {
 };
 
 export const fetchConnections = async (): Promise<BackendConnection[]> => {
-  const response = await fetch(`/api/dev-server/v1/graphs/default/connections`);
+  const response = await fetch(`/api/designer/v1/graphs/default/connections`);
   if (!response.ok) {
     throw new Error(`Failed to fetch connections: ${response.status}`);
   }
@@ -53,7 +53,7 @@ export const fetchConnections = async (): Promise<BackendConnection[]> => {
 export const fetchExtensionAddonByName = async (
   name: string
 ): Promise<ExtensionAddon> => {
-  const response = await fetch(`/api/dev-server/v1/addons/extensions/${name}`);
+  const response = await fetch(`/api/designer/v1/addons/extensions/${name}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch addon '${name}': ${response.status}`);
   }

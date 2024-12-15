@@ -161,7 +161,7 @@ mod tests {
             App::new()
                 .app_data(web::Data::new(designer_state.clone()))
                 .route(
-                    "/api/dev-server/v1/graphs/{graph_name}",
+                    "/api/designer/v1/graphs/{graph_name}",
                     web::put().to(update_graph),
                 ),
         )
@@ -174,7 +174,7 @@ mod tests {
             .unwrap();
 
         let req = test::TestRequest::put()
-            .uri("/api/dev-server/v1/graphs/default")
+            .uri("/api/designer/v1/graphs/default")
             .set_json(input_data)
             .to_request();
         let resp = test::call_service(&app, req).await;

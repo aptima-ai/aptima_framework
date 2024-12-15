@@ -127,12 +127,12 @@ mod tests {
         let app = test::init_service(
             App::new()
                 .app_data(web::Data::new(designer_state))
-                .route("/api/dev-server/v1/graphs", web::get().to(get_graphs)),
+                .route("/api/designer/v1/graphs", web::get().to(get_graphs)),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs")
+            .uri("/api/designer/v1/graphs")
             .to_request();
         let resp = test::call_service(&app, req).await;
 
@@ -174,12 +174,12 @@ mod tests {
         let app = test::init_service(
             App::new()
                 .app_data(web::Data::new(designer_state))
-                .route("/api/dev-server/v1/graphs", web::get().to(get_graphs)),
+                .route("/api/designer/v1/graphs", web::get().to(get_graphs)),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/graphs")
+            .uri("/api/designer/v1/graphs")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

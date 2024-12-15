@@ -111,14 +111,14 @@ mod tests {
         let designer_state = Arc::new(RwLock::new(designer_state));
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/property/check",
+                "/api/designer/v1/property/check",
                 web::get().to(check_property),
             ),
         )
         .await;
 
         let req = test::TestRequest::get()
-            .uri("/api/dev-server/v1/property/check?type=dirty")
+            .uri("/api/designer/v1/property/check?type=dirty")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

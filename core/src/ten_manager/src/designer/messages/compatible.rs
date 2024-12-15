@@ -345,7 +345,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -364,7 +364,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -425,7 +425,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -444,7 +444,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -487,7 +487,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -506,7 +506,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -567,7 +567,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -586,7 +586,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -648,7 +648,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -667,7 +667,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -740,7 +740,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -759,7 +759,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -822,7 +822,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -841,7 +841,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -893,7 +893,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -912,7 +912,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -974,7 +974,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -993,7 +993,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -1057,7 +1057,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -1076,7 +1076,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 
@@ -1128,7 +1128,7 @@ mod tests {
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(designer_state)).route(
-                "/api/dev-server/v1/messages/compatible",
+                "/api/designer/v1/messages/compatible",
                 web::post().to(get_compatible_messages),
             ),
         )
@@ -1147,7 +1147,7 @@ mod tests {
 
         // Send request to the test server.
         let req = test::TestRequest::post()
-            .uri("/api/dev-server/v1/messages/compatible")
+            .uri("/api/designer/v1/messages/compatible")
             .set_json(&input_data)
             .to_request();
 

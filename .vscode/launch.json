@@ -412,14 +412,14 @@
       ],
     },
     {
-      "name": "tman dev-server (lldb)",
+      "name": "tman designer (lldb)",
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/core/src/ten_manager/target/x86_64-unknown-linux-gnu/debug/tman",
       "cwd": "${workspaceFolder}/core/src/ten_manager/target/x86_64-unknown-linux-gnu/debug/",
       "args": [
         "--verbose",
-        "dev-server",
+        "designer",
         "--frontend-dev",
         "--base-dir=/home/wei/MyData/MyProject/ten_framework_internal_base/ten_framework/out/linux/x64/tests/ten_runtime/integration/cpp/http_basic/restful_http_app/",
       ],

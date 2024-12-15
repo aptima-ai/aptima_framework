@@ -33,7 +33,7 @@ const App: React.FC = () => {
 
   // Get the version of tman.
   useEffect(() => {
-    fetch("/api/dev-server/v1/version")
+    fetch("/api/designer/v1/version")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

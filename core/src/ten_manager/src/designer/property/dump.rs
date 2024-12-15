@@ -145,11 +145,11 @@ mod tests {
             App::new()
                 .app_data(web::Data::new(designer_state.clone()))
                 .route(
-                    "/api/dev-server/v1/graphs/{graph_name}",
+                    "/api/designer/v1/graphs/{graph_name}",
                     web::put().to(update_graph),
                 )
                 .route(
-                    "/api/dev-server/v1/property",
+                    "/api/designer/v1/property",
                     web::put().to(dump_property),
                 ),
         )
@@ -162,7 +162,7 @@ mod tests {
             .unwrap();
 
         let req = test::TestRequest::put()
-            .uri("/api/dev-server/v1/graphs/default")
+            .uri("/api/designer/v1/graphs/default")
             .set_json(input_data)
             .to_request();
         let resp = test::call_service(&app, req).await;
@@ -173,7 +173,7 @@ mod tests {
         let property_file_path = test_data_dir.join(PROPERTY_JSON_FILENAME);
 
         let req = test::TestRequest::put()
-            .uri("/api/dev-server/v1/property")
+            .uri("/api/designer/v1/property")
             .to_request();
         let resp = test::call_service(&app, req).await;
 

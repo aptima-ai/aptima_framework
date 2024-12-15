@@ -38,10 +38,8 @@ pub struct DevServerCommand {
 }
 
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
-    Command::new("dev-server")
-        .about(
-            "Install a package. For more detailed usage, run 'dev-server -h'",
-        )
+    Command::new("designer")
+        .about("Install a package. For more detailed usage, run 'designer -h'")
         .arg(
             Arg::new("IP_ADDRESS")
                 .long("ip")
@@ -109,7 +107,7 @@ pub async fn execute_cmd(
     tman_config: &TmanConfig,
     command_data: DevServerCommand,
 ) -> Result<()> {
-    tman_verbose_println!(tman_config, "Executing dev-server command");
+    tman_verbose_println!(tman_config, "Executing designer command");
     tman_verbose_println!(tman_config, "{:?}", command_data);
     tman_verbose_println!(tman_config, "{:?}", tman_config);
 
