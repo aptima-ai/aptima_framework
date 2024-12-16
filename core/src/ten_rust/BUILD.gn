@@ -29,6 +29,7 @@ if (ten_enable_ten_rust) {
       # `cargo build` commands to avoid interfering with each other.
       target_path = "${root_gen_dir}/core/src/ten_rust_test"
 
+      # Copy the test executable to the test output directory.
       test_output_dir = "${root_out_dir}/tests/standalone/ten_rust"
 
       deps = [

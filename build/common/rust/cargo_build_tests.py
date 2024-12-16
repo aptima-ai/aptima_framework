@@ -95,7 +95,11 @@ if __name__ == "__main__":
     parser.add_argument("--env", type=str, action="append", default=[])
     parser.add_argument("--log-level", type=int, required=True)
     parser.add_argument(
-        "--test-output-dir", type=str, default="", required=False
+        "--test-output-dir",
+        type=str,
+        default="",
+        required=False,
+        help="The test executable will eventually be copied here.",
     )
     parser.add_argument(
         "--tg-timestamp-proxy-file", type=str, default="", required=False

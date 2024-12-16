@@ -60,12 +60,12 @@ version = "0.1.0"
 
 [dependencies.tokio]
 version = "1"
-features = ["full"]
+features = ["rt-multi-thread", "sync", "time"]
 
 [dependencies.zip]
 version = "2.2"
 default-features = false
-features = ["aes-crypto", "deflate", "deflate64", "lzma", "time", "zstd"]
+features = ["deflate", "time"]
 
 [target."cfg(unix)".dependencies]
 mimalloc = "0.1"

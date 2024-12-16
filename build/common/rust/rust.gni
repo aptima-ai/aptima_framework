@@ -93,8 +93,8 @@ template("rust_target") {
 
     # Note that the `target` is required for `cargo build` if the asan is
     # enabled, otherwise the platform-dependent dependencies might not be found,
-    # and there might be asan conflict with the shared libraries depeneded by
-    # the denendencies.
+    # and there might be asan conflict with the shared libraries depended by
+    # the dependencies.
     if (is_win) {
       if (target_cpu == "x86") {
         target = "i686-pc-windows-msvc"
@@ -282,8 +282,8 @@ template("rust_test") {
 
     # Note that the `target` is required for `cargo build` if the asan is
     # enabled, otherwise the platform-dependent dependencies might not be found,
-    # and there might be asan conflict with the shared libraries depeneded by
-    # the denendencies.
+    # and there might be asan conflict with the shared libraries depended by
+    # the dependencies.
     if (is_win) {
       if (target_cpu == "x86") {
         target = "i686-pc-windows-msvc"
@@ -356,6 +356,8 @@ template("rust_test") {
   }
 }
 
+# Call rust `cbindgen` to generate binding file for `ten_rust` to be used in C
+# codes.
 template("rust_cbindgen") {
   assert(defined(invoker.config_file), "config_file is not defined")
   assert(defined(invoker.project_path), "project_path is not defined")
@@ -401,6 +403,7 @@ template("rust_cbindgen") {
   }
 }
 
+# Generate `ten_framework/.cargo/config.toml` to configure the Rust compiler.
 template("rust_gen_cargo_config") {
   assert(defined(invoker.project_root), "project_root is not defined")
 
@@ -493,6 +496,7 @@ template("rust_gen_cargo_config") {
   }
 }
 
+# Call 'cargo clean' clean the target directory.
 template("rust_clean") {
   _project_path = rebase_path(invoker.project_path)
   _target_path = rebase_path(invoker.target_path)
