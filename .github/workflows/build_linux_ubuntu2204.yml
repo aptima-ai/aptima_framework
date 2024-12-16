@@ -17,13 +17,21 @@ on:
 jobs:
   build-linux-ubuntu2204:
     concurrency:
-      group: build-linux-ubuntu2204-${{ github.head_ref }}-${{ matrix.compiler }}-${{ matrix.build_type }}
+      group: build-linux-ubuntu2204-${{ github.head_ref }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
     strategy:
       matrix:
         compiler: [gcc, clang]
         build_type: [debug, release]
+        arch: [x64, x86]
+        include:
+          - compiler: gcc
+            build_type: debug
+            arch: x86
+        exclude:
+          - compiler: clang
+            arch: x86
     container:
       image: ghcr.io/ten-framework/ten_building_ubuntu2204
     steps:
@@ -55,6 +63,12 @@ jobs:
           sysctl -w net.core.somaxconn=8192
         shell: bash
 
+      - name: Install gcc-multilib and g++-multilib
+        if: matrix.arch == 'x86'
+        run: |
+          apt-get update
+          apt-get install -y gcc-multilib g++-multilib
+
       - name: Build
         run: |
           export PATH=$(pwd)/core/ten_gn:$PATH
@@ -62,9 +76,18 @@ jobs:
           go env -w GOFLAGS="-buildvcs=false"
           go1.20.12 download
           rustup default nightly
+
           df -h .
-          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_go_lint=true ten_enable_rust_incremental_build=false
+
+          if [ "${{ matrix.arch }}" = "x86" ]; then
+            EXTRA_ARGS="is_clang=false ten_enable_ten_manager=false ten_manager_enable_frontend=false ten_rust_enable_tests=false ten_manager_enable_tests=false ten_enable_go_binding=false ten_enable_python_binding=false ten_enable_nodejs_binding=false"
+          else
+            EXTRA_ARGS="is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_go_lint=true ten_enable_rust_incremental_build=false"
+          fi
+
+          tgn gen linux x64 ${{ matrix.build_type }} -- $EXTRA_ARGS
           tgn build linux x64 ${{ matrix.build_type }}
+
           df -h .
           tree -I 'gen|obj' out
 
@@ -99,6 +122,7 @@ jobs:
           out/linux/x64/tests/standalone/ten_runtime_smoke_test || { echo "test failed"; exit 1; }
 
       - name: Run Tests (ten_rust standalone tests)
+        if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
@@ -114,6 +138,7 @@ jobs:
           ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
 
       - name: Run Tests (ten_manager standalone tests)
+        if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
@@ -131,6 +156,7 @@ jobs:
           python .github/tools/setup_pytest_dependencies.py
 
       - name: Run Tests (ten_manager pytest tests)
+        if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
@@ -141,6 +167,7 @@ jobs:
           pytest -s tests/ten_manager/
 
       - name: Run tests (ten_runtime integration tests)
+        if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
@@ -152,6 +179,7 @@ jobs:
           pytest -s tests/ten_runtime/integration/
 
       - name: Update supports before upload or publish
+        if: matrix.arch == 'x64'
         run: |
           UPDATE_SUPPORTS_SCRIPT=$(pwd)/tools/supports/update_supports_in_manifest_json.py
 
@@ -170,15 +198,17 @@ jobs:
         shell: bash
 
       - name: Upload tman
+        if: matrix.arch == 'x64'
         uses: actions/upload-artifact@v4
         with:
-          name: tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}
+          name: tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
           path: out/linux/x64/ten_manager/bin/tman
 
       - name: Upload ten_packages
+        if: matrix.arch == 'x64'
         uses: actions/upload-artifact@v4
         with:
-          name: ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}
+          name: ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
           path: |
             out/linux/x64/ten_packages/system/ten_runtime
             out/linux/x64/ten_packages/system/ten_runtime_go
@@ -190,11 +220,11 @@ jobs:
             out/linux/x64/ten_packages/extension/py_init_extension_cpp
 
       - name: Package assets
-        if: startsWith(github.ref, 'refs/tags/')
+        if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
         run: |
           cd out/linux/x64
-          zip -vr tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip ten_manager/bin/tman
-          zip -vr ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip \
+          zip -vr tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip ten_manager/bin/tman
+          zip -vr ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip \
             ten_packages/system/ten_runtime \
             ten_packages/system/ten_runtime_go \
             ten_packages/system/ten_runtime_python \
@@ -206,14 +236,14 @@ jobs:
 
       - name: Publish to release assets
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            out/linux/x64/tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
-            out/linux/x64/ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
+            out/linux/x64/tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
+            out/linux/x64/ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
 
       - name: Publish release to TEN cloud store
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.compiler == 'gcc' && matrix.build_type == 'release' }}
+        if: ${{ matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/') && matrix.compiler == 'gcc' && matrix.build_type == 'release' && matrix.arch == 'x64' }}
         run: |
           TMAN_BIN=$(pwd)/out/linux/x64/ten_manager/bin/tman
 
