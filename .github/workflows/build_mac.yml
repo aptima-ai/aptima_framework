@@ -27,6 +27,10 @@ jobs:
           fetch-depth: "0"
           submodules: "true"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -77,9 +81,13 @@ jobs:
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
 
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false
+          df -h .
+
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_rust_incremental_build=false
 
           tgn build mac arm64 ${{ matrix.build_type }}
+
+          df -h .
           tree -I 'gen|obj' out
 
       - name: Run Tests (ten_utils_unit_test)
@@ -189,6 +197,10 @@ jobs:
           fetch-depth: "0"
           submodules: "true"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -239,9 +251,13 @@ jobs:
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
 
-          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false
+          df -h .
+
+          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_rust_incremental_build=false
 
           tgn build mac x64 ${{ matrix.build_type }}
+
+          df -h .
           tree -I 'gen|obj' out
       #   continue-on-error: true
       # - name: Setup tmate session
@@ -352,6 +368,10 @@ jobs:
           fetch-depth: "0"
           submodules: "true"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -402,10 +422,13 @@ jobs:
           export PATH=$(pwd)/core/ten_gn:$PATH
           echo $PATH
 
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_ten_rust_apis=false
+          df -h .
+
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_ten_rust_apis=false ten_enable_rust_incremental_build=false
 
           tgn build mac arm64 ${{ matrix.build_type }}
 
+          df -h .
           tree -I 'gen|obj' out
 
       - name: Run Tests (ten_runtime_smoke_test)

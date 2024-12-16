@@ -15,15 +15,11 @@ use actix_web::{http::header, web, App, HttpServer};
 use anyhow::{Ok, Result};
 use clap::{value_parser, Arg, ArgMatches, Command};
 use console::Emoji;
+// use webbrowser;
 
 use crate::{
     config::TmanConfig,
-    designer::{
-        configure_routes,
-        // TODO(Wei): Enable this.
-        // frontend::get_frontend_asset,
-        DesignerState,
-    },
+    designer::{configure_routes, frontend::get_frontend_asset, DesignerState},
     error::TmanError,
     log::tman_verbose_println,
     utils::{check_is_app_folder, get_cwd},
@@ -155,8 +151,7 @@ pub async fn execute_cmd(
 
             app = app.service(static_files);
         } else {
-            // TODO(Wei): Enable this.
-            // app = app.default_service(web::route().to(get_frontend_asset));
+            app = app.default_service(web::route().to(get_frontend_asset));
         }
 
         app
@@ -170,6 +165,18 @@ pub async fn execute_cmd(
         Emoji("🏆", ":-)"),
         bind_address,
     );
+
+    // Auto launch browser to navigate the designer frontend.
+    // let url = format!("http://{}", bind_address);
+    // Launch the browser in a new process to avoid blocking the http server.
+    // TODO(Wei): enable this.
+    // actix_web::rt::spawn(async move {
+    //     // Wait until the browser to launch completely.
+    //     actix_web::rt::time::sleep(std::time::Duration::from_secs(1)).await;
+    //     if let Err(e) = webbrowser::open(&url) {
+    //         eprintln!("Failed to open browser: {}", e);
+    //     }
+    // });
 
     server.bind(&bind_address)?.run().await?;
 

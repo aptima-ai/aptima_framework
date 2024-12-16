@@ -1,17 +1,17 @@
 {
   "type": "extension",
   "name": "py_init_extension_cpp",
-  "version": "0.4.2",
+  "version": "0.5.1",
   "dependencies": [
     {
       "type": "system",
       "name": "ten_runtime",
-      "version": "0.4.2"
+      "version": "0.5.1"
     },
     {
       "type": "system",
       "name": "ten_runtime_python",
-      "version": "0.4.2"
+      "version": "0.5.1"
     }
   ],
   "api": {}

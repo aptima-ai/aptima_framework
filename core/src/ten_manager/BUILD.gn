@@ -19,7 +19,7 @@ copy("ten_manager_test_data") {
 }
 
 if (ten_enable_ten_manager) {
-  if (ten_package_manager_enable_tests) {
+  if (ten_manager_enable_tests) {
     rust_test("tman_test_cargo_build") {
       project_path = "//core/src/ten_manager"
       integration_test_output_name = "integration_test"
@@ -84,6 +84,34 @@ if (ten_enable_ten_manager) {
     }
   }
 
+  if (ten_manager_enable_frontend) {
+    action("build_designer_frontend") {
+      script = "//build/ten_manager/scripts/build_frontend.py"
+
+      args = [
+        "--dir",
+        rebase_path("//core/src/ten_manager/designer_frontend"),
+        "--log-level",
+        "${log_level}",
+      ]
+
+      # A timestamp file is used to track the last build time of the frontend.
+      outputs = [ "${root_out_dir}/gen/tman_frontend_build.timestamp" ]
+    }
+  } else {
+    # Because tman will look for `designer_frontend/dist/` during compilation to
+    # bundle the frontend codes, even if `ten_manager_enable_frontend=false`, an
+    # empty `designer_frontend/dist/` is still required to prevent `tman` from
+    # encountering compilation errors.
+    action("create_frontend_dist_folder") {
+      script = "//build/common/scripts/mkdir.py"
+
+      args = [ rebase_path("//core/src/ten_manager/designer_frontend/dist/") ]
+
+      outputs = [ "${root_out_dir}/gen/core/src/ten_manager/designer_frontend/dist/.placeholder" ]
+    }
+  }
+
   rust_target("tman") {
     project_path = "//core/src/ten_manager"
     manifest_path = "//core/src/ten_manager/Cargo.toml"
@@ -112,6 +140,18 @@ if (ten_enable_ten_manager) {
       "//core/src/ten_rust:ten_rust_static_lib",
       "//third_party/clingo",
     ]
+
+    if (ten_manager_enable_frontend) {
+      deps += [
+        # The frontend build is required before building the backend.
+        ":build_designer_frontend",
+      ]
+    } else {
+      deps += [
+        # The `designer_frontend/dist/` is required before building the backend.
+        ":create_frontend_dist_folder",
+      ]
+    }
   }
 
   # Assembling the final ten manager package.

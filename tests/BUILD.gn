@@ -28,7 +28,7 @@ group("tests") {
   if (ten_enable_ten_manager) {
     deps += [ "local_registry:copy_local_registry" ]
 
-    if (ten_package_manager_enable_tests) {
+    if (ten_manager_enable_tests) {
       deps += [
         "ten_manager",
         "//core/src/ten_manager:tman_test",

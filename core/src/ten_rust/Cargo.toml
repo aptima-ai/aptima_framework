@@ -23,10 +23,10 @@ test = true
 
 [dependencies]
 anyhow = "1.0"
-jsonschema = { version = "0.18", default-features = false }
+jsonschema = { version = "0.26", default-features = false }
 serde_json = { version = "1.0", features = ["preserve_order"] }
 linked-hash-map = { version = "0.5", features = ["serde_impl"] }
-regex = "1.10"
+regex = "1.11"
 serde = { version = "1.0", features = ["derive"] }
 libc = "0.2"
 json5 = "0.4"

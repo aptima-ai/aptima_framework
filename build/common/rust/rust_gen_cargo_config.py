@@ -63,11 +63,12 @@ CLANG_ASAN_FLAGS = [
     "link-args=-fsanitize=address",
 ]
 
-ASAN_CONFIG = """[target.{build_target}]
+CONFIG_TEMPLATE = """[target.{build_target}]
 rustflags = {asan_flags}
 
 [build]
 target = "{build_target}"
+{incremental_setting}
 """
 
 
@@ -83,6 +84,7 @@ class ArgumentInfo(argparse.Namespace):
         self.tg_timestamp_proxy_file: str | None = None
         self.enable_asan: bool
         self.action: str
+        self.disable_incremental: bool = False
 
 
 # On macOS, only the Clang compiler is available, and Clang's ASan runtime
@@ -119,8 +121,14 @@ def gen_cargo_config(args: ArgumentInfo):
     if args.target_os == "mac":
         flags.extend(["-C", special_link_args_on_mac(args.target_arch)])
 
-    config_content = ASAN_CONFIG.format(
-        build_target=args.target, asan_flags=json.dumps(flags)
+    incremental_setting = (
+        "incremental = false" if args.disable_incremental else ""
+    )
+
+    config_content = CONFIG_TEMPLATE.format(
+        build_target=args.target,
+        asan_flags=json.dumps(flags),
+        incremental_setting=incremental_setting,
     )
 
     with open(cargo_config, "w") as f:
@@ -149,6 +157,11 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--enable-asan", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--disable-incremental",
+        action=argparse.BooleanOptionalAction,
+        default=False,
     )
 
     arg_info = ArgumentInfo()

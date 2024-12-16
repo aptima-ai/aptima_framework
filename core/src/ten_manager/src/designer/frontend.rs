@@ -8,8 +8,9 @@ use actix_web::{HttpRequest, HttpResponse, Responder};
 use mime_guess::from_path;
 use rust_embed::RustEmbed;
 
+// Points to the frontend build output directory.
 #[derive(RustEmbed)]
-#[folder = "frontend/dist/"] // Points to the frontend build output directory.
+#[folder = "designer_frontend/dist/"]
 struct Asset;
 
 pub async fn get_frontend_asset(req: HttpRequest) -> impl Responder {

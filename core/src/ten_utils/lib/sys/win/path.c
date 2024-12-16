@@ -377,7 +377,27 @@ int ten_path_change_cwd(ten_string_t *dirname) {
 }
 
 int ten_path_is_absolute(const ten_string_t *path) {
-  return PathIsRelativeA(ten_string_get_raw_str(path)) == TRUE ? 0 : 1;
+  if (!path || ten_string_is_empty(path)) {
+    return 0;
+  }
+
+  const char *str = ten_string_get_raw_str(path);
+  size_t len = ten_string_len(path);
+
+  if (len >= 2) {
+    // Check if it starts with double backslashes (UNC path).
+    if (str[0] == '\\' && str[1] == '\\') {
+      return 1;
+    }
+
+    // Check if it starts with a drive letter, such as "C:\".
+    if (isalpha(str[0]) && str[1] == ':' && (str[2] == '\\' || str[2] == '/')) {
+      return 1;
+    }
+  }
+
+  // In other cases, treat it as a relative path.
+  return 0;
 }
 
 int ten_path_make_symlink(const char *target, const char *linkpath) {

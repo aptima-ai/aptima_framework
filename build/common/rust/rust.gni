@@ -477,6 +477,10 @@ template("rust_gen_cargo_config") {
       ]
     }
 
+    if (ten_enable_rust_incremental_build == false) {
+      args += [ "--disable-incremental" ]
+    }
+
     forward_variables_from(invoker,
                            [
                              "deps",

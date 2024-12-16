@@ -5,5 +5,6 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 declare_args() {
-  ten_package_manager_enable_tests = true
+  ten_manager_enable_frontend = true
+  ten_manager_enable_tests = true
 }
