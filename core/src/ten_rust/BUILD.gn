@@ -14,7 +14,7 @@ copy("ten_rust_test_data") {
 
 if (ten_enable_ten_rust) {
   if (ten_rust_enable_tests) {
-    rust_test("ten_rust_test") {
+    rust_test("ten_rust_test_cargo_build") {
       project_path = "//core/src/ten_rust"
       integration_test_output_name = "integration_test"
 
@@ -35,6 +35,22 @@ if (ten_enable_ten_rust) {
         ":ten_rust_build_deps",
         ":ten_rust_test_data",
       ]
+    }
+
+    rust_clean("ten_rust_test_cargo_clean") {
+      project_path = "//core/src/ten_rust"
+      target_path = "${root_gen_dir}/core/src/ten_rust_test"
+
+      # Build ten_rust_test first, then `cargo clean` it.
+      deps = [ ":ten_rust_test_cargo_build" ]
+    }
+
+    group("ten_rust_test") {
+      if (ten_enable_cargo_clean) {
+        deps = [ ":ten_rust_test_cargo_clean" ]
+      } else {
+        deps = [ ":ten_rust_test_cargo_build" ]
+      }
     }
   }
 }

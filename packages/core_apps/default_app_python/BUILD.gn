@@ -20,13 +20,13 @@ ten_package("default_app_python") {
   ]
 
   deps = [ "//core/src/ten_runtime/binding/python" ]
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps +=
         [ "//core/src/ten_runtime:upload_ten_runtime_system_package_to_server" ]
   }
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_default_app_python_to_server") {
     base_dir = rebase_path("${root_out_dir}/app/default_app_python")
     deps = [ ":default_app_python" ]

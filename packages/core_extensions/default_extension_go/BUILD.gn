@@ -12,6 +12,10 @@ ten_package("default_extension_go") {
   package_kind = "extension"
 
   resources = [
+    "README-CN.md",
+    "README-CN.md.tent",
+    "README.md",
+    "README.md.tent",
     "extension.go",
     "extension.go.tent",
     "go_release.mod.tent=>go.mod.tent",
@@ -19,16 +23,12 @@ ten_package("default_extension_go") {
     "manifest.json",
     "manifest.json.tent",
     "property.json",
-    "README.md",
-    "README.md.tent",
-    "README-CN.md",
-    "README-CN.md.tent",
   ]
 
   deps = [ "//core/src/ten_runtime" ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_default_extension_go_to_server") {
     base_dir = rebase_path(
             "${root_out_dir}/ten_packages/extension/default_extension_go")

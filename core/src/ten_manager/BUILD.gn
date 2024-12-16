@@ -18,7 +18,7 @@ copy("ten_manager_test_data") {
   outputs = [ "${root_out_dir}/tests/standalone/ten_manager/tests/test_data" ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   if (ten_package_manager_enable_tests) {
     rust_test("tman_test_cargo_build") {
       project_path = "//core/src/ten_manager"
@@ -38,7 +38,7 @@ if (ten_enable_package_manager) {
       # executable will be the normal executable, not the test case executable.
       # Therefore, it's necessary to separate the `target-dir` for these two
       # `cargo build` commands to avoid interfering with each other.
-      target_path = "${target_gen_dir}/tman_test"
+      target_path = "${root_gen_dir}/core/src/ten_manager_test"
 
       test_output_dir = "${root_out_dir}/tests/standalone/ten_manager"
 
@@ -51,8 +51,9 @@ if (ten_enable_package_manager) {
 
     rust_clean("tman_test_cargo_clean") {
       project_path = "//core/src/ten_manager"
-      target_path = get_label_info("tman_test", "target_gen_dir")
+      target_path = "${root_gen_dir}/core/src/ten_manager_test"
 
+      # Build tman_test first, then `cargo clean` it.
       deps = [ ":tman_test_cargo_build" ]
     }
 
@@ -160,6 +161,7 @@ if (ten_enable_package_manager) {
     tman_target_gen_dir = get_label_info(":tman", "target_gen_dir")
     target_path = "${tman_target_gen_dir}/tman"
 
+    # Build tman first, then `cargo clean` it.
     deps = [ ":ten_manager_package" ]
   }
 

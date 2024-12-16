@@ -19,7 +19,7 @@ ten_package_test_prepare_app("multiple_results_python_1_app") {
 
   replace_files_after_install_all = [ "multiple_results_python_1_app/ten_packages/extension/default_extension_python/extension.py" ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_python:upload_default_app_python_to_server",

@@ -42,7 +42,7 @@ ten_package("ten_go_binding_system_package") {
   }
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_ten_go_binding_system_package_to_server") {
     base_dir = rebase_path("${root_out_dir}/ten_packages/system/ten_runtime_go")
     deps = [
@@ -55,7 +55,7 @@ if (ten_enable_package_manager) {
 group("go") {
   deps = [ "native:ten_runtime_go" ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps += [ ":upload_ten_go_binding_system_package_to_server" ]
   }
 }

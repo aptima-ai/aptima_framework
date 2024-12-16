@@ -22,7 +22,7 @@ ten_package_test_prepare_app("large_json_python_app") {
     "large_json_python_app/ten_packages/extension/default_extension_python/test.json",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_python:upload_default_app_python_to_server",

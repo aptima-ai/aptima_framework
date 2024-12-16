@@ -17,7 +17,7 @@ group("cpp") {
     "large_result",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     # The standalone testing for the C++ extension depends on the Googletest
     # system package.
     deps += [ "standalone_test_cpp" ]

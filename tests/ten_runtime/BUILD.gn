@@ -61,7 +61,7 @@ group("ten_runtime") {
 
   if (ten_enable_tests && ten_enable_integration_tests &&
       # Almost all integration test cases needs ten_manager.
-      ten_enable_package_manager) {
+      ten_enable_ten_manager) {
     deps += [ "integration" ]
   }
 }

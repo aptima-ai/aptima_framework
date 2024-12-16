@@ -22,7 +22,7 @@ ten_package_test_prepare_app("go_app_python_app") {
     "go_app_python_app/bin",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_go:upload_default_app_go_to_server",

@@ -37,7 +37,7 @@ ten_package("ffmpeg_muxer") {
   ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_ffmpeg_muxer_to_server") {
     base_dir =
         rebase_path("${root_out_dir}/ten_packages/extension/ffmpeg_muxer")

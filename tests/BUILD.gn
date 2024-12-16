@@ -25,7 +25,7 @@ group("tests") {
     "//tests/ten_runtime",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps += [ "local_registry:copy_local_registry" ]
 
     if (ten_package_manager_enable_tests) {

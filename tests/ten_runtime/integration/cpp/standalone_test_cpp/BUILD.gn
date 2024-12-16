@@ -15,7 +15,7 @@ ten_package_test_prepare_auxiliary_resources("standalone_test_cpp_files") {
     "test_case.py",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     # The standalone testing for the C++ extension depends on the googletest
     # system package.
     deps = [ "//third_party/googletest:googletest_system_package" ]

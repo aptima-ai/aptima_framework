@@ -18,7 +18,7 @@ ten_package_test_prepare_app("app_1") {
     "app_1_source/ten_packages",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//core/src/ten_runtime:upload_ten_runtime_system_package_to_server",
@@ -40,7 +40,7 @@ ten_package_test_prepare_app("app_2") {
     "app_2_source/ten_packages",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//core/src/ten_runtime:upload_ten_runtime_system_package_to_server",

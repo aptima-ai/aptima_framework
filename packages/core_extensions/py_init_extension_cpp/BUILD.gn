@@ -37,7 +37,7 @@ ten_package("py_init_extension_cpp") {
   ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_py_init_extension_cpp_to_server") {
     base_dir = rebase_path(
             "${root_out_dir}/ten_packages/extension/py_init_extension_cpp")

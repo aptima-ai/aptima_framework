@@ -18,6 +18,8 @@ jobs:
       group: build-win-x64-${{ github.head_ref }}-${{ matrix.build_type }}
       cancel-in-progress: true
     runs-on: windows-latest
+    env:
+      PYTHONIOENCODING: utf-8
     strategy:
       matrix:
         build_type: [debug, release]
@@ -65,7 +67,7 @@ jobs:
       - name: Build
         run: |
           $ENV:PATH += ";$PWD/core/ten_gn"
-          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_go_binding=false
+          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_go_binding=false
           tgn build win x64 ${{ matrix.build_type }}
 
       - name: Run Tests (ten_utils_unit_test)

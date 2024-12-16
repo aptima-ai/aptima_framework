@@ -18,7 +18,7 @@ ten_package_test_prepare_app("large_result_http") {
   ]
 
   replace_files_after_install_all = [ "large_result_source/ten_packages/extension/default_extension_cpp/src/main.cc" ]
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",

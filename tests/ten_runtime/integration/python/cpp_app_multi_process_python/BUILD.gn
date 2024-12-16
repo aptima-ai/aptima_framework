@@ -23,7 +23,7 @@ ten_package_test_prepare_app("cpp_app_multi_process_python_app") {
     "cpp_app_multi_process_python_app_source/bin",
   ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",

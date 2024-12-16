@@ -30,7 +30,7 @@ ten_package("ten_python_binding_system_package") {
   deps = [ "native:ten_runtime_python" ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_ten_python_binding_system_package_to_server") {
     base_dir =
         rebase_path("${root_out_dir}/ten_packages/system/ten_runtime_python")
@@ -44,7 +44,7 @@ if (ten_enable_package_manager) {
 group("python") {
   deps = [ "native:ten_runtime_python" ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps += [ ":upload_ten_python_binding_system_package_to_server" ]
   }
 }

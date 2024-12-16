@@ -113,7 +113,7 @@ ten_package("ten_runtime_system_package") {
   ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_ten_runtime_system_package_to_server") {
     base_dir = rebase_path("${root_out_dir}/ten_packages/system/ten_runtime")
     deps = [
@@ -132,7 +132,7 @@ if (ten_enable_package_manager) {
 group("ten_runtime") {
   public_deps = [ ":ten_runtime_library" ]
 
-  if (ten_enable_package_manager) {
+  if (ten_enable_ten_manager) {
     deps = [ ":upload_ten_runtime_system_package_to_server" ]
   }
 }

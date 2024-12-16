@@ -22,7 +22,7 @@ ten_package("simple_http_server_go") {
   deps = [ "//core/src/ten_runtime" ]
 }
 
-if (ten_enable_package_manager) {
+if (ten_enable_ten_manager) {
   ten_package_publish("upload_simple_golang_http_server_to_server") {
     base_dir = rebase_path(
             "${root_out_dir}/ten_packages/extension/simple_http_server_go")
