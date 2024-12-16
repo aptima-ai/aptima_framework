@@ -22,17 +22,17 @@ crate-type = ["staticlib", "rlib"]
 test = true
 
 [dependencies]
-anyhow = "1.0"
+anyhow = { version = "1.0" }
+json5 = { version = "0.4" }
 jsonschema = { version = "0.26", default-features = false }
-serde_json = { version = "1.0", features = ["preserve_order"] }
+libc = { version = "0.2" }
 linked-hash-map = { version = "0.5", features = ["serde_impl"] }
-regex = "1.11"
-serde = { version = "1.0", features = ["derive"] }
-libc = "0.2"
-json5 = "0.4"
+regex = { version = "1.11" }
 semver = { version = "1.0", features = ["serde"] }
-sha2 = "0.10"
-tempfile = "3.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+sha2 = { version = "0.10" }
+tempfile = { version = "3.10" }
 
 [build-dependencies]
-bindgen = "0.70"
+bindgen = { version = "0.70" }
