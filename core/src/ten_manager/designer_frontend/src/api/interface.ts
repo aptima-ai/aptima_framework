@@ -48,3 +48,11 @@ export interface BackendConnection {
     }[];
   }[];
 }
+
+export interface FileContentResponse {
+  content: string;
+}
+
+export interface SaveFileRequest {
+  content: string;
+}

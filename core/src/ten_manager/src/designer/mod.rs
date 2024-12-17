@@ -90,5 +90,9 @@ pub fn configure_routes(
             "/api/designer/v1/file-content/{path}",
             web::get().to(file_content::get_file_content),
         )
+        .route(
+            "/api/designer/v1/file-content/{path}",
+            web::put().to(file_content::save_file_content),
+        )
         .route("/ws/terminal", web::get().to(ws_terminal));
 }

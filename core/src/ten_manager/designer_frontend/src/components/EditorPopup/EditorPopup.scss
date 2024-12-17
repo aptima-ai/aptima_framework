@@ -16,3 +16,16 @@
     flex-direction: column;
   }
 }
+
+.popup-confirm {
+  .confirm-dialog-content {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .confirm-dialog-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+}
