@@ -29,7 +29,7 @@ use crate::designer::response::{ApiResponse, ErrorResponse, Status};
 use crate::designer::DesignerState;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerExtension {
+pub struct DesignerExtension {
     pub addon: String,
     pub name: String,
 
@@ -40,64 +40,64 @@ pub struct DevServerExtension {
     pub app: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub api: Option<DevServerApi>,
+    pub api: Option<DesignerApi>,
 
     pub property: Option<serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerApi {
+pub struct DesignerApi {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub property: Option<HashMap<String, DevServerPropertyAttributes>>,
+    pub property: Option<HashMap<String, DesignerPropertyAttributes>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cmd_in: Option<Vec<DevServerApiCmdLike>>,
+    pub cmd_in: Option<Vec<DesignerApiCmdLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cmd_out: Option<Vec<DevServerApiCmdLike>>,
+    pub cmd_out: Option<Vec<DesignerApiCmdLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data_in: Option<Vec<DevServerApiDataLike>>,
+    pub data_in: Option<Vec<DesignerApiDataLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data_out: Option<Vec<DevServerApiDataLike>>,
+    pub data_out: Option<Vec<DesignerApiDataLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub audio_frame_in: Option<Vec<DevServerApiDataLike>>,
+    pub audio_frame_in: Option<Vec<DesignerApiDataLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub audio_frame_out: Option<Vec<DevServerApiDataLike>>,
+    pub audio_frame_out: Option<Vec<DesignerApiDataLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub video_frame_in: Option<Vec<DevServerApiDataLike>>,
+    pub video_frame_in: Option<Vec<DesignerApiDataLike>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub video_frame_out: Option<Vec<DevServerApiDataLike>>,
+    pub video_frame_out: Option<Vec<DesignerApiDataLike>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct DevServerPropertyAttributes {
+pub struct DesignerPropertyAttributes {
     #[serde(rename = "type")]
     pub prop_type: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct DevServerPropertyItem {
+pub struct DesignerPropertyItem {
     pub name: String,
-    pub attributes: DevServerPropertyAttributes,
+    pub attributes: DesignerPropertyAttributes,
 }
 
-impl From<PkgPropertyAttributes> for DevServerPropertyAttributes {
+impl From<PkgPropertyAttributes> for DesignerPropertyAttributes {
     fn from(api_property: PkgPropertyAttributes) -> Self {
-        DevServerPropertyAttributes {
+        DesignerPropertyAttributes {
             prop_type: api_property.prop_type.to_string(),
         }
     }
 }
 
-impl From<PkgPropertyItem> for DevServerPropertyItem {
+impl From<PkgPropertyItem> for DesignerPropertyItem {
     fn from(item: PkgPropertyItem) -> Self {
-        DevServerPropertyItem {
+        DesignerPropertyItem {
             name: item.name,
             attributes: item.attributes.into(),
         }
@@ -105,16 +105,16 @@ impl From<PkgPropertyItem> for DevServerPropertyItem {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct DevServerCmdResult {
-    pub property: Vec<DevServerPropertyItem>,
+pub struct DesignerCmdResult {
+    pub property: Vec<DesignerPropertyItem>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
 }
 
-impl From<PkgCmdResult> for DevServerCmdResult {
+impl From<PkgCmdResult> for DesignerCmdResult {
     fn from(cmd_result: PkgCmdResult) -> Self {
-        DevServerCmdResult {
+        DesignerCmdResult {
             property: cmd_result
                 .property
                 .into_iter()
@@ -130,22 +130,22 @@ impl From<PkgCmdResult> for DevServerCmdResult {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerApiCmdLike {
+pub struct DesignerApiCmdLike {
     pub name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub property: Option<Vec<DevServerPropertyItem>>,
+    pub property: Option<Vec<DesignerPropertyItem>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub result: Option<DevServerCmdResult>,
+    pub result: Option<DesignerCmdResult>,
 }
 
-impl From<PkgApiCmdLike> for DevServerApiCmdLike {
+impl From<PkgApiCmdLike> for DesignerApiCmdLike {
     fn from(api_cmd_like: PkgApiCmdLike) -> Self {
-        DevServerApiCmdLike {
+        DesignerApiCmdLike {
             name: api_cmd_like.name,
             property: if api_cmd_like.property.is_empty() {
                 None
@@ -169,19 +169,19 @@ impl From<PkgApiCmdLike> for DevServerApiCmdLike {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerApiDataLike {
+pub struct DesignerApiDataLike {
     pub name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub property: Option<Vec<DevServerPropertyItem>>,
+    pub property: Option<Vec<DesignerPropertyItem>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
 }
 
-impl From<PkgApiDataLike> for DevServerApiDataLike {
+impl From<PkgApiDataLike> for DesignerApiDataLike {
     fn from(api_data_like: PkgApiDataLike) -> Self {
-        DevServerApiDataLike {
+        DesignerApiDataLike {
             name: api_data_like.name,
             property: if api_data_like.property.is_empty() {
                 None
@@ -201,7 +201,7 @@ impl From<PkgApiDataLike> for DevServerApiDataLike {
 
 fn get_designer_property_items_from_pkg(
     items: Vec<PkgPropertyItem>,
-) -> Vec<DevServerPropertyItem> {
+) -> Vec<DesignerPropertyItem> {
     items.into_iter().map(|v| v.into()).collect()
 }
 
@@ -236,7 +236,7 @@ pub async fn get_graph_nodes(
                 }
             };
 
-        let mut resp_extensions: Vec<DevServerExtension> = Vec::new();
+        let mut resp_extensions: Vec<DesignerExtension> = Vec::new();
         for extension in &extensions {
             let pkg_info = get_pkg_info_for_extension(extension, all_pkgs);
             if let Err(err) = pkg_info {
@@ -252,12 +252,12 @@ pub async fn get_graph_nodes(
             }
 
             let pkg_info = pkg_info.unwrap();
-            resp_extensions.push(DevServerExtension {
+            resp_extensions.push(DesignerExtension {
                 addon: extension.addon.clone(),
                 name: extension.name.clone(),
                 extension_group: extension.extension_group.clone().unwrap(),
                 app: extension.app.as_ref().unwrap().clone(),
-                api: pkg_info.api.as_ref().map(|api| DevServerApi {
+                api: pkg_info.api.as_ref().map(|api| DesignerApi {
                     property: if api.property.is_empty() {
                         None
                     } else {
@@ -412,47 +412,47 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let extensions: ApiResponse<Vec<DevServerExtension>> =
+        let extensions: ApiResponse<Vec<DesignerExtension>> =
             serde_json::from_str(body_str).unwrap();
 
         // Create the expected Version struct
         let expected_extensions = vec![
-            DevServerExtension {
+            DesignerExtension {
                 addon: "extension_addon_1".to_string(),
                 name: "extension_1".to_string(),
                 extension_group: "extension_group_1".to_string(),
                 app: localhost(),
-                api: Some(DevServerApi {
+                api: Some(DesignerApi {
                     property: None,
                     cmd_in: None,
                     cmd_out: Some(vec![
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "test_cmd".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "test_property".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "int8".to_string(),
                                 },
                             }]),
                             required: None,
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
                             required: Some(vec!["foo".to_string()]),
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required_mismatch".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
@@ -469,52 +469,52 @@ mod tests {
                 }),
                 property: None,
             },
-            DevServerExtension {
+            DesignerExtension {
                 addon: "extension_addon_2".to_string(),
                 name: "extension_2".to_string(),
                 extension_group: "extension_group_1".to_string(),
                 app: localhost(),
-                api: Some(DevServerApi {
+                api: Some(DesignerApi {
                     property: None,
                     cmd_in: Some(vec![
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "test_cmd".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "test_property".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "int32".to_string(),
                                 },
                             }]),
                             required: None,
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "another_test_cmd".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "test_property".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "int8".to_string(),
                                 },
                             }]),
                             required: None,
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
                             required: Some(vec!["foo".to_string()]),
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required_mismatch".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
@@ -524,11 +524,11 @@ mod tests {
                     ]),
                     cmd_out: None,
                     data_in: None,
-                    data_out: Some(vec![DevServerApiDataLike {
+                    data_out: Some(vec![DesignerApiDataLike {
                         name: "data_has_required".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "foo".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "int8".to_string(),
                             },
                         }]),
@@ -543,18 +543,18 @@ mod tests {
                     "a": 1
                 })),
             },
-            DevServerExtension {
+            DesignerExtension {
                 addon: "extension_addon_3".to_string(),
                 name: "extension_3".to_string(),
                 extension_group: "extension_group_1".to_string(),
                 app: localhost(),
-                api: Some(DevServerApi {
+                api: Some(DesignerApi {
                     property: None,
-                    cmd_in: Some(vec![DevServerApiCmdLike {
+                    cmd_in: Some(vec![DesignerApiCmdLike {
                         name: "test_cmd".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "test_property".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "string".to_string(),
                             },
                         }]),
@@ -562,11 +562,11 @@ mod tests {
                         result: None,
                     }]),
                     cmd_out: None,
-                    data_in: Some(vec![DevServerApiDataLike {
+                    data_in: Some(vec![DesignerApiDataLike {
                         name: "data_has_required".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "foo".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "int8".to_string(),
                             },
                         }]),
@@ -585,7 +585,7 @@ mod tests {
         assert_eq!(extensions.data, expected_extensions);
         assert!(!extensions.data.is_empty());
 
-        let json: ApiResponse<Vec<DevServerExtension>> =
+        let json: ApiResponse<Vec<DesignerExtension>> =
             serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);

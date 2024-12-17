@@ -39,7 +39,7 @@ pub struct InputData {
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
-pub struct DevServerCompatibleMsg {
+pub struct DesignerCompatibleMsg {
     pub app: String,
     pub extension_group: String,
     pub extension: String,
@@ -48,9 +48,9 @@ pub struct DevServerCompatibleMsg {
     pub msg_name: String,
 }
 
-impl From<CompatibleExtensionAndMsg<'_>> for DevServerCompatibleMsg {
+impl From<CompatibleExtensionAndMsg<'_>> for DesignerCompatibleMsg {
     fn from(compatible: CompatibleExtensionAndMsg) -> Self {
-        DevServerCompatibleMsg {
+        DesignerCompatibleMsg {
             app: compatible.extension.app.as_ref().unwrap().clone(),
             extension_group: compatible
                 .extension
@@ -280,7 +280,7 @@ pub async fn get_compatible_messages(
             }
         };
 
-        let results: Vec<DevServerCompatibleMsg> =
+        let results: Vec<DesignerCompatibleMsg> =
             compatible_list.into_iter().map(|v| v.into()).collect();
 
         let response = ApiResponse {
@@ -375,10 +375,10 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_compatibles = vec![DevServerCompatibleMsg {
+        let expected_compatibles = vec![DesignerCompatibleMsg {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
@@ -517,10 +517,10 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_compatibles = vec![DevServerCompatibleMsg {
+        let expected_compatibles = vec![DesignerCompatibleMsg {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
@@ -598,10 +598,10 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_compatibles = vec![DevServerCompatibleMsg {
+        let expected_compatibles = vec![DesignerCompatibleMsg {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
@@ -678,11 +678,11 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
         let expected_compatibles = vec![
-            DevServerCompatibleMsg {
+            DesignerCompatibleMsg {
                 app: localhost(),
                 extension_group: "extension_group_1".to_string(),
                 extension: "extension_1".to_string(),
@@ -690,7 +690,7 @@ mod tests {
                 msg_direction: MsgDirection::In,
                 msg_name: "cmd1".to_string(),
             },
-            DevServerCompatibleMsg {
+            DesignerCompatibleMsg {
                 app: localhost(),
                 extension_group: "extension_group_1".to_string(),
                 extension: "extension_2".to_string(),
@@ -770,10 +770,10 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_compatibles = vec![DevServerCompatibleMsg {
+        let expected_compatibles = vec![DesignerCompatibleMsg {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_2".to_string(),
@@ -852,7 +852,7 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
         assert!(compatibles.data.is_empty());
@@ -923,11 +923,11 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
         assert!(compatibles.data.is_empty());
 
-        // let expected_compatibles = vec![DevServerCompatibleMsg {
+        // let expected_compatibles = vec![DesignerCompatibleMsg {
         //     app: default_app_loc(),
         //     extension_group: "extension_group_1".to_string(),
         //     extension: "extension_2".to_string(),
@@ -1004,11 +1004,11 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
         assert!(compatibles.data.is_empty());
 
-        // let expected_compatibles = vec![DevServerCompatibleMsg {
+        // let expected_compatibles = vec![DesignerCompatibleMsg {
         //     app: default_app_loc(),
         //     extension_group: "extension_group_1".to_string(),
         //     extension: "extension_2".to_string(),
@@ -1087,7 +1087,7 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
         assert!(compatibles.data.is_empty());
@@ -1158,10 +1158,10 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let compatibles: ApiResponse<Vec<DevServerCompatibleMsg>> =
+        let compatibles: ApiResponse<Vec<DesignerCompatibleMsg>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_compatibles = vec![DevServerCompatibleMsg {
+        let expected_compatibles = vec![DesignerCompatibleMsg {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),

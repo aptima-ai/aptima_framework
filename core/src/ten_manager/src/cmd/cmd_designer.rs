@@ -26,7 +26,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct DevServerCommand {
+pub struct DesignerCommand {
     pub ip_address: String,
     pub port: u16,
     pub base_dir: Option<String>,
@@ -83,8 +83,8 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
 
 pub fn parse_sub_cmd(
     sub_cmd_args: &ArgMatches,
-) -> crate::cmd::cmd_designer::DevServerCommand {
-    let cmd = crate::cmd::cmd_designer::DevServerCommand {
+) -> crate::cmd::cmd_designer::DesignerCommand {
+    let cmd = crate::cmd::cmd_designer::DesignerCommand {
         ip_address: sub_cmd_args
             .get_one::<String>("IP_ADDRESS")
             .unwrap()
@@ -101,7 +101,7 @@ pub fn parse_sub_cmd(
 
 pub async fn execute_cmd(
     tman_config: &TmanConfig,
-    command_data: DevServerCommand,
+    command_data: DesignerCommand,
 ) -> Result<()> {
     tman_verbose_println!(tman_config, "Executing designer command");
     tman_verbose_println!(tman_config, "{:?}", command_data);

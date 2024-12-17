@@ -19,7 +19,7 @@ interface ApiResponse<T> {
   meta?: any;
 }
 
-interface DevServerVersion {
+interface DesignerVersion {
   version: string;
 }
 
@@ -40,7 +40,7 @@ const App: React.FC = () => {
         }
         return response.json();
       })
-      .then((payload: ApiResponse<DevServerVersion>) => {
+      .then((payload: ApiResponse<DesignerVersion>) => {
         if (payload.status === "ok" && payload.data.version) {
           setVersion(payload.data.version);
         } else {

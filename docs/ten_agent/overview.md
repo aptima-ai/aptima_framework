@@ -13,7 +13,7 @@ The TEN Agent consists of two main parts:
    - Manages communication and graph control
 
 2. **Backend Services**
-   - DevServer (Port 49463): Handles graph operations
+   - Designer (Port 49483): Handles graph operations
    - WebServer (Port 8080): Processes commands
    - AgentApp: Core component with extensions and config
 
@@ -68,6 +68,7 @@ Starts an agent with the given graph and overridden properties. The started agen
 Example:
 
 {% code title=">_ Terminal" %}
+
 ```bash
 curl 'http://localhost:8080/start' \
 -H 'Content-Type: application/json' \
@@ -83,6 +84,7 @@ curl 'http://localhost:8080/start' \
   }
 }'
 ```
+
 {% endcode %}
 
 ## Stop
@@ -97,6 +99,7 @@ Stops the agent that was previously started.
 Example:
 
 {% code title=">_ Terminal" %}
+
 ```bash
 curl 'http://localhost:8080/stop' \
 -H 'Content-Type: application/json' \
@@ -105,6 +108,7 @@ curl 'http://localhost:8080/stop' \
   "channel_name": "test"
 }'
 ```
+
 {% endcode %}
 
 ## Ping
@@ -114,6 +118,7 @@ Sends a ping to the server to indicate the connection is still alive. This is un
 Example:
 
 {% code title=">_ Terminal" %}
+
 ```bash
 curl 'http://localhost:8080/ping' \
 -H 'Content-Type: application/json' \
@@ -122,6 +127,7 @@ curl 'http://localhost:8080/ping' \
   "channel_name": "test"
 }'
 ```
+
 {% endcode %}
 
 ## Playground
@@ -133,6 +139,7 @@ The code to handle audio input/output and transcribed text is in src/manager/rtc
 Example of joining a channel:
 
 {% code title="src/manager/rtc/rtc.ts" %}
+
 ```typescript
 async join({ channel, userId }: { channel: string; userId: number }) {
   if (!this._joined) {
@@ -147,4 +154,5 @@ async join({ channel, userId }: { channel: string; userId: number }) {
   }
 }
 ```
+
 {% endcode %}

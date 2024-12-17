@@ -16,14 +16,14 @@ use super::{
 use crate::version::VERSION;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-struct DevServerVersion {
+struct DesignerVersion {
     version: String,
 }
 
 pub async fn get_version(
     _state: web::Data<Arc<RwLock<DesignerState>>>,
 ) -> impl Responder {
-    let version_info = DevServerVersion {
+    let version_info = DesignerVersion {
         version: VERSION.to_string(),
     };
 
@@ -53,12 +53,12 @@ mod tests {
         })));
 
         // Create the App with the routes configured.
-        let app =
-            test::init_service(App::new().app_data(state.clone()).route(
-                "/api/designer/v1/version",
-                web::get().to(get_version),
-            ))
-            .await;
+        let app = test::init_service(
+            App::new()
+                .app_data(state.clone())
+                .route("/api/designer/v1/version", web::get().to(get_version)),
+        )
+        .await;
 
         // Send a request to the version endpoint.
         let req = test::TestRequest::get()
@@ -74,18 +74,18 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let version: ApiResponse<DevServerVersion> =
+        let version: ApiResponse<DesignerVersion> =
             serde_json::from_str(body_str).unwrap();
 
         // Create the expected Version struct
-        let expected_version = DevServerVersion {
+        let expected_version = DesignerVersion {
             version: VERSION.to_string(),
         };
 
         // Compare the actual Version struct with the expected one
         assert_eq!(version.data, expected_version);
 
-        let json: ApiResponse<DevServerVersion> =
+        let json: ApiResponse<DesignerVersion> =
             serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);

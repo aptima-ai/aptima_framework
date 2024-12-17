@@ -12,7 +12,7 @@ use ten_manager::{
     config::TmanConfig,
     designer::{
         graphs::{
-            connections::{get_graph_connections, DevServerConnection},
+            connections::{get_graph_connections, DesignerConnection},
             get_graphs, RespGraph,
         },
         response::{ApiResponse, ErrorResponse},
@@ -121,7 +121,7 @@ async fn test_cmd_designer_connections_has_msg_conversion() {
 
     let body = test::read_body(resp).await;
     let body_str = std::str::from_utf8(&body).unwrap();
-    let json: ApiResponse<Vec<DevServerConnection>> =
+    let json: ApiResponse<Vec<DesignerConnection>> =
         serde_json::from_str(body_str).unwrap();
 
     let pretty_json = serde_json::to_string_pretty(&json).unwrap();

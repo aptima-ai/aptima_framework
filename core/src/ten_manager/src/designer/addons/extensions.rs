@@ -18,25 +18,25 @@ use crate::designer::{
         get_designer_property_hashmap_from_pkg,
     },
     get_all_pkgs::get_all_pkgs,
-    graphs::nodes::DevServerApi,
+    graphs::nodes::DesignerApi,
     response::{ApiResponse, ErrorResponse, Status},
     DesignerState,
 };
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
-struct DevServerExtensionAddon {
+struct DesignerExtensionAddon {
     #[serde(rename = "name")]
     addon_name: String,
 
     url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub api: Option<DevServerApi>,
+    pub api: Option<DesignerApi>,
 }
 
 fn retrieve_extension_addons(
     state: &mut DesignerState,
-) -> Result<Vec<DevServerExtensionAddon>, ErrorResponse> {
+) -> Result<Vec<DesignerExtensionAddon>, ErrorResponse> {
     if let Err(err) = get_all_pkgs(state) {
         return Err(ErrorResponse::from_error(
             &err,
@@ -66,11 +66,11 @@ fn retrieve_extension_addons(
 
 fn map_pkg_to_extension_addon(
     pkg_info_with_src: &PkgInfo,
-) -> DevServerExtensionAddon {
-    DevServerExtensionAddon {
+) -> DesignerExtensionAddon {
+    DesignerExtensionAddon {
         addon_name: pkg_info_with_src.pkg_identity.name.clone(),
         url: pkg_info_with_src.url.clone(),
-        api: pkg_info_with_src.api.as_ref().map(|api| DevServerApi {
+        api: pkg_info_with_src.api.as_ref().map(|api| DesignerApi {
             property: if api.property.is_empty() {
                 None
             } else {
@@ -193,8 +193,8 @@ mod tests {
         config::TmanConfig,
         designer::{
             graphs::nodes::{
-                DevServerApiCmdLike, DevServerApiDataLike,
-                DevServerPropertyAttributes, DevServerPropertyItem,
+                DesignerApiCmdLike, DesignerApiDataLike,
+                DesignerPropertyAttributes, DesignerPropertyItem,
             },
             mock::tests::inject_all_pkgs_for_mock,
         },
@@ -257,44 +257,44 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let addons: ApiResponse<Vec<DevServerExtensionAddon>> =
+        let addons: ApiResponse<Vec<DesignerExtensionAddon>> =
             serde_json::from_str(body_str).unwrap();
 
         let expected_addons = vec![
-            DevServerExtensionAddon {
+            DesignerExtensionAddon {
                 addon_name: "extension_addon_1".to_string(),
                 url: "".to_string(),
-                api: Some(DevServerApi {
+                api: Some(DesignerApi {
                     property: None,
                     cmd_in: None,
                     cmd_out: Some(vec![
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "test_cmd".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "test_property".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "int8".to_string(),
                                 },
                             }]),
                             required: None,
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
                             required: Some(vec!["foo".to_string()]),
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required_mismatch".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
@@ -310,50 +310,50 @@ mod tests {
                     video_frame_out: None,
                 }),
             },
-            DevServerExtensionAddon {
+            DesignerExtensionAddon {
                 addon_name: "extension_addon_2".to_string(),
                 url: "".to_string(),
-                api: Some(DevServerApi {
+                api: Some(DesignerApi {
                     property: None,
                     cmd_in: Some(vec![
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "test_cmd".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "test_property".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "int32".to_string(),
                                 },
                             }]),
                             required: None,
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "another_test_cmd".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "test_property".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "int8".to_string(),
                                 },
                             }]),
                             required: None,
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
                             required: Some(vec!["foo".to_string()]),
                             result: None,
                         },
-                        DevServerApiCmdLike {
+                        DesignerApiCmdLike {
                             name: "has_required_mismatch".to_string(),
-                            property: Some(vec![DevServerPropertyItem {
+                            property: Some(vec![DesignerPropertyItem {
                                 name: "foo".to_string(),
-                                attributes: DevServerPropertyAttributes {
+                                attributes: DesignerPropertyAttributes {
                                     prop_type: "string".to_string(),
                                 },
                             }]),
@@ -363,11 +363,11 @@ mod tests {
                     ]),
                     cmd_out: None,
                     data_in: None,
-                    data_out: Some(vec![DevServerApiDataLike {
+                    data_out: Some(vec![DesignerApiDataLike {
                         name: "data_has_required".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "foo".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "int8".to_string(),
                             },
                         }]),
@@ -379,16 +379,16 @@ mod tests {
                     video_frame_out: None,
                 }),
             },
-            DevServerExtensionAddon {
+            DesignerExtensionAddon {
                 addon_name: "extension_addon_3".to_string(),
                 url: "".to_string(),
-                api: Some(DevServerApi {
+                api: Some(DesignerApi {
                     property: None,
-                    cmd_in: Some(vec![DevServerApiCmdLike {
+                    cmd_in: Some(vec![DesignerApiCmdLike {
                         name: "test_cmd".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "test_property".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "string".to_string(),
                             },
                         }]),
@@ -396,11 +396,11 @@ mod tests {
                         result: None,
                     }]),
                     cmd_out: None,
-                    data_in: Some(vec![DevServerApiDataLike {
+                    data_in: Some(vec![DesignerApiDataLike {
                         name: "data_has_required".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "foo".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "int8".to_string(),
                             },
                         }]),
@@ -417,7 +417,7 @@ mod tests {
 
         assert_eq!(addons.data, expected_addons);
 
-        let json: ApiResponse<Vec<DevServerExtensionAddon>> =
+        let json: ApiResponse<Vec<DesignerExtensionAddon>> =
             serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
@@ -479,43 +479,43 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let addon: ApiResponse<DevServerExtensionAddon> =
+        let addon: ApiResponse<DesignerExtensionAddon> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_addon = DevServerExtensionAddon {
+        let expected_addon = DesignerExtensionAddon {
             addon_name: "extension_addon_1".to_string(),
             url: "".to_string(),
-            api: Some(DevServerApi {
+            api: Some(DesignerApi {
                 property: None,
                 cmd_in: None,
                 cmd_out: Some(vec![
-                    DevServerApiCmdLike {
+                    DesignerApiCmdLike {
                         name: "test_cmd".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "test_property".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "int8".to_string(),
                             },
                         }]),
                         required: None,
                         result: None,
                     },
-                    DevServerApiCmdLike {
+                    DesignerApiCmdLike {
                         name: "has_required".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "foo".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "string".to_string(),
                             },
                         }]),
                         required: Some(vec!["foo".to_string()]),
                         result: None,
                     },
-                    DevServerApiCmdLike {
+                    DesignerApiCmdLike {
                         name: "has_required_mismatch".to_string(),
-                        property: Some(vec![DevServerPropertyItem {
+                        property: Some(vec![DesignerPropertyItem {
                             name: "foo".to_string(),
-                            attributes: DevServerPropertyAttributes {
+                            attributes: DesignerPropertyAttributes {
                                 prop_type: "string".to_string(),
                             },
                         }]),

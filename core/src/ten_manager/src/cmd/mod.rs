@@ -22,7 +22,7 @@ pub enum CommandData {
     Package(self::cmd_package::PackageCommand),
     Publish(self::cmd_publish::PublishCommand),
     Delete(self::cmd_delete::DeleteCommand),
-    DevServer(self::cmd_designer::DevServerCommand),
+    Designer(self::cmd_designer::DesignerCommand),
     Check(self::cmd_check::CheckCommandData),
 }
 
@@ -46,7 +46,7 @@ pub async fn execute_cmd(
         CommandData::Delete(cmd) => {
             crate::cmd::cmd_delete::execute_cmd(tman_config, cmd).await
         }
-        CommandData::DevServer(cmd) => {
+        CommandData::Designer(cmd) => {
             crate::cmd::cmd_designer::execute_cmd(tman_config, cmd).await
         }
         CommandData::Check(cmd) => {

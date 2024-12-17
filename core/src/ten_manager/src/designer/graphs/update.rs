@@ -12,15 +12,15 @@ use serde::{Deserialize, Serialize};
 use ten_rust::pkg_info::pkg_type::PkgType;
 use ten_rust::pkg_info::predefined_graphs::get_pkg_predefined_graph_from_nodes_and_connections;
 
-use super::{connections::DevServerConnection, nodes::DevServerExtension};
+use super::{connections::DesignerConnection, nodes::DesignerExtension};
 use crate::designer::response::{ApiResponse, ErrorResponse, Status};
 use crate::designer::{get_all_pkgs::get_all_pkgs, DesignerState};
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct GraphUpdateRequest {
     pub auto_start: bool,
-    pub nodes: Vec<DevServerExtension>,
-    pub connections: Vec<DevServerConnection>,
+    pub nodes: Vec<DesignerExtension>,
+    pub connections: Vec<DesignerConnection>,
 }
 
 #[derive(Serialize, Debug, PartialEq)]

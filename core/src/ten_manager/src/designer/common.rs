@@ -13,24 +13,24 @@ use ten_rust::pkg_info::api::{
 };
 
 use super::graphs::nodes::{
-    DevServerApiCmdLike, DevServerApiDataLike, DevServerPropertyAttributes,
+    DesignerApiCmdLike, DesignerApiDataLike, DesignerPropertyAttributes,
 };
 
 pub fn get_designer_property_hashmap_from_pkg(
     items: HashMap<String, PkgPropertyAttributes>,
-) -> HashMap<String, DevServerPropertyAttributes> {
+) -> HashMap<String, DesignerPropertyAttributes> {
     items.into_iter().map(|(k, v)| (k, v.into())).collect()
 }
 
 pub fn get_designer_api_cmd_likes_from_pkg(
     items: Vec<PkgApiCmdLike>,
-) -> Vec<DevServerApiCmdLike> {
+) -> Vec<DesignerApiCmdLike> {
     items.into_iter().map(|v| v.into()).collect()
 }
 
 pub fn get_designer_api_data_likes_from_pkg(
     items: Vec<PkgApiDataLike>,
-) -> Vec<DevServerApiDataLike> {
+) -> Vec<DesignerApiDataLike> {
     items.into_iter().map(|v| v.into()).collect()
 }
 

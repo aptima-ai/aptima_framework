@@ -21,27 +21,27 @@ use crate::designer::response::{ApiResponse, ErrorResponse, Status};
 use crate::designer::DesignerState;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerConnection {
+pub struct DesignerConnection {
     pub app: String,
     pub extension_group: String,
     pub extension: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cmd: Option<Vec<DevServerMessageFlow>>,
+    pub cmd: Option<Vec<DesignerMessageFlow>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<Vec<DevServerMessageFlow>>,
+    pub data: Option<Vec<DesignerMessageFlow>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub audio_frame: Option<Vec<DevServerMessageFlow>>,
+    pub audio_frame: Option<Vec<DesignerMessageFlow>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub video_frame: Option<Vec<DevServerMessageFlow>>,
+    pub video_frame: Option<Vec<DesignerMessageFlow>>,
 }
 
-impl From<GraphConnection> for DevServerConnection {
+impl From<GraphConnection> for DesignerConnection {
     fn from(conn: GraphConnection) -> Self {
-        DevServerConnection {
+        DesignerConnection {
             app: conn.get_app_uri().to_string(),
             extension_group: conn.extension_group,
             extension: conn.extension,
@@ -62,14 +62,14 @@ impl From<GraphConnection> for DevServerConnection {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerMessageFlow {
+pub struct DesignerMessageFlow {
     pub name: String,
-    pub dest: Vec<DevServerDestination>,
+    pub dest: Vec<DesignerDestination>,
 }
 
-impl From<GraphMessageFlow> for DevServerMessageFlow {
+impl From<GraphMessageFlow> for DesignerMessageFlow {
     fn from(msg_flow: GraphMessageFlow) -> Self {
-        DevServerMessageFlow {
+        DesignerMessageFlow {
             name: msg_flow.name,
             dest: get_designer_destination_from_property(msg_flow.dest),
         }
@@ -78,7 +78,7 @@ impl From<GraphMessageFlow> for DevServerMessageFlow {
 
 fn get_designer_msg_flow_from_property(
     msg_flow: Vec<GraphMessageFlow>,
-) -> Vec<DevServerMessageFlow> {
+) -> Vec<DesignerMessageFlow> {
     if msg_flow.is_empty() {
         return vec![];
     }
@@ -87,7 +87,7 @@ fn get_designer_msg_flow_from_property(
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct DevServerDestination {
+pub struct DesignerDestination {
     pub app: String,
     pub extension_group: String,
     pub extension: String,
@@ -96,9 +96,9 @@ pub struct DevServerDestination {
     pub msg_conversion: Option<MsgAndResultConversion>,
 }
 
-impl From<GraphDestination> for DevServerDestination {
+impl From<GraphDestination> for DesignerDestination {
     fn from(destination: GraphDestination) -> Self {
-        DevServerDestination {
+        DesignerDestination {
             app: destination.get_app_uri().to_string(),
             extension_group: destination.extension_group,
             extension: destination.extension,
@@ -109,7 +109,7 @@ impl From<GraphDestination> for DevServerDestination {
 
 fn get_designer_destination_from_property(
     destinations: Vec<GraphDestination>,
-) -> Vec<DevServerDestination> {
+) -> Vec<DesignerDestination> {
     destinations.into_iter().map(|v| v.into()).collect()
 }
 
@@ -141,7 +141,7 @@ pub async fn get_graph_connections(
                 // Convert the connections field to RespConnection.
                 let connections: Option<_> =
                     predefined_graph.graph.connections.as_ref();
-                let resp_connections: Vec<DevServerConnection> =
+                let resp_connections: Vec<DesignerConnection> =
                     match connections {
                         Some(connections) => connections
                             .iter()
@@ -235,16 +235,16 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let connections: ApiResponse<Vec<DevServerConnection>> =
+        let connections: ApiResponse<Vec<DesignerConnection>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_connections = vec![DevServerConnection {
+        let expected_connections = vec![DesignerConnection {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
-            cmd: Some(vec![DevServerMessageFlow {
+            cmd: Some(vec![DesignerMessageFlow {
                 name: "hello_world".to_string(),
-                dest: vec![DevServerDestination {
+                dest: vec![DesignerDestination {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
@@ -259,7 +259,7 @@ mod tests {
         assert_eq!(connections.data, expected_connections);
         assert!(!connections.data.is_empty());
 
-        let json: ApiResponse<Vec<DevServerConnection>> =
+        let json: ApiResponse<Vec<DesignerConnection>> =
             serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);
@@ -317,43 +317,43 @@ mod tests {
         let body = test::read_body(resp).await;
         let body_str = std::str::from_utf8(&body).unwrap();
 
-        let connections: ApiResponse<Vec<DevServerConnection>> =
+        let connections: ApiResponse<Vec<DesignerConnection>> =
             serde_json::from_str(body_str).unwrap();
 
-        let expected_connections = vec![DevServerConnection {
+        let expected_connections = vec![DesignerConnection {
             app: localhost(),
             extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
-            cmd: Some(vec![DevServerMessageFlow {
+            cmd: Some(vec![DesignerMessageFlow {
                 name: "hello_world".to_string(),
-                dest: vec![DevServerDestination {
+                dest: vec![DesignerDestination {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
             }]),
-            data: Some(vec![DevServerMessageFlow {
+            data: Some(vec![DesignerMessageFlow {
                 name: "data".to_string(),
-                dest: vec![DevServerDestination {
+                dest: vec![DesignerDestination {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
             }]),
-            audio_frame: Some(vec![DevServerMessageFlow {
+            audio_frame: Some(vec![DesignerMessageFlow {
                 name: "pcm".to_string(),
-                dest: vec![DevServerDestination {
+                dest: vec![DesignerDestination {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
             }]),
-            video_frame: Some(vec![DevServerMessageFlow {
+            video_frame: Some(vec![DesignerMessageFlow {
                 name: "image".to_string(),
-                dest: vec![DevServerDestination {
+                dest: vec![DesignerDestination {
                     app: localhost(),
                     extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
@@ -365,7 +365,7 @@ mod tests {
         assert_eq!(connections.data, expected_connections);
         assert!(!connections.data.is_empty());
 
-        let json: ApiResponse<Vec<DevServerConnection>> =
+        let json: ApiResponse<Vec<DesignerConnection>> =
             serde_json::from_str(body_str).unwrap();
         let pretty_json = serde_json::to_string_pretty(&json).unwrap();
         println!("Response body: {}", pretty_json);

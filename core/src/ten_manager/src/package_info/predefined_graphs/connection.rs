@@ -9,11 +9,11 @@ use ten_rust::pkg_info::graph::{
 };
 
 use crate::designer::graphs::connections::{
-    DevServerConnection, DevServerDestination, DevServerMessageFlow,
+    DesignerConnection, DesignerDestination, DesignerMessageFlow,
 };
 
-impl From<DevServerConnection> for GraphConnection {
-    fn from(designer_connection: DevServerConnection) -> Self {
+impl From<DesignerConnection> for GraphConnection {
+    fn from(designer_connection: DesignerConnection) -> Self {
         GraphConnection {
             app: Some(designer_connection.app),
             extension_group: designer_connection.extension_group,
@@ -36,13 +36,13 @@ impl From<DevServerConnection> for GraphConnection {
 }
 
 fn get_property_msg_flow_from_designer(
-    msg_flow: Vec<DevServerMessageFlow>,
+    msg_flow: Vec<DesignerMessageFlow>,
 ) -> Vec<GraphMessageFlow> {
     msg_flow.into_iter().map(|v| v.into()).collect()
 }
 
-impl From<DevServerMessageFlow> for GraphMessageFlow {
-    fn from(designer_msg_flow: DevServerMessageFlow) -> Self {
+impl From<DesignerMessageFlow> for GraphMessageFlow {
+    fn from(designer_msg_flow: DesignerMessageFlow) -> Self {
         GraphMessageFlow {
             name: designer_msg_flow.name,
             dest: designer_msg_flow
@@ -54,8 +54,8 @@ impl From<DevServerMessageFlow> for GraphMessageFlow {
     }
 }
 
-impl From<DevServerDestination> for GraphDestination {
-    fn from(designer_destination: DevServerDestination) -> Self {
+impl From<DesignerDestination> for GraphDestination {
+    fn from(designer_destination: DesignerDestination) -> Self {
         GraphDestination {
             app: Some(designer_destination.app),
             extension_group: designer_destination.extension_group,

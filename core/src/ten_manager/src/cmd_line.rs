@@ -135,7 +135,7 @@ pub fn parse_cmd(
         Some(("delete", sub_cmd_args)) => crate::cmd::CommandData::Delete(
             crate::cmd::cmd_delete::parse_sub_cmd(sub_cmd_args),
         ),
-        Some(("designer", sub_cmd_args)) => crate::cmd::CommandData::DevServer(
+        Some(("designer", sub_cmd_args)) => crate::cmd::CommandData::Designer(
             crate::cmd::cmd_designer::parse_sub_cmd(sub_cmd_args),
         ),
         Some(("check", sub_cmd_args)) => crate::cmd::CommandData::Check(
