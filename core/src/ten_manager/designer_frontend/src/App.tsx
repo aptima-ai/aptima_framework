@@ -12,16 +12,7 @@ import SettingsPopup from "./components/SettingsPopup/SettingsPopup";
 import { useTheme } from "./hooks/useTheme";
 
 import "./theme/index.scss";
-
-interface ApiResponse<T> {
-  status: string;
-  data: T;
-  meta?: any;
-}
-
-interface DesignerVersion {
-  version: string;
-}
+import { fetchDesignerVersion } from "./api/api";
 
 const App: React.FC = () => {
   const [version, setVersion] = useState<string>("");
@@ -33,22 +24,12 @@ const App: React.FC = () => {
 
   // Get the version of tman.
   useEffect(() => {
-    fetch("/api/designer/v1/version")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((payload: ApiResponse<DesignerVersion>) => {
-        if (payload.status === "ok" && payload.data.version) {
-          setVersion(payload.data.version);
-        } else {
-          throw new Error("Failed to fetch version information.");
-        }
+    fetchDesignerVersion()
+      .then((version) => {
+        setVersion(version);
       })
       .catch((err) => {
-        console.error("Error fetching API:", err);
+        console.error("Failed to fetch version:", err);
         setError("Failed to fetch version.");
       });
   }, []);

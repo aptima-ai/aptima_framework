@@ -25,6 +25,21 @@ export const isSuccessResponse = <T>(
   return response.status === "ok";
 };
 
+export const fetchDesignerVersion = async (): Promise<string> => {
+  const response = await fetch("/api/designer/v1/version");
+  if (!response.ok) {
+    throw new Error(`Failed to fetch version: ${response.status}`);
+  }
+
+  const data: ApiResponse<{ version: string }> = await response.json();
+
+  if (isSuccessResponse(data) && data.data.version) {
+    return data.data.version;
+  } else {
+    throw new Error("Failed to fetch version information.");
+  }
+};
+
 export const fetchNodes = async (): Promise<BackendNode[]> => {
   const response = await fetch(`/api/designer/v1/graphs/default/nodes`);
   if (!response.ok) {
