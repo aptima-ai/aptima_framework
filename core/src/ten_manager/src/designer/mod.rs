@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 mod addons;
+mod base_dir;
 mod common;
 mod file_content;
 pub mod frontend;
@@ -93,6 +94,10 @@ pub fn configure_routes(
         .route(
             "/api/designer/v1/file-content/{path}",
             web::put().to(file_content::save_file_content),
+        )
+        .route(
+            "/api/designer/v1/base-dir",
+            web::put().to(base_dir::set_base_dir),
         )
         .route("/ws/terminal", web::get().to(ws_terminal));
 }
