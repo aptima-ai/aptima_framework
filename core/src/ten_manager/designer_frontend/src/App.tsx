@@ -16,6 +16,7 @@ import {
   fetchDesignerVersion,
   fetchGraphs,
   fetchNodes,
+  setBaseDir,
 } from "./api/api";
 import { Graph } from "./api/interface";
 import { CustomNodeType } from "./flow/CustomNode";
@@ -38,6 +39,8 @@ const App: React.FC = () => {
   const [showGraphSelection, setShowGraphSelection] = useState<boolean>(false);
   const [nodes, setNodes] = useState<CustomNodeType[]>([]);
   const [edges, setEdges] = useState<CustomEdgeType[]>([]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { theme, setTheme } = useTheme();
 
@@ -113,6 +116,18 @@ const App: React.FC = () => {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
 
+  const handleSetBaseDir = useCallback(async (folderPath: string) => {
+    try {
+      await setBaseDir(folderPath);
+      setSuccessMessage("Successfully opened a new app folder.");
+      setNodes([]); // Clear the contents of the FlowCanvas.
+      setEdges([]);
+    } catch (error) {
+      setErrorMessage("Failed to open a new app folder.");
+      console.error(error);
+    }
+  }, []);
+
   return (
     <div className={`theme-${theme}`}>
       <AppBar
@@ -120,6 +135,7 @@ const App: React.FC = () => {
         onOpenSettings={() => setShowSettings(true)}
         onAutoLayout={performAutoLayout}
         onOpenExistingGraph={handleOpenExistingGraph}
+        onSetBaseDir={handleSetBaseDir}
       />
       <FlowCanvas
         nodes={nodes}
@@ -157,6 +173,30 @@ const App: React.FC = () => {
               </li>
             ))}
           </ul>
+        </Popup>
+      )}
+      {successMessage && (
+        <Popup
+          title="Ok"
+          onClose={() => setSuccessMessage(null)}
+          resizable={false}
+          initialWidth={300}
+          initialHeight={150}
+          onCollapseToggle={() => {}}
+        >
+          <p>{successMessage}</p>
+        </Popup>
+      )}
+      {errorMessage && (
+        <Popup
+          title="Error"
+          onClose={() => setErrorMessage(null)}
+          resizable={false}
+          initialWidth={300}
+          initialHeight={150}
+          onCollapseToggle={() => {}}
+        >
+          <p>{errorMessage}</p>
         </Popup>
       )}
     </div>

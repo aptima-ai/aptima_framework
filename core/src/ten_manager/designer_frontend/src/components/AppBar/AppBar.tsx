@@ -19,6 +19,7 @@ interface AppBarProps {
   onOpenExistingGraph: () => void;
   onAutoLayout: () => void;
   onOpenSettings: () => void;
+  onSetBaseDir: (folderPath: string) => void;
 }
 
 type MenuType = "file" | "edit" | "help" | null;
@@ -28,6 +29,7 @@ const AppBar: React.FC<AppBarProps> = ({
   onOpenExistingGraph,
   onAutoLayout,
   onOpenSettings,
+  onSetBaseDir,
 }) => {
   const [openMenu, setOpenMenu] = useState<MenuType>(null);
   const appBarRef = useRef<HTMLDivElement>(null);
@@ -91,6 +93,7 @@ const AppBar: React.FC<AppBarProps> = ({
           onClick={() => handleOpenMenu("file")}
           onHover={() => handleSwitchMenu("file")}
           closeMenu={closeMenu}
+          onSetBaseDir={onSetBaseDir}
         />
         <EditMenu
           isOpen={openMenu === "edit"}

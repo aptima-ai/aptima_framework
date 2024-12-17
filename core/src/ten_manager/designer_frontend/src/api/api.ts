@@ -12,6 +12,8 @@ import {
   FileContentResponse,
   SaveFileRequest,
   SuccessResponse,
+  SetBaseDirResponse,
+  SetBaseDirRequest,
 } from "./interface";
 
 export interface ExtensionAddon {
@@ -164,4 +166,26 @@ export const saveFileContent = async (
   if (data.status !== "ok") {
     throw new Error(`Failed to save file content: ${data.status}`);
   }
+};
+
+export const setBaseDir = async (
+  baseDir: string
+): Promise<ApiResponse<SetBaseDirResponse>> => {
+  const requestBody: SetBaseDirRequest = { base_dir: baseDir };
+
+  const response = await fetch("/api/designer/v1/base-dir", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to set base directory: ${response.status}`);
+  }
+
+  const data: ApiResponse<SetBaseDirResponse> = await response.json();
+
+  return data;
 };
