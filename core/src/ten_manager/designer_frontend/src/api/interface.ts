@@ -56,3 +56,8 @@ export interface FileContentResponse {
 export interface SaveFileRequest {
   content: string;
 }
+
+export interface Graph {
+  name: string;
+  auto_start: boolean;
+}

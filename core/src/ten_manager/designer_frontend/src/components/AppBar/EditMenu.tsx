@@ -5,7 +5,8 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 import React from "react";
-import { FaCogs, FaArrowsAlt } from "react-icons/fa";
+import { FaCogs, FaArrowsAlt, FaFolderOpen } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 import DropdownMenu, { DropdownMenuItem } from "./DropdownMenu";
 
@@ -16,6 +17,7 @@ interface EditMenuProps {
   onOpenSettings: () => void;
   closeMenu: () => void;
   onAutoLayout: () => void;
+  onOpenExistingGraph: () => void;
 }
 
 const EditMenu: React.FC<EditMenuProps> = ({
@@ -25,10 +27,21 @@ const EditMenu: React.FC<EditMenuProps> = ({
   onOpenSettings,
   closeMenu,
   onAutoLayout,
+  onOpenExistingGraph,
 }) => {
+  const { t } = useTranslation();
+
   const items: DropdownMenuItem[] = [
     {
-      label: "Auto Layout",
+      label: t("Open Existing Graph"),
+      icon: <FaFolderOpen />,
+      onClick: () => {
+        onOpenExistingGraph();
+        closeMenu();
+      },
+    },
+    {
+      label: t("Auto Layout"),
       icon: <FaArrowsAlt />,
       onClick: () => {
         onAutoLayout();
@@ -36,7 +49,7 @@ const EditMenu: React.FC<EditMenuProps> = ({
       },
     },
     {
-      label: "Settings",
+      label: t("Settings"),
       icon: <FaCogs />,
       onClick: () => {
         onOpenSettings();
@@ -54,7 +67,7 @@ const EditMenu: React.FC<EditMenuProps> = ({
       isOpen={isOpen}
       onClick={onClick}
       onHover={onHover}
-      items={items} // 傳遞 items
+      items={items}
     />
   );
 };

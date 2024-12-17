@@ -5,7 +5,6 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 import React, { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
 
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
@@ -17,22 +16,19 @@ interface AppBarProps {
   // The current version of tman.
   version: string;
 
-  // An error message to be displayed if any issue occurs.
-  error: string;
-
-  onOpenSettings: () => void;
+  onOpenExistingGraph: () => void;
   onAutoLayout: () => void;
+  onOpenSettings: () => void;
 }
 
 type MenuType = "file" | "edit" | "help" | null;
 
 const AppBar: React.FC<AppBarProps> = ({
   version,
-  error,
-  onOpenSettings,
+  onOpenExistingGraph,
   onAutoLayout,
+  onOpenSettings,
 }) => {
-  const { t } = useTranslation("common");
   const [openMenu, setOpenMenu] = useState<MenuType>(null);
   const appBarRef = useRef<HTMLDivElement>(null);
 
@@ -103,6 +99,7 @@ const AppBar: React.FC<AppBarProps> = ({
           onOpenSettings={onOpenSettings}
           closeMenu={closeMenu}
           onAutoLayout={onAutoLayout}
+          onOpenExistingGraph={onOpenExistingGraph}
         />
         <HelpMenu
           isOpen={openMenu === "help"}
@@ -114,11 +111,7 @@ const AppBar: React.FC<AppBarProps> = ({
 
       {/* Right part is the logo. */}
       <div className="app-bar-right">
-        {error ? (
-          <span style={{ color: "red" }}>{t("error_fetching")}</span>
-        ) : (
-          <span>Powered by TEN Framework {version}</span>
-        )}
+        <span>Powered by TEN Framework {version}</span>
       </div>
     </div>
   );

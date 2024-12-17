@@ -8,6 +8,7 @@ import {
   ApiResponse,
   BackendConnection,
   BackendNode,
+  Graph,
   FileContentResponse,
   SaveFileRequest,
   SuccessResponse,
@@ -40,8 +41,11 @@ export const fetchDesignerVersion = async (): Promise<string> => {
   }
 };
 
-export const fetchNodes = async (): Promise<BackendNode[]> => {
-  const response = await fetch(`/api/designer/v1/graphs/default/nodes`);
+export const fetchNodes = async (graphName: string): Promise<BackendNode[]> => {
+  const encodedGraphName = encodeURIComponent(graphName);
+  const response = await fetch(
+    `/api/designer/v1/graphs/${encodedGraphName}/nodes`
+  );
   if (!response.ok) {
     throw new Error(`Failed to fetch nodes: ${response.status}`);
   }
@@ -54,8 +58,13 @@ export const fetchNodes = async (): Promise<BackendNode[]> => {
   return data.data;
 };
 
-export const fetchConnections = async (): Promise<BackendConnection[]> => {
-  const response = await fetch(`/api/designer/v1/graphs/default/connections`);
+export const fetchConnections = async (
+  graphName: string
+): Promise<BackendConnection[]> => {
+  const encodedGraphName = encodeURIComponent(graphName);
+  const response = await fetch(
+    `/api/designer/v1/graphs/${encodedGraphName}/connections`
+  );
   if (!response.ok) {
     throw new Error(`Failed to fetch connections: ${response.status}`);
   }
@@ -63,6 +72,21 @@ export const fetchConnections = async (): Promise<BackendConnection[]> => {
 
   if (!isSuccessResponse(data)) {
     throw new Error(`Failed to fetch connection: ${data.message}`);
+  }
+
+  return data.data;
+};
+
+export const fetchGraphs = async (): Promise<Graph[]> => {
+  const response = await fetch(`/api/designer/v1/graphs`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch graphs: ${response.status}`);
+  }
+
+  const data: ApiResponse<Graph[]> = await response.json();
+
+  if (!isSuccessResponse(data)) {
+    throw new Error(`Failed to fetch graphs: ${data.message}`);
   }
 
   return data.data;
