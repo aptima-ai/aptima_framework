@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import "./Popup.scss";
+import ReactDOM from "react-dom";
 
 const DEFAULT_WIDTH = 800;
 const DEFAULT_HEIGHT = 400;
@@ -223,7 +224,7 @@ const Popup: React.FC<PopupProps> = ({
     }
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div
       className={`popup ${isVisible ? "visible" : "hidden"}
       ${isResizing ? "resizing" : ""} ${isDragging ? "dragging" : ""} ${
@@ -275,7 +276,8 @@ const Popup: React.FC<PopupProps> = ({
           onMouseDown={handleResizeMouseDown}
         ></div>
       )}
-    </div>
+    </div>,
+    document.body // Render Popup in the body.
   );
 };
 

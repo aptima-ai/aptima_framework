@@ -20,6 +20,7 @@ interface AppBarProps {
   onAutoLayout: () => void;
   onOpenSettings: () => void;
   onSetBaseDir: (folderPath: string) => void;
+  onShowMessage: (message: string, type: "success" | "error") => void;
 }
 
 type MenuType = "file" | "edit" | "help" | null;
@@ -30,6 +31,7 @@ const AppBar: React.FC<AppBarProps> = ({
   onAutoLayout,
   onOpenSettings,
   onSetBaseDir,
+  onShowMessage,
 }) => {
   const [openMenu, setOpenMenu] = useState<MenuType>(null);
   const appBarRef = useRef<HTMLDivElement>(null);
@@ -37,6 +39,13 @@ const AppBar: React.FC<AppBarProps> = ({
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
       const targetElement = event.target as HTMLElement;
+
+      const isClickInsidePopup = targetElement.closest(".popup") !== null;
+      if (isClickInsidePopup) {
+        // Do not interfere with clicks inside Popups. Otherwise, it will keep
+        // stealing the popup's keyboard focus.
+        return;
+      }
 
       // Check if the click is inside the AppBar.
       if (appBarRef.current && appBarRef.current.contains(targetElement)) {
@@ -94,6 +103,7 @@ const AppBar: React.FC<AppBarProps> = ({
           onHover={() => handleSwitchMenu("file")}
           closeMenu={closeMenu}
           onSetBaseDir={onSetBaseDir}
+          onShowMessage={onShowMessage}
         />
         <EditMenu
           isOpen={openMenu === "edit"}

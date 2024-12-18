@@ -128,6 +128,17 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleShowMessage = useCallback(
+    (message: string, type: "success" | "error") => {
+      if (type === "success") {
+        setSuccessMessage(message);
+      } else {
+        setErrorMessage(message);
+      }
+    },
+    []
+  );
+
   return (
     <div className={`theme-${theme}`}>
       <AppBar
@@ -136,6 +147,7 @@ const App: React.FC = () => {
         onAutoLayout={performAutoLayout}
         onOpenExistingGraph={handleOpenExistingGraph}
         onSetBaseDir={handleSetBaseDir}
+        onShowMessage={handleShowMessage}
       />
       <FlowCanvas
         nodes={nodes}
