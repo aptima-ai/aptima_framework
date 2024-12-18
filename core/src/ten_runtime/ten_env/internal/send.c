@@ -22,6 +22,7 @@
 #include "ten_runtime/msg/msg.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
+#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
@@ -113,6 +114,14 @@ static bool ten_send_msg_internal(
   }
 
 done:
+  if (!result) {
+    if (ten_error_errno(err) == TEN_ERRNO_MSG_NOT_CONNECTED) {
+      TEN_LOGD("Failed to send message: %s", ten_error_errmsg(err));
+    } else {
+      TEN_LOGE("Failed to send message: %s", ten_error_errmsg(err));
+    }
+  }
+
   if (err_new_created) {
     ten_error_destroy(err);
   }

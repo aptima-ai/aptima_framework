@@ -19,7 +19,6 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 typedef struct ten_env_notify_return_result_info_t {
@@ -115,15 +114,6 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
       rc = ten_env_return_result_directly(ten_env, info->c_cmd, NULL, NULL,
                                           &err);
       TEN_ASSERT(rc, "Should not happen.");
-    }
-
-    if (!rc) {
-      // The error cannot be handled by the developer, all we can do is to log
-      // the error.
-      TEN_LOGE(
-          "Failed to return result to Go, but no error handler is provided. "
-          "errno: %d, errmsg: %s",
-          ten_error_errno(&err), ten_error_errmsg(&err));
     }
   } else {
     ten_go_callback_info_t *callback_info =

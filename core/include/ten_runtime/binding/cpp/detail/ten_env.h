@@ -114,8 +114,6 @@ class ten_env_t {
       // the ownership of the data message to the TEN runtime.
       auto *cpp_data_ptr = data.release();
       delete cpp_data_ptr;
-    } else {
-      TEN_LOGE("Failed to send_data: %s.", data->get_name());
     }
 
     return rc;
@@ -154,8 +152,6 @@ class ten_env_t {
       // the ownership of the message to the TEN runtime.
       auto *cpp_frame_ptr = frame.release();
       delete cpp_frame_ptr;
-    } else {
-      TEN_LOGE("Failed to send_video_frame %s.", frame->get_name());
     }
 
     return rc;
@@ -194,8 +190,6 @@ class ten_env_t {
       // the ownership of the message to the TEN runtime.
       auto *cpp_frame_ptr = frame.release();
       delete cpp_frame_ptr;
-    } else {
-      TEN_LOGE("Failed to send_audio_frame %s.", frame->get_name());
     }
 
     return rc;
@@ -233,8 +227,6 @@ class ten_env_t {
       // the C msg from the 'cmd'.
       auto *cpp_cmd_ptr = cmd.release();
       delete cpp_cmd_ptr;
-    } else {
-      TEN_LOGE("Failed to return_result_directly.");
     }
 
     return rc;
@@ -284,8 +276,6 @@ class ten_env_t {
 
       auto *cpp_cmd_ptr = cmd.release();
       delete cpp_cmd_ptr;
-    } else {
-      TEN_LOGE("Failed to return_result for cmd: %s", target_cmd->get_name());
     }
 
     return rc;

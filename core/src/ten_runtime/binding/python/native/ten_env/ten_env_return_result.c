@@ -12,7 +12,6 @@
 #include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/memory.h"
 
 typedef struct ten_env_notify_return_result_info_t {
@@ -123,13 +122,6 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
     } else {
       rc = ten_env_return_result_directly(ten_env, info->c_cmd, NULL, NULL,
                                           &err);
-    }
-
-    if (!rc) {
-      TEN_LOGE(
-          "Failed to return result, but no callback function is provided. "
-          "errno: %s, err_msg: %s",
-          ten_error_errno(&err), ten_error_errmsg(&err));
     }
   } else {
     if (info->c_target_cmd) {

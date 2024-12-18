@@ -96,14 +96,6 @@ static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
   if (notify_info->callback_handle == TEN_GO_NO_RESPONSE_HANDLER) {
     res = ten_env_send_audio_frame(ten_env, notify_info->c_audio_frame, NULL,
                                    NULL, &err);
-    if (!res) {
-      // The error cannot be handled by the developer, all we can do is to log
-      // the error.
-      TEN_LOGE(
-          "Failed to send audio frame, but no error handler is provided."
-          "errno: %d, errmsg: %s",
-          ten_error_errno(&err), ten_error_errmsg(&err));
-    }
   } else {
     ten_go_callback_info_t *info =
         ten_go_callback_info_create(notify_info->callback_handle);

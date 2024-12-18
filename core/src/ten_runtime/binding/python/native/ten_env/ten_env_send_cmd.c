@@ -15,7 +15,6 @@
 #include "ten_runtime/msg/cmd_result/cmd_result.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/error.h"
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
@@ -136,12 +135,6 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   bool res = false;
   if (notify_info->py_cb_func == NULL) {
     res = send_cmd_func(ten_env, notify_info->c_cmd, NULL, NULL, &err);
-    if (!res) {
-      TEN_LOGE(
-          "Failed to send cmd, but no callback function is provided. errno: "
-          "%s, err_msg: %s",
-          ten_error_errno(&err), ten_error_errmsg(&err));
-    }
   } else {
     res = send_cmd_func(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
                         notify_info->py_cb_func, &err);

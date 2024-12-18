@@ -495,15 +495,17 @@ static bool ten_extension_determine_out_msg_dest_from_graph(
 
   // Graph doesn't specify how to route the messages.
 
+  TEN_MSG_TYPE msg_type = ten_msg_get_type(msg);
   const char *msg_name = ten_msg_get_name(msg);
 
   if (err) {
-    ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
-                  "Failed to find destination of a message (%s) from graph.",
-                  msg_name);
+    ten_error_set(
+        err, TEN_ERRNO_MSG_NOT_CONNECTED,
+        "Failed to find destination of a '%s' message '%s' from graph.",
+        ten_msg_type_to_string(msg_type), msg_name);
   } else {
     if (ten_msg_is_cmd_and_result(msg)) {
-      TEN_LOGE("Failed to find destination of a command (%s) from graph.",
+      TEN_LOGD("Failed to find destination of a command '%s' from graph.",
                msg_name);
     } else {
       // The amount of the data-like messages might be huge, so we don't

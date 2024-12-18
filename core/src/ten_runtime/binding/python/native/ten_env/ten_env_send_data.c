@@ -107,12 +107,6 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
   bool res = false;
   if (notify_info->py_cb_func == NULL) {
     res = ten_env_send_data(ten_env, notify_info->c_data, NULL, NULL, &err);
-    if (!res) {
-      TEN_LOGE(
-          "Failed to send data, but no callback function is provided. errno: "
-          "%s, err_msg: %s",
-          ten_error_errno(&err), ten_error_errmsg(&err));
-    }
   } else {
     res = ten_env_send_data(ten_env, notify_info->c_data,
                             proxy_send_data_callback, notify_info->py_cb_func,

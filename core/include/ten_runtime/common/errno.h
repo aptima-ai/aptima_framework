@@ -32,6 +32,9 @@ typedef enum TEN_ERRNO {
 
   // The TEN world is closed.
   TEN_ERRNO_TEN_IS_CLOSED = 6,
+
+  // The msg is not connected in the graph.
+  TEN_ERRNO_MSG_NOT_CONNECTED = 7,
 } TEN_ERRNO;
 
 static_assert(
