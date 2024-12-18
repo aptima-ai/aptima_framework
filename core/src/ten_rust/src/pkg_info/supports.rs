@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::pkg_info::manifest::{support::ManifestSupport, Manifest};
 
-#[derive(Clone, Debug, Hash)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct PkgSupport {
     // Unspecified fields represent 'don't care', so we need to use `Option`
     // to express that they are not specified.
@@ -144,7 +144,9 @@ pub fn is_pkg_supports_compatible_with(
     largest_compatible_score
 }
 
-#[derive(Clone, Debug, Serialize, Hash, Deserialize, PartialEq)]
+#[derive(
+    Clone, Debug, Serialize, Hash, Deserialize, PartialEq, Eq, PartialOrd, Ord,
+)]
 pub enum Os {
     #[serde(rename = "win")]
     Win,
@@ -179,7 +181,9 @@ impl fmt::Display for Os {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Hash, Deserialize, PartialEq)]
+#[derive(
+    Clone, Debug, Serialize, Hash, Deserialize, PartialEq, Eq, PartialOrd, Ord,
+)]
 pub enum Arch {
     #[serde(rename = "x86")]
     X86,

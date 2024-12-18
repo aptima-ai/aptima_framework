@@ -91,7 +91,9 @@ impl Hash for PkgInfo {
 
 impl PartialEq for PkgInfo {
     fn eq(&self, other: &Self) -> bool {
-        self.pkg_identity == other.pkg_identity && self.version == other.version
+        self.pkg_identity == other.pkg_identity
+            && self.version == other.version
+            && self.supports == other.supports
     }
 }
 
@@ -105,6 +107,7 @@ impl PartialOrd for PkgInfo {
 
 impl Ord for PkgInfo {
     fn cmp(&self, other: &Self) -> Ordering {
+        // Compare pkg_type.
         if self.pkg_identity.pkg_type != other.pkg_identity.pkg_type {
             return self
                 .pkg_identity
@@ -112,11 +115,18 @@ impl Ord for PkgInfo {
                 .cmp(&other.pkg_identity.pkg_type);
         }
 
+        // Compare name.
         if self.pkg_identity.name != other.pkg_identity.name {
-            self.pkg_identity.name.cmp(&other.pkg_identity.name)
-        } else {
-            self.version.cmp(&other.version)
+            return self.pkg_identity.name.cmp(&other.pkg_identity.name);
         }
+
+        // Compare version.
+        if self.version != other.version {
+            return self.version.cmp(&other.version);
+        }
+
+        // Compare supports.
+        self.supports.cmp(&other.supports)
     }
 }
 

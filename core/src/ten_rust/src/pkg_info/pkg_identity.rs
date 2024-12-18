@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use super::pkg_type::PkgType;
 use crate::pkg_info::manifest::Manifest;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialOrd, Ord)]
 pub struct PkgIdentity {
     pub pkg_type: PkgType,
     pub name: String,
