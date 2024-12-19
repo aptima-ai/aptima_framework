@@ -219,7 +219,7 @@ async fn process_dependencies_to_get_candidates(
             );
 
             let compatible_score = is_pkg_supports_compatible_with(
-                &candidate_pkg_info.supports,
+                &candidate_pkg_info.basic_info.supports,
                 support,
             );
 
@@ -269,16 +269,19 @@ fn clean_up_all_candidates(
         for pkg_info in pkg_infos.iter() {
             // Check if the candidate is a locked one.
             if let Some(locked_pkg) = locked_pkg {
-                if locked_pkg.version == pkg_info.1.version
+                if locked_pkg.basic_info.version
+                    == pkg_info.1.basic_info.version
                     && locked_pkg.hash == pkg_info.1.hash
                 {
-                    locked_pkgs_map
-                        .insert(pkg_info.1.version.clone(), pkg_info.1);
+                    locked_pkgs_map.insert(
+                        pkg_info.1.basic_info.version.clone(),
+                        pkg_info.1,
+                    );
                 }
             }
 
             version_map
-                .entry(pkg_info.1.version.clone())
+                .entry(pkg_info.1.basic_info.version.clone())
                 .and_modify(|existing_pkg_info| {
                     if pkg_info.1.compatible_score
                         > existing_pkg_info.compatible_score
@@ -378,7 +381,10 @@ pub fn get_pkg_info_from_candidates(
     let version_parsed = Version::parse(version)?;
     let pkg_info = all_candidates
         .get(&pkg_type_name)
-        .and_then(|set| set.iter().find(|pkg| pkg.1.version == version_parsed))
+        .and_then(|set| {
+            set.iter()
+                .find(|pkg| pkg.1.basic_info.version == version_parsed)
+        })
         .ok_or_else(|| {
             anyhow!(
                 "PkgInfo not found for [{}]{}@{}",

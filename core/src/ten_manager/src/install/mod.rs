@@ -40,8 +40,8 @@ pub async fn install_pkg_info(
         tman_verbose_println!(
             tman_config,
             "{}:{} has already been installed.\n",
-            pkg_info.pkg_type,
-            pkg_info.name
+            pkg_info.basic_info.type_and_name.pkg_type,
+            pkg_info.basic_info.type_and_name.name
         );
         return Ok(());
     }
@@ -50,8 +50,10 @@ pub async fn install_pkg_info(
 
     let mut found_pkg_identity_mapping = None;
     for pkg_identity_mapping in pkg_identity_mappings {
-        if pkg_info.pkg_type == pkg_identity_mapping.pkg_type
-            && pkg_info.name == pkg_identity_mapping.src_pkg_name
+        if pkg_info.basic_info.type_and_name.pkg_type
+            == pkg_identity_mapping.pkg_type
+            && pkg_info.basic_info.type_and_name.name
+                == pkg_identity_mapping.src_pkg_name
         {
             found_pkg_identity_mapping = Some(pkg_identity_mapping);
         }
@@ -62,7 +64,8 @@ pub async fn install_pkg_info(
         path = Path::new(&base_dir)
             .join(found_pkg_identity_mapping.dest_pkg_name.clone());
     } else {
-        path = PathBuf::from(&base_dir).join(pkg_info.name.clone());
+        path = PathBuf::from(&base_dir)
+            .join(pkg_info.basic_info.type_and_name.name.clone());
     }
 
     let output_dir = path.to_string_lossy().to_string();
@@ -82,8 +85,8 @@ pub async fn install_pkg_info(
         .map_err(|e| {
             anyhow::anyhow!(
                 "Failed to check property.json for {}:{}, {}",
-                pkg_info.pkg_type,
-                pkg_info.name,
+                pkg_info.basic_info.type_and_name.pkg_type,
+                pkg_info.basic_info.type_and_name.name,
                 e
             )
         })?;
@@ -93,7 +96,7 @@ pub async fn install_pkg_info(
     // NOTE: This feature is not currently in use, but a command-line argument
     // could be added to copy the lib/ or include/ from the system package to
     // ten_packages/system/. This would reduce the number of rpaths.
-    if pkg_info.pkg_type == PkgType::System {
+    if pkg_info.basic_info.type_and_name.pkg_type == PkgType::System {
         let inclusions = vec![];
         merge_folders(
             Path::new(&output_dir),
@@ -112,8 +115,8 @@ pub async fn install_pkg_info(
     tman_verbose_println!(
         tman_config,
         "Install files for {}:{}",
-        pkg_info.pkg_type,
-        pkg_info.name
+        pkg_info.basic_info.type_and_name.pkg_type,
+        pkg_info.basic_info.type_and_name.name
     );
     for install_path in &installed_paths.paths {
         tman_verbose_println!(tman_config, "{}", install_path);

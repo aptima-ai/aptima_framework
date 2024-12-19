@@ -229,23 +229,32 @@ fn update_package_manifest(
         base_pkg_info.manifest.as_mut().unwrap().dependencies
     {
         let is_present = dependencies.iter().any(|dep| {
-            dep.pkg_type == added_pkg_info.pkg_type.to_string()
-                && dep.name == added_pkg_info.name
+            dep.pkg_type
+                == added_pkg_info.basic_info.type_and_name.pkg_type.to_string()
+                && dep.name == added_pkg_info.basic_info.type_and_name.name
         });
 
         if !is_present {
             dependencies.push(ManifestDependency {
-                pkg_type: added_pkg_info.pkg_type.to_string(),
-                name: added_pkg_info.name.clone(),
-                version: added_pkg_info.version.to_string(),
+                pkg_type: added_pkg_info
+                    .basic_info
+                    .type_and_name
+                    .pkg_type
+                    .to_string(),
+                name: added_pkg_info.basic_info.type_and_name.name.clone(),
+                version: added_pkg_info.basic_info.version.to_string(),
             });
         }
     } else {
         base_pkg_info.manifest.clone().unwrap().dependencies =
             Some(vec![ManifestDependency {
-                pkg_type: added_pkg_info.pkg_type.to_string(),
-                name: added_pkg_info.name.clone(),
-                version: added_pkg_info.version.to_string(),
+                pkg_type: added_pkg_info
+                    .basic_info
+                    .type_and_name
+                    .pkg_type
+                    .to_string(),
+                name: added_pkg_info.basic_info.type_and_name.name.clone(),
+                version: added_pkg_info.basic_info.version.to_string(),
             }]);
     }
 
@@ -312,8 +321,10 @@ fn filter_compatible_pkgs_to_candidates(
             existed_pkg
         );
 
-        let compatible_score =
-            is_pkg_supports_compatible_with(&existed_pkg.supports, support);
+        let compatible_score = is_pkg_supports_compatible_with(
+            &existed_pkg.basic_info.supports,
+            support,
+        );
 
         if compatible_score >= 0 {
             existed_pkg.compatible_score = compatible_score;
@@ -321,8 +332,8 @@ fn filter_compatible_pkgs_to_candidates(
             tman_verbose_println!(
                 tman_config,
                 "The existed {} package {} is compatible with the current system.",
-                existed_pkg.pkg_type,
-                existed_pkg.name
+                existed_pkg.basic_info.type_and_name.pkg_type,
+                existed_pkg.basic_info.type_and_name.name
             );
 
             all_candidates
@@ -336,8 +347,8 @@ fn filter_compatible_pkgs_to_candidates(
                 tman_config,
                 "The existed {} package {} is not compatible \
 with the current system.",
-                existed_pkg.pkg_type,
-                existed_pkg.name
+                existed_pkg.basic_info.type_and_name.pkg_type,
+                existed_pkg.basic_info.type_and_name.name
             );
         }
     }
@@ -345,6 +356,7 @@ with the current system.",
 
 fn get_supports_str(pkg: &PkgInfo) -> String {
     let support_items: Vec<String> = pkg
+        .basic_info
         .supports
         .iter()
         .filter_map(|s| match (s.os.as_ref(), s.arch.as_ref()) {
@@ -380,7 +392,12 @@ appear in the dependency tree:",
             Emoji("💡", "")
         );
         for pkg in untracked_local_pkgs {
-            println!(" {}:{}@{}", pkg.pkg_type, pkg.name, pkg.version);
+            println!(
+                " {}:{}@{}",
+                pkg.basic_info.type_and_name.pkg_type,
+                pkg.basic_info.type_and_name.name,
+                pkg.basic_info.version
+            );
         }
     }
 
@@ -403,24 +420,24 @@ appear in the dependency tree:",
             if old_supports_str != new_supports_str {
                 println!(
                     " {}:{}@{}{} -> {}:{}@{}{}",
-                    old_pkg.pkg_type,
-                    old_pkg.name,
-                    old_pkg.version,
+                    old_pkg.basic_info.type_and_name.pkg_type,
+                    old_pkg.basic_info.type_and_name.name,
+                    old_pkg.basic_info.version,
                     old_supports_str,
-                    new_pkg.pkg_type,
-                    new_pkg.name,
-                    new_pkg.version,
+                    new_pkg.basic_info.type_and_name.pkg_type,
+                    new_pkg.basic_info.type_and_name.name,
+                    new_pkg.basic_info.version,
                     new_supports_str
                 );
             } else {
                 println!(
                     " {}:{}@{} -> {}:{}@{}",
-                    old_pkg.pkg_type,
-                    old_pkg.name,
-                    old_pkg.version,
-                    new_pkg.pkg_type,
-                    new_pkg.name,
-                    new_pkg.version
+                    old_pkg.basic_info.type_and_name.pkg_type,
+                    old_pkg.basic_info.type_and_name.name,
+                    old_pkg.basic_info.version,
+                    new_pkg.basic_info.type_and_name.pkg_type,
+                    new_pkg.basic_info.type_and_name.name,
+                    new_pkg.basic_info.version
                 );
             }
         }
@@ -549,7 +566,7 @@ pub async fn execute_cmd(
             // If it is not a standalone install, then the `cwd` must be within
             // the base directory of a TEN app.
             let app_pkg_ = get_pkg_info_from_path(&cwd)?;
-            affected_pkg_name = app_pkg_.name.clone();
+            affected_pkg_name = app_pkg_.basic_info.type_and_name.name.clone();
 
             // Push the app itself into the initial_input_pkgs.
             initial_input_pkgs.push(get_pkg_info_from_path(&cwd)?);
@@ -567,9 +584,9 @@ pub async fn execute_cmd(
             );
 
             let extra_dependency_relationship = DependencyRelationship {
-                pkg_type: app_pkg_.pkg_type,
-                name: app_pkg_.name.clone(),
-                version: app_pkg_.version.clone(),
+                pkg_type: app_pkg_.basic_info.type_and_name.pkg_type,
+                name: app_pkg_.basic_info.type_and_name.name.clone(),
+                version: app_pkg_.basic_info.version.clone(),
                 dependency: PkgDependency {
                     pkg_type: desired_pkg_type_,
                     name: desired_pkg_src_name_.clone(),

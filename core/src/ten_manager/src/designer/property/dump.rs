@@ -46,8 +46,9 @@ pub async fn dump_property(
     );
 
     if let Some(pkgs) = &mut state.all_pkgs {
-        if let Some(app_pkg) =
-            pkgs.iter_mut().find(|pkg| pkg.pkg_type == PkgType::App)
+        if let Some(app_pkg) = pkgs
+            .iter_mut()
+            .find(|pkg| pkg.basic_info.type_and_name.pkg_type == PkgType::App)
         {
             let response = ApiResponse {
                 status: Status::Ok,

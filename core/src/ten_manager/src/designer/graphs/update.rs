@@ -45,8 +45,9 @@ pub async fn update_graph(
     }
 
     if let Some(pkgs) = &mut state.all_pkgs {
-        if let Some(app_pkg) =
-            pkgs.iter_mut().find(|pkg| pkg.pkg_type == PkgType::App)
+        if let Some(app_pkg) = pkgs
+            .iter_mut()
+            .find(|pkg| pkg.basic_info.type_and_name.pkg_type == PkgType::App)
         {
             // Collect nodes into a Vec<GraphNode>.
             let nodes: Vec<GraphNode> =
@@ -188,7 +189,9 @@ mod tests {
             Some(pkgs) => {
                 let app_pkg = pkgs
                     .iter()
-                    .find(|pkg| pkg.pkg_type == PkgType::App)
+                    .find(|pkg| {
+                        pkg.basic_info.type_and_name.pkg_type == PkgType::App
+                    })
                     .unwrap();
 
                 let predefined_graphs =

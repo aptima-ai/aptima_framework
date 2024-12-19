@@ -47,7 +47,9 @@ fn retrieve_extension_addons(
     if let Some(all_pkgs) = &state.all_pkgs {
         let extensions = all_pkgs
             .iter()
-            .filter(|pkg| pkg.pkg_type == PkgType::Extension)
+            .filter(|pkg| {
+                pkg.basic_info.type_and_name.pkg_type == PkgType::Extension
+            })
             .map(|pkg_info_with_src| {
                 map_pkg_to_extension_addon(pkg_info_with_src)
             })
@@ -68,7 +70,7 @@ fn map_pkg_to_extension_addon(
     pkg_info_with_src: &PkgInfo,
 ) -> DesignerExtensionAddon {
     DesignerExtensionAddon {
-        addon_name: pkg_info_with_src.name.clone(),
+        addon_name: pkg_info_with_src.basic_info.type_and_name.name.clone(),
         url: pkg_info_with_src.url.clone(),
         api: pkg_info_with_src.api.as_ref().map(|api| DesignerApi {
             property: if api.property.is_empty() {

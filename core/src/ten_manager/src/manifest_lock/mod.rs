@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use ten_rust::json_schema::validate_manifest_lock_json_string;
 use ten_rust::pkg_info::dependencies::PkgDependency;
 use ten_rust::pkg_info::manifest::support::ManifestSupport;
+use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
 use ten_rust::pkg_info::supports::{
     get_manifest_supports_from_pkg, get_pkg_supports_from_manifest_supports,
 };
@@ -91,7 +92,7 @@ impl ManifestLock {
                 removed_pkgs.push(old_pkg);
             } else {
                 let new_pkg = new_pkgs.get(idt).unwrap();
-                if old_pkg.version != new_pkg.version {
+                if old_pkg.basic_info.version != new_pkg.basic_info.version {
                     updated_pkgs.push((old_pkg, new_pkg));
                 }
             }
@@ -109,8 +110,8 @@ impl ManifestLock {
                 println!(
                     "{}  Adding package {} v{}",
                     Emoji("➕", ""),
-                    pkg.name,
-                    pkg.version
+                    pkg.basic_info.type_and_name.name,
+                    pkg.basic_info.version
                 );
             }
         }
@@ -120,8 +121,8 @@ impl ManifestLock {
                 println!(
                     "{}  Removing package {} v{}",
                     Emoji("🗑️", ""),
-                    pkg.name,
-                    pkg.version
+                    pkg.basic_info.type_and_name.name,
+                    pkg.basic_info.version
                 );
             }
         }
@@ -131,9 +132,9 @@ impl ManifestLock {
                 println!(
                     "{}  Updating package {} v{} to v{}",
                     Emoji("🔄", ""),
-                    old_pkg.name,
-                    old_pkg.version,
-                    new_pkg.version
+                    old_pkg.basic_info.type_and_name.name,
+                    old_pkg.basic_info.version,
+                    new_pkg.basic_info.version
                 );
             }
         }
@@ -208,6 +209,34 @@ pub struct ManifestLockItem {
     pub supports: Option<Vec<ManifestSupport>>,
 }
 
+impl TryFrom<&ManifestLockItem> for PkgTypeAndName {
+    type Error = anyhow::Error;
+
+    fn try_from(manifest: &ManifestLockItem) -> Result<Self> {
+        Ok(PkgTypeAndName {
+            pkg_type: PkgType::from_str(&manifest.pkg_type).unwrap(),
+            name: manifest.name.clone(),
+        })
+    }
+}
+
+impl TryFrom<&ManifestLockItem> for PkgBasicInfo {
+    type Error = anyhow::Error;
+
+    fn try_from(manifest: &ManifestLockItem) -> Result<Self> {
+        Ok(PkgBasicInfo {
+            type_and_name: PkgTypeAndName::try_from(manifest)?,
+            version: Version::parse(&manifest.version).unwrap(),
+            // If manifest.supports is None, then supports is an empty vector.
+            // Otherwise, convert the supports to a vector of PkgSupport.
+            supports: get_pkg_supports_from_manifest_supports(
+                &manifest.supports,
+            )
+            .unwrap(),
+        })
+    }
+}
+
 fn get_encodable_deps_from_pkg_deps(
     pkg_deps: Vec<PkgDependency>,
 ) -> Vec<ManifestLockItemDependencyItem> {
@@ -217,9 +246,9 @@ fn get_encodable_deps_from_pkg_deps(
 impl<'a> From<&'a PkgInfo> for ManifestLockItem {
     fn from(pkg_info: &'a PkgInfo) -> Self {
         ManifestLockItem {
-            pkg_type: pkg_info.pkg_type.to_string(),
-            name: pkg_info.name.clone(),
-            version: pkg_info.version.to_string(),
+            pkg_type: pkg_info.basic_info.type_and_name.pkg_type.to_string(),
+            name: pkg_info.basic_info.type_and_name.name.clone(),
+            version: pkg_info.basic_info.version.to_string(),
             hash: pkg_info.hash.to_string(),
             dependencies: if pkg_info.dependencies.is_empty() {
                 None
@@ -228,7 +257,9 @@ impl<'a> From<&'a PkgInfo> for ManifestLockItem {
                     pkg_info.dependencies.clone(),
                 ))
             },
-            supports: Some(get_manifest_supports_from_pkg(&pkg_info.supports)),
+            supports: Some(get_manifest_supports_from_pkg(
+                &pkg_info.basic_info.supports,
+            )),
         }
     }
 }
@@ -236,9 +267,7 @@ impl<'a> From<&'a PkgInfo> for ManifestLockItem {
 impl<'a> From<&'a ManifestLockItem> for PkgInfo {
     fn from(val: &'a ManifestLockItem) -> Self {
         PkgInfo {
-            pkg_type: PkgType::from_str(&val.pkg_type).unwrap(),
-            name: val.name.clone(),
-            version: Version::parse(&val.version).unwrap(),
+            basic_info: PkgBasicInfo::try_from(val).unwrap(),
             dependencies: val
                 .clone()
                 .dependencies
@@ -254,10 +283,6 @@ impl<'a> From<&'a ManifestLockItem> for PkgInfo {
                 })
                 .unwrap_or_default(),
             api: None,
-            // If val.supports is None, then supports is an empty vector.
-            // Otherwise, convert the supports to a vector of PkgSupport.
-            supports: get_pkg_supports_from_manifest_supports(&val.supports)
-                .unwrap(),
             compatible_score: 0, // TODO(xilin): default value.
             is_local_installed: false,
             url: "".to_string(), // TODO(xilin): default value.

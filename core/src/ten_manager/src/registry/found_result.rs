@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 use ten_rust::pkg_info::manifest::{
     dependency::ManifestDependency, support::ManifestSupport,
 };
+use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
+use ten_rust::pkg_info::pkg_type_and_name::PkgTypeAndName;
 use ten_rust::pkg_info::{
     dependencies::get_pkg_dependencies_from_manifest_dependencies,
     hash::gen_hash_hex, pkg_type::PkgType,
@@ -32,6 +34,31 @@ pub struct RegistryPackageData {
     pub supports: Option<Vec<ManifestSupport>>,
 
     pub hash: String,
+}
+
+impl TryFrom<&RegistryPackageData> for PkgTypeAndName {
+    type Error = anyhow::Error;
+
+    fn try_from(package_data: &RegistryPackageData) -> Result<Self> {
+        Ok(PkgTypeAndName {
+            pkg_type: package_data.pkg_type,
+            name: package_data.name.clone(),
+        })
+    }
+}
+
+impl TryFrom<&RegistryPackageData> for PkgBasicInfo {
+    type Error = anyhow::Error;
+
+    fn try_from(package_data: &RegistryPackageData) -> Result<Self> {
+        Ok(PkgBasicInfo {
+            type_and_name: PkgTypeAndName::try_from(package_data)?,
+            version: package_data.version.clone(),
+            supports: get_pkg_supports_from_manifest_supports(
+                &package_data.supports,
+            )?,
+        })
+    }
 }
 
 impl RegistryPackageData {

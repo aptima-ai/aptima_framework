@@ -102,9 +102,9 @@ async fn get_package_upload_info(
 
         Box::pin(async move {
             let payload = json!(RegistryPackageData {
-                pkg_type: pkg_info.pkg_type,
-                name: pkg_info.name.clone(),
-                version: pkg_info.version.clone(),
+                pkg_type: pkg_info.basic_info.type_and_name.pkg_type,
+                name: pkg_info.basic_info.type_and_name.name.clone(),
+                version: pkg_info.basic_info.version.clone(),
                 dependencies: pkg_info
                     .dependencies
                     .clone()
@@ -112,7 +112,7 @@ async fn get_package_upload_info(
                     .map(|d| d.into())
                     .collect(),
                 supports: Some(get_manifest_supports_from_pkg(
-                    &pkg_info.supports
+                    &pkg_info.basic_info.supports
                 )),
                 hash: pkg_info.hash.clone(),
             });

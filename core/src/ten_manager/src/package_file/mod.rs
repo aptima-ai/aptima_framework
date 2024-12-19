@@ -28,7 +28,9 @@ use crate::{
 pub fn get_package_zip_file_name(pkg_info: &PkgInfo) -> Result<String> {
     let output_zip_file_name = format!(
         "{}_{}.{}",
-        pkg_info.name, pkg_info.version, TEN_PACKAGE_FILE_EXTENSION
+        pkg_info.basic_info.type_and_name.name,
+        pkg_info.basic_info.version,
+        TEN_PACKAGE_FILE_EXTENSION
     );
 
     Ok(output_zip_file_name)

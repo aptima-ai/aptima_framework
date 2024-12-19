@@ -13,24 +13,19 @@ use anyhow::Result;
 use crate::{config::TmanConfig, registry::found_result::RegistryPackageData};
 use ten_rust::pkg_info::{
     dependencies::get_pkg_dependencies_from_manifest_dependencies,
-    get_all_existed_pkgs_info_of_app_to_hashmap,
-    supports::get_pkg_supports_from_manifest_supports, PkgInfo,
+    get_all_existed_pkgs_info_of_app_to_hashmap, pkg_basic_info::PkgBasicInfo,
+    PkgInfo,
 };
 
 pub fn pkg_info_from_find_package_data(
     package_data: &RegistryPackageData,
 ) -> Result<PkgInfo> {
     Ok(PkgInfo {
-        pkg_type: package_data.pkg_type,
-        name: package_data.name.clone(),
-        version: package_data.version.clone(),
+        basic_info: PkgBasicInfo::try_from(package_data)?,
         dependencies: get_pkg_dependencies_from_manifest_dependencies(
             &package_data.dependencies,
         )?,
         api: None,
-        supports: get_pkg_supports_from_manifest_supports(
-            &package_data.supports,
-        )?,
         compatible_score: -1,
 
         is_local_installed: false,

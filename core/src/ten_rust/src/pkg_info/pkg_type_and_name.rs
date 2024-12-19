@@ -45,8 +45,8 @@ impl TryFrom<&Manifest> for PkgTypeAndName {
 impl From<&PkgInfo> for PkgTypeAndName {
     fn from(pkg_info: &PkgInfo) -> Self {
         PkgTypeAndName {
-            pkg_type: pkg_info.pkg_type,
-            name: pkg_info.name.clone(),
+            pkg_type: pkg_info.basic_info.type_and_name.pkg_type,
+            name: pkg_info.basic_info.type_and_name.name.clone(),
         }
     }
 }

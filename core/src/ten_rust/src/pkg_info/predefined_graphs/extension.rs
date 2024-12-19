@@ -26,8 +26,9 @@ pub fn get_extension_nodes_in_graph(
     graph_name: &String,
     all_pkgs: &[PkgInfo],
 ) -> Result<Vec<GraphNode>> {
-    if let Some(app_pkg) =
-        all_pkgs.iter().find(|pkg| pkg.pkg_type == PkgType::App)
+    if let Some(app_pkg) = all_pkgs
+        .iter()
+        .find(|pkg| pkg.basic_info.type_and_name.pkg_type == PkgType::App)
     {
         if app_pkg.property.is_none() {
             return Err(anyhow::anyhow!("'property.json' file not found."));
@@ -66,8 +67,8 @@ pub fn get_pkg_info_for_extension<'a>(
     all_pkgs
         .iter()
         .find(|pkg| {
-            pkg.pkg_type == PkgType::Extension
-                && pkg.name == extension.addon
+            pkg.basic_info.type_and_name.pkg_type == PkgType::Extension
+                && pkg.basic_info.type_and_name.name == extension.addon
         })
         .ok_or_else(|| {
             anyhow::anyhow!(

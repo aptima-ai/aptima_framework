@@ -16,11 +16,11 @@ use super::{
 impl PkgInfo {
     pub fn gen_hash_hex(&self) -> Result<String> {
         gen_hash_hex(
-            &self.pkg_type,
-            &self.name,
-            &self.version,
+            &self.basic_info.type_and_name.pkg_type,
+            &self.basic_info.type_and_name.name,
+            &self.basic_info.version,
             &self.dependencies,
-            &self.supports,
+            &self.basic_info.supports,
         )
     }
 }

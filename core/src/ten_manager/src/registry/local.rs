@@ -46,7 +46,10 @@ pub async fn upload_package(
     // Construct the directory path.
     let dir_path = PathBuf::from(format!(
         "{}{}/{}/{}/",
-        path_url, pkg_info.pkg_type, pkg_info.name, pkg_info.version
+        path_url,
+        pkg_info.basic_info.type_and_name.pkg_type,
+        pkg_info.basic_info.type_and_name.name,
+        pkg_info.basic_info.version
     ));
 
     // Check if the directory exists, and only create it if it doesn't.

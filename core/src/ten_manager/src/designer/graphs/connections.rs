@@ -128,8 +128,9 @@ pub async fn get_graph_connections(
     }
 
     if let Some(pkgs) = &state.all_pkgs {
-        if let Some(app_pkg) =
-            pkgs.iter().find(|pkg| pkg.pkg_type == PkgType::App)
+        if let Some(app_pkg) = pkgs
+            .iter()
+            .find(|pkg| pkg.basic_info.type_and_name.pkg_type == PkgType::App)
         {
             // If the app package has predefined graphs, find the one with the
             // specified graph_name.
