@@ -19,14 +19,16 @@ use crate::dep_and_candidate::get_pkg_info_from_candidates;
 pub fn extract_introducer_relations_from_raw_solver_results(
     results: &[String],
     all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
-) -> Result<HashMap<PkgInfo, (String, Option<PkgInfo>)>> {
+) -> Result<HashMap<PkgBasicInfo, (String, Option<PkgInfo>)>> {
     let re = Regex::new(
       r#"introducer\("([^"]+)","([^"]+)","([^"]+)","([^"]+)","([^"]*)","([^"]*)"\)"#,
   )
   .unwrap();
 
-    let mut introducer_relations: HashMap<PkgInfo, (String, Option<PkgInfo>)> =
-        HashMap::new();
+    let mut introducer_relations: HashMap<
+        PkgBasicInfo,
+        (String, Option<PkgInfo>),
+    > = HashMap::new();
 
     for result in results.iter() {
         if let Some(caps) = re.captures(result) {
@@ -80,8 +82,10 @@ pub fn extract_introducer_relations_from_raw_solver_results(
                 Some(introducer_info.clone())
             };
 
-            introducer_relations
-                .insert(pkg_info.clone(), (requested_version_str, introducer));
+            introducer_relations.insert(
+                (&pkg_info).into(),
+                (requested_version_str, introducer),
+            );
         }
     }
 
@@ -91,11 +95,11 @@ pub fn extract_introducer_relations_from_raw_solver_results(
 pub fn get_dependency_chain(
     introducer: &PkgInfo,
     conflict_pkg_identity: &PkgTypeAndName,
-    introducer_relations: &HashMap<PkgInfo, (String, Option<PkgInfo>)>,
+    introducer_relations: &HashMap<PkgBasicInfo, (String, Option<PkgInfo>)>,
 ) -> Vec<(String, PkgTypeAndName)> {
     let mut chain = Vec::new();
     let mut current_pkg = introducer.clone();
-    let mut visited = HashSet::new();
+    let mut visited = HashSet::<PkgBasicInfo>::new();
 
     // Add the leaf node (i.e., `introducer` depends on `pkg_name`) to the
     // dependency chain first.
@@ -115,12 +119,12 @@ pub fn get_dependency_chain(
     ));
 
     loop {
-        if !visited.insert(current_pkg.clone()) {
+        if !visited.insert((&current_pkg).into()) {
             // Detected a cycle, break to prevent infinite loop.
             break;
         }
 
-        match introducer_relations.get(&current_pkg) {
+        match introducer_relations.get(&(&current_pkg).into()) {
             Some((requested_version, Some(introducer_pkg))) => {
                 // The dependency chain is that `introducer_pkg` depends on
                 // `current_pkg`@`requested_version`, i.e., the

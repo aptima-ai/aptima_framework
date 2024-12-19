@@ -22,6 +22,40 @@ class ArgumentInfo(argparse.Namespace):
         self.log_level: int
 
 
+def run_clippy_static_checking(args: ArgumentInfo):
+    cmd = [
+        "cargo",
+        "clippy",
+        "--target-dir",
+        args.target_path,
+        "--target",
+        args.target,
+    ]
+
+    if args.manifest_path != "":
+        cmd.append(
+            "--manifest-path",
+        )
+        cmd.append(
+            args.manifest_path,
+        )
+
+    if args.build_type == "release":
+        cmd.append("--release")
+
+    cmd += [
+        "--",
+        "-D",
+        "warnings",
+    ]
+
+    returncode, logs = cmd_exec.run_cmd(cmd, args.log_level)
+    if returncode:
+        raise Exception(f"Failed to cargo clippy rust tests: {logs}")
+    else:
+        print(logs)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -50,6 +84,8 @@ if __name__ == "__main__":
 
     try:
         os.chdir(args.project_path)
+
+        # run_clippy_static_checking(args)
 
         cmd = [
             "cargo",

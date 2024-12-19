@@ -83,6 +83,33 @@ def copy_test_binaries(
         )
 
 
+def run_clippy_static_checking(args: ArgumentInfo):
+    cmd = [
+        "cargo",
+        "clippy",
+        "--target-dir",
+        args.target_path,
+        "--target",
+        args.target,
+        "--tests",
+    ]
+
+    if args.build_type == "release":
+        cmd.append("--release")
+
+    cmd += [
+        "--",
+        "-D",
+        "warnings",
+    ]
+
+    returncode, logs = cmd_exec.run_cmd(cmd, args.log_level)
+    if returncode:
+        raise Exception(f"Failed to cargo clippy rust tests: {logs}")
+    else:
+        print(logs)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -126,6 +153,8 @@ if __name__ == "__main__":
     returncode = 0
     try:
         os.chdir(args.project_path)
+
+        # run_clippy_static_checking(args)
 
         # cargo build --tests: only compile the test source files, without
         # running the test cases.

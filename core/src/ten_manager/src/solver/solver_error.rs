@@ -146,7 +146,7 @@ fn print_dependency_chain(
 
 pub fn print_conflict_info(
     conflict_info: &ConflictInfo,
-    introducer_relations: &HashMap<PkgInfo, (String, Option<PkgInfo>)>,
+    introducer_relations: &HashMap<PkgBasicInfo, (String, Option<PkgInfo>)>,
     all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<()> {
     println!(

@@ -77,7 +77,16 @@ pub fn filter_solver_results_by_type_and_name<'a>(
     let mut filtered_results: Vec<&PkgInfo> = vec![];
 
     for result in solver_results.iter() {
+        // After Rust 1.82, there is an `is_none_or` method, and Clippy will
+        // suggest using `is_none_or` for simplicity. However, since Ten
+        // currently needs to rely on Rust 1.81 on macOS (mainly because debug
+        // mode on Mac enables ASAN, and rustc must match the versions of
+        // LLVM/Clang to prevent ASAN linking errors), we disable this specific
+        // Clippy warning here.
+        #[allow(clippy::unnecessary_map_or)]
         let matches_type = pkg_type.map_or(true, |pt| result.pkg_type == *pt);
+
+        #[allow(clippy::unnecessary_map_or)]
         let matches_name = name.map_or(true, |n| result.name == *n);
 
         let matches = matches_type && matches_name;
