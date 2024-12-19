@@ -13,8 +13,9 @@ pub mod hash;
 pub mod language;
 pub mod manifest;
 pub mod message;
-pub mod pkg_identity;
+pub mod pkg_basic_info;
 pub mod pkg_type;
+pub mod pkg_type_and_name;
 pub mod predefined_graphs;
 pub mod property;
 pub mod supports;
@@ -23,13 +24,14 @@ pub mod value_type;
 
 use std::{
     cmp::Ordering,
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     hash::{Hash, Hasher},
     path::{Path, PathBuf},
 };
 
 use anyhow::Result;
 use graph::Graph;
+use pkg_type_and_name::PkgTypeAndName;
 use semver::Version;
 
 use crate::schema::store::SchemaStore;
@@ -40,7 +42,6 @@ use constants::{
 };
 use dependencies::{get_pkg_dependencies_from_manifest, PkgDependency};
 use manifest::{parse_manifest_from_file, parse_manifest_in_folder, Manifest};
-use pkg_identity::PkgIdentity;
 use pkg_type::PkgType;
 use property::{
     parse_property_from_file, parse_property_in_folder,
@@ -54,10 +55,9 @@ pub fn localhost() -> String {
 
 #[derive(Clone, Debug)]
 pub struct PkgInfo {
-    pub pkg_identity: PkgIdentity,
+    pub pkg_type: PkgType,
+    pub name: String,
     pub version: Version,
-    pub dependencies: Vec<PkgDependency>,
-    pub api: Option<PkgApi>,
 
     // Since the declaration 'does not support all environments' has no
     // practical meaning, not specifying the 'supports' field or specifying an
@@ -66,6 +66,10 @@ pub struct PkgInfo {
     // 'supports' field represents support for all combinations of
     // environments.
     pub supports: Vec<PkgSupport>,
+
+    pub dependencies: Vec<PkgDependency>,
+    pub api: Option<PkgApi>,
+
     pub compatible_score: i32,
 
     // Source information.
@@ -83,7 +87,8 @@ pub struct PkgInfo {
 // supports are the same.
 impl Hash for PkgInfo {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.pkg_identity.hash(state);
+        self.pkg_type.hash(state);
+        self.name.hash(state);
         self.version.hash(state);
         self.supports.hash(state);
     }
@@ -91,7 +96,8 @@ impl Hash for PkgInfo {
 
 impl PartialEq for PkgInfo {
     fn eq(&self, other: &Self) -> bool {
-        self.pkg_identity == other.pkg_identity
+        self.pkg_type == other.pkg_type
+            && self.name == other.name
             && self.version == other.version
             && self.supports == other.supports
     }
@@ -108,16 +114,13 @@ impl PartialOrd for PkgInfo {
 impl Ord for PkgInfo {
     fn cmp(&self, other: &Self) -> Ordering {
         // Compare pkg_type.
-        if self.pkg_identity.pkg_type != other.pkg_identity.pkg_type {
-            return self
-                .pkg_identity
-                .pkg_type
-                .cmp(&other.pkg_identity.pkg_type);
+        if self.pkg_type != other.pkg_type {
+            return self.pkg_type.cmp(&other.pkg_type);
         }
 
         // Compare name.
-        if self.pkg_identity.name != other.pkg_identity.name {
-            return self.pkg_identity.name.cmp(&other.pkg_identity.name);
+        if self.name != other.name {
+            return self.name.cmp(&other.name);
         }
 
         // Compare version.
@@ -136,7 +139,8 @@ impl PkgInfo {
         property: &Option<Property>,
     ) -> Result<Self> {
         Ok(PkgInfo {
-            pkg_identity: PkgIdentity::from_manifest(manifest)?,
+            pkg_type: manifest.pkg_type.parse::<PkgType>()?,
+            name: manifest.name.clone(),
             version: Version::parse(&manifest.version)?,
             dependencies: get_pkg_dependencies_from_manifest(manifest)?,
             api: PkgApi::from_manifest(manifest)?,
@@ -231,8 +235,7 @@ impl PkgInfo {
         pkg_name: &str,
     ) -> Option<&PkgDependency> {
         self.dependencies.iter().find(|dep| {
-            dep.pkg_identity.pkg_type.to_string() == pkg_type
-                && dep.pkg_identity.name == pkg_name
+            dep.pkg_type.to_string() == pkg_type && dep.name == pkg_name
         })
     }
 }
@@ -251,29 +254,30 @@ pub fn get_pkg_info_from_path(pkg_path: &Path) -> Result<PkgInfo> {
 
 fn collect_pkg_info_from_path(
     base_path: &Path,
-    pkgs_info: &mut HashSet<PkgInfo>,
+    pkgs_info: &mut HashMap<PkgTypeAndName, PkgInfo>,
 ) -> Result<Manifest> {
     let pkg_info = get_pkg_info_from_path(base_path)?;
 
-    if pkgs_info.contains(&pkg_info) {
+    let pkg_type_name = PkgTypeAndName::from(&pkg_info);
+    if pkgs_info.contains_key(&pkg_type_name) {
         return Err(anyhow::anyhow!(
             "Duplicated package, type: {}, name: {}",
-            pkg_info.pkg_identity.pkg_type,
-            pkg_info.pkg_identity.name
+            pkg_info.pkg_type,
+            pkg_info.name
         ));
     }
 
     let manifest = pkg_info.manifest.clone().unwrap().clone();
 
-    pkgs_info.insert(pkg_info);
+    pkgs_info.insert(pkg_type_name, pkg_info);
 
     Ok(manifest)
 }
 
-pub fn get_all_existed_pkgs_info_of_app_to_hashset(
+pub fn get_all_existed_pkgs_info_of_app_to_hashmap(
     app_path: &Path,
-) -> Result<HashSet<PkgInfo>> {
-    let mut pkgs_info: HashSet<PkgInfo> = HashSet::new();
+) -> Result<HashMap<PkgTypeAndName, PkgInfo>> {
+    let mut pkgs_info: HashMap<PkgTypeAndName, PkgInfo> = HashMap::new();
 
     // Process the manifest.json file in the root path.
     let app_pkg_manifest =
@@ -345,8 +349,8 @@ pub fn get_all_existed_pkgs_info_of_app_to_hashset(
 pub fn get_all_existed_pkgs_info_of_app(
     app_path: &Path,
 ) -> Result<Vec<PkgInfo>> {
-    let result = get_all_existed_pkgs_info_of_app_to_hashset(app_path)?;
-    Ok(result.into_iter().collect())
+    let result = get_all_existed_pkgs_info_of_app_to_hashmap(app_path)?;
+    Ok(result.into_values().collect())
 }
 
 pub fn find_untracked_local_packages<'a>(
@@ -356,17 +360,15 @@ pub fn find_untracked_local_packages<'a>(
     let mut untracked_local_packages: Vec<&PkgInfo> = vec![];
 
     for local_pkg in local_pkgs {
-        let pkg_identity = &local_pkg.pkg_identity;
-
-        if pkg_identity.pkg_type == PkgType::App {
+        if local_pkg.pkg_type == PkgType::App {
             continue;
         }
 
         // Check if the package is in dependencies list.
-        if !dependencies
-            .iter()
-            .any(|dependency| dependency.pkg_identity == *pkg_identity)
-        {
+        if !dependencies.iter().any(|dependency| {
+            dependency.pkg_type == local_pkg.pkg_type
+                && dependency.name == local_pkg.name
+        }) {
             untracked_local_packages.push(local_pkg);
         }
     }
@@ -389,11 +391,9 @@ pub fn find_to_be_replaced_local_pkgs<'a>(
     let mut result: Vec<(&PkgInfo, &PkgInfo)> = vec![];
 
     for local_pkg in local_pkgs {
-        let pkg_identity = local_pkg.pkg_identity.clone();
-
-        let pkg_in_dependencies = dependencies
-            .iter()
-            .find(|pkg| pkg.pkg_identity == pkg_identity);
+        let pkg_in_dependencies = dependencies.iter().find(|pkg| {
+            pkg.pkg_type == local_pkg.pkg_type && pkg.name == local_pkg.name
+        });
 
         if let Some(pkg_in_dependencies) = pkg_in_dependencies {
             // If the supports of a locally installed package are incompatible,

@@ -300,10 +300,7 @@ fn find_cmd_schema_from_all_pkgs_info<'a>(
 ) -> Option<&'a CmdSchema> {
     let addon_pkg = existed_pkgs_of_app
         .iter()
-        .find(|pkg| {
-            pkg.pkg_identity.pkg_type == PkgType::Extension
-                && pkg.pkg_identity.name == addon
-        })
+        .find(|pkg| pkg.pkg_type == PkgType::Extension && pkg.name == addon)
         .unwrap_or_else(|| {
             panic!("should not happen.");
         });
@@ -331,10 +328,7 @@ fn find_msg_schema_from_all_pkgs_info<'a>(
 
     let addon_pkg = existed_pkgs_of_app
         .iter()
-        .find(|pkg| {
-            pkg.pkg_identity.pkg_type == PkgType::Extension
-                && pkg.pkg_identity.name == addon
-        })
+        .find(|pkg| pkg.pkg_type == PkgType::Extension && pkg.name == addon)
         .unwrap_or_else(|| {
             panic!("should not happen.");
         });

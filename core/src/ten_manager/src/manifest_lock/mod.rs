@@ -18,7 +18,7 @@ use ten_rust::pkg_info::supports::{
     get_manifest_supports_from_pkg, get_pkg_supports_from_manifest_supports,
 };
 use ten_rust::pkg_info::{
-    pkg_identity::PkgIdentity, pkg_type::PkgType, PkgInfo,
+    pkg_type::PkgType, pkg_type_and_name::PkgTypeAndName, PkgInfo,
 };
 
 use super::constants::MANIFEST_LOCK_JSON_FILENAME;
@@ -63,14 +63,14 @@ impl FromStr for ManifestLock {
 }
 
 impl ManifestLock {
-    pub fn get_pkgs(&self) -> HashMap<PkgIdentity, PkgInfo> {
+    pub fn get_pkgs(&self) -> HashMap<PkgTypeAndName, PkgInfo> {
         self.packages
             .as_ref()
             .map(|pkgs| {
                 pkgs.iter()
                     .map(|pkg| {
                         let pkg_info: PkgInfo = pkg.into();
-                        (pkg_info.pkg_identity.clone(), pkg_info)
+                        ((&pkg_info).into(), pkg_info)
                     })
                     .collect()
             })
@@ -109,7 +109,7 @@ impl ManifestLock {
                 println!(
                     "{}  Adding package {} v{}",
                     Emoji("➕", ""),
-                    pkg.pkg_identity.name,
+                    pkg.name,
                     pkg.version
                 );
             }
@@ -120,7 +120,7 @@ impl ManifestLock {
                 println!(
                     "{}  Removing package {} v{}",
                     Emoji("🗑️", ""),
-                    pkg.pkg_identity.name,
+                    pkg.name,
                     pkg.version
                 );
             }
@@ -131,7 +131,7 @@ impl ManifestLock {
                 println!(
                     "{}  Updating package {} v{} to v{}",
                     Emoji("🔄", ""),
-                    old_pkg.pkg_identity.name,
+                    old_pkg.name,
                     old_pkg.version,
                     new_pkg.version
                 );
@@ -217,8 +217,8 @@ fn get_encodable_deps_from_pkg_deps(
 impl<'a> From<&'a PkgInfo> for ManifestLockItem {
     fn from(pkg_info: &'a PkgInfo) -> Self {
         ManifestLockItem {
-            pkg_type: pkg_info.pkg_identity.pkg_type.to_string(),
-            name: pkg_info.pkg_identity.name.clone(),
+            pkg_type: pkg_info.pkg_type.to_string(),
+            name: pkg_info.name.clone(),
             version: pkg_info.version.to_string(),
             hash: pkg_info.hash.to_string(),
             dependencies: if pkg_info.dependencies.is_empty() {
@@ -236,10 +236,8 @@ impl<'a> From<&'a PkgInfo> for ManifestLockItem {
 impl<'a> From<&'a ManifestLockItem> for PkgInfo {
     fn from(val: &'a ManifestLockItem) -> Self {
         PkgInfo {
-            pkg_identity: PkgIdentity {
-                pkg_type: PkgType::from_str(&val.pkg_type).unwrap(),
-                name: val.name.clone(),
-            },
+            pkg_type: PkgType::from_str(&val.pkg_type).unwrap(),
+            name: val.name.clone(),
             version: Version::parse(&val.version).unwrap(),
             dependencies: val
                 .clone()
@@ -247,11 +245,8 @@ impl<'a> From<&'a ManifestLockItem> for PkgInfo {
                 .map(|deps| {
                     deps.into_iter()
                         .map(|dep| PkgDependency {
-                            pkg_identity: PkgIdentity {
-                                pkg_type: PkgType::from_str(&dep.pkg_type)
-                                    .unwrap(),
-                                name: dep.name,
-                            },
+                            pkg_type: PkgType::from_str(&dep.pkg_type).unwrap(),
+                            name: dep.name,
                             version_req: VersionReq::STAR,
                             version_req_str: None,
                         })
@@ -285,8 +280,8 @@ pub struct ManifestLockItemDependencyItem {
 impl From<PkgDependency> for ManifestLockItemDependencyItem {
     fn from(pkg_dep: PkgDependency) -> Self {
         ManifestLockItemDependencyItem {
-            pkg_type: pkg_dep.pkg_identity.pkg_type.to_string(),
-            name: pkg_dep.pkg_identity.name,
+            pkg_type: pkg_dep.pkg_type.to_string(),
+            name: pkg_dep.name,
         }
     }
 }

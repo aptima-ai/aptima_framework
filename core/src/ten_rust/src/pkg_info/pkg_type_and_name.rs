@@ -9,35 +9,55 @@ use std::hash::{Hash, Hasher};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
-use super::pkg_type::PkgType;
+use super::{pkg_basic_info::PkgBasicInfo, pkg_type::PkgType, PkgInfo};
 use crate::pkg_info::manifest::Manifest;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialOrd, Ord)]
-pub struct PkgIdentity {
+pub struct PkgTypeAndName {
     pub pkg_type: PkgType,
     pub name: String,
 }
 
-impl Hash for PkgIdentity {
+impl Hash for PkgTypeAndName {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.pkg_type.hash(state);
         self.name.hash(state);
     }
 }
 
-impl PartialEq for PkgIdentity {
+impl PartialEq for PkgTypeAndName {
     fn eq(&self, other: &Self) -> bool {
         self.pkg_type == other.pkg_type && self.name == other.name
     }
 }
 
-impl Eq for PkgIdentity {}
+impl Eq for PkgTypeAndName {}
 
-impl PkgIdentity {
-    pub fn from_manifest(manifest: &Manifest) -> Result<Self> {
-        Ok(PkgIdentity {
+impl TryFrom<&Manifest> for PkgTypeAndName {
+    type Error = anyhow::Error;
+
+    fn try_from(manifest: &Manifest) -> Result<Self> {
+        Ok(PkgTypeAndName {
             pkg_type: manifest.pkg_type.parse::<PkgType>()?,
             name: manifest.name.clone(),
         })
+    }
+}
+
+impl From<&PkgInfo> for PkgTypeAndName {
+    fn from(pkg_info: &PkgInfo) -> Self {
+        PkgTypeAndName {
+            pkg_type: pkg_info.pkg_type,
+            name: pkg_info.name.clone(),
+        }
+    }
+}
+
+impl From<&PkgBasicInfo> for PkgTypeAndName {
+    fn from(pkg_basic_info: &PkgBasicInfo) -> Self {
+        PkgTypeAndName {
+            pkg_type: pkg_basic_info.type_and_name.pkg_type,
+            name: pkg_basic_info.type_and_name.name.clone(),
+        }
     }
 }

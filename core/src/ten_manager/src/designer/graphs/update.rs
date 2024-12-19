@@ -46,7 +46,7 @@ pub async fn update_graph(
     if let Some(pkgs) = &mut state.all_pkgs {
         if let Some(app_pkg) = pkgs
             .iter_mut()
-            .find(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
+            .find(|pkg| pkg.pkg_type == PkgType::App)
         {
             let new_graph =
                 match get_pkg_predefined_graph_from_nodes_and_connections(
@@ -185,7 +185,7 @@ mod tests {
             Some(pkgs) => {
                 let app_pkg = pkgs
                     .iter()
-                    .find(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
+                    .find(|pkg| pkg.pkg_type == PkgType::App)
                     .unwrap();
 
                 let predefined_graphs =

@@ -19,8 +19,8 @@ pub struct ManifestDependency {
 impl From<PkgDependency> for ManifestDependency {
     fn from(pkg_dependency: PkgDependency) -> Self {
         ManifestDependency {
-            pkg_type: pkg_dependency.pkg_identity.pkg_type.to_string(),
-            name: pkg_dependency.pkg_identity.name,
+            pkg_type: pkg_dependency.pkg_type.to_string(),
+            name: pkg_dependency.name,
             version: pkg_dependency.version_req.to_string(),
         }
     }

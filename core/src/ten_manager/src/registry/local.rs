@@ -16,7 +16,6 @@ use walkdir::WalkDir;
 use zip::ZipArchive;
 
 use ten_rust::pkg_info::manifest::Manifest;
-use ten_rust::pkg_info::pkg_identity::PkgIdentity;
 use ten_rust::pkg_info::pkg_type::PkgType;
 use ten_rust::pkg_info::PkgInfo;
 
@@ -47,10 +46,7 @@ pub async fn upload_package(
     // Construct the directory path.
     let dir_path = PathBuf::from(format!(
         "{}{}/{}/{}/",
-        path_url,
-        pkg_info.pkg_identity.pkg_type,
-        pkg_info.pkg_identity.name,
-        pkg_info.version
+        path_url, pkg_info.pkg_type, pkg_info.name, pkg_info.version
     ));
 
     // Check if the directory exists, and only create it if it doesn't.
@@ -117,12 +113,11 @@ pub async fn get_package(
 
 fn find_file_with_criteria(
     base_url: &Path,
-    pkg_identity: &PkgIdentity,
+    pkg_type: PkgType,
+    name: &String,
     criteria: &SearchCriteria,
 ) -> Result<Vec<FoundResult>> {
-    let target_path = base_url
-        .join(pkg_identity.pkg_type.to_string())
-        .join(&pkg_identity.name);
+    let target_path = base_url.join(pkg_type.to_string()).join(&name);
 
     let mut results = Vec::<FoundResult>::new();
 
@@ -205,7 +200,8 @@ fn find_file_with_criteria(
 pub async fn get_package_list(
     _tman_config: &TmanConfig,
     base_url: &str,
-    pkg_identity: &PkgIdentity,
+    pkg_type: PkgType,
+    name: &String,
     criteria: &SearchCriteria,
 ) -> Result<Vec<FoundResult>> {
     let mut path_url = url::Url::parse(base_url)
@@ -222,15 +218,20 @@ pub async fn get_package_list(
         format!("{}/", path_url)
     };
 
-    let result =
-        find_file_with_criteria(Path::new(&path_url), pkg_identity, criteria)?;
+    let result = find_file_with_criteria(
+        Path::new(&path_url),
+        pkg_type,
+        name,
+        criteria,
+    )?;
 
     Ok(result)
 }
 
 pub async fn delete_package(
     base_url: &str,
-    pkg_identity: &PkgIdentity,
+    pkg_type: PkgType,
+    name: &String,
     version: &Version,
     hash: &String,
 ) -> Result<()> {
@@ -251,7 +252,7 @@ pub async fn delete_package(
     // Construct the directory path.
     let dir_path = PathBuf::from(format!(
         "{}{}/{}/{}/",
-        path_url, pkg_identity.pkg_type, pkg_identity.name, version
+        path_url, pkg_type, name, version
     ));
 
     if dir_path.exists() {

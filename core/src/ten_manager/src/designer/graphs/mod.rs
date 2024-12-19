@@ -42,7 +42,7 @@ pub async fn get_graphs(
     if let Some(all_pkgs) = &state.all_pkgs {
         if let Some(app_pkg) = all_pkgs
             .iter()
-            .find(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
+            .find(|pkg| pkg.pkg_type == PkgType::App)
         {
             let graphs: Vec<RespGraph> = app_pkg
                 .get_predefined_graphs()

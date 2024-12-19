@@ -13,7 +13,6 @@ use console::Emoji;
 use indicatif::HumanDuration;
 use semver::Version;
 
-use ten_rust::pkg_info::pkg_identity::PkgIdentity;
 use ten_rust::pkg_info::pkg_type::PkgType;
 
 use crate::log::tman_verbose_println;
@@ -85,10 +84,8 @@ pub async fn execute_cmd(
 
     delete_package(
         tman_config,
-        &PkgIdentity {
-            pkg_type: PkgType::from_str(&command_data.package_type)?,
-            name: command_data.package_name,
-        },
+        PkgType::from_str(&command_data.package_type)?,
+        &command_data.package_name,
         &Version::parse(&command_data.version)?,
         &command_data.hash,
     )

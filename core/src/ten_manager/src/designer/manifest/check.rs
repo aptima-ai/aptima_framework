@@ -39,7 +39,7 @@ pub async fn check_manifest(
     if let Some(pkgs) = &mut state.all_pkgs {
         if let Some(app_pkg) = pkgs
             .iter_mut()
-            .find(|pkg| pkg.pkg_identity.pkg_type == PkgType::App)
+            .find(|pkg| pkg.pkg_type == PkgType::App)
         {
             match query.0.check_type.as_str() {
                 "dirty" => match app_pkg.is_manifest_equal_to_fs() {

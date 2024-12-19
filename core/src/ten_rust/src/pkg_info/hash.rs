@@ -16,8 +16,8 @@ use super::{
 impl PkgInfo {
     pub fn gen_hash_hex(&self) -> Result<String> {
         gen_hash_hex(
-            &self.pkg_identity.pkg_type,
-            &self.pkg_identity.name,
+            &self.pkg_type,
+            &self.name,
             &self.version,
             &self.dependencies,
             &self.supports,
@@ -47,10 +47,8 @@ pub fn gen_hash_hex(
 
     // Hash dependencies.
     for dep in dependencies {
-        let dep_string = format!(
-            "{}:{}@{}",
-            dep.pkg_identity.pkg_type, dep.pkg_identity.name, dep.version_req
-        );
+        let dep_string =
+            format!("{}:{}@{}", dep.pkg_type, dep.name, dep.version_req);
         hasher.update(dep_string);
     }
 
