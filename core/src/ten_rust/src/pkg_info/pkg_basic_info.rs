@@ -19,6 +19,10 @@ use super::{
     PkgInfo,
 };
 
+// Basic info refers to the information used to "uniquely" identify a TEN
+// package. It includes the fields: type, name, version, and supports, which
+// together can be thought of as a unique ID representing a specific TEN
+// package.
 #[derive(Clone, Debug, Eq)]
 pub struct PkgBasicInfo {
     pub type_and_name: PkgTypeAndName,
