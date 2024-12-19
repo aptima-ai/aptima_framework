@@ -8,12 +8,9 @@ use std::hash::{Hash, Hasher};
 
 use semver::Version;
 
-use super::{
-    dependencies::PkgDependency, pkg_type_and_name::PkgTypeAndName,
-    supports::PkgSupport, PkgInfo,
-};
+use super::{pkg_type_and_name::PkgTypeAndName, supports::PkgSupport, PkgInfo};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq)]
 pub struct PkgBasicInfo {
     pub type_and_name: PkgTypeAndName,
     pub version: Version,
@@ -25,16 +22,14 @@ pub struct PkgBasicInfo {
     // 'supports' field represents support for all combinations of
     // environments.
     pub supports: Vec<PkgSupport>,
-
-    pub dependencies: Vec<PkgDependency>,
-
-    pub hash: String,
 }
 
 impl Hash for PkgBasicInfo {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.type_and_name.pkg_type.hash(state);
         self.type_and_name.name.hash(state);
+        self.version.hash(state);
+        self.supports.hash(state);
     }
 }
 
@@ -42,10 +37,10 @@ impl PartialEq for PkgBasicInfo {
     fn eq(&self, other: &Self) -> bool {
         self.type_and_name.pkg_type == other.type_and_name.pkg_type
             && self.type_and_name.name == other.type_and_name.name
+            && self.version == other.version
+            && self.supports == other.supports
     }
 }
-
-impl Eq for PkgBasicInfo {}
 
 impl From<&PkgInfo> for PkgBasicInfo {
     fn from(pkg_info: &PkgInfo) -> Self {
@@ -53,8 +48,6 @@ impl From<&PkgInfo> for PkgBasicInfo {
             type_and_name: pkg_info.into(),
             version: pkg_info.version.clone(),
             supports: pkg_info.supports.clone(),
-            dependencies: pkg_info.dependencies.clone(),
-            hash: pkg_info.hash.clone(),
         }
     }
 }

@@ -9,14 +9,16 @@ use std::collections::{HashMap, HashSet};
 use anyhow::Result;
 use regex::Regex;
 
-use ten_rust::pkg_info::{pkg_type_and_name::PkgTypeAndName, PkgInfo};
+use ten_rust::pkg_info::{
+    pkg_basic_info::PkgBasicInfo, pkg_type_and_name::PkgTypeAndName, PkgInfo,
+};
 
 use crate::dep_and_candidate::get_pkg_info_from_candidates;
 
 /// Returns a map from a package to its introducer and the requested version.
 pub fn extract_introducer_relations_from_raw_solver_results(
     results: &[String],
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<HashMap<PkgInfo, (String, Option<PkgInfo>)>> {
     let re = Regex::new(
       r#"introducer\("([^"]+)","([^"]+)","([^"]+)","([^"]+)","([^"]*)","([^"]*)"\)"#,

@@ -11,6 +11,7 @@ use anyhow::{anyhow, Result};
 use semver::{Version, VersionReq};
 
 use ten_rust::pkg_info::dependencies::PkgDependency;
+use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
 use ten_rust::pkg_info::pkg_type::PkgType;
 use ten_rust::pkg_info::pkg_type_and_name::PkgTypeAndName;
 use ten_rust::pkg_info::supports::{
@@ -118,9 +119,8 @@ fn merge_dependency_to_dependencies(
 /// # Parameters
 ///
 /// - `all_candidates`: A mutable reference to a map where the keys are package
-///   identities (`PkgIdentity`) and the values are sets of candidate package
-///   information (`HashSet<PkgInfo>`). This map will be updated with potential
-///   candidate packages for each dependency.
+///   type & name and the values are sets of candidate package information. This
+///   map will be updated with potential candidate packages for each dependency.
 ///
 /// # Returns
 ///
@@ -135,7 +135,10 @@ async fn process_dependencies_to_get_candidates(
     support: &PkgSupport,
     input_dependencies: &Vec<PkgDependency>,
     merged_dependencies: &mut HashSet<FoundDependency>,
-    all_candidates: &mut HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &mut HashMap<
+        PkgTypeAndName,
+        HashMap<PkgBasicInfo, PkgInfo>,
+    >,
     new_pkgs_to_be_searched: &mut Vec<PkgInfo>,
 ) -> Result<()> {
     for dependency in input_dependencies {
@@ -196,14 +199,14 @@ async fn process_dependencies_to_get_candidates(
         // dependencies within those packages are processed.
         if let Some(candidates) = all_candidates.get(&dependency.into()) {
             for candidate in candidates {
-                if dependency.version_req.matches(&candidate.version) {
+                if dependency.version_req.matches(&candidate.0.version) {
                     tman_verbose_println!(
                         tman_config,
                         "Collect candidate: {:?}",
                         candidate
                     );
 
-                    candidate_pkg_infos.push(candidate.clone());
+                    candidate_pkg_infos.push(candidate.1.clone());
                 }
             }
         }
@@ -233,10 +236,10 @@ async fn process_dependencies_to_get_candidates(
                     candidate_pkg_info
                 );
 
-                all_candidates
-                    .entry(dependency.into())
-                    .or_default()
-                    .insert(candidate_pkg_info.clone());
+                all_candidates.entry(dependency.into()).or_default().insert(
+                    (&candidate_pkg_info).into(),
+                    candidate_pkg_info.clone(),
+                );
 
                 new_pkgs_to_be_searched.push(candidate_pkg_info);
             }
@@ -250,7 +253,10 @@ async fn process_dependencies_to_get_candidates(
 /// suitable one is the package with the highest compatible_score. If there are
 /// multiple packages with the highest score, just pick one at random.
 fn clean_up_all_candidates(
-    all_candidates: &mut HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &mut HashMap<
+        PkgTypeAndName,
+        HashMap<PkgBasicInfo, PkgInfo>,
+    >,
     locked_pkgs: Option<&HashMap<PkgTypeAndName, PkgInfo>>,
 ) {
     for (pkg_type_name, pkg_infos) in all_candidates.iter_mut() {
@@ -263,30 +269,34 @@ fn clean_up_all_candidates(
         for pkg_info in pkg_infos.iter() {
             // Check if the candidate is a locked one.
             if let Some(locked_pkg) = locked_pkg {
-                if locked_pkg.version == pkg_info.version
-                    && locked_pkg.hash == pkg_info.hash
+                if locked_pkg.version == pkg_info.1.version
+                    && locked_pkg.hash == pkg_info.1.hash
                 {
-                    locked_pkgs_map.insert(pkg_info.version.clone(), pkg_info);
+                    locked_pkgs_map
+                        .insert(pkg_info.1.version.clone(), pkg_info.1);
                 }
             }
 
             version_map
-                .entry(pkg_info.version.clone())
+                .entry(pkg_info.1.version.clone())
                 .and_modify(|existing_pkg_info| {
-                    if pkg_info.compatible_score
+                    if pkg_info.1.compatible_score
                         > existing_pkg_info.compatible_score
                     {
-                        *existing_pkg_info = pkg_info;
+                        *existing_pkg_info = pkg_info.1;
                     }
                 })
-                .or_insert(pkg_info);
+                .or_insert(pkg_info.1);
         }
 
         // If there is a locked one, replace the candidate with the highest
         // score with the locked one.
         version_map.extend(locked_pkgs_map);
 
-        *pkg_infos = version_map.into_values().cloned().collect();
+        *pkg_infos = version_map
+            .into_values()
+            .map(|pkg_info| (pkg_info.into(), pkg_info.clone()))
+            .collect();
     }
 }
 
@@ -294,12 +304,12 @@ pub async fn get_all_candidates_from_deps(
     tman_config: &TmanConfig,
     support: &PkgSupport,
     mut pkgs_to_be_searched: Vec<PkgInfo>,
-    mut all_candidates: HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    mut all_candidates: HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
     extra_dependencies: &Vec<PkgDependency>,
     locked_pkgs: Option<&HashMap<PkgTypeAndName, PkgInfo>>,
-) -> Result<HashMap<PkgTypeAndName, HashSet<PkgInfo>>> {
+) -> Result<HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>> {
     let mut merged_dependencies = HashSet::<FoundDependency>::new();
-    let mut processed_pkgs = HashSet::<PkgInfo>::new();
+    let mut processed_pkgs = HashSet::<PkgBasicInfo>::new();
 
     // If there is extra dependencies (ex: specified in the command line),
     // handle those dependencies, too.
@@ -324,7 +334,7 @@ pub async fn get_all_candidates_from_deps(
 
         // Process all packages to be searched.
         while let Some(pkg_to_be_search) = pkgs_to_be_searched.pop() {
-            if processed_pkgs.contains(&pkg_to_be_search) {
+            if processed_pkgs.contains(&(&pkg_to_be_search).into()) {
                 // If this package info has already been processed, do not
                 // process it again.
                 continue;
@@ -341,7 +351,7 @@ pub async fn get_all_candidates_from_deps(
             .await?;
 
             // Remember that this package has already been processed.
-            processed_pkgs.insert(pkg_to_be_search);
+            processed_pkgs.insert((&pkg_to_be_search).into());
         }
 
         if new_pkgs_to_be_searched.is_empty() {
@@ -359,7 +369,7 @@ pub fn get_pkg_info_from_candidates(
     pkg_type: &str,
     pkg_name: &str,
     version: &str,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<PkgInfo> {
     let pkg_type_name = PkgTypeAndName {
         pkg_type: pkg_type.parse::<PkgType>()?,
@@ -368,7 +378,7 @@ pub fn get_pkg_info_from_candidates(
     let version_parsed = Version::parse(version)?;
     let pkg_info = all_candidates
         .get(&pkg_type_name)
-        .and_then(|set| set.iter().find(|pkg| pkg.version == version_parsed))
+        .and_then(|set| set.iter().find(|pkg| pkg.1.version == version_parsed))
         .ok_or_else(|| {
             anyhow!(
                 "PkgInfo not found for [{}]{}@{}",
@@ -377,5 +387,5 @@ pub fn get_pkg_info_from_candidates(
                 version
             )
         })?;
-    Ok(pkg_info.clone())
+    Ok(pkg_info.1.clone())
 }

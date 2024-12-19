@@ -4,10 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use std::{
-    collections::{HashMap, HashSet},
-    path::Path,
-};
+use std::{collections::HashMap, path::Path};
 
 use anyhow::Result;
 use console::Emoji;
@@ -16,7 +13,8 @@ use regex::Regex;
 use semver::Version;
 
 use ten_rust::pkg_info::{
-    pkg_type::PkgType, pkg_type_and_name::PkgTypeAndName, PkgInfo,
+    pkg_basic_info::PkgBasicInfo, pkg_type::PkgType,
+    pkg_type_and_name::PkgTypeAndName, PkgInfo,
 };
 
 use crate::{
@@ -30,7 +28,7 @@ use crate::{
 
 pub fn extract_solver_results_from_raw_solver_results(
     results: &[String],
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<Vec<PkgInfo>> {
     let re =
         Regex::new(r#"selected_pkg_version\("([^"]+)","([^"]+)","([^"]+)"\)"#)
@@ -54,12 +52,13 @@ pub fn extract_solver_results_from_raw_solver_results(
                 })
                 .unwrap()
             {
-                if candidate.pkg_type != pkg_type || candidate.name != name {
+                if candidate.1.pkg_type != pkg_type || candidate.1.name != name
+                {
                     panic!("Should not happen.");
                 }
 
-                if candidate.version == semver {
-                    results_info.push(candidate.clone());
+                if candidate.1.version == semver {
+                    results_info.push(candidate.1.clone());
                     continue 'outer;
                 }
             }

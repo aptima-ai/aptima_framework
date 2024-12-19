@@ -35,7 +35,7 @@ pub struct ManifestLock {
 
 type LockedPkgsInfo<'a> = &'a Vec<&'a PkgInfo>;
 
-impl<'a> From<LockedPkgsInfo<'a>> for ManifestLock {
+impl From<LockedPkgsInfo<'_>> for ManifestLock {
     // Convert a complete `Resolve` to a ManifestLock which can be serialized to
     // a `manifest-lock.json` file.
     fn from(resolve: LockedPkgsInfo) -> Self {

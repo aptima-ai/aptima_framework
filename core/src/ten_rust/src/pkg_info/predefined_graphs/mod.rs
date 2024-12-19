@@ -32,8 +32,8 @@ where
 pub fn get_pkg_predefined_graph_from_nodes_and_connections(
     graph_name: &str,
     auto_start: bool,
-    nodes: &Vec<GraphNode>,
-    connections: &Vec<GraphConnection>,
+    nodes: &[GraphNode],
+    connections: &[GraphConnection],
 ) -> Result<PropertyPredefinedGraph> {
     Ok(PropertyPredefinedGraph {
         name: graph_name.to_string(),

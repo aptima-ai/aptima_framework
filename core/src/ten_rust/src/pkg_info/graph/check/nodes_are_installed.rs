@@ -28,7 +28,7 @@ impl Graph {
                 if !skip_if_app_not_exist {
                     not_installed_pkgs.push((
                         node_app_uri.to_string(),
-                        node.node_type.clone(),
+                        node.node_type,
                         node.addon.clone(),
                     ));
                 }
@@ -48,7 +48,7 @@ impl Graph {
             if found.is_none() {
                 not_installed_pkgs.push((
                     node_app_uri.to_string(),
-                    node.node_type.clone(),
+                    node.node_type,
                     node.addon.clone(),
                 ));
             }

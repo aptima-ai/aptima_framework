@@ -5,7 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     env,
     fs::{self, OpenOptions},
     path::{Path, PathBuf},
@@ -20,9 +20,6 @@ use indicatif::HumanDuration;
 use inquire::Confirm;
 use semver::VersionReq;
 
-use ten_rust::pkg_info::manifest::{
-    dependency::ManifestDependency, parse_manifest_in_folder,
-};
 use ten_rust::pkg_info::{
     dependencies::{DependencyRelationship, PkgDependency},
     find_to_be_replaced_local_pkgs, find_untracked_local_packages,
@@ -31,6 +28,10 @@ use ten_rust::pkg_info::{
     pkg_type_and_name::PkgTypeAndName,
     supports::{is_pkg_supports_compatible_with, Arch, Os, PkgSupport},
     PkgInfo,
+};
+use ten_rust::pkg_info::{
+    manifest::{dependency::ManifestDependency, parse_manifest_in_folder},
+    pkg_basic_info::PkgBasicInfo,
 };
 
 use crate::{
@@ -298,7 +299,10 @@ fn parse_pkg_name_version(
 fn filter_compatible_pkgs_to_candidates(
     tman_config: &TmanConfig,
     all_existing_local_pkgs: &Vec<PkgInfo>,
-    all_candidates: &mut HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &mut HashMap<
+        PkgTypeAndName,
+        HashMap<PkgBasicInfo, PkgInfo>,
+    >,
     support: &PkgSupport,
 ) {
     for existed_pkg in all_existing_local_pkgs.to_owned().iter_mut() {
@@ -324,7 +328,7 @@ fn filter_compatible_pkgs_to_candidates(
             all_candidates
                 .entry((&*existed_pkg).into())
                 .or_default()
-                .insert(existed_pkg.clone());
+                .insert((&*existed_pkg).into(), existed_pkg.clone());
         } else {
             // The existed package is not compatible with the current system, so
             // it should not be considered as a candidate.
@@ -455,8 +459,10 @@ pub async fn execute_cmd(
     // those addons (extensions, extension_groups, ...) installed in the app
     // directory are all considered initial_input_pkgs.
     let mut initial_input_pkgs = vec![];
-    let mut all_candidates: HashMap<PkgTypeAndName, HashSet<PkgInfo>> =
-        HashMap::new();
+    let mut all_candidates: HashMap<
+        PkgTypeAndName,
+        HashMap<PkgBasicInfo, PkgInfo>,
+    > = HashMap::new();
 
     // 'all_existing_local_pkgs' contains all the packages which are already
     // located in the app directory.

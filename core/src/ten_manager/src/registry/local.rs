@@ -117,7 +117,7 @@ fn find_file_with_criteria(
     name: &String,
     criteria: &SearchCriteria,
 ) -> Result<Vec<FoundResult>> {
-    let target_path = base_url.join(pkg_type.to_string()).join(&name);
+    let target_path = base_url.join(pkg_type.to_string()).join(name);
 
     let mut results = Vec::<FoundResult>::new();
 

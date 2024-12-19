@@ -4,13 +4,15 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use anyhow::{anyhow, Result};
 use console::Emoji;
 use regex::Regex;
 
-use ten_rust::pkg_info::{pkg_type_and_name::PkgTypeAndName, PkgInfo};
+use ten_rust::pkg_info::{
+    pkg_basic_info::PkgBasicInfo, pkg_type_and_name::PkgTypeAndName, PkgInfo,
+};
 
 use crate::{
     dep_and_candidate::get_pkg_info_from_candidates,
@@ -145,7 +147,7 @@ fn print_dependency_chain(
 pub fn print_conflict_info(
     conflict_info: &ConflictInfo,
     introducer_relations: &HashMap<PkgInfo, (String, Option<PkgInfo>)>,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<()> {
     println!(
         "{}  Error: {}",

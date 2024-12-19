@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use super::{pkg_basic_info::PkgBasicInfo, pkg_type::PkgType, PkgInfo};
 use crate::pkg_info::manifest::Manifest;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialOrd, Ord)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialOrd, Eq)]
 pub struct PkgTypeAndName {
     pub pkg_type: PkgType,
     pub name: String,
@@ -30,8 +30,6 @@ impl PartialEq for PkgTypeAndName {
         self.pkg_type == other.pkg_type && self.name == other.name
     }
 }
-
-impl Eq for PkgTypeAndName {}
 
 impl TryFrom<&Manifest> for PkgTypeAndName {
     type Error = anyhow::Error;

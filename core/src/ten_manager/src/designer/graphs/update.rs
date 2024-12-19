@@ -9,6 +9,7 @@ use std::sync::{Arc, RwLock};
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
+use ten_rust::pkg_info::graph::{GraphConnection, GraphNode};
 use ten_rust::pkg_info::pkg_type::PkgType;
 use ten_rust::pkg_info::predefined_graphs::get_pkg_predefined_graph_from_nodes_and_connections;
 
@@ -44,21 +45,23 @@ pub async fn update_graph(
     }
 
     if let Some(pkgs) = &mut state.all_pkgs {
-        if let Some(app_pkg) = pkgs
-            .iter_mut()
-            .find(|pkg| pkg.pkg_type == PkgType::App)
+        if let Some(app_pkg) =
+            pkgs.iter_mut().find(|pkg| pkg.pkg_type == PkgType::App)
         {
+            // Collect nodes into a Vec<GraphNode>.
+            let nodes: Vec<GraphNode> =
+                body.nodes.iter().cloned().map(|v| v.into()).collect();
+
+            // Collect connections into a Vec<GraphConnection>.
+            let connections: Vec<GraphConnection> =
+                body.connections.iter().cloned().map(|v| v.into()).collect();
+
             let new_graph =
                 match get_pkg_predefined_graph_from_nodes_and_connections(
                     &graph_name,
                     body.auto_start,
-                    &body.nodes.clone().into_iter().map(|v| v.into()).collect(),
-                    &body
-                        .connections
-                        .clone()
-                        .into_iter()
-                        .map(|v| v.into())
-                        .collect(),
+                    &nodes,
+                    &connections,
                 ) {
                     Ok(graph) => graph,
                     Err(err) => {

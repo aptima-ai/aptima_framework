@@ -13,8 +13,8 @@ use clingo::{
 };
 
 use ten_rust::pkg_info::{
-    dependencies::DependencyRelationship, pkg_type::PkgType,
-    pkg_type_and_name::PkgTypeAndName, PkgInfo,
+    dependencies::DependencyRelationship, pkg_basic_info::PkgBasicInfo,
+    pkg_type::PkgType, pkg_type_and_name::PkgTypeAndName, PkgInfo,
 };
 
 use crate::{
@@ -294,7 +294,7 @@ fn solve(tman_config: &TmanConfig, input: &str) -> SolveResult {
 fn create_input_str_for_dependency_relationship(
     input_str: &mut String,
     dependency_relationships: &Vec<DependencyRelationship>,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<()> {
     for dependency_relationship in dependency_relationships {
         let candidates =
@@ -305,16 +305,16 @@ fn create_input_str_for_dependency_relationship(
                 if dependency_relationship
                     .dependency
                     .version_req
-                    .matches(&candidate.version)
+                    .matches(&candidate.1.version)
                 {
                     input_str.push_str(&format!(
         "depends_on_declared(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\").\n",
         dependency_relationship.pkg_type,
         dependency_relationship.name,
         dependency_relationship.version,
-        candidate.pkg_type,
-        candidate.name,
-        candidate.version,
+        candidate.1.pkg_type,
+        candidate.1.name,
+        candidate.1.version,
                   ));
                 }
             }
@@ -338,14 +338,14 @@ fn create_input_str_for_dependency_relationship(
 fn create_input_str_for_pkg_info_dependencies(
     input_str: &mut String,
     pkg_info: &PkgInfo,
-    dumped_pkgs_info: &mut HashSet<PkgInfo>,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    dumped_pkgs_info: &mut HashSet<PkgBasicInfo>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
 ) -> Result<()> {
     // If this package has already been dumped, skip it.
-    if dumped_pkgs_info.contains(pkg_info) {
+    if dumped_pkgs_info.contains(&pkg_info.into()) {
         return Ok(());
     }
-    dumped_pkgs_info.insert(pkg_info.clone());
+    dumped_pkgs_info.insert(pkg_info.into());
 
     for dependency in &pkg_info.dependencies {
         let candidates = all_candidates.get(&(dependency).into());
@@ -354,20 +354,20 @@ fn create_input_str_for_pkg_info_dependencies(
             let mut found_matched = false;
 
             for candidate in candidates {
-                if dependency.version_req.matches(&candidate.version) {
+                if dependency.version_req.matches(&candidate.1.version) {
                     input_str.push_str(&format!(
         "depends_on_declared(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\").\n",
         pkg_info.pkg_type,
         pkg_info.name,
         pkg_info.version,
-        candidate.pkg_type,
-        candidate.name,
-        candidate.version,
+        candidate.1.pkg_type,
+        candidate.1.name,
+        candidate.1.version,
                   ));
 
                     create_input_str_for_pkg_info_dependencies(
                         input_str,
-                        candidate,
+                        candidate.1,
                         dumped_pkgs_info,
                         all_candidates,
                     )?;
@@ -420,11 +420,12 @@ fn create_input_str_for_pkg_info_without_dependencies(
 
 fn create_input_str_for_all_possible_pkgs_info(
     input_str: &mut String,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
     locked_pkgs: Option<&HashMap<PkgTypeAndName, PkgInfo>>,
 ) -> Result<()> {
     for candidates in all_candidates {
-        let mut candidates_vec: Vec<_> = candidates.1.iter().collect();
+        let mut candidates_vec: Vec<PkgInfo> =
+            candidates.1.values().cloned().collect();
 
         // The sorting below places the larger versions at the front, thus
         // having smaller indexes. This is correct because, in the Clingo
@@ -447,13 +448,13 @@ fn create_input_str_for_all_possible_pkgs_info(
 
             if let Some(idx) = idx {
                 candidates_vec.remove(idx);
-                candidates_vec.insert(0, locked_pkg);
+                candidates_vec.insert(0, locked_pkg.clone());
             }
         }
 
         for (idx, candidate) in candidates_vec.into_iter().enumerate() {
             create_input_str_for_pkg_info_without_dependencies(
-                input_str, candidate, &idx,
+                input_str, &candidate, &idx,
             )?;
         }
     }
@@ -466,7 +467,7 @@ fn create_input_str(
     pkg_name: &String,
     pkg_type: &PkgType,
     extra_dependency_relationships: &Vec<DependencyRelationship>,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
     locked_pkgs: Option<&HashMap<PkgTypeAndName, PkgInfo>>,
 ) -> Result<String> {
     let mut input_str = String::new();
@@ -494,7 +495,7 @@ fn create_input_str(
         for candidate in candidates.1 {
             create_input_str_for_pkg_info_dependencies(
                 &mut input_str,
-                candidate,
+                candidate.1,
                 &mut dumped_pkgs_info,
                 all_candidates,
             )?;
@@ -519,7 +520,7 @@ pub fn solve_all(
     pkg_name: &String,
     pkg_type: &PkgType,
     extra_dependency_relationships: &Vec<DependencyRelationship>,
-    all_candidates: &HashMap<PkgTypeAndName, HashSet<PkgInfo>>,
+    all_candidates: &HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>,
     locked_pkgs: Option<&HashMap<PkgTypeAndName, PkgInfo>>,
 ) -> SolveResult {
     let input_str = create_input_str(
