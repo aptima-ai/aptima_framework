@@ -19,7 +19,7 @@ import {
 export interface ExtensionAddon {
   addon_name: string;
   url: string;
-  api?: any;
+  api?: unknown;
 }
 
 export const isSuccessResponse = <T>(

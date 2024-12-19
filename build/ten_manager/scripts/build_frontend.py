@@ -52,6 +52,16 @@ def main():
             sys.stderr.write(output)
             sys.exit(returncode)
 
+        # npm run lint
+        lint_cmd = "npm run lint"
+        returncode, output = cmd_exec.run_cmd_realtime(
+            lint_cmd, cwd=frontend_dir, log_level=log_level
+        )
+        if returncode != 0:
+            sys.stderr.write("Error: 'npm run lint' failed.\n")
+            sys.stderr.write(output)
+            sys.exit(returncode)
+
         # npm run build
         build_cmd = "npm run build"
         returncode, output = cmd_exec.run_cmd_realtime(

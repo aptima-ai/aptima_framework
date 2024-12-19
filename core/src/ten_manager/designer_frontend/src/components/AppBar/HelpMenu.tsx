@@ -4,57 +4,53 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-import React, { useState } from "react";
-import { FaInfoCircle } from "react-icons/fa";
+import * as React from "react";
+import { InfoIcon } from "lucide-react";
 
-import DropdownMenu, { DropdownMenuItem } from "./DropdownMenu";
-import AboutPopup from "../AboutPopup/AboutPopup";
+import AboutPopup from "@/components/Popup/AboutPopup";
+import {
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
+} from "@/components/ui/NavigationMenu";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
-interface HelpMenuProps {
-  isOpen: boolean;
-  onClick: () => void;
-  onHover: () => void;
-  closeMenu: () => void;
-}
-
-const HelpMenu: React.FC<HelpMenuProps> = ({
-  isOpen,
-  onClick,
-  onHover,
-  closeMenu,
-}) => {
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
+export function HelpMenu() {
+  const [isAboutOpen, setIsAboutOpen] = React.useState(false);
 
   const openAbout = () => {
     setIsAboutOpen(true);
-    closeMenu();
   };
 
   const closeAbout = () => {
     setIsAboutOpen(false);
   };
 
-  const items: DropdownMenuItem[] = [
-    {
-      label: "About",
-      icon: <FaInfoCircle />,
-      onClick: openAbout,
-    },
-  ];
-
   return (
     <>
-      <DropdownMenu
-        title="Help"
-        isOpen={isOpen}
-        onClick={onClick}
-        onHover={onHover}
-        items={items}
-      />
+      <NavigationMenuItem>
+        <NavigationMenuTrigger className="submenu-trigger">
+          Help
+        </NavigationMenuTrigger>
+        <NavigationMenuContent
+          className={cn("flex flex-col items-center px-1 py-1.5 gap-1.5")}
+        >
+          <NavigationMenuLink asChild>
+            <Button
+              className="w-full justify-start max-w-screen-sm"
+              variant="ghost"
+              onClick={openAbout}
+            >
+              <InfoIcon />
+              About
+            </Button>
+          </NavigationMenuLink>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
 
       {isAboutOpen && <AboutPopup onClose={closeAbout} />}
     </>
   );
-};
-
-export default HelpMenu;
+}

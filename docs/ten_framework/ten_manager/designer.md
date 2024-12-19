@@ -443,7 +443,16 @@ To independently start the tman designer frontend, use the following commands:
 
 ```shell
 $ cd core/src/ten_manager/designer_frontend/
-$ npm run start
+
+# Prefer to use bun, but npm works too.
+# Install bun if you don't have it.
+# curl -fsSL https://bun.sh/install | bash
+bun install
+bun dev
+
+# OR using npm.
+npm install
+npm run dev
 ```
 
 Running `npm run start` will start a **webpack dev-server** to serve the tman designer frontend. Open your browser and navigate to `http://<ip>:3000` to view the tman designer frontend.

@@ -5,9 +5,10 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 import React, { useState, useEffect, useRef } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-import "./Popup.scss";
-import ReactDOM from "react-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
 
 const DEFAULT_WIDTH = 800;
 const DEFAULT_HEIGHT = 400;
@@ -107,17 +108,19 @@ const Popup: React.FC<PopupProps> = ({
       }
     };
 
-    // Only add listener if this popup is focused and preventFocusSteal is
-    // false.
+    // Only add listener if this popup should take focus.
     if (!preventFocusSteal && popupRef.current) {
-      popupRef.current.addEventListener("keydown", handleKeyDown);
+      const current = popupRef.current;
+      current.addEventListener("keydown", handleKeyDown);
+
+      // Cleanup function uses the captured reference.
+      return () => {
+        current.removeEventListener("keydown", handleKeyDown);
+      };
     }
 
-    return () => {
-      if (!preventFocusSteal && popupRef.current) {
-        popupRef.current.removeEventListener("keydown", handleKeyDown);
-      }
-    };
+    // If the condition isn't met, no cleanup is necessary.
+    return undefined;
   }, [onClose, preventFocusSteal]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -128,30 +131,30 @@ const Popup: React.FC<PopupProps> = ({
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging && dragStart) {
-      setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-    }
-
-    if (isResizing && resizeStart) {
-      const newWidth = Math.max(e.clientX - resizeStart.x, 300);
-      const newHeight = Math.max(e.clientY - resizeStart.y, 200);
-      setSize({
-        width: newWidth,
-        height: newHeight,
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setDragStart(null);
-
-    setIsResizing(false);
-    setResizeStart(null);
-  };
-
   useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging && dragStart) {
+        setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+      }
+
+      if (isResizing && resizeStart) {
+        const newWidth = Math.max(e.clientX - resizeStart.x, 300);
+        const newHeight = Math.max(e.clientY - resizeStart.y, 200);
+        setSize({
+          width: newWidth,
+          height: newHeight,
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      setDragStart(null);
+
+      setIsResizing(false);
+      setResizeStart(null);
+    };
+
     if (isDragging || isResizing) {
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
@@ -224,15 +227,20 @@ const Popup: React.FC<PopupProps> = ({
     }
   };
 
-  return ReactDOM.createPortal(
+  return (
     <div
-      className={`popup ${isVisible ? "visible" : "hidden"}
-      ${isResizing ? "resizing" : ""} ${isDragging ? "dragging" : ""} ${
-        className || ""
-      }`}
+      className={cn(
+        "fixed bg-background border border-border shadow-lg text-sm",
+        "text-foreground rounded focus:outline-none flex flex-col popup",
+        isVisible ? "opacity-100" : "opacity-0",
+        isResizing && "select-none",
+        isDragging && "select-none cursor-move",
+        className
+      )}
       style={{
         top: position.y,
         left: position.x,
+        zIndex: 1001,
         ...(size.width !== undefined && size.height !== undefined
           ? { width: size.width, height: size.height }
           : {}),
@@ -240,7 +248,6 @@ const Popup: React.FC<PopupProps> = ({
       ref={popupRef}
       tabIndex={-1}
       onClick={handleClick}
-      // Use `onMouseDownCapture` to ensure all internal clicks bubble up.
       onMouseDownCapture={() => {
         if (!preventFocusSteal) {
           popupRef.current?.focus();
@@ -249,35 +256,53 @@ const Popup: React.FC<PopupProps> = ({
       }}
     >
       <div
-        className="popup-header"
+        className={cn(
+          "p-2.5 flex justify-between items-center cursor-move select-none",
+          "bg-muted border-b border-border"
+        )}
         onMouseDown={handleMouseDown}
         ref={headerRef}
       >
-        <span className="popup-title">{title}</span>
-        <div className="popup-buttons">
-          <button className="collapse-button" onClick={toggleCollapse}>
-            {isCollapsed ? "▼" : "▲"}
-          </button>
-          <button className="close-button" onClick={onClose}>
-            ×
-          </button>
+        <span className="font-bold">{title}</span>
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-auto p-1.5"
+            onClick={toggleCollapse}
+          >
+            {isCollapsed ? <ChevronDown /> : <ChevronUp />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-auto p-1.5"
+            onClick={onClose}
+          >
+            <X />
+          </Button>
         </div>
       </div>
 
       <div
-        className={`popup-content ${isCollapsed ? "collapsed" : ""}`}
-        style={{ width: "100%", height: "100%" }}
+        className={cn(
+          "p-2.5 overflow-hidden flex w-full h-full",
+          isCollapsed ? "invisible h-0 py-0" : "visible"
+        )}
       >
         {children}
       </div>
-      {resizable && (
+
+      {resizable && !isCollapsed && (
         <div
-          className="resize-handle"
+          className={cn(
+            "w-[5px] h-[5px] bg-transparent cursor-se-resize",
+            "absolute right-0 bottom-0 z-[1002]"
+          )}
           onMouseDown={handleResizeMouseDown}
-        ></div>
+        />
       )}
-    </div>,
-    document.body // Render Popup in the body.
+    </div>
   );
 };
 

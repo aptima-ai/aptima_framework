@@ -4,13 +4,19 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-import React, { useState, useEffect, useRef } from "react";
+import * as React from "react";
 
-import FileMenu from "./FileMenu";
-import EditMenu from "./EditMenu";
-import HelpMenu from "./HelpMenu";
-
-import "./AppBar.scss";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+} from "@/components/ui/NavigationMenu";
+import { ModeToggle } from "@/components/ModeToggle";
+import { LanguageToggle } from "@/components/LangSwitch";
+import { Badge } from "@/components/ui/Badge";
+import { FileMenu } from "@/components/AppBar/FileMenu";
+import { EditMenu } from "@/components/AppBar/EditMenu";
+import { HelpMenu } from "@/components/AppBar/HelpMenu";
+import { cn } from "@/lib/utils";
 
 interface AppBarProps {
   // The current version of tman.
@@ -18,113 +24,64 @@ interface AppBarProps {
 
   onOpenExistingGraph: () => void;
   onAutoLayout: () => void;
-  onOpenSettings: () => void;
   onSetBaseDir: (folderPath: string) => void;
-  onShowMessage: (message: string, type: "success" | "error") => void;
 }
-
-type MenuType = "file" | "edit" | "help" | null;
 
 const AppBar: React.FC<AppBarProps> = ({
   version,
   onOpenExistingGraph,
   onAutoLayout,
-  onOpenSettings,
   onSetBaseDir,
-  onShowMessage,
 }) => {
-  const [openMenu, setOpenMenu] = useState<MenuType>(null);
-  const appBarRef = useRef<HTMLDivElement>(null);
+  const onNavChange = () => {
+    setTimeout(() => {
+      const triggers = document.querySelectorAll(
+        '.submenu-trigger[data-state="open"]'
+      );
+      if (triggers.length === 0) return;
 
-  useEffect(() => {
-    const handleMouseDown = (event: MouseEvent) => {
-      const targetElement = event.target as HTMLElement;
+      const firstTrigger = triggers[0] as HTMLElement;
 
-      const isClickInsidePopup = targetElement.closest(".popup") !== null;
-      if (isClickInsidePopup) {
-        // Do not interfere with clicks inside Popups. Otherwise, it will keep
-        // stealing the popup's keyboard focus.
-        return;
-      }
-
-      // Check if the click is inside the AppBar.
-      if (appBarRef.current && appBarRef.current.contains(targetElement)) {
-        // Check if the click is inside any menu-container.
-        const menuContainer = targetElement.closest(".menu-container");
-        if (!menuContainer) {
-          // Clicked inside AppBar but not on any menu-container, close any open
-          // dropdown.
-          setOpenMenu(null);
-        }
-        // Else, let the menu component handle its own logic.
-      } else {
-        // Clicked outside AppBar, close any open dropdown.
-        setOpenMenu(null);
-      }
-    };
-
-    // Add the mousedown listener in the capturing phase.
-    //
-    // Note: It is necessary to intercept the `mousedown` event during the
-    // **capturing phase**, as third-party components like ReactFlow may
-    // intercept the event and prevent it from propagating further. Therefore,
-    // intercepting the event in the **bubbling phase** might not work as
-    // expected.
-    document.addEventListener("mousedown", handleMouseDown, true);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown, true);
-    };
-  }, []);
-
-  // Function to open a specific menu or toggle it if it's already open.
-  const handleOpenMenu = (menu: MenuType) => {
-    setOpenMenu((prevMenu) => (prevMenu === menu ? null : menu));
-  };
-
-  // Function to switch menus on hover only if a menu is already open.
-  const handleSwitchMenu = (menu: MenuType) => {
-    if (openMenu !== null && menu !== openMenu) {
-      setOpenMenu(menu);
-    }
-  };
-
-  // Function to close any open menu.
-  const closeMenu = () => {
-    setOpenMenu(null);
+      document.documentElement.style.setProperty(
+        "--menu-left-position",
+        `${firstTrigger.offsetLeft}px`
+      );
+    });
   };
 
   return (
-    <div className="app-bar" ref={appBarRef}>
-      {/* Left part is the menu itself. */}
-      <div className="app-bar-left">
-        <FileMenu
-          isOpen={openMenu === "file"}
-          onClick={() => handleOpenMenu("file")}
-          onHover={() => handleSwitchMenu("file")}
-          closeMenu={closeMenu}
-          onSetBaseDir={onSetBaseDir}
-          onShowMessage={onShowMessage}
-        />
-        <EditMenu
-          isOpen={openMenu === "edit"}
-          onClick={() => handleOpenMenu("edit")}
-          onHover={() => handleSwitchMenu("edit")}
-          onOpenSettings={onOpenSettings}
-          closeMenu={closeMenu}
-          onAutoLayout={onAutoLayout}
-          onOpenExistingGraph={onOpenExistingGraph}
-        />
-        <HelpMenu
-          isOpen={openMenu === "help"}
-          onClick={() => handleOpenMenu("help")}
-          onHover={() => handleSwitchMenu("help")}
-          closeMenu={closeMenu}
-        />
-      </div>
+    <div
+      className={cn(
+        "flex justify-between items-center h-10 px-5 text-sm select-none",
+        "bg-[var(--app-bar-bg)] text-[var(--app-bar-fg)]"
+      )}
+    >
+      <NavigationMenu onValueChange={onNavChange}>
+        <NavigationMenuList>
+          <FileMenu onSetBaseDir={onSetBaseDir} />
+          <EditMenu
+            onAutoLayout={onAutoLayout}
+            onOpenExistingGraph={onOpenExistingGraph}
+          />
+          <HelpMenu />
+        </NavigationMenuList>
+      </NavigationMenu>
 
       {/* Right part is the logo. */}
-      <div className="app-bar-right">
-        <span>Powered by TEN Framework {version}</span>
+      <div className="ml-auto flex items-center gap-1.5">
+        <LanguageToggle />
+        <ModeToggle />
+        <div
+          className={cn(
+            "text-xs text-muted-foreground flex items-center gap-2 relative"
+          )}
+        >
+          <div>
+            Powered by{" "}
+            <span className="font-bold text-foreground">TEN Framework</span>
+          </div>
+          <Badge variant="secondary">{version}</Badge>
+        </div>
       </div>
     </div>
   );

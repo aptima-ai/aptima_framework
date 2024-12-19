@@ -7,7 +7,7 @@
 export interface SuccessResponse<T> {
   status: "ok";
   data: T;
-  meta?: any;
+  meta?: unknown;
 }
 
 export interface ErrorResponse {
@@ -31,8 +31,8 @@ export interface BackendNode {
   name: string;
   extension_group: string;
   app: string;
-  property: any;
-  api?: any;
+  property: unknown;
+  api?: unknown;
 }
 
 export interface BackendConnection {

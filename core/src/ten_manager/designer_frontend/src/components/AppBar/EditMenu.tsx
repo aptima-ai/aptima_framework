@@ -4,72 +4,56 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-import React from "react";
-import { FaCogs, FaArrowsAlt, FaFolderOpen } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { FolderOpenIcon, MoveIcon } from "lucide-react";
 
-import DropdownMenu, { DropdownMenuItem } from "./DropdownMenu";
+import {
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuTrigger,
+} from "@/components/ui/NavigationMenu";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 interface EditMenuProps {
-  isOpen: boolean;
-  onClick: () => void;
-  onHover: () => void;
-  onOpenSettings: () => void;
-  closeMenu: () => void;
   onAutoLayout: () => void;
   onOpenExistingGraph: () => void;
 }
 
-const EditMenu: React.FC<EditMenuProps> = ({
-  isOpen,
-  onClick,
-  onHover,
-  onOpenSettings,
-  closeMenu,
-  onAutoLayout,
-  onOpenExistingGraph,
-}) => {
+export function EditMenu(props: EditMenuProps) {
+  const { onAutoLayout, onOpenExistingGraph } = props;
   const { t } = useTranslation();
 
-  const items: DropdownMenuItem[] = [
-    {
-      label: t("Open Existing Graph"),
-      icon: <FaFolderOpen />,
-      onClick: () => {
-        onOpenExistingGraph();
-        closeMenu();
-      },
-    },
-    {
-      label: t("Auto Layout"),
-      icon: <FaArrowsAlt />,
-      onClick: () => {
-        onAutoLayout();
-        closeMenu();
-      },
-    },
-    {
-      label: t("Settings"),
-      icon: <FaCogs />,
-      onClick: () => {
-        onOpenSettings();
-        closeMenu();
-      },
-    },
-    {
-      separator: true,
-    },
-  ];
-
   return (
-    <DropdownMenu
-      title="Edit"
-      isOpen={isOpen}
-      onClick={onClick}
-      onHover={onHover}
-      items={items}
-    />
+    <NavigationMenuItem>
+      <NavigationMenuTrigger className="submenu-trigger">
+        Edit
+      </NavigationMenuTrigger>
+      <NavigationMenuContent
+        className={cn("flex flex-col items-center px-1 py-1.5 gap-1.5")}
+      >
+        <NavigationMenuLink asChild>
+          <Button
+            className="w-full justify-start"
+            variant="ghost"
+            onClick={onOpenExistingGraph}
+          >
+            <FolderOpenIcon />
+            {t("Open Existing Graph")}
+          </Button>
+        </NavigationMenuLink>
+        <NavigationMenuLink asChild>
+          <Button
+            className="w-full justify-start"
+            variant="ghost"
+            onClick={onAutoLayout}
+          >
+            <MoveIcon />
+            {t("Auto Layout")}
+          </Button>
+        </NavigationMenuLink>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
   );
-};
-
-export default EditMenu;
+}

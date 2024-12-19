@@ -10,17 +10,28 @@ import {
   useCallback,
   forwardRef,
   MouseEvent,
+  useContext,
 } from "react";
-import { ReactFlow, MiniMap, Controls, Connection } from "@xyflow/react";
+import {
+  ReactFlow,
+  MiniMap,
+  Controls,
+  Connection,
+  type NodeChange,
+  type EdgeChange,
+} from "@xyflow/react";
 
-import CustomNode, { CustomNodeType } from "./CustomNode";
-import CustomEdge, { CustomEdgeType } from "./CustomEdge";
-import NodeContextMenu from "./ContextMenu/NodeContextMenu";
-import EdgeContextMenu from "./ContextMenu/EdgeContextMenu";
-import TerminalPopup, {
-  TerminalData,
-} from "../components/TerminalPopup/TerminalPopup";
-import EditorPopup, { EditorData } from "../components/EditorPopup/EditorPopup";
+import CustomNode, { CustomNodeType } from "@/flow/CustomNode";
+import CustomEdge, { CustomEdgeType } from "@/flow/CustomEdge";
+import NodeContextMenu from "@/flow/ContextMenu/NodeContextMenu";
+import EdgeContextMenu from "@/flow/ContextMenu/EdgeContextMenu";
+import TerminalPopup, { TerminalData } from "@/components/Popup/TerminalPopup";
+import EditorPopup, { EditorData } from "@/components/Popup/EditorPopup";
+import { ThemeProviderContext } from "@/components/theme-context";
+
+// Import react-flow style.
+import "@xyflow/react/dist/style.css";
+import "@/flow/reactflow.css";
 
 export interface FlowCanvasRef {
   performAutoLayout: () => void;
@@ -29,8 +40,8 @@ export interface FlowCanvasRef {
 interface FlowCanvasProps {
   nodes: CustomNodeType[];
   edges: CustomEdgeType[];
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
+  onNodesChange: (changes: NodeChange<CustomNodeType>[]) => void;
+  onEdgesChange: (changes: EdgeChange<CustomEdgeType>[]) => void;
   onConnect: (connection: Connection) => void;
 }
 
@@ -160,12 +171,15 @@ const FlowCanvas = forwardRef<FlowCanvasRef, FlowCanvasProps>(
       return () => window.removeEventListener("click", handleClick);
     }, [closeContextMenu]);
 
+    const { theme } = useContext(ThemeProviderContext);
+
     return (
       <div
         className="flow-container"
         style={{ width: "100%", height: "calc(100vh - 40px)" }}
       >
         <ReactFlow
+          colorMode={theme}
           nodes={nodes}
           edges={edges}
           edgeTypes={{
