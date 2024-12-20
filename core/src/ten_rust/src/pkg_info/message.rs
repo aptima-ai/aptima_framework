@@ -19,7 +19,7 @@ pub enum MsgDirection {
 }
 
 impl MsgDirection {
-    // Method to toggle the value
+    // Method to toggle the value.
     pub fn toggle(&mut self) {
         *self = match *self {
             MsgDirection::In => MsgDirection::Out,

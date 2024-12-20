@@ -10,15 +10,13 @@ use anyhow::Result;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 
-use ten_rust::pkg_info::manifest::{
-    dependency::ManifestDependency, support::ManifestSupport,
-};
+use ten_rust::pkg_info::manifest::dependency::ManifestDependency;
 use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
 use ten_rust::pkg_info::pkg_type_and_name::PkgTypeAndName;
+use ten_rust::pkg_info::supports::PkgSupport;
 use ten_rust::pkg_info::{
     dependencies::get_pkg_dependencies_from_manifest_dependencies,
     hash::gen_hash_hex, pkg_type::PkgType,
-    supports::get_pkg_supports_from_manifest_supports,
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -28,10 +26,11 @@ pub struct RegistryPackageData {
 
     pub name: String,
     pub version: Version,
-    pub dependencies: Vec<ManifestDependency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub supports: Option<Vec<ManifestSupport>>,
+    pub supports: Option<Vec<PkgSupport>>,
+
+    pub dependencies: Vec<ManifestDependency>,
 
     pub hash: String,
 }
@@ -54,9 +53,7 @@ impl TryFrom<&RegistryPackageData> for PkgBasicInfo {
         Ok(PkgBasicInfo {
             type_and_name: PkgTypeAndName::try_from(package_data)?,
             version: package_data.version.clone(),
-            supports: get_pkg_supports_from_manifest_supports(
-                &package_data.supports,
-            )?,
+            supports: package_data.supports.clone().unwrap_or_default(),
         })
     }
 }
@@ -67,7 +64,7 @@ impl RegistryPackageData {
             &self.dependencies,
         )?;
 
-        let supports = get_pkg_supports_from_manifest_supports(&self.supports)?;
+        let supports = self.supports.clone().unwrap_or_default();
 
         gen_hash_hex(
             &self.pkg_type,

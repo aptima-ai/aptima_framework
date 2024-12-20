@@ -12,7 +12,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::pkg_info::manifest::{support::ManifestSupport, Manifest};
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize,
+)]
 pub struct PkgSupport {
     // Unspecified fields represent 'don't care', so we need to use `Option`
     // to express that they are not specified.

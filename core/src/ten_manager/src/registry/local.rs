@@ -12,6 +12,7 @@ use std::str::FromStr;
 use anyhow::{anyhow, Context, Result};
 use semver::Version;
 use tempfile::NamedTempFile;
+use ten_rust::pkg_info::supports::get_pkg_supports_from_manifest_supports;
 use walkdir::WalkDir;
 use zip::ZipArchive;
 
@@ -182,7 +183,10 @@ fn find_file_with_criteria(
                                         .dependencies
                                         .clone()
                                         .map_or(vec![], |d| d),
-                                    supports: manifest.supports.clone(),
+                                    supports:
+                                        Some(get_pkg_supports_from_manifest_supports(
+                                            &manifest.supports,
+                                        )?),
 
                                     hash: manifest.gen_hash_hex()?,
                                 },

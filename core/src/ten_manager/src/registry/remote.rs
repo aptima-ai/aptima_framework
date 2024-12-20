@@ -17,7 +17,7 @@ use ten_rust::pkg_info::pkg_type::PkgType;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
 
-use ten_rust::pkg_info::{supports::get_manifest_supports_from_pkg, PkgInfo};
+use ten_rust::pkg_info::PkgInfo;
 
 use super::{FoundResult, SearchCriteria};
 use crate::constants::{
@@ -111,9 +111,7 @@ async fn get_package_upload_info(
                     .into_iter()
                     .map(|d| d.into())
                     .collect(),
-                supports: Some(get_manifest_supports_from_pkg(
-                    &pkg_info.basic_info.supports
-                )),
+                supports: Some(pkg_info.basic_info.supports),
                 hash: pkg_info.hash.clone(),
             });
 
