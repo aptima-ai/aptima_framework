@@ -9,7 +9,7 @@
 #include "ten_runtime/binding/cpp/detail/extension.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lang/cpp/lib/value.h"
-#include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
+#include "tests/ten_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 

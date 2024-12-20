@@ -12,7 +12,7 @@
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
+#include "tests/ten_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -31,7 +31,7 @@ class test_extension : public ten::extension_t {
                           {
                             "name": "hello_world",
                             "property": {
-                              "tool":{
+                              "tool": {
                                 "type": "object",
                                 "properties": {
                                   "name": {
@@ -62,7 +62,20 @@ class test_extension : public ten::extension_t {
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (std::string(cmd->get_name()) == "hello_world") {
+      // The get/set property actions of the message itself will not immediately
+      // trigger schema validation. This is because the message might be
+      // manipulated in other threads, and schema information is tied to the
+      // extension. For thread safety, schema validation for the message is
+      // delayed until it interacts with the extension system, specifically
+      // during `send_xxx` and `return_xxx` operations.
       bool rc = cmd->set_property_from_json("tool", R"({
+        "name": "hammer",
+        "description": "a tool to hit nails",
+        "parameters": [ "foo" ]
+      })");
+      TEN_ASSERT(rc, "Should not happen.");
+
+      rc = cmd->set_property_from_json("tool", R"({
         "name": "hammer",
         "description": "a tool to hit nails",
         "parameters": []

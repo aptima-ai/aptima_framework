@@ -13,7 +13,7 @@
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/macro/macros.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/ten_runtime/smoke/extension_test/util/binding/cpp/check.h"
+#include "tests/ten_runtime/smoke/util/binding/cpp/check.h"
 
 #define APP_PROP_NAME "test_app_prop"
 #define EXT_PROP_NAME "test_extension_prop"

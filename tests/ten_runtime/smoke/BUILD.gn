@@ -33,19 +33,41 @@ ten_executable("ten_runtime_smoke_test") {
 
   deps += [
     "audio_frame_test",
+    "basic",
     "cmd_conversion",
     "cmd_result_test",
+    "command",
+    "concurrent",
     "data_test",
-    "extension_test",
+    "dest",
+    "engine",
+    "error",
+    "extension",
+    "extension_group",
+    "graph",
+    "graph_name",
     "graph_test",
+    "lock",
     "log_test",
     "msg_property",
     "msg_test",
+    "multi_dest",
     "notify_test",
+    "outer_thread",
+    "path",
+    "predefined_graph",
+    "prepare_to_stop",
     "property",
+    "resp_handler",
     "result_conversion",
+    "return",
+    "same_thread_ext_on_xxx",
     "standalone_test",
+    "start_graph",
+    "suspend_resume",
     "ten_env_call_timing",
+    "ten_proxy",
+    "timer",
     "video_frame_test",
   ]
 
@@ -77,6 +99,10 @@ ten_executable("ten_runtime_smoke_test") {
     "//third_party/googlemock",
     "//third_party/googletest",
   ]
+
+  if (ten_enable_libwebsockets && ten_enable_curl) {
+    deps += [ "http_server_extension" ]
+  }
 }
 
 group("smoke") {
