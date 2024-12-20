@@ -26,7 +26,7 @@ class test_extension_1 : public ten::extension_t {
                       "name": "property_two_extensions_set_object__test_extension_1",
                       "version": "0.1.0",
                       "api": {
-                        "cmd_in": [
+                        "cmd_out": [
                           {
                             "name": "internal_cmd",
                             "property": {
@@ -64,6 +64,13 @@ class test_extension_1 : public ten::extension_t {
       hello_world_cmd = std::move(cmd);
 
       auto internal_cmd = ten::cmd_t::create("internal_cmd");
+      bool rc = internal_cmd->set_property_from_json("tool", R"({
+        "name": "hammer",
+        "description": "a tool to hit nails",
+        "parameters": []
+      })");
+      TEN_ASSERT(rc, "Should not happen.");
+
       ten_env.send_cmd(std::move(internal_cmd),
                        [this](ten::ten_env_t &ten_env,
                               TEN_UNUSED std::unique_ptr<ten::cmd_result_t> cmd,

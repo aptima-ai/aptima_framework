@@ -575,23 +575,23 @@
       "environment": [
         {
           "name": "PYTHONPATH",
-          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app/ten_packages/system/ten_runtime_python/interface"
+          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app/ten_packages/system/ten_runtime_python/interface"
         },
         {
           "name": "TEN_APP_BASE_DIR",
-          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app/"
+          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app/"
         },
         {
           "name": "LD_PRELOAD",
-          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app/ten_packages/system/ten_runtime/lib/libasan.so"
+          "value": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app/ten_packages/system/ten_runtime/lib/libasan.so"
         },
         {
           "name": "PYTHONMALLOC",
           "value": "malloc"
         }
       ],
-      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app",
-      "additionalSOLibSearchPath": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_recv_image_python/send_recv_image_python_app/ten_packages/system/ten_runtime/lib",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app",
+      "additionalSOLibSearchPath": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app/ten_packages/system/ten_runtime_python/lib:${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/send_cmd_set_object_python/send_cmd_set_object_python_app/ten_packages/system/ten_runtime/lib",
       "MIMode": "gdb",
     },
     {

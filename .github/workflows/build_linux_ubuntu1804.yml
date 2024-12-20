@@ -53,7 +53,7 @@ jobs:
           go env -w GOFLAGS="-buildvcs=false"
           rustup default nightly
           df -h .
-          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=false log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_enable_integration_tests=false ten_enable_ten_manager=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_rust_incremental_build=false
+          tgn gen linux x64 ${{ matrix.build_type }} -- is_clang=false log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_enable_integration_tests=false ten_enable_ten_manager=false ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false
           tgn build linux x64 ${{ matrix.build_type }}
           df -h .
           tree -I 'gen|obj' out

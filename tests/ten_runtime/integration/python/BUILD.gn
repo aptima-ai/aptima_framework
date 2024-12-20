@@ -34,6 +34,7 @@ group("python") {
       "resp_handler_yield_python",
       "send_cmd_discard_result_python",
       "send_cmd_python",
+      "send_cmd_set_object_python",
       "send_data_python",
       "send_recv_image_python",
       "send_recv_pcm_python",

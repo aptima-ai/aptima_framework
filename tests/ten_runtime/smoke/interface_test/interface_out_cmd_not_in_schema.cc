@@ -26,7 +26,7 @@ class test_extension_1 : public ten::extension_t {
                                 "type": "extension",
                                 "name": "test_extension_1",
                                 "version": "0.1.0",
-                                  "api": {
+                                "api": {
                                   "interface_out": [
                                     {
                                       "name": "ia",

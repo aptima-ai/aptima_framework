@@ -4,6 +4,7 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+import json
 from typing import Optional
 from ten import (
     Extension,
@@ -76,9 +77,23 @@ class DefaultExtension(Extension):
         ten_env.log_info("on_cmd json: " + cmd_json)
 
         new_cmd = Cmd.create("hello")
-        new_cmd.set_property_from_json("test", '"testValue2"')
-        test_value = new_cmd.get_property_to_json("test")
-        ten_env.log_info("on_cmd test_value: " + test_value)
+        new_cmd.set_property_from_json(
+            "tool",
+            json.dumps(
+                {
+                    "name": "get_current_weather",
+                    "description": "Determine current weather in user's location.",
+                    "parameters": [
+                        {
+                            "name": "location",
+                            "type": "string",
+                            "description": "The city and state (use only English) e.g. San Francisco, CA",
+                            "required": "true",
+                        }
+                    ],
+                }
+            ),
+        )
 
         ten_env.send_cmd(
             new_cmd,

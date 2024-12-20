@@ -31,7 +31,7 @@ class test_extension_1 : public ten::extension_t {
                       "type": "extension",
                       "name": "msg_9__extension_1",
                       "version": "0.1.0",
-                        "api": {
+                      "api": {
                         "cmd_out": [
                           {
                             "name": "test",
