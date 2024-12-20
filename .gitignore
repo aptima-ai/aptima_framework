@@ -56,7 +56,6 @@ out/
 # Javascript/Typescript generated files
 node_modules/
 *.tsbuildinfo
-package-lock.json
 
 # Cache files
 .cache

@@ -10,6 +10,7 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
+    "incremental": true,
     // Bundler mode.
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
