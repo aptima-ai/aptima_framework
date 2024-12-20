@@ -28,7 +28,7 @@ class test_extension_1 : public ten::extension_t {
                       "type": "extension",
                       "name": "schema_cmd_result_error__test_extension_1",
                       "version": "0.1.0",
-                                          "api": {
+                        "api": {
                         "cmd_out": [
                           {
                             "name": "hello_world",
@@ -71,7 +71,7 @@ class test_extension_2 : public ten::extension_t {
                       "type": "extension",
                       "name": "schema_cmd_result_error__test_extension_2",
                       "version": "0.1.0",
-                                          "api": {
+                      "api": {
                         "cmd_in": [
                           {
                             "name": "hello_world",
