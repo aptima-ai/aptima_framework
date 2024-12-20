@@ -9,7 +9,7 @@ The easiest way to run the demo is to use the pre-built Docker image. The image 
 After you successfully setup, you will need to run an additional command to switch graph folder to demo folder,
 
 ```bash
-task use AGENT=agents/exmaples/demo
+task use AGENT=agents/examples/demo
 ```
 
 Once finished, you can access the demo by opening the browser and navigating to `http://localhost:3002`.
