@@ -40,6 +40,19 @@ impl From<&PkgDependency> for PkgTypeAndName {
     }
 }
 
+impl TryFrom<&ManifestDependency> for PkgDependency {
+    type Error = anyhow::Error;
+
+    fn try_from(manifest_dep: &ManifestDependency) -> Result<Self> {
+        Ok(PkgDependency {
+            pkg_type: PkgType::from_str(&manifest_dep.pkg_type)?,
+            name: manifest_dep.name.clone(),
+            version_req: VersionReq::parse(&manifest_dep.version)?,
+            version_req_str: Some(manifest_dep.version.clone()),
+        })
+    }
+}
+
 pub fn get_pkg_dependencies_from_manifest(
     manifest: &Manifest,
 ) -> Result<Vec<PkgDependency>> {
@@ -117,5 +130,5 @@ pub struct DependencyRelationship {
 pub fn get_manifest_dependencies_from_pkg(
     pkg_dependencies: Vec<PkgDependency>,
 ) -> Vec<ManifestDependency> {
-    pkg_dependencies.into_iter().map(|v| v.into()).collect()
+    pkg_dependencies.into_iter().map(|v| (&v).into()).collect()
 }

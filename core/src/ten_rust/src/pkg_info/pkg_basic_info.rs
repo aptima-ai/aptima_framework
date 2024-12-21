@@ -11,6 +11,7 @@ use std::{
 
 use anyhow::Result;
 use semver::Version;
+use serde::{Deserialize, Serialize};
 
 use super::{
     manifest::Manifest,
@@ -23,7 +24,7 @@ use super::{
 // package. It includes the fields: type, name, version, and supports, which
 // together can be thought of as a unique ID representing a specific TEN
 // package.
-#[derive(Clone, Debug, Eq)]
+#[derive(Clone, Debug, Eq, Serialize, Deserialize)]
 pub struct PkgBasicInfo {
     pub type_and_name: PkgTypeAndName,
     pub version: Version,
@@ -34,6 +35,7 @@ pub struct PkgBasicInfo {
     // Therefore, the 'supports' field here is not an option. An empty
     // 'supports' field represents support for all combinations of
     // environments.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub supports: Vec<PkgSupport>,
 }
 

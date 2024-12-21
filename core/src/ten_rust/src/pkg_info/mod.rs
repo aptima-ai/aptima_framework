@@ -84,7 +84,7 @@ impl PkgInfo {
 
             is_local_installed: false,
             url: "".to_string(),
-            hash: manifest.gen_hash_hex()?,
+            hash: manifest.gen_hash_hex()?, // =-=-=
 
             manifest: Some(manifest.clone()),
             property: property.clone(),

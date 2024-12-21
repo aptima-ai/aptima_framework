@@ -13,6 +13,7 @@ use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tempfile::NamedTempFile;
+use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
 use ten_rust::pkg_info::pkg_type::PkgType;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
@@ -102,16 +103,12 @@ async fn get_package_upload_info(
 
         Box::pin(async move {
             let payload = json!(RegistryPackageData {
-                pkg_type: pkg_info.basic_info.type_and_name.pkg_type,
-                name: pkg_info.basic_info.type_and_name.name.clone(),
-                version: pkg_info.basic_info.version.clone(),
+                basic_info: PkgBasicInfo::from(&pkg_info),
                 dependencies: pkg_info
                     .dependencies
                     .clone()
                     .into_iter()
-                    .map(|d| d.into())
                     .collect(),
-                supports: Some(pkg_info.basic_info.supports),
                 hash: pkg_info.hash.clone(),
             });
 
@@ -546,9 +543,9 @@ pub async fn get_package_list(
                     let url = PathBuf::from(format!(
                         "{}/{}/{}/{}/{}",
                         &base_url,
-                        package_data.pkg_type,
-                        package_data.name,
-                        package_data.version,
+                        package_data.basic_info.type_and_name.pkg_type,
+                        package_data.basic_info.type_and_name.name,
+                        package_data.basic_info.version,
                         package_data.hash,
                     ));
                     results.push(FoundResult { url, package_data });

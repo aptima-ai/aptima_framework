@@ -7,72 +7,95 @@
 use std::path::PathBuf;
 
 use anyhow::Result;
-use semver::Version;
 use serde::{Deserialize, Serialize};
 
-use ten_rust::pkg_info::manifest::dependency::ManifestDependency;
+use ten_rust::pkg_info::dependencies::PkgDependency;
+use ten_rust::pkg_info::hash::gen_hash_hex;
+use ten_rust::pkg_info::manifest::Manifest;
 use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
-use ten_rust::pkg_info::pkg_type_and_name::PkgTypeAndName;
-use ten_rust::pkg_info::supports::PkgSupport;
-use ten_rust::pkg_info::{
-    dependencies::get_pkg_dependencies_from_manifest_dependencies,
-    hash::gen_hash_hex, pkg_type::PkgType,
-};
+use ten_rust::pkg_info::PkgInfo;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RegistryPackageData {
-    #[serde(rename = "type")]
-    pub pkg_type: PkgType,
+    pub basic_info: PkgBasicInfo,
 
-    pub name: String,
-    pub version: Version,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub supports: Option<Vec<PkgSupport>>,
-
-    pub dependencies: Vec<ManifestDependency>,
+    #[serde(with = "dependencies_conversion")]
+    pub dependencies: Vec<PkgDependency>,
 
     pub hash: String,
 }
 
-impl TryFrom<&RegistryPackageData> for PkgTypeAndName {
-    type Error = anyhow::Error;
+mod dependencies_conversion {
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use ten_rust::pkg_info::{
+        dependencies::PkgDependency, manifest::dependency::ManifestDependency,
+    };
 
-    fn try_from(package_data: &RegistryPackageData) -> Result<Self> {
-        Ok(PkgTypeAndName {
-            pkg_type: package_data.pkg_type,
-            name: package_data.name.clone(),
-        })
+    pub fn serialize<S>(
+        deps: &[PkgDependency],
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let manifest_deps: Vec<ManifestDependency> =
+            deps.iter().cloned().map(|dep| (&dep).into()).collect();
+        manifest_deps.serialize(serializer)
     }
-}
 
-impl TryFrom<&RegistryPackageData> for PkgBasicInfo {
-    type Error = anyhow::Error;
-
-    fn try_from(package_data: &RegistryPackageData) -> Result<Self> {
-        Ok(PkgBasicInfo {
-            type_and_name: PkgTypeAndName::try_from(package_data)?,
-            version: package_data.version.clone(),
-            supports: package_data.supports.clone().unwrap_or_default(),
-        })
+    pub fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<Vec<PkgDependency>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let manifest_deps: Vec<ManifestDependency> =
+            Vec::deserialize(deserializer)?;
+        manifest_deps
+            .into_iter()
+            .map(|dep| (&dep).try_into().map_err(serde::de::Error::custom))
+            .collect()
     }
 }
 
 impl RegistryPackageData {
     pub fn gen_hash_hex(&self) -> Result<String> {
-        let dependencies = get_pkg_dependencies_from_manifest_dependencies(
+        Ok(gen_hash_hex(
+            &self.basic_info.type_and_name.pkg_type,
+            &self.basic_info.type_and_name.name,
+            &self.basic_info.version,
             &self.dependencies,
-        )?;
+            &self.basic_info.supports,
+        ))
+    }
+}
 
-        let supports = self.supports.clone().unwrap_or_default();
+impl TryFrom<&Manifest> for RegistryPackageData {
+    type Error = anyhow::Error;
 
-        gen_hash_hex(
-            &self.pkg_type,
-            &self.name,
-            &self.version,
-            &dependencies,
-            &supports,
-        )
+    fn try_from(manifest: &Manifest) -> Result<Self> {
+        let dependencies =
+            manifest.dependencies.as_ref().map_or(Ok(vec![]), |v| {
+                v.iter()
+                    .map(|d| d.try_into())
+                    .collect::<Result<Vec<PkgDependency>, anyhow::Error>>()
+            })?;
+
+        Ok(RegistryPackageData {
+            basic_info: PkgBasicInfo::try_from(manifest)?,
+            dependencies,
+            hash: manifest.gen_hash_hex()?,
+        })
+    }
+}
+
+impl From<&PkgInfo> for RegistryPackageData {
+    fn from(pkg_info: &PkgInfo) -> Self {
+        RegistryPackageData {
+            basic_info: PkgBasicInfo::from(pkg_info),
+            dependencies: pkg_info.dependencies.clone(),
+            hash: pkg_info.gen_hash_hex(),
+        }
     }
 }
 

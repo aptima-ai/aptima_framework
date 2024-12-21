@@ -12,7 +12,6 @@ use std::str::FromStr;
 use anyhow::{anyhow, Context, Result};
 use semver::Version;
 use tempfile::NamedTempFile;
-use ten_rust::pkg_info::supports::get_pkg_supports_from_manifest_supports;
 use walkdir::WalkDir;
 use zip::ZipArchive;
 
@@ -20,7 +19,6 @@ use ten_rust::pkg_info::manifest::Manifest;
 use ten_rust::pkg_info::pkg_type::PkgType;
 use ten_rust::pkg_info::PkgInfo;
 
-use super::found_result::RegistryPackageData;
 use super::{FoundResult, SearchCriteria};
 use crate::config::TmanConfig;
 use crate::constants::{MANIFEST_JSON_FILENAME, TEN_PACKAGE_FILE_EXTENSION};
@@ -173,23 +171,7 @@ fn find_file_with_criteria(
                                         )
                                     )?,
                                 )),
-                                package_data: RegistryPackageData {
-                                    pkg_type: manifest
-                                        .pkg_type
-                                        .parse::<PkgType>()?,
-                                    name: manifest.name.clone(),
-                                    version: manifest.version.parse()?,
-                                    dependencies: manifest
-                                        .dependencies
-                                        .clone()
-                                        .map_or(vec![], |d| d),
-                                    supports:
-                                        Some(get_pkg_supports_from_manifest_supports(
-                                            &manifest.supports,
-                                        )?),
-
-                                    hash: manifest.gen_hash_hex()?,
-                                },
+                                package_data: (&manifest).try_into()?,
                             });
 
                             // Stop processing after finding the manifest.

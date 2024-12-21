@@ -18,7 +18,10 @@ use crate::pkg_info::manifest::{support::ManifestSupport, Manifest};
 pub struct PkgSupport {
     // Unspecified fields represent 'don't care', so we need to use `Option`
     // to express that they are not specified.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub os: Option<Os>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub arch: Option<Arch>,
 }
 

@@ -14,7 +14,9 @@ use crate::pkg_info::manifest::Manifest;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialOrd, Eq)]
 pub struct PkgTypeAndName {
+    #[serde(rename = "type")]
     pub pkg_type: PkgType,
+
     pub name: String,
 }
 

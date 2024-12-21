@@ -16,11 +16,11 @@ pub struct ManifestDependency {
     pub version: String,
 }
 
-impl From<PkgDependency> for ManifestDependency {
-    fn from(pkg_dependency: PkgDependency) -> Self {
+impl From<&PkgDependency> for ManifestDependency {
+    fn from(pkg_dependency: &PkgDependency) -> Self {
         ManifestDependency {
             pkg_type: pkg_dependency.pkg_type.to_string(),
-            name: pkg_dependency.name,
+            name: pkg_dependency.name.clone(),
             version: pkg_dependency.version_req.to_string(),
         }
     }

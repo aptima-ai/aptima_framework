@@ -83,13 +83,13 @@ impl Manifest {
 
         let supports = get_pkg_supports_from_manifest_supports(&self.supports)?;
 
-        gen_hash_hex(
+        Ok(gen_hash_hex(
             &self.pkg_type.parse()?,
             &self.name,
             &self.version.parse()?,
             &dependencies,
             &supports,
-        )
+        ))
     }
 }
 
