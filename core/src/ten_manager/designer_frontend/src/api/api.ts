@@ -81,14 +81,14 @@ export const fetchConnections = async (
 
 export const fetchGraphs = async (): Promise<Graph[]> => {
   const response = await fetch(`/api/designer/v1/graphs`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch graphs: ${response.status}`);
-  }
-
   const data: ApiResponse<Graph[]> = await response.json();
 
   if (!isSuccessResponse(data)) {
-    throw new Error(`Failed to fetch graphs: ${data.message}`);
+    if (!response.ok) {
+      throw new Error(`${data.message}`);
+    } else {
+      throw new Error("Should not happen.");
+    }
   }
 
   return data.data;
@@ -170,7 +170,7 @@ export const saveFileContent = async (
 
 export const setBaseDir = async (
   baseDir: string
-): Promise<ApiResponse<SetBaseDirResponse>> => {
+): Promise<SetBaseDirResponse> => {
   const requestBody: SetBaseDirRequest = { base_dir: baseDir };
 
   const response = await fetch("/api/designer/v1/base-dir", {
@@ -181,11 +181,15 @@ export const setBaseDir = async (
     body: JSON.stringify(requestBody),
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to set base directory: ${response.status}`);
-  }
-
   const data: ApiResponse<SetBaseDirResponse> = await response.json();
 
-  return data;
+  if (!isSuccessResponse(data)) {
+    if (!response.ok) {
+      throw new Error(`${data.message}`);
+    } else {
+      throw new Error("Should not happen.");
+    }
+  }
+
+  return data.data;
 };

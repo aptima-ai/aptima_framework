@@ -8,7 +8,6 @@ import * as React from "react";
 import { toast } from "sonner";
 import { FolderOpenIcon } from "lucide-react";
 
-import { setBaseDir } from "@/api/api";
 import Popup from "@/components/Popup/Popup";
 import {
   NavigationMenuContent,
@@ -35,14 +34,8 @@ export function FileMenu(props: FileMenuProps) {
       return;
     }
 
-    try {
-      await setBaseDir(folderPath.trim());
-      onSetBaseDir(folderPath.trim());
-      setFolderPath("");
-    } catch (error) {
-      toast.error("Failed to open a new app folder.");
-      console.error(error);
-    }
+    onSetBaseDir(folderPath.trim());
+    setFolderPath("");
   };
 
   return (

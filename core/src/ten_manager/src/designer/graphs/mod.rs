@@ -34,8 +34,7 @@ pub async fn get_graphs(
 
     // Fetch all packages if not already done.
     if let Err(err) = get_all_pkgs(&mut state) {
-        let error_response =
-            ErrorResponse::from_error(&err, "Error fetching packages:");
+        let error_response = ErrorResponse::from_error(&err, "");
         return Ok(HttpResponse::NotFound().json(error_response));
     }
 

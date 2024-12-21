@@ -59,8 +59,13 @@ const App: React.FC = () => {
       const fetchedGraphs = await fetchGraphs();
       setGraphs(fetchedGraphs);
       setShowGraphSelection(true);
-    } catch (err: unknown) {
-      console.error(err);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(`Failed to fetch graphs: ${error.message}`);
+      } else {
+        toast.error("An unknown error occurred.");
+      }
+      console.error(error);
     }
   }, []);
 
@@ -123,12 +128,15 @@ const App: React.FC = () => {
 
   const handleSetBaseDir = useCallback(async (folderPath: string) => {
     try {
-      await setBaseDir(folderPath);
-      toast.success("Successfully opened a new app folder.");
+      await setBaseDir(folderPath.trim());
       setNodes([]); // Clear the contents of the FlowCanvas.
       setEdges([]);
-    } catch (error) {
-      toast.error("Failed to open a new app folder.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(`Failed to open a new app folder: ${error.message}`);
+      } else {
+        toast.error("An unknown error occurred.");
+      }
       console.error(error);
     }
   }, []);

@@ -25,7 +25,7 @@ pub fn get_all_pkgs(state: &mut DesignerState) -> Result<()> {
                 }
             }
         } else {
-            return Err(anyhow!("Base directory not found"));
+            return Err(anyhow!("Base directory is not set"));
         }
     }
 

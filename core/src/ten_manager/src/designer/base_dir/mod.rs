@@ -4,13 +4,19 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-use std::sync::{Arc, RwLock};
+use std::{
+    path::Path,
+    sync::{Arc, RwLock},
+};
 
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
-use super::DesignerState;
-use crate::designer::response::{ApiResponse, Status};
+use super::{response::ErrorResponse, DesignerState};
+use crate::{
+    designer::response::{ApiResponse, Status},
+    utils::check_is_app_folder,
+};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct SetBaseDirRequest {
@@ -28,16 +34,30 @@ pub async fn set_base_dir(
 ) -> impl Responder {
     let mut state = state.write().unwrap();
 
-    // Update base_dir.
-    state.base_dir = Some(req.base_dir.clone());
+    match check_is_app_folder(Path::new(&req.base_dir)) {
+        Ok(_) => {
+            // Update base_dir.
+            state.base_dir = Some(req.base_dir.clone());
 
-    let response = ApiResponse {
-        status: Status::Ok,
-        data: serde_json::json!({ "success": true }),
-        meta: None,
-    };
+            // Reset the all_pkgs, so that it will be reloaded when needed.
+            state.all_pkgs = None;
 
-    HttpResponse::Ok().json(response)
+            let response = ApiResponse {
+                status: Status::Ok,
+                data: serde_json::json!({ "success": true }),
+                meta: None,
+            };
+
+            HttpResponse::Ok().json(response)
+        }
+        Err(err) => {
+            let error_response = ErrorResponse::from_error(
+                &err,
+                format!("{} is not an app folder: ", &req.base_dir).as_str(),
+            );
+            HttpResponse::NotFound().json(error_response)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -67,20 +87,18 @@ mod tests {
         .await;
 
         let new_base_dir = SetBaseDirRequest {
-            base_dir: "/new/path".to_string(),
+            base_dir: "/not/a/correct/app/folder/path".to_string(),
         };
 
         let req = test::TestRequest::put()
             .uri("/api/designer/v1/base-dir")
             .set_json(&new_base_dir)
             .to_request();
-        let resp: ApiResponse<SetBaseDirResponse> =
-            test::call_and_read_body_json(&app, req).await;
+        let resp: Result<
+            ApiResponse<SetBaseDirResponse>,
+            std::boxed::Box<dyn std::error::Error>,
+        > = test::try_call_and_read_body_json(&app, req).await;
 
-        assert_eq!(resp.status, Status::Ok);
-        assert!(resp.data.success);
-
-        let state = designer_state.read().unwrap();
-        assert_eq!(state.base_dir.as_ref().unwrap(), "/new/path");
+        assert!(resp.is_err());
     }
 }
