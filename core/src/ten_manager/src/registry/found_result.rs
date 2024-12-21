@@ -10,13 +10,12 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use ten_rust::pkg_info::dependencies::PkgDependency;
-use ten_rust::pkg_info::hash::gen_hash_hex;
 use ten_rust::pkg_info::manifest::Manifest;
 use ten_rust::pkg_info::pkg_basic_info::PkgBasicInfo;
 use ten_rust::pkg_info::PkgInfo;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct RegistryPackageData {
+pub struct PkgRegistryInfo {
     pub basic_info: PkgBasicInfo,
 
     #[serde(with = "dependencies_conversion")]
@@ -58,49 +57,50 @@ mod dependencies_conversion {
     }
 }
 
-impl RegistryPackageData {
-    pub fn gen_hash_hex(&self) -> Result<String> {
-        Ok(gen_hash_hex(
-            &self.basic_info.type_and_name.pkg_type,
-            &self.basic_info.type_and_name.name,
-            &self.basic_info.version,
-            &self.dependencies,
-            &self.basic_info.supports,
-        ))
-    }
-}
-
-impl TryFrom<&Manifest> for RegistryPackageData {
+impl TryFrom<&Manifest> for PkgRegistryInfo {
     type Error = anyhow::Error;
 
     fn try_from(manifest: &Manifest) -> Result<Self> {
-        let dependencies =
-            manifest.dependencies.as_ref().map_or(Ok(vec![]), |v| {
-                v.iter()
-                    .map(|d| d.try_into())
-                    .collect::<Result<Vec<PkgDependency>, anyhow::Error>>()
-            })?;
-
-        Ok(RegistryPackageData {
-            basic_info: PkgBasicInfo::try_from(manifest)?,
-            dependencies,
-            hash: manifest.gen_hash_hex()?,
-        })
+        let pkg_info = PkgInfo::from_metadata(manifest, &None)?;
+        Ok((&pkg_info).into())
     }
 }
 
-impl From<&PkgInfo> for RegistryPackageData {
+impl From<&PkgInfo> for PkgRegistryInfo {
     fn from(pkg_info: &PkgInfo) -> Self {
-        RegistryPackageData {
+        PkgRegistryInfo {
             basic_info: PkgBasicInfo::from(pkg_info),
             dependencies: pkg_info.dependencies.clone(),
-            hash: pkg_info.gen_hash_hex(),
+            hash: pkg_info.hash.clone(),
         }
+    }
+}
+
+impl From<&PkgRegistryInfo> for PkgInfo {
+    fn from(pkg_registry_info: &PkgRegistryInfo) -> Self {
+        let mut pkg_info = PkgInfo {
+            basic_info: pkg_registry_info.basic_info.clone(),
+            dependencies: pkg_registry_info.dependencies.clone(),
+            api: None,
+            compatible_score: -1,
+
+            is_local_installed: false,
+            url: String::new(),
+            hash: String::new(),
+
+            manifest: None,
+            property: None,
+            schema_store: None,
+        };
+
+        pkg_info.hash = pkg_info.gen_hash_hex();
+
+        pkg_info
     }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FoundResult {
     pub url: PathBuf,
-    pub package_data: RegistryPackageData,
+    pub pkg_registry_info: PkgRegistryInfo,
 }

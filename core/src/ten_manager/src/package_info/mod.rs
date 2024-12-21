@@ -10,30 +10,10 @@ use std::path::Path;
 
 use anyhow::Result;
 
-use crate::{config::TmanConfig, registry::found_result::RegistryPackageData};
+use crate::config::TmanConfig;
 use ten_rust::pkg_info::{
     get_all_existed_pkgs_info_of_app_to_hashmap, PkgInfo,
 };
-
-// =-=-=
-pub fn pkg_info_from_find_package_data(
-    package_data: &RegistryPackageData,
-) -> Result<PkgInfo> {
-    Ok(PkgInfo {
-        basic_info: package_data.basic_info.clone(),
-        dependencies: package_data.dependencies.clone(),
-        api: None,
-        compatible_score: -1,
-
-        is_local_installed: false,
-        url: "".to_string(),
-        hash: package_data.gen_hash_hex()?,
-
-        manifest: None,
-        property: None,
-        schema_store: None,
-    })
-}
 
 pub fn tman_get_all_existed_pkgs_info_of_app(
     tman_config: &TmanConfig,

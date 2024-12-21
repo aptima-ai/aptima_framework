@@ -21,10 +21,6 @@ use dependency::ManifestDependency;
 use publish::PackageConfig;
 use support::ManifestSupport;
 
-use super::dependencies::get_pkg_dependencies_from_manifest_dependencies;
-use super::hash::gen_hash_hex;
-use super::supports::get_pkg_supports_from_manifest_supports;
-
 // Define a structure that mirrors the structure of the JSON file.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Manifest {
@@ -73,23 +69,6 @@ impl fmt::Display for Manifest {
 impl Manifest {
     pub fn validate_and_complete(&mut self) -> Result<()> {
         Ok(())
-    }
-
-    pub fn gen_hash_hex(&self) -> Result<String> {
-        let dependencies =
-            self.dependencies.as_ref().map_or(Ok(vec![]), |d| {
-                get_pkg_dependencies_from_manifest_dependencies(d)
-            })?;
-
-        let supports = get_pkg_supports_from_manifest_supports(&self.supports)?;
-
-        Ok(gen_hash_hex(
-            &self.pkg_type.parse()?,
-            &self.name,
-            &self.version.parse()?,
-            &dependencies,
-            &supports,
-        ))
     }
 }
 

@@ -23,7 +23,6 @@ use super::config::TmanConfig;
 use super::registry::{get_package_list, SearchCriteria};
 use super::utils::pathbuf_to_string;
 use crate::log::tman_verbose_println;
-use crate::package_info::pkg_info_from_find_package_data;
 
 // TODO(Wei): Should use the union of the semantic versioning rather than the
 // union of all version requirements.
@@ -175,8 +174,8 @@ async fn process_dependencies_to_get_candidates(
         // `candidate_pkg_infos`, making it convenient for `supports` filtering
         // later.
         for result in results {
-            let mut candidate_pkg_info =
-                pkg_info_from_find_package_data(&result.package_data)?;
+            let mut candidate_pkg_info: PkgInfo =
+                (&result.pkg_registry_info).into();
 
             candidate_pkg_info.url = pathbuf_to_string(result.url)?;
             candidate_pkg_info.is_local_installed = false;

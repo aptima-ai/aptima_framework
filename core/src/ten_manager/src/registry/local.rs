@@ -171,7 +171,7 @@ fn find_file_with_criteria(
                                         )
                                     )?,
                                 )),
-                                package_data: (&manifest).try_into()?,
+                                pkg_registry_info: (&manifest).try_into()?,
                             });
 
                             // Stop processing after finding the manifest.

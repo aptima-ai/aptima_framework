@@ -24,7 +24,7 @@ impl PkgInfo {
     }
 }
 
-pub fn gen_hash_hex(
+fn gen_hash_hex(
     pkg_type: &PkgType,
     name: &String,
     version: &Version,

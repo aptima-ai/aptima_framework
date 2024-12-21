@@ -75,7 +75,7 @@ impl PkgInfo {
         manifest: &Manifest,
         property: &Option<Property>,
     ) -> Result<Self> {
-        Ok(PkgInfo {
+        let mut pkg_info = PkgInfo {
             basic_info: PkgBasicInfo::try_from(manifest)?,
 
             dependencies: get_pkg_dependencies_from_manifest(manifest)?,
@@ -83,13 +83,17 @@ impl PkgInfo {
             compatible_score: -1,
 
             is_local_installed: false,
-            url: "".to_string(),
-            hash: manifest.gen_hash_hex()?, // =-=-=
+            url: String::new(),
+            hash: String::new(),
 
             manifest: Some(manifest.clone()),
             property: property.clone(),
             schema_store: SchemaStore::from_manifest(manifest)?,
-        })
+        };
+
+        pkg_info.hash = pkg_info.gen_hash_hex();
+
+        Ok(pkg_info)
     }
 
     pub fn is_manifest_equal_to_fs(&self) -> Result<bool> {
