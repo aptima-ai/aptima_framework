@@ -28,7 +28,7 @@ pub struct CheckGraphCommand {
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("graph")
         .about(
-            "Check whether the graph content of the predefined graph or start_graph command is correct. For more detailed usage, run 'graph -h'",
+            "Check whether the graph content of the predefined graph or start_graph command is correct",
         )
         .arg(
             Arg::new("APP")
@@ -204,7 +204,7 @@ pub async fn execute_cmd(
             Ok(_) => println!("{}", Emoji("✅", "Passed")),
             Err(e) => {
                 err_count += 1;
-                println!("{}. Details:", Emoji("❌", "Failed"));
+                println!("{}. Details:", Emoji("🔴", "Failed"));
                 display_error(&e);
                 println!();
             }

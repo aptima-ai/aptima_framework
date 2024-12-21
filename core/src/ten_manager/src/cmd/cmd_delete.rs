@@ -28,7 +28,7 @@ pub struct DeleteCommand {
 
 pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("delete")
-        .about("Delete a package. For more detailed usage, run 'delete -h'")
+        .about("Delete a package")
         .after_help("This is a hidden privileged command, use it with caution.")
         .hide(true)
         .arg(

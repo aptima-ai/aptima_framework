@@ -33,6 +33,7 @@ pub const APP_PKG_TYPE: &str = "app";
 pub const MANIFEST_JSON_FILENAME: &str = "manifest.json";
 pub const MANIFEST_LOCK_JSON_FILENAME: &str = "manifest-lock.json";
 pub const PROPERTY_JSON_FILENAME: &str = "property.json";
+pub const SCRIPTS: &str = "scripts";
 
 pub const INSTALL_PATHS_APP_PREFIX: &str = "@app";
 

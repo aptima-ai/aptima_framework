@@ -20,7 +20,10 @@ use ten_rust::pkg_info::PkgInfo;
 
 use super::{config::TmanConfig, constants::TEN_PACKAGE_FILE_EXTENSION};
 use crate::{
-    constants::{DOT_TEN_DIR, PACKAGE_DIR_IN_DOT_TEN_DIR, TEN_PACKAGES_DIR},
+    constants::{
+        DOT_TEN_DIR, MANIFEST_JSON_FILENAME, PACKAGE_DIR_IN_DOT_TEN_DIR,
+        TEN_PACKAGES_DIR,
+    },
     log::tman_verbose_println,
     utils::pathbuf_to_string_lossy,
 };
@@ -90,7 +93,7 @@ pub fn create_package_zip_file(
 
     // manifest.json is needed for all TEN packages.
     globset_builder.add(
-        GlobBuilder::new("manifest.json")
+        GlobBuilder::new(MANIFEST_JSON_FILENAME)
             .literal_separator(false)
             .build()?,
     );

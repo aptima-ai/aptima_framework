@@ -151,7 +151,7 @@ pub fn print_conflict_info(
 ) -> Result<()> {
     println!(
         "{}  Error: {}",
-        Emoji("❌", ":-("),
+        Emoji("🔴", ":-("),
         conflict_info.error_message
     );
     println!();

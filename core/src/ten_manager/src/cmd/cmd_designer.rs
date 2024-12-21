@@ -34,7 +34,7 @@ pub struct DesignerCommand {
 
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("designer")
-        .about("Install a package. For more detailed usage, run 'designer -h'")
+        .about("Launch designer")
         .arg(
             Arg::new("IP_ADDRESS")
                 .long("ip")

@@ -18,7 +18,7 @@ pub enum CheckCommandData {
 
 pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("check")
-        .about("Check various consistency validations. For more detailed usage, run 'check -h'")
+        .about("Check various consistency validations")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(crate::cmd::cmd_check::cmd_check_graph::create_sub_cmd(

@@ -43,7 +43,7 @@ fn main() {
     let rt = Runtime::new().unwrap();
     let result = rt.block_on(cmd::execute_cmd(&tman_config, command_data));
     if let Err(e) = result {
-        println!("{}  Error: {:?}", Emoji("❌", ":-("), e);
+        println!("{}  Error: {:?}", Emoji("🔴", ":-("), e);
 
         process::exit(1);
     }

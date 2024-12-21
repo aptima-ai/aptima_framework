@@ -106,7 +106,8 @@ impl PkgInfo {
             None => return Ok(false),
         };
 
-        let manifest_json_path = PathBuf::from(&self.url).join("manifest.json");
+        let manifest_json_path =
+            PathBuf::from(&self.url).join(MANIFEST_JSON_FILENAME);
         let manifest_from_fs: Manifest =
             parse_manifest_from_file(&manifest_json_path)?;
 
