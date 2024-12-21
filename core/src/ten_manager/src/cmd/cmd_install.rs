@@ -21,7 +21,7 @@ use inquire::Confirm;
 use semver::VersionReq;
 
 use ten_rust::pkg_info::{
-    dependencies::{DependencyRelationship, PkgDependency},
+    dependencies::PkgDependency,
     find_to_be_replaced_local_pkgs, find_untracked_local_packages,
     get_pkg_info_from_path,
     pkg_type::PkgType,
@@ -47,7 +47,7 @@ use crate::{
     package_info::tman_get_all_existed_pkgs_info_of_app,
     solver::{
         introducer::extract_introducer_relations_from_raw_solver_results,
-        solve::solve_all,
+        solve::{solve_all, DependencyRelationship},
         solver_error::{parse_error_statement, print_conflict_info},
         solver_result::{
             extract_solver_results_from_raw_solver_results,
@@ -292,16 +292,20 @@ fn write_pkgs_into_lock(pkgs: &Vec<&PkgInfo>, app_dir: &Path) -> Result<()> {
 
 fn parse_pkg_name_version(
     pkg_name_version: &str,
-) -> Result<(String, Option<String>, VersionReq)> {
+) -> Result<(String, String, VersionReq)> {
     let parts: Vec<&str> = pkg_name_version.split('@').collect();
     if parts.len() == 2 {
         Ok((
             parts[0].to_string(),
-            Some(parts[1].to_string()),
+            parts[1].to_string(),
             VersionReq::parse(parts[1])?,
         ))
     } else {
-        Ok((pkg_name_version.to_string(), None, VersionReq::STAR))
+        Ok((
+            pkg_name_version.to_string(),
+            VersionReq::STAR.to_string(),
+            VersionReq::STAR,
+        ))
     }
 }
 
@@ -584,12 +588,16 @@ pub async fn execute_cmd(
             );
 
             let extra_dependency_relationship = DependencyRelationship {
-                pkg_type: app_pkg_.basic_info.type_and_name.pkg_type,
-                name: app_pkg_.basic_info.type_and_name.name.clone(),
+                type_and_name: PkgTypeAndName {
+                    pkg_type: app_pkg_.basic_info.type_and_name.pkg_type,
+                    name: app_pkg_.basic_info.type_and_name.name.clone(),
+                },
                 version: app_pkg_.basic_info.version.clone(),
                 dependency: PkgDependency {
-                    pkg_type: desired_pkg_type_,
-                    name: desired_pkg_src_name_.clone(),
+                    type_and_name: PkgTypeAndName {
+                        pkg_type: desired_pkg_type_,
+                        name: desired_pkg_src_name_.clone(),
+                    },
                     version_req: desired_pkg_src_version_.clone(),
                     version_req_str: desired_pkg_src_version_str_,
                 },

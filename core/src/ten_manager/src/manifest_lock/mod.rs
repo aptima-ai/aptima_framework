@@ -274,10 +274,13 @@ impl<'a> From<&'a ManifestLockItem> for PkgInfo {
                 .map(|deps| {
                     deps.into_iter()
                         .map(|dep| PkgDependency {
-                            pkg_type: PkgType::from_str(&dep.pkg_type).unwrap(),
-                            name: dep.name,
+                            type_and_name: PkgTypeAndName {
+                                pkg_type: PkgType::from_str(&dep.pkg_type)
+                                    .unwrap(),
+                                name: dep.name,
+                            },
                             version_req: VersionReq::STAR,
-                            version_req_str: None,
+                            version_req_str: VersionReq::STAR.to_string(),
                         })
                         .collect()
                 })
@@ -305,8 +308,8 @@ pub struct ManifestLockItemDependencyItem {
 impl From<PkgDependency> for ManifestLockItemDependencyItem {
     fn from(pkg_dep: PkgDependency) -> Self {
         ManifestLockItemDependencyItem {
-            pkg_type: pkg_dep.pkg_type.to_string(),
-            name: pkg_dep.name,
+            pkg_type: pkg_dep.type_and_name.pkg_type.to_string(),
+            name: pkg_dep.type_and_name.name,
         }
     }
 }

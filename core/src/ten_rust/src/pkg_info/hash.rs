@@ -46,8 +46,10 @@ fn gen_hash_hex(
 
     // Hash dependencies.
     for dep in dependencies {
-        let dep_string =
-            format!("{}:{}@{}", dep.pkg_type, dep.name, dep.version_req);
+        let dep_string = format!(
+            "{}:{}@{}",
+            dep.type_and_name.pkg_type, dep.type_and_name.name, dep.version_req
+        );
         hasher.update(dep_string);
     }
 

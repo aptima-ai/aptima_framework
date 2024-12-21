@@ -68,11 +68,8 @@ pub fn extract_introducer_relations_from_raw_solver_results(
                 {
                     // The `version` declared in the `dependencies` section in
                     // manifest.json is always present.
-                    requested_version_str = requested_dep_in_introducer
-                        .version_req_str
-                        .as_ref()
-                        .unwrap()
-                        .clone();
+                    requested_version_str =
+                        requested_dep_in_introducer.version_req_str.clone();
                 } else {
                     return Err(anyhow::anyhow!(
                         "Requested dependency [{}]{} not found in introducer, should not happen.", pkg_type_str, name
@@ -110,11 +107,7 @@ pub fn get_dependency_chain(
         )
         .unwrap();
     chain.push((
-        requested_dep_in_introducer
-            .version_req_str
-            .as_ref()
-            .unwrap()
-            .clone(),
+        requested_dep_in_introducer.version_req_str.clone(),
         conflict_pkg_identity.clone(),
     ));
 

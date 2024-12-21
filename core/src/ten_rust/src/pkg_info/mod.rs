@@ -174,7 +174,8 @@ impl PkgInfo {
         pkg_name: &str,
     ) -> Option<&PkgDependency> {
         self.dependencies.iter().find(|dep| {
-            dep.pkg_type.to_string() == pkg_type && dep.name == pkg_name
+            dep.type_and_name.pkg_type.to_string() == pkg_type
+                && dep.type_and_name.name == pkg_name
         })
     }
 }

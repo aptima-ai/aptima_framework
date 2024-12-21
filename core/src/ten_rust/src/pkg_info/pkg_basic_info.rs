@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use super::{
     manifest::Manifest,
     pkg_type_and_name::PkgTypeAndName,
-    supports::{get_pkg_supports_from_manifest, PkgSupport},
+    supports::{get_pkg_supports_from_manifest_supports, PkgSupport},
     PkgInfo,
 };
 
@@ -41,8 +41,7 @@ pub struct PkgBasicInfo {
 
 impl Hash for PkgBasicInfo {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.type_and_name.pkg_type.hash(state);
-        self.type_and_name.name.hash(state);
+        self.type_and_name.hash(state);
         self.version.hash(state);
         self.supports.hash(state);
     }
@@ -105,7 +104,9 @@ impl TryFrom<&Manifest> for PkgBasicInfo {
         Ok(PkgBasicInfo {
             type_and_name: PkgTypeAndName::try_from(manifest)?,
             version: Version::parse(&manifest.version)?,
-            supports: get_pkg_supports_from_manifest(manifest)?,
+            supports: get_pkg_supports_from_manifest_supports(
+                &manifest.supports,
+            )?,
         })
     }
 }

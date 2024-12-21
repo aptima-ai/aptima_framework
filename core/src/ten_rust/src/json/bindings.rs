@@ -11,7 +11,7 @@ use std::ptr;
 use crate::json;
 
 #[no_mangle]
-pub extern "C" fn ten_remove_json_comments(
+pub unsafe extern "C" fn ten_remove_json_comments(
     json_with_comments: *const c_char,
 ) -> *mut c_char {
     if json_with_comments.is_null() {

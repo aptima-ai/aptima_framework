@@ -5,7 +5,6 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 use std::collections::{HashMap, HashSet};
-use std::hash::{Hash, Hasher};
 
 use anyhow::{anyhow, Result};
 use semver::{Version, VersionReq};
@@ -52,62 +51,35 @@ impl MergedVersionReq {
     }
 }
 
-struct FoundDependency {
-    pkg_type: PkgType,
-    name: String,
-    version_reqs: MergedVersionReq,
-}
-
-impl Hash for FoundDependency {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.pkg_type.hash(state);
-        self.name.hash(state);
-    }
-}
-
-impl PartialEq for FoundDependency {
-    fn eq(&self, other: &Self) -> bool {
-        self.pkg_type == other.pkg_type && self.name == other.name
-    }
-}
-
-impl Eq for FoundDependency {}
-
 /// If the contents of merged_dependencies are the same before and after the
 /// merge, it means merged_dependencies has not changed, so return false.
 /// Otherwise, it means there has been a change, so return true. This allows the
 /// caller to know that there may be new content and that some actions may need
 /// to be taken.
 fn merge_dependency_to_dependencies(
-    merged_dependencies: &mut HashSet<FoundDependency>,
+    merged_dependencies: &mut HashMap<PkgTypeAndName, MergedVersionReq>,
     dependency: &PkgDependency,
 ) -> Result<bool> {
-    let searched_target = FoundDependency {
-        pkg_type: dependency.pkg_type,
-        name: dependency.name.clone(),
-        version_reqs: MergedVersionReq::default(),
+    let searched_target = PkgTypeAndName {
+        pkg_type: dependency.type_and_name.pkg_type,
+        name: dependency.type_and_name.name.clone(),
     };
 
     let mut changed = true;
 
-    // Note that FoundDependency will only use pkg_identity as the hash key.
-    if let Some(mut existed_dependency) =
-        merged_dependencies.take(&searched_target)
+    if let Some(existed_dependency) =
+        merged_dependencies.get_mut(&searched_target)
     {
-        changed = existed_dependency
-            .version_reqs
-            .merge(&dependency.version_req)?;
-
-        // Put back.
-        merged_dependencies.insert(existed_dependency);
+        changed = existed_dependency.merge(&dependency.version_req)?;
     } else {
         // This is the first time seeing this dependency.
-
-        merged_dependencies.insert(FoundDependency {
-            pkg_type: dependency.pkg_type,
-            name: dependency.name.clone(),
-            version_reqs: MergedVersionReq::new(&dependency.version_req),
-        });
+        merged_dependencies.insert(
+            PkgTypeAndName {
+                pkg_type: dependency.type_and_name.pkg_type,
+                name: dependency.type_and_name.name.clone(),
+            },
+            MergedVersionReq::new(&dependency.version_req),
+        );
     }
 
     Ok(changed)
@@ -133,7 +105,7 @@ async fn process_dependencies_to_get_candidates(
     tman_config: &TmanConfig,
     support: &PkgSupport,
     input_dependencies: &Vec<PkgDependency>,
-    merged_dependencies: &mut HashSet<FoundDependency>,
+    merged_dependencies: &mut HashMap<PkgTypeAndName, MergedVersionReq>,
     all_candidates: &mut HashMap<
         PkgTypeAndName,
         HashMap<PkgBasicInfo, PkgInfo>,
@@ -162,8 +134,8 @@ async fn process_dependencies_to_get_candidates(
         // criteria.
         let results = get_package_list(
             tman_config,
-            dependency.pkg_type,
-            &dependency.name,
+            dependency.type_and_name.pkg_type,
+            &dependency.type_and_name.name,
             &criteria,
         )
         .await?;
@@ -310,7 +282,7 @@ pub async fn get_all_candidates_from_deps(
     extra_dependencies: &Vec<PkgDependency>,
     locked_pkgs: Option<&HashMap<PkgTypeAndName, PkgInfo>>,
 ) -> Result<HashMap<PkgTypeAndName, HashMap<PkgBasicInfo, PkgInfo>>> {
-    let mut merged_dependencies = HashSet::<FoundDependency>::new();
+    let mut merged_dependencies = HashMap::new();
     let mut processed_pkgs = HashSet::<PkgBasicInfo>::new();
 
     // If there is extra dependencies (ex: specified in the command line),

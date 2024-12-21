@@ -12,8 +12,9 @@ use clingo::{
     SolveMode, Statistics, StatisticsType,
 };
 
+use semver::Version;
 use ten_rust::pkg_info::{
-    dependencies::DependencyRelationship, pkg_basic_info::PkgBasicInfo,
+    dependencies::PkgDependency, pkg_basic_info::PkgBasicInfo,
     pkg_type::PkgType, pkg_type_and_name::PkgTypeAndName, PkgInfo,
 };
 
@@ -22,6 +23,13 @@ use crate::{
     error::TmanError,
     log::{tman_verbose_print, tman_verbose_println},
 };
+
+#[derive(Debug)]
+pub struct DependencyRelationship {
+    pub type_and_name: PkgTypeAndName,
+    pub version: Version,
+    pub dependency: PkgDependency,
+}
 
 fn get_model(
     tman_config: &TmanConfig,
@@ -309,8 +317,8 @@ fn create_input_str_for_dependency_relationship(
                 {
                     input_str.push_str(&format!(
         "depends_on_declared(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\", \"{}\").\n",
-        dependency_relationship.pkg_type,
-        dependency_relationship.name,
+        dependency_relationship.type_and_name.pkg_type,
+        dependency_relationship.type_and_name.name,
         dependency_relationship.version,
         candidate.1.basic_info.type_and_name.pkg_type,
         candidate.1.basic_info.type_and_name.name,
@@ -322,8 +330,8 @@ fn create_input_str_for_dependency_relationship(
             return Err(TmanError::Custom(
                 format!(
                     "Failed to find candidates for {}:{}@{}",
-                    dependency_relationship.dependency.pkg_type,
-                    dependency_relationship.dependency.name,
+                    dependency_relationship.dependency.type_and_name.pkg_type,
+                    dependency_relationship.dependency.type_and_name.name,
                     dependency_relationship.version,
                 )
                 .to_string(),
@@ -383,8 +391,8 @@ fn create_input_str_for_pkg_info_dependencies(
                 return Err(TmanError::Custom(
                     format!(
                         "Failed to find candidates for [{}]{}({})",
-                        dependency.pkg_type,
-                        dependency.name,
+                        dependency.type_and_name.pkg_type,
+                        dependency.type_and_name.name,
                         dependency.version_req
                     )
                     .to_string(),
@@ -395,8 +403,8 @@ fn create_input_str_for_pkg_info_dependencies(
             return Err(TmanError::Custom(
                 format!(
                     "Failed to find candidates for {}:{}@{}",
-                    dependency.pkg_type,
-                    dependency.name,
+                    dependency.type_and_name.pkg_type,
+                    dependency.type_and_name.name,
                     dependency.version_req
                 )
                 .to_string(),

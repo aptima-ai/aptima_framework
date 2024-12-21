@@ -7,10 +7,10 @@
 use std::hash::Hash;
 use std::{fmt, str::FromStr};
 
-use anyhow::{anyhow, Error, Result};
+use anyhow::{anyhow, Context, Error, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::pkg_info::manifest::{support::ManifestSupport, Manifest};
+use crate::pkg_info::manifest::support::ManifestSupport;
 
 #[derive(
     Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize,
@@ -41,14 +41,24 @@ impl fmt::Display for PkgSupport {
     }
 }
 
-impl From<ManifestSupport> for PkgSupport {
-    fn from(manifest_support: ManifestSupport) -> Self {
-        PkgSupport {
-            os: manifest_support.os.map(|os| Os::from_str(&os).unwrap()),
+impl TryFrom<&ManifestSupport> for PkgSupport {
+    type Error = anyhow::Error;
+
+    fn try_from(manifest_support: &ManifestSupport) -> Result<Self> {
+        Ok(PkgSupport {
+            os: manifest_support
+                .os
+                .as_deref()
+                .map(Os::from_str)
+                .transpose()
+                .context("Failed to parse OS from manifest")?,
             arch: manifest_support
                 .arch
-                .map(|arch| Arch::from_str(&arch).unwrap()),
-        }
+                .as_deref()
+                .map(Arch::from_str)
+                .transpose()
+                .context("Failed to parse Arch from manifest")?,
+        })
     }
 }
 
@@ -107,22 +117,23 @@ impl PkgSupport {
     }
 }
 
-pub fn get_pkg_supports_from_manifest(
-    manifest: &Manifest,
-) -> Result<Vec<PkgSupport>> {
-    get_pkg_supports_from_manifest_supports(&manifest.supports)
-}
-
 pub fn get_pkg_supports_from_manifest_supports(
     manifest_supports: &Option<Vec<ManifestSupport>>,
 ) -> Result<Vec<PkgSupport>> {
     if let Some(supports) = &manifest_supports {
-        let pkg_supports: Vec<PkgSupport> =
-            supports.iter().cloned().map(PkgSupport::from).collect();
-        Ok(pkg_supports)
+        Ok(supports
+            .iter()
+            .map(PkgSupport::try_from)
+            .collect::<Result<Vec<_>>>()?)
     } else {
         Ok(vec![])
     }
+}
+
+pub fn get_manifest_supports_from_pkg(
+    support: &[PkgSupport],
+) -> Vec<ManifestSupport> {
+    support.iter().map(|v| v.into()).collect()
 }
 
 pub fn is_pkg_supports_compatible_with(
@@ -226,10 +237,4 @@ impl fmt::Display for Arch {
             Arch::Arm64 => write!(f, "arm64"),
         }
     }
-}
-
-pub fn get_manifest_supports_from_pkg(
-    support: &[PkgSupport],
-) -> Vec<ManifestSupport> {
-    support.iter().map(|v| v.into()).collect()
 }
