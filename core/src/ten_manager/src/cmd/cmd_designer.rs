@@ -124,22 +124,22 @@ pub async fn execute_cmd(
         }
     };
 
-    let mut actual_base_dir: Option<String> = Some(base_dir);
+    let mut actual_base_dir_opt: Option<String> = Some(base_dir);
 
     // Check if the base_dir is an app folder.
-    if let Some(actual_base_dir_ref) = actual_base_dir.as_ref() {
-        if let Err(e) = check_is_app_folder(Path::new(actual_base_dir_ref)) {
+    if let Some(actual_base_dir) = actual_base_dir_opt.as_ref() {
+        if let Err(e) = check_is_app_folder(Path::new(actual_base_dir)) {
             println!(
                 "{}  base_dir is not an app folder: {}",
                 Emoji("🚨", ":-("),
                 e
             );
-            actual_base_dir = None;
+            actual_base_dir_opt = None;
         }
     }
 
     let state = Arc::new(RwLock::new(DesignerState {
-        base_dir: actual_base_dir,
+        base_dir: actual_base_dir_opt,
         all_pkgs: None,
         tman_config: TmanConfig::default(),
     }));

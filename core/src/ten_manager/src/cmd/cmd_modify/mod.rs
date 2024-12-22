@@ -18,7 +18,7 @@ pub enum ModifyCommandData {
 
 pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("modify")
-        .about("Modify various configurations")
+        .about("Modify something in the TEN framework")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(crate::cmd::cmd_modify::cmd_modify_graph::create_sub_cmd(
