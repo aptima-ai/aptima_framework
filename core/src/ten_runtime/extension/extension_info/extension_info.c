@@ -36,7 +36,6 @@ ten_extension_info_t *ten_extension_info_create(void) {
   ten_string_init(&self->extension_addon_name);
 
   ten_loc_init_empty(&self->loc);
-  self->extension = NULL;
 
   self->property = ten_value_create_object_with_move(NULL);
 

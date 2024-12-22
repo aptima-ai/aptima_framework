@@ -62,6 +62,7 @@ ten_executable("ten_runtime_smoke_test") {
     "result_conversion",
     "return",
     "same_thread_ext_on_xxx",
+    "send",
     "standalone_test",
     "start_graph",
     "suspend_resume",

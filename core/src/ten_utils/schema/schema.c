@@ -90,7 +90,7 @@ void ten_schema_deinit(ten_schema_t *self) {
   TEN_ASSERT(self && ten_schema_check_integrity(self), "Invalid argument.");
 
   ten_signature_set(&self->signature, 0);
-  ten_hashtable_clear(&self->keywords);
+  ten_hashtable_deinit(&self->keywords);
 }
 
 static ten_schema_t *ten_schema_create_by_type(const char *type) {

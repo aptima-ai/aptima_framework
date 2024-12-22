@@ -18,6 +18,7 @@
 #include "include_internal/ten_runtime/extension/msg_dest_info/json.h"
 #include "include_internal/ten_runtime/extension/msg_dest_info/msg_dest_info.h"
 #include "include_internal/ten_runtime/extension/msg_handling.h"
+#include "include_internal/ten_runtime/extension/msg_not_connected_cnt.h"
 #include "include_internal/ten_runtime/extension/on_xxx.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
@@ -119,6 +120,10 @@ ten_extension_t *ten_extension_create(
 
   self->ten_env = ten_env_create_for_extension(self);
 
+  ten_hashtable_init(
+      &self->msg_not_connected_count_map,
+      offsetof(ten_extension_output_msg_not_connected_count_t, hh_in_map));
+
   self->user_data = user_data;
 
   return self;
@@ -200,6 +205,8 @@ void ten_extension_destroy(ten_extension_t *self) {
     ten_ref_dec_ref(&self->addon_host->ref);
     self->addon_host = NULL;
   }
+
+  ten_hashtable_deinit(&self->msg_not_connected_count_map);
 
   TEN_FREE(self);
 }
@@ -498,20 +505,12 @@ static bool ten_extension_determine_out_msg_dest_from_graph(
   TEN_MSG_TYPE msg_type = ten_msg_get_type(msg);
   const char *msg_name = ten_msg_get_name(msg);
 
-  if (err) {
-    ten_error_set(
-        err, TEN_ERRNO_MSG_NOT_CONNECTED,
-        "Failed to find destination of a '%s' message '%s' from graph.",
-        ten_msg_type_to_string(msg_type), msg_name);
-  } else {
-    if (ten_msg_is_cmd_and_result(msg)) {
-      TEN_LOGD("Failed to find destination of a command '%s' from graph.",
-               msg_name);
-    } else {
-      // The amount of the data-like messages might be huge, so we don't
-      // dump error logs here to prevent log flooding.
-    }
-  }
+  // In any case, the user needs to be informed about the error where the graph
+  // does not have a specified destination for the message.
+  TEN_ASSERT(err, "Should not happen.");
+  ten_error_set(err, TEN_ERRNO_MSG_NOT_CONNECTED,
+                "Failed to find destination of a '%s' message '%s' from graph.",
+                ten_msg_type_to_string(msg_type), msg_name);
 
   return false;
 }

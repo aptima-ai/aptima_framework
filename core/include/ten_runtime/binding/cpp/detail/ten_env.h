@@ -835,8 +835,6 @@ class ten_env_t {
       // ownership of the cmd to the TEN runtime.
       auto *cpp_cmd_ptr = cmd.release();
       delete cpp_cmd_ptr;
-    } else {
-      TEN_LOGE("Failed to send_cmd: %s", cmd->get_name());
     }
 
     return rc;

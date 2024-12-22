@@ -392,16 +392,16 @@ void ten_schema_store_deinit(ten_schema_store_t *self) {
     self->property = NULL;
   }
 
-  ten_hashtable_clear(&self->cmd_in);
-  ten_hashtable_clear(&self->cmd_out);
-  ten_hashtable_clear(&self->data_in);
-  ten_hashtable_clear(&self->data_out);
-  ten_hashtable_clear(&self->video_frame_in);
-  ten_hashtable_clear(&self->video_frame_out);
-  ten_hashtable_clear(&self->audio_frame_in);
-  ten_hashtable_clear(&self->audio_frame_out);
-  ten_hashtable_clear(&self->interface_in);
-  ten_hashtable_clear(&self->interface_out);
+  ten_hashtable_deinit(&self->cmd_in);
+  ten_hashtable_deinit(&self->cmd_out);
+  ten_hashtable_deinit(&self->data_in);
+  ten_hashtable_deinit(&self->data_out);
+  ten_hashtable_deinit(&self->video_frame_in);
+  ten_hashtable_deinit(&self->video_frame_out);
+  ten_hashtable_deinit(&self->audio_frame_in);
+  ten_hashtable_deinit(&self->audio_frame_out);
+  ten_hashtable_deinit(&self->interface_in);
+  ten_hashtable_deinit(&self->interface_out);
 }
 
 // {

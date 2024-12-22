@@ -191,6 +191,8 @@ void ten_hashtable_init(ten_hashtable_t *self, ptrdiff_t hh_offset) {
 void ten_hashtable_deinit(ten_hashtable_t *self) {
   assert(self);
 
+  ten_hashtable_clear(self);
+
   if (self->bkts) {
     free(self->bkts);
     self->bkts = NULL;
@@ -205,8 +207,6 @@ void ten_hashtable_clear(ten_hashtable_t *self) {
   assert(self);
 
   ten_hashtable_foreach(self, iter) { ten_hashtable_del(self, iter.node); }
-
-  ten_hashtable_deinit(self);
 }
 
 void ten_hashtable_concat(ten_hashtable_t *self, ten_hashtable_t *target) {

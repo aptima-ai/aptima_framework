@@ -10,7 +10,6 @@
 
 #include "ten_utils/container/hash_handle.h"
 #include "ten_utils/container/hash_table.h"
-#include "ten_utils/macro/macros.h"
 
 void ten_hashbucket_add(ten_hashbucket_t *self, ten_hashhandle_t *hh) {
   assert(self && hh);

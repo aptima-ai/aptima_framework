@@ -11,6 +11,7 @@
 #include "include_internal/ten_runtime/app/msg_interface/common.h"
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/extension/extension.h"
+#include "include_internal/ten_runtime/extension/msg_not_connected_cnt.h"
 #include "include_internal/ten_runtime/extension_context/extension_context.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd_base.h"
@@ -27,7 +28,7 @@
 #include "ten_utils/macro/memory.h"
 
 /**
- * @brief All message sending code flows will eventually fall into this
+ * @brief All message-sending code paths will ultimately converge in this
  * function.
  */
 static bool ten_send_msg_internal(
@@ -41,6 +42,9 @@ static bool ten_send_msg_internal(
 
   const bool msg_is_cmd = ten_msg_is_cmd(msg);
 
+  // Even if the user does not pass in the `err` parameter, since different
+  // error scenarios require different handling, we need to create a temporary
+  // one to obtain the actual error information.
   bool err_new_created = false;
   if (!err) {
     err = ten_error_create();
@@ -116,7 +120,17 @@ static bool ten_send_msg_internal(
 done:
   if (!result) {
     if (ten_error_errno(err) == TEN_ERRNO_MSG_NOT_CONNECTED) {
-      TEN_LOGD("Failed to send message: %s", ten_error_errmsg(err));
+      if (ten_env_get_attach_to(self) == TEN_ENV_ATTACH_TO_EXTENSION) {
+        ten_extension_t *extension = ten_env_get_attached_extension(self);
+        TEN_ASSERT(extension, "Should not happen.");
+
+        if (ten_extension_increment_msg_not_connected_count(
+                extension, ten_msg_get_name(msg))) {
+          TEN_LOGW("Failed to send message: %s", ten_error_errmsg(err));
+        }
+      } else {
+        TEN_LOGE("Failed to send message: %s", ten_error_errmsg(err));
+      }
     } else {
       TEN_LOGE("Failed to send message: %s", ten_error_errmsg(err));
     }

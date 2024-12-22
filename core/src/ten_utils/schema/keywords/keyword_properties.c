@@ -46,7 +46,7 @@ static void ten_schema_keyword_properties_destroy(ten_schema_keyword_t *self_) {
              "Invalid argument.");
 
   ten_signature_set(&self->signature, 0);
-  ten_hashtable_clear(&self->properties);
+  ten_hashtable_deinit(&self->properties);
   ten_schema_keyword_deinit(&self->hdr);
   TEN_FREE(self);
 }

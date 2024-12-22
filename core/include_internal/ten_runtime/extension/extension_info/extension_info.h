@@ -27,9 +27,7 @@ typedef struct ten_extension_info_t {
   ten_sanitizer_thread_check_t thread_check;
 
   ten_string_t extension_addon_name;
-
   ten_loc_t loc;
-  ten_extension_t *extension;
 
   // The extension_info of the destination extension for each type of message.
   ten_all_msg_type_dest_info_t msg_dest_info;
