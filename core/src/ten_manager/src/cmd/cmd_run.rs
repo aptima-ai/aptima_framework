@@ -21,6 +21,9 @@ use crate::{
 #[derive(Debug)]
 pub struct RunCommand {
     pub script_name: String,
+
+    // Stores additional arguments passed after `--`.
+    pub extra_args: Vec<String>,
 }
 
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
@@ -31,6 +34,13 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
                 .required(true)
                 .help("Which script to run, e.g. 'start' or 'stop'"),
         )
+        .arg(
+            Arg::new("EXTRA_ARGS")
+                .help("Additional arguments to pass to the script")
+                .last(true)
+                .allow_hyphen_values(true)
+                .required(false),
+        )
 }
 
 pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> RunCommand {
@@ -39,7 +49,15 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> RunCommand {
         .expect("SCRIPT_NAME is required")
         .to_string();
 
-    RunCommand { script_name }
+    let extra_args = sub_cmd_args
+        .get_many::<String>("EXTRA_ARGS")
+        .map(|vals| vals.map(|s| s.to_string()).collect())
+        .unwrap_or_default();
+
+    RunCommand {
+        script_name,
+        extra_args,
+    }
 }
 
 pub async fn execute_cmd(
@@ -117,7 +135,11 @@ pub async fn execute_cmd(
 
     let mut parts = script_cmd.split_whitespace();
     let exec = parts.next().unwrap();
-    let args: Vec<&str> = parts.collect();
+    let mut args: Vec<&str> = parts.collect();
+
+    for arg in &cmd.extra_args {
+        args.push(arg);
+    }
 
     let mut child = StdCommand::new(exec)
         .args(&args)
