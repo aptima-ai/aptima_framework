@@ -12,10 +12,10 @@ use ten_manager::{
 async fn test_cmd_check_predefined_graph_success() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec![
+        app_dir: vec![
             "tests/test_data/cmd_check_predefined_graph_success".to_string()
         ],
-        graph: None,
+        graph_json_str: None,
         predefined_graph_name: None,
     };
 
@@ -31,8 +31,8 @@ async fn test_cmd_check_predefined_graph_success() {
 async fn test_cmd_check_start_graph_cmd() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec!["tests/test_data/cmd_check_start_graph_cmd".to_string()],
-        graph: Some(
+        app_dir: vec!["tests/test_data/cmd_check_start_graph_cmd".to_string()],
+        graph_json_str: Some(
             include_str!(
                 "test_data/cmd_check_start_graph_cmd/start_graph.json"
             )
@@ -54,13 +54,13 @@ async fn test_cmd_check_start_graph_cmd() {
 async fn test_cmd_check_start_graph_multi_apps() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec![
+        app_dir: vec![
             "tests/test_data/cmd_check_start_graph_multi_apps/app_1"
                 .to_string(),
             "tests/test_data/cmd_check_start_graph_multi_apps/app_2"
                 .to_string(),
         ],
-        graph: Some(
+        graph_json_str: Some(
             include_str!(
                 "test_data/cmd_check_start_graph_multi_apps/start_graph.json"
             )
@@ -87,9 +87,11 @@ async fn test_cmd_check_start_graph_multi_apps() {
 async fn test_cmd_check_app_in_graph_cannot_be_localhost() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec!["tests/test_data/cmd_check_app_in_graph_cannot_be_localhost"
-            .to_string()],
-        graph: None,
+        app_dir: vec![
+            "tests/test_data/cmd_check_app_in_graph_cannot_be_localhost"
+                .to_string(),
+        ],
+        graph_json_str: None,
         predefined_graph_name: None,
     };
 
@@ -111,11 +113,11 @@ async fn test_cmd_check_app_in_graph_cannot_be_localhost() {
 async fn test_cmd_check_predefined_graph_only_check_specified() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec![
+        app_dir: vec![
             "tests/test_data/cmd_check_predefined_graph_only_check_specified"
                 .to_string(),
         ],
-        graph: None,
+        graph_json_str: None,
         predefined_graph_name: Some("default".to_string()),
     };
 
@@ -132,11 +134,11 @@ async fn test_cmd_check_predefined_graph_only_check_specified() {
 async fn test_cmd_check_predefined_graph_check_all() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec![
+        app_dir: vec![
             "tests/test_data/cmd_check_predefined_graph_only_check_specified"
                 .to_string(),
         ],
-        graph: None,
+        graph_json_str: None,
         predefined_graph_name: None,
     };
 
@@ -159,8 +161,8 @@ async fn test_cmd_check_predefined_graph_check_all() {
 async fn test_cmd_check_unique_extension_in_connections() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec!["tests/test_data/cmd_check_start_graph_cmd".to_string()],
-        graph: Some(
+        app_dir: vec!["tests/test_data/cmd_check_start_graph_cmd".to_string()],
+        graph_json_str: Some(
             include_str!(
                 "test_data/cmd_check_start_graph_cmd/cmd_check_unique_extension_in_connections.json"
             )
@@ -184,8 +186,8 @@ async fn test_cmd_check_unique_extension_in_connections() {
 async fn test_cmd_check_single_app_node_cannot_be_localhost() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec!["tests/test_data/cmd_check_single_app_node_cannot_be_localhost".to_string()],
-        graph: Some(
+        app_dir: vec!["tests/test_data/cmd_check_single_app_node_cannot_be_localhost".to_string()],
+        graph_json_str: Some(
             include_str!(
                 "test_data/cmd_check_single_app_node_cannot_be_localhost/start_graph.json"
             )
@@ -211,8 +213,8 @@ async fn test_cmd_check_single_app_node_cannot_be_localhost() {
 async fn test_cmd_check_multi_apps_node_cannot_be_localhost() {
     let tman_config = TmanConfig::default();
     let command = CheckGraphCommand {
-        app: vec!["tests/test_data/cmd_check_multi_apps_node_cannot_be_localhost".to_string()],
-        graph: Some(
+        app_dir: vec!["tests/test_data/cmd_check_multi_apps_node_cannot_be_localhost".to_string()],
+        graph_json_str: Some(
             include_str!(
                 "test_data/cmd_check_multi_apps_node_cannot_be_localhost/start_graph.json"
             )

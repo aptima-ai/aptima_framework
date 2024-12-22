@@ -4,7 +4,6 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-
 use std::{collections::HashMap, fs, path, str::FromStr};
 
 use anyhow::{Context, Result};
@@ -20,9 +19,9 @@ use crate::config::TmanConfig;
 
 #[derive(Debug)]
 pub struct CheckGraphCommand {
-    pub app: Vec<String>,
+    pub app_dir: Vec<String>,
     pub predefined_graph_name: Option<String>,
-    pub graph: Option<String>,
+    pub graph_json_str: Option<String>,
 }
 
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
@@ -31,14 +30,14 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
             "Check whether the graph content of the predefined graph or start_graph command is correct",
         )
         .arg(
-            Arg::new("APP")
-                .long("app")
+            Arg::new("APP_DIR")
+                .long("app-dir")
                 .help(
                     "The absolute path of the app declared in the graph. By \
                     default, the predefined graph will be read from the first \
                     one in the list.",
                 )
-                .required(true),
+                .required(true).num_args(1..),
         )
         .arg(
             Arg::new("PREDEFINED_GRAPH_NAME")
@@ -48,11 +47,11 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
                     otherwise, all predefined graphs will be checked.",
                 )
                 .required(false)
-                .conflicts_with("GRAPH"),
+                .conflicts_with("GRAPH_JSON_STR"),
         )
         .arg(
-            Arg::new("GRAPH")
-                .long("graph")
+            Arg::new("GRAPH_JSON_STR")
+                .long("graph-json-str")
                 .help(
                     "Specify the json string of a 'start_graph' cmd to be \
                     checked. If not specified, the predefined graph in the \
@@ -63,26 +62,26 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(
-    _sub_cmd_args: &ArgMatches,
-) -> crate::cmd::cmd_check::cmd_check_graph::CheckGraphCommand {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> CheckGraphCommand {
     let cmd = CheckGraphCommand {
-        app: _sub_cmd_args
-            .get_many::<String>("APP")
+        app_dir: sub_cmd_args
+            .get_many::<String>("APP_DIR")
             .unwrap_or_default()
             .map(|s| s.to_string())
             .collect(),
-        predefined_graph_name: _sub_cmd_args
+        predefined_graph_name: sub_cmd_args
             .get_one::<String>("PREDEFINED_GRAPH_NAME")
             .cloned(),
-        graph: _sub_cmd_args.get_one::<String>("GRAPH").cloned(),
+        graph_json_str: sub_cmd_args
+            .get_one::<String>("GRAPH_JSON_STR")
+            .cloned(),
     };
 
     cmd
 }
 
 fn validate_cmd_args(command: &CheckGraphCommand) -> Result<()> {
-    for app in &command.app {
+    for app in &command.app_dir {
         let stat = fs::metadata(app).with_context(|| {
             format!("Failed to get metadata of app path [{}].", app)
         })?;
@@ -102,9 +101,9 @@ fn get_existed_pkgs_of_all_apps(
 ) -> Result<HashMap<String, Vec<PkgInfo>>> {
     let mut pkgs_info: HashMap<String, Vec<PkgInfo>> = HashMap::new();
 
-    let single_app = command.app.len() == 1;
+    let single_app = command.app_dir.len() == 1;
 
-    for app in &command.app {
+    for app in &command.app_dir {
         let app_path = path::Path::new(app);
         let app_existed_pkgs = get_all_existed_pkgs_info_of_app(app_path)?;
 
@@ -137,13 +136,13 @@ fn get_existed_pkgs_of_all_apps(
 fn get_graphs_to_be_checked(command: &CheckGraphCommand) -> Result<Vec<Graph>> {
     let mut graphs_to_be_checked: Vec<Graph> = Vec::new();
 
-    if let Some(graph_str) = &command.graph {
+    if let Some(graph_str) = &command.graph_json_str {
         let graph: Graph = Graph::from_str(graph_str).map_err(|e| {
             anyhow::anyhow!("Failed to parse graph string, {}", e)
         })?;
         graphs_to_be_checked.push(graph);
     } else {
-        let first_app_path = path::Path::new(&command.app[0]);
+        let first_app_path = path::Path::new(&command.app_dir[0]);
         let first_app_property = parse_property_in_folder(first_app_path)?;
         if first_app_property.is_none() {
             return Err(anyhow::anyhow!("The property.json is not found in the first app, which is required to retrieve the predefined graphs."));
@@ -201,10 +200,10 @@ pub async fn execute_cmd(
         print!("Checking graph[{}]... ", graph_idx);
 
         match graph.check(&existed_pkgs_of_all_apps) {
-            Ok(_) => println!("{}", Emoji("✅", "Passed")),
+            Ok(_) => println!("{}", Emoji("👍", "Passed")),
             Err(e) => {
                 err_count += 1;
-                println!("{}. Details:", Emoji("🔴", "Failed"));
+                println!("{}  Details:", Emoji("🔴", "Failed"));
                 display_error(&e);
                 println!();
             }
