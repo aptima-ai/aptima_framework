@@ -32,8 +32,8 @@
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_is.h"
 
-ten_value_t *ten_cmd_start_graph_extensions_info_to_value(ten_msg_t *self,
-                                                          ten_error_t *err) {
+static ten_value_t *ten_cmd_start_graph_extensions_info_to_value(
+    ten_msg_t *self, ten_error_t *err) {
   TEN_ASSERT(self && ten_raw_msg_check_integrity(self), "Should not happen.");
 
   ten_cmd_start_graph_t *cmd = (ten_cmd_start_graph_t *)self;
