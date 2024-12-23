@@ -8,8 +8,7 @@ use std::{collections::HashMap, path::Path, str::FromStr};
 
 use ten_rust::pkg_info::{
     get_all_existed_pkgs_info_of_app, graph::Graph, localhost,
-    pkg_type::PkgType, property::predefined_graph::PropertyPredefinedGraph,
-    PkgInfo,
+    pkg_type::PkgType, property::predefined_graph::PredefinedGraph, PkgInfo,
 };
 
 #[test]
@@ -26,7 +25,7 @@ fn test_graph_check_extension_not_installed_1() {
     let app_pkg = app_pkg_info.unwrap();
     let predefined_graphs = app_pkg.get_predefined_graphs().unwrap();
     let pkg_graph = predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone();
+    let predefined_graph: PredefinedGraph = pkg_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
@@ -51,7 +50,7 @@ fn test_graph_check_extension_not_installed_2() {
     let app_pkg = app_pkg_info.unwrap();
     let predefined_graphs = app_pkg.get_predefined_graphs().unwrap();
     let pkg_graph = predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone();
+    let predefined_graph: PredefinedGraph = pkg_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
@@ -76,7 +75,7 @@ fn test_graph_check_predefined_graph_success() {
     let app_pkg = app_pkg_info.unwrap();
     let predefined_graphs = app_pkg.get_predefined_graphs().unwrap();
     let pkg_graph = predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone();
+    let predefined_graph: PredefinedGraph = pkg_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();
@@ -100,7 +99,7 @@ fn test_graph_check_all_msgs_schema_incompatible() {
     let app_pkg = app_pkg_info.unwrap();
     let predefined_graphs = app_pkg.get_predefined_graphs().unwrap();
     let pkg_graph = predefined_graphs.first().unwrap();
-    let predefined_graph: PropertyPredefinedGraph = pkg_graph.clone();
+    let predefined_graph: PredefinedGraph = pkg_graph.clone();
     let graph = &predefined_graph.graph;
 
     let mut pkg_info_map: HashMap<String, Vec<PkgInfo>> = HashMap::new();

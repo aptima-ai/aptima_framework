@@ -14,7 +14,7 @@ use anyhow::Result;
 use msg_conversion::MsgAndResultConversion;
 use serde::{Deserialize, Serialize};
 
-use super::{pkg_type::PkgType, PkgInfo};
+use super::{pkg_type::PkgType, pkg_type_and_name::PkgTypeAndName, PkgInfo};
 use crate::pkg_info::localhost;
 
 /// The state of the 'app' field declaration in all nodes in the graph.
@@ -214,9 +214,9 @@ impl Graph {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GraphNode {
-    #[serde(rename = "type")]
-    pub node_type: PkgType,
-    pub name: String,
+    #[serde(flatten)]
+    pub type_and_name: PkgTypeAndName,
+
     pub addon: String,
 
     // extension group node does not contain extension_group field.
@@ -236,12 +236,12 @@ impl GraphNode {
         graph_node_app_declaration: &GraphNodeAppDeclaration,
     ) -> Result<()> {
         // Extension node must specify extension_group name.
-        if self.node_type == PkgType::Extension
+        if self.type_and_name.pkg_type == PkgType::Extension
             && self.extension_group.is_none()
         {
             return Err(anyhow::anyhow!(
                 "Node '{}' of type 'extension' must have an 'extension_group' defined.",
-                self.name
+                self.type_and_name.name
             ));
         }
 

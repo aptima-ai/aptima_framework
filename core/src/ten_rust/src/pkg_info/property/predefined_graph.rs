@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::pkg_info::graph::Graph;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct PropertyPredefinedGraph {
+pub struct PredefinedGraph {
     pub name: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -20,7 +20,7 @@ pub struct PropertyPredefinedGraph {
     pub graph: Graph,
 }
 
-impl PropertyPredefinedGraph {
+impl PredefinedGraph {
     pub fn validate_and_complete(&mut self) -> Result<()> {
         self.graph.validate_and_complete()
     }

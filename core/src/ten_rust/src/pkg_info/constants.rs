@@ -14,7 +14,5 @@ pub const EXTENSION_GROUP_DIR: &str = "extension_group";
 pub const PROTOCOL_DIR: &str = "protocol";
 pub const SYSTEM_DIR: &str = "system";
 
-pub const APP_PKG_TYPE: &str = "app";
-
 pub const ERR_STR_NOT_APP_DIR: &str =
     "The current working directory does not belong to the `app`.";

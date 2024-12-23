@@ -15,19 +15,19 @@ impl Graph {
         let mut all_extension_groups: Vec<String> = Vec::new();
 
         for (node_idx, node) in self.nodes.iter().enumerate() {
-            match node.node_type {
+            match node.type_and_name.pkg_type {
                 PkgType::Extension => {
                     let unique_ext_name = format!(
                         "{}:{}:{}",
                         node.get_app_uri(),
                         node.extension_group.as_ref().unwrap(),
-                        node.name
+                        node.type_and_name.name
                     );
 
                     if all_extensions.contains(&unique_ext_name) {
                         return Err(anyhow::anyhow!(
                             "Duplicated extension was found in nodes[{}], addon: {}, name: {}.",
-                            node_idx, node.addon, node.name
+                            node_idx, node.addon, node.type_and_name.name
                         ));
                     }
 
@@ -45,13 +45,16 @@ impl Graph {
                 }
 
                 PkgType::ExtensionGroup => {
-                    let unique_ext_group_name =
-                        format!("{}:{}", node.get_app_uri(), node.name);
+                    let unique_ext_group_name = format!(
+                        "{}:{}",
+                        node.get_app_uri(),
+                        node.type_and_name.name
+                    );
 
                     if all_extension_groups.contains(&unique_ext_group_name) {
                         return Err(anyhow::anyhow!(
                             "Duplicated extension_group was found in nodes[{}], addon: {}, name: {}.",
-                            node_idx, node.addon, node.name
+                            node_idx, node.addon, node.type_and_name.name
                         ));
                     }
 

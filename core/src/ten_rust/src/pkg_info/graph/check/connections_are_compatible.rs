@@ -28,8 +28,8 @@ impl Graph {
         self.nodes
             .iter()
             .find_map(|node| {
-                if node.node_type == PkgType::Extension
-                    && node.name.as_str() == extension
+                if node.type_and_name.pkg_type == PkgType::Extension
+                    && node.type_and_name.name.as_str() == extension
                     && node.get_app_uri() == app
                 {
                     Some(node.addon.as_str())

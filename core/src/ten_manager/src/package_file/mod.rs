@@ -64,8 +64,8 @@ pub fn create_package_zip_file(
     .map_err(|e| {
         anyhow::anyhow!(
             "Failed to check property.json for {}:{}, {}",
-            manifest.pkg_type,
-            manifest.name,
+            manifest.type_and_name.pkg_type,
+            manifest.type_and_name.name,
             e
         )
     })?;

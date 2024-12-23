@@ -28,7 +28,7 @@ impl Graph {
                 if !skip_if_app_not_exist {
                     not_installed_pkgs.push((
                         node_app_uri.to_string(),
-                        node.node_type,
+                        node.type_and_name.pkg_type,
                         node.addon.clone(),
                     ));
                 }
@@ -41,14 +41,15 @@ impl Graph {
 
             // Check if the graph node exists in the specified app.
             let found = existed_pkgs_of_app.iter().find(|pkg| {
-                pkg.basic_info.type_and_name.pkg_type == node.node_type
+                pkg.basic_info.type_and_name.pkg_type
+                    == node.type_and_name.pkg_type
                     && pkg.basic_info.type_and_name.name == node.addon
                     && pkg.is_local_installed
             });
             if found.is_none() {
                 not_installed_pkgs.push((
                     node_app_uri.to_string(),
-                    node.node_type,
+                    node.type_and_name.pkg_type,
                     node.addon.clone(),
                 ));
             }

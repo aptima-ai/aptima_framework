@@ -614,8 +614,8 @@ pub async fn execute_cmd(
         // Case 2: tman install
 
         let manifest = parse_manifest_in_folder(&cwd)?;
-        affected_pkg_type = manifest.pkg_type.parse::<PkgType>()?;
-        affected_pkg_name = manifest.name.clone();
+        affected_pkg_type = manifest.type_and_name.pkg_type;
+        affected_pkg_name = manifest.type_and_name.name.clone();
 
         match affected_pkg_type {
             PkgType::App => {

@@ -47,9 +47,12 @@ impl Graph {
 
         let mut all_extensions: Vec<String> = Vec::new();
         for node in &self.nodes {
-            if node.node_type == PkgType::Extension {
-                let unique_ext_name =
-                    format!("{}:{}", node.get_app_uri(), node.name);
+            if node.type_and_name.pkg_type == PkgType::Extension {
+                let unique_ext_name = format!(
+                    "{}:{}",
+                    node.get_app_uri(),
+                    node.type_and_name.name
+                );
                 all_extensions.push(unique_ext_name);
             }
         }

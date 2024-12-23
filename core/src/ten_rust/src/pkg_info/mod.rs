@@ -35,7 +35,7 @@ use pkg_type_and_name::PkgTypeAndName;
 use crate::schema::store::SchemaStore;
 use api::PkgApi;
 use constants::{
-    APP_PKG_TYPE, ERR_STR_NOT_APP_DIR, EXTENSION_DIR, EXTENSION_GROUP_DIR,
+    ERR_STR_NOT_APP_DIR, EXTENSION_DIR, EXTENSION_GROUP_DIR,
     MANIFEST_JSON_FILENAME, PROTOCOL_DIR, SYSTEM_DIR, TEN_PACKAGES_DIR,
 };
 use dependencies::{get_pkg_dependencies_from_manifest, PkgDependency};
@@ -43,7 +43,7 @@ use manifest::{parse_manifest_from_file, parse_manifest_in_folder, Manifest};
 use pkg_type::PkgType;
 use property::{
     parse_property_from_file, parse_property_in_folder,
-    predefined_graph::PropertyPredefinedGraph, Property,
+    predefined_graph::PredefinedGraph, Property,
 };
 
 pub fn localhost() -> String {
@@ -139,9 +139,7 @@ impl PkgInfo {
         Ok(property_pkg_json == property_fs_json)
     }
 
-    pub fn get_predefined_graphs(
-        &self,
-    ) -> Option<&Vec<PropertyPredefinedGraph>> {
+    pub fn get_predefined_graphs(&self) -> Option<&Vec<PredefinedGraph>> {
         if let Some(property) = &self.property {
             if let Some(ten) = &property._ten {
                 return ten.predefined_graphs.as_ref();
@@ -151,10 +149,7 @@ impl PkgInfo {
         None
     }
 
-    pub fn update_predefined_graph(
-        &mut self,
-        new_graph: &PropertyPredefinedGraph,
-    ) {
+    pub fn update_predefined_graph(&mut self, new_graph: &PredefinedGraph) {
         if let Some(property) = &mut self.property {
             if let Some(ten) = &mut property._ten {
                 if let Some(predefined_graphs) = &mut ten.predefined_graphs {
@@ -223,7 +218,7 @@ pub fn get_all_existed_pkgs_info_of_app_to_hashmap(
     // Process the manifest.json file in the root path.
     let app_pkg_manifest =
         collect_pkg_info_from_path(app_path, &mut pkgs_info)?;
-    if app_pkg_manifest.pkg_type != APP_PKG_TYPE {
+    if app_pkg_manifest.type_and_name.pkg_type != PkgType::App {
         return Err(anyhow::anyhow!(ERR_STR_NOT_APP_DIR));
     }
 
@@ -246,28 +241,31 @@ pub fn get_all_existed_pkgs_info_of_app_to_hashmap(
                             parse_manifest_from_file(&manifest_path)?;
 
                         // Do some simple checks.
-                        if manifest.name
+                        if manifest.type_and_name.name
                             != path.file_name().unwrap().to_str().unwrap()
                         {
                             return Err(anyhow::anyhow!(
                                 "The path '{}' is not valid: {}.",
-                                format!("{}:{}",manifest.pkg_type, manifest.name),
+                                format!("{}:{}",manifest.type_and_name.pkg_type, manifest.type_and_name.name),
                                 format!(
                                     "the path '{}' and the name '{}' of the package are different",
-                                    path.file_name().unwrap().to_str().unwrap(), manifest.name
+                                    path.file_name().unwrap().to_str().unwrap(), manifest.type_and_name.name
                             )));
                         }
 
-                        if manifest.pkg_type != addon_type {
+                        if manifest.type_and_name.pkg_type.to_string()
+                            != addon_type
+                        {
                             return Err(anyhow::anyhow!(
                                 "The path '{}' is not valid: {}.",
                                 format!(
                                     "{}:{}",
-                                    manifest.pkg_type, manifest.name
+                                    manifest.type_and_name.pkg_type,
+                                    manifest.type_and_name.name
                                 ),
                                 format!(
                                 "the package type '{}' is not as expected '{}'",
-                                manifest.pkg_type, addon_type)
+                                manifest.type_and_name.pkg_type, addon_type)
                             ));
                         }
 

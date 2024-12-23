@@ -21,12 +21,14 @@ use dependency::ManifestDependency;
 use publish::PackageConfig;
 use support::ManifestSupport;
 
+use super::pkg_type_and_name::PkgTypeAndName;
+
 // Define a structure that mirrors the structure of the JSON file.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Manifest {
-    #[serde(rename = "type")]
-    pub pkg_type: String,
-    pub name: String,
+    #[serde(flatten)]
+    pub type_and_name: PkgTypeAndName,
+
     pub version: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -113,6 +115,8 @@ pub fn parse_manifest_in_folder(folder_path: &Path) -> Result<Manifest> {
 
 #[cfg(test)]
 mod tests {
+    use crate::pkg_info::pkg_type::PkgType;
+
     use super::*;
 
     #[test]
@@ -125,7 +129,7 @@ mod tests {
         assert!(result.is_ok());
 
         let manifest = result.unwrap();
-        assert_eq!(manifest.pkg_type, "extension");
+        assert_eq!(manifest.type_and_name.pkg_type, PkgType::Extension);
 
         let cmd_in = manifest.api.unwrap().cmd_in.unwrap();
         assert_eq!(cmd_in.len(), 1);

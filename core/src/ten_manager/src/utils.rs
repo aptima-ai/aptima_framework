@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::{env, io};
 
 use anyhow::{anyhow, Result};
+use ten_rust::pkg_info::pkg_type::PkgType;
 
 use super::error::TmanError;
 
@@ -66,7 +67,7 @@ pub fn read_file_to_string<P: AsRef<Path>>(
 pub fn check_is_app_folder(path: &Path) -> Result<()> {
     let manifest =
         ten_rust::pkg_info::manifest::parse_manifest_in_folder(path)?;
-    if manifest.pkg_type != "app" {
+    if manifest.type_and_name.pkg_type != PkgType::App {
         return Err(anyhow!("The `type` in manifest.json is not `app`."));
     }
 
@@ -74,21 +75,8 @@ pub fn check_is_app_folder(path: &Path) -> Result<()> {
 }
 
 pub fn check_is_package_folder(path: &Path) -> Result<()> {
-    let manifest =
-        ten_rust::pkg_info::manifest::parse_manifest_in_folder(path)?;
-    if manifest.pkg_type == "app"
-        || manifest.pkg_type == "system"
-        || manifest.pkg_type == "extension"
-        || manifest.pkg_type == "extension_group"
-        || manifest.pkg_type == "protocol"
-    {
-        return Err(TmanError::InvalidPath(
-            path.to_string_lossy().to_string(),
-            format!("package type {} is not correct", manifest.pkg_type)
-                .to_string(),
-        )
-        .into());
+    match ten_rust::pkg_info::manifest::parse_manifest_in_folder(path) {
+        Ok(_) => Ok(()),
+        Err(err) => Err(err),
     }
-
-    Ok(())
 }

@@ -23,7 +23,7 @@ use super::{
 };
 use crate::pkg_info::graph::is_app_default_loc_or_none;
 use crate::{json_schema, pkg_info::localhost};
-use predefined_graph::PropertyPredefinedGraph;
+use predefined_graph::PredefinedGraph;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Property {
@@ -90,7 +90,7 @@ impl Property {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TenInProperty {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub predefined_graphs: Option<Vec<PropertyPredefinedGraph>>,
+    pub predefined_graphs: Option<Vec<PredefinedGraph>>,
 
     #[serde(skip_serializing_if = "is_app_default_loc_or_none")]
     pub uri: Option<String>,

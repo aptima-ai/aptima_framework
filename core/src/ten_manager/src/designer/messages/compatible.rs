@@ -58,7 +58,7 @@ impl From<CompatibleExtensionAndMsg<'_>> for DesignerCompatibleMsg {
                 .clone()
                 .unwrap()
                 .clone(),
-            extension: compatible.extension.name.clone(),
+            extension: compatible.extension.type_and_name.name.clone(),
             msg_type: compatible.msg_type,
             msg_direction: compatible.msg_direction,
             msg_name: compatible.msg_name,
