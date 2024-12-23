@@ -165,29 +165,24 @@ TEST(ExtensionTest, MultiDestYGraph) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "extension_group",
                "extension": "extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "extension_group",
                    "extension": "extension_2"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "extension_group",
                "extension": "extension_2",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "extension_group",
                    "extension": "extension_3"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "extension_group",
                    "extension": "extension_4"
                  }]
                }]

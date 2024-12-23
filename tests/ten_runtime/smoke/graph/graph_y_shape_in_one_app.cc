@@ -145,7 +145,6 @@ TEST(ExtensionTest, GraphYShapeInOneApp) {
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_y_shape_in_one_app__extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                   "name": "hello_world",

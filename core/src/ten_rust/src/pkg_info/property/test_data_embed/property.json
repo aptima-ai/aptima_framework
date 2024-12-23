@@ -20,14 +20,12 @@
 				],
 				"connections": [
 					{
-						"extension_group": "ext_group",
 						"extension": "ext1",
 						"cmd": [
 							{
 								"name": "hello_world",
 								"dest": [
 									{
-										"extension_group": "ext_group",
 										"extension": "ext2"
 									}
 								]

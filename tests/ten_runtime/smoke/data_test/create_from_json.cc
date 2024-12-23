@@ -115,25 +115,21 @@ TEST(DataTest, CreateFromJson) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
                "extension": "test_extension_1",
                "data": [{
                  "name": "data",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_2"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
                "extension": "test_extension_2",
                "cmd": [{
                  "name": "data_ack",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_1"
                  }]
                }]

@@ -128,13 +128,11 @@ TEST(ExtensionTest, CommandSendPtrThroughCmd) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "command_send_ptr_through_cmd__extension_group_1",
                "extension": "command_send_ptr_through_cmd__extension_1",
                "cmd": [{
                  "name": "send_ptr",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "command_send_ptr_through_cmd__extension_group_2",
                    "extension": "command_send_ptr_through_cmd__extension_2"
                  }]
                }]

@@ -16,14 +16,12 @@ impl Graph {
     // "connections": [
     //   {
     //     "extension": "some_ext",
-    //     "extension_group": "some_group",
     //     "cmd": [
     //       {
     //         "name": "some_cmd",
     //         "dest": [
     //           {
-    //             "extension": "ext_2",
-    //             "extension_group": "group_2"
+    //             "extension": "ext_2"
     //           }
     //         ]
     //       }
@@ -31,14 +29,12 @@ impl Graph {
     //   },
     //   {
     //     "extension": "some_ext",
-    //     "extension_group": "some_group",
     //     "cmd": [
     //       {
     //         "name": "another_cmd",
     //         "dest": [
     //           {
-    //             "extension": "ext_3",
-    //             "extension_group": "group_3"
+    //             "extension": "ext_3"
     //           }
     //         ]
     //       }
@@ -53,9 +49,8 @@ impl Graph {
             self.connections.as_ref().unwrap().iter().enumerate()
         {
             let extension = format!(
-                "{}:{}:{}",
+                "{}:{}",
                 connection.get_app_uri(),
-                connection.extension_group,
                 connection.extension
             );
 

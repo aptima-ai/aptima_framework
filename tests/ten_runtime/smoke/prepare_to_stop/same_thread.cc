@@ -131,20 +131,17 @@ TEST(ExtensionTest, PrepareToStopSameThread) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "prepare_to_stop_same_thread",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "prepare_to_stop_same_thread",
                    "extension": "test_extension_2"
                  }]
                },{
                  "name": "extension_1_stop",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "prepare_to_stop_same_thread",
                    "extension": "test_extension_2"
                  }]
                }]

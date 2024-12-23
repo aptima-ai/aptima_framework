@@ -78,12 +78,10 @@ class test_app : public ten::app_t {
                             "extension_group": "cmd_conversion_graph_default_uri_extension_group"
                           }],
                           "connections": [{
-                            "extension_group": "cmd_conversion_graph_default_uri_extension_group",
                             "extension": "test_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
-                                "extension_group": "cmd_conversion_graph_default_uri_extension_group",
                                 "extension": "test_extension_2",
                                 "msg_conversion": {
                                   "type": "per_property",
@@ -95,9 +93,6 @@ class test_app : public ten::app_t {
                                 }
                               }]
                             }]
-                          },{
-                            "extension_group": "cmd_conversion_graph_default_uri_extension_group",
-                            "extension": "test_extension_1"
                           }]
                         }]
                       }

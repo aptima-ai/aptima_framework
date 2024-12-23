@@ -42,26 +42,22 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
       "connections": [
         {
           "app": "msgpack://127.0.0.1:8007/",
-          "extension_group": "nodetest_group",
           "extension": "A",
           "cmd": [{
             "name": "B",
             "dest": [{
               "app": "msgpack://127.0.0.1:8007/",
-              "extension_group": "nodetest_group",
               "extension": "B"
             }]
           }]
         },
         {
           "app": "msgpack://127.0.0.1:8007/",
-          "extension_group": "nodetest_group",
           "extension": "B",
           "cmd": [{
             "name": "C",
             "dest": [{
               "app": "msgpack://127.0.0.1:8007/",
-              "extension_group": "nodetest_group",
               "extension": "C"
             }]
           }]

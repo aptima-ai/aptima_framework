@@ -34,13 +34,11 @@ int main(TEN_UNUSED int argc, TEN_UNUSED char **argv) {
         "connections": [
           {
             "app": "msgpack://127.0.0.1:8007/",
-            "extension_group": "nodetest",
             "extension": "A",
             "data": [{
               "name": "data",
               "dest": [{
                 "app": "msgpack://127.0.0.1:8007/",
-                "extension_group": "nodetest",
                 "extension": "B"
               }]
             }]

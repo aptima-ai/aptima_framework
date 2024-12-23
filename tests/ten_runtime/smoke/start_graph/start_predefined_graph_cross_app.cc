@@ -165,13 +165,11 @@ class test_app_1 : public ten::app_t {
                           }],
                           "connections": [{
                             "app": "msgpack://127.0.0.1:8001/",
-                            "extension_group": "start_predefined_graph_cross_app__normal_extension_group",
                             "extension": "normal_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
                                 "app": "msgpack://127.0.0.1:8002/",
-                                "extension_group": "start_predefined_graph_cross_app__normal_extension_group",
                                 "extension": "normal_extension_2"
                               }]
                             }]

@@ -178,34 +178,28 @@ TEST(StandaloneTest, BasicGraphOuterThread1) {  // NOLINT
 			"extension_group": "test_extension_group"
 		}],
 		"connections": [{
-			"extension_group": "test_extension_group",
 			"extension": "ten:test_extension",
 			"cmd": [{
 				"name": "process",
 				"dest": [{
-					"extension_group": "test_extension_group_1",
 					"extension": "test_extension_1"
 				}]
 			}]
 		},
 		{
-			"extension_group": "test_extension_group_1",
 			"extension": "test_extension_1",
 			"cmd": [{
 				"name": "process",
 				"dest": [{
-					"extension_group": "test_extension_group_2",
 					"extension": "test_extension_2"
 				}]
 			}]
 		},
 		{
-			"extension_group": "test_extension_group_2",
 			"extension": "test_extension_2",
 			"cmd": [{
 				"name": "hello_world",
 				"dest": [{
-					"extension_group": "test_extension_group",
 					"extension": "ten:test_extension"
 				}]
 			}]

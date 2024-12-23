@@ -29,14 +29,12 @@
         ],
         "connections": [
           {
-            "extension_group": "extension_group_1",
             "extension": "extension_1",
             "cmd": [
               {
                 "name": "hello_world",
                 "dest": [
                   {
-                    "extension_group": "extension_group_1",
                     "extension": "extension_2"
                   }
                 ]

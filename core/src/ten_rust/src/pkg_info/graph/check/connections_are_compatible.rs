@@ -71,7 +71,10 @@ impl Graph {
             if let Err(e) =
                 are_ten_schemas_compatible(src_msg_schema, dest_msg_schema)
             {
-                errors.push(format!("Schema incompatible to [extension_group: {}, extension: {}], {}", dest.extension_group, dest.extension, e));
+                errors.push(format!(
+                    "Schema incompatible to [extension: {}], {}",
+                    dest.extension, e
+                ));
             }
         }
 
@@ -120,7 +123,10 @@ impl Graph {
             if let Err(e) =
                 are_cmd_schemas_compatible(src_cmd_schema, dest_cmd_schema)
             {
-                errors.push(format!("Schema incompatible to [extension_group: {}, extension: {}], {}", dest.extension_group, dest.extension, e));
+                errors.push(format!(
+                    "Schema incompatible to [extension: {}], {}",
+                    dest.extension, e
+                ));
             }
         }
 

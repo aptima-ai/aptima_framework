@@ -29,14 +29,12 @@
         ],
         "connections": [
           {
-            "extension_group": "nodetest_group",
             "extension": "A",
             "cmd": [
               {
                 "name": "start",
                 "dest": [
                   {
-                    "extension_group": "nodetest_group",
                     "extension": "B"
                   }
                 ]
@@ -45,7 +43,6 @@
                 "name": "stop",
                 "dest": [
                   {
-                    "extension_group": "nodetest_group",
                     "extension": "B"
                   }
                 ]
@@ -53,14 +50,12 @@
             ]
           },
           {
-            "extension_group": "nodetest_group",
             "extension": "B",
             "cmd": [
               {
                 "name": "start",
                 "dest": [
                   {
-                    "extension_group": "nodetest_group",
                     "extension": "C"
                   }
                 ]
@@ -69,7 +64,6 @@
                 "name": "stop",
                 "dest": [
                   {
-                    "extension_group": "nodetest_group",
                     "extension": "C"
                   }
                 ]
@@ -77,7 +71,6 @@
             ]
           },
           {
-            "extension_group": "nodetest_group",
             "extension": "C"
           }
         ]

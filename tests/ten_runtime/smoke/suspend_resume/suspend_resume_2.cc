@@ -210,13 +210,11 @@ TEST(ExtensionTest, SuspendResume2) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_2"
                  }]
                }],
@@ -224,7 +222,6 @@ TEST(ExtensionTest, SuspendResume2) {  // NOLINT
                  "name": "data",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_2"
                  }]
                }]

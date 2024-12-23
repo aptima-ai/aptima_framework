@@ -275,7 +275,6 @@ pub struct GraphConnection {
     #[serde(skip_serializing_if = "is_app_default_loc_or_none")]
     pub app: Option<String>,
 
-    pub extension_group: String,
     pub extension: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -393,7 +392,6 @@ pub struct GraphDestination {
     #[serde(skip_serializing_if = "is_app_default_loc_or_none")]
     pub app: Option<String>,
 
-    pub extension_group: String,
     pub extension: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]

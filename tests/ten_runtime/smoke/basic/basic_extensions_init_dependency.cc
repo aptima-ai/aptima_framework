@@ -173,25 +173,21 @@ TEST(BasicTest, ExtensionsInitDependency) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extensions_init_dependency",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extensions_init_dependency",
                    "extension": "test_extension_2"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extensions_init_dependency",
                "extension": "test_extension_2",
                "cmd": [{
                  "name": "get_name",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extensions_init_dependency",
                    "extension": "test_extension_1"
                  }]
                }]

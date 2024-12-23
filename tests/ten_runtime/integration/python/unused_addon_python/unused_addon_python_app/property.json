@@ -36,14 +36,12 @@
         ],
         "connections": [
           {
-            "extension_group": "default_extension_group",
             "extension": "simple_http_server_cpp",
             "cmd": [
               {
                 "name": "test",
                 "dest": [
                   {
-                    "extension_group": "default_extension_group",
                     "extension": "simple_echo_cpp"
                   }
                 ]

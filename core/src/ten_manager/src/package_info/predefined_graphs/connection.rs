@@ -16,7 +16,6 @@ impl From<DesignerConnection> for GraphConnection {
     fn from(designer_connection: DesignerConnection) -> Self {
         GraphConnection {
             app: Some(designer_connection.app),
-            extension_group: designer_connection.extension_group,
             extension: designer_connection.extension,
 
             cmd: designer_connection
@@ -58,7 +57,6 @@ impl From<DesignerDestination> for GraphDestination {
     fn from(designer_destination: DesignerDestination) -> Self {
         GraphDestination {
             app: Some(designer_destination.app),
-            extension_group: designer_destination.extension_group,
             extension: designer_destination.extension,
             msg_conversion: designer_destination.msg_conversion,
         }

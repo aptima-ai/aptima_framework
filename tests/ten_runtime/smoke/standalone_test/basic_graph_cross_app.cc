@@ -190,39 +190,33 @@ TEST(StandaloneTest, BasicGraphCrossApp) {  // NOLINT
 		}],
 		"connections": [{
       "app": "client:aaa",
-			"extension_group": "test_extension_group",
-			"extension": "ten:test_extension",
+      "extension": "ten:test_extension",
 			"cmd": [{
 				"name": "process",
 				"dest": [{
           "app": "client:aaa",
-					"extension_group": "test_extension_group_1",
 					"extension": "test_extension_1"
 				}]
 			}]
 		},
 		{
       "app": "client:aaa",
-			"extension_group": "test_extension_group_1",
 			"extension": "test_extension_1",
 			"cmd": [{
 				"name": "process",
 				"dest": [{
           "app": "msgpack://127.0.0.1:8088/",
-					"extension_group": "test_extension_group_2",
 					"extension": "test_extension_2"
 				}]
 			}]
 		},
 		{
-			"extension_group": "test_extension_group_2",
 			"extension": "test_extension_2",
       "app": "msgpack://127.0.0.1:8088/",
 			"cmd": [{
 				"name": "hello_world",
 				"dest": [{
           "app": "client:aaa",
-					"extension_group": "test_extension_group",
 					"extension": "ten:test_extension"
 				}]
 			}]

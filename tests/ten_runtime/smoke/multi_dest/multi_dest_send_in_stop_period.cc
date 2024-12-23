@@ -132,17 +132,14 @@ TEST(ExtensionTest, MultiDestSendInStopPeriod) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test_extension_group1",
                "extension": "extension 1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test_extension_group2",
                    "extension": "extension 2"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "test_extension_group3",
                    "extension": "extension 3"
                  }]
                }]

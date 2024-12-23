@@ -238,7 +238,6 @@ You will receive a `200 OK` response. Ex:
   "data": [
     {
       "app": "localhost",
-      "extension_group": "some_group",
       "extension": "ext_a",
       "cmd": [
         {
@@ -388,7 +387,6 @@ Input data (body):
   "connections": [
     {
       "app": "localhost",
-      "extension_group": "extension_group_1",
       "extension": "extension_1",
       "cmd": [
         {
@@ -396,7 +394,6 @@ Input data (body):
           "dest": [
             {
               "app": "localhost",
-              "extension_group": "extension_group_1",
               "extension": "extension_2"
             }
           ]

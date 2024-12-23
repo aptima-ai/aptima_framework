@@ -83,13 +83,11 @@ class test_app_1 : public ten::app_t {
                            }],
                            "connections": [{
                              "app": "msgpack://127.0.0.1:8001/",
-                             "extension_group": "predefined_graph_group",
                              "extension": "test_extension_1",
                              "cmd": [{
                                "name": "hello_world",
                                "dest": [{
                                  "app": "msgpack://127.0.0.1:8002/",
-                                 "extension_group": "predefined_graph_group",
                                  "extension": "test_extension_2"
                                }]
                              }]

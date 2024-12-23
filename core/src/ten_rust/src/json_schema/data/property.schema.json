@@ -63,18 +63,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "extension_group",
         "extension"
       ],
       "properties": {
         "app": {
           "$ref": "#/$defs/notEmptyString"
         },
-        "extension_group": {
-          "$ref": "#/$defs/notEmptyString"
-        },
         "extension": {
-          "$ref": "#/$defs/notEmptyString"
+          "$ref": "#/$defs/alphanumericCharacters"
         },
         "msg_conversion": {
           "type": "object",
@@ -140,18 +136,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "extension_group",
         "extension"
       ],
       "properties": {
         "app": {
           "$ref": "#/$defs/notEmptyString"
         },
-        "extension_group": {
-          "$ref": "#/$defs/notEmptyString"
-        },
         "extension": {
-          "$ref": "#/$defs/notEmptyString"
+          "$ref": "#/$defs/alphanumericCharacters"
         },
         "msg_conversion": {
           "$ref": "#/$defs/msgConversion"
@@ -222,18 +214,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "extension_group",
         "extension"
       ],
       "properties": {
         "app": {
           "$ref": "#/$defs/notEmptyString"
         },
-        "extension_group": {
-          "$ref": "#/$defs/notEmptyString"
-        },
         "extension": {
-          "$ref": "#/$defs/notEmptyString"
+          "$ref": "#/$defs/alphanumericCharacters"
         },
         "cmd": {
           "$ref": "#/$defs/extensionCmdsInGraph"

@@ -157,13 +157,11 @@ void *client_thread_main(TEN_UNUSED void *args) {
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "test_extension_group 1",
                  "extension": "test_extension_1",
                  "cmd": [{
                    "name": "hello_world",
                    "dest": [{
                      "app": "msgpack://127.0.0.1:8002/",
-                     "extension_group": "test_extension_group 2",
                      "extension": "test_extension_2"
                    }]
                  }]

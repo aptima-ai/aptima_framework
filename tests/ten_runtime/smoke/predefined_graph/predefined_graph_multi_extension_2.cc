@@ -80,12 +80,10 @@ class test_app : public ten::app_t {
                             "extension_group": "predefined_graph_multi_extension_2"
                           }],
                           "connections": [{
-                            "extension_group": "predefined_graph_multi_extension_2",
                             "extension": "test_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
-                                "extension_group": "predefined_graph_multi_extension_2",
                                 "extension": "test_extension_2"
                               }]
                             }]

@@ -23,7 +23,6 @@ use crate::designer::DesignerState;
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DesignerConnection {
     pub app: String,
-    pub extension_group: String,
     pub extension: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -43,7 +42,6 @@ impl From<GraphConnection> for DesignerConnection {
     fn from(conn: GraphConnection) -> Self {
         DesignerConnection {
             app: conn.get_app_uri().to_string(),
-            extension_group: conn.extension_group,
             extension: conn.extension,
 
             cmd: conn.cmd.map(get_designer_msg_flow_from_property),
@@ -89,7 +87,6 @@ fn get_designer_msg_flow_from_property(
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DesignerDestination {
     pub app: String,
-    pub extension_group: String,
     pub extension: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -100,7 +97,6 @@ impl From<GraphDestination> for DesignerDestination {
     fn from(destination: GraphDestination) -> Self {
         DesignerDestination {
             app: destination.get_app_uri().to_string(),
-            extension_group: destination.extension_group,
             extension: destination.extension,
             msg_conversion: destination.msg_conversion,
         }
@@ -240,13 +236,11 @@ mod tests {
 
         let expected_connections = vec![DesignerConnection {
             app: localhost(),
-            extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
             cmd: Some(vec![DesignerMessageFlow {
                 name: "hello_world".to_string(),
                 dest: vec![DesignerDestination {
                     app: localhost(),
-                    extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
@@ -322,13 +316,11 @@ mod tests {
 
         let expected_connections = vec![DesignerConnection {
             app: localhost(),
-            extension_group: "extension_group_1".to_string(),
             extension: "extension_1".to_string(),
             cmd: Some(vec![DesignerMessageFlow {
                 name: "hello_world".to_string(),
                 dest: vec![DesignerDestination {
                     app: localhost(),
-                    extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
@@ -337,7 +329,6 @@ mod tests {
                 name: "data".to_string(),
                 dest: vec![DesignerDestination {
                     app: localhost(),
-                    extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
@@ -346,7 +337,6 @@ mod tests {
                 name: "pcm".to_string(),
                 dest: vec![DesignerDestination {
                     app: localhost(),
-                    extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],
@@ -355,7 +345,6 @@ mod tests {
                 name: "image".to_string(),
                 dest: vec![DesignerDestination {
                     app: localhost(),
-                    extension_group: "extension_group_1".to_string(),
                     extension: "extension_2".to_string(),
                     msg_conversion: None,
                 }],

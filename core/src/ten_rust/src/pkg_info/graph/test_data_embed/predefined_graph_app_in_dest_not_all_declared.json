@@ -23,14 +23,12 @@
         "connections": [
           {
             "extension": "some_extension",
-            "extension_group": "some_group",
             "app": "http://localhost:8080",
             "cmd": [
               {
                 "name": "hello",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "some_extension_2"
                   }
                 ]

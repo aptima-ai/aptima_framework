@@ -20,14 +20,12 @@
         ],
         "connections": [
           {
-            "extension_group": "some_group",
             "extension": "ext_a",
             "cmd": [
               {
                 "name": "cmd_1",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "ext_b",
                     "msg_conversion": {
                       "type": "per_property",

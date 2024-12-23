@@ -104,13 +104,11 @@ TEST(CmdConversionTest, CmdConversionConnectCmd) {  // NOLINT
             }],
             "connections": [{
               "app": "msgpack://127.0.0.1:8001/",
-              "extension_group": "cmd_conversion_connect_cmd_extension_group",
               "extension": "test_extension_1",
               "cmd": [{
                 "name": "hello_world",
                 "dest": [{
                   "app": "msgpack://127.0.0.1:8001/",
-                  "extension_group": "cmd_conversion_connect_cmd_extension_group",
                   "extension": "test_extension_2",
                   "msg_conversion": {
                     "type": "per_property",

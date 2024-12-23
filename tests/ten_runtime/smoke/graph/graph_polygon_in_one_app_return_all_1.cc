@@ -173,41 +173,34 @@ TEST(ExtensionTest, GraphPolygonInOneAppReturnAll1) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                "extension": "A",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                    "extension": "B"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                    "extension": "C"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                "extension": "B",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                    "extension": "D"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                "extension": "C",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_polygon_in_one_app_return_all_1__extension_group",
                    "extension": "D"
                  }]
                }]

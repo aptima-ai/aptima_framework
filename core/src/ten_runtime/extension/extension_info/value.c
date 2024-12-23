@@ -129,19 +129,6 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
   const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
 
-  const char *extension_group_name =
-      ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
-  if (!extension_group_name || ten_c_string_is_empty(extension_group_name)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
-                    "The extension_group in connection is required.");
-    } else {
-      TEN_ASSERT(0, "The extension_group in connection is required.");
-    }
-
-    return NULL;
-  }
-
   const char *extension_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION);
   if (!extension_name || ten_c_string_is_empty(extension_name)) {
@@ -156,8 +143,8 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_src_part_from_value(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_id, extension_group_name, NULL,
-      extension_name, true, err);
+      extensions_info, app_uri, graph_id, NULL, NULL, extension_name, true,
+      err);
   if (!self) {
     return NULL;
   }
@@ -231,18 +218,6 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_value(
   const char *app_uri = ten_value_object_peek_string(value, TEN_STR_APP);
   const char *graph_id = ten_value_object_peek_string(value, TEN_STR_GRAPH);
 
-  const char *extension_group_name =
-      ten_value_object_peek_string(value, TEN_STR_EXTENSION_GROUP);
-  if (!extension_group_name || ten_c_string_is_empty(extension_group_name)) {
-    if (err) {
-      ten_error_set(err, TEN_ERRNO_INVALID_GRAPH,
-                    "The extension_group in connection is required.");
-    } else {
-      TEN_ASSERT(0, "The extension_group in connection is required.");
-    }
-    return NULL;
-  }
-
   const char *extension_name =
       ten_value_object_peek_string(value, TEN_STR_EXTENSION);
   if (!extension_name || ten_c_string_is_empty(extension_name)) {
@@ -256,8 +231,8 @@ ten_shared_ptr_t *ten_extension_info_parse_connection_dest_part_from_value(
   }
 
   ten_shared_ptr_t *self = get_extension_info_in_extensions_info(
-      extensions_info, app_uri, graph_id, extension_group_name, NULL,
-      extension_name, true, err);
+      extensions_info, app_uri, graph_id, NULL, NULL, extension_name, true,
+      err);
   if (!self) {
     return NULL;
   }

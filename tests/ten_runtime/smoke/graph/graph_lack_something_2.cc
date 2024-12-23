@@ -103,13 +103,11 @@ TEST(ExtensionTest, GraphLackSomething2) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_lack_something_2",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_lack_something_2",
                    "extension": "test_extension_2"
                  }]
                }]

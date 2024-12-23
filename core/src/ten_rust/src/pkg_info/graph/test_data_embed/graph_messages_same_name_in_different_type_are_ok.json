@@ -22,13 +22,11 @@
   "connections": [
     {
       "extension": "some_extension",
-      "extension_group": "some_group",
       "cmd": [
         {
           "name": "hello",
           "dest": [
             {
-              "extension_group": "some_group",
               "extension": "another_ext"
             }
           ]
@@ -39,7 +37,6 @@
           "name": "hello",
           "dest": [
             {
-              "extension_group": "some_group",
               "extension": "third_ext"
             }
           ]

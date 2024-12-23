@@ -70,12 +70,10 @@ class test_app : public ten::app_t {
                             "extension_group": "test_extension_group"
                           }],
                           "connections": [{
-                            "extension_group": "test_extension_group",
                             "extension": "simple_http_server_cpp",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
-                                "extension_group": "test_extension_group",
                                 "extension": "test_extension"
                               }]
                             }]

@@ -20,7 +20,6 @@
   "connections": [
     {
       "app": "localhost",
-      "extension_group": "extension_group_1",
       "extension": "extension_1",
       "cmd": [
         {
@@ -28,7 +27,6 @@
           "dest": [
             {
               "app": "localhost",
-              "extension_group": "extension_group_1",
               "extension": "extension_2"
             }
           ]

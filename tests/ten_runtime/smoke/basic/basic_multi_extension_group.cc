@@ -103,13 +103,11 @@ TEST(BasicTest, MultiExtensionGroup) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_multi_extension_group__extension_group_1",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_multi_extension_group__extension_group_2",
                    "extension": "test_extension_2"
                  }]
                }]

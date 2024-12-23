@@ -191,7 +191,6 @@ TEST(ExtensionTest, MultiDestRespWhenAllInMultiApp) {  // NOLINT
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "test_extension_group",
                  "extension": "extension 1",
                  "cmd": [{
                    "name": "hello_world",

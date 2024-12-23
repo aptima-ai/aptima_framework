@@ -14,14 +14,12 @@
         ],
         "connections": [
           {
-            "extension": "some_extension",
-            "extension_group": "producer",
+            "extension": "some_extension_1",
             "cmd": [
               {
                 "name": "hello",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "some_extension"
                   }
                 ]

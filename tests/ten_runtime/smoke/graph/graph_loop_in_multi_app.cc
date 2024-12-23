@@ -214,49 +214,41 @@ TEST(ExtensionTest, GraphLoopInMultiApp) {  // NOLINT
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_loop_in_multi_app__extension_group_1",
                  "extension": "test_extension_1",
                  "cmd": [{
                     "name": "hello_world",
                     "dest": [{
                       "app": "msgpack://127.0.0.1:8002/",
-                      "extension_group": "graph_loop_in_multi_app__extension_group_2",
                       "extension": "test_extension_3"
                     }]
                   }]
                 },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_loop_in_multi_app__extension_group_2",
                  "extension": "test_extension_2",
                  "cmd": [{
                     "name": "hello_world",
                     "dest": [{
                       "app": "msgpack://127.0.0.1:8002/",
-                      "extension_group": "graph_loop_in_multi_app__extension_group_2",
                       "extension": "test_extension_3"
                     }]
                   }]
                 },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_loop_in_multi_app__extension_group_2",
                  "extension": "test_extension_3",
                  "cmd": [{
                     "name": "hello_world",
                     "dest": [{
                       "app": "msgpack://127.0.0.1:8003/",
-                      "extension_group": "graph_loop_in_multi_app__extension_group_3",
                       "extension": "test_extension_4"
                     }]
                   }]
                 },{
                  "app": "msgpack://127.0.0.1:8003/",
-                 "extension_group": "graph_loop_in_multi_app__extension_group_3",
                  "extension": "test_extension_4",
                  "cmd": [{
                     "name": "hello_world",
                     "dest": [{
                       "app": "msgpack://127.0.0.1:8002/",
-                      "extension_group": "graph_loop_in_multi_app__extension_group_2",
                       "extension": "test_extension_2"
                     }]
                   }]

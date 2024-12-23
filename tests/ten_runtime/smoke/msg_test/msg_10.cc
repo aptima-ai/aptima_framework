@@ -150,13 +150,11 @@ TEST(MsgTest, Msg10) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "msg_10__extension_group_1",
                "extension": "msg_10__extension_1",
                "cmd": [{
                  "name": "test",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "msg_10__extension_group_2",
                    "extension": "msg_10__extension_2"
                  }]
                }]

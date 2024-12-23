@@ -81,12 +81,10 @@ class test_app : public ten::app_t {
                             "extension_group": "command_check_cmd_out_extension_1"
                           }],
                           "connections": [{
-                            "extension_group": "command_check_cmd_out_extension_1",
                             "extension": "test_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
-                                "extension_group": "command_check_cmd_out_extension_1",
                                 "extension": "test_extension_2"
                               }]
                             }]

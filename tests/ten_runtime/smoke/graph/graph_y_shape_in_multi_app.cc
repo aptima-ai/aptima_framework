@@ -213,7 +213,6 @@ TEST(ExtensionTest, GraphYShapeInMultiApp) {  // NOLINT
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_y_shape_in_multi_app__extension_group_1",
                  "extension": "test_extension_1",
                  "cmd": [{
                    "name": "hello_world",
@@ -225,7 +224,6 @@ TEST(ExtensionTest, GraphYShapeInMultiApp) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_y_shape_in_multi_app__extension_group_2",
                  "extension": "test_extension_2",
                  "cmd": [{
                     "name": "hello_world",

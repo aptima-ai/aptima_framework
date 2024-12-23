@@ -260,65 +260,50 @@ TEST(ExtensionTest, MultiDestInMultiApp) {  // NOLINT
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "multi_dest_in_multi_app__extension_group_1",
                  "extension": "test_extension_1",
                  "cmd": [{
                    "name": "hello_world",
                    "dest": [{
                       "app": "msgpack://127.0.0.1:8001/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_1",
                       "extension": "test_extension_2"
                    },{
                       "app": "msgpack://127.0.0.1:8001/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_1",
                       "extension": "test_extension_3"
                    },{
                       "app": "msgpack://127.0.0.1:8002/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_2",
                       "extension": "test_extension_4"
                    },{
                       "app": "msgpack://127.0.0.1:8002/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_2",
                       "extension": "test_extension_5"
                    },{
                       "app": "msgpack://127.0.0.1:8002/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_2",
                       "extension": "test_extension_6"
                    },{
                       "app": "msgpack://127.0.0.1:8003/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_3",
                       "extension": "test_extension_7"
                    },{
                       "app": "msgpack://127.0.0.1:8003/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_3",
                       "extension": "test_extension_8"
                    },{
                       "app": "msgpack://127.0.0.1:8003/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_3",
                       "extension": "test_extension_9"
                    },{
                       "app": "msgpack://127.0.0.1:8004/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_4",
                       "extension": "test_extension_10"
                    },{
                       "app": "msgpack://127.0.0.1:8004/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_4",
                       "extension": "test_extension_11"
                    },{
                       "app": "msgpack://127.0.0.1:8004/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_4",
                       "extension": "test_extension_12"
                    },{
                       "app": "msgpack://127.0.0.1:8005/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_5",
                       "extension": "test_extension_13"
                    },{
                       "app": "msgpack://127.0.0.1:8005/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_5",
                       "extension": "test_extension_14"
                    },{
                       "app": "msgpack://127.0.0.1:8005/",
-                      "extension_group": "multi_dest_in_multi_app__extension_group_5",
                       "extension": "test_extension_15"
                    }]
                  }]

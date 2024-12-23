@@ -199,41 +199,35 @@ TEST(ExtensionTest, RespHandlerBasicWaitInOnStart) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "resp_handler_basic_wait_in_on_start__extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world_1",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "resp_handler_basic_wait_in_on_start__extension_group",
                    "extension": "test_extension_2"
                  }]
                },{
                  "name": "hello_world_2",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "resp_handler_basic_wait_in_on_start__extension_group",
                    "extension": "test_extension_2"
                  }]
                },{
                  "name": "hello_world_3",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "resp_handler_basic_wait_in_on_start__extension_group",
                    "extension": "test_extension_2"
                  }]
                },{
                  "name": "hello_world_5",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "resp_handler_basic_wait_in_on_start__extension_group",
                    "extension": "test_extension_2"
                  }]
                },{
                  "name": "hello_world_6",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "resp_handler_basic_wait_in_on_start__extension_group",
                    "extension": "test_extension_2"
                  }]
                }]

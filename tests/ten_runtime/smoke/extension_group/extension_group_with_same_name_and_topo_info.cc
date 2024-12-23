@@ -87,13 +87,11 @@ TEST(ExtensionTest, ExtensionGroupWithSameNameAndGraphInfo) {
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "same_name_extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "cmd_1",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "same_name_extension_group",
                    "extension": "test_extension_2"
                  }]
                }]

@@ -229,97 +229,80 @@ TEST(ExtensionTest, GraphMultiplePolygonOneApp) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "A",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "B"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "C"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "D"
                  },{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "E"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "B",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "F"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "C",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "F"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "D",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "G"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "E",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "G"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "F",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "H"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_multiple_polygon_one_app__extension_group",
                "extension": "G",
                "cmd": [{
                  "name": "send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_multiple_polygon_one_app__extension_group",
                    "extension": "H"
                  }]
                }]

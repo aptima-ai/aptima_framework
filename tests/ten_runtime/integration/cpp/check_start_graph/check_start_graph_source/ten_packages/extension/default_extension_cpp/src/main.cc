@@ -44,15 +44,13 @@ class test_extension : public ten::extension_t {
             ],
             "connections": [
               {
-                "extension": "default_extension_cpp",
-                "extension_group": "default_extension_group",
+                "extension": "default_extension_cpp_1",
                 "cmd": [
                   {
                     "name": "test",
                     "dest": [
                       {
-                        "extension": "default_extension_cpp_2",
-                        "extension_group": "default_extension_group_2"
+                        "extension": "default_extension_cpp_2"
                       }
                     ]
                   }
@@ -62,14 +60,6 @@ class test_extension : public ten::extension_t {
         })",
                                                        &err);
     assert(!result && "The graph should be invalid.");
-
-    // The extension_info is not found, extension_group:
-    // default_extension_group_2, extension: default_extension_cpp_2.
-    std::string err_msg = err.errmsg();
-
-    // NOLINTNEXTLINE
-    assert(err_msg.find("default_extension_group_2") != std::string::npos &&
-           "Incorrect msg.");
   }
 
   void on_start(ten::ten_env_t &ten_env) override {

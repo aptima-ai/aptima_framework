@@ -71,13 +71,11 @@ void test_extension_in_app2_not_installed() {
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test_extension_group",
                "extension": "ext_a",
                "cmd": [{
                  "name": "hello_world",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8002/",
-                   "extension_group": "test_extension_group",
                    "extension": "ext_b"
                  }]
                }]

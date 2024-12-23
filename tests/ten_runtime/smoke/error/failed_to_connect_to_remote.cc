@@ -103,13 +103,11 @@ class test_app_1 : public ten::app_t {
                           }],
                           "connections": [{
                             "app": "msgpack://127.0.0.1:8001/",
-                            "extension_group": "failed_to_connect_to_remote__normal_extension_group",
                             "extension": "normal_extension_1",
                             "cmd": [{
                               "name": "hello_world",
                               "dest": [{
                                 "app": "msgpack://127.0.0.1:8888/",
-                                "extension_group": "failed_to_connect_to_remote__normal_extension_group",
                                 "extension": "normal_extension_2"
                               }]
                             }]

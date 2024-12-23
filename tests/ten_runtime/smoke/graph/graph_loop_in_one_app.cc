@@ -146,7 +146,6 @@ TEST(ExtensionTest, GraphLoopInOneApp) {
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_in_one_app__extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                   "name": "hello_world",
@@ -158,7 +157,6 @@ TEST(ExtensionTest, GraphLoopInOneApp) {
                 }]
               },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_in_one_app__extension_group",
                "extension": "test_extension_2",
                "cmd": [{
                   "name": "hello_world",
@@ -170,7 +168,6 @@ TEST(ExtensionTest, GraphLoopInOneApp) {
                 }]
               },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_in_one_app__extension_group",
                "extension": "test_extension_3",
                "cmd": [{
                   "name": "hello_world",
@@ -182,7 +179,6 @@ TEST(ExtensionTest, GraphLoopInOneApp) {
                 }]
               },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_in_one_app__extension_group",
                "extension": "test_extension_4",
                "cmd": [{
                   "name": "hello_world",

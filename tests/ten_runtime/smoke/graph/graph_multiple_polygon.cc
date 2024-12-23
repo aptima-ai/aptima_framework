@@ -306,7 +306,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_multiple_polygon_1",
                  "extension": "A",
                  "cmd": [{
                    "name": "send",
@@ -330,7 +329,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_multiple_polygon_1",
                  "extension": "B",
                  "cmd": [{
                    "name": "send",
@@ -342,7 +340,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_multiple_polygon_1",
                  "extension": "C",
                  "cmd": [{
                    "name": "send",
@@ -354,7 +351,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_multiple_polygon_1",
                  "extension": "D",
                  "cmd": [{
                    "name": "send",
@@ -366,7 +362,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_multiple_polygon_2",
                  "extension": "E",
                  "cmd": [{
                    "name": "send",
@@ -378,7 +373,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8003/",
-                 "extension_group": "graph_multiple_polygon_3",
                  "extension": "F",
                  "cmd": [{
                    "name": "send",
@@ -390,7 +384,6 @@ TEST(ExtensionTest, GraphMultiplePolygon) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_multiple_polygon_2",
                  "extension": "G",
                  "cmd": [{
                    "name": "send",

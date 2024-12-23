@@ -23,14 +23,12 @@
         ],
         "connections": [
           {
-            "extension_group": "default_extension_group",
             "extension": "extension_a",
             "cmd": [
               {
                 "name": "B",
                 "dest": [
                   {
-                    "extension_group": "default_extension_group",
                     "extension": "extension_b"
                   }
                 ]

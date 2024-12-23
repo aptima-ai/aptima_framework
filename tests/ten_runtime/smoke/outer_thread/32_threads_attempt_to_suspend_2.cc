@@ -444,13 +444,11 @@ TEST(ExtensionTest, ThirtyTwoThreadsAttemptToSuspend2) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "start_to_send",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_2"
                  }]
                }],
@@ -458,7 +456,6 @@ TEST(ExtensionTest, ThirtyTwoThreadsAttemptToSuspend2) {  // NOLINT
                  "name": "data",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_2"
                  }]
                }]

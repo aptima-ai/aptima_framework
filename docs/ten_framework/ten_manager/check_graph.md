@@ -159,13 +159,11 @@ All extension instances referenced in the `connections` field, whether as a sour
           "connections": [
             {
               "extension": "some_extension",
-              "extension_group": "producer",
               "cmd": [
                 {
                   "name": "hello",
                   "dest": [
                     {
-                      "extension_group": "some_group",
                       "extension": "some_extension"
                     }
                   ]
@@ -221,13 +219,11 @@ All extension instances referenced in the `connections` field, whether as a sour
           "connections": [
             {
               "extension": "some_extension",
-              "extension_group": "some_group",
               "cmd": [
                 {
                   "name": "hello",
                   "dest": [
                     {
-                      "extension_group": "some_group",
                       "extension": "some_extension_1"
                     }
                   ]
@@ -236,11 +232,9 @@ All extension instances referenced in the `connections` field, whether as a sour
                   "name": "world",
                   "dest": [
                     {
-                      "extension_group": "some_group",
                       "extension": "some_extension_1"
                     },
                     {
-                      "extension_group": "some_group",
                       "extension": "consumer"
                     }
                   ]
@@ -378,13 +372,11 @@ All extension instances referenced in the `connections` field, whether as a sour
     "connections": [
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "cmd": [
           {
             "name": "hello",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]
@@ -393,13 +385,11 @@ All extension instances referenced in the `connections` field, whether as a sour
       },
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "cmd": [
           {
             "name": "hello_2",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]
@@ -445,13 +435,11 @@ All extension instances referenced in the `connections` field, whether as a sour
     "connections": [
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "cmd": [
           {
             "name": "hello",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]
@@ -460,7 +448,6 @@ All extension instances referenced in the `connections` field, whether as a sour
             "name": "hello",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "some_extension"
               }
             ]
@@ -584,13 +571,11 @@ The message declared in each message flow in the connections will be checked if 
     "connections": [
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "cmd": [
           {
             "name": "cmd_1",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]
@@ -677,14 +662,12 @@ The `app` field in each node must met the following rules.
     "connections": [
      {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "app": "http://localhost:8000",
         "cmd": [
           {
             "name": "cmd_1",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]
@@ -727,13 +710,11 @@ The `app` field in each node must met the following rules.
     "connections": [
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "cmd": [
           {
             "name": "cmd_1",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext",
                 "app": "http://localhost:8000"
               }
@@ -782,13 +763,11 @@ The `app` field in each node must met the following rules.
     "connections": [
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "cmd": [
           {
             "name": "cmd_1",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]
@@ -830,14 +809,12 @@ The `app` field in each node must met the following rules.
     "connections": [
       {
         "extension": "some_extension",
-        "extension_group": "some_group",
         "app": "http://localhost:8000",
         "cmd": [
           {
             "name": "cmd_1",
             "dest": [
               {
-                "extension_group": "some_group",
                 "extension": "another_ext"
               }
             ]

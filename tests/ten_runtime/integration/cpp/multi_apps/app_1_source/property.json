@@ -25,7 +25,6 @@
         "connections": [
           {
             "app": "msgpack://127.0.0.1:8001/",
-            "extension_group": "test_extension_group",
             "extension": "ext_a",
             "cmd": [
               {
@@ -33,7 +32,6 @@
                 "dest": [
                   {
                     "app": "msgpack://127.0.0.1:8001/",
-                    "extension_group": "test_extension_group",
                     "extension": "ext_b"
                   }
                 ]

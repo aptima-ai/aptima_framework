@@ -139,25 +139,21 @@ TEST(BasicTest, LoopCmd) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test_extension_group",
                "extension": "test_extension_1",
                "cmd": [{
                  "name": "hello_world_1",
                  "dest": [{
                     "app": "msgpack://127.0.0.1:8001/",
-                    "extension_group": "test_extension_group",
                     "extension": "test_extension_2"
                  }]
                 }]
               },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "test_extension_group",
                "extension": "test_extension_2",
                "cmd": [{
                   "name": "hello_world_2",
                   "dest": [{
                      "app": "msgpack://127.0.0.1:8001/",
-                     "extension_group": "test_extension_group",
                      "extension": "test_extension_1"
                   }]
                 }]

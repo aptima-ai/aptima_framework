@@ -23,13 +23,11 @@
         "connections": [
           {
             "extension": "some_extension",
-            "extension_group": "some_group",
             "cmd": [
               {
                 "name": "hello",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "some_extension_2"
                   }
                 ]

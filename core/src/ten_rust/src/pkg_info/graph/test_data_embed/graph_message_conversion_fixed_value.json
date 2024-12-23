@@ -17,14 +17,12 @@
   ],
   "connections": [
     {
-      "extension_group": "test_extension_group",
       "extension": "ext_1",
       "cmd": [
         {
           "name": "test",
           "dest": [
             {
-              "extension_group": "test_extension_group",
               "extension": "ext_2",
               "msg_conversion": {
                 "type": "per_property",

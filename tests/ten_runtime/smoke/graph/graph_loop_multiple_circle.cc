@@ -156,49 +156,41 @@ TEST(ExtensionTest, GraphLoopMultipleCircle) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_multiple_circle__extension_group",
                "extension": "A",
                "cmd": [{
                  "name": "sum",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_loop_multiple_circle__extension_group",
                    "extension": "B"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_multiple_circle__extension_group",
                "extension": "B",
                "cmd": [{
                  "name": "sum",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_loop_multiple_circle__extension_group",
                    "extension": "C"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_multiple_circle__extension_group",
                "extension": "C",
                "cmd": [{
                  "name": "sum",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_loop_multiple_circle__extension_group",
                    "extension": "D"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "graph_loop_multiple_circle__extension_group",
                "extension": "D",
                "cmd": [{
                  "name": "sum",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "graph_loop_multiple_circle__extension_group",
                    "extension": "B"
                  }]
                }]

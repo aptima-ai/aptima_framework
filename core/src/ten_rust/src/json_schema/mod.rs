@@ -223,14 +223,12 @@ mod tests {
                 }],
                 "connections": [
                   {
-                    "extension_group": "default_extension_group",
                     "extension": "default_extension_cpp",
                     "cmd": [
                       {
                         "name": "",
                         "dest": [
                           {
-                            "extension_group": "default_extension_group",
                             "extension": "default_extension_cpp"
                           }
                         ]
@@ -267,7 +265,6 @@ mod tests {
                 }],
                 "connections": [
                   {
-                    "extension_group":"default_extension_group",
                     "extension": "default_extension_cpp",
                     "cmd": [
                       {
@@ -952,13 +949,11 @@ mod tests {
               }],
               "connections": [{
                 "app": "msgpack://127.0.0.1:8001/",
-                "extension_group": "result_mapping_1__extension_group",
                 "extension": "test_extension_1",
                 "cmd": [{
                   "name": "hello_world",
                   "dest": [{
                     "app": "msgpack://127.0.0.1:8001/",
-                    "extension_group": "result_mapping_1__extension_group",
                     "extension": "test_extension_2",
                     "msg_conversion": {
                       "type": "per_property",
@@ -1008,14 +1003,12 @@ mod tests {
                 }],
                 "connections": [
                   {
-                    "extension_group": "default_extension_group",
                     "extension": "default_extension_cpp",
                     "cmd": [
                       {
                         "name": "invalid command",
                         "dest": [
                           {
-                            "extension_group": "default_extension_group",
                             "extension": "default_extension_cpp"
                           }
                         ]

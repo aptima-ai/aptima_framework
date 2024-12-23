@@ -161,7 +161,6 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
                }],
                "connections": [{
                  "app": "msgpack://127.0.0.1:8001/",
-                 "extension_group": "graph_id_basic__extension_group_1",
                  "extension": "extension1",
                  "cmd": [{
                    "name": "send_message",
@@ -173,7 +172,6 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
                  }]
                },{
                  "app": "msgpack://127.0.0.1:8002/",
-                 "extension_group": "graph_id_basic__extension_group_2",
                  "extension": "extension3",
                  "cmd": [{
                    "name": "send_message",

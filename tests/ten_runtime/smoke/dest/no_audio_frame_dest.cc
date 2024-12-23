@@ -129,25 +129,21 @@ TEST(ExtensionTest, NoAudioFrameDest) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
                "extension": "test_extension_1",
                "audio_frame": [{
                  "name": "audio_frame",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_2"
                  }]
                }]
              },{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "basic_extension_group",
                "extension": "test_extension_2",
                "cmd": [{
                  "name": "audio_frame_ack",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8001/",
-                   "extension_group": "basic_extension_group",
                    "extension": "test_extension_1"
                  }]
                }]

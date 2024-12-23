@@ -20,14 +20,12 @@
         ],
         "connections": [
           {
-            "extension_group": "some_group",
             "extension": "ext_1",
             "cmd": [
               {
                 "name": "cmd_1",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "ext_2"
                   }
                 ]
@@ -38,7 +36,6 @@
                 "name": "data_1",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "ext_2"
                   }
                 ]
@@ -49,7 +46,6 @@
                 "name": "audio_frame_1",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "ext_2"
                   }
                 ]
@@ -60,7 +56,6 @@
                 "name": "video_frame_1",
                 "dest": [
                   {
-                    "extension_group": "some_group",
                     "extension": "ext_2"
                   }
                 ]

@@ -998,14 +998,12 @@ In the app's `manifest.json`, configure `predefined_graph` to specify that the `
 >     ],
 >     "connections": [
 >       {
->         "extension_group": "http_thread",
 >         "extension": "http_server",
 >         "cmd": [
 >           {
 >             "name": "hello",
 >             "dest": [
 >               {
->                 "extension_group": "http_thread",
 >                 "extension": "first_cxx_extension"
 >               }
 >             ]

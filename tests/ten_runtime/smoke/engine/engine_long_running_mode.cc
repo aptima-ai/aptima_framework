@@ -145,13 +145,11 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
              }],
              "connections": [{
                "app": "msgpack://127.0.0.1:8001/",
-               "extension_group": "engine_long_running_mode__extension_group_A",
                "extension": "A",
                "cmd": [{
                  "name": "test",
                  "dest": [{
                    "app": "msgpack://127.0.0.1:8002/",
-                   "extension_group": "engine_long_running_mode__extension_group_B",
                    "extension": "B"
                  }]
                }]
