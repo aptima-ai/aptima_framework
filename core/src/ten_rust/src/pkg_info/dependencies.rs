@@ -24,7 +24,6 @@ pub struct PkgDependency {
     // The `version_req_str` is the original value in string form, while
     // `version_req` is the result after being converted to `VersionReq`.
     pub version_req: VersionReq,
-    pub version_req_str: String,
 }
 
 impl PkgDependency {
@@ -35,7 +34,6 @@ impl PkgDependency {
     ) -> Self {
         PkgDependency {
             type_and_name: PkgTypeAndName { pkg_type, name },
-            version_req_str: version_req.to_string(),
             version_req,
         }
     }
@@ -57,7 +55,6 @@ impl TryFrom<&ManifestDependency> for PkgDependency {
                 name: manifest_dep.name.clone(),
             },
             version_req: VersionReq::parse(&manifest_dep.version)?,
-            version_req_str: manifest_dep.version.clone(),
         })
     }
 }

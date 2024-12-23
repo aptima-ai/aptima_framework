@@ -292,20 +292,12 @@ fn write_pkgs_into_lock(pkgs: &Vec<&PkgInfo>, app_dir: &Path) -> Result<()> {
 
 fn parse_pkg_name_version(
     pkg_name_version: &str,
-) -> Result<(String, String, VersionReq)> {
+) -> Result<(String, VersionReq)> {
     let parts: Vec<&str> = pkg_name_version.split('@').collect();
     if parts.len() == 2 {
-        Ok((
-            parts[0].to_string(),
-            parts[1].to_string(),
-            VersionReq::parse(parts[1])?,
-        ))
+        Ok((parts[0].to_string(), VersionReq::parse(parts[1])?))
     } else {
-        Ok((
-            pkg_name_version.to_string(),
-            VersionReq::STAR.to_string(),
-            VersionReq::STAR,
-        ))
+        Ok((pkg_name_version.to_string(), VersionReq::STAR))
     }
 }
 
@@ -540,11 +532,8 @@ pub async fn execute_cmd(
         // Case 1: tman install <package_type> <package_name>
 
         let desired_pkg_type_: PkgType = package_type_str.parse()?;
-        let (
-            desired_pkg_src_name_,
-            desired_pkg_src_version_str_,
-            desired_pkg_src_version_,
-        ) = parse_pkg_name_version(&command_data.package_name.unwrap())?;
+        let (desired_pkg_src_name_, desired_pkg_src_version_) =
+            parse_pkg_name_version(&command_data.package_name.unwrap())?;
 
         desired_pkg_type = Some(desired_pkg_type_);
         desired_pkg_src_name = Some(desired_pkg_src_name_.clone());
@@ -599,7 +588,6 @@ pub async fn execute_cmd(
                         name: desired_pkg_src_name_.clone(),
                     },
                     version_req: desired_pkg_src_version_.clone(),
-                    version_req_str: desired_pkg_src_version_str_,
                 },
             };
             extra_dependency_relationships.push(extra_dependency_relationship);
