@@ -13,8 +13,7 @@ namespace {
 
 class test_predefined_graph : public ten::extension_t {
  public:
-  explicit test_predefined_graph(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit test_predefined_graph(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {

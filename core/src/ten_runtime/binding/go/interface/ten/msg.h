@@ -15,8 +15,6 @@ typedef struct ten_go_msg_t ten_go_msg_t;
 typedef struct ten_smart_ptr_t ten_shared_ptr_t;
 typedef struct ten_go_value_t ten_go_value_t;
 
-int ten_go_msg_get_type(uintptr_t bridge_addr);
-
 /**
  * @brief Get the type and size of a property of the msg. This function is
  * called before getting property from the GO side, as the GO side needs to do

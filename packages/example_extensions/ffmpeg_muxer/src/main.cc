@@ -57,14 +57,14 @@ static demuxer_settings_t read_settings(cmd_t &cmd) {
 
 class muxer_extension_t : public extension_t {
  public:
-  explicit muxer_extension_t(const std::string &name) : extension_t(name) {}
+  explicit muxer_extension_t(const char *name) : extension_t(name) {}
 
   void on_start(TEN_UNUSED ten_env_t &ten_env) override {
     ten_env.on_start_done();
   }
 
   void on_cmd(ten_env_t &ten_env, std::unique_ptr<ten::cmd_t> cmd) override {
-    const auto *cmd_name = cmd->get_name();
+    const auto cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "start_muxer") {
       TEN_LOGE("muxer_extension_t::on_cmd, %s",

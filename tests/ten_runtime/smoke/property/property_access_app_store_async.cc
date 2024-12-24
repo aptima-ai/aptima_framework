@@ -13,13 +13,13 @@ namespace {
 
 class test_property_access_app_store_async_1 : public ten::extension_t {
  public:
-  explicit test_property_access_app_store_async_1(const std::string &name)
+  explicit test_property_access_app_store_async_1(const char *name)
       : ten::extension_t(name) {}
 };
 
 class test_property_access_app_store_async_2 : public ten::extension_t {
  public:
-  explicit test_property_access_app_store_async_2(const std::string &name)
+  explicit test_property_access_app_store_async_2(const char *name)
       : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,

@@ -17,11 +17,11 @@ namespace {
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    const auto *cmd_name = cmd->get_name();
+    const auto cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "hello_world") {
       // Save the command for later using.
@@ -51,11 +51,11 @@ class test_extension_1 : public ten::extension_t {
 
 class test_extension_2 : public ten::extension_t {
  public:
-  explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "hello_world_1") {
+    if (cmd->get_name() == "hello_world_1") {
       // waiting for result
       pending_request = std::move(cmd);
       auto hello_world_2_cmd = ten::cmd_t::create("hello_world_2");

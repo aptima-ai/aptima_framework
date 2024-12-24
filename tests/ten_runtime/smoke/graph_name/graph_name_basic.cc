@@ -18,7 +18,7 @@ namespace {
 
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const std::string &name)
+  explicit test_extension(const char *name)
       : ten::extension_t(name), name_(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,

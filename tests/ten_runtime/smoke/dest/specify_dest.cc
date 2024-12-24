@@ -40,14 +40,13 @@ namespace {
 
 class business_extension : public ten::extension_t {
  public:
-  explicit business_extension(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit business_extension(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Check whether the initial request has been received and start processing
     // it.
-    if (std::string(cmd->get_name()) == "initial_request") {
+    if (cmd->get_name() == "initial_request") {
       // Start the handling process of "initial_request".
       handle_initial_request(ten_env, std::move(cmd));
     }
@@ -130,13 +129,12 @@ class business_extension : public ten::extension_t {
 
 class plugin_extension_1 : public ten::extension_t {
  public:
-  explicit plugin_extension_1(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit plugin_extension_1(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Simulate the action of receiving a command, and return a result.
-    if (std::string(cmd->get_name()) == "plugin_1_cmd") {
+    if (cmd->get_name() == "plugin_1_cmd") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "plugin_1_result");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
@@ -146,13 +144,12 @@ class plugin_extension_1 : public ten::extension_t {
 
 class plugin_extension_2 : public ten::extension_t {
  public:
-  explicit plugin_extension_2(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit plugin_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Simulate the action of receiving a command, and return a result.
-    if (std::string(cmd->get_name()) == "plugin_2_cmd") {
+    if (cmd->get_name() == "plugin_2_cmd") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "plugin_2_result");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));

@@ -13,12 +13,11 @@ namespace {
 
 class test_normal_extension : public ten::extension_t {
  public:
-  explicit test_normal_extension(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit test_normal_extension(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "hello_world") {
+    if (cmd->get_name() == "hello_world") {
       auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
@@ -28,8 +27,7 @@ class test_normal_extension : public ten::extension_t {
 
 class test_predefined_graph : public ten::extension_t {
  public:
-  explicit test_predefined_graph(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit test_predefined_graph(const char *name) : ten::extension_t(name) {}
 
   void on_start(ten::ten_env_t &ten_env) override {
     auto start_graph_cmd = ten::cmd_start_graph_t::create();
@@ -81,7 +79,7 @@ class test_predefined_graph : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "test") {
+    if (cmd->get_name() == "test") {
       if (received_hello_world_resp) {
         nlohmann::json detail = {{"id", 1}, {"name", "a"}};
 

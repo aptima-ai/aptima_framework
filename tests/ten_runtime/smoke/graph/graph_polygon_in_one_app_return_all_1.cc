@@ -23,7 +23,7 @@ namespace {
  */
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const std::string &name)
+  explicit test_extension(const char *name)
       : ten::extension_t(name), name_(name) {}
 
   void on_init(ten::ten_env_t &ten_env) override {
@@ -44,7 +44,7 @@ class test_extension : public ten::extension_t {
     }
 
     std::vector<std::string> edges = {"B", "C"};
-    if (std::string(cmd->get_name()) == "send") {
+    if (cmd->get_name() == "send") {
       json["from"] = name_;
       if (std::find(edges.begin(), edges.end(), name_) != edges.end()) {
         json["source"] = name_;

@@ -56,7 +56,7 @@ class extension_t {
   // @}
 
  protected:
-  explicit extension_t(const std::string &name)
+  explicit extension_t(const char *name)
       :  // In order to keep type safety in C++, the type of the 'ten'
          // parameters of these 4 functions are indeed 'ten::ten_env_t'.
          // However, these callback functions are called from the C language
@@ -65,7 +65,7 @@ class extension_t {
          // the second parameter of these callback functions from '::ten_env_t
          // *' to 'void *'
         c_extension(::ten_extension_create(
-            name.c_str(),
+            name,
             reinterpret_cast<ten_extension_on_configure_func_t>(
                 &proxy_on_configure),
             reinterpret_cast<ten_extension_on_init_func_t>(&proxy_on_init),

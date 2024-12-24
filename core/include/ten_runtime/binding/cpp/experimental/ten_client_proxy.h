@@ -107,7 +107,8 @@ class ten_client_proxy_internal_impl_t : public ten::extension_tester_t {
     TEN_ASSERT(ten_env_tester_proxy_, "Invalid state.");
 
     if (ten_env_tester_proxy_ == nullptr) {
-      TEN_LOGE("Failed to send_cmd: %s before started.", cmd->get_name());
+      TEN_LOGE("Failed to send_cmd: %s before started.",
+               cmd->get_name().c_str());
       return false;
     }
 

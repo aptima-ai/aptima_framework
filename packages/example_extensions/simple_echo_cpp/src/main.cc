@@ -14,8 +14,7 @@ namespace {
 
 class simple_echo_extension_t : public ten::extension_t {
  public:
-  explicit simple_echo_extension_t(const std::string &name)
-      : ten::extension_t(name) {}
+  explicit simple_echo_extension_t(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
@@ -35,7 +34,7 @@ class simple_echo_extension_t : public ten::extension_t {
     // Receive data from ten graph.
     auto buf = data->get_buf();
 
-    auto new_data = ten::data_t::create(data->get_name());
+    auto new_data = ten::data_t::create(data->get_name().c_str());
     new_data->alloc_buf(buf.size());
     auto new_buf = new_data->lock_buf();
     memcpy(new_buf.data(), buf.data(), buf.size());
@@ -50,7 +49,8 @@ class simple_echo_extension_t : public ten::extension_t {
     // Receive video frame from ten graph.
     auto buf = video_frame->lock_buf();
 
-    auto new_video_frame = ten::video_frame_t::create(video_frame->get_name());
+    auto new_video_frame =
+        ten::video_frame_t::create(video_frame->get_name().c_str());
     new_video_frame->alloc_buf(buf.size());
     auto new_buf = new_video_frame->lock_buf();
     memcpy(new_buf.data(), buf.data(), buf.size());
@@ -73,7 +73,8 @@ class simple_echo_extension_t : public ten::extension_t {
     // Receive audio frame from ten graph.
     auto buf = audio_frame->lock_buf();
 
-    auto new_audio_frame = ten::audio_frame_t::create(audio_frame->get_name());
+    auto new_audio_frame =
+        ten::audio_frame_t::create(audio_frame->get_name().c_str());
     new_audio_frame->alloc_buf(buf.size());
     auto new_buf = new_audio_frame->lock_buf();
     memcpy(new_buf.data(), buf.data(), buf.size());

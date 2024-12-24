@@ -22,7 +22,7 @@ namespace {
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
   static std::unique_ptr<ten::video_frame_t> create420Buffer(int width,
                                                              int height) {
@@ -39,7 +39,7 @@ class test_extension_1 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "dispatch_data") {
+    if (cmd->get_name() == "dispatch_data") {
       auto video_frame = create420Buffer(WIDTH, HEIGHT);
       video_frame->set_property("test_prop", "test_prop_value");
 
@@ -54,7 +54,7 @@ class test_extension_1 : public ten::extension_t {
 
 class test_extension_2 : public ten::extension_t {
  public:
-  explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_video_frame(
       TEN_UNUSED ten::ten_env_t &ten_env,
@@ -70,7 +70,7 @@ class test_extension_2 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "check_received") {
+    if (cmd->get_name() == "check_received") {
       if (received) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");
@@ -89,7 +89,7 @@ class test_extension_2 : public ten::extension_t {
 
 class test_extension_3 : public ten::extension_t {
  public:
-  explicit test_extension_3(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_3(const char *name) : ten::extension_t(name) {}
 
   void on_video_frame(
       TEN_UNUSED ten::ten_env_t &ten_env,
@@ -105,7 +105,7 @@ class test_extension_3 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "check_received") {
+    if (cmd->get_name() == "check_received") {
       if (received) {
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");

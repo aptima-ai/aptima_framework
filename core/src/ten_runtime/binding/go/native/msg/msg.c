@@ -92,17 +92,6 @@ void ten_go_msg_set_go_handle(ten_go_msg_t *self, ten_go_handle_t go_handle) {
   self->go_msg = go_handle;
 }
 
-int ten_go_msg_get_type(uintptr_t bridge_addr) {
-  ten_go_msg_t *msg_bridge = ten_go_msg_reinterpret(bridge_addr);
-  TEN_ASSERT(msg_bridge && ten_go_msg_check_integrity(msg_bridge),
-             "Should not happen.");
-
-  TEN_MSG_TYPE type = ten_msg_get_type(msg_bridge->c_msg);
-  TEN_ASSERT(type != TEN_MSG_TYPE_INVALID, "Should not happen.");
-
-  return type;
-}
-
 static ten_value_t *ten_go_msg_property_get_and_check_if_exists(
     ten_go_msg_t *self, const void *path, ten_go_handle_t path_len,
     ten_go_error_t *status) {

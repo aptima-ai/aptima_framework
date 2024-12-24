@@ -30,7 +30,7 @@ namespace {
  */
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const std::string &name)
+  explicit test_extension(const char *name)
       : ten::extension_t(name), name_(name) {}
 
   void on_init(ten::ten_env_t &ten_env) override {
@@ -40,11 +40,10 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    TEN_ENV_LOG_INFO(
-        ten_env,
-        (std::string("xxxx on_cmd") + std::string(cmd->get_name())).c_str());
+    TEN_ENV_LOG_INFO(ten_env,
+                     (std::string("xxxx on_cmd") + cmd->get_name()).c_str());
 
-    if (std::string(cmd->get_name()) == "sum") {
+    if (cmd->get_name() == "sum") {
       if (counter_ == LOOP_CNT) {
         auto json = nlohmann::json::parse(cmd->get_property_to_json());
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);

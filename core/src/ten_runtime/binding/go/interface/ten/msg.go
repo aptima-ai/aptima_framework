@@ -44,7 +44,6 @@ type Msg interface {
 	postSyncJob(payload job) any
 	keepAlive()
 
-	GetType() MsgType
 	GetName() (string, error)
 
 	iProperty
@@ -185,18 +184,6 @@ func (p *msg) getCPtr() C.uintptr_t {
 
 func (p *msg) postSyncJob(payload job) any {
 	return p.process(payload)
-}
-
-func (p *msg) GetType() MsgType {
-	return p.process(func() any {
-		return p.getType()
-	}).(MsgType)
-}
-
-func (p *msg) getType() MsgType {
-	defer p.keepAlive()
-
-	return (MsgType)(C.ten_go_msg_get_type(p.cPtr))
 }
 
 func (p *msg) GetName() (string, error) {

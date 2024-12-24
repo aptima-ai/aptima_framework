@@ -648,7 +648,7 @@ class ten_env_t {
     return set_property_impl(path, ten_value_create_string(value), err);
   }
 
-  // Convenient overloaded function for string type.
+  // Convenient overloaded function for std::string type.
   bool set_property(const char *path, const std::string &value,
                     error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_string(value.c_str()), err);

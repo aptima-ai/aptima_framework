@@ -22,7 +22,7 @@ namespace {
 
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension(const char *name) : ten::extension_t(name) {}
 
   void on_configure(ten::ten_env_t &ten_env) override {
     bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
@@ -49,7 +49,7 @@ class test_extension : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "hello_world") {
+    if (cmd->get_name() == "hello_world") {
       auto rc =
           ten_env.set_property(PROP_NAME, static_cast<float_t>(PROP_NEW_VAL));
       EXPECT_EQ(rc, true);

@@ -9,7 +9,7 @@ namespace default_extension {
 
 class default_extension_t : public ten::extension_t {
  public:
-  explicit default_extension_t(const std::string &name) : extension_t(name) {}
+  explicit default_extension_t(const char *name) : extension_t(name) {}
 
   void on_init(ten::ten_env_t &ten_env) override {
     // Do some initializes.

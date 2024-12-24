@@ -11,12 +11,12 @@ namespace ffmpeg_extension {
 
 class demuxer_extension_t : public extension_t {
  public:
-  explicit demuxer_extension_t(const std::string &name) : extension_t(name) {}
+  explicit demuxer_extension_t(const char *name) : extension_t(name) {}
 
   void on_start(ten_env_t &ten_env) override { ten_env.on_start_done(); }
 
   void on_cmd(ten_env_t &ten_env, std::unique_ptr<ten::cmd_t> cmd) override {
-    const auto *cmd_name = cmd->get_name();
+    const auto cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "prepare_demuxer") {
       auto input_stream_name = cmd->get_property_string("input_stream");

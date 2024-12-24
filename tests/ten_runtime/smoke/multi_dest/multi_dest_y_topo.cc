@@ -17,11 +17,11 @@ namespace {
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "hello_world") {
+    if (cmd->get_name() == "hello_world") {
       // Remember the command sent from the client, so that we can send its
       // result back to the client.
       client_cmd = std::move(cmd);
@@ -48,14 +48,14 @@ class test_extension_1 : public ten::extension_t {
 
 class test_extension_2 : public ten::extension_t {
  public:
-  explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Extension 2 is just a forwarding proxy, forward all the commands it
     // received out.
 
-    if (std::string(cmd->get_name()) == "hello_world") {
+    if (cmd->get_name() == "hello_world") {
       ten_env.send_cmd(std::move(cmd));
       return;
     }
@@ -64,7 +64,7 @@ class test_extension_2 : public ten::extension_t {
 
 class test_extension_3 : public ten::extension_t {
  public:
-  explicit test_extension_3(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_3(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
@@ -77,7 +77,7 @@ class test_extension_3 : public ten::extension_t {
 
 class test_extension_4 : public ten::extension_t {
  public:
-  explicit test_extension_4(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_4(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {

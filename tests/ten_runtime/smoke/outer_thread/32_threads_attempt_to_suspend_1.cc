@@ -35,7 +35,7 @@ class Holder {  // NOLINT
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
 #define OUTER_THREAD_MAIN(X)                                                 \
   void outer_thread##X##_main(                                               \
@@ -313,7 +313,7 @@ class test_extension_1 : public ten::extension_t {
 
 class test_extension_2 : public ten::extension_t {
  public:
-  explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_configure(ten::ten_env_t &ten_env) override {
     // We have increased the path timeout to 20 minutes because, under limited

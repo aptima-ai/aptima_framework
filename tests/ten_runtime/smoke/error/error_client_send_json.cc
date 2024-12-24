@@ -20,7 +20,7 @@ namespace {
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : extension_t(name) {}
+  explicit test_extension_1(const char *name) : extension_t(name) {}
 };
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(error_client_send_json__extension_1,
@@ -28,7 +28,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(error_client_send_json__extension_1,
 
 class test_extension_2 : public ten::extension_t {
  public:
-  explicit test_extension_2(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 };
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(error_client_send_json__extension_2,

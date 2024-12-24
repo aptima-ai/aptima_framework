@@ -21,14 +21,13 @@
 #define DEFINE_EXTENSION(N)                                                   \
   class test_extension_##N : public ten::extension_t {                        \
    public:                                                                    \
-    explicit test_extension_##N(const std::string &name)                      \
-        : ten::extension_t(name) {}                                           \
+    explicit test_extension_##N(const char *name) : ten::extension_t(name) {} \
                                                                               \
     void on_cmd(ten::ten_env_t &ten_env,                                      \
                 std::unique_ptr<ten::cmd_t> cmd) override {                   \
       nlohmann::json json =                                                   \
           nlohmann::json::parse(cmd->get_property_to_json());                 \
-      if (std::string(cmd->get_name()) == "hello_world") {                    \
+      if (cmd->get_name() == "hello_world") {                                 \
         auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);      \
         cmd_result->set_property("detail", "hello world from extension " #N); \
         ten_env.return_result(std::move(cmd_result), std::move(cmd));         \
@@ -89,11 +88,11 @@ typedef enum RESPONSE {
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "hello_world") {
+    if (cmd->get_name() == "hello_world") {
       ten_env.send_cmd(
           std::move(cmd),
           [&](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> cmd,

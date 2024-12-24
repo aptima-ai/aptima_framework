@@ -33,9 +33,6 @@ func (p *aExtension) OnCmd(
 		tenEnv.LogInfo(
 			"aExtension receive command: " + cmdName,
 		)
-		if cmd.GetType() != ten.MsgTypeCmdResult {
-			tenEnv.LogInfo("onCmd: " + cmdName)
-		}
 
 		if cmdName == "A" {
 			cmdB, _ := ten.NewCmd("B")

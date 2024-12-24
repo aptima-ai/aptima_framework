@@ -9,7 +9,7 @@ namespace {{package_name}}_extension {
 
 class {{package_name}}_extension_t : public ten::extension_t {
  public:
-  explicit {{package_name}}_extension_t(const std::string &name) : extension_t(name) {}
+  explicit {{package_name}}_extension_t(const char *name) : extension_t(name) {}
 
   void on_init(ten::ten_env_t &ten_env) override {
     // Do some initializes.

@@ -18,11 +18,11 @@ namespace {
 
 class test_extension_1 : public ten::extension_t {
  public:
-  explicit test_extension_1(const std::string &name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
   void on_data(ten::ten_env_t &ten_env,
                std::unique_ptr<ten::data_t> data) override {
-    if (std::string(data->get_name()) == "test") {
+    if (std::string(data->get_name().c_str()) == "test") {
       data_frame_recv_count_++;
 
       return_if_possible(ten_env);
@@ -34,7 +34,7 @@ class test_extension_1 : public ten::extension_t {
   void on_audio_frame(
       ten::ten_env_t &ten_env,
       std::unique_ptr<ten::audio_frame_t> audio_frame) override {
-    if (std::string(audio_frame->get_name()) == "test") {
+    if (std::string(audio_frame->get_name().c_str()) == "test") {
       data_frame_recv_count_++;
 
       return_if_possible(ten_env);
@@ -46,7 +46,7 @@ class test_extension_1 : public ten::extension_t {
   void on_video_frame(
       ten::ten_env_t &ten_env,
       std::unique_ptr<ten::video_frame_t> video_frame) override {
-    if (std::string(video_frame->get_name()) == "test") {
+    if (std::string(video_frame->get_name().c_str()) == "test") {
       data_frame_recv_count_++;
 
       return_if_possible(ten_env);
@@ -57,7 +57,7 @@ class test_extension_1 : public ten::extension_t {
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    if (std::string(cmd->get_name()) == "hello_world") {
+    if (cmd->get_name() == "hello_world") {
       // Cache the cmd and return it later.
       cached_cmd_ = std::move(cmd);
 

@@ -25,23 +25,9 @@
 namespace ten {
 
 class ten_env_t;
-class msg_t;
 class cmd_result_t;
-
-namespace {
-
-template <typename T>
-struct is_string
-    : public std::integral_constant<
-          bool,
-          std::is_same<char *, typename std::decay<T>::type>::value ||
-              std::is_same<const char *, typename std::decay<T>::type>::value> {
-};
-
-template <>
-struct is_string<std::string> : std::true_type {};
-
-}  // namespace
+class msg_t;
+class msg_internal_accessor_t;
 
 class msg_t {
  public:
@@ -56,19 +42,7 @@ class msg_t {
 
   explicit operator bool() const { return c_msg != nullptr; }
 
-  TEN_MSG_TYPE get_type(error_t *err = nullptr) const {
-    if (c_msg == nullptr) {
-      if (err != nullptr && err->get_c_error() != nullptr) {
-        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
-                      "Invalid TEN message.");
-      }
-      return TEN_MSG_TYPE_INVALID;
-    }
-
-    return ten_msg_get_type(c_msg);
-  }
-
-  const char *get_name(error_t *err = nullptr) const {
+  std::string get_name(error_t *err = nullptr) const {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     if (c_msg == nullptr) {
@@ -116,7 +90,7 @@ class msg_t {
         c_msg, path, err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  virtual uint8_t get_property_uint8(const char *path, error_t *err) {
+  uint8_t get_property_uint8(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -125,11 +99,7 @@ class msg_t {
                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  uint8_t get_property_uint8(const char *path) {
-    return get_property_uint8(path, nullptr);
-  }
-
-  virtual uint16_t get_property_uint16(const char *path, error_t *err) {
+  uint16_t get_property_uint16(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -138,11 +108,7 @@ class msg_t {
                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  uint16_t get_property_uint16(const char *path) {
-    return get_property_uint16(path, nullptr);
-  }
-
-  virtual uint32_t get_property_uint32(const char *path, error_t *err) {
+  uint32_t get_property_uint32(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -151,11 +117,7 @@ class msg_t {
                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  uint32_t get_property_uint32(const char *path) {
-    return get_property_uint32(path, nullptr);
-  }
-
-  virtual uint64_t get_property_uint64(const char *path, error_t *err) {
+  uint64_t get_property_uint64(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -164,11 +126,7 @@ class msg_t {
                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  uint64_t get_property_uint64(const char *path) {
-    return get_property_uint64(path, nullptr);
-  }
-
-  virtual int8_t get_property_int8(const char *path, error_t *err) {
+  int8_t get_property_int8(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -177,11 +135,7 @@ class msg_t {
                               err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  int8_t get_property_int8(const char *path) {
-    return get_property_int8(path, nullptr);
-  }
-
-  virtual int16_t get_property_int16(const char *path, error_t *err) {
+  int16_t get_property_int16(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -190,11 +144,7 @@ class msg_t {
                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  int16_t get_property_int16(const char *path) {
-    return get_property_int16(path, nullptr);
-  }
-
-  virtual int32_t get_property_int32(const char *path, error_t *err) {
+  int32_t get_property_int32(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -203,11 +153,7 @@ class msg_t {
                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  int32_t get_property_int32(const char *path) {
-    return get_property_int32(path, nullptr);
-  }
-
-  virtual int64_t get_property_int64(const char *path, error_t *err) {
+  int64_t get_property_int64(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0;
@@ -216,11 +162,7 @@ class msg_t {
                                err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  int64_t get_property_int64(const char *path) {
-    return get_property_int64(path, nullptr);
-  }
-
-  virtual float get_property_float32(const char *path, error_t *err) {
+  float get_property_float32(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0.0F;
@@ -229,11 +171,7 @@ class msg_t {
                                  err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  float get_property_float32(const char *path) {
-    return get_property_float32(path, nullptr);
-  }
-
-  virtual double get_property_float64(const char *path, error_t *err) {
+  double get_property_float64(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return 0.0F;
@@ -242,11 +180,7 @@ class msg_t {
                                  err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  double get_property_float64(const char *path) {
-    return get_property_float64(path, nullptr);
-  }
-
-  virtual std::string get_property_string(const char *path, error_t *err) {
+  std::string get_property_string(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return "";
@@ -255,11 +189,7 @@ class msg_t {
         c_value, err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  std::string get_property_string(const char *path) {
-    return get_property_string(path, nullptr);
-  }
-
-  virtual void *get_property_ptr(const char *path, error_t *err) {
+  void *get_property_ptr(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return nullptr;
@@ -268,11 +198,7 @@ class msg_t {
                              err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  void *get_property_ptr(const char *path) {
-    return get_property_ptr(path, nullptr);
-  }
-
-  virtual bool get_property_bool(const char *path, error_t *err) {
+  bool get_property_bool(const char *path, error_t *err = nullptr) {
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
       return false;
@@ -281,12 +207,8 @@ class msg_t {
                               err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  bool get_property_bool(const char *path) {
-    return get_property_bool(path, nullptr);
-  }
-
   // Pay attention to its copy semantics.
-  virtual ten::buf_t get_property_buf(const char *path, error_t *err) {
+  ten::buf_t get_property_buf(const char *path, error_t *err = nullptr) {
     auto result = ten::buf_t{};
 
     ten_value_t *c_value = peek_property_value(path, err);
@@ -298,10 +220,6 @@ class msg_t {
     ten_buf_init_with_copying_data(&result.buf, c_buf->data, c_buf->size);
 
     return result;
-  }
-
-  ten::buf_t get_property_buf(const char *path) {
-    return get_property_buf(path, nullptr);
   }
 
   std::string get_property_to_json(const char *path = nullptr,
@@ -343,95 +261,51 @@ class msg_t {
     return result;
   }
 
-  virtual bool set_property(const char *path, int8_t value, error_t *err) {
+  bool set_property(const char *path, int8_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int8(value), err);
   }
 
-  bool set_property(const char *path, int8_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, int16_t value, error_t *err) {
+  bool set_property(const char *path, int16_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int16(value), err);
   }
 
-  bool set_property(const char *path, int16_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, int32_t value, error_t *err) {
+  bool set_property(const char *path, int32_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int32(value), err);
   }
 
-  bool set_property(const char *path, int32_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, int64_t value, error_t *err) {
+  bool set_property(const char *path, int64_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_int64(value), err);
   }
 
-  bool set_property(const char *path, int64_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, uint8_t value, error_t *err) {
+  bool set_property(const char *path, uint8_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint8(value), err);
   }
 
-  bool set_property(const char *path, uint8_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, uint16_t value, error_t *err) {
+  bool set_property(const char *path, uint16_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint16(value), err);
   }
 
-  bool set_property(const char *path, uint16_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, uint32_t value, error_t *err) {
+  bool set_property(const char *path, uint32_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint32(value), err);
   }
 
-  bool set_property(const char *path, uint32_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, uint64_t value, error_t *err) {
+  bool set_property(const char *path, uint64_t value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_uint64(value), err);
   }
 
-  bool set_property(const char *path, uint64_t value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, float value, error_t *err) {
+  bool set_property(const char *path, float value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_float32(value), err);
   }
 
-  bool set_property(const char *path, float value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, double value, error_t *err) {
+  bool set_property(const char *path, double value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_float64(value), err);
   }
 
-  bool set_property(const char *path, double value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, bool value, error_t *err) {
+  bool set_property(const char *path, bool value, error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_bool(value), err);
   }
 
-  bool set_property(const char *path, bool value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, void *value, error_t *err) {
+  bool set_property(const char *path, void *value, error_t *err = nullptr) {
     if (value == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
@@ -443,11 +317,8 @@ class msg_t {
         path, ten_value_create_ptr(value, nullptr, nullptr, nullptr), err);
   }
 
-  bool set_property(const char *path, void *value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, const char *value, error_t *err) {
+  bool set_property(const char *path, const char *value,
+                    error_t *err = nullptr) {
     if (value == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
@@ -458,22 +329,14 @@ class msg_t {
     return set_property_impl(path, ten_value_create_string(value), err);
   }
 
-  bool set_property(const char *path, const char *value) {
-    return set_property(path, value, nullptr);
-  }
-
-  virtual bool set_property(const char *path, const std::string &value,
-                            error_t *err) {
+  bool set_property(const char *path, const std::string &value,
+                    error_t *err = nullptr) {
     return set_property_impl(path, ten_value_create_string(value.c_str()), err);
   }
 
-  bool set_property(const char *path, const std::string &value) {
-    return set_property(path, value, nullptr);
-  }
-
   // Pay attention to its copy semantics.
-  virtual bool set_property(const char *path, const ten::buf_t &value,
-                            error_t *err) {
+  bool set_property(const char *path, const ten::buf_t &value,
+                    error_t *err = nullptr) {
     if (value.data() == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
@@ -484,10 +347,6 @@ class msg_t {
     ten_buf_t buf;
     ten_buf_init_with_copying_data(&buf, value.data(), value.size());
     return set_property_impl(path, ten_value_create_buf_with_move(buf), err);
-  }
-
-  bool set_property(const char *path, const ten::buf_t &value) {
-    return set_property(path, value, nullptr);
   }
 
   bool set_property_from_json(const char *path, const char *json,
@@ -555,11 +414,27 @@ class msg_t {
   ten_shared_ptr_t *c_msg = nullptr;  // NOLINT
 
  private:
+  friend msg_internal_accessor_t;
+
   ten_value_t *peek_property_value(const char *path, error_t *err) const {
     TEN_ASSERT(c_msg, "Should not happen.");
 
     return ten_msg_peek_property(c_msg, path,
                                  err != nullptr ? err->get_c_error() : nullptr);
+  }
+
+  // Not sure if we should have this as a public API, so for now, let's keep it
+  // private.
+  TEN_MSG_TYPE get_type(error_t *err = nullptr) const {
+    if (c_msg == nullptr) {
+      if (err != nullptr && err->get_c_error() != nullptr) {
+        ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
+                      "Invalid TEN message.");
+      }
+      return TEN_MSG_TYPE_INVALID;
+    }
+
+    return ten_msg_get_type(c_msg);
   }
 };
 
