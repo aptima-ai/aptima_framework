@@ -1,11 +1,11 @@
-use std::{fs, path::PathBuf};
-
 //
 // Copyright © 2024 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+use std::{fs, path::PathBuf};
+
 use anyhow::{Context, Result};
 use clap::{Arg, ArgMatches, Command};
 use serde_json::Value;
