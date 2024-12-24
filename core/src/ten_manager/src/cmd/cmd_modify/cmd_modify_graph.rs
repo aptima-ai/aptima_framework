@@ -8,11 +8,12 @@ use std::{fs, path::PathBuf};
 
 use anyhow::{Context, Result};
 use clap::{Arg, ArgMatches, Command};
+use console::Emoji;
 use serde_json::Value;
 
 use crate::{
-    config::TmanConfig, constants::PROPERTY_JSON_FILENAME,
-    utils::read_file_to_string,
+    cmd::cmd_modify::jq_util::jq_run, config::TmanConfig,
+    constants::PROPERTY_JSON_FILENAME, utils::read_file_to_string,
 };
 
 #[derive(Debug)]
@@ -20,6 +21,7 @@ pub struct ModifyGraphCommand {
     pub app_dir: String,
     pub predefined_graph_name: String,
     pub modification: String,
+    pub inplace: bool,
 }
 
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
@@ -43,9 +45,17 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
             Arg::new("MODIFICATION")
                 .long("modification")
                 .short('m')
-                .help("The path=JsonString to modify in the selected graph. E.g. nodes[1].property.a=\"\\\"foo\\\"\"")
+                .help("The path=JsonString to modify in the selected graph. E.g. .name=\"test\"")
                 .required(true)
                 .num_args(1)
+        )
+        .arg(
+            Arg::new("INPLACE")
+                .long("inplace")
+                .short('i')
+                .help("Overwrite the original property.json file")
+                .required(false)
+                .action(clap::ArgAction::SetTrue)
         )
 }
 
@@ -63,6 +73,7 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> ModifyGraphCommand {
             .get_one::<String>("MODIFICATION")
             .unwrap()
             .to_string(),
+        inplace: sub_cmd_args.get_flag("INPLACE"),
     };
 
     cmd
@@ -120,98 +131,27 @@ pub async fn execute_cmd(
         )
     })?;
 
-    // Handle modification. The format is `path=JsonString`.
-    // e.g. nodes[1].property.a="\"foo\""
-    // Split it into "nodes[1].property.a" 與 "\"foo\""
-    let mut iter = command_data.modification.splitn(2, '=');
-    let json_path = iter
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("Invalid modification format"))?
-        .trim();
-    let raw_value_str = iter
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("No '=' found in modification"))?
-        .trim();
+    let output =
+        jq_run(target_graph.clone(), &command_data.modification).unwrap();
 
-    // raw_value_str should be a valid JSON string, e.g., "\"foo\"" =>
-    // After parsing, it will become "foo"
-    let new_value: Value =
-        serde_json::from_str(raw_value_str).with_context(|| {
-            format!("Invalid JSON for the new value: {}", raw_value_str)
-        })?;
+    if !command_data.inplace {
+        println!("{}", output);
+        return Ok(());
+    }
 
-    // Replace this `new_value` into target_graph.
-    apply_json_patch(target_graph, json_path, new_value)?;
+    // If inplace is true, overwrite the original property.json file.
 
-    // Serialize and write back to property.json.
+    // Update target_graph with the output.
+    *target_graph = output.clone();
+
     let new_property_str = serde_json::to_string_pretty(&property_json)?;
     fs::write(&property_file_path, new_property_str)?;
 
     println!(
-        "Successfully modified the graph '{}'",
+        "{}  Successfully modified the graph '{}'",
+        Emoji("🏆", ":-)"),
         command_data.predefined_graph_name
     );
+
     Ok(())
-}
-
-/// Based on user input like "nodes[1].property.a", locate the corresponding
-/// position in `json_obj` and write `new_value` to it.
-fn apply_json_patch(
-    json_obj: &mut Value,
-    path_expr: &str,
-    new_value: Value,
-) -> Result<()> {
-    // Ex: nodes[1].property.a => ["nodes[1]", "property", "a"]
-    let segments = path_expr.split('.').collect::<Vec<_>>();
-
-    let mut current_val = json_obj;
-
-    for (i, seg) in segments.iter().enumerate() {
-        // Check if an array index is included.
-        if let Some(idx_start) = seg.find('[') {
-            // Ex, if seg="nodes[1]", then key="nodes" and arr_idx=1
-            let key_part = &seg[..idx_start];
-            let idx_part = &seg[idx_start + 1..seg.len() - 1];
-            let arr_idx: usize = idx_part.parse()?;
-
-            // First, find key_part in the current layer.
-            current_val = current_val
-                .get_mut(key_part)
-                .ok_or_else(|| anyhow::anyhow!("Key {} not found", key_part))?;
-
-            // Then, access the array.
-            let arr = current_val.as_array_mut().ok_or_else(|| {
-                anyhow::anyhow!("Value of key {} is not array", key_part)
-            })?;
-
-            if arr_idx >= arr.len() {
-                return Err(anyhow::anyhow!(
-                    "Array index out of range: {}",
-                    arr_idx
-                ));
-            }
-            current_val = &mut arr[arr_idx];
-        } else {
-            // Regular object key. If it's the last segment, assign the value.
-            if i == segments.len() - 1 {
-                // Reached the end.
-                current_val
-                    .as_object_mut()
-                    .ok_or_else(|| {
-                        anyhow::anyhow!("Not an object at segment: {}", seg)
-                    })?
-                    .insert(seg.to_string(), new_value);
-                return Ok(());
-            } else {
-                // Not the last segment, continue traversing.
-                current_val = current_val
-                    .get_mut(*seg)
-                    .ok_or_else(|| anyhow::anyhow!("Key {} not found", seg))?;
-            }
-        }
-    }
-
-    // If `path_expr` is empty, theoretically the loop won't be entered, and
-    // this case is not supported.
-    Err(anyhow::anyhow!("Invalid path expression: '{}'", path_expr))
 }

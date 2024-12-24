@@ -25,6 +25,9 @@ handlebars = { version = "6.2" }
 ignore = { version = "0.4" }
 indicatif = { version = "0.17" }
 inquire = { version = "0.7.5" }
+jaq-core = "2.0.0"
+jaq-json = { version = "1.0.0", features = ["serde_json"] }
+jaq-std = "2.0.0"
 linked-hash-map = { version = "0.5", features = ["serde_impl"] }
 mime_guess = { version = "2.0.5" }
 portable-pty = { version = "0.8.1" }

@@ -102,7 +102,7 @@ impl TryFrom<&Manifest> for PkgBasicInfo {
 
     fn try_from(manifest: &Manifest) -> Result<Self> {
         Ok(PkgBasicInfo {
-            type_and_name: PkgTypeAndName::try_from(manifest)?,
+            type_and_name: PkgTypeAndName::from(manifest),
             version: Version::parse(&manifest.version)?,
             supports: get_pkg_supports_from_manifest_supports(
                 &manifest.supports,
