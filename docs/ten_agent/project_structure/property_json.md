@@ -7,6 +7,10 @@ This file contains the orchestration of extensions. It is the main runtime confi
 
 The `property.json` file contains the following orchestration info,
 
+- Graphs
+- Nodes
+- Connections
+
 ## Graphs
 
 The `predefined_graphs` property contains a list of available graphs. Each graph defines how agent should behave in a specific scenario. Each graph has a `name` property which is used to identify a graph.
