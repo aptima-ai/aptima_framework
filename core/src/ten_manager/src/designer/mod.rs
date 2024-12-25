@@ -7,6 +7,7 @@
 mod addons;
 mod base_dir;
 mod common;
+mod dir_list;
 mod file_content;
 pub mod frontend;
 mod get_all_pkgs;
@@ -98,6 +99,10 @@ pub fn configure_routes(
         .route(
             "/api/designer/v1/base-dir",
             web::put().to(base_dir::set_base_dir),
+        )
+        .route(
+            "/api/designer/v1/dir-list/{path}",
+            web::get().to(dir_list::list_dir),
         )
         .route("/ws/terminal", web::get().to(ws_terminal));
 }

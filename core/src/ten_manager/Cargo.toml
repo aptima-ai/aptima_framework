@@ -60,3 +60,7 @@ mimalloc = "0.1"
 [target."cfg(unix)".dependencies.clingo]
 version = "0.8"
 features = ["static-linking"]
+
+[dev-dependencies]
+tempfile = "3.5"
+urlencoding = "2.1"
