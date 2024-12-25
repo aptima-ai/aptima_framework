@@ -10,7 +10,6 @@ use std::{
 };
 
 use actix_cors::Cors;
-use actix_files::Files;
 use actix_web::{http::header, web, App, HttpServer};
 use anyhow::{Ok, Result};
 use clap::{value_parser, Arg, ArgMatches, Command};
@@ -19,12 +18,12 @@ use console::Emoji;
 
 use crate::{
     config::TmanConfig,
-    designer::{configure_routes, frontend::get_frontend_asset, DesignerState},
+    designer::{configure_routes, DesignerState},
     log::tman_verbose_println,
     utils::{check_is_app_folder, get_cwd},
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DesignerCommand {
     pub ip_address: String,
     pub port: u16,
@@ -106,10 +105,10 @@ pub async fn execute_cmd(
     tman_verbose_println!(tman_config, "{:?}", command_data);
     tman_verbose_println!(tman_config, "{:?}", tman_config);
 
-    let base_dir = match command_data.base_dir {
+    let base_dir = match &command_data.base_dir {
         Some(base_dir) => {
             println!("Base directory: {}", base_dir);
-            base_dir
+            base_dir.clone()
         }
         None => {
             let cwd = get_cwd()?.to_str().unwrap_or_default().to_string();
@@ -120,7 +119,7 @@ pub async fn execute_cmd(
                 &cwd
             );
 
-            cwd
+            cwd.clone()
         }
     };
 
@@ -144,6 +143,8 @@ pub async fn execute_cmd(
         tman_config: TmanConfig::default(),
     }));
 
+    let command_data_cloned = command_data.clone();
+
     let server = HttpServer::new(move || {
         let state = web::Data::new(state.clone());
 
@@ -154,25 +155,12 @@ pub async fn execute_cmd(
             .allowed_header(header::CONTENT_TYPE)
             .max_age(3600);
 
-        let mut app = App::new()
+        App::new()
             .app_data(state.clone())
             .wrap(cors)
-            .configure(|cfg| configure_routes(cfg, state.clone()));
-
-        if let Some(external_frontend_asset_path) =
-            &command_data.external_frontend_asset_path
-        {
-            let static_files = Files::new("/", external_frontend_asset_path)
-                .index_file("index.html")
-                .use_last_modified(true)
-                .use_etag(true);
-
-            app = app.service(static_files);
-        } else {
-            app = app.default_service(web::route().to(get_frontend_asset));
-        }
-
-        app
+            .configure(|cfg| {
+                configure_routes(cfg, &command_data_cloned, state.clone())
+            })
     });
 
     let bind_address =

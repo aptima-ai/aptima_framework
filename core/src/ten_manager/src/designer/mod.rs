@@ -23,12 +23,15 @@ mod version;
 
 use std::sync::{Arc, RwLock};
 
+use actix_files::Files;
 use actix_web::web;
 
+use frontend::get_frontend_asset;
 use ten_rust::pkg_info::PkgInfo;
-use terminal::ws_terminal;
 
 use super::config::TmanConfig;
+use crate::cmd::cmd_designer::DesignerCommand;
+use terminal::ws_terminal;
 use version::get_version;
 
 pub struct DesignerState {
@@ -39,70 +42,79 @@ pub struct DesignerState {
 
 pub fn configure_routes(
     cfg: &mut web::ServiceConfig,
+    command_data: &DesignerCommand,
     state: web::Data<Arc<RwLock<DesignerState>>>,
 ) {
-    cfg.app_data(state.clone())
-        .route("/api/designer/v1/version", web::get().to(get_version))
-        .route(
-            "/api/designer/v1/addons/extensions",
-            web::get().to(addons::extensions::get_extension_addons),
-        )
-        .route(
-            "/api/designer/v1/addons/extensions/{name}",
-            web::get().to(addons::extensions::get_extension_addon_by_name),
-        )
-        .route(
-            "/api/designer/v1/packages/reload",
-            web::post().to(packages::reload::clear_and_reload_pkgs),
-        )
-        .route("/api/designer/v1/graphs", web::get().to(graphs::get_graphs))
-        .route(
-            "/api/designer/v1/graphs/{graph_name}/nodes",
-            web::get().to(graphs::nodes::get_graph_nodes),
-        )
-        .route(
-            "/api/designer/v1/graphs/{graph_name}/connections",
-            web::get().to(graphs::connections::get_graph_connections),
-        )
-        .route(
-            "/api/designer/v1/graphs/{graph_name}",
-            web::put().to(graphs::update::update_graph),
-        )
-        .route(
-            "/api/designer/v1/manifest",
-            web::put().to(manifest::dump::dump_manifest),
-        )
-        .route(
-            "/api/designer/v1/manifest/check",
-            web::get().to(manifest::check::check_manifest),
-        )
-        .route(
-            "/api/designer/v1/property",
-            web::put().to(property::dump::dump_property),
-        )
-        .route(
-            "/api/designer/v1/property/check",
-            web::get().to(property::check::check_property),
-        )
-        .route(
-            "/api/designer/v1/messages/compatible",
-            web::post().to(messages::compatible::get_compatible_messages),
-        )
-        .route(
-            "/api/designer/v1/file-content/{path}",
-            web::get().to(file_content::get_file_content),
-        )
-        .route(
-            "/api/designer/v1/file-content/{path}",
-            web::put().to(file_content::save_file_content),
-        )
-        .route(
-            "/api/designer/v1/base-dir",
-            web::put().to(base_dir::set_base_dir),
-        )
-        .route(
-            "/api/designer/v1/dir-list/{path}",
-            web::get().to(dir_list::list_dir),
-        )
-        .route("/ws/terminal", web::get().to(ws_terminal));
+    cfg.service(
+        web::scope("/api/designer/v1")
+            .app_data(state.clone())
+            .route("/version", web::get().to(get_version))
+            .route(
+                "/addons/extensions",
+                web::get().to(addons::extensions::get_extension_addons),
+            )
+            .route(
+                "/addons/extensions/{name}",
+                web::get().to(addons::extensions::get_extension_addon_by_name),
+            )
+            .route(
+                "/packages/reload",
+                web::post().to(packages::reload::clear_and_reload_pkgs),
+            )
+            .route("/graphs", web::get().to(graphs::get_graphs))
+            .route(
+                "/graphs/{graph_name}/nodes",
+                web::get().to(graphs::nodes::get_graph_nodes),
+            )
+            .route(
+                "/graphs/{graph_name}/connections",
+                web::get().to(graphs::connections::get_graph_connections),
+            )
+            .route(
+                "/graphs/{graph_name}",
+                web::put().to(graphs::update::update_graph),
+            )
+            .route("/manifest", web::put().to(manifest::dump::dump_manifest))
+            .route(
+                "/manifest/check",
+                web::get().to(manifest::check::check_manifest),
+            )
+            .route("/property", web::put().to(property::dump::dump_property))
+            .route(
+                "/property/check",
+                web::get().to(property::check::check_property),
+            )
+            .route(
+                "/messages/compatible",
+                web::post().to(messages::compatible::get_compatible_messages),
+            )
+            .route(
+                "/file-content/{path}",
+                web::get().to(file_content::get_file_content),
+            )
+            .route(
+                "/file-content/{path}",
+                web::put().to(file_content::save_file_content),
+            )
+            .route("/base-dir", web::put().to(base_dir::set_base_dir))
+            .route("/dir-list/{path}", web::get().to(dir_list::list_dir))
+            .route("/ws/terminal", web::get().to(ws_terminal)),
+    );
+
+    if let Some(external_frontend_asset_path) =
+        &command_data.external_frontend_asset_path
+    {
+        cfg.service(
+            Files::new("/", external_frontend_asset_path)
+                .index_file("index.html")
+                .use_last_modified(true)
+                .use_etag(true),
+        );
+    } else {
+        cfg.service(
+            web::scope("/")
+                .app_data(state.clone())
+                .default_service(web::route().to(get_frontend_asset)),
+        );
+    }
 }
