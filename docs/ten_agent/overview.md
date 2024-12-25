@@ -1,158 +1,57 @@
 # Overview
 
-TEN Agent, built on the TEN framework, is an open-source AI agent project. It can speak, see and access to a knowledge base.
+TEN Agent is a conversational AI agent powered by the TEN, integrating Gemini 2.0 Live, OpenAI Realtime, RTC, and more. It delivers real-time capabilities to see, hear, and speak, while being fully compatible with popular workflow platforms like Dify and Coze.
 
-It also serves as a boilerplate for using the TEN framework, offering a great way to fully understand how to use the framework by diving into TEN Agent.
+## Links
+
+- [TEN Agent](https://github.com/TEN-framework/ten_agent)
+- [TEN Framework](https://github.com/TEN-framework/ten_framework)
 
 ## Architecture
 
-The TEN Agent consists of two main parts:
+The TEN Agent project is organized into the following major components, offering clarity and extensibility for developers:
 
-1. **Frontend**: **Playground** (Port 3000)
-   - Web interface with API Router and UI
-   - Manages communication and graph control
+1.	**Agents**: Contains the core logic, binaries, and examples for building and running AI agents. Within the Agents folder, there is a subfolder called `ten_packages,` which houses a variety of ready-to-use extensions. By leveraging these extensions, developers can build and customize powerful agents tailored to specific tasks or workflows.
 
-2. **Backend Services**
-   - Designer (Port 49483): Handles graph operations
-   - WebServer (Port 8080): Processes commands
-   - AgentApp: Core component with extensions and config
-
-![Components Diagram](https://github.com/TEN-framework/docs/blob/main/assets/jpg/diagram.jpg?raw=true)
+2.	**Dev Server**: Backend services, orchestrating agents and handling extensions.
+3.	**Web Server**: Runs on port 8080 and serves the frontend interface. The web server handles HTTP requests and delivers assets.
+4.	**Extensions**: Modular integrations for LLMs, TTS/STT, and external APIs, enabling easy customization.
+5.	**Playground**: An interactive environment for testing, configuring, and fine-tuning agents.
+6.	**Demo**: A deployment-ready setup to showcase real-world applications of TEN Agent.
 
 ## Docker Containers
 
 There are two Docker containers in TEN Agent:
 
-- `astra_agents_dev`: This is the workspace for development. The code repository will be mirrored into the /app folder in the container, and it provides the build environment. The backend service will also run in this container.
-- `astra_playground`: This is a separate service for the web frontend. The compiled frontend files will be mirrored here.
+- `ten_agent_dev`: The main development container that powers TEN Agent. It contains the core runtime environment, development tools, and dependencies needed to build and run agents. This container lets you execute commands like `task use` to build agents and `task run` to start the web server.
+
+- `ten_agent_playground`: Port 3000, a dedicated container for the web frontend interface. It serves the compiled frontend assets and provides an interactive environment where users can configure modules, select extensions, and test their agents. The playground UI allows you to visually select graph types (like Voice Agent or Realtime Agent), choose modules, and configure API settings.
+
+- `ten_agent_demo`: Port 3002, a deployment-focused container that provides a production-ready sample setup. It demonstrates how users can deploy their configured agents in real-world scenarios, with all necessary components packaged together for easy deployment.
+
 
 ## Agents
 
-The agents directory contains the core runtime of TEN, along with the graphs defined by users and some miscellaneous items like build scripts.
+The Agents folder is the heart of the project, housing:
 
-## Manifest
+-	Core binaries and examples that define agent behaviors.
+-	Scripts and outputs that enable flexible configurations for various AI use cases.
+-	Tools for developers to create, modify, and enhance AI agents.
 
-The application’s metadata and required extensions are specified here. Please note that `ten_runtime_go`, `py_init_extension_cpp`, and `agora_rtc` must be included. The required items will be stored in the `/ten_packages` directory.
+With its structured design, the Agents folder allows you to build agents tailored to specific applications, whether it’s voice assistants, chatbots, or task automation.
 
-## Property
+## Demo
 
-All graph information is stored in property.json. We recommend using the Graph Designer to create and edit the graphs instead of directly modifying `property.json`. Each graph consists of a list of nodes and connections:
-
-- In each node section, specify which extension will be used in the node, along with all required environment variables.
-- In each connection section, specify how the data is passed. Data should flow from an extension to one or more destination extensions. The data format must be one of the four formats defined by TEN: Command, Data, Video Frame, or Audio Frame.
-
-For details, see the API reference on interfaces in graphs.
-
-## Bin
-
-The build script will compile the graphs into binaries stored in the `bin` folder. The binaries can be called by other services, such as the server. Note that the binary must be restarted for changes in `property.json` to take effect.
-
-## Server
-
-The server folder includes a lightweight HTTP server and a module for running agent binaries. Below are the HTTP APIs for use. They can also be integrated with other frontend applications, such as mobile apps.
-
-## Start
-
-Starts an agent with the given graph and overridden properties. The started agent will join the specified channel and subscribe to the uid used by your browser/device’s RTC.
-
-| Parameter | Description |
-|-----------|-------------|
-| user_uid | The uid used by your browser/device's RTC, needed by the agent to subscribe to your audio. |
-| timeout | Specifies how long the agent will remain active without receiving pings. If set to -1, the agent will not terminate due to inactivity. The default is 60 seconds, but this can be adjusted with the WORKER_QUIT_TIMEOUT_SECONDS variable in your .env file. |
-| request_id | A UUID for tracing requests. |
-| properties | Additional properties to override in property.json (these overrides won't affect the original property.json, only the agent instance). |
-| graph_name | The graph to be used when starting the agent, found in property.json. |
-| channel_name | Must match the one your browser/device joins; the agent needs to be in the same channel to communicate. |
-| bot_uid | (Optional) The uid used by the bot to join RTC. |
-
-Example:
-
-{% code title=">_ Terminal" %}
-
-```bash
-curl 'http://localhost:8080/start' \
--H 'Content-Type: application/json' \
---data-raw '{
-  "request_id": "c1912182-924c-4d15-a8bb-85063343077c",
-  "channel_name": "test",
-  "user_uid": 176573,
-  "graph_name": "camera.va.openai.azure",
-  "properties": {
-    "openai_chatgpt": {
-      "model": "gpt-4o"
-    }
-  }
-}'
-```
-
-{% endcode %}
-
-## Stop
-
-Stops the agent that was previously started.
-
-| Parameter | Description |
-|-----------|-------------|
-| request_id | A UUID for tracing requests. |
-| channel_name | The channel name used to start the agent. |
-
-Example:
-
-{% code title=">_ Terminal" %}
-
-```bash
-curl 'http://localhost:8080/stop' \
--H 'Content-Type: application/json' \
---data-raw '{
-  "request_id": "c1912182-924c-4d15-a8bb-85063343077c",
-  "channel_name": "test"
-}'
-```
-
-{% endcode %}
-
-## Ping
-
-Sends a ping to the server to indicate the connection is still alive. This is unnecessary if you specify timeout: -1 when starting the agent. Otherwise, the agent will quit if it doesn’t receive a ping after the specified timeout.
-
-Example:
-
-{% code title=">_ Terminal" %}
-
-```bash
-curl 'http://localhost:8080/ping' \
--H 'Content-Type: application/json' \
---data-raw '{
-  "request_id": "c1912182-924c-4d15-a8bb-85063343077c",
-  "channel_name": "test"
-}'
-```
-
-{% endcode %}
+The Demo folder provides a deployment-ready environment for showcasing TEN Agent in action. It includes:
+-	Example configurations for running agents in production.
+-	Prebuilt agents and workflows to highlight the framework’s capabilities.
+-	Tools for demonstrating real-world applications to users, clients, or collaborators.
 
 ## Playground
 
-Playground is the UI of TEN Agent. It is built with NextJS. You can preview it online at <https://agent.theten.ai/>.
+Once the playground is up and running, users can leverage the module picker to:
+-	Select and configure extensions from a range of prebuilt modules.
+-	Experiment with different AI models, TTS/STT systems, and real-time communication tools.
+-	Test agent behaviors in a safe, interactive environment.
 
-The code to handle audio input/output and transcribed text is in src/manager/rtc/rtc.ts. The code captures user audio and transmits it to the agent server while the agent’s audio is sent back to the web app.
-
-Example of joining a channel:
-
-{% code title="src/manager/rtc/rtc.ts" %}
-
-```typescript
-async join({ channel, userId }: { channel: string; userId: number }) {
-  if (!this._joined) {
-    const res = await apiGenAgoraData({ channel, userId });
-    const { code, data } = res;
-    if (code !== 0) {
-      throw new Error("Failed to get token");
-    }
-    const { appId, token } = data;
-    await this.client?.join(appId, channel, token, userId);
-    this._joined = true;
-  }
-}
-```
-
-{% endcode %}
+The playground serves as a hub for innovation, empowering developers to explore and fine-tune their AI systems effortlessly.
