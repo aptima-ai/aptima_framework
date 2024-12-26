@@ -120,37 +120,3 @@ jobs:
             ten_packages/extension/default_extension_python \
             ten_packages/extension/default_async_extension_python \
             ten_packages/extension/py_init_extension_cpp
-
-      - name: Upload Release Asset
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ASSET_PATH: out/linux/x64/ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip
-          ASSET_NAME: ten_packages-linux-ubuntu1804-x64-gcc-${{ matrix.build_type }}.zip
-        run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          echo "Tag: $TAG_NAME"
-
-          # Get the release information
-          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/$TAG_NAME)
-
-          # Check if the release was found
-          if echo "$response" | grep -q '"id":'; then
-            echo "Release found."
-          else
-            echo "Release not found. Exiting."
-            exit 1
-          fi
-
-          # Extract upload_url
-          upload_url=$(echo "$response" | jq -r .upload_url | sed -e "s/{?name,label}//")
-          echo "Upload URL: $upload_url"
-
-          # Upload the asset
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Content-Type: application/zip" \
-            --data-binary @"$ASSET_PATH" \
-            "$upload_url?name=$ASSET_NAME"
-
-          echo "Asset uploaded successfully."

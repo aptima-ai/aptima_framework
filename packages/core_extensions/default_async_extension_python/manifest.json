@@ -1,12 +1,12 @@
 {
   "type": "extension",
   "name": "default_async_extension_python",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "dependencies": [
     {
       "type": "system",
       "name": "ten_runtime_python",
-      "version": "0.5.1"
+      "version": "0.6.0"
     }
   ],
   "package": {

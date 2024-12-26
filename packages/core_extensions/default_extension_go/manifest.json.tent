@@ -1,12 +1,12 @@
 {
   "type": "extension",
   "name": "{{package_name}}",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "dependencies": [
     {
       "type": "system",
       "name": "ten_runtime_go",
-      "version": "0.5.1"
+      "version": "0.6.0"
     }
   ],
   "package": {

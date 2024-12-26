@@ -3,7 +3,7 @@
     {
       "type": "system",
       "name": "ten_runtime",
-      "version": "0.5.1"
+      "version": "0.6.0"
     },
     {
       "type": "extension",
@@ -13,7 +13,7 @@
     {
       "type": "extension",
       "name": "default_extension_python",
-      "version": "0.5.1"
+      "version": "0.6.0"
     }
   ]
 }

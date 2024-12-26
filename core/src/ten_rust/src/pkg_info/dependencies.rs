@@ -15,6 +15,7 @@ use crate::pkg_info::manifest::{dependency::ManifestDependency, Manifest};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PkgDependency {
+    #[serde(flatten)]
     pub type_and_name: PkgTypeAndName,
 
     // The version requirement of this dependency, ex: the `version`

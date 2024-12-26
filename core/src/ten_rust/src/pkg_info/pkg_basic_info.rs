@@ -26,7 +26,9 @@ use super::{
 // package.
 #[derive(Clone, Debug, Eq, Serialize, Deserialize)]
 pub struct PkgBasicInfo {
+    #[serde(flatten)]
     pub type_and_name: PkgTypeAndName,
+
     pub version: Version,
 
     // Since the declaration 'does not support all environments' has no
