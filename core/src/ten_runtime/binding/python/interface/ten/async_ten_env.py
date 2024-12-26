@@ -119,9 +119,7 @@ class AsyncTenEnv(TenEnvBase):
         error = await q.get()
         return error
 
-    async def return_result(
-        self, result: CmdResult, target_cmd: Cmd
-    ) -> Optional[TenError]:
+    async def return_result(self, result: CmdResult, target_cmd: Cmd) -> None:
         q = asyncio.Queue(maxsize=1)
         self._internal.return_result(
             result,
@@ -133,11 +131,11 @@ class AsyncTenEnv(TenEnvBase):
         )
 
         error = await q.get()
-        return error
 
-    async def return_result_directly(
-        self, result: CmdResult
-    ) -> Optional[TenError]:
+        if error is not None:
+            raise RuntimeError(error.err_msg())
+
+    async def return_result_directly(self, result: CmdResult) -> None:
         q = asyncio.Queue(maxsize=1)
         self._internal.return_result_directly(
             result,
@@ -148,7 +146,9 @@ class AsyncTenEnv(TenEnvBase):
         )
 
         error = await q.get()
-        return error
+
+        if error is not None:
+            raise RuntimeError(error.err_msg())
 
     async def get_property_to_json(self, path: str) -> str:
         q = asyncio.Queue(maxsize=1)
