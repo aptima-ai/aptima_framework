@@ -4,7 +4,7 @@ In this tutorial, we will show you how to make Dify Bot speak in TEN-Agent playg
 
 ## Prerequisites
 
-- Make sure you have the TEN-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/ten-agent/quickstart) guide to start the playground.
+- Make sure you have the TEN-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/ten-agent/getting_started) guide to start the playground.
 - You will need following information prepared:
   - Dify info:
     - Dify API Key
