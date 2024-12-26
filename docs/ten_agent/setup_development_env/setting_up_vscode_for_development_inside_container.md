@@ -14,7 +14,7 @@ Next, install the [Dev Containers extension](https://marketplace.visualstudio.co
 
 ## Step 3: Start the Development Environment Using Docker Compose
 
-This step is similar to the process outlined in the [Quick Start](./quickstart.md) guide. However, instead of running:
+This step is similar to the process outlined in the [Quick Start](https://doc.theten.ai/ten-agent/getting_started) guide. However, instead of running:
 
 {% code title=">_ Terminal" %}
 ```shell
