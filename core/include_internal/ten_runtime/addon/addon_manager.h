@@ -25,6 +25,9 @@ typedef struct ten_addon_register_ctx_t {
 } ten_addon_register_ctx_t;
 
 typedef struct ten_addon_manager_t {
+  // Define a registry map to store addon registration functions.
+  // The key is the addon name (string), and the value is a function that takes
+  // a register_ctx.
   ten_list_t registry;  // ten_addon_registration_t*
   ten_mutex_t *mutex;
 } ten_addon_manager_t;

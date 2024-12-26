@@ -469,8 +469,8 @@ pub async fn execute_cmd(
     let mut preinstall_chdir_path: Option<PathBuf> = None;
 
     // If `tman install` is run within the scope of an app, then the app and
-    // those addons (extensions, extension_groups, ...) installed in the app
-    // directory are all considered initial_input_pkgs.
+    // those addons (extensions, ...) installed in the app directory are all
+    // considered initial_input_pkgs.
     let mut initial_input_pkgs = vec![];
     let mut all_candidates: HashMap<
         PkgTypeAndName,

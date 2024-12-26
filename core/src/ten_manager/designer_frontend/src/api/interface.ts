@@ -37,13 +37,11 @@ export interface BackendNode {
 
 export interface BackendConnection {
   app: string;
-  extension_group: string;
   extension: string;
   cmd?: {
     name: string;
     dest: {
       app: string;
-      extension_group: string;
       extension: string;
     }[];
   }[];

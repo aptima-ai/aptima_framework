@@ -29,13 +29,10 @@ class error_t {
   error_t(error_t &&) = delete;
   error_t &operator=(error_t &&) = delete;
 
-  void reset() { ten_error_reset(c_error); }
-
-  bool is_success() { return ten_error_is_success(c_error); }
-
-  const char *errmsg() { return ten_error_errmsg(c_error); }
+  const char *err_msg() { return ten_error_errmsg(c_error); }
 
   // Internal use only.
+  bool is_success() { return ten_error_is_success(c_error); }
   ten_error_t *get_c_error() { return c_error; }
 
  private:

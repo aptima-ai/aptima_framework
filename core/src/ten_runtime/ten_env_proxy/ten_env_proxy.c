@@ -14,7 +14,6 @@
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/extension/extension.h"
-#include "ten_runtime/extension_group/extension_group.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/io/runloop.h"

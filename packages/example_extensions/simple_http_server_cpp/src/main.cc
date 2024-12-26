@@ -642,7 +642,7 @@ void send_ten_msg_with_req_body(
               if (error != nullptr) {
                 prepare_response_data_from_ten_world(
                     http_session_data, "The command is not supported. err:" +
-                                           std::string(error->errmsg()));
+                                           std::string(error->err_msg()));
                 return;
               }
 
@@ -682,7 +682,7 @@ void send_ten_msg_without_req_body(
               if (error != nullptr) {
                 prepare_response_data_from_ten_world(
                     http_session_data, "The command is not supported. err:" +
-                                           std::string(error->errmsg()));
+                                           std::string(error->err_msg()));
                 return;
               }
 

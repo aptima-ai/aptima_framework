@@ -16,7 +16,6 @@
 #include "include_internal/ten_runtime/test/env_tester.h"
 #include "include_internal/ten_runtime/test/extension_tester.h"
 #include "ten_runtime/addon/addon.h"
-#include "ten_runtime/extension_group/extension_group.h"
 #include "ten_runtime/ten.h"
 #include "ten_runtime/ten_env/internal/log.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"

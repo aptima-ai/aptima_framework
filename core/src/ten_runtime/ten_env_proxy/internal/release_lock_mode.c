@@ -10,13 +10,12 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/ten_env/ten_env_proxy.h"
 #include "include_internal/ten_runtime/ten_env_proxy/ten_env_proxy.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/extension/extension.h"
-#include "ten_runtime/extension_group/extension_group.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/thread.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
 bool ten_env_proxy_release_lock_mode(ten_env_proxy_t *self, ten_error_t *err) {
