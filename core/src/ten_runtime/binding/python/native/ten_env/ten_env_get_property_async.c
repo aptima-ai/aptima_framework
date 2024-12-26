@@ -1,0 +1,477 @@
+//
+// Copyright © 2024 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+#include <string.h>
+
+#include "include_internal/ten_runtime/binding/python/common/common.h"
+#include "include_internal/ten_runtime/binding/python/common/error.h"
+#include "include_internal/ten_runtime/binding/python/ten_env/ten_env.h"
+#include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
+#include "ten_utils/lib/error.h"
+#include "ten_utils/lib/json.h"
+#include "ten_utils/macro/check.h"
+#include "ten_utils/macro/memory.h"
+#include "ten_utils/value/value.h"
+#include "ten_utils/value/value_get.h"
+
+typedef void (*ten_py_get_property_cb)(ten_env_t *ten_env, ten_value_t *value,
+                                       ten_error_t *error,
+                                       PyObject *py_cb_func);
+
+typedef struct ten_env_notify_get_property_async_info_t {
+  ten_string_t path;
+  PyObject *py_cb_func;
+  ten_py_get_property_cb cb;
+} ten_env_notify_get_property_async_info_t;
+
+static ten_env_notify_get_property_async_info_t *
+ten_env_notify_get_property_async_info_create(const char *path,
+                                              PyObject *py_cb_func,
+                                              ten_py_get_property_cb cb) {
+  ten_env_notify_get_property_async_info_t *info =
+      TEN_MALLOC(sizeof(ten_env_notify_get_property_async_info_t));
+  TEN_ASSERT(info, "Failed to allocate memory.");
+
+  ten_string_init_formatted(&info->path, "%s", path);
+  info->py_cb_func = py_cb_func;
+  info->cb = cb;
+
+  if (py_cb_func != NULL) {
+    Py_INCREF(py_cb_func);
+  }
+
+  return info;
+}
+
+static void ten_env_notify_get_property_async_info_destroy(
+    ten_env_notify_get_property_async_info_t *info) {
+  TEN_ASSERT(info, "Invalid argument.");
+
+  ten_string_deinit(&info->path);
+
+  info->py_cb_func = NULL;
+  info->cb = NULL;
+
+  TEN_FREE(info);
+}
+
+static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
+                                              void *user_data) {
+  TEN_ASSERT(user_data, "Invalid argument.");
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  ten_env_notify_get_property_async_info_t *info = user_data;
+  TEN_ASSERT(info, "Should not happen.");
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  ten_value_t *c_value =
+      ten_env_peek_property(ten_env, ten_string_get_raw_str(&info->path), &err);
+
+  if (c_value) {
+    info->cb(ten_env, c_value, NULL, info->py_cb_func);
+  } else {
+    info->cb(ten_env, NULL, &err, info->py_cb_func);
+  }
+
+  ten_error_deinit(&err);
+  ten_env_notify_get_property_async_info_destroy(info);
+}
+
+static bool ten_py_get_property_async(ten_py_ten_env_t *self, const char *path,
+                                      PyObject *py_cb_func,
+                                      ten_py_get_property_cb cb,
+                                      ten_error_t *error) {
+  TEN_ASSERT(self && ten_py_ten_env_check_integrity(self), "Invalid argument.");
+
+  bool success = true;
+
+  ten_env_notify_get_property_async_info_t *info =
+      ten_env_notify_get_property_async_info_create(path, py_cb_func, cb);
+  if (!ten_env_proxy_notify(self->c_ten_env_proxy,
+                            ten_env_proxy_notify_get_property, info, false,
+                            error)) {
+    if (py_cb_func) {
+      Py_XDECREF(py_cb_func);
+    }
+
+    ten_env_notify_get_property_async_info_destroy(info);
+    success = false;
+    ten_py_raise_py_runtime_error_exception("Failed to get property");
+  }
+
+  return success;
+}
+
+static void ten_py_get_property_to_json_cb(ten_env_t *ten_env,
+                                           ten_value_t *value,
+                                           ten_error_t *error,
+                                           PyObject *py_cb_func) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+  const char *json_str = "";
+
+  if (error) {
+    py_error = ten_py_error_wrap(error);
+
+    arglist = Py_BuildValue("(sO)", json_str, py_error);
+  } else {
+    ten_json_t *json = ten_value_to_json(value);
+    TEN_ASSERT(json, "Should not happen.");
+
+    bool must_free = false;
+    json_str = ten_json_to_string(json, NULL, &must_free);
+    TEN_ASSERT(json_str, "Should not happen.");
+
+    arglist = Py_BuildValue("(sO)", json_str, Py_None);
+
+    ten_json_destroy(json);
+
+    if (must_free) {
+      TEN_FREE(json_str);
+    }
+  }
+
+  PyObject *result = PyObject_CallObject(py_cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(py_cb_func);
+
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void ten_py_get_property_int_cb(ten_env_t *ten_env, ten_value_t *value,
+                                       ten_error_t *error,
+                                       PyObject *py_cb_func) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+  int64_t int_value = 0;
+
+  if (error) {
+    py_error = ten_py_error_wrap(error);
+
+    arglist = Py_BuildValue("(iO)", int_value, py_error);
+  } else {
+    ten_error_t err;
+    ten_error_init(&err);
+
+    int_value = ten_value_get_int64(value, error);
+
+    if (ten_error_is_success(&err)) {
+      arglist = Py_BuildValue("(iO)", int_value, Py_None);
+    } else {
+      py_error = ten_py_error_wrap(&err);
+      arglist = Py_BuildValue("(iO)", int_value, py_error);
+    }
+
+    ten_error_deinit(&err);
+  }
+
+  PyObject *result = PyObject_CallObject(py_cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(py_cb_func);
+
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void ten_py_get_property_string_cb(ten_env_t *ten_env,
+                                          ten_value_t *value,
+                                          ten_error_t *error,
+                                          PyObject *py_cb_func) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+  const char *str_value = "";
+
+  if (error) {
+    py_error = ten_py_error_wrap(error);
+
+    arglist = Py_BuildValue("(sO)", str_value, py_error);
+  } else {
+    ten_error_t err;
+    ten_error_init(&err);
+
+    str_value = ten_value_peek_raw_str(value, &err);
+
+    if (ten_error_is_success(&err)) {
+      arglist = Py_BuildValue("(sO)", str_value, Py_None);
+    } else {
+      py_error = ten_py_error_wrap(&err);
+      arglist = Py_BuildValue("(sO)", str_value, py_error);
+    }
+
+    ten_error_deinit(&err);
+  }
+
+  PyObject *result = PyObject_CallObject(py_cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(py_cb_func);
+
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void ten_py_get_property_bool_cb(ten_env_t *ten_env, ten_value_t *value,
+                                        ten_error_t *error,
+                                        PyObject *py_cb_func) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+  bool bool_value = false;
+
+  if (error) {
+    py_error = ten_py_error_wrap(error);
+
+    arglist = Py_BuildValue("(OO)", bool_value ? Py_True : Py_False, py_error);
+  } else {
+    ten_error_t err;
+    ten_error_init(&err);
+
+    bool_value = ten_value_get_bool(value, &err);
+
+    if (ten_error_is_success(&err)) {
+      arglist = Py_BuildValue("(OO)", bool_value ? Py_True : Py_False, Py_None);
+    } else {
+      py_error = ten_py_error_wrap(&err);
+      arglist =
+          Py_BuildValue("(OO)", bool_value ? Py_True : Py_False, py_error);
+    }
+
+    ten_error_deinit(&err);
+  }
+
+  PyObject *result = PyObject_CallObject(py_cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(py_cb_func);
+
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void ten_py_get_property_float_cb(ten_env_t *ten_env, ten_value_t *value,
+                                         ten_error_t *error,
+                                         PyObject *py_cb_func) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  PyObject *arglist = NULL;
+  ten_py_error_t *py_error = NULL;
+  double float_value = 0.0;
+
+  if (error) {
+    py_error = ten_py_error_wrap(error);
+
+    arglist = Py_BuildValue("(dO)", float_value, py_error);
+  } else {
+    ten_error_t err;
+    ten_error_init(&err);
+
+    float_value = ten_value_get_float64(value, &err);
+
+    if (ten_error_is_success(&err)) {
+      arglist = Py_BuildValue("(dO)", float_value, Py_None);
+    } else {
+      py_error = ten_py_error_wrap(&err);
+      arglist = Py_BuildValue("(dO)", float_value, py_error);
+    }
+
+    ten_error_deinit(&err);
+  }
+
+  PyObject *result = PyObject_CallObject(py_cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(py_cb_func);
+
+  if (py_error) {
+    ten_py_error_invalidate(py_error);
+  }
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static void ten_py_is_property_exist_cb(ten_env_t *ten_env, ten_value_t *value,
+                                        ten_error_t *error,
+                                        PyObject *py_cb_func) {
+  TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
+             "Should not happen.");
+
+  // About to call the Python function, so it's necessary to ensure that the GIL
+  // has been acquired.
+  //
+  // Allows C codes to work safely with Python objects.
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+
+  PyObject *arglist = NULL;
+  bool is_exist = value != NULL;
+
+  arglist = Py_BuildValue("(O)", is_exist ? Py_True : Py_False);
+
+  PyObject *result = PyObject_CallObject(py_cb_func, arglist);
+  Py_XDECREF(result);  // Ensure cleanup if an error occurred.
+
+  bool err_occurred = ten_py_check_and_clear_py_error();
+  TEN_ASSERT(!err_occurred, "Should not happen.");
+
+  Py_XDECREF(arglist);
+  Py_XDECREF(py_cb_func);
+
+  ten_py_gil_state_release(prev_state);
+}
+
+static PyObject *ten_py_ten_env_get_property_async(PyObject *self,
+                                                   PyObject *args,
+                                                   ten_py_get_property_cb cb) {
+  ten_py_ten_env_t *py_ten_env = (ten_py_ten_env_t *)self;
+  TEN_ASSERT(py_ten_env && ten_py_ten_env_check_integrity(py_ten_env),
+             "Invalid argument.");
+
+  if (PyTuple_GET_SIZE(args) != 2) {
+    return ten_py_raise_py_value_error_exception(
+        "Invalid argument count when ten_env.get_property_to_json_async.");
+  }
+
+  const char *path = NULL;
+  PyObject *cb_func = NULL;
+  if (!PyArg_ParseTuple(args, "sO", &path, &cb_func)) {
+    return ten_py_raise_py_value_error_exception(
+        "Failed to parse argument when ten_env.get_property_to_json_async.");
+  }
+
+  // Check if cb_func is callable.
+  if (!PyCallable_Check(cb_func)) {
+    return ten_py_raise_py_value_error_exception(
+        "Invalid callback function when ten_env.get_property_to_json_async.");
+  }
+
+  ten_error_t err;
+  ten_error_init(&err);
+
+  bool rc = ten_py_get_property_async(py_ten_env, path, cb_func, cb, &err);
+
+  ten_error_deinit(&err);
+
+  if (!rc) {
+    return NULL;
+  }
+
+  Py_RETURN_NONE;
+}
+
+PyObject *ten_py_ten_env_get_property_to_json_async(PyObject *self,
+                                                    PyObject *args) {
+  return ten_py_ten_env_get_property_async(self, args,
+                                           ten_py_get_property_to_json_cb);
+}
+
+PyObject *ten_py_ten_env_get_property_int_async(PyObject *self,
+                                                PyObject *args) {
+  return ten_py_ten_env_get_property_async(self, args,
+                                           ten_py_get_property_int_cb);
+}
+
+PyObject *ten_py_ten_env_get_property_string_async(PyObject *self,
+                                                   PyObject *args) {
+  return ten_py_ten_env_get_property_async(self, args,
+                                           ten_py_get_property_string_cb);
+}
+
+PyObject *ten_py_ten_env_get_property_bool_async(PyObject *self,
+                                                 PyObject *args) {
+  return ten_py_ten_env_get_property_async(self, args,
+                                           ten_py_get_property_bool_cb);
+}
+
+PyObject *ten_py_ten_env_get_property_float_async(PyObject *self,
+                                                  PyObject *args) {
+  return ten_py_ten_env_get_property_async(self, args,
+                                           ten_py_get_property_float_cb);
+}
+
+PyObject *ten_py_ten_env_is_property_exist_async(PyObject *self,
+                                                 PyObject *args) {
+  return ten_py_ten_env_get_property_async(self, args,
+                                           ten_py_is_property_exist_cb);
+}

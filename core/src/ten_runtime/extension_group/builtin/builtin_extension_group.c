@@ -23,9 +23,14 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
-static void on_addon_create_instance_done(ten_env_t *ten_env,
-                                          ten_extension_t *extension,
-                                          void *cb_data) {
+// Because the creation process for extensions is asynchronous, it is necessary
+// to check whether the number of extensions already created has reached the
+// initially set target each time an extension is successfully created. If the
+// target is met, it means that all the required extensions for this extension
+// group have been successfully created.
+static void on_addon_create_extension_done(ten_env_t *ten_env,
+                                           ten_extension_t *extension,
+                                           void *cb_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Invalid argument.");
   TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
@@ -48,7 +53,7 @@ static void on_addon_create_instance_done(ten_env_t *ten_env,
       ten_list_size(
           ten_extension_group_get_extension_addon_and_instance_name_pairs(
               extension_group))) {
-    // Notify the default extension group that all extensions have been created.
+    // Notify the builtin extension group that all extensions have been created.
     ten_env_on_create_extensions_done(
         ten_extension_group_get_ten_env(extension_group), result, NULL);
 
@@ -123,7 +128,7 @@ static void ten_builtin_extension_group_on_create_extensions(
     bool res = ten_addon_create_extension(
         ten_env, ten_string_get_raw_str(extension_addon_name),
         ten_string_get_raw_str(extension_instance_name),
-        (ten_env_addon_create_instance_done_cb_t)on_addon_create_instance_done,
+        (ten_env_addon_create_instance_done_cb_t)on_addon_create_extension_done,
         result, NULL);
 
     if (!res) {

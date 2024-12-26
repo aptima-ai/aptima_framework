@@ -19,6 +19,7 @@ group("python") {
     deps += [
       "aio_http_server_python",
       "async_extension_basic_python",
+      "async_get_set_prop_python",
       "async_io_basic_python",
       "cpp_app_multi_process_python",
       "cpp_app_python",

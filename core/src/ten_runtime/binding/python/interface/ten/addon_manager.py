@@ -9,7 +9,8 @@ import os
 import sys
 import importlib.util
 from glob import glob
-from typing import Callable, Dict, Type
+from typing import Callable, Dict, Type, Optional
+
 from .addon import Addon
 from libten_runtime_python import _register_addon_as_extension
 
@@ -133,7 +134,7 @@ class _AddonManager:
         )
 
 
-def register_addon_as_extension(name: str, base_dir: str | None = None):
+def register_addon_as_extension(name: str, base_dir: Optional[str] = None):
     def decorator(cls: Type[Addon]) -> Type[Addon]:
         # Resolve base_dir.
         if base_dir is None:

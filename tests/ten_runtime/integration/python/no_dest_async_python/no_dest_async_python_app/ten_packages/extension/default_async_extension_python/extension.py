@@ -19,50 +19,34 @@ class DefaultAsyncExtension(AsyncExtension):
         await asyncio.sleep(0.5)
         ten_env.log_debug("on_start")
 
-        assert ten_env.is_property_exist("unknown_field") is False
+        assert await ten_env.is_property_exist("unknown_field") is False
 
-        ten_env.set_property_string("string_field", "hello")
-        assert ten_env.is_property_exist("string_field") is True
+        await ten_env.set_property_string("string_field", "hello")
+        assert await ten_env.is_property_exist("string_field") is True
 
-        exception_caught = False
-        try:
-            result = await ten_env.send_cmd(Cmd.create("unknown_cmd"))
-        except Exception as e:
-            ten_env.log_error(f"Error: {e}")
-            exception_caught = True
+        result, err = await ten_env.send_cmd(Cmd.create("unknown_cmd"))
+        assert err is not None
 
-        assert exception_caught is True
-        exception_caught = False
+        ten_env.log_error(f"Error: {err.err_msg()}")
 
-        try:
-            result = await ten_env.send_data(Data.create("unknown_data"))
-        except Exception as e:
-            ten_env.log_error(f"Error: {e}")
-            exception_caught = True
+        err = await ten_env.send_data(Data.create("unknown_data"))
+        assert err is not None
 
-        assert exception_caught is True
-        exception_caught = False
+        ten_env.log_error(f"Error: {err.err_msg()}")
 
-        try:
-            result = await ten_env.send_audio_frame(
-                AudioFrame.create("unknown_audio_frame")
-            )
-        except Exception as e:
-            ten_env.log_error(f"Error: {e}")
-            exception_caught = True
+        err = await ten_env.send_audio_frame(
+            AudioFrame.create("unknown_audio_frame")
+        )
+        assert err is not None
 
-        assert exception_caught is True
-        exception_caught = False
+        ten_env.log_error(f"Error: {err.err_msg()}")
 
-        try:
-            result = await ten_env.send_video_frame(
-                VideoFrame.create("unknown_video_frame")
-            )
-        except Exception as e:
-            ten_env.log_error(f"Error: {e}")
-            exception_caught = True
+        err = await ten_env.send_video_frame(
+            VideoFrame.create("unknown_video_frame")
+        )
+        assert err is not None
 
-        assert exception_caught is True
+        ten_env.log_error(f"Error: {err.err_msg()}")
 
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
@@ -77,7 +61,9 @@ class DefaultAsyncExtension(AsyncExtension):
         # Send a new command to other extensions and wait for the result. The
         # result will be returned to the original sender.
         new_cmd = Cmd.create("hello")
-        cmd_result = await ten_env.send_cmd(new_cmd)
+        cmd_result, _ = await ten_env.send_cmd(new_cmd)
+        assert cmd_result is not None
+
         await ten_env.return_result(cmd_result, cmd)
 
     async def on_stop(self, ten_env: AsyncTenEnv) -> None:

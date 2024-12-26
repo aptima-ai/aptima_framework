@@ -114,5 +114,41 @@ TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_float(
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_init_property_from_json(
     PyObject *self, PyObject *args);
 
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_get_property_to_json_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_from_json_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_is_property_exist_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_get_property_int_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_int_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_get_property_string_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_string_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_get_property_bool_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_bool_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_get_property_float_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_set_property_float_async(
+    PyObject *self, PyObject *args);
+
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_init_property_from_json_async(
+    PyObject *self, PyObject *args);
+
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_ten_env_log(PyObject *self,
                                                      PyObject *args);

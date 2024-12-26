@@ -6,6 +6,7 @@
 #
 import argparse
 import os
+from typing import Optional
 
 
 class ArgumentInfo(argparse.Namespace):
@@ -26,7 +27,7 @@ class LibFilter:
             return False
         return True
 
-    def get_link_lib_name(self, lib_path: str) -> str | None:
+    def get_link_lib_name(self, lib_path: str) -> Optional[str]:
         lib_basename = os.path.basename(lib_path)
         if self.args.target_os == "win":
             return lib_basename

@@ -23,10 +23,10 @@ class DefaultAsyncExtension(AsyncExtension):
         await asyncio.sleep(0.5)
         ten_env.log_debug("on_start")
 
-        assert ten_env.is_property_exist("unknown_field") is False
+        assert await ten_env.is_property_exist("unknown_field") is False
 
-        ten_env.set_property_string("string_field", "hello")
-        assert ten_env.is_property_exist("string_field") is True
+        await ten_env.set_property_string("string_field", "hello")
+        assert await ten_env.is_property_exist("string_field") is True
 
     async def on_deinit(self, ten_env: AsyncTenEnv) -> None:
         await asyncio.sleep(0.5)
@@ -41,7 +41,9 @@ class DefaultAsyncExtension(AsyncExtension):
         # Send a new command to other extensions and wait for the result. The
         # result will be returned to the original sender.
         new_cmd = Cmd.create("hello")
-        cmd_result = await ten_env.send_cmd(new_cmd)
+        cmd_result, _ = await ten_env.send_cmd(new_cmd)
+        assert cmd_result is not None
+
         await ten_env.return_result(cmd_result, cmd)
 
     async def on_stop(self, ten_env: AsyncTenEnv) -> None:

@@ -4,9 +4,12 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+from typing import Callable, Optional
+
 from .ten_env_attach_to_enum import _TenEnvAttachTo
 from .log_level import LogLevel
 from .addon import Addon
+from .error import TenError
 from .ten_env import ResultHandler, ErrorHandler
 from .test import (
     ResultHandler as TestResultHandler,
@@ -22,15 +25,15 @@ class _Msg:
     def set_name(self, name: str) -> None: ...
     def set_dest(
         self,
-        app_uri: str | None,
-        graph_id: str | None,
-        extension_group: str | None,
-        extension: str | None,
+        app_uri: Optional[str],
+        graph_id: Optional[str],
+        extension_group: Optional[str],
+        extension: Optional[str],
     ) -> None: ...
     def set_property_from_json(
-        self, path: str | None, json_str: str
+        self, path: Optional[str], json_str: str
     ) -> None: ...
-    def get_property_to_json(self, path: str | None = None) -> str: ...
+    def get_property_to_json(self, path: Optional[str] = None) -> str: ...
     def get_property_int(self, path: str) -> int: ...
     def set_property_int(self, path: str, value: int) -> None: ...
     def get_property_string(self, path: str) -> str: ...
@@ -120,6 +123,59 @@ class _TenEnv:
     def set_property_bool(self, path: str, value: int) -> None: ...
     def get_property_float(self, path: str) -> float: ...
     def set_property_float(self, path: str, value: float) -> None: ...
+    def is_property_exist(self, path: str) -> bool: ...
+    def init_property_from_json(self, json_str: str) -> None: ...
+    def get_property_to_json_async(
+        self, path: str, callback: Callable[[str, Optional[TenError]], None]
+    ) -> None: ...
+    def set_property_from_json_async(
+        self,
+        path: str,
+        json_str: str,
+        callback: Callable[[Optional[TenError]], None],
+    ) -> None: ...
+    def get_property_int_async(
+        self, path: str, callback: Callable[[int, Optional[TenError]], None]
+    ) -> None: ...
+    def set_property_int_async(
+        self,
+        path: str,
+        value: int,
+        callback: Callable[[Optional[TenError]], None],
+    ) -> None: ...
+    def get_property_string_async(
+        self, path: str, callback: Callable[[str, Optional[TenError]], None]
+    ) -> None: ...
+    def set_property_string_async(
+        self,
+        path: str,
+        value: str,
+        callback: Callable[[Optional[TenError]], None],
+    ) -> None: ...
+    def get_property_bool_async(
+        self, path: str, callback: Callable[[bool, Optional[TenError]], None]
+    ) -> None: ...
+    def set_property_bool_async(
+        self,
+        path: str,
+        value: int,
+        callback: Callable[[Optional[TenError]], None],
+    ) -> None: ...
+    def get_property_float_async(
+        self, path: str, callback: Callable[[float, Optional[TenError]], None]
+    ) -> None: ...
+    def set_property_float_async(
+        self,
+        path: str,
+        value: float,
+        callback: Callable[[Optional[TenError]], None],
+    ) -> None: ...
+    def is_property_exist_async(
+        self, path: str, callback: Callable[[bool], None]
+    ) -> None: ...
+    def init_property_from_json_async(
+        self, json_str: str, callback: Callable[[Optional[TenError]], None]
+    ) -> None: ...
     def send_cmd(
         self, cmd: _Cmd, result_handler: ResultHandler, is_ex: bool
     ) -> None: ...
@@ -136,13 +192,11 @@ class _TenEnv:
     def return_result_directly(
         self, result: _CmdResult, error_handler: ErrorHandler
     ) -> None: ...
-    def is_property_exist(self, path: str) -> bool: ...
-    def init_property_from_json(self, json_str: str) -> None: ...
     def log(
         self,
         level: LogLevel,
-        func_name: str | None,
-        file_name: str | None,
+        func_name: Optional[str],
+        file_name: Optional[str],
         line_no: int,
         msg: str,
     ) -> None: ...
@@ -207,10 +261,10 @@ class _TenEnvTester:
 
 class _ExtensionTester:
     def set_test_mode_single(
-        self, addon_name: str, property_json_str: str | None
+        self, addon_name: str, property_json_str: Optional[str]
     ) -> None: ...
     def run(self) -> None: ...
 
 def _register_addon_as_extension(
-    name: str, base_dir: str | None, instance: Addon, register_ctx: object
+    name: str, base_dir: Optional[str], instance: Addon, register_ctx: object
 ): ...

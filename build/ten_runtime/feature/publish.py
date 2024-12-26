@@ -8,9 +8,10 @@ import os
 import argparse
 import re
 import sys
+from typing import Optional
+import subprocess
 from build.scripts import cmd_exec, touch
 from common.scripts import delete_files
-import subprocess
 
 
 class ArgumentInfo(argparse.Namespace):
@@ -24,7 +25,7 @@ class ArgumentInfo(argparse.Namespace):
         self.cpu: str
 
 
-def extract_publish_path(text: str) -> str | None:
+def extract_publish_path(text: str) -> Optional[str]:
     pattern = r'Publish to "(.+?)"'
     match = re.search(pattern, text)
     return match.group(1) if match is not None else None

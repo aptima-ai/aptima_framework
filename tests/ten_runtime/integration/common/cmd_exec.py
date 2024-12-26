@@ -7,6 +7,7 @@
 import sys
 import os
 import subprocess
+from typing import Optional
 
 
 # `psutil` is not a builtin module, so use it if it exists.
@@ -88,8 +89,8 @@ def run_cmd(argv: list[str], log_level: int = 0) -> tuple[int, str]:
 
 def run_cmd_realtime(
     cmd,
-    cwd: str | None = None,
-    env: dict[str, str] | None = None,
+    cwd: Optional[str] = None,
+    env: Optional[dict[str, str]] = None,
     log_level: int = 0,
 ):
     # print(cmd)

@@ -7,7 +7,7 @@
 import sys
 import importlib
 from pathlib import Path
-from typing import Callable, Optional, final
+from typing import Callable, Optional, final, Optional
 
 from libten_runtime_python import _ExtensionTester, _TenEnvTester
 from ten.cmd_result import CmdResult
@@ -22,12 +22,11 @@ from .addon_manager import _AddonManager
 class TenEnvTester: ...  # type: ignore
 
 
-ResultHandler = (
+ResultHandler = Optional[
     Callable[[TenEnvTester, Optional[CmdResult], Optional[TenError]], None]
-    | None
-)
+]
 
-ErrorHandler = Callable[[TenEnvTester, Optional[TenError]], None] | None
+ErrorHandler = Optional[Callable[[TenEnvTester, Optional[TenError]], None]]
 
 
 class TenEnvTester:
@@ -86,7 +85,7 @@ class ExtensionTester(_ExtensionTester):
 
     @final
     def set_test_mode_single(
-        self, addon_name: str, property_json_str: str | None = None
+        self, addon_name: str, property_json_str: Optional[str] = None
     ) -> None:
         return _ExtensionTester.set_test_mode_single(
             self, addon_name, property_json_str
