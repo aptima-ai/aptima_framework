@@ -16,6 +16,7 @@ use ten_rust::pkg_info::PkgInfo;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PkgRegistryInfo {
+    #[serde(flatten)]
     pub basic_info: PkgBasicInfo,
 
     #[serde(with = "dependencies_conversion")]
