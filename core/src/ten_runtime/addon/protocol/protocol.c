@@ -40,17 +40,11 @@ ten_addon_t *ten_addon_unregister_protocol(const char *name) {
   return ten_addon_unregister(ten_protocol_get_global_store(), name);
 }
 
-void ten_addon_register_protocol(const char *name, const char *base_dir,
-                                 ten_addon_t *addon) {
-  ten_addon_host_t *addon_host =
-      (ten_addon_host_t *)TEN_MALLOC(sizeof(ten_addon_host_t));
-  TEN_ASSERT(addon_host, "Failed to allocate memory.");
-
-  addon_host->type = TEN_ADDON_TYPE_PROTOCOL;
-  ten_addon_host_init(addon_host);
-
-  ten_addon_register(ten_protocol_get_global_store(), addon_host, name,
-                     base_dir, addon);
+ten_addon_host_t *ten_addon_register_protocol(const char *name,
+                                              const char *base_dir,
+                                              ten_addon_t *addon) {
+  return ten_addon_register(TEN_ADDON_TYPE_PROTOCOL, name, base_dir, addon,
+                            NULL);
 }
 
 static bool ten_addon_protocol_match_protocol(ten_addon_host_t *self,

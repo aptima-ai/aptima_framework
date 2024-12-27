@@ -167,12 +167,6 @@ class py_init_addon_t : public ten::addon_t {
     TEN_ASSERT(0, "Should not happen.");
   }
 
-  void on_create_instance_impl(ten::ten_env_t &ten_env, const char *name,
-                               void *context) override {
-    // Create instance.
-    TEN_ASSERT(0, "Should not happen.");
-  }
-
   void on_destroy_instance(ten::ten_env_t &ten_env, void *instance,
                            void *context) override {
     // Destroy instance.

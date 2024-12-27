@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "include_internal/ten_runtime/addon/addon.h"
 #include "ten_runtime/ten_env/ten_env.h"
 
 typedef struct ten_env_t ten_env_t;

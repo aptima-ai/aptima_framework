@@ -14,15 +14,6 @@
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_error_t ten_error_t;
 
-typedef void (*ten_env_peek_property_async_cb_t)(ten_env_t *ten_env,
-                                                 ten_value_t *value,
-                                                 void *cb_data,
-                                                 ten_error_t *err);
-
-typedef void (*ten_env_set_property_async_cb_t)(ten_env_t *ten_env, bool res,
-                                                void *cb_data,
-                                                ten_error_t *err);
-
 /**
  * @brief Note that the ownership of @a value would be transferred into the
  * TEN runtime, so the caller of this function could _not_ consider the
@@ -31,18 +22,9 @@ typedef void (*ten_env_set_property_async_cb_t)(ten_env_t *ten_env, bool res,
 TEN_RUNTIME_API bool ten_env_set_property(ten_env_t *self, const char *path,
                                           ten_value_t *value, ten_error_t *err);
 
-// This function is used to set prop on any threads.
-TEN_RUNTIME_API bool ten_env_set_property_async(
-    ten_env_t *self, const char *path, ten_value_t *value,
-    ten_env_set_property_async_cb_t cb, void *cb_data, ten_error_t *err);
-
 TEN_RUNTIME_API ten_value_t *ten_env_peek_property(ten_env_t *self,
                                                    const char *path,
                                                    ten_error_t *err);
-
-TEN_RUNTIME_API bool ten_env_peek_property_async(
-    ten_env_t *self, const char *path, ten_env_peek_property_async_cb_t cb,
-    void *cb_data, ten_error_t *err);
 
 TEN_RUNTIME_API bool ten_env_is_property_exist(ten_env_t *self,
                                                const char *path,

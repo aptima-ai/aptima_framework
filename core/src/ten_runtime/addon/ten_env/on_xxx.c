@@ -108,7 +108,8 @@ void ten_addon_on_deinit_done(ten_env_t *self) {
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
@@ -130,7 +131,8 @@ static void ten_addon_extension_on_create_instance_done(ten_env_t *self,
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
@@ -210,7 +212,8 @@ static void ten_addon_extension_group_on_create_instance_done(ten_env_t *self,
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
@@ -272,7 +275,8 @@ void ten_addon_protocol_on_create_instance_done(ten_env_t *self,
   // thread-check: This function is intended to be called in any threads.
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
@@ -353,7 +357,8 @@ void ten_addon_on_create_instance_done(ten_env_t *self, void *instance,
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
@@ -384,7 +389,8 @@ void ten_addon_on_destroy_instance_done(ten_env_t *self, void *context) {
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),

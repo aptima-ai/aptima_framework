@@ -24,13 +24,6 @@ TEN_RUNTIME_API bool ten_env_on_start_done(ten_env_t *self, ten_error_t *err);
 
 TEN_RUNTIME_API bool ten_env_on_stop_done(ten_env_t *self, ten_error_t *err);
 
-TEN_RUNTIME_API bool ten_env_on_create_extensions_done(ten_env_t *self,
-                                                       ten_list_t *extensions,
-                                                       ten_error_t *err);
-
-TEN_RUNTIME_API bool ten_env_on_destroy_extensions_done(ten_env_t *self,
-                                                        ten_error_t *err);
-
 TEN_RUNTIME_API bool ten_env_on_create_instance_done(ten_env_t *self,
                                                      void *instance,
                                                      void *context,

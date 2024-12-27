@@ -10,8 +10,12 @@
 
 #include <stdbool.h>
 
-#include "ten_runtime/ten_env/ten_env.h"
+#include "ten_utils/lib/error.h"
 
-TEN_RUNTIME_PRIVATE_API bool ten_is_cmd_connected_async(
-    ten_env_t *self, const char *cmd_name,
-    ten_env_is_cmd_connected_async_cb_t cb, void *cb_data, ten_error_t *err);
+typedef struct ten_env_t ten_env_t;
+
+TEN_RUNTIME_PRIVATE_API bool ten_env_on_create_extensions_done(
+    ten_env_t *self, ten_list_t *extensions, ten_error_t *err);
+
+TEN_RUNTIME_PRIVATE_API bool ten_env_on_destroy_extensions_done(
+    ten_env_t *self, ten_error_t *err);

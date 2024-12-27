@@ -62,7 +62,9 @@ class addon_t {
   ::ten_addon_t *get_c_addon() const { return c_addon; }
 
   virtual void on_create_instance_impl(ten_env_t &ten_env, const char *name,
-                                       void *context) = 0;
+                                       void *context) {
+    on_create_instance(ten_env, name, context);
+  }
 
   void invoke_cpp_addon_on_init(ten_env_t &ten_env) {
     try {

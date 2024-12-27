@@ -24,7 +24,7 @@
     ten_rwlock_lock((ten_env_bridge)->lock, 1);                        \
     if (((ten_env_bridge)->c_ten_env == NULL) ||                       \
         (((ten_env_bridge)->c_ten_env->attach_to !=                    \
-          TEN_ENV_ATTACH_TO_ADDON) &&                                  \
+          TEN_ENV_ATTACH_TO_ADDON_HOST) &&                             \
          ((ten_env_bridge)->c_ten_env_proxy == NULL))) {               \
       ten_rwlock_unlock((ten_env_bridge)->lock, 1);                    \
       {                                                                \

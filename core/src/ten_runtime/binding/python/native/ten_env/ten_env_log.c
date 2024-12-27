@@ -88,7 +88,7 @@ PyObject *ten_py_ten_env_log(PyObject *self, PyObject *args) {
   ten_env_notify_log_info_t *info =
       ten_env_notify_log_info_create(level, func_name, file_name, line_no, msg);
 
-  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
+  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST) {
     // TODO(Wei): This function is currently specifically designed for the addon
     // because the addon currently does not have a main thread, so it's unable
     // to check thread safety. Once the main thread for the addon is determined

@@ -99,7 +99,7 @@ ten_env_t *ten_env_create_for_addon(ten_addon_host_t *addon_host) {
   TEN_ASSERT(ten_addon_host_check_integrity(addon_host),
              "Invalid use of addon_host %p.", addon_host);
 
-  return ten_create_with_attach_to(TEN_ENV_ATTACH_TO_ADDON, addon_host);
+  return ten_create_with_attach_to(TEN_ENV_ATTACH_TO_ADDON_HOST, addon_host);
 }
 
 ten_env_t *ten_env_create_for_extension(ten_extension_t *extension) {
@@ -177,7 +177,7 @@ void ten_env_close(ten_env_t *self) {
       TEN_LOGD("[%s] Close ten of extension.",
                ten_string_get_raw_str(&self->attached_target.extension->name));
       break;
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       TEN_LOGD("[%s] Close ten of addon.",
                ten_string_get_raw_str(&self->attached_target.addon_host->name));
       break;
@@ -250,7 +250,7 @@ void *ten_env_get_attached_target(ten_env_t *self) {
       return ten_env_get_attached_engine(self);
     case TEN_ENV_ATTACH_TO_APP:
       return ten_env_get_attached_app(self);
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       return ten_env_get_attached_addon(self);
     default:
       TEN_ASSERT(0, "Handle more types: %d", self->attach_to);
@@ -282,7 +282,7 @@ void ten_env_set_attach_to(ten_env_t *self, TEN_ENV_ATTACH_TO attach_to_type,
       self->attached_target.app = attach_to;
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       self->attached_target.addon_host = attach_to;
       break;
 

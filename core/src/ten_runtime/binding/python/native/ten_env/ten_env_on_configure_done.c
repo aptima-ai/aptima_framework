@@ -18,10 +18,10 @@
 static void ten_env_proxy_notify_on_configure_done(ten_env_t *ten_env,
                                                    TEN_UNUSED void *user_data) {
   TEN_ASSERT(
-      ten_env &&
-          ten_env_check_integrity(
-              ten_env,
-              ten_env->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+      ten_env && ten_env_check_integrity(
+                     ten_env, ten_env->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST
+                                  ? true
+                                  : false),
       "Should not happen.");
 
   ten_error_t err;
@@ -43,7 +43,7 @@ PyObject *ten_py_ten_env_on_configure_done(PyObject *self, PyObject *args) {
 
   bool rc = true;
 
-  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
+  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST) {
     rc = ten_env_on_configure_done(py_ten_env->c_ten_env, &err);
   } else {
     rc = ten_env_proxy_notify_async(py_ten_env->c_ten_env_proxy,

@@ -108,7 +108,7 @@ void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
   ten_error_t err;
   ten_error_init(&err);
 
-  if (self->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
+  if (self->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST) {
     // TODO(Wei): This function is currently specifically designed for the addon
     // because the addon currently does not have a main thread, so it's unable
     // to check thread safety. Once the main thread for the addon is determined

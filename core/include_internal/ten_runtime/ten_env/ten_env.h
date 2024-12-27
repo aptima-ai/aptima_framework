@@ -30,7 +30,7 @@ typedef enum TEN_ENV_ATTACH_TO {
   TEN_ENV_ATTACH_TO_EXTENSION,
   TEN_ENV_ATTACH_TO_EXTENSION_GROUP,
   TEN_ENV_ATTACH_TO_APP,
-  TEN_ENV_ATTACH_TO_ADDON,
+  TEN_ENV_ATTACH_TO_ADDON_HOST,
   TEN_ENV_ATTACH_TO_ENGINE,
 } TEN_ENV_ATTACH_TO;
 
@@ -148,7 +148,8 @@ inline ten_addon_host_t *ten_env_get_attached_addon(ten_env_t *self) {
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
+             "Should not happen.");
 
   return self->attached_target.addon_host;
 }

@@ -18,10 +18,10 @@
 #include "include_internal/ten_runtime/ten_env/metadata.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
-#include "ten_utils/macro/check.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
 static TEN_METADATA_LEVEL ten_get_metadata_level_from_name(
@@ -134,7 +134,7 @@ static ten_metadata_info_t *ten_env_get_manifest_info(ten_env_t *self) {
       manifest_info = self->attached_target.app->manifest_info;
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       manifest_info = self->attached_target.addon_host->manifest_info;
       break;
 
@@ -162,7 +162,7 @@ static ten_metadata_info_t *ten_env_get_property_info(ten_env_t *self) {
       property_info = self->attached_target.app->property_info;
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       property_info = self->attached_target.addon_host->property_info;
       break;
 
@@ -179,7 +179,7 @@ bool ten_env_init_manifest_from_json(ten_env_t *self, const char *json_string,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   ten_metadata_info_t *manifest_info = ten_env_get_manifest_info(self);
@@ -195,7 +195,7 @@ bool ten_env_init_property_from_json(ten_env_t *self, const char *json_string,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   ten_metadata_info_t *property_info = ten_env_get_property_info(self);

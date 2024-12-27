@@ -18,23 +18,8 @@
 typedef struct ten_env_t ten_env_t;
 typedef struct ten_extension_group_t ten_extension_group_t;
 
-typedef void (*ten_env_addon_create_instance_done_cb_t)(ten_env_t *ten_env,
-                                                        void *instance,
-                                                        void *cb_data);
-
-typedef void (*ten_env_addon_destroy_instance_done_cb_t)(ten_env_t *ten_env,
-                                                         void *cb_data);
-
-typedef void (*ten_env_is_cmd_connected_async_cb_t)(ten_env_t *ten_env,
-                                                    bool result, void *cb_data,
-                                                    ten_error_t *err);
-
 TEN_RUNTIME_API bool ten_env_check_integrity(ten_env_t *self,
                                              bool check_thread);
-
-TEN_RUNTIME_API bool ten_env_is_cmd_connected(ten_env_t *self,
-                                              const char *cmd_name,
-                                              ten_error_t *err);
 
 TEN_RUNTIME_API void *ten_env_get_attached_target(ten_env_t *self);
 

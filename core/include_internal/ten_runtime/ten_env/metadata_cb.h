@@ -8,6 +8,7 @@
 
 #include "ten_runtime/ten_config.h"
 
+#include "include_internal/ten_runtime/ten_env/metadata.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/event.h"

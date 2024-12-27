@@ -120,32 +120,8 @@ ten_addon_host_t *ten_addon_register_extension(const char *name,
                                                const char *base_dir,
                                                ten_addon_t *addon,
                                                void *register_ctx) {
-  if (!name || strlen(name) == 0) {
-    TEN_LOGE("The addon name is required.");
-    exit(EXIT_FAILURE);
-  }
-
-  ten_addon_host_t *addon_host =
-      ten_addon_store_find(ten_extension_get_global_store(), name);
-  if (addon_host) {
-    return addon_host;
-  }
-
-  addon_host = ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION);
-  TEN_ASSERT(addon_host, "Should not happen.");
-
-  if (register_ctx) {
-    // If `register_ctx` exists, its content will be used to assist in the addon
-    // registration process.
-    ten_addon_register_ctx_t *register_ctx_ =
-        (ten_addon_register_ctx_t *)register_ctx;
-    addon_host->user_data = register_ctx_->app;
-  }
-
-  ten_addon_register(ten_extension_get_global_store(), addon_host, name,
-                     base_dir, addon);
-
-  return addon_host;
+  return ten_addon_register(TEN_ADDON_TYPE_EXTENSION, name, base_dir, addon,
+                            register_ctx);
 }
 
 ten_addon_t *ten_addon_unregister_extension(const char *name) {

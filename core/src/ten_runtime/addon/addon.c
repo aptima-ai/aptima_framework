@@ -7,6 +7,7 @@
 #include "ten_runtime/addon/addon.h"
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_manager.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/addon/extension/extension.h"
 #include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
@@ -201,9 +202,10 @@ static const char *ten_addon_type_to_string(TEN_ADDON_TYPE type) {
  * Developers could override the 'on_init' function to perform user-defined
  * operations the addon needs.
  */
-void ten_addon_register(ten_addon_store_t *addon_store,
-                        ten_addon_host_t *addon_host, const char *name,
-                        const char *base_dir, ten_addon_t *addon) {
+static void ten_addon_register_internal(ten_addon_store_t *addon_store,
+                                        ten_addon_host_t *addon_host,
+                                        const char *name, const char *base_dir,
+                                        ten_addon_t *addon) {
   TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
              "Should not happen.");
   TEN_ASSERT(name, "Should not happen.");
@@ -542,4 +544,51 @@ void ten_addon_find_and_set_base_dir(ten_addon_host_t *self,
 const char *ten_addon_host_get_base_dir(ten_addon_host_t *self) {
   TEN_ASSERT(self && ten_addon_host_check_integrity(self), "Invalid argument.");
   return ten_string_get_raw_str(&self->base_dir);
+}
+
+ten_addon_host_t *ten_addon_register(TEN_ADDON_TYPE addon_type,
+                                     const char *name, const char *base_dir,
+                                     ten_addon_t *addon, void *register_ctx) {
+  TEN_ASSERT(addon_type != TEN_ADDON_TYPE_INVALID, "Invalid argument.");
+
+  if (!name || strlen(name) == 0) {
+    TEN_LOGE("The addon name is required.");
+    exit(EXIT_FAILURE);
+  }
+
+  ten_addon_store_t *addon_store = NULL;
+  switch (addon_type) {
+    case TEN_ADDON_TYPE_EXTENSION:
+      addon_store = ten_extension_get_global_store();
+      break;
+    case TEN_ADDON_TYPE_EXTENSION_GROUP:
+      addon_store = ten_extension_group_get_global_store();
+      break;
+    case TEN_ADDON_TYPE_PROTOCOL:
+      addon_store = ten_protocol_get_global_store();
+      break;
+    default:
+      break;
+  }
+  TEN_ASSERT(addon_store, "Should not happen.");
+
+  ten_addon_host_t *addon_host = ten_addon_store_find(addon_store, name);
+  if (addon_host) {
+    return addon_host;
+  }
+
+  addon_host = ten_addon_host_create(addon_type);
+  TEN_ASSERT(addon_host, "Should not happen.");
+
+  if (register_ctx) {
+    // If `register_ctx` exists, its content will be used to assist in the addon
+    // registration process.
+    ten_addon_register_ctx_t *register_ctx_ =
+        (ten_addon_register_ctx_t *)register_ctx;
+    addon_host->user_data = register_ctx_->app;
+  }
+
+  ten_addon_register_internal(addon_store, addon_host, name, base_dir, addon);
+
+  return addon_host;
 }

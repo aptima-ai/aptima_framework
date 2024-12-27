@@ -15,6 +15,7 @@
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
+#include "include_internal/ten_runtime/ten_env/on_xxx_done.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/macro/check.h"
@@ -24,7 +25,7 @@ bool ten_env_on_configure_done(ten_env_t *self, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   switch (self->attach_to) {
@@ -36,7 +37,7 @@ bool ten_env_on_configure_done(ten_env_t *self, ten_error_t *err) {
       break;
 
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       TEN_ASSERT(0, "Handle these types.");
       break;
 
@@ -52,7 +53,7 @@ bool ten_env_on_init_done(ten_env_t *self, ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   switch (self->attach_to) {
@@ -67,7 +68,7 @@ bool ten_env_on_init_done(ten_env_t *self, ten_error_t *err) {
       ten_app_on_init_done(self);
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       ten_addon_on_init_done(self);
       break;
 
@@ -83,11 +84,11 @@ bool ten_env_on_deinit_done(ten_env_t *self, TEN_UNUSED ten_error_t *err) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   switch (self->attach_to) {
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       ten_addon_on_deinit_done(self);
       break;
 
@@ -154,11 +155,11 @@ bool ten_env_on_create_instance_done(ten_env_t *self, void *instance,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   switch (self->attach_to) {
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       ten_addon_on_create_instance_done(self, instance, context);
       break;
 
@@ -175,11 +176,11 @@ bool ten_env_on_destroy_instance_done(ten_env_t *self, void *context,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
       "Invalid use of ten_env %p.", self);
 
   switch (self->attach_to) {
-    case TEN_ENV_ATTACH_TO_ADDON:
+    case TEN_ENV_ATTACH_TO_ADDON_HOST:
       ten_addon_on_destroy_instance_done(self, context);
       break;
 

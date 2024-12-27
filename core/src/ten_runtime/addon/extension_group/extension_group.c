@@ -28,19 +28,8 @@ ten_addon_host_t *ten_addon_register_extension_group(const char *name,
                                                      const char *base_dir,
                                                      ten_addon_t *addon,
                                                      void *register_ctx) {
-  if (!name || strlen(name) == 0) {
-    TEN_LOGE("The addon name is required.");
-    exit(EXIT_FAILURE);
-  }
-
-  ten_addon_host_t *addon_host =
-      ten_addon_host_create(TEN_ADDON_TYPE_EXTENSION_GROUP);
-  TEN_ASSERT(addon_host, "Should not happen.");
-
-  ten_addon_register(ten_extension_group_get_global_store(), addon_host, name,
-                     base_dir, addon);
-
-  return addon_host;
+  return ten_addon_register(TEN_ADDON_TYPE_EXTENSION_GROUP, name, base_dir,
+                            addon, register_ctx);
 }
 
 ten_addon_t *ten_addon_unregister_extension_group(const char *name) {

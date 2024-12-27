@@ -29,6 +29,13 @@ typedef enum TEN_ADDON_TYPE {
   TEN_ADDON_TYPE_EXTENSION_GROUP,
 } TEN_ADDON_TYPE;
 
+typedef void (*ten_env_addon_create_instance_done_cb_t)(ten_env_t *ten_env,
+                                                        void *instance,
+                                                        void *cb_data);
+
+typedef void (*ten_env_addon_destroy_instance_done_cb_t)(ten_env_t *ten_env,
+                                                         void *cb_data);
+
 typedef struct ten_addon_context_t {
   ten_env_t *caller_ten;
 
@@ -108,12 +115,6 @@ TEN_RUNTIME_API void ten_addon_host_destroy(ten_addon_host_t *self);
 TEN_RUNTIME_PRIVATE_API TEN_ADDON_TYPE
 ten_addon_type_from_string(const char *addon_type_str);
 
-TEN_RUNTIME_PRIVATE_API void ten_addon_register(ten_addon_store_t *addon_store,
-                                                ten_addon_host_t *addon_host,
-                                                const char *name,
-                                                const char *base_dir,
-                                                ten_addon_t *addon);
-
 TEN_RUNTIME_PRIVATE_API ten_addon_t *ten_addon_unregister(
     ten_addon_store_t *store, const char *addon_name);
 
@@ -170,3 +171,7 @@ TEN_RUNTIME_PRIVATE_API ten_string_t *ten_addon_find_base_dir_from_app(
 
 TEN_RUNTIME_PRIVATE_API void ten_addon_find_and_set_base_dir(
     ten_addon_host_t *self, const char *path);
+
+TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_register(
+    TEN_ADDON_TYPE addon_type, const char *name, const char *base_dir,
+    ten_addon_t *addon, void *register_ctx);
