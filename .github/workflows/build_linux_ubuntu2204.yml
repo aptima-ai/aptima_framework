@@ -201,14 +201,14 @@ jobs:
         if: matrix.arch == 'x64'
         uses: actions/upload-artifact@v4
         with:
-          name: tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
+          name: tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
           path: out/linux/x64/ten_manager/bin/tman
 
       - name: Upload ten_packages
         if: matrix.arch == 'x64'
         uses: actions/upload-artifact@v4
         with:
-          name: ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
+          name: ten_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
           path: |
             out/linux/x64/ten_packages/system/ten_runtime
             out/linux/x64/ten_packages/system/ten_runtime_go
@@ -223,8 +223,8 @@ jobs:
         if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
         run: |
           cd out/linux/x64
-          zip -vr tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip ten_manager/bin/tman
-          zip -vr ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip \
+          zip -vr tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip ten_manager/bin/tman
+          zip -vr ten_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip \
             ten_packages/system/ten_runtime \
             ten_packages/system/ten_runtime_go \
             ten_packages/system/ten_runtime_python \
@@ -239,8 +239,8 @@ jobs:
         if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            out/linux/x64/tman-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
-            out/linux/x64/ten_packages-linux-x64-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
+            out/linux/x64/tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
+            out/linux/x64/ten_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
 
       - name: Publish release to TEN cloud store
         if: ${{ matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/') && matrix.compiler == 'gcc' && matrix.build_type == 'release' && matrix.arch == 'x64' }}

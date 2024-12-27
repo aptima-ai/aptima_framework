@@ -151,6 +151,12 @@ void ten_app_destroy(ten_app_t *self) {
   ten_env_destroy(self->ten_env);
   ten_mutex_destroy(self->state_lock);
 
+  // BUG(Wei): The `on_deinit` of the protocol addon needs to call the
+  // `on_deinit_done` of the addon host. However, during the `on_deinit` of the
+  // app, `ten_addon_unregister_all_protocol` has already been called, which
+  // causes an issue. Ideally, the `on_deinit` of the protocol should be handled
+  // within the app's `on_deinit`. Only after all the protocol's `on_deinit`
+  // processes have completed should the app's `on_deinit` conclude.
   if (self->endpoint_protocol) {
     ten_ref_dec_ref(&self->endpoint_protocol->ref);
   }

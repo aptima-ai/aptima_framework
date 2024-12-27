@@ -37,3 +37,5 @@ TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_register_extension_group(
 
 TEN_RUNTIME_PRIVATE_API ten_addon_t *ten_addon_unregister_extension_group(
     const char *name);
+
+TEN_RUNTIME_API void ten_addon_unregister_all_extension_group(void);

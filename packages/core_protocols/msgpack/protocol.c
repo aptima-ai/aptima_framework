@@ -47,8 +47,8 @@ static ten_buf_t ten_protocol_msgpack_on_output(ten_protocol_msgpack_t *self,
 }
 
 static void ten_protocol_msgpack_on_destroy_instance(
-    TEN_UNUSED ten_addon_t *addon, TEN_UNUSED ten_env_t *ten_env, void *_self,
-    TEN_UNUSED void *context) {
+    TEN_UNUSED ten_addon_t *addon, ten_env_t *ten_env, void *_self,
+    void *context) {
   ten_protocol_msgpack_t *self = (ten_protocol_msgpack_t *)_self;
   TEN_ASSERT(self &&
                  // TEN_NOLINTNEXTLINE(thread-check)

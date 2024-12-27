@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
 #include "include_internal/ten_runtime/addon/addon_manager.h"
 #include "include_internal/ten_runtime/addon/extension/extension.h"
+#include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/addon/protocol/protocol.h"
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/base_dir.h"
@@ -268,6 +269,10 @@ static void ten_app_unregister_addons_after_app_close(ten_app_t *self) {
   }
 
   ten_addon_unregister_all_extension();
+  ten_addon_unregister_all_extension_group();
+
+  // BUG(Wei): Refer to the bug in `ten_app_destroy`.
+  // ten_addon_unregister_all_protocol();
 }
 
 void ten_app_on_deinit(ten_app_t *self) {

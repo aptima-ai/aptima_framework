@@ -281,3 +281,7 @@ bool ten_addon_create_protocol(ten_env_t *ten_env, const char *addon_name,
 
   return true;
 }
+
+void ten_addon_unregister_all_protocol(void) {
+  ten_addon_store_del_all(ten_protocol_get_global_store());
+}

@@ -97,3 +97,7 @@ bool ten_addon_destroy_extension_group(
   return ten_addon_host_destroy_instance_async(addon_host, ten_env,
                                                extension_group, cb, cb_data);
 }
+
+void ten_addon_unregister_all_extension_group(void) {
+  ten_addon_store_del_all(ten_extension_group_get_global_store());
+}
