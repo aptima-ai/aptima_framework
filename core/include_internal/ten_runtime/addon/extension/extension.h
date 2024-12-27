@@ -31,3 +31,5 @@ TEN_RUNTIME_PRIVATE_API bool ten_addon_destroy_extension(
     ten_env_t *ten_env, ten_extension_t *extension,
     ten_env_addon_destroy_instance_done_cb_t cb, void *user_data,
     ten_error_t *err);
+
+TEN_RUNTIME_API ten_addon_t *ten_addon_unregister_extension(const char *name);

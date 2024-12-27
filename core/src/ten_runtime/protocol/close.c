@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "ten_runtime/protocol/close.h"
+#include "include_internal/ten_runtime/protocol/close.h"
 
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "ten_utils/log/log.h"

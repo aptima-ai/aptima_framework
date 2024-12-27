@@ -24,3 +24,5 @@ TEN_RUNTIME_PRIVATE_API void ten_protocol_set_on_closed(
     void *on_closed_data);
 
 TEN_RUNTIME_PRIVATE_API void ten_protocol_on_close(ten_protocol_t *self);
+
+TEN_RUNTIME_API void ten_protocol_close(ten_protocol_t *self);

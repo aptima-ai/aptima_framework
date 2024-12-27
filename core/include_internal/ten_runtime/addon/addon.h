@@ -175,3 +175,10 @@ TEN_RUNTIME_PRIVATE_API void ten_addon_find_and_set_base_dir(
 TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_register(
     TEN_ADDON_TYPE addon_type, const char *name, const char *base_dir,
     ten_addon_t *addon, void *register_ctx);
+
+TEN_RUNTIME_API void ten_addon_init(
+    ten_addon_t *self, ten_addon_on_init_func_t on_init,
+    ten_addon_on_deinit_func_t on_deinit,
+    ten_addon_on_create_instance_func_t on_create_instance,
+    ten_addon_on_destroy_instance_func_t on_destroy_instance,
+    ten_addon_on_destroy_func_t on_destroy);

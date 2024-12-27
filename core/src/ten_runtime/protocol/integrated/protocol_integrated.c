@@ -24,7 +24,6 @@
 #include "include_internal/ten_runtime/remote/remote.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_runtime/protocol/close.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/io/runloop.h"
 #include "ten_utils/io/stream.h"

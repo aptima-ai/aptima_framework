@@ -20,8 +20,6 @@
 #include "include_internal/ten_utils/log/log.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/app/app.h"
-#include "ten_runtime/protocol/close.h"
-#include "ten_runtime/protocol/protocol.h"
 #include "ten_utils/lib/error.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/ref.h"
