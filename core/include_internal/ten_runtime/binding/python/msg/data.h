@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -25,19 +25,19 @@ TEN_RUNTIME_PRIVATE_API ten_py_data_t *ten_py_data_wrap(ten_shared_ptr_t *data);
 TEN_RUNTIME_PRIVATE_API void ten_py_data_invalidate(ten_py_data_t *self);
 
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_data_create(PyTypeObject *type,
-                                                   PyObject *args,
-                                                   PyObject *kwds);
+                                                     PyObject *args,
+                                                     PyObject *kwds);
 
 TEN_RUNTIME_PRIVATE_API void ten_py_data_destroy(PyObject *self);
 
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_data_alloc_buf(PyObject *self,
-                                                      PyObject *args);
+                                                        PyObject *args);
 
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_data_lock_buf(PyObject *self,
-                                                     PyObject *args);
-
-TEN_RUNTIME_PRIVATE_API PyObject *ten_py_data_unlock_buf(PyObject *self,
                                                        PyObject *args);
 
+TEN_RUNTIME_PRIVATE_API PyObject *ten_py_data_unlock_buf(PyObject *self,
+                                                         PyObject *args);
+
 TEN_RUNTIME_PRIVATE_API PyObject *ten_py_data_get_buf(PyObject *self,
-                                                    PyObject *args);
+                                                      PyObject *args);

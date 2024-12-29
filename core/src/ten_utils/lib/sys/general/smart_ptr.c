@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -10,10 +10,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/atomic.h"
 #include "ten_utils/lib/signature.h"
+#include "ten_utils/macro/check.h"
 
 #define TEN_SMART_PTR_SIGNATURE 0x7BB9769E3A5CBA5FU
 

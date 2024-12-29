@@ -1,5 +1,5 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
@@ -13,7 +13,7 @@ ten_utils_test("ten_utils_unit_test") {
   deps = []
   if (enable_sanitizer) {
     if (!is_clang) {
-      deps += [ "//build/common/asan:package_asan_lib_for_ten_framework_standalone_test" ]
+      deps += [ "//build/ten_common/asan:package_asan_lib_for_ten_framework_standalone_test" ]
     }
   }
 

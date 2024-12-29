@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -30,7 +30,7 @@ typedef enum TEN_ENV_ATTACH_TO {
   TEN_ENV_ATTACH_TO_EXTENSION,
   TEN_ENV_ATTACH_TO_EXTENSION_GROUP,
   TEN_ENV_ATTACH_TO_APP,
-  TEN_ENV_ATTACH_TO_ADDON_HOST,
+  TEN_ENV_ATTACH_TO_ADDON,
   TEN_ENV_ATTACH_TO_ENGINE,
 } TEN_ENV_ATTACH_TO;
 
@@ -102,6 +102,8 @@ TEN_RUNTIME_PRIVATE_API void ten_env_set_attach_to(
 TEN_RUNTIME_PRIVATE_API const char *ten_env_get_attached_instance_name(
     ten_env_t *self, bool check_thread);
 
+TEN_RUNTIME_PRIVATE_API ten_app_t *ten_env_get_belonging_app(ten_env_t *self);
+
 inline ten_extension_t *ten_env_get_attached_extension(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
@@ -148,8 +150,7 @@ inline ten_addon_host_t *ten_env_get_attached_addon(ten_env_t *self) {
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
-  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST,
-             "Should not happen.");
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
 
   return self->attached_target.addon_host;
 }

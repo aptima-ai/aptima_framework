@@ -80,9 +80,9 @@ jobs:
           df -h .
 
           if [ "${{ matrix.arch }}" = "x86" ]; then
-            EXTRA_ARGS="is_clang=false ten_enable_ten_manager=false ten_manager_enable_frontend=false ten_rust_enable_tests=false ten_manager_enable_tests=false ten_enable_go_binding=false ten_enable_python_binding=false ten_enable_nodejs_binding=false ten_manager_enable_frontend=false"
+            EXTRA_ARGS="is_clang=false ten_enable_ten_manager=false ten_manager_enable_frontend=false ten_rust_enable_tests=false ten_manager_enable_tests=false ten_enable_go_binding=false ten_enable_python_binding=false ten_enable_nodejs_binding=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false"
           else
-            EXTRA_ARGS="is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_go_lint=true ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false"
+            EXTRA_ARGS="is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_go_lint=true ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false"
           fi
 
           tgn gen linux x64 ${{ matrix.build_type }} -- $EXTRA_ARGS
@@ -188,7 +188,7 @@ jobs:
             "system/ten_runtime"
             "system/ten_runtime_go"
             "system/ten_runtime_python"
-            "extension/py_init_extension_cpp"
+            "lang_addon_loader/python_addon_loader"
           )
 
           for item in "${ARRAY[@]}"; do
@@ -217,7 +217,7 @@ jobs:
             out/linux/x64/ten_packages/extension/default_extension_go
             out/linux/x64/ten_packages/extension/default_extension_python
             out/linux/x64/ten_packages/extension/default_async_extension_python
-            out/linux/x64/ten_packages/extension/py_init_extension_cpp
+            out/linux/x64/ten_packages/lang_addon_loader/python_addon_loader
 
       - name: Package assets
         if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
@@ -232,7 +232,7 @@ jobs:
             ten_packages/extension/default_extension_go \
             ten_packages/extension/default_extension_python \
             ten_packages/extension/default_async_extension_python \
-            ten_packages/extension/py_init_extension_cpp
+            ten_packages/lang_addon_loader/python_addon_loader
 
       - name: Publish to release assets
         uses: softprops/action-gh-release@v2
@@ -256,7 +256,7 @@ jobs:
             "extension/default_extension_go"
             "extension/default_extension_python"
             "extension/default_async_extension_python"
-            "extension/py_init_extension_cpp"
+            "lang_addon_loader/python_addon_loader"
           )
 
           for item in "${ARRAY[@]}"; do

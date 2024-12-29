@@ -74,7 +74,7 @@ template("ten_mbedtls_copy_deps") {
       }
     }
 
-    script = "//build/common/scripts/copy_files_with_pattern.py"
+    script = "//build/ten_common/scripts/copy_files_with_pattern.py"
     args = [
       "--sources",
       rebase_path(runtime_libs_src_dir),
@@ -108,7 +108,7 @@ template("ten_mbedtls_copy_deps") {
     }
 
     action("ten_mbedtls_copy_headers_mbedtls") {
-      script = "//build/common/scripts/copy_files_with_pattern.py"
+      script = "//build/ten_common/scripts/copy_files_with_pattern.py"
       args = [
         "--sources",
         rebase_path(headers_src_dir + "/mbedtls"),
@@ -134,7 +134,7 @@ template("ten_mbedtls_copy_deps") {
     all_deps += [ ":ten_mbedtls_copy_headers_mbedtls" ]
 
     action("ten_mbedtls_copy_headers_psa") {
-      script = "//build/common/scripts/copy_files_with_pattern.py"
+      script = "//build/ten_common/scripts/copy_files_with_pattern.py"
       args = [
         "--sources",
         rebase_path(headers_src_dir + "/psa"),
@@ -161,7 +161,7 @@ template("ten_mbedtls_copy_deps") {
 
     if (is_win) {
       action("ten_mbedtls_copy_win_exported_libs") {
-        script = "//build/common/scripts/copy_files_with_pattern.py"
+        script = "//build/ten_common/scripts/copy_files_with_pattern.py"
         args = [
           "--sources",
           rebase_path("${root_gen_dir}/cmake/mbedtls/install/lib"),

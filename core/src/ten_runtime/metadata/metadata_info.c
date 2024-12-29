@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -122,7 +122,7 @@ static ten_string_t *ten_metadata_info_filename_to_absolute_path(
       break;
     }
 
-    case TEN_ENV_ATTACH_TO_ADDON_HOST: {
+    case TEN_ENV_ATTACH_TO_ADDON: {
       const char *base_dir = ten_addon_host_get_base_dir(
           ten_env_get_attached_addon(self->belonging_to));
       if (base_dir) {
@@ -165,7 +165,7 @@ static void ten_metadata_info_get_debug_display(ten_metadata_info_t *self,
              "Invalid argument.");
 
   switch (ten_env_get_attach_to(self->belonging_to)) {
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       ten_string_set_formatted(
           display, "addon(%s)",
           ten_addon_host_get_name(
@@ -235,7 +235,7 @@ bool ten_metadata_info_set(ten_metadata_info_t *self, TEN_METADATA_TYPE type,
       case TEN_METADATA_ATTACH_TO_MANIFEST:
         switch (type) {
           case TEN_METADATA_JSON_STR:
-            if (self->belonging_to->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST) {
+            if (self->belonging_to->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
               // TODO(Wei): The current protocol's manifest doesn't fully comply
               // with the spec, so we'll bypass the validation of the protocol
               // manifest for now.
@@ -317,7 +317,7 @@ bool ten_handle_manifest_info_when_on_configure_done(ten_metadata_info_t **self,
       }
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       break;
 
     default:
@@ -352,7 +352,7 @@ bool ten_handle_property_info_when_on_configure_done(ten_metadata_info_t **self,
       }
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       break;
 
     default:

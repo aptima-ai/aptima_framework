@@ -1,3 +1,9 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
 import numpy as np
 import cv2
 
@@ -45,8 +51,9 @@ def compare(
             grab_failure_cnt += 1
             if grab_failure_cnt >= 10:
                 raise Exception(
-                    "Grab failed too much >= {} times, could be endless loop."
-                    .format(10)
+                    "Grab failed too much >= {} times, could be endless loop.".format(
+                        10
+                    )
                 )
         else:
             grab_failure_cnt = 0

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -12,10 +12,10 @@
 #include "ten_utils/macro/mark.h"
 
 #if defined(_WIN32)
-  #include <Windows.h>
-  #define ATOMIC_LOAD32(a) InterlockedAdd((a), 0)
+#include <Windows.h>
+#define ATOMIC_LOAD32(a) InterlockedAdd((a), 0)
 #else
-  #define ATOMIC_LOAD32(a) __sync_add_and_fetch((a), 0)
+#define ATOMIC_LOAD32(a) __sync_add_and_fetch((a), 0)
 #endif
 
 int __busy_loop(volatile uint32_t *addr, uint32_t expect, ten_spinlock_t *lock,

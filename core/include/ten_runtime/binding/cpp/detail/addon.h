@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -49,9 +49,26 @@ class addon_t {
   virtual void on_deinit(ten_env_t &ten_env) { ten_env.on_deinit_done(); }
 
   virtual void on_create_instance(ten_env_t &ten_env, const char *name,
-                                  void *context) = 0;
+                                  void *context) {
+    (void)ten_env;
+    (void)name;
+    (void)context;
+
+    // If a subclass requires the functionality of this function, it needs to
+    // override this function.
+    TEN_ASSERT(0, "Should not happen.");
+  };
+
   virtual void on_destroy_instance(ten_env_t &ten_env, void *instance,
-                                   void *context) = 0;
+                                   void *context) {
+    (void)ten_env;
+    (void)instance;
+    (void)context;
+
+    // If a subclass requires the functionality of this function, it needs to
+    // override this function.
+    TEN_ASSERT(0, "Should not happen.");
+  };
 
  private:
   ten_addon_t *c_addon;
@@ -60,11 +77,6 @@ class addon_t {
   friend class addon_internal_accessor_t;
 
   ::ten_addon_t *get_c_addon() const { return c_addon; }
-
-  virtual void on_create_instance_impl(ten_env_t &ten_env, const char *name,
-                                       void *context) {
-    on_create_instance(ten_env, name, context);
-  }
 
   void invoke_cpp_addon_on_init(ten_env_t &ten_env) {
     try {
@@ -84,10 +96,11 @@ class addon_t {
     }
   }
 
-  void invoke_cpp_addon_on_create_instance(ten_env_t &ten_env, const char *name,
-                                           void *context) {
+  virtual void invoke_cpp_addon_on_create_instance(ten_env_t &ten_env,
+                                                   const char *name,
+                                                   void *context) {
     try {
-      on_create_instance_impl(ten_env, name, context);
+      on_create_instance(ten_env, name, context);
     } catch (...) {
       TEN_LOGD("Caught a exception '%s' in addon on_create_instance().",
                curr_exception_type_name().c_str());
@@ -212,13 +225,18 @@ class addon_internal_accessor_t {
 
 class extension_addon_t : public addon_t {
  private:
-  void on_create_instance_impl(ten_env_t &ten_env, const char *name,
-                               void *context) override {
-    auto *cpp_context = new addon_context_t();
-    cpp_context->task = ADDON_TASK_CREATE_EXTENSION;
-    cpp_context->c_context = context;
+  void invoke_cpp_addon_on_create_instance(ten_env_t &ten_env, const char *name,
+                                           void *context) override {
+    try {
+      auto *cpp_context = new addon_context_t();
+      cpp_context->task = ADDON_TASK_CREATE_EXTENSION;
+      cpp_context->c_context = context;
 
-    on_create_instance(ten_env, name, cpp_context);
+      on_create_instance(ten_env, name, cpp_context);
+    } catch (...) {
+      TEN_LOGD("Caught a exception '%s' in addon on_create_instance().",
+               curr_exception_type_name().c_str());
+    }
   }
 };
 

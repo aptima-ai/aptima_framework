@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -23,8 +23,14 @@ pub struct ArgsCfg {
 fn get_args_cfg() -> ArgsCfg {
     ArgsCfg {
         pkg_type: ArgCfg {
-            possible_values: ["system", "protocol", "extension", "app"]
-                .to_vec(),
+            possible_values: [
+                "system",
+                "protocol",
+                "lang_addon_loader",
+                "extension",
+                "app",
+            ]
+            .to_vec(),
         },
         os: ArgCfg {
             possible_values: ["linux", "mac", "win"].to_vec(),

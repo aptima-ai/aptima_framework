@@ -26,8 +26,8 @@
       "version": "0.6.0"
     },
     {
-      "type": "extension",
-      "name": "py_init_extension_cpp",
+      "type": "lang_addon_loader",
+      "name": "python_addon_loader",
       "version": "0.6.0"
     },
     {

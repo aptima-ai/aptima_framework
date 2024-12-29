@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -9,8 +9,8 @@
 #include "include_internal/ten_runtime/app/ten_env/metadata.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 
 bool ten_extension_group_set_property(ten_extension_group_t *extension_group,
                                       const char *name, ten_value_t *value) {

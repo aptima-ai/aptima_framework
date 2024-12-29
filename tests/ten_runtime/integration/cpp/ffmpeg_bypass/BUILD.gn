@@ -1,5 +1,5 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
@@ -18,16 +18,16 @@ ten_package_test_prepare_app("ffmpeg_bypass_app") {
   ]
 
   replace_files_after_install_all = [
-    "ffmpeg_bypass_app_source/ten_packages/extension/default_extension_cpp/src/main.cc",
-    "ffmpeg_bypass_app_source/ten_packages/extension/default_extension_cpp/manifest.json",
+    "ffmpeg_bypass_app_source/ten_packages/extension/ffmpeg_client/src/main.cc",
+    "ffmpeg_bypass_app_source/ten_packages/extension/ffmpeg_client/manifest.json",
   ]
 
   if (ten_enable_ten_manager) {
     deps = [
       "//core/src/ten_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
-      "//packages/core_extensions/default_extension_cpp:upload_default_extension_cpp_to_server",
       "//packages/core_protocols/msgpack:upload_protocol_msgpack_to_server",
+      "//packages/example_extensions/ffmpeg_client:upload_ffmpeg_client_to_server",
       "//packages/example_extensions/ffmpeg_demuxer:upload_ffmpeg_demuxer_to_server",
       "//packages/example_extensions/ffmpeg_muxer:upload_ffmpeg_muxer_to_server",
     ]

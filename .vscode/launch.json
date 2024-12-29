@@ -137,7 +137,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/out/linux/x64/tests/standalone/ten_runtime_smoke_test",
       "args": [
-        "--gtest_filter=ExtensionTest.PredefinedGraphMultiExtension1"
+        "--gtest_filter=AudioFrameTest.FromJson"
       ],
       "cwd": "${workspaceFolder}/out/linux/x64/tests/standalone/",
       "env": {
@@ -488,9 +488,9 @@
       "name": "app (C/C++) (lldb, launch)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/graph_env_var_2/graph_env_var_2_app/bin/graph_env_var_2_app_source",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/ffmpeg_basic/ffmpeg_basic_app/bin/ffmpeg_basic_app_source",
       "args": [],
-      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/graph_env_var_2/graph_env_var_2_app",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/ffmpeg_basic/ffmpeg_basic_app",
       "env": {
         "ASAN_OPTIONS": "use_sigaltstack=0",
       },

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -134,7 +134,7 @@ static ten_metadata_info_t *ten_env_get_manifest_info(ten_env_t *self) {
       manifest_info = self->attached_target.app->manifest_info;
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       manifest_info = self->attached_target.addon_host->manifest_info;
       break;
 
@@ -162,7 +162,7 @@ static ten_metadata_info_t *ten_env_get_property_info(ten_env_t *self) {
       property_info = self->attached_target.app->property_info;
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       property_info = self->attached_target.addon_host->property_info;
       break;
 
@@ -179,7 +179,7 @@ bool ten_env_init_manifest_from_json(ten_env_t *self, const char *json_string,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
       "Invalid use of ten_env %p.", self);
 
   ten_metadata_info_t *manifest_info = ten_env_get_manifest_info(self);
@@ -195,7 +195,7 @@ bool ten_env_init_property_from_json(ten_env_t *self, const char *json_string,
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(
       ten_env_check_integrity(
-          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON_HOST ? true : false),
+          self, self->attach_to != TEN_ENV_ATTACH_TO_ADDON ? true : false),
       "Invalid use of ten_env %p.", self);
 
   ten_metadata_info_t *property_info = ten_env_get_property_info(self);

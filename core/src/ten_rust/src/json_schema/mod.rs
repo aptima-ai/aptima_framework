@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -170,11 +170,6 @@ mod tests {
 
         let result = ten_validate_manifest_json_string(manifest);
         assert!(result.is_err());
-
-        let msg = result.unwrap_err().to_string();
-        assert!(msg.contains(
-            "is not one of [\"app\",\"extension\",\"extension_group\",\"system\",\"protocol\"]"
-        ));
     }
 
     #[test]

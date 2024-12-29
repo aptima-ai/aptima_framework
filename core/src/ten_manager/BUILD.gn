@@ -1,11 +1,11 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/common/rust/rust.gni")
 import("//build/feature/ten_package.gni")
+import("//build/ten_common/rust/rust.gni")
 import("//build/ten_manager/options.gni")
 import("//third_party/clingo/output_libs.gni")
 
@@ -68,7 +68,7 @@ if (ten_enable_ten_manager) {
   }
 
   action("copy_clingo_config_files") {
-    script = "//build/common/scripts/copy_files.py"
+    script = "//build/ten_common/scripts/copy_files.py"
 
     sources = [
       "//core/src/ten_manager/src/solver/display.lp",
@@ -105,7 +105,7 @@ if (ten_enable_ten_manager) {
     # empty `designer_frontend/dist/` is still required to prevent `tman` from
     # encountering compilation errors.
     action("create_frontend_dist_folder") {
-      script = "//build/common/scripts/mkdir.py"
+      script = "//build/ten_common/scripts/mkdir.py"
 
       args = [ rebase_path("//core/src/ten_manager/designer_frontend/dist/") ]
 

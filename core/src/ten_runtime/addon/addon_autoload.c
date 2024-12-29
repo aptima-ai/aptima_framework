@@ -1,10 +1,12 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
+
+#include "ten_runtime/common/errno.h"
 
 #if defined(OS_LINUX)
 #define _GNU_SOURCE
@@ -20,13 +22,11 @@
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/addon_manager.h"
 #include "include_internal/ten_runtime/addon/extension/extension.h"
-#include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
 #include "include_internal/ten_runtime/metadata/manifest.h"
 #include "include_internal/ten_utils/log/log.h"
-#include "ten_runtime/app/app.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_str.h"
 #include "ten_utils/lib/error.h"
@@ -50,9 +50,8 @@
  * Neither Android nor iOS support unload library.
  */
 #if defined(OS_MACOS) || defined(OS_LINUX) || defined(OS_WINDOWS)
-static void load_all_dynamic_libraries_under_path(ten_app_t *app,
-                                                  const char *path) {
-  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
+
+static void load_all_dynamic_libraries_under_path(const char *path) {
   TEN_ASSERT(path, "Invalid argument.");
 
   ten_dir_fd_t *dir = NULL;
@@ -133,7 +132,7 @@ done:
   }
 }
 
-static void ten_addon_load_from_base_dir(ten_app_t *app, const char *path) {
+static void ten_addon_load_from_base_dir(const char *path) {
   ten_string_t lib_dir;
   ten_string_init_formatted(&lib_dir, "%s", path);
 
@@ -156,14 +155,13 @@ static void ten_addon_load_from_base_dir(ten_app_t *app, const char *path) {
   }
 
   // Load self first.
-  load_all_dynamic_libraries_under_path(app, ten_string_get_raw_str(&lib_dir));
+  load_all_dynamic_libraries_under_path(ten_string_get_raw_str(&lib_dir));
 
 done:
   ten_string_deinit(&lib_dir);
 }
 
-static void load_all_dynamic_libraries(ten_app_t *app, const char *path,
-                                       ten_list_t *dependencies) {
+static void load_all_dynamic_libraries(const char *path) {
   ten_string_t *cur = NULL;
   ten_string_t *short_name = NULL;
   ten_string_t *self = NULL;
@@ -193,35 +191,13 @@ static void load_all_dynamic_libraries(ten_app_t *app, const char *path,
       goto continue_loop;
     }
 
-    // Check if short_name is in dependencies list.
-    bool should_load = false;
-    if (dependencies) {
-      // Iterate over dependencies and check if short_name matches any.
-      ten_list_foreach (dependencies, dep_iter) {
-        ten_string_t *dep_name = ten_str_listnode_get(dep_iter.node);
-        if (ten_string_is_equal(short_name, dep_name)) {
-          should_load = true;
-          break;
-        }
-      }
-    } else {
-      // If dependencies list is NULL, we load all addons.
-      should_load = true;
-    }
-
-    if (!should_load) {
-      TEN_LOGI("Skipping addon '%s' as it's not in dependencies.",
-               ten_string_get_raw_str(short_name));
-      goto continue_loop;
-    }
-
     cur = ten_path_itor_get_full_name(itor);
     if (!cur) {
       TEN_LOGE("Failed to get full name under path: %s", path);
       goto continue_loop;
     }
 
-    ten_addon_load_from_base_dir(app, ten_string_get_raw_str(cur));
+    ten_addon_load_from_base_dir(ten_string_get_raw_str(cur));
 
     ten_string_destroy(cur);
     cur = NULL;
@@ -256,65 +232,27 @@ done:
   }
 }
 
-bool ten_addon_load_all_from_app_base_dir(
-    ten_app_t *app, ten_list_t *extension_dependencies,
-    ten_list_t *extension_group_dependencies, ten_list_t *protocol_dependencies,
-    ten_error_t *err) {
-  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
+bool ten_addon_load_all_from_app_base_dir(const char *app_base_dir,
+                                          ten_error_t *err) {
+  TEN_ASSERT(app_base_dir, "Invalid argument.");
 
   bool success = true;
-  ten_string_t *app_lib_path = NULL;
 
-#if defined(_WIN32)
-  // Append the 'app/lib' to the search path first, the module in extensions and
-  // protocols may depend on the libraries in 'app/lib'.
-  app_lib_path = ten_string_clone(&app->base_dir);
-  if (!app_lib_path) {
-    TEN_LOGE("Failed to clone string: %s",
-             ten_string_get_raw_str(&app->base_dir));
-
-    success = false;
-    goto done;
-  }
-
-  ten_string_append_formatted(app_lib_path, "/lib");
-  if (ten_path_to_system_flavor(app_lib_path) != 0) {
-    TEN_LOGE("Failed to convert path to system flavor: %s",
-             ten_string_get_raw_str(app_lib_path));
-
-    success = false;
-    goto done;
-  }
-
-  AddDllDirectory(ten_string_get_raw_str(app_lib_path));
-#endif
-
+  // The extension is loaded dynamically and will only be loaded when it's
+  // needed. Both the protocol and lang_addon_loader are preloaded, so when the
+  // app starts, it will scan these two folders and load all the addons inside
+  // them.
   struct {
     const char *path;
-    TEN_ADDON_TYPE addon_type;
-    ten_list_t *dependencies;
   } folders[] = {
-      {
-          "/ten_packages/extension",
-          TEN_ADDON_TYPE_EXTENSION,
-          extension_dependencies,
-      },
-      {
-          "/ten_packages/extension_group",
-          TEN_ADDON_TYPE_EXTENSION_GROUP,
-          extension_group_dependencies,
-      },
-      {
-          "/ten_packages/protocol",
-          TEN_ADDON_TYPE_PROTOCOL,
-          protocol_dependencies,
-      },
+      {"/ten_packages/protocol"},
+      {"/ten_packages/lang_addon_loader"},
   };
 
   for (int i = 0; i < sizeof(folders) / sizeof(folders[0]); i++) {
     ten_string_t module_path;
-    ten_string_init(&module_path);
-    ten_string_copy(&module_path, &app->base_dir);
+    ten_string_init_from_c_str(&module_path, app_base_dir,
+                               strlen(app_base_dir));
 
     do {
       ten_string_append_formatted(&module_path, folders[i].path);
@@ -330,8 +268,7 @@ bool ten_addon_load_all_from_app_base_dir(
       // The modules (e.g., extensions/protocols) do not exist if only the TEN
       // app has been installed.
       if (ten_path_exists(ten_string_get_raw_str(&module_path))) {
-        load_all_dynamic_libraries(app, ten_string_get_raw_str(&module_path),
-                                   folders[i].dependencies);
+        load_all_dynamic_libraries(ten_string_get_raw_str(&module_path));
       }
     } while (0);
 
@@ -343,20 +280,16 @@ bool ten_addon_load_all_from_app_base_dir(
   }
 
 done:
-  if (app_lib_path) {
-    ten_string_destroy(app_lib_path);
-  }
-
   return success;
 }
 
-bool ten_addon_load_all_from_ten_package_base_dirs(ten_app_t *app,
-                                                   ten_error_t *err) {
-  TEN_ASSERT(app && ten_app_check_integrity(app, true), "Invalid argument.");
+bool ten_addon_load_all_from_ten_package_base_dirs(
+    ten_list_t *ten_package_base_dirs, ten_error_t *err) {
+  TEN_ASSERT(ten_package_base_dirs, "Invalid argument.");
 
   bool success = true;
 
-  ten_list_foreach (&app->ten_package_base_dirs, iter) {
+  ten_list_foreach (ten_package_base_dirs, iter) {
     ten_string_t *ten_package_base_dir = ten_str_listnode_get(iter.node);
     TEN_ASSERT(ten_package_base_dir &&
                    ten_string_check_integrity(ten_package_base_dir),
@@ -381,10 +314,76 @@ bool ten_addon_load_all_from_ten_package_base_dirs(ten_app_t *app,
 
     ten_string_deinit(&manifest_json_file_path);
 
-    ten_addon_load_from_base_dir(app,
-                                 ten_string_get_raw_str(ten_package_base_dir));
+    ten_addon_load_from_base_dir(ten_string_get_raw_str(ten_package_base_dir));
 
     ten_string_deinit(&addon_name);
+  }
+
+  return success;
+}
+
+bool ten_addon_load_specific_addon_from_app_base_dir(const char *app_base_dir,
+                                                     TEN_ADDON_TYPE addon_type,
+                                                     const char *addon_name,
+                                                     ten_error_t *err) {
+  TEN_ASSERT(app_base_dir, "Invalid argument.");
+  TEN_ASSERT(addon_name, "Addon name cannot be NULL.");
+
+  bool success = true;
+  ten_string_t addon_lib_folder_path;
+
+  // Construct the path to the specific addon lib/ folder.
+  ten_string_init_from_c_str(&addon_lib_folder_path, app_base_dir,
+                             strlen(app_base_dir));
+
+  ten_string_append_formatted(&addon_lib_folder_path, "/ten_packages/%s/%s/lib",
+                              ten_addon_type_to_string(addon_type), addon_name);
+  if (ten_path_to_system_flavor(&addon_lib_folder_path) != 0) {
+    TEN_LOGE("Failed to convert path to system flavor: %s",
+             ten_string_get_raw_str(&addon_lib_folder_path));
+    success = false;
+    goto done;
+  }
+
+  if (!ten_path_exists(ten_string_get_raw_str(&addon_lib_folder_path)) ||
+      !ten_path_is_dir(&addon_lib_folder_path)) {
+    TEN_LOGE("Addon lib/ folder does not exist or is not a directory: %s",
+             ten_string_get_raw_str(&addon_lib_folder_path));
+    success = false;
+    goto done;
+  }
+
+  // Load the library from the 'lib/' directory.
+  load_all_dynamic_libraries_under_path(
+      ten_string_get_raw_str(&addon_lib_folder_path));
+
+done:
+  ten_string_deinit(&addon_lib_folder_path);
+
+  if (!success && err) {
+    ten_error_set(err, TEN_ERRNO_GENERIC,
+                  "Failed to load specific addon: %s:%s",
+                  ten_addon_type_to_string(addon_type), addon_name);
+  }
+
+  return success;
+}
+
+bool ten_addon_register_specific_addon(TEN_ADDON_TYPE addon_type,
+                                       const char *addon_name,
+                                       ten_addon_register_ctx_t *register_ctx,
+                                       ten_error_t *err) {
+  TEN_ASSERT(addon_name, "Invalid argument.");
+
+  ten_addon_manager_t *manager = ten_addon_manager_get_instance();
+
+  bool success = ten_addon_manager_register_specific_addon(
+      manager, addon_type, addon_name, (void *)register_ctx);
+
+  if (!success && err) {
+    ten_error_set(err, TEN_ERRNO_GENERIC,
+                  "Failed to register specific addon: %s:%s",
+                  ten_addon_type_to_string(addon_type), addon_name);
   }
 
   return success;

@@ -55,7 +55,7 @@ template("ten_websockets_copy_deps") {
       }
     }
 
-    script = "//build/common/scripts/copy_files_with_pattern.py"
+    script = "//build/ten_common/scripts/copy_files_with_pattern.py"
     args = [
       "--sources",
       rebase_path(runtime_libs_src_dir),
@@ -90,7 +90,7 @@ template("ten_websockets_copy_deps") {
         headers_dest_dir += "/" + invoker.subdir
       }
 
-      script = "//build/common/scripts/copy_files_with_pattern.py"
+      script = "//build/ten_common/scripts/copy_files_with_pattern.py"
       args = [
         "--sources",
         rebase_path("${root_gen_dir}/cmake/websockets/install/include"),
@@ -118,7 +118,7 @@ template("ten_websockets_copy_deps") {
 
     if (is_win) {
       action("ten_websockets_copy_win_exported_libs") {
-        script = "//build/common/scripts/copy_files_with_pattern.py"
+        script = "//build/ten_common/scripts/copy_files_with_pattern.py"
         args = [
           "--sources",
           rebase_path("${root_gen_dir}/cmake/websockets/install/lib"),

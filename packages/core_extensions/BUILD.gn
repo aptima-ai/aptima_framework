@@ -16,7 +16,6 @@ group("core_extensions") {
     deps += [
       "default_async_extension_python",
       "default_extension_python",
-      "py_init_extension_cpp",
     ]
   }
 }

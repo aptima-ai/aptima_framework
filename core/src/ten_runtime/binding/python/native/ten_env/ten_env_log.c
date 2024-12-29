@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -88,7 +88,7 @@ PyObject *ten_py_ten_env_log(PyObject *self, PyObject *args) {
   ten_env_notify_log_info_t *info =
       ten_env_notify_log_info_create(level, func_name, file_name, line_no, msg);
 
-  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST) {
+  if (py_ten_env->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
     // TODO(Wei): This function is currently specifically designed for the addon
     // because the addon currently does not have a main thread, so it's unable
     // to check thread safety. Once the main thread for the addon is determined

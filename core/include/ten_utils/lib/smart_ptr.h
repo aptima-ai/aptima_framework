@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -83,11 +83,11 @@ TEN_UTILS_API bool ten_smart_ptr_check_type(
 // Shared pointer
 
 #ifdef __cplusplus
-  #define ten_shared_ptr_create(ptr, destroy) \
-    ten_shared_ptr_create_(ptr, reinterpret_cast<void (*)(void *)>(destroy))
+#define ten_shared_ptr_create(ptr, destroy) \
+  ten_shared_ptr_create_(ptr, reinterpret_cast<void (*)(void *)>(destroy))
 #else
-  #define ten_shared_ptr_create(ptr, destroy) \
-    ten_shared_ptr_create_(ptr, (void (*)(void *))(destroy))
+#define ten_shared_ptr_create(ptr, destroy) \
+  ten_shared_ptr_create_(ptr, (void (*)(void *))(destroy))
 #endif
 
 TEN_UTILS_API ten_shared_ptr_t *ten_shared_ptr_create_(void *ptr,

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -108,7 +108,7 @@ void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
   ten_error_t err;
   ten_error_init(&err);
 
-  if (self->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON_HOST) {
+  if (self->c_ten_env->attach_to == TEN_ENV_ATTACH_TO_ADDON) {
     // TODO(Wei): This function is currently specifically designed for the addon
     // because the addon currently does not have a main thread, so it's unable
     // to check thread safety. Once the main thread for the addon is determined

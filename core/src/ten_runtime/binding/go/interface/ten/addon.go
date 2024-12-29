@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -21,30 +21,44 @@ type Addon interface {
 	OnCreateInstance(tenEnv TenEnv, name string, context uintptr)
 }
 
-type DefaultAddon struct {
-	onCreateInstanceImpl func(tenEnv TenEnv, name string, context uintptr)
+// ExtensionConstructor is the constructor for the extension.
+type ExtensionConstructor func(name string) Extension
+
+// ExtensionAddon is the addon for the extension.
+type ExtensionAddon struct {
+	constructor ExtensionConstructor
 }
 
-func (p *DefaultAddon) OnInit(
+// OnInit initializes the addon.
+func (p *ExtensionAddon) OnInit(
 	tenEnv TenEnv,
 ) {
 	tenEnv.OnInitDone()
 }
 
-func (p *DefaultAddon) OnDeinit(tenEnv TenEnv) {
+// OnDeinit deinitializes the addon.
+func (p *ExtensionAddon) OnDeinit(tenEnv TenEnv) {
 	tenEnv.OnDeinitDone()
 }
 
-func (p *DefaultAddon) OnCreateInstance(
+// OnCreateInstance creates an instance of the extension.
+func (p *ExtensionAddon) OnCreateInstance(
 	tenEnv TenEnv,
 	name string,
 	context uintptr,
 ) {
-	if p.onCreateInstanceImpl == nil {
-		panic("Not implemented")
+	if p.constructor == nil {
+		panic("Extension constructor is not provided")
 	}
 
-	p.onCreateInstanceImpl(tenEnv, name, context)
+	ext := p.constructor(name)
+	if ext == nil {
+		// Should not happen.
+		panic("The extension constructor returns nil.")
+	}
+
+	extWrapper := WrapExtension(ext, name)
+	tenEnv.OnCreateInstanceDone(extWrapper, context)
 }
 
 // TODO(Liu): move this definition to a internal package.
@@ -54,21 +68,10 @@ type addon struct {
 	baseTenObject[C.uintptr_t]
 }
 
-type ExtensionConstructor func(name string) Extension
-
 // NewDefaultExtensionAddon creates a new default extension addon.
 func NewDefaultExtensionAddon(constructor ExtensionConstructor) Addon {
-	return &DefaultAddon{
-		onCreateInstanceImpl: func(tenEnv TenEnv, name string, context uintptr) {
-			ext := constructor(name)
-			if ext == nil {
-				// Should not happen.
-				panic("The extension constructor returns nil.")
-			}
-
-			extWrapper := WrapExtension(ext, name)
-			tenEnv.OnCreateInstanceDone(extWrapper, context)
-		},
+	return &ExtensionAddon{
+		constructor: constructor,
 	}
 }
 

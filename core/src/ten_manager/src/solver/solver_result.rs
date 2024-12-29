@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -13,16 +13,18 @@ use regex::Regex;
 use semver::Version;
 
 use ten_rust::pkg_info::{
-    pkg_basic_info::PkgBasicInfo, pkg_type::PkgType,
-    pkg_type_and_name::PkgTypeAndName, PkgInfo,
+    constants::{
+        EXTENSION_DIR, LANG_ADDON_LOADER_DIR, PROTOCOL_DIR, SYSTEM_DIR,
+        TEN_PACKAGES_DIR,
+    },
+    pkg_basic_info::PkgBasicInfo,
+    pkg_type::PkgType,
+    pkg_type_and_name::PkgTypeAndName,
+    PkgInfo,
 };
 
 use crate::{
     config::TmanConfig,
-    constants::{
-        EXTENSION_DIR, EXTENSION_GROUP_DIR, PROTOCOL_DIR, SYSTEM_DIR,
-        TEN_PACKAGES_DIR,
-    },
     install::{install_pkg_info, PkgIdentityMapping},
 };
 
@@ -134,13 +136,13 @@ pub async fn install_solver_results_in_app_folder(
             PkgType::Extension => {
                 app_dir.join(TEN_PACKAGES_DIR).join(EXTENSION_DIR)
             }
-            PkgType::ExtensionGroup => {
-                app_dir.join(TEN_PACKAGES_DIR).join(EXTENSION_GROUP_DIR)
-            }
             PkgType::Protocol => {
                 app_dir.join(TEN_PACKAGES_DIR).join(PROTOCOL_DIR)
             }
             PkgType::System => app_dir.join(TEN_PACKAGES_DIR).join(SYSTEM_DIR),
+            PkgType::LangAddonLoader => {
+                app_dir.join(TEN_PACKAGES_DIR).join(LANG_ADDON_LOADER_DIR)
+            }
             PkgType::App => app_dir.to_path_buf(),
         };
 

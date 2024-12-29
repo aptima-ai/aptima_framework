@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -244,23 +244,22 @@ void ten_extension_thread_on_addon_destroy_extension_done(void *self_,
                                                       addon_context);
 }
 
-void ten_extension_thread_create_addon_instance(void *self_, void *arg) {
+void ten_extension_thread_create_extension_instance(void *self_, void *arg) {
   ten_extension_thread_t *self = (ten_extension_thread_t *)self_;
   TEN_ASSERT(self, "Invalid argument.");
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
              "Invalid use of extension_thread %p.", self);
 
-  ten_addon_on_create_instance_info_t *addon_instance_info = arg;
+  ten_addon_on_create_extension_instance_info_t *addon_instance_info = arg;
   TEN_ASSERT(addon_instance_info, "Should not happen.");
 
   ten_addon_create_instance_async(
-      self->extension_group->ten_env,
+      self->extension_group->ten_env, addon_instance_info->addon_type,
       ten_string_get_raw_str(&addon_instance_info->addon_name),
       ten_string_get_raw_str(&addon_instance_info->instance_name),
-      addon_instance_info->addon_type, addon_instance_info->cb,
-      addon_instance_info->cb_data);
+      addon_instance_info->cb, addon_instance_info->cb_data);
 
-  ten_addon_on_create_instance_info_destroy(addon_instance_info);
+  ten_addon_on_create_extension_instance_info_destroy(addon_instance_info);
 }
 
 void ten_extension_thread_destroy_addon_instance(void *self_, void *arg) {

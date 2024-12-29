@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -11,8 +11,8 @@
 #include <stdbool.h>
 
 #include "include_internal/ten_runtime/addon/addon.h"
-#include "ten_runtime/addon/addon.h"
 #include "src/ten_runtime/binding/go/interface/ten/common.h"
+#include "ten_runtime/addon/addon.h"
 #include "ten_utils/lib/signature.h"
 
 #define TEN_GO_ADDON_SIGNATURE 0x00FCE9927FA352FBU

@@ -1,12 +1,11 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #pragma once
 
-#include "ten_utils/macro/check.h"
 #include "include_internal/ten_utils/schema/constant_str.h"
 #include "include_internal/ten_utils/schema/keywords/keyword.h"
 #include "include_internal/ten_utils/schema/keywords/keyword_items.h"
@@ -14,6 +13,7 @@
 #include "include_internal/ten_utils/schema/keywords/keyword_required.h"
 #include "include_internal/ten_utils/schema/keywords/keyword_type.h"
 #include "ten_utils/lib/string.h"
+#include "ten_utils/macro/check.h"
 
 #ifdef __cplusplus
 #error \

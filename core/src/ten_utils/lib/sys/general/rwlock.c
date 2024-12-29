@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #if !defined(_WIN32)
-  #include <pthread.h>
+#include <pthread.h>
 #else
 // clang-format off
 // Stupid Windows doesn't handle header files well

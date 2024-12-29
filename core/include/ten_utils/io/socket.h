@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -16,10 +16,10 @@
 #include <WinSock2.h>
 // clang-format on
 #else
-  #include <netinet/in.h>
-  #include <stdbool.h>
-  #include <sys/socket.h>
-  #include <sys/types.h>
+#include <netinet/in.h>
+#include <stdbool.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #endif
 
 #include "ten_utils/lib/string.h"

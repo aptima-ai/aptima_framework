@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -104,6 +104,9 @@
 
 // Protocol.
 #define TEN_STR_PROTOCOL "protocol"
+
+// Lang addon loader.
+#define TEN_STR_LANG_ADDON_LOADER "lang_addon_loader"
 
 // Transport.
 #define TEN_STR_TRANSPORT_TYPE "transport_type"

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -27,7 +27,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_engine_is_closing(ten_engine_t *self);
 TEN_RUNTIME_PRIVATE_API void ten_engine_on_close(ten_engine_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_engine_on_timer_closed(ten_timer_t *timer,
-                                                      void *on_closed_data);
+                                                        void *on_closed_data);
 
 TEN_RUNTIME_PRIVATE_API void ten_engine_on_extension_context_closed(
     ten_extension_context_t *extension_context, void *on_closed_data);

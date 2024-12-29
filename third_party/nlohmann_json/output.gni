@@ -9,7 +9,7 @@ template("copy_nlohmann_headers") {
 
   action_name = "copy_nlohmann_headers_for_${_target_name}"
   action(action_name) {
-    script = "//build/common/scripts/copy_files_with_pattern.py"
+    script = "//build/ten_common/scripts/copy_files_with_pattern.py"
     args = [
       "--sources",
       rebase_path("${root_gen_dir}/cmake/nlohmann_json/install/include"),

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -99,7 +99,7 @@ ten_env_t *ten_env_create_for_addon(ten_addon_host_t *addon_host) {
   TEN_ASSERT(ten_addon_host_check_integrity(addon_host),
              "Invalid use of addon_host %p.", addon_host);
 
-  return ten_create_with_attach_to(TEN_ENV_ATTACH_TO_ADDON_HOST, addon_host);
+  return ten_create_with_attach_to(TEN_ENV_ATTACH_TO_ADDON, addon_host);
 }
 
 ten_env_t *ten_env_create_for_extension(ten_extension_t *extension) {
@@ -177,7 +177,7 @@ void ten_env_close(ten_env_t *self) {
       TEN_LOGD("[%s] Close ten of extension.",
                ten_string_get_raw_str(&self->attached_target.extension->name));
       break;
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       TEN_LOGD("[%s] Close ten of addon.",
                ten_string_get_raw_str(&self->attached_target.addon_host->name));
       break;
@@ -250,7 +250,7 @@ void *ten_env_get_attached_target(ten_env_t *self) {
       return ten_env_get_attached_engine(self);
     case TEN_ENV_ATTACH_TO_APP:
       return ten_env_get_attached_app(self);
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       return ten_env_get_attached_addon(self);
     default:
       TEN_ASSERT(0, "Handle more types: %d", self->attach_to);
@@ -282,7 +282,7 @@ void ten_env_set_attach_to(ten_env_t *self, TEN_ENV_ATTACH_TO attach_to_type,
       self->attached_target.app = attach_to;
       break;
 
-    case TEN_ENV_ATTACH_TO_ADDON_HOST:
+    case TEN_ENV_ATTACH_TO_ADDON:
       self->attached_target.addon_host = attach_to;
       break;
 
@@ -293,5 +293,85 @@ void ten_env_set_attach_to(ten_env_t *self, TEN_ENV_ATTACH_TO attach_to_type,
     default:
       TEN_ASSERT(0, "Should not happen.");
       break;
+  }
+}
+
+ten_app_t *ten_env_get_belonging_app(ten_env_t *self) {
+  TEN_ASSERT(self && ten_env_check_integrity(self, true), "Should not happen.");
+
+  switch (self->attach_to) {
+    case TEN_ENV_ATTACH_TO_APP:
+      return ten_env_get_attached_app(self);
+    case TEN_ENV_ATTACH_TO_EXTENSION: {
+      ten_extension_t *extension = ten_env_get_attached_extension(self);
+      TEN_ASSERT(extension && ten_extension_check_integrity(extension, true),
+                 "Should not happen.");
+
+      ten_extension_thread_t *extension_thread = extension->extension_thread;
+      TEN_ASSERT(extension_thread && ten_extension_thread_check_integrity(
+                                         extension_thread, true),
+                 "Should not happen.");
+
+      ten_extension_context_t *extension_context =
+          extension_thread->extension_context;
+      TEN_ASSERT(extension_context && ten_extension_context_check_integrity(
+                                          extension_context, false),
+                 "Should not happen.");
+
+      ten_engine_t *engine = extension_context->engine;
+      TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
+                 "Should not happen.");
+
+      ten_app_t *app = engine->app;
+      TEN_ASSERT(app && ten_app_check_integrity(app, false),
+                 "Should not happen.");
+
+      return app;
+    }
+    case TEN_ENV_ATTACH_TO_EXTENSION_GROUP: {
+      ten_extension_group_t *extension_group =
+          ten_env_get_attached_extension_group(self);
+      TEN_ASSERT(extension_group &&
+                     ten_extension_group_check_integrity(extension_group, true),
+                 "Should not happen.");
+
+      ten_extension_thread_t *extension_thread =
+          extension_group->extension_thread;
+      TEN_ASSERT(extension_thread && ten_extension_thread_check_integrity(
+                                         extension_thread, true),
+                 "Should not happen.");
+
+      ten_extension_context_t *extension_context =
+          extension_thread->extension_context;
+      TEN_ASSERT(extension_context && ten_extension_context_check_integrity(
+                                          extension_context, false),
+                 "Should not happen.");
+
+      ten_engine_t *engine = extension_context->engine;
+      TEN_ASSERT(engine && ten_engine_check_integrity(engine, false),
+                 "Should not happen.");
+
+      ten_app_t *app = engine->app;
+      TEN_ASSERT(app && ten_app_check_integrity(app, false),
+                 "Should not happen.");
+
+      return app;
+    }
+
+    case TEN_ENV_ATTACH_TO_ENGINE: {
+      ten_engine_t *engine = ten_env_get_attached_engine(self);
+      TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
+                 "Should not happen.");
+
+      ten_app_t *app = engine->app;
+      TEN_ASSERT(app && ten_app_check_integrity(app, false),
+                 "Should not happen.");
+
+      return app;
+    }
+
+    default:
+      TEN_ASSERT(0, "Handle more types: %d", self->attach_to);
+      return NULL;
   }
 }

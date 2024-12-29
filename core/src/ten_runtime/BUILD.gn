@@ -1,11 +1,11 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/common/asan/package_asan_lib.gni")
 import("//build/feature/ten_package.gni")
+import("//build/ten_common/asan/package_asan_lib.gni")
 import("//build/ten_runtime/feature/publish.gni")
 import("//build/ten_runtime/options.gni")
 import("//build/ten_runtime/ten.gni")

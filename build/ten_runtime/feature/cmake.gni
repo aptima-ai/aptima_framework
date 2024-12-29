@@ -1,5 +1,5 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
@@ -163,7 +163,7 @@ template("cmake_project") {
     ]
 
     # Find source files in current cmake project.
-    inputs = exec_script("//build/common/scripts/find_all_c_cpp_files.py",
+    inputs = exec_script("//build/ten_common/scripts/find_all_c_cpp_files.py",
                          [ rebase_path(invoker.project_path) ],
                          "list lines")
 
@@ -192,7 +192,7 @@ template("cmake_project") {
       foreach(lib, _libs) {
         current_libs = []
         current_libs = exec_script(
-                "//build/common/scripts/get_lib_name_from_cmake_output.py",
+                "//build/ten_common/scripts/get_lib_name_from_cmake_output.py",
                 [
                   "--libs",
                   "${lib}",

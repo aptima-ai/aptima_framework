@@ -1,5 +1,5 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
@@ -29,6 +29,7 @@ group("ten_framework_all") {
     "//core/src/ten_rust",
     "//packages/core_apps",
     "//packages/core_extensions",
+    "//packages/core_lang_addon_loaders",
     "//packages/core_protocols",
     "//packages/example_apps",
     "//packages/example_extensions",

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -39,7 +39,7 @@ ten_string_t *ten_string_create_from_c_str(const char *str, size_t size) {
   return result;
 }
 
-#define MAX_RETRIES 10
+enum { MAX_RETRIES = 10 };
 
 void ten_string_append_from_va_list(ten_string_t *self, const char *fmt,
                                     va_list ap) {
@@ -159,7 +159,6 @@ void ten_string_init_formatted(ten_string_t *self, const char *fmt, ...) {
 void ten_string_init_from_c_str(ten_string_t *self, const char *str,
                                 size_t size) {
   TEN_ASSERT(self && str, "Invalid argument.");
-  TEN_ASSERT(size, "Invalid argument.");
 
   ten_string_init(self);
   ten_string_set_formatted(self, "%.*s", size, str);

@@ -6,9 +6,9 @@
       "enum": [
         "app",
         "extension",
-        "extension_group",
         "system",
-        "protocol"
+        "protocol",
+        "lang_addon_loader"
       ]
     },
     "os": {
@@ -526,14 +526,14 @@
       {
         "properties": {
           "type": {
-            "const": "extension_group"
+            "const": "protocol"
           }
         }
       },
       {
         "properties": {
           "type": {
-            "const": "protocol"
+            "const": "lang_addon_loader"
           }
         }
       }

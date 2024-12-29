@@ -13,6 +13,7 @@ group("example_extensions") {
 
     if (ten_enable_ffmpeg_extensions) {
       deps += [
+        "ffmpeg_client",
         "ffmpeg_demuxer",
         "ffmpeg_muxer",
       ]

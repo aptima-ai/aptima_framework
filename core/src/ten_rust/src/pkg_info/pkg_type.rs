@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -28,14 +28,14 @@ pub enum PkgType {
     #[serde(rename = "app")]
     App,
 
-    #[serde(rename = "extension_group")]
-    ExtensionGroup,
-
     #[serde(rename = "extension")]
     Extension,
 
     #[serde(rename = "protocol")]
     Protocol,
+
+    #[serde(rename = "lang_addon_loader")]
+    LangAddonLoader,
 }
 
 impl FromStr for PkgType {
@@ -45,9 +45,9 @@ impl FromStr for PkgType {
         match s {
             "system" => Ok(PkgType::System),
             "app" => Ok(PkgType::App),
-            "extension_group" => Ok(PkgType::ExtensionGroup),
             "extension" => Ok(PkgType::Extension),
             "protocol" => Ok(PkgType::Protocol),
+            "lang_addon_loader" => Ok(PkgType::LangAddonLoader),
             _ => Err(Error::msg("Failed to parse string to package type")),
         }
     }
@@ -58,9 +58,9 @@ impl fmt::Display for PkgType {
         match self {
             PkgType::System => write!(f, "system"),
             PkgType::App => write!(f, "app"),
-            PkgType::ExtensionGroup => write!(f, "extension_group"),
             PkgType::Extension => write!(f, "extension"),
             PkgType::Protocol => write!(f, "protocol"),
+            PkgType::LangAddonLoader => write!(f, "lang_addon_loader"),
         }
     }
 }

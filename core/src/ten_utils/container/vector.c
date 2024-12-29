@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -9,8 +9,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "ten_utils/macro/check.h"
 #include "ten_utils/lib/alloc.h"
+#include "ten_utils/macro/check.h"
 
 void ten_vector_init(ten_vector_t *self, size_t capacity) {
   TEN_ASSERT(self, "Invalid argument.");

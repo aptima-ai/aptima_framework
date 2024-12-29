@@ -1,5 +1,5 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
@@ -10,7 +10,7 @@ import re
 import os
 import ast
 from build.scripts import cmd_exec, timestamp_proxy
-from common.scripts import env
+from ten_common.scripts import env
 
 
 class ArgumentInfo(argparse.Namespace):

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -125,7 +125,7 @@ class extension_t {
   ::ten_extension_t *get_c_extension() const { return c_extension; }
 
   using cpp_extension_on_cmd_func_t =
-      void (extension_t:: *)(ten_env_t &, std::unique_ptr<cmd_t>);
+      void (extension_t::*)(ten_env_t &, std::unique_ptr<cmd_t>);
 
   static void issue_stop_graph_cmd(ten_env_t &ten_env) {
     // Issue a 'close engine' command, and in order to gain the maximum

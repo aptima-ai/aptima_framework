@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -54,9 +54,9 @@ typedef struct ten_extension_peek_manifest_context_t {
 } ten_extension_peek_manifest_context_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_extension_set_property(ten_extension_t *self,
-                                                      const char *path,
-                                                      ten_value_t *value,
-                                                      ten_error_t *err);
+                                                        const char *path,
+                                                        ten_value_t *value,
+                                                        ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API bool ten_extension_set_property_async(
     ten_extension_t *self, const char *path, ten_value_t *value,

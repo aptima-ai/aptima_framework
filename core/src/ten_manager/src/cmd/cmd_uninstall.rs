@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -15,12 +15,13 @@ use clap::{Arg, ArgMatches, Command};
 use console::Emoji;
 use indicatif::HumanDuration;
 use serde_json::from_reader;
+use ten_rust::pkg_info::constants::TEN_PACKAGES_DIR;
 
 use crate::{
     config::TmanConfig,
     constants::{
         DOT_TEN_DIR, INSTALLED_PATHS_JSON_FILENAME, INSTALL_PATHS_APP_PREFIX,
-        PACKAGE_INFO_DIR_IN_DOT_TEN_DIR, TEN_PACKAGES_DIR,
+        PACKAGE_INFO_DIR_IN_DOT_TEN_DIR,
     },
     install::installed_paths::InstalledPaths,
     log::tman_verbose_println,

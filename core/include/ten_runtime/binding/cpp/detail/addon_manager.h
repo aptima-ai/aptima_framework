@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdlib>
 
 #include "ten_runtime/addon/addon_manager.h"  // IWYU pragma: export
 
@@ -40,6 +41,11 @@
   TEN_CONSTRUCTOR(____ten_addon_##NAME##_registrar____) {                        \
     /* Add addon registration function into addon manager. */                    \
     ten_addon_manager_t *manager = ten_addon_manager_get_instance();             \
-    ten_addon_manager_add_addon(manager, #NAME,                                  \
-                                ____ten_addon_##NAME##_register_handler__);      \
-  }\
+    bool success = ten_addon_manager_add_addon(                                  \
+        manager, "extension", #NAME,                                             \
+        ____ten_addon_##NAME##_register_handler__);                              \
+    if (!success) {                                                              \
+      TEN_LOGF("Failed to register addon: %s", #NAME);                           \
+      exit(EXIT_FAILURE);                                                        \
+    }                                                                            \
+  }

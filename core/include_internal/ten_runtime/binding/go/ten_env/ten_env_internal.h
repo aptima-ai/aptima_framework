@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -24,7 +24,7 @@
     ten_rwlock_lock((ten_env_bridge)->lock, 1);                        \
     if (((ten_env_bridge)->c_ten_env == NULL) ||                       \
         (((ten_env_bridge)->c_ten_env->attach_to !=                    \
-          TEN_ENV_ATTACH_TO_ADDON_HOST) &&                             \
+          TEN_ENV_ATTACH_TO_ADDON) &&                                  \
          ((ten_env_bridge)->c_ten_env_proxy == NULL))) {               \
       ten_rwlock_unlock((ten_env_bridge)->lock, 1);                    \
       {                                                                \

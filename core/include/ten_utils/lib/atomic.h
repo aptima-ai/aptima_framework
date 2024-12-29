@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -139,11 +139,11 @@ TEN_UTILS_API int64_t ten_atomic_dec_if_non_zero(volatile ten_atomic_t *a);
 TEN_UTILS_API void ten_memory_barrier();
 
 #if defined(_WIN32)
-  #include <intrin.h>
-  #define ten_compiler_barrier() _ReadWriteBarrier()
+#include <intrin.h>
+#define ten_compiler_barrier() _ReadWriteBarrier()
 #else
-  #define ten_compiler_barrier()       \
-    do {                               \
-      asm volatile("" : : : "memory"); \
-    } while (0)
+#define ten_compiler_barrier()       \
+  do {                               \
+    asm volatile("" : : : "memory"); \
+  } while (0)
 #endif

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -57,9 +57,9 @@ bool ten_addon_create_extension_group(
   TEN_ASSERT(engine && ten_engine_check_integrity(engine, true),
              "Should not happen.");
 
-  return ten_addon_create_instance_async(ten_env, addon_name, instance_name,
-                                         TEN_ADDON_TYPE_EXTENSION_GROUP, cb,
-                                         user_data);
+  return ten_addon_create_instance_async(
+      ten_env, TEN_ADDON_TYPE_EXTENSION_GROUP, addon_name, instance_name, cb,
+      user_data);
 }
 
 bool ten_addon_destroy_extension_group(

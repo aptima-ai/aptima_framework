@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -9,13 +9,13 @@
 #include "ten_utils/ten_config.h"
 
 #if defined(_WIN32)
-  #include <Windows.h>
-  #define ten_thread_once_t INIT_ONCE
-  #define TEN_THREAD_ONCE_INIT INIT_ONCE_STATIC_INIT
+#include <Windows.h>
+#define ten_thread_once_t INIT_ONCE
+#define TEN_THREAD_ONCE_INIT INIT_ONCE_STATIC_INIT
 #else
-  #include <pthread.h>
-  #define ten_thread_once_t pthread_once_t
-  #define TEN_THREAD_ONCE_INIT PTHREAD_ONCE_INIT
+#include <pthread.h>
+#define ten_thread_once_t pthread_once_t
+#define TEN_THREAD_ONCE_INIT PTHREAD_ONCE_INIT
 #endif
 
 /**

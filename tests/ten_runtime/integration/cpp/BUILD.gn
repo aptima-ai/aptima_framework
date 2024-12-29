@@ -1,5 +1,5 @@
 #
-# Copyright © 2024 Agora
+# Copyright © 2025 Agora
 # This file is part of TEN Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
@@ -23,7 +23,7 @@ group("cpp") {
     deps += [ "standalone_test_cpp" ]
   }
 
-  if (ten_enable_ffmpeg_extensions && ten_enable_integration_tests_prebuilt) {
+  if (ten_enable_ffmpeg_extensions) {
     deps += [
       "ffmpeg_basic",
       "ffmpeg_bypass",

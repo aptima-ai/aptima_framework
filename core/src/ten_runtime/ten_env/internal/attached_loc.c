@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -35,7 +35,7 @@ const char *ten_env_get_attached_instance_name(ten_env_t *self,
       ten_app_t *app = ten_env_get_attached_app(self);
       return ten_app_get_uri(app);
     }
-    case TEN_ENV_ATTACH_TO_ADDON_HOST: {
+    case TEN_ENV_ATTACH_TO_ADDON: {
       ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
       return ten_addon_host_get_name(addon_host);
     }

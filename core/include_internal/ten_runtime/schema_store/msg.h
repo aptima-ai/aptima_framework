@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -56,7 +56,7 @@ TEN_RUNTIME_PRIVATE_API ten_msg_schema_t *ten_msg_schema_create(
 TEN_RUNTIME_PRIVATE_API void ten_msg_schema_destroy(ten_msg_schema_t *self);
 
 TEN_RUNTIME_PRIVATE_API void ten_msg_schema_init(ten_msg_schema_t *self,
-                                               ten_value_t *msg_schema_value);
+                                                 ten_value_t *msg_schema_value);
 
 TEN_RUNTIME_PRIVATE_API void ten_msg_schema_deinit(ten_msg_schema_t *self);
 
@@ -64,15 +64,15 @@ TEN_RUNTIME_PRIVATE_API void ten_msg_schema_deinit(ten_msg_schema_t *self);
  * @param msg_props The property must be an object.
  */
 TEN_RUNTIME_API bool ten_msg_schema_adjust_properties(ten_msg_schema_t *self,
-                                                    ten_value_t *msg_props,
-                                                    ten_error_t *err);
+                                                      ten_value_t *msg_props,
+                                                      ten_error_t *err);
 
 /**
  * @param msg_props The property must be an object.
  */
 TEN_RUNTIME_API bool ten_msg_schema_validate_properties(ten_msg_schema_t *self,
-                                                      ten_value_t *msg_props,
-                                                      ten_error_t *err);
+                                                        ten_value_t *msg_props,
+                                                        ten_error_t *err);
 
 TEN_RUNTIME_PRIVATE_API const char *ten_msg_schema_get_msg_name(
     ten_msg_schema_t *self);

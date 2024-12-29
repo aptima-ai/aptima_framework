@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Agora
+// Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
@@ -14,5 +14,5 @@
 typedef struct ten_engine_t ten_engine_t;
 
 TEN_RUNTIME_PRIVATE_API void ten_engine_handle_cmd_timer(ten_engine_t *self,
-                                                       ten_shared_ptr_t *cmd,
-                                                       ten_error_t *err);
+                                                         ten_shared_ptr_t *cmd,
+                                                         ten_error_t *err);
