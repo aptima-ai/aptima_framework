@@ -44,7 +44,7 @@ jobs:
             "core/src/ten_runtime"
             "core/src/ten_runtime/binding/go"
             "core/src/ten_runtime/binding/python"
-            "packages/core_lang_addon_loaders/python_addon_loader"
+            "packages/core_addon_loaders/python_addon_loader"
           )
 
           for item in "${ARRAY[@]}"; do
@@ -107,7 +107,7 @@ jobs:
             out/linux/arm64/ten_packages/extension/default_extension_go
             out/linux/arm64/ten_packages/extension/default_extension_python
             out/linux/arm64/ten_packages/extension/default_async_extension_python
-            out/linux/arm64/ten_packages/lang_addon_loader/python_addon_loader
+            out/linux/arm64/ten_packages/addon_loader/python_addon_loader
 
       - name: Package assets
         if: startsWith(github.ref, 'refs/tags/')
@@ -122,7 +122,7 @@ jobs:
             ten_packages/extension/default_extension_go \
             ten_packages/extension/default_extension_python \
             ten_packages/extension/default_async_extension_python \
-            ten_packages/lang_addon_loader/python_addon_loader
+            ten_packages/addon_loader/python_addon_loader
 
       - name: Publish to release assets
         uses: softprops/action-gh-release@v2
@@ -143,6 +143,6 @@ jobs:
               cd system/ten_runtime && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - && \
               cd system/ten_runtime_go && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - && \
               cd system/ten_runtime_python && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - && \
-              cd lang_addon_loader/python_addon_loader && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - \
+              cd addon_loader/python_addon_loader && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - \
           "
         shell: bash

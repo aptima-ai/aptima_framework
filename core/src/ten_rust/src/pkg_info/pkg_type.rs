@@ -34,7 +34,7 @@ pub enum PkgType {
     #[serde(rename = "protocol")]
     Protocol,
 
-    #[serde(rename = "lang_addon_loader")]
+    #[serde(rename = "addon_loader")]
     LangAddonLoader,
 }
 
@@ -47,7 +47,7 @@ impl FromStr for PkgType {
             "app" => Ok(PkgType::App),
             "extension" => Ok(PkgType::Extension),
             "protocol" => Ok(PkgType::Protocol),
-            "lang_addon_loader" => Ok(PkgType::LangAddonLoader),
+            "addon_loader" => Ok(PkgType::LangAddonLoader),
             _ => Err(Error::msg("Failed to parse string to package type")),
         }
     }
@@ -60,7 +60,7 @@ impl fmt::Display for PkgType {
             PkgType::App => write!(f, "app"),
             PkgType::Extension => write!(f, "extension"),
             PkgType::Protocol => write!(f, "protocol"),
-            PkgType::LangAddonLoader => write!(f, "lang_addon_loader"),
+            PkgType::LangAddonLoader => write!(f, "addon_loader"),
         }
     }
 }

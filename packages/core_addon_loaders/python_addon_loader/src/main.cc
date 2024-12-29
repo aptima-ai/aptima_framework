@@ -6,7 +6,7 @@
 #include <cstring>
 #include <string>
 
-#include "include_internal/ten_runtime/addon/lang_addon_loader/lang_addon_loader.h"
+#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/app/metadata.h"
 #include "include_internal/ten_runtime/binding/cpp/detail/addon.h"
 #include "include_internal/ten_runtime/binding/cpp/detail/ten_env_internal_accessor.h"
@@ -108,7 +108,7 @@ static void foo() {}
 
 namespace {
 
-class python_addon_loader_addon_t : public ten::lang_addon_loader_addon_t {
+class python_addon_loader_addon_t : public ten::addon_loader_addon_t {
  public:
   explicit python_addon_loader_addon_t() = default;
 
@@ -390,7 +390,7 @@ void ____ten_addon_python_addon_loader_register_handler____(
       ten_path_get_module_path(/* NOLINTNEXTLINE */
                                (void *)
                                    ____ten_addon_python_addon_loader_register_handler____);
-  ten_addon_register_lang_addon_loader(
+  ten_addon_register_addon_loader(
       "python_addon_loader", ten_string_get_raw_str(base_dir),
       ten::addon_internal_accessor_t::get_c_addon(addon_instance),
       register_ctx);
@@ -400,7 +400,7 @@ void ____ten_addon_python_addon_loader_register_handler____(
 TEN_CONSTRUCTOR(____ten_addon_python_addon_loader_registrar____) {
   ten_addon_manager_t *manager = ten_addon_manager_get_instance();
   bool success = ten_addon_manager_add_addon(
-      manager, "lang_addon_loader", "python_addon_loader",
+      manager, "addon_loader", "python_addon_loader",
       ____ten_addon_python_addon_loader_register_handler____);
   if (!success) {
     TEN_LOGF("Failed to register addon: python_addon_loader");

@@ -11,7 +11,7 @@ pub const TEN_FIELD_IN_PROPERTY: &str = "_ten";
 pub const TEN_PACKAGES_DIR: &str = "ten_packages";
 pub const EXTENSION_DIR: &str = "extension";
 pub const PROTOCOL_DIR: &str = "protocol";
-pub const LANG_ADDON_LOADER_DIR: &str = "lang_addon_loader";
+pub const LANG_ADDON_LOADER_DIR: &str = "addon_loader";
 pub const SYSTEM_DIR: &str = "system";
 
 pub const ERR_STR_NOT_APP_DIR: &str =

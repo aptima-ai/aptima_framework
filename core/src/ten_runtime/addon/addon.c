@@ -8,11 +8,11 @@
 
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
+#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/addon/addon_manager.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/addon/extension/extension.h"
 #include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
-#include "include_internal/ten_runtime/addon/lang_addon_loader/lang_addon_loader.h"
 #include "include_internal/ten_runtime/addon/protocol/protocol.h"
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/base_dir.h"
@@ -344,7 +344,7 @@ static ten_addon_host_t *ten_addon_host_find(TEN_ADDON_TYPE type,
       return ten_addon_store_find(ten_protocol_get_global_store(), addon_name);
 
     case TEN_ADDON_TYPE_LANG_ADDON_LOADER:
-      return ten_addon_store_find(ten_lang_addon_loader_get_global_store(),
+      return ten_addon_store_find(ten_addon_loader_get_global_store(),
                                   addon_name);
 
     default:
@@ -605,7 +605,7 @@ ten_addon_host_t *ten_addon_register(TEN_ADDON_TYPE addon_type,
       addon_store = ten_protocol_get_global_store();
       break;
     case TEN_ADDON_TYPE_LANG_ADDON_LOADER:
-      addon_store = ten_lang_addon_loader_get_global_store();
+      addon_store = ten_addon_loader_get_global_store();
       break;
     default:
       break;

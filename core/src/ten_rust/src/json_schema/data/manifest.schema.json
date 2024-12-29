@@ -8,7 +8,7 @@
         "extension",
         "system",
         "protocol",
-        "lang_addon_loader"
+        "addon_loader"
       ]
     },
     "os": {
@@ -533,7 +533,7 @@
       {
         "properties": {
           "type": {
-            "const": "lang_addon_loader"
+            "const": "addon_loader"
           }
         }
       }

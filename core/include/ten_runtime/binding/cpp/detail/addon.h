@@ -70,6 +70,16 @@ class addon_t {
     TEN_ASSERT(0, "Should not happen.");
   };
 
+  virtual void on_load(ten_env_t &ten_env, const char *name, void *context) {
+    (void)ten_env;
+    (void)name;
+    (void)context;
+
+    // If a subclass requires the functionality of this function, it needs to
+    // override this function.
+    TEN_ASSERT(0, "Should not happen.");
+  }
+
  private:
   ten_addon_t *c_addon;
   ten_env_t *cpp_ten_env{};
@@ -99,12 +109,13 @@ class addon_t {
   virtual void invoke_cpp_addon_on_create_instance(ten_env_t &ten_env,
                                                    const char *name,
                                                    void *context) {
-    try {
-      on_create_instance(ten_env, name, context);
-    } catch (...) {
-      TEN_LOGD("Caught a exception '%s' in addon on_create_instance().",
-               curr_exception_type_name().c_str());
-    }
+    (void)ten_env;
+    (void)name;
+    (void)context;
+
+    // If a subclass requires the functionality of this function, it needs to
+    // override this function.
+    TEN_ASSERT(0, "Should not happen.");
   }
 
   void invoke_cpp_addon_on_destroy_instance(ten_env_t &ten_env, void *instance,

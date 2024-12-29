@@ -119,4 +119,4 @@ jobs:
             ten_packages/extension/default_extension_go \
             ten_packages/extension/default_extension_python \
             ten_packages/extension/default_async_extension_python \
-            ten_packages/lang_addon_loader/python_addon_loader
+            ten_packages/addon_loader/python_addon_loader

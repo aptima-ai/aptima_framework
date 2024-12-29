@@ -5,10 +5,10 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
+#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/addon/addon_manager.h"
 #include "include_internal/ten_runtime/addon/extension/extension.h"
 #include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
-#include "include_internal/ten_runtime/addon/lang_addon_loader/lang_addon_loader.h"
 #include "include_internal/ten_runtime/addon/protocol/protocol.h"
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/base_dir.h"
@@ -254,7 +254,7 @@ static void ten_app_unregister_addons_after_app_close(ten_app_t *self) {
 
   ten_addon_unregister_all_extension();
   ten_addon_unregister_all_extension_group();
-  ten_addon_unregister_all_lang_addon_loader();
+  ten_addon_unregister_all_addon_loader();
 
   // BUG(Wei): Refer to the bug in `ten_app_destroy`.
   // ten_addon_unregister_all_protocol();

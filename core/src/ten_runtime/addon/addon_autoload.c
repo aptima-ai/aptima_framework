@@ -239,14 +239,14 @@ bool ten_addon_load_all_from_app_base_dir(const char *app_base_dir,
   bool success = true;
 
   // The extension is loaded dynamically and will only be loaded when it's
-  // needed. Both the protocol and lang_addon_loader are preloaded, so when the
+  // needed. Both the protocol and addon_loader are preloaded, so when the
   // app starts, it will scan these two folders and load all the addons inside
   // them.
   struct {
     const char *path;
   } folders[] = {
       {"/ten_packages/protocol"},
-      {"/ten_packages/lang_addon_loader"},
+      {"/ten_packages/addon_loader"},
   };
 
   for (int i = 0; i < sizeof(folders) / sizeof(folders[0]); i++) {

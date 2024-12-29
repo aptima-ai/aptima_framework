@@ -136,5 +136,5 @@ class HttpServerExtension(AsyncExtension):
 @register_addon_as_extension("aio_http_server_python")
 class DefaultExtensionAddon(Addon):
     def on_create_instance(self, ten_env: TenEnv, name: str, context) -> None:
-        print("DefaultExtensionAddon on_create_instance")
+        print("on_create_instance")
         ten_env.on_create_instance_done(HttpServerExtension(name), context)

@@ -9,7 +9,7 @@ import("//build/ten_runtime/glob.gni")
 import("//build/ten_runtime/options.gni")
 
 ten_package("python_addon_loader") {
-  package_kind = "lang_addon_loader"
+  package_kind = "addon_loader"
   enable_build = true
 
   resources = [
@@ -40,7 +40,7 @@ ten_package("python_addon_loader") {
 if (ten_enable_ten_manager) {
   ten_package_publish("upload_python_addon_loader_to_server") {
     base_dir = rebase_path(
-            "${root_out_dir}/ten_packages/lang_addon_loader/python_addon_loader")
+            "${root_out_dir}/ten_packages/addon_loader/python_addon_loader")
     deps = [ ":python_addon_loader" ]
   }
 }

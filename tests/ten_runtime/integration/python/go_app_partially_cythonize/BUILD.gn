@@ -26,7 +26,7 @@ ten_package_test_prepare_app("go_app_partially_cythonize_app") {
       "//packages/core_apps/default_app_go:upload_default_app_go_to_server",
       "//packages/core_extensions/default_extension_go:upload_default_extension_go_to_server",
       "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
-      "//packages/core_lang_addon_loaders/python_addon_loader:upload_python_addon_loader_to_server",
+      "//packages/core_addon_loaders/python_addon_loader:upload_python_addon_loader_to_server",
       "//packages/example_extensions/pil_demo_python:upload_pil_demo_python_to_server",
       "//packages/example_extensions/simple_echo_cpp:upload_simple_echo_cpp_to_server",
       "//packages/example_extensions/simple_http_server_cpp:upload_simple_http_server_cpp_to_server",

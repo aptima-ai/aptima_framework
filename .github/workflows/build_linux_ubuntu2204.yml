@@ -188,7 +188,7 @@ jobs:
             "system/ten_runtime"
             "system/ten_runtime_go"
             "system/ten_runtime_python"
-            "lang_addon_loader/python_addon_loader"
+            "addon_loader/python_addon_loader"
           )
 
           for item in "${ARRAY[@]}"; do
@@ -217,7 +217,7 @@ jobs:
             out/linux/x64/ten_packages/extension/default_extension_go
             out/linux/x64/ten_packages/extension/default_extension_python
             out/linux/x64/ten_packages/extension/default_async_extension_python
-            out/linux/x64/ten_packages/lang_addon_loader/python_addon_loader
+            out/linux/x64/ten_packages/addon_loader/python_addon_loader
 
       - name: Package assets
         if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
@@ -232,7 +232,7 @@ jobs:
             ten_packages/extension/default_extension_go \
             ten_packages/extension/default_extension_python \
             ten_packages/extension/default_async_extension_python \
-            ten_packages/lang_addon_loader/python_addon_loader
+            ten_packages/addon_loader/python_addon_loader
 
       - name: Publish to release assets
         uses: softprops/action-gh-release@v2
@@ -256,7 +256,7 @@ jobs:
             "extension/default_extension_go"
             "extension/default_extension_python"
             "extension/default_async_extension_python"
-            "lang_addon_loader/python_addon_loader"
+            "addon_loader/python_addon_loader"
           )
 
           for item in "${ARRAY[@]}"; do

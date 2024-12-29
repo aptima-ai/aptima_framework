@@ -26,7 +26,7 @@ fn get_args_cfg() -> ArgsCfg {
             possible_values: [
                 "system",
                 "protocol",
-                "lang_addon_loader",
+                "addon_loader",
                 "extension",
                 "app",
             ]

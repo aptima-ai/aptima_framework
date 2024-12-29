@@ -12,7 +12,7 @@ glob("addon") {
     "common",
     "extension",
     "extension_group",
-    "lang_addon_loader",
+    "addon_loader",
     "protocol",
     "ten_env",
   ]
