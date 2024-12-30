@@ -9,7 +9,7 @@ import Editor from "@monaco-editor/react";
 import { toast } from "sonner";
 
 import Popup from "@/components/Popup/Popup";
-import { getFileContent, saveFileContent } from "@/api/api";
+import { getFileContent, putFileContent } from "@/api/services/fileSystem";
 import { ThemeProviderContext } from "@/components/theme-context";
 import { Button } from "@/components/ui/Button";
 
@@ -89,7 +89,8 @@ const EditorPopup: React.FC<EditorPopupProps> = ({ data, onClose }) => {
 
   const saveFile = async (content: string) => {
     try {
-      await saveFileContent(data.url, content);
+      await putFileContent(data.url, { content });
+      console.log("File saved successfully");
       toast.success("File saved successfully");
       // We can add UI prompts, such as displaying a success notification.
     } catch (error: unknown) {

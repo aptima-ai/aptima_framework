@@ -17,16 +17,29 @@ import {
 } from "@/components/ui/NavigationMenu";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { ThreeColumnFileManager } from "@/components/FileManager/AppFolder";
+import {
+  baseDirEntriesToIFMItems,
+  fmItemsToFMArray,
+  type IFMItem,
+  EFMItemType,
+} from "@/components/FileManager/utils";
+import { useDirList } from "@/api/services/fileSystem";
 
 interface FileMenuProps {
+  defaultBaseDir?: string;
   onSetBaseDir: (folderPath: string) => void;
 }
 
 export function FileMenu(props: FileMenuProps) {
-  const { onSetBaseDir } = props;
+  const { defaultBaseDir = "/", onSetBaseDir } = props;
+
   const [isFolderPathModalOpen, setIsFolderPathModalOpen] =
     React.useState<boolean>(false);
-  const [folderPath, setFolderPath] = React.useState<string>("");
+  const [folderPath, setFolderPath] = React.useState<string>(defaultBaseDir);
+  const [fmItems, setFmItems] = React.useState<IFMItem[][]>([]);
+
+  const { data, error, isLoading } = useDirList(folderPath);
 
   const handleManualOk = async () => {
     if (!folderPath.trim()) {
@@ -34,9 +47,30 @@ export function FileMenu(props: FileMenuProps) {
       return;
     }
 
+    console.log("[file-menu] folderPath set to", folderPath);
     onSetBaseDir(folderPath.trim());
-    setFolderPath("");
+    setIsFolderPathModalOpen(false);
   };
+
+  React.useEffect(() => {
+    if (!data?.entries) {
+      return;
+    }
+    const currentFmItems = baseDirEntriesToIFMItems(data.entries);
+    const fmArray = fmItemsToFMArray(currentFmItems, fmItems);
+    setFmItems(fmArray);
+    // Suppress the warning about the dependency array.
+    // <fmItems> should not be a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, folderPath]);
+
+  React.useEffect(() => {
+    if (error) {
+      toast.error("Failed to load the folder.", {
+        description: error?.message,
+      });
+    }
+  }, [error]);
 
   return (
     <>
@@ -64,26 +98,28 @@ export function FileMenu(props: FileMenuProps) {
           title="Open App Folder"
           onClose={() => setIsFolderPathModalOpen(false)}
           resizable={false}
-          initialWidth={400}
-          initialHeight={200}
+          initialWidth={600}
+          initialHeight={400}
           onCollapseToggle={() => {}}
         >
-          <div>
-            <label htmlFor="folderPath">Folder Path:</label>
-            <input
-              type="text"
-              id="folderPath"
-              value={folderPath}
-              onChange={(e) => setFolderPath(e.target.value)}
-              style={{ width: "100%", padding: "8px", marginTop: "5px" }}
-              placeholder="Enter folder path"
+          <div className="flex flex-col gap-2 w-full h-full">
+            <ThreeColumnFileManager
+              data={fmItems}
+              allowSelectTypes={[EFMItemType.FOLDER]}
+              className="w-full h-[calc(100%-3rem)]"
+              onSelect={(path) => setFolderPath(path)}
+              selectedPath={folderPath}
+              isLoading={isLoading}
             />
-            <button
-              onClick={handleManualOk}
-              style={{ marginTop: "10px", padding: "8px 16px" }}
-            >
-              Ok
-            </button>
+            <div className="flex justify-end h-fit gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsFolderPathModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleManualOk}>OK</Button>
+            </div>
           </div>
         </Popup>
       )}

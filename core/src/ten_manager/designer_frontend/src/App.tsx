@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   addEdge,
   applyEdgeChanges,
@@ -17,14 +17,13 @@ import { toast } from "sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import AppBar from "@/components/AppBar/AppBar";
 import FlowCanvas from "@/flow/FlowCanvas";
+import { useVersion } from "@/api/services/common";
 import {
-  fetchConnections,
-  fetchDesignerVersion,
-  fetchGraphs,
-  fetchNodes,
-  setBaseDir,
-} from "@/api/api";
-import { Graph } from "@/api/interface";
+  getGraphNodes,
+  getGraphConnections,
+  getGraphs,
+} from "@/api/services/graphs";
+import { putBaseDir } from "@/api/services/fileSystem";
 import { CustomNodeType } from "@/flow/CustomNode";
 import { CustomEdgeType } from "@/flow/CustomEdge";
 import {
@@ -35,28 +34,20 @@ import {
   processNodes,
 } from "@/flow/graph";
 import Popup from "@/components/Popup/Popup";
+import type { IGraph } from "@/types/graphs";
 
 const App: React.FC = () => {
-  const [version, setVersion] = useState<string>("");
-  const [graphs, setGraphs] = useState<Graph[]>([]);
+  const [graphs, setGraphs] = useState<IGraph[]>([]);
   const [showGraphSelection, setShowGraphSelection] = useState<boolean>(false);
   const [nodes, setNodes] = useState<CustomNodeType[]>([]);
   const [edges, setEdges] = useState<CustomEdgeType[]>([]);
 
   // Get the version of tman.
-  useEffect(() => {
-    fetchDesignerVersion()
-      .then((version) => {
-        setVersion(version);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch version:", err);
-      });
-  }, []);
+  const { version } = useVersion();
 
   const handleOpenExistingGraph = useCallback(async () => {
     try {
-      const fetchedGraphs = await fetchGraphs();
+      const fetchedGraphs = await getGraphs();
       setGraphs(fetchedGraphs);
       setShowGraphSelection(true);
     } catch (error: unknown) {
@@ -73,8 +64,8 @@ const App: React.FC = () => {
     setShowGraphSelection(false);
 
     try {
-      const backendNodes = await fetchNodes(graphName);
-      const backendConnections = await fetchConnections(graphName);
+      const backendNodes = await getGraphNodes(graphName);
+      const backendConnections = await getGraphConnections(graphName);
 
       let initialNodes: CustomNodeType[] = processNodes(backendNodes);
 
@@ -128,12 +119,14 @@ const App: React.FC = () => {
 
   const handleSetBaseDir = useCallback(async (folderPath: string) => {
     try {
-      await setBaseDir(folderPath.trim());
+      await putBaseDir(folderPath.trim());
       setNodes([]); // Clear the contents of the FlowCanvas.
       setEdges([]);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast.error(`Failed to open a new app folder: ${error.message}`);
+        toast.error(`Failed to open a new app folder`, {
+          description: error.message,
+        });
       } else {
         toast.error("An unknown error occurred.");
       }

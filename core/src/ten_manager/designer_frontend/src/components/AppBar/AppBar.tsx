@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 interface AppBarProps {
   // The current version of tman.
-  version: string;
+  version?: string;
 
   onOpenExistingGraph: () => void;
   onAutoLayout: () => void;
