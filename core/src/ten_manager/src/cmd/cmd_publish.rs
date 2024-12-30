@@ -30,8 +30,8 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
 
 pub fn parse_sub_cmd(
     _sub_cmd_args: &ArgMatches,
-) -> crate::cmd::cmd_publish::PublishCommand {
-    crate::cmd::cmd_publish::PublishCommand {}
+) -> Result<crate::cmd::cmd_publish::PublishCommand> {
+    Ok(crate::cmd::cmd_publish::PublishCommand {})
 }
 
 pub async fn execute_cmd(

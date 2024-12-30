@@ -62,7 +62,7 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> CheckGraphCommand {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<CheckGraphCommand> {
     let cmd = CheckGraphCommand {
         app_dir: sub_cmd_args
             .get_many::<String>("APP_DIR")
@@ -77,7 +77,7 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> CheckGraphCommand {
             .cloned(),
     };
 
-    cmd
+    Ok(cmd)
 }
 
 fn validate_cmd_args(command: &CheckGraphCommand) -> Result<()> {

@@ -59,7 +59,7 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> ModifyGraphCommand {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<ModifyGraphCommand> {
     let cmd = ModifyGraphCommand {
         app_dir: sub_cmd_args
             .get_one::<String>("APP_DIR")
@@ -76,7 +76,7 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> ModifyGraphCommand {
         inplace: sub_cmd_args.get_flag("INPLACE"),
     };
 
-    cmd
+    Ok(cmd)
 }
 
 pub async fn execute_cmd(

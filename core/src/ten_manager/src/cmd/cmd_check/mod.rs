@@ -40,30 +40,32 @@ pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> CheckCommandData {
-    match sub_cmd_args.subcommand() {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<CheckCommandData> {
+    let command_data = match sub_cmd_args.subcommand() {
         Some(("graph", graph_cmd_args)) => CheckCommandData::CheckGraph(
             crate::cmd::cmd_check::cmd_check_graph::parse_sub_cmd(
                 graph_cmd_args,
-            ),
+            )?,
         ),
         Some(("manifest-json", manifest_json_cmd_args)) => {
             CheckCommandData::CheckManifestJson(
                 crate::cmd::cmd_check::cmd_check_manifest_json::parse_sub_cmd(
                     manifest_json_cmd_args,
-                ),
+                )?,
             )
         }
         Some(("property-json", property_json_cmd_args)) => {
             CheckCommandData::CheckPropertyJson(
                 crate::cmd::cmd_check::cmd_check_property_json::parse_sub_cmd(
                     property_json_cmd_args,
-                ),
+                )?,
             )
         }
 
         _ => unreachable!("Command not found"),
-    }
+    };
+
+    Ok(command_data)
 }
 
 pub async fn execute_cmd(

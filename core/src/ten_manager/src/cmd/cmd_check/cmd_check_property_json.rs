@@ -30,12 +30,14 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> CheckPropertyJsonCommand {
+pub fn parse_sub_cmd(
+    sub_cmd_args: &ArgMatches,
+) -> Result<CheckPropertyJsonCommand> {
     let cmd = CheckPropertyJsonCommand {
         path: sub_cmd_args.get_one::<String>("PATH").cloned().unwrap(),
     };
 
-    cmd
+    Ok(cmd)
 }
 
 pub async fn execute_cmd(

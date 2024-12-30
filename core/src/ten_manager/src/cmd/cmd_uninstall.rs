@@ -50,7 +50,7 @@ pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> UninstallCommand {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<UninstallCommand> {
     let cmd = UninstallCommand {
         package_type: sub_cmd_args
             .get_one::<String>("PACKAGE_TYPE")
@@ -62,7 +62,7 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> UninstallCommand {
             .clone(),
     };
 
-    cmd
+    Ok(cmd)
 }
 
 async fn remove_installed_paths(

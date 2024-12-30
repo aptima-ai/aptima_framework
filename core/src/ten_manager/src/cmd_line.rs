@@ -4,6 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
+use anyhow::Result;
 use clap::{Arg, Command};
 
 use crate::version::VERSION;
@@ -109,7 +110,7 @@ fn create_cmd() -> clap::ArgMatches {
 
 pub fn parse_cmd(
     tman_config: &mut crate::config::TmanConfig,
-) -> crate::cmd::CommandData {
+) -> Result<crate::cmd::CommandData> {
     let matches = create_cmd();
 
     tman_config.config_file = matches.get_one::<String>("CONFIG_FILE").cloned();
@@ -119,36 +120,38 @@ pub fn parse_cmd(
     tman_config.assume_yes = matches.get_flag("ASSUME_YES");
     tman_config.mi_mode = matches.get_flag("MI");
 
-    match matches.subcommand() {
+    let command_data = match matches.subcommand() {
         Some(("install", sub_cmd_args)) => crate::cmd::CommandData::Install(
-            crate::cmd::cmd_install::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_install::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("uninstall", sub_cmd_args)) => {
             crate::cmd::CommandData::Uninstall(
-                crate::cmd::cmd_uninstall::parse_sub_cmd(sub_cmd_args),
+                crate::cmd::cmd_uninstall::parse_sub_cmd(sub_cmd_args)?,
             )
         }
         Some(("package", sub_cmd_args)) => crate::cmd::CommandData::Package(
-            crate::cmd::cmd_package::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_package::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("publish", sub_cmd_args)) => crate::cmd::CommandData::Publish(
-            crate::cmd::cmd_publish::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_publish::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("delete", sub_cmd_args)) => crate::cmd::CommandData::Delete(
-            crate::cmd::cmd_delete::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_delete::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("designer", sub_cmd_args)) => crate::cmd::CommandData::Designer(
-            crate::cmd::cmd_designer::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_designer::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("check", sub_cmd_args)) => crate::cmd::CommandData::Check(
-            crate::cmd::cmd_check::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_check::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("modify", sub_cmd_args)) => crate::cmd::CommandData::Modify(
-            crate::cmd::cmd_modify::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_modify::parse_sub_cmd(sub_cmd_args)?,
         ),
         Some(("run", sub_cmd_args)) => crate::cmd::CommandData::Run(
-            crate::cmd::cmd_run::parse_sub_cmd(sub_cmd_args),
+            crate::cmd::cmd_run::parse_sub_cmd(sub_cmd_args)?,
         ),
         _ => unreachable!("Command not found"),
-    }
+    };
+
+    Ok(command_data)
 }

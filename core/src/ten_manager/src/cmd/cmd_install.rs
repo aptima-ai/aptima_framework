@@ -59,6 +59,24 @@ use crate::{
     utils::{check_is_app_folder, check_is_package_folder},
 };
 
+#[derive(Debug, Clone, Copy)]
+pub enum LocalInstallMode {
+    Copy,
+    Link,
+}
+
+impl std::str::FromStr for LocalInstallMode {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        match s.to_lowercase().as_str() {
+            "copy" => Ok(LocalInstallMode::Copy),
+            "link" => Ok(LocalInstallMode::Link),
+            _ => Err(anyhow::anyhow!("Invalid local install mode: {}", s)),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct InstallCommand {
     pub package_type: Option<String>,
@@ -66,6 +84,7 @@ pub struct InstallCommand {
     pub support: PkgSupport,
     pub template_mode: bool,
     pub template_data: HashMap<String, String>,
+    pub local_install_mode: LocalInstallMode,
 }
 
 pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
@@ -121,9 +140,17 @@ pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
                 .requires("TEMPLATE_MODE")
                 .help("Sets a key-value pair, e.g., --template-data key=value")
         )
+        .arg(
+            Arg::new("LOCAL_INSTALL_MODE")
+                .long("local-install-mode")
+                .help("Local install mode: copy or link")
+                .value_parser(["copy", "link"])
+                .default_value("copy")
+                .required(false),
+        )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> InstallCommand {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<InstallCommand> {
     let mut cmd = InstallCommand {
         package_type: sub_cmd_args.get_one::<String>("PACKAGE_TYPE").cloned(),
         package_name: sub_cmd_args.get_one::<String>("PACKAGE_NAME").cloned(),
@@ -139,6 +166,7 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> InstallCommand {
             .get_one::<bool>("TEMPLATE_MODE")
             .unwrap_or(&false),
         template_data: HashMap::new(),
+        local_install_mode: LocalInstallMode::Copy,
     };
 
     let _ = cmd.support.set_defaults();
@@ -152,7 +180,12 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> InstallCommand {
         }
     }
 
-    cmd
+    if let Some(mode_str) = sub_cmd_args.get_one::<String>("LOCAL_INSTALL_MODE")
+    {
+        cmd.local_install_mode = mode_str.parse()?;
+    }
+
+    Ok(cmd)
 }
 
 fn is_package_installable_in_cwd(

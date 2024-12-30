@@ -74,6 +74,10 @@
           "items": {
             "$ref": "#/$defs/supportItem"
           }
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [

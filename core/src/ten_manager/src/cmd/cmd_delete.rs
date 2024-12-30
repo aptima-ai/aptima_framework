@@ -58,8 +58,8 @@ pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
 
 pub fn parse_sub_cmd(
     sub_cmd_args: &ArgMatches,
-) -> crate::cmd::cmd_delete::DeleteCommand {
-    crate::cmd::cmd_delete::DeleteCommand {
+) -> Result<crate::cmd::cmd_delete::DeleteCommand> {
+    Ok(crate::cmd::cmd_delete::DeleteCommand {
         package_type: sub_cmd_args
             .get_one::<String>("PACKAGE_TYPE")
             .cloned()
@@ -70,7 +70,7 @@ pub fn parse_sub_cmd(
             .unwrap(),
         version: sub_cmd_args.get_one::<String>("VERSION").cloned().unwrap(),
         hash: sub_cmd_args.get_one::<String>("HASH").cloned().unwrap(),
-    }
+    })
 }
 
 pub async fn execute_cmd(

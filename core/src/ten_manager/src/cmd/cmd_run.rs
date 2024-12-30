@@ -43,7 +43,7 @@ pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
         )
 }
 
-pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> RunCommand {
+pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<RunCommand> {
     let script_name = sub_cmd_args
         .get_one::<String>("SCRIPT_NAME")
         .expect("SCRIPT_NAME is required")
@@ -54,10 +54,10 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> RunCommand {
         .map(|vals| vals.map(|s| s.to_string()).collect())
         .unwrap_or_default();
 
-    RunCommand {
+    Ok(RunCommand {
         script_name,
         extra_args,
-    }
+    })
 }
 
 pub async fn execute_cmd(
