@@ -114,6 +114,7 @@ const EditorPopup: React.FC<EditorPopupProps> = ({ data, onClose }) => {
         resizable={true}
         initialWidth={DEFAULT_WIDTH}
         initialHeight={DEFAULT_HEIGHT}
+        contentClassName="p-0"
       >
         <div className="p-0 box-border flex flex-col w-full h-full">
           <Editor

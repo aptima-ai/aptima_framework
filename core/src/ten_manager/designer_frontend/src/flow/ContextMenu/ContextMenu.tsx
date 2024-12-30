@@ -6,6 +6,7 @@
 //
 import React from "react";
 
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 export interface ContextMenuItem {
@@ -29,7 +30,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, items }) => {
     <div
       className={cn(
         "fixed p-1.5 z-[9999]",
-        "bg-white border border-gray-300 shadow-lg box-border"
+        "bg-popover border border-border rounded-md shadow-md box-border"
       )}
       style={{
         left: x,
@@ -39,25 +40,29 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, items }) => {
     >
       {items.map((item, index) => (
         <React.Fragment key={index}>
-          {item.separator && <div className="h-px bg-gray-300 my-1.5"></div>}
+          {item.separator && <div className="h-px bg-border my-1"></div>}
           {!item.separator && (
-            <div
+            <Button
+              variant="ghost"
+              asChild
               className={cn(
-                "flex items-center px-2.5 py-1.5 whitespace-nowrap",
-                "box-border hover:bg-gray-100 cursor-pointer"
+                "flex w-full justify-start px-2.5 py-1.5 whitespace-nowrap",
+                "h-auto font-normal cursor-pointer"
               )}
               onClick={item.onClick}
             >
-              <span
-                className={cn(
-                  "flex items-center flex-shrink-0 justify-center",
-                  "mr-2 h-[1em] w-5"
-                )}
-              >
-                {item.icon || null}
-              </span>
-              <span className="flex-1 text-left">{item.label}</span>
-            </div>
+              <div>
+                <span
+                  className={cn(
+                    "flex items-center flex-shrink-0 justify-center",
+                    "mr-2 h-[1em] w-5"
+                  )}
+                >
+                  {item.icon || null}
+                </span>
+                <span className="flex-1 text-left">{item.label}</span>
+              </div>
+            </Button>
           )}
         </React.Fragment>
       ))}

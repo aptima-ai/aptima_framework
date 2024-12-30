@@ -31,12 +31,14 @@ interface PopupProps {
 
   onClose: () => void;
   onCollapseToggle?: (isCollapsed: boolean) => void;
+  contentClassName?: string;
 }
 
 const Popup: React.FC<PopupProps> = ({
   title,
   children,
   className,
+  contentClassName,
   resizable = false, // Default to non-resizable.
   preventFocusSteal = false,
   initialWidth,
@@ -230,8 +232,10 @@ const Popup: React.FC<PopupProps> = ({
   return (
     <div
       className={cn(
-        "fixed bg-background border border-border shadow-lg text-sm",
-        "text-foreground rounded focus:outline-none flex flex-col popup",
+        "fixed text-sm overflow-hidden",
+        "bg-background/80 backdrop-blur-sm border border-border/50 shadow-lg",
+        "text-foreground rounded-lg focus:outline-none flex flex-col popup",
+        "transition-opacity duration-200 ease-in-out",
         isVisible ? "opacity-100" : "opacity-0",
         isResizing && "select-none",
         isDragging && "select-none cursor-move",
@@ -258,28 +262,37 @@ const Popup: React.FC<PopupProps> = ({
       <div
         className={cn(
           "p-2.5 flex justify-between items-center cursor-move select-none",
-          "bg-muted border-b border-border"
+          "rounded-t-lg",
+          {
+            ["border-b border-border/50"]: !isCollapsed,
+          }
         )}
         onMouseDown={handleMouseDown}
         ref={headerRef}
       >
-        <span className="font-bold">{title}</span>
+        <span className="font-medium text-foreground/90 font-sans">
+          {title}
+        </span>
         <div className="flex items-center gap-1.5">
           <Button
             variant="ghost"
             size="sm"
-            className="h-auto p-1.5"
+            className="h-auto p-1.5 hover:bg-background/50 transition-colors"
             onClick={toggleCollapse}
           >
-            {isCollapsed ? <ChevronDown /> : <ChevronUp />}
+            {isCollapsed ? (
+              <ChevronDown className="opacity-70" />
+            ) : (
+              <ChevronUp className="opacity-70" />
+            )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-auto p-1.5"
+            className="h-auto p-1.5 hover:bg-background/50 transition-colors"
             onClick={onClose}
           >
-            <X />
+            <X className="opacity-70" />
           </Button>
         </div>
       </div>
@@ -287,7 +300,10 @@ const Popup: React.FC<PopupProps> = ({
       <div
         className={cn(
           "p-2.5 overflow-hidden flex w-full h-full",
-          isCollapsed ? "invisible h-0 py-0" : "visible"
+          {
+            ["invisible h-0 py-0"]: isCollapsed,
+          },
+          contentClassName
         )}
       >
         {children}

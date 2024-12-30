@@ -6,7 +6,7 @@
 //
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FaEdit, FaTrash, FaTerminal } from "react-icons/fa";
+import { FilePenLineIcon, TerminalIcon, Trash2Icon } from "lucide-react";
 
 import ContextMenu, { ContextMenuItem } from "@/flow/ContextMenu/ContextMenu";
 import { CustomNodeType } from "@/flow/CustomNode";
@@ -37,7 +37,7 @@ const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
   const items: ContextMenuItem[] = [
     {
       label: t("Edit manifest.json"),
-      icon: <FaEdit />,
+      icon: <FilePenLineIcon />,
       onClick: () => {
         onClose();
         if (node?.data.url)
@@ -50,7 +50,7 @@ const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     },
     {
       label: t("Edit property.json"),
-      icon: <FaEdit />,
+      icon: <FilePenLineIcon />,
       onClick: () => {
         onClose();
         if (node?.data.url)
@@ -66,7 +66,7 @@ const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     },
     {
       label: t("Launch terminal"),
-      icon: <FaTerminal />,
+      icon: <TerminalIcon />,
       onClick: () => {
         onClose();
         onLaunchTerminal({ title: node.data.name, url: node.data.url });
@@ -77,7 +77,7 @@ const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     },
     {
       label: t("Delete"),
-      icon: <FaTrash />,
+      icon: <Trash2Icon />,
       onClick: () => {
         onClose();
       },
