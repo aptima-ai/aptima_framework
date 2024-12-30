@@ -43,7 +43,7 @@ static void proxy_on_configure(ten_app_t *app, ten_env_t *ten_env) {
   // The current state may be PyGILState_LOCKED or PyGILState_UNLOCKED which
   // depends on whether the app is running in the Python thread or native
   // thread.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_app_t *py_app =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
@@ -93,7 +93,7 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_app_t *py_app =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
@@ -109,7 +109,7 @@ static void proxy_on_init(ten_app_t *app, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 
   TEN_LOGI("proxy_on_init done");
 }
@@ -123,7 +123,7 @@ static void proxy_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_app_t *py_app =
       ten_binding_handle_get_me_in_target_lang((ten_binding_handle_t *)app);
@@ -140,7 +140,7 @@ static void proxy_on_deinit(ten_app_t *app, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 
   TEN_LOGI("proxy_on_deinit done");
 }

@@ -10,7 +10,6 @@
 // include in the C++ programming language.
 
 #include "include_internal/ten_runtime/addon/extension_group/extension_group.h"  // IWYU pragma: export
-#include "include_internal/ten_runtime/binding/cpp/detail/addon.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/extension_impl.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/cmd_result_internal_accessor.h"  // IWYU pragma: export
 #include "include_internal/ten_runtime/binding/cpp/detail/msg/cmd/timeout.h"  // IWYU pragma: export

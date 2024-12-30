@@ -106,7 +106,7 @@
 #define TEN_STR_PROTOCOL "protocol"
 
 // Lang addon loader.
-#define TEN_STR_LANG_ADDON_LOADER "addon_loader"
+#define TEN_STR_ADDON_LOADER "addon_loader"
 
 // Transport.
 #define TEN_STR_TRANSPORT_TYPE "transport_type"

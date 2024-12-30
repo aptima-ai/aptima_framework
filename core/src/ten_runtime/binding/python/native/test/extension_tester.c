@@ -59,7 +59,7 @@ static void proxy_on_start(ten_extension_tester_t *extension_tester,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_tester_t *py_extension_tester =
       (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
@@ -81,7 +81,7 @@ static void proxy_on_start(ten_extension_tester_t *extension_tester,
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_cmd(ten_extension_tester_t *extension_tester,
@@ -96,7 +96,7 @@ static void proxy_on_cmd(ten_extension_tester_t *extension_tester,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_tester_t *py_extension_tester =
       (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
@@ -124,7 +124,7 @@ static void proxy_on_cmd(ten_extension_tester_t *extension_tester,
 
   ten_py_cmd_invalidate(py_cmd);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_data(ten_extension_tester_t *extension_tester,
@@ -139,7 +139,7 @@ static void proxy_on_data(ten_extension_tester_t *extension_tester,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_tester_t *py_extension_tester =
       (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
@@ -167,7 +167,7 @@ static void proxy_on_data(ten_extension_tester_t *extension_tester,
 
   ten_py_data_invalidate(py_data);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_audio_frame(ten_extension_tester_t *extension_tester,
@@ -183,7 +183,7 @@ static void proxy_on_audio_frame(ten_extension_tester_t *extension_tester,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_tester_t *py_extension_tester =
       (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
@@ -211,7 +211,7 @@ static void proxy_on_audio_frame(ten_extension_tester_t *extension_tester,
 
   ten_py_audio_frame_invalidate(py_audio_frame);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_video_frame(ten_extension_tester_t *extension_tester,
@@ -227,7 +227,7 @@ static void proxy_on_video_frame(ten_extension_tester_t *extension_tester,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_tester_t *py_extension_tester =
       (ten_py_extension_tester_t *)ten_binding_handle_get_me_in_target_lang(
@@ -255,7 +255,7 @@ static void proxy_on_video_frame(ten_extension_tester_t *extension_tester,
 
   ten_py_video_frame_invalidate(py_video_frame);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static ten_py_extension_tester_t *ten_py_extension_tester_init(

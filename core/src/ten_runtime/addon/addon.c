@@ -54,6 +54,7 @@ void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
                     ten_addon_on_deinit_func_t on_deinit,
                     ten_addon_on_create_instance_func_t on_create_instance,
                     ten_addon_on_destroy_instance_func_t on_destroy_instance,
+                    ten_addon_on_load_addon_func_t on_load_addon,
                     ten_addon_on_destroy_func_t on_destroy) {
   ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)self, NULL);
   ten_signature_set(&self->signature, TEN_ADDON_SIGNATURE);
@@ -62,6 +63,7 @@ void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
   self->on_deinit = on_deinit;
   self->on_create_instance = on_create_instance;
   self->on_destroy_instance = on_destroy_instance;
+  self->on_load_addon = on_load_addon;
   self->on_destroy = on_destroy;
 
   self->user_data = NULL;
@@ -71,12 +73,13 @@ ten_addon_t *ten_addon_create(
     ten_addon_on_init_func_t on_init, ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
     ten_addon_on_destroy_instance_func_t on_destroy_instance,
+    ten_addon_on_load_addon_func_t on_load_addon,
     ten_addon_on_destroy_func_t on_destroy) {
   ten_addon_t *self = TEN_MALLOC(sizeof(ten_addon_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_addon_init(self, on_init, on_deinit, on_create_instance,
-                 on_destroy_instance, on_destroy);
+                 on_destroy_instance, on_load_addon, on_destroy);
 
   return self;
 }
@@ -178,8 +181,8 @@ TEN_ADDON_TYPE ten_addon_type_from_string(const char *addon_type_str) {
     return TEN_ADDON_TYPE_EXTENSION_GROUP;
   } else if (ten_c_string_is_equal(addon_type_str, TEN_STR_PROTOCOL)) {
     return TEN_ADDON_TYPE_PROTOCOL;
-  } else if (ten_c_string_is_equal(addon_type_str, TEN_STR_LANG_ADDON_LOADER)) {
-    return TEN_ADDON_TYPE_LANG_ADDON_LOADER;
+  } else if (ten_c_string_is_equal(addon_type_str, TEN_STR_ADDON_LOADER)) {
+    return TEN_ADDON_TYPE_ADDON_LOADER;
   } else {
     return TEN_ADDON_TYPE_INVALID;
   }
@@ -193,8 +196,8 @@ const char *ten_addon_type_to_string(TEN_ADDON_TYPE type) {
       return TEN_STR_EXTENSION_GROUP;
     case TEN_ADDON_TYPE_PROTOCOL:
       return TEN_STR_PROTOCOL;
-    case TEN_ADDON_TYPE_LANG_ADDON_LOADER:
-      return TEN_STR_LANG_ADDON_LOADER;
+    case TEN_ADDON_TYPE_ADDON_LOADER:
+      return TEN_STR_ADDON_LOADER;
     default:
       TEN_ASSERT(0, "Should not happen.");
       return NULL;
@@ -343,7 +346,7 @@ static ten_addon_host_t *ten_addon_host_find(TEN_ADDON_TYPE type,
     case TEN_ADDON_TYPE_PROTOCOL:
       return ten_addon_store_find(ten_protocol_get_global_store(), addon_name);
 
-    case TEN_ADDON_TYPE_LANG_ADDON_LOADER:
+    case TEN_ADDON_TYPE_ADDON_LOADER:
       return ten_addon_store_find(ten_addon_loader_get_global_store(),
                                   addon_name);
 
@@ -451,13 +454,13 @@ bool ten_addon_create_instance_async(ten_env_t *ten_env,
                           false),
                "Should not happen.");
 
-    if (!ten_addon_load_specific_addon_from_app_base_dir(
-            ten_string_get_raw_str(&app->base_dir), addon_type, addon_name,
-            NULL)) {
+    if (!ten_addon_try_load_specific_addon_from_app_base_dir(
+            ten_string_get_raw_str(&app->base_dir), addon_type, addon_name)) {
       return false;
     }
-    if (!ten_addon_register_specific_addon(addon_type, addon_name, NULL,
-                                           NULL)) {
+
+    if (!ten_addon_try_load_specific_addon_using_all_addon_loaders(
+            addon_type, addon_name)) {
       return false;
     }
 
@@ -604,7 +607,7 @@ ten_addon_host_t *ten_addon_register(TEN_ADDON_TYPE addon_type,
     case TEN_ADDON_TYPE_PROTOCOL:
       addon_store = ten_protocol_get_global_store();
       break;
-    case TEN_ADDON_TYPE_LANG_ADDON_LOADER:
+    case TEN_ADDON_TYPE_ADDON_LOADER:
       addon_store = ten_addon_loader_get_global_store();
       break;
     default:

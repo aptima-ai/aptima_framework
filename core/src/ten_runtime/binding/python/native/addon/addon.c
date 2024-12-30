@@ -59,7 +59,7 @@ static void proxy_on_init(ten_addon_t *addon, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
@@ -90,7 +90,7 @@ static void proxy_on_init(ten_addon_t *addon, ten_env_t *ten_env) {
   Py_XDECREF(py_res);
 
 done:
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
@@ -106,7 +106,7 @@ static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
@@ -137,7 +137,7 @@ static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
   Py_XDECREF(py_res);
 
 done:
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_create_instance_async(ten_addon_t *addon,
@@ -154,7 +154,7 @@ static void proxy_on_create_instance_async(ten_addon_t *addon,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   if (!py_addon || !name || !strlen(name)) {
     ten_py_raise_py_value_error_exception(
@@ -185,7 +185,7 @@ static void proxy_on_create_instance_async(ten_addon_t *addon,
   Py_XDECREF(py_res);
 
 done:
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_destroy_instance_async(ten_addon_t *addon,
@@ -204,7 +204,7 @@ static void proxy_on_destroy_instance_async(ten_addon_t *addon,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   switch (py_addon->type) {
     case TEN_ADDON_TYPE_EXTENSION:
@@ -224,7 +224,7 @@ static void proxy_on_destroy_instance_async(ten_addon_t *addon,
   // ten object, so that Python GC can reclaim them.
   Py_DECREF(py_instance);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 
   ten_env_on_destroy_instance_done(ten_env, context, NULL);
 }
@@ -244,7 +244,7 @@ static PyObject *ten_py_addon_create(PyTypeObject *type,
 
   ten_addon_init(&py_addon->c_addon, proxy_on_init, proxy_on_deinit,
                  proxy_on_create_instance_async,
-                 proxy_on_destroy_instance_async, NULL);
+                 proxy_on_destroy_instance_async, NULL, NULL);
 
   ten_binding_handle_set_me_in_target_lang(
       (ten_binding_handle_t *)&py_addon->c_addon, py_addon);

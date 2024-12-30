@@ -14,7 +14,7 @@ use semver::Version;
 
 use ten_rust::pkg_info::{
     constants::{
-        EXTENSION_DIR, LANG_ADDON_LOADER_DIR, PROTOCOL_DIR, SYSTEM_DIR,
+        ADDON_LOADER_DIR, EXTENSION_DIR, PROTOCOL_DIR, SYSTEM_DIR,
         TEN_PACKAGES_DIR,
     },
     pkg_basic_info::PkgBasicInfo,
@@ -140,8 +140,8 @@ pub async fn install_solver_results_in_app_folder(
                 app_dir.join(TEN_PACKAGES_DIR).join(PROTOCOL_DIR)
             }
             PkgType::System => app_dir.join(TEN_PACKAGES_DIR).join(SYSTEM_DIR),
-            PkgType::LangAddonLoader => {
-                app_dir.join(TEN_PACKAGES_DIR).join(LANG_ADDON_LOADER_DIR)
+            PkgType::AddonLoader => {
+                app_dir.join(TEN_PACKAGES_DIR).join(ADDON_LOADER_DIR)
             }
             PkgType::App => app_dir.to_path_buf(),
         };

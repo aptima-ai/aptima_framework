@@ -22,7 +22,7 @@ static void proxy_send_xxx_callback(ten_env_tester_t *self, void *user_data,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_ten_env_tester_t *py_ten_env_tester = ten_py_ten_env_tester_wrap(self);
   PyObject *cb_func = user_data;
@@ -51,7 +51,7 @@ static void proxy_send_xxx_callback(ten_env_tester_t *self, void *user_data,
     ten_py_error_invalidate(py_error);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 PyObject *ten_py_ten_env_tester_send_data(PyObject *self, PyObject *args) {

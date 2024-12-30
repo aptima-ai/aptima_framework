@@ -488,9 +488,9 @@
       "name": "app (C/C++) (lldb, launch)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/ffmpeg_basic/ffmpeg_basic_app/bin/ffmpeg_basic_app_source",
+      "program": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/cpp_app_python/cpp_app_python_app/bin/cpp_app_python_app_source",
       "args": [],
-      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/cpp/ffmpeg_basic/ffmpeg_basic_app",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_runtime/integration/python/cpp_app_python/cpp_app_python_app",
       "env": {
         "ASAN_OPTIONS": "use_sigaltstack=0",
       },

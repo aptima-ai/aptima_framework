@@ -28,6 +28,15 @@
 typedef struct ten_addon_t ten_addon_t;
 typedef struct ten_env_t ten_env_t;
 
+typedef enum TEN_ADDON_TYPE {
+  TEN_ADDON_TYPE_INVALID,
+
+  TEN_ADDON_TYPE_EXTENSION,
+  TEN_ADDON_TYPE_EXTENSION_GROUP,  // Internal use only.
+  TEN_ADDON_TYPE_PROTOCOL,
+  TEN_ADDON_TYPE_ADDON_LOADER,
+} TEN_ADDON_TYPE;
+
 typedef void (*ten_addon_on_init_func_t)(ten_addon_t *addon,
                                          ten_env_t *ten_env);
 
@@ -44,12 +53,19 @@ typedef void (*ten_addon_on_destroy_instance_func_t)(ten_addon_t *addon,
                                                      void *instance,
                                                      void *context);
 
+typedef void (*ten_addon_on_load_addon_func_t)(ten_addon_t *addon,
+                                               ten_env_t *ten_env,
+                                               TEN_ADDON_TYPE addon_type,
+                                               const char *addon_name,
+                                               void *context);
+
 typedef void (*ten_addon_on_destroy_func_t)(ten_addon_t *addon);
 
 TEN_RUNTIME_API ten_addon_t *ten_addon_create(
     ten_addon_on_init_func_t on_init, ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
     ten_addon_on_destroy_instance_func_t on_destroy_instance,
+    ten_addon_on_load_addon_func_t on_load_addon,
     ten_addon_on_destroy_func_t on_destroy);
 
 TEN_RUNTIME_API void ten_addon_destroy(ten_addon_t *self);

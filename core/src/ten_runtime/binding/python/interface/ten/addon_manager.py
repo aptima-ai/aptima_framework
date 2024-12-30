@@ -104,6 +104,18 @@ class _AddonManager:
 
         cls._registry.clear()
 
+    @classmethod
+    def register_addon(cls, addon_name: str, register_ctx: object):
+        register_handler = cls._registry.pop(addon_name, None)
+        if register_handler:
+            try:
+                register_handler(register_ctx)
+                print(f"Successfully registered addon '{addon_name}'")
+            except Exception as e:
+                print(f"Error during registration of addon '{addon_name}': {e}")
+        else:
+            print(f"No register handler found for addon '{addon_name}'")
+
     @staticmethod
     def _set_register_handler(
         addon_name: str,

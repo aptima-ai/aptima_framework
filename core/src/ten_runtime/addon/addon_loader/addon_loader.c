@@ -4,8 +4,9 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
+
+#include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "ten_utils/container/list.h"
@@ -38,8 +39,8 @@ ten_addon_host_t *ten_addon_register_addon_loader(const char *name,
                                                   const char *base_dir,
                                                   ten_addon_t *addon,
                                                   void *register_ctx) {
-  return ten_addon_register(TEN_ADDON_TYPE_LANG_ADDON_LOADER, name, base_dir,
-                            addon, register_ctx);
+  return ten_addon_register(TEN_ADDON_TYPE_ADDON_LOADER, name, base_dir, addon,
+                            register_ctx);
 }
 
 static bool ten_addon_addon_loader_match_addon_loader(

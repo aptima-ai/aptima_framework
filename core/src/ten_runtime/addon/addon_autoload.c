@@ -6,6 +6,8 @@
 //
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
 
+#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
+#include "ten_runtime/addon/addon.h"
 #include "ten_runtime/common/errno.h"
 
 #if defined(OS_LINUX)
@@ -322,10 +324,9 @@ bool ten_addon_load_all_from_ten_package_base_dirs(
   return success;
 }
 
-bool ten_addon_load_specific_addon_from_app_base_dir(const char *app_base_dir,
-                                                     TEN_ADDON_TYPE addon_type,
-                                                     const char *addon_name,
-                                                     ten_error_t *err) {
+static bool ten_addon_load_specific_addon_from_app_base_dir(
+    const char *app_base_dir, TEN_ADDON_TYPE addon_type, const char *addon_name,
+    ten_error_t *err) {
   TEN_ASSERT(app_base_dir, "Invalid argument.");
   TEN_ASSERT(addon_name, "Addon name cannot be NULL.");
 
@@ -369,10 +370,9 @@ done:
   return success;
 }
 
-bool ten_addon_register_specific_addon(TEN_ADDON_TYPE addon_type,
-                                       const char *addon_name,
-                                       ten_addon_register_ctx_t *register_ctx,
-                                       ten_error_t *err) {
+static bool ten_addon_register_specific_addon(
+    TEN_ADDON_TYPE addon_type, const char *addon_name,
+    ten_addon_register_ctx_t *register_ctx, ten_error_t *err) {
   TEN_ASSERT(addon_name, "Invalid argument.");
 
   ten_addon_manager_t *manager = ten_addon_manager_get_instance();
@@ -387,6 +387,44 @@ bool ten_addon_register_specific_addon(TEN_ADDON_TYPE addon_type,
   }
 
   return success;
+}
+
+bool ten_addon_try_load_specific_addon_from_app_base_dir(
+    const char *app_base_dir, TEN_ADDON_TYPE addon_type,
+    const char *addon_name) {
+  if (ten_addon_load_specific_addon_from_app_base_dir(app_base_dir, addon_type,
+                                                      addon_name, NULL)) {
+    if (!ten_addon_register_specific_addon(addon_type, addon_name, NULL,
+                                           NULL)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool ten_addon_try_load_specific_addon_using_all_addon_loaders(
+    TEN_ADDON_TYPE addon_type, const char *addon_name) {
+  ten_addon_store_t *addon_loader_store = ten_addon_loader_get_global_store();
+  TEN_ASSERT(addon_loader_store, "Should not happen.");
+
+  ten_mutex_lock(addon_loader_store->lock);
+
+  ten_list_foreach (&addon_loader_store->store, iter) {
+    ten_addon_host_t *loader_addon_host = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(loader_addon_host, "Should not happen.");
+
+    if (loader_addon_host && loader_addon_host->addon &&
+        loader_addon_host->addon->on_load_addon) {
+      loader_addon_host->addon->on_load_addon(loader_addon_host->addon,
+                                              loader_addon_host->ten_env,
+                                              addon_type, addon_name, NULL);
+    }
+  }
+
+  ten_mutex_unlock(addon_loader_store->lock);
+
+  return true;
 }
 
 #endif

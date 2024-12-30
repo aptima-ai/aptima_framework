@@ -36,7 +36,7 @@ static void ten_env_proxy_notify_on_deinit_done(ten_env_t *ten_env,
   //
   // About to call the Python function, so it's necessary to ensure that the
   // GIL has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *py_res =
       PyObject_CallMethod(py_ten_env->actual_py_ten_env, "_on_release", NULL);
@@ -45,7 +45,7 @@ static void ten_env_proxy_notify_on_deinit_done(ten_env_t *ten_env,
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 
   if (py_ten_env->c_ten_env_proxy) {
     TEN_ASSERT(
@@ -74,10 +74,10 @@ static void ten_env_proxy_notify_on_deinit_done(ten_env_t *ten_env,
       ten_py_eval_restore_thread(py_ten_env->py_thread_state);
 
       // Release the gil state and the gil.
-      ten_py_gil_state_release(PyGILState_UNLOCKED);
+      ten_py_gil_state_release_internal(PyGILState_UNLOCKED);
     } else {
       // Release the gil state but keep holding the gil.
-      ten_py_gil_state_release(PyGILState_LOCKED);
+      ten_py_gil_state_release_internal(PyGILState_LOCKED);
     }
   }
 }

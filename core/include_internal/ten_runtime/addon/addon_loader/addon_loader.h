@@ -13,8 +13,8 @@
 typedef struct ten_addon_host_t ten_addon_host_t;
 typedef struct ten_addon_store_t ten_addon_store_t;
 
-#define TEN_REGISTER_ADDON_AS_LANG_ADDON_LOADER(LANG_ADDON_LOADER_NAME, ADDON) \
-  TEN_ADDON_REGISTER(addon_loader, LANG_ADDON_LOADER_NAME, ADDON)
+#define TEN_REGISTER_ADDON_AS_ADDON_LOADER(ADDON_LOADER_NAME, ADDON) \
+  TEN_ADDON_REGISTER(addon_loader, ADDON_LOADER_NAME, ADDON)
 
 TEN_RUNTIME_PRIVATE_API ten_addon_store_t *ten_addon_loader_get_global_store(
     void);

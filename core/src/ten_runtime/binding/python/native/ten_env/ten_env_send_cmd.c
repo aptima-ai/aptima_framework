@@ -70,7 +70,7 @@ static void proxy_send_xxx_callback(ten_env_t *ten_env,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   PyObject *cb_func = callback_info;
@@ -112,7 +112,7 @@ static void proxy_send_xxx_callback(ten_env_t *ten_env,
     ten_py_cmd_result_invalidate(cmd_result_bridge);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
@@ -143,7 +143,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
       // GIL has been acquired.
       //
       // Allows C codes to work safely with Python objects.
-      PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+      PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
       ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
       ten_py_error_t *py_err = ten_py_error_wrap(&err);
@@ -162,7 +162,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
 
       ten_py_error_invalidate(py_err);
 
-      ten_py_gil_state_release(prev_state);
+      ten_py_gil_state_release_internal(prev_state);
     }
   }
 

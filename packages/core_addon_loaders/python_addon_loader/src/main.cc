@@ -8,13 +8,13 @@
 
 #include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/app/metadata.h"
-#include "include_internal/ten_runtime/binding/cpp/detail/addon.h"
 #include "include_internal/ten_runtime/binding/cpp/detail/ten_env_internal_accessor.h"
 #include "include_internal/ten_runtime/binding/python/common.h"
 #include "include_internal/ten_runtime/common/base_dir.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/metadata/manifest.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_runtime/addon/addon.h"
 #include "ten_runtime/addon/addon_manager.h"
 #include "ten_runtime/binding/cpp/detail/addon.h"
 #include "ten_runtime/binding/cpp/detail/ten_env.h"
@@ -108,7 +108,7 @@ static void foo() {}
 
 namespace {
 
-class python_addon_loader_addon_t : public ten::addon_loader_addon_t {
+class python_addon_loader_addon_t : public ten::addon_t {
  public:
   explicit python_addon_loader_addon_t() = default;
 
@@ -116,6 +116,8 @@ class python_addon_loader_addon_t : public ten::addon_loader_addon_t {
     // Do some initializations.
 
     TEN_ENV_LOG_DEBUG(ten_env, "on_init");
+
+    // load_all_on_init = ten_env.get_property_bool("load_all_on_init");
 
     int py_initialized = ten_py_is_initialized();
     if (py_initialized != 0) {
@@ -155,8 +157,14 @@ class python_addon_loader_addon_t : public ten::addon_loader_addon_t {
 
     start_debugpy_server_if_needed(ten_env);
 
-    // Traverse `ten_packages/extension` directory and import module.
-    load_python_extensions_according_to_app_manifest_dependencies(ten_env);
+    if (load_all_on_init) {
+      // Traverse `ten_packages/extension` directory and import module.
+      load_python_extensions_according_to_app_manifest_dependencies(ten_env);
+    } else {
+      TEN_ENV_LOG_INFO(ten_env,
+                       "load_all_on_init is false, skip loading all python "
+                       "extensions when startup.");
+    }
 
     // The `app_base_dir` is no longer needed afterwards, so it is released.
     ten_string_destroy(app_base_dir);
@@ -188,9 +196,33 @@ class python_addon_loader_addon_t : public ten::addon_loader_addon_t {
     ten_env.on_deinit_done();
   }
 
+  void on_load_addon(ten::ten_env_t &ten_env, TEN_ADDON_TYPE addon_type,
+                     const char *addon_name, void *context) override {
+    // Load the specified addon.
+    (void)ten_env;
+    (void)context;
+
+    void *ten_py_gil_state = ten_py_gil_state_ensure();
+
+    // Construct the full module name.
+    ten_string_t *full_module_name = ten_string_create_formatted(
+        "ten_packages.%s.%s", ten_addon_type_to_string(addon_type), addon_name);
+
+    // Import the specified Python module.
+    ten_py_import_module(ten_string_get_raw_str(full_module_name));
+
+    ten_string_destroy(full_module_name);
+
+    // Register the addon if necessary.
+    register_single_addon(addon_type, addon_name);
+
+    ten_py_gil_state_release(ten_py_gil_state);
+  }
+
  private:
   void *py_thread_state_ = nullptr;
   bool py_init_by_self_ = false;
+  bool load_all_on_init = false;
   ten_string_t *app_base_dir = nullptr;
 
   void find_app_base_dir() {
@@ -365,6 +397,17 @@ class python_addon_loader_addon_t : public ten::addon_loader_addon_t {
     ten_py_run_simple_string(
         "from ten import _AddonManager\n"
         "_AddonManager.register_all_addons(None)\n");
+  }
+
+  static void register_single_addon(TEN_ADDON_TYPE addon_type,
+                                    const char *addon_name) {
+    (void)addon_type;
+
+    std::string register_script =
+        "from ten import _AddonManager\n"
+        "_AddonManager.register_addon('" +
+        std::string(addon_name) + "', None)\n";
+    ten_py_run_simple_string(register_script.c_str());
   }
 
   static void load_python_lib() {

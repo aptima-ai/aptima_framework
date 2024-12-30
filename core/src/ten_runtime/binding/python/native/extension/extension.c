@@ -50,7 +50,7 @@ static void proxy_on_configure(ten_extension_t *extension, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
   // This function can only be called on the native thread not a Python
   // thread.
   TEN_ASSERT(prev_state == PyGILState_UNLOCKED,
@@ -95,7 +95,7 @@ static void proxy_on_init(ten_extension_t *extension, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
   // This function can only be called on the native thread not a Python
   // thread.
   TEN_ASSERT(prev_state == PyGILState_UNLOCKED,
@@ -119,7 +119,7 @@ static void proxy_on_init(ten_extension_t *extension, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_start(ten_extension_t *extension, ten_env_t *ten_env) {
@@ -130,7 +130,7 @@ static void proxy_on_start(ten_extension_t *extension, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
   TEN_ASSERT(prev_state == PyGILState_UNLOCKED,
              "The GIL should not be help by the extension thread now.");
 
@@ -152,7 +152,7 @@ static void proxy_on_start(ten_extension_t *extension, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_stop(ten_extension_t *extension, ten_env_t *ten_env) {
@@ -163,7 +163,7 @@ static void proxy_on_stop(ten_extension_t *extension, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
   TEN_ASSERT(prev_state == PyGILState_UNLOCKED,
              "The GIL should not be help by the extension thread now.");
 
@@ -185,7 +185,7 @@ static void proxy_on_stop(ten_extension_t *extension, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_deinit(ten_extension_t *extension, ten_env_t *ten_env) {
@@ -196,7 +196,7 @@ static void proxy_on_deinit(ten_extension_t *extension, ten_env_t *ten_env) {
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
   TEN_ASSERT(prev_state == PyGILState_UNLOCKED,
              "The GIL should not be help by the extension thread now.");
 
@@ -218,7 +218,7 @@ static void proxy_on_deinit(ten_extension_t *extension, ten_env_t *ten_env) {
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_cmd(ten_extension_t *extension, ten_env_t *ten_env,
@@ -231,7 +231,7 @@ static void proxy_on_cmd(ten_extension_t *extension, ten_env_t *ten_env,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_t *py_extension =
       (ten_py_extension_t *)ten_binding_handle_get_me_in_target_lang(
@@ -255,7 +255,7 @@ static void proxy_on_cmd(ten_extension_t *extension, ten_env_t *ten_env,
 
   ten_py_cmd_invalidate(py_cmd);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_data(ten_extension_t *extension, ten_env_t *ten_env,
@@ -268,7 +268,7 @@ static void proxy_on_data(ten_extension_t *extension, ten_env_t *ten_env,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_t *py_extension =
       (ten_py_extension_t *)ten_binding_handle_get_me_in_target_lang(
@@ -292,7 +292,7 @@ static void proxy_on_data(ten_extension_t *extension, ten_env_t *ten_env,
 
   ten_py_data_invalidate(py_data);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_audio_frame(ten_extension_t *extension, ten_env_t *ten_env,
@@ -306,7 +306,7 @@ static void proxy_on_audio_frame(ten_extension_t *extension, ten_env_t *ten_env,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   ten_py_extension_t *py_extension =
       (ten_py_extension_t *)ten_binding_handle_get_me_in_target_lang(
@@ -330,7 +330,7 @@ static void proxy_on_audio_frame(ten_extension_t *extension, ten_env_t *ten_env,
 
   ten_py_audio_frame_invalidate(py_audio_frame);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void proxy_on_video_frame(ten_extension_t *extension, ten_env_t *ten_env,
@@ -344,7 +344,7 @@ static void proxy_on_video_frame(ten_extension_t *extension, ten_env_t *ten_env,
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *py_extension = (PyObject *)ten_binding_handle_get_me_in_target_lang(
       (ten_binding_handle_t *)extension);
@@ -361,7 +361,7 @@ static void proxy_on_video_frame(ten_extension_t *extension, ten_env_t *ten_env,
 
   ten_py_video_frame_invalidate(py_video_frame);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static PyObject *ten_py_extension_create(PyTypeObject *type, PyObject *py_name,

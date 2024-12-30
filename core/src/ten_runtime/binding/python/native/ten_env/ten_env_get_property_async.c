@@ -119,7 +119,7 @@ static void ten_py_get_property_to_json_cb(ten_env_t *ten_env,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *arglist = NULL;
   ten_py_error_t *py_error = NULL;
@@ -159,7 +159,7 @@ static void ten_py_get_property_to_json_cb(ten_env_t *ten_env,
     ten_py_error_invalidate(py_error);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void ten_py_get_property_int_cb(ten_env_t *ten_env, ten_value_t *value,
@@ -172,7 +172,7 @@ static void ten_py_get_property_int_cb(ten_env_t *ten_env, ten_value_t *value,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *arglist = NULL;
   ten_py_error_t *py_error = NULL;
@@ -211,7 +211,7 @@ static void ten_py_get_property_int_cb(ten_env_t *ten_env, ten_value_t *value,
     ten_py_error_invalidate(py_error);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void ten_py_get_property_string_cb(ten_env_t *ten_env,
@@ -225,7 +225,7 @@ static void ten_py_get_property_string_cb(ten_env_t *ten_env,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *arglist = NULL;
   ten_py_error_t *py_error = NULL;
@@ -264,7 +264,7 @@ static void ten_py_get_property_string_cb(ten_env_t *ten_env,
     ten_py_error_invalidate(py_error);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void ten_py_get_property_bool_cb(ten_env_t *ten_env, ten_value_t *value,
@@ -277,7 +277,7 @@ static void ten_py_get_property_bool_cb(ten_env_t *ten_env, ten_value_t *value,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *arglist = NULL;
   ten_py_error_t *py_error = NULL;
@@ -317,7 +317,7 @@ static void ten_py_get_property_bool_cb(ten_env_t *ten_env, ten_value_t *value,
     ten_py_error_invalidate(py_error);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void ten_py_get_property_float_cb(ten_env_t *ten_env, ten_value_t *value,
@@ -330,7 +330,7 @@ static void ten_py_get_property_float_cb(ten_env_t *ten_env, ten_value_t *value,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *arglist = NULL;
   ten_py_error_t *py_error = NULL;
@@ -369,7 +369,7 @@ static void ten_py_get_property_float_cb(ten_env_t *ten_env, ten_value_t *value,
     ten_py_error_invalidate(py_error);
   }
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static void ten_py_is_property_exist_cb(ten_env_t *ten_env, ten_value_t *value,
@@ -382,7 +382,7 @@ static void ten_py_is_property_exist_cb(ten_env_t *ten_env, ten_value_t *value,
   // has been acquired.
   //
   // Allows C codes to work safely with Python objects.
-  PyGILState_STATE prev_state = ten_py_gil_state_ensure();
+  PyGILState_STATE prev_state = ten_py_gil_state_ensure_internal();
 
   PyObject *arglist = NULL;
   bool is_exist = value != NULL;
@@ -398,7 +398,7 @@ static void ten_py_is_property_exist_cb(ten_env_t *ten_env, ten_value_t *value,
   Py_XDECREF(arglist);
   Py_XDECREF(py_cb_func);
 
-  ten_py_gil_state_release(prev_state);
+  ten_py_gil_state_release_internal(prev_state);
 }
 
 static PyObject *ten_py_ten_env_get_property_async(PyObject *self,
