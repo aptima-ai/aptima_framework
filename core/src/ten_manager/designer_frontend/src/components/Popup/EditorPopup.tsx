@@ -6,10 +6,12 @@
 //
 import React, { useEffect, useState, useContext } from "react";
 import Editor from "@monaco-editor/react";
+import { toast } from "sonner";
 
 import Popup from "@/components/Popup/Popup";
 import { getFileContent, saveFileContent } from "@/api/api";
 import { ThemeProviderContext } from "@/components/theme-context";
+import { Button } from "@/components/ui/Button";
 
 const DEFAULT_WIDTH = 800;
 const DEFAULT_HEIGHT = 400;
@@ -46,14 +48,18 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       onClose={onCancel}
       preventFocusSteal={true}
       resizable={false}
-      initialWidth={400}
-      initialHeight={200}
+      initialWidth={288}
+      initialHeight={180}
     >
-      <div className="p-5 text-center">
-        <p>{message}</p>
-        <div className="mt-5 flex justify-around">
-          <button onClick={onCancel}>Cancel</button>
-          <button onClick={onConfirm}>Ok</button>
+      <div className="flex flex-col items-center justify-center h-full mx-auto">
+        <p className="text-sm text-foreground">{message}</p>
+        <div className="flex items-center gap-4 mt-6 w-full justify-end">
+          <Button variant="outline" size="sm" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button variant="default" size="sm" onClick={onConfirm}>
+            OK
+          </Button>
         </div>
       </div>
     </Popup>
@@ -74,6 +80,7 @@ const EditorPopup: React.FC<EditorPopupProps> = ({ data, onClose }) => {
         setFileContent(respData.content);
       } catch (error) {
         console.error("Failed to fetch file content:", error);
+        toast.error("Failed to fetch file content");
       }
     };
 
@@ -83,11 +90,13 @@ const EditorPopup: React.FC<EditorPopupProps> = ({ data, onClose }) => {
   const saveFile = async (content: string) => {
     try {
       await saveFileContent(data.url, content);
-      console.log("File saved successfully");
+      toast.success("File saved successfully");
       // We can add UI prompts, such as displaying a success notification.
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Failed to save file content:", error);
-      // We can add UI prompts, such as popping up an error notification.
+      toast.error("Failed to save file content", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -128,8 +137,44 @@ const EditorPopup: React.FC<EditorPopupProps> = ({ data, onClose }) => {
             }}
             onChange={(value) => setFileContent(value || "")}
             onMount={(editor) => {
-              editor.focus(); // Set the keyboard focus to the editor.
+              // --- set context menu actions ---
+              // reference: https://github.com/microsoft/monaco-editor/issues/1280#issuecomment-2420136963
+              const keepIds = [
+                "editor.action.clipboardCopyAction",
+                "editor.action.clipboardCutAction",
+                "editor.action.clipboardPasteAction",
+                "editor.action.formatDocument",
+                "vs.editor.ICodeEditor:1:save-file",
+                "vs.actions.separator",
+              ];
+              const contextmenu = editor.getContribution(
+                "editor.contrib.contextmenu"
+              );
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const realMethod = (contextmenu as any)._getMenuActions;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (contextmenu as any)._getMenuActions = function (...args: any[]) {
+                const items = realMethod.apply(contextmenu, args);
+                const filteredItems = items.filter(function (item: {
+                  id: string;
+                }) {
+                  return keepIds.includes(item.id);
+                });
+                // Remove separator if it's the last item
+                if (
+                  filteredItems.length > 0 &&
+                  filteredItems[filteredItems.length - 1].id ===
+                    "vs.actions.separator"
+                ) {
+                  filteredItems.pop();
+                }
+                return filteredItems;
+              };
 
+              // --- set keyboard focus to the editor ---
+              editor.focus();
+
+              // --- add save-file action ---
               editor.addAction({
                 id: "save-file",
                 label: "Save",

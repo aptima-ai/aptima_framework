@@ -1,6 +1,13 @@
 /* eslint-disable max-len */
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
+import {
+  TriangleAlertIcon,
+  CircleCheckIcon,
+  InfoIcon,
+  LoaderCircleIcon,
+  CircleXIcon,
+} from "lucide-react";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
@@ -21,6 +28,15 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
         },
+      }}
+      icons={{
+        success: <CircleCheckIcon className="h-4 w-4 text-green-500" />,
+        info: <InfoIcon className="h-4 w-4 text-blue-500" />,
+        warning: <TriangleAlertIcon className="h-4 w-4 text-amber-500" />,
+        error: <CircleXIcon className="h-4 w-4 text-red-500" />,
+        loading: (
+          <LoaderCircleIcon className="h-4 w-4 text-gray-500 animate-spin" />
+        ),
       }}
       {...props}
     />

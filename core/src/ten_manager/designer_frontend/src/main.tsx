@@ -16,6 +16,6 @@ import "@/index.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
-    <Toaster />
+    <Toaster richColors />
   </StrictMode>
 );
