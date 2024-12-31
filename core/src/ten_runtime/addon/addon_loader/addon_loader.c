@@ -111,6 +111,8 @@ void ten_addon_unregister_all_addon_loader(void) {
   ten_addon_store_del_all(ten_addon_loader_get_global_store());
 }
 
+// This function is called in the app thread, so `ten_env` is the app's
+// `ten_env`.
 bool ten_addon_create_addon_loader(ten_env_t *ten_env, const char *addon_name,
                                    const char *instance_name,
                                    ten_env_addon_create_instance_done_cb_t cb,
@@ -126,8 +128,8 @@ bool ten_addon_create_addon_loader(ten_env_t *ten_env, const char *addon_name,
   ten_app_t *app = ten_env_get_attached_app(ten_env);
   TEN_ASSERT(app && ten_app_check_integrity(app, true), "Should not happen.");
 
-  // Check whether current thread is extension thread. If not, we should switch
-  // to extension thread.
+  // This function is called in the app thread, so `ten_env` is the app's
+  // `ten_env`.
   if (ten_app_thread_call_by_me(app)) {
     return ten_addon_create_instance_async(ten_env, TEN_ADDON_TYPE_ADDON_LOADER,
                                            addon_name, instance_name, cb,

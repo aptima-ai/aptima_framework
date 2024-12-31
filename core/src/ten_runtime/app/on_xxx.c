@@ -54,6 +54,7 @@ ten_app_thread_on_addon_create_addon_loader_done_info_t *
 ten_app_thread_on_addon_create_addon_loader_done_info_create(void) {
   ten_app_thread_on_addon_create_addon_loader_done_info_t *self = TEN_MALLOC(
       sizeof(ten_app_thread_on_addon_create_addon_loader_done_info_t));
+  TEN_ASSERT(self, "Failed to allocate memory.");
 
   self->addon_loader = NULL;
   self->addon_context = NULL;

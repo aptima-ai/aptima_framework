@@ -198,9 +198,8 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
   ten_addon_manager_register_all_addons(manager, (void *)register_ctx);
   ten_addon_register_ctx_destroy(register_ctx);
 
-  // =-=-=
   bool need_to_wait_all_addon_loaders_created =
-      ten_addon_loader_create_singleton(ten_env);
+      ten_addon_loader_addons_create_singleton_instance(ten_env);
   if (!need_to_wait_all_addon_loaders_created) {
     ten_app_on_all_addon_loaders_created(self);
   }
@@ -267,7 +266,8 @@ static void ten_app_unregister_addons_after_app_close(ten_app_t *self) {
     return;
   }
 
-  ten_addon_loader_destroy_singleton();
+  // App is close, so unregister all addon loaders to avoid memory leak.
+  ten_addon_loader_addons_destroy_singleton_instance();
 
   ten_addon_unregister_all_extension();
   ten_addon_unregister_all_extension_group();
@@ -283,9 +283,9 @@ void ten_app_on_deinit(ten_app_t *self) {
   // At the final stage of addon deinitialization, `ten_env_t::on_deinit_done`
   // is required, which in turn depends on the runloop. Therefore, the addon
   // deinitialization process must be performed before the app's runloop ends.
-  // After `app::on_deinit`, the app's runloop will be terminated soon,
-  // leaving no runloop within the TEN runtime. As a result, addon cleanup
-  // must be performed during the app's `on_deinit` phase.
+  // After `app::on_deinit`, the app's runloop will be terminated soon, leaving
+  // no runloop within the TEN runtime. As a result, addon cleanup must be
+  // performed during the app's `on_deinit` phase.
   ten_app_unregister_addons_after_app_close(self);
 
   // The world outside of TEN would do some operations after the app_run()

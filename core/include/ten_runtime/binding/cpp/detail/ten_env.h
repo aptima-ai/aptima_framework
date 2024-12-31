@@ -696,15 +696,10 @@ class ten_env_t {
                                 err != nullptr ? err->get_c_error() : nullptr);
   }
 
-  bool on_create_instance_done(void *instance, void *context,
+  bool on_create_instance_done(binding_handle_t *instance, void *context,
                                error_t *err = nullptr) {
-    TEN_LOGE("5 %p", instance);
-
-    void *c_instance =
-        static_cast<binding_handle_t *>(instance)->get_c_instance();
+    void *c_instance = instance->get_c_instance();
     TEN_ASSERT(c_instance, "Should not happen.");
-
-    TEN_LOGE("6 %p", c_instance);
 
     bool rc = ten_env_on_create_instance_done(
         c_ten_env, c_instance, context,

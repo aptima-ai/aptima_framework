@@ -6,28 +6,30 @@
 //
 #pragma once
 
-#include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
 namespace ten {
 
 class binding_handle_t {
  protected:
-  explicit binding_handle_t(void *c_instance) : _c_instance(c_instance) {
-    TEN_LOGE("2 %p", c_instance);
+  explicit binding_handle_t(void *c_instance) : c_instance(c_instance) {
     TEN_ASSERT(c_instance, "Should not happen.");
   }
 
-  void set_c_instance(void *c_instance) { this->_c_instance = c_instance; }
-
  public:
-  void *get_c_instance() const {
-    TEN_LOGE("3 %p", _c_instance);
-    return _c_instance;
-  }
+  virtual ~binding_handle_t() = default;
+
+  // @{
+  binding_handle_t(const binding_handle_t &) = delete;
+  binding_handle_t(binding_handle_t &&) = delete;
+  binding_handle_t &operator=(const binding_handle_t &) = delete;
+  binding_handle_t &operator=(const binding_handle_t &&) = delete;
+  // @}
+
+  void *get_c_instance() const { return c_instance; }
 
  private:
-  void *_c_instance = nullptr;
+  void *c_instance = nullptr;
 };
 
 }  // namespace ten

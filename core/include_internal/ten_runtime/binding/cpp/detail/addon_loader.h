@@ -19,11 +19,9 @@ using ten_addon_loader_t = struct ten_addon_loader_t;
 
 namespace ten {
 
-class extension_group_t;
-
 class addon_loader_t : public binding_handle_t {
  public:
-  virtual ~addon_loader_t() {
+  ~addon_loader_t() override {
     TEN_ASSERT(get_c_instance(), "Should not happen.");
     ten_addon_loader_destroy(
         static_cast<ten_addon_loader_t *>(get_c_instance()));
@@ -55,6 +53,8 @@ class addon_loader_t : public binding_handle_t {
 
   virtual void on_deinit() = 0;
 
+  // **Note:** This function, used to dynamically load other addons, may be
+  // called from multiple threads. Therefore, it must be thread-safe.
   virtual void on_load_addon(TEN_ADDON_TYPE addon_type,
                              const char *addon_name) = 0;
 

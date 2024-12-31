@@ -29,9 +29,8 @@ class addon_t : public binding_handle_t {
         reinterpret_cast<ten_binding_handle_t *>(get_c_instance()), this);
   }
 
-  virtual ~addon_t() {
+  ~addon_t() override {
     ten_addon_destroy(static_cast<ten_addon_t *>(get_c_instance()));
-    set_c_instance(nullptr);
 
     TEN_ASSERT(cpp_ten_env, "Should not happen.");
     delete cpp_ten_env;

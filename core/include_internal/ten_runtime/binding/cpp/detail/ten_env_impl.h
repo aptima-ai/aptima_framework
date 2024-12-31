@@ -7,7 +7,6 @@
 #pragma once
 
 #include "include_internal/ten_runtime/ten_env/metadata.h"
-#include "ten_runtime/binding/cpp/detail/extension.h"
 #include "ten_runtime/binding/cpp/detail/ten_env.h"
 
 namespace ten {

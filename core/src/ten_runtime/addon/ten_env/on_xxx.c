@@ -122,7 +122,7 @@ void ten_addon_on_deinit_done(ten_env_t *self) {
   ten_addon_host_destroy(addon_host);
 }
 
-static void ten_addon_extension_on_create_instance_done(ten_env_t *self,
+static void ten_extension_addon_on_create_instance_done(ten_env_t *self,
                                                         void *instance,
                                                         void *context) {
   TEN_ASSERT(self, "Invalid argument.");
@@ -202,7 +202,7 @@ static void ten_addon_extension_on_create_instance_done(ten_env_t *self,
   }
 }
 
-static void ten_addon_extension_group_on_create_instance_done(ten_env_t *self,
+static void ten_extension_group_addon_on_create_instance_done(ten_env_t *self,
                                                               void *instance,
                                                               void *context) {
   TEN_ASSERT(self, "Invalid argument.");
@@ -265,8 +265,9 @@ static void ten_addon_extension_group_on_create_instance_done(ten_env_t *self,
   }
 }
 
-static void ten_addon_protocol_on_create_instance_done(
-    ten_env_t *self, TEN_UNUSED void *instance, TEN_UNUSED void *context) {
+static void ten_protocol_addon_on_create_instance_done(ten_env_t *self,
+                                                       void *instance,
+                                                       void *context) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: This function is intended to be called in any threads.
@@ -345,8 +346,9 @@ static void ten_addon_protocol_on_create_instance_done(
   }
 }
 
-static void ten_addon_addon_loader_on_create_instance_done(
-    ten_env_t *self, TEN_UNUSED void *instance, TEN_UNUSED void *context) {
+static void ten_addon_loader_addon_on_create_instance_done(ten_env_t *self,
+                                                           void *instance,
+                                                           void *context) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: This function is intended to be called in any threads.
@@ -417,17 +419,17 @@ void ten_addon_on_create_instance_done(ten_env_t *self, void *instance,
 
   switch (addon_host->type) {
     case TEN_ADDON_TYPE_EXTENSION:
-      ten_addon_extension_on_create_instance_done(self, instance, context);
+      ten_extension_addon_on_create_instance_done(self, instance, context);
       break;
     case TEN_ADDON_TYPE_EXTENSION_GROUP:
-      ten_addon_extension_group_on_create_instance_done(self, instance,
+      ten_extension_group_addon_on_create_instance_done(self, instance,
                                                         context);
       break;
     case TEN_ADDON_TYPE_PROTOCOL:
-      ten_addon_protocol_on_create_instance_done(self, instance, context);
+      ten_protocol_addon_on_create_instance_done(self, instance, context);
       break;
     case TEN_ADDON_TYPE_ADDON_LOADER:
-      ten_addon_addon_loader_on_create_instance_done(self, instance, context);
+      ten_addon_loader_addon_on_create_instance_done(self, instance, context);
       break;
 
     default:

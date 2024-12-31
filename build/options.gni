@@ -29,7 +29,7 @@ declare_args() {
   # defer the integration test build until the testing phase. This prevents it
   # from being built together with the core TEN framework components (e.g.,
   # `ten_runtime`, `ten_manager`).
-  ten_enable_integration_tests_prebuilt = true
+  ten_enable_integration_tests_prebuilt = false
 
   # Rust's incremental build requires additional disk space, so this option
   # allows it to be disabled in CI environments.

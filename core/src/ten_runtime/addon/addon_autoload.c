@@ -406,14 +406,13 @@ bool ten_addon_try_load_specific_addon_from_app_base_dir(
 
 bool ten_addon_try_load_specific_addon_using_all_addon_loaders(
     TEN_ADDON_TYPE addon_type, const char *addon_name) {
-  ten_list_t *addon_loaders = ten_addon_loader_get_global();
+  ten_list_t *addon_loaders = ten_addon_loader_get_all();
   TEN_ASSERT(addon_loaders, "Should not happen.");
 
   ten_list_foreach (addon_loaders, iter) {
     ten_addon_loader_t *addon_loader = ten_ptr_listnode_get(iter.node);
     TEN_ASSERT(addon_loader, "Should not happen.");
 
-    // =-=-=
     if (addon_loader) {
       addon_loader->on_load_addon(addon_loader, addon_type, addon_name);
     }

@@ -17,9 +17,7 @@ namespace {
 
 class test_extension : public ten::extension_t {
  public:
-  explicit test_extension(const char *name) : ten::extension_t(name) {
-    TEN_LOGE("4 %p", this);
-  }
+  explicit test_extension(const char *name) : ten::extension_t(name) {}
 
   void on_cmd(ten::ten_env_t &ten_env,
               std::unique_ptr<ten::cmd_t> cmd) override {

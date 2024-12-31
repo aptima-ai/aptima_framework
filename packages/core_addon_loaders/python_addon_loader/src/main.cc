@@ -180,6 +180,10 @@ class python_addon_loader_t : public ten::addon_loader_t {
     }
   }
 
+  // **Note:** This function, used to dynamically load other addons, may be
+  // called from multiple threads. Therefore, it must be thread-safe. Since it
+  // calls `ten_py_gil_state_ensure` and `ten_py_gil_state_release`, thread
+  // safety is ensured.
   void on_load_addon(TEN_ADDON_TYPE addon_type,
                      const char *addon_name) override {
     // Load the specified addon.

@@ -41,7 +41,7 @@ class extension_group_t;
 
 class extension_t : public binding_handle_t {
  public:
-  virtual ~extension_t() {
+  ~extension_t() override {
     TEN_ASSERT(get_c_instance(), "Should not happen.");
     ten_extension_destroy(static_cast<ten_extension_t *>(get_c_instance()));
 

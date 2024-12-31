@@ -20,8 +20,7 @@
     void on_create_instance(ten::ten_env_t &ten_env, const char *name,           \
                             void *context) override {                            \
       auto *instance = new CLASS(name);                                          \
-      ten_env.on_create_instance_done(                                           \
-          static_cast<binding_handle_t *>(instance), context);                   \
+      ten_env.on_create_instance_done(instance, context);                        \
     }                                                                            \
     void on_destroy_instance(ten::ten_env_t &ten_env, void *instance,            \
                              void *context) override {                           \
