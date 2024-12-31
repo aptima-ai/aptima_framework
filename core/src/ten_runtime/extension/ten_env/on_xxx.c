@@ -114,6 +114,7 @@ bool ten_extension_on_configure_done(ten_env_t *self) {
       &extension->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load extension manifest data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -122,6 +123,7 @@ bool ten_extension_on_configure_done(ten_env_t *self) {
       &extension->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load extension property data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

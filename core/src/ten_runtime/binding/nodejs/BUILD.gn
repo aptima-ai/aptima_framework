@@ -6,10 +6,20 @@
 #
 import("//build/feature/ten_package.gni")
 import("//build/options.gni")
+import("//build/ten_runtime/feature/javascript.gni")
 import("//build/ten_runtime/feature/publish.gni")
 import("//build/ten_runtime/options.gni")
 import("//build/ten_runtime/ten.gni")
 import("//core/src/ten_runtime/output_libs.gni")
+
+nodejs_library("ten_runtime_nodejs_js") {
+  tsconfig = "tsconfig.json"
+  package_json = "package.json"
+  output_dir = "$root_out_dir/ten_packages/system/ten_runtime_nodejs"
+  remove_node_modules = true
+  remove_tsbuildinfo = true
+  remove_src = true
+}
 
 ten_package("ten_nodejs_binding_system_package") {
   package_kind = "system"
@@ -18,6 +28,8 @@ ten_package("ten_nodejs_binding_system_package") {
   resources = [
     "//core/src/ten_runtime/binding/nodejs/interface=>interface",
     "manifest.json",
+    "package.json",
+    "tsconfig.json",
   ]
 
   foreach(lib, ten_runtime_nodejs_output_libs) {
@@ -25,22 +37,25 @@ ten_package("ten_nodejs_binding_system_package") {
     resources += [ "${lib}=>lib/${libname}" ]
   }
 
-  deps = [ "native:ten_runtime_nodejs" ]
+  deps = [
+    ":ten_runtime_nodejs_js",
+    "native:ten_runtime_nodejs",
+  ]
 }
 
 if (ten_enable_ten_manager) {
   ten_package_publish("upload_ten_nodejs_binding_system_package_to_server") {
     base_dir =
         rebase_path("${root_out_dir}/ten_packages/system/ten_runtime_nodejs")
-    deps = [
-      ":ten_nodejs_binding_system_package",
-      "native:ten_runtime_nodejs",
-    ]
+    deps = [ ":ten_nodejs_binding_system_package" ]
   }
 }
 
 group("nodejs") {
-  deps = [ "native:ten_runtime_nodejs" ]
+  deps = [
+    ":ten_runtime_nodejs_js",
+    "native:ten_runtime_nodejs",
+  ]
 
   if (ten_enable_ten_manager) {
     deps += [ ":upload_ten_nodejs_binding_system_package_to_server" ]

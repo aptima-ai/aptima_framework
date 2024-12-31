@@ -20,7 +20,9 @@ class GlobalTestEnvironment : public ::testing::Environment {
   void SetUp() override {
     if (!ten_env_set("TEN_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE", "true")) {
       perror("Failed to set TEN_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE");
-      exit(-1);
+
+      // NOLINTNEXTLINE(concurrency-mt-unsafe)
+      exit(EXIT_FAILURE);
     }
 
     ten_addon_manager_t *manager = ten_addon_manager_get_instance();

@@ -166,6 +166,16 @@ def collect_and_update_version_of_system_packages(
             "python",
             MANIFEST_JSON_FILE,
         ),
+        # ten_runtime_nodejs
+        os.path.join(
+            repo_base_dir,
+            "core",
+            "src",
+            "ten_runtime",
+            "binding",
+            "nodejs",
+            MANIFEST_JSON_FILE,
+        ),
     ]
 
     pkgInfos = []

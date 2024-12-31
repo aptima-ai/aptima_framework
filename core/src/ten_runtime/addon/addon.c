@@ -590,6 +590,7 @@ ten_addon_host_t *ten_addon_register(TEN_ADDON_TYPE addon_type,
 
   if (!name || strlen(name) == 0) {
     TEN_LOGE("The addon name is required.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

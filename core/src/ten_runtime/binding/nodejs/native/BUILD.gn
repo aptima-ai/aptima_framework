@@ -18,6 +18,8 @@ config("ten_runtime_nodejs_config") {
 ten_shared_library("ten_runtime_nodejs") {
   configs = [ ":ten_runtime_nodejs_config" ]
 
+  output_extension = "node"
+
   if (is_mac || is_linux) {
     add_configs = [ "//.gnfiles/build/toolchain/common:allow_undefined" ]
     remove_configs = [ "//.gnfiles/build/toolchain/common:disallow_undefined" ]
@@ -29,7 +31,12 @@ ten_shared_library("ten_runtime_nodejs") {
   ]
 
   deps = [
+    "addon",
     "app",
+    "common",
+    "extension",
+    "msg",
+    "ten_env",
     "//core/src/ten_runtime:ten_runtime_library",
   ]
 }

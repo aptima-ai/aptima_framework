@@ -48,6 +48,7 @@ void ten_addon_on_init_done(ten_env_t *self) {
       &addon_host->manifest_info, NULL, &addon_host->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load addon manifest data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -55,6 +56,7 @@ void ten_addon_on_init_done(ten_env_t *self) {
       &addon_host->property_info, NULL, &addon_host->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load addon property data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -98,6 +100,7 @@ void ten_addon_on_init_done(ten_env_t *self) {
   rc = ten_addon_store_add(addon_host->store, addon_host);
   if (!rc) {
     TEN_ASSERT(0, "Should not happen.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 }

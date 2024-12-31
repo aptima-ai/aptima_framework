@@ -87,6 +87,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
       &extension_group->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load extension group manifest data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -96,6 +97,7 @@ void ten_extension_thread_on_extension_group_on_init_done(
       &extension_group->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load extension group property data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

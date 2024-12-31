@@ -30,6 +30,7 @@ void *ten_malloc(size_t size) {
   void *result = ten_malloc_without_backtrace(size);
   if (!result) {
     ten_backtrace_dump_global(0);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -54,6 +55,7 @@ void *ten_calloc(size_t cnt, size_t size) {
   void *result = ten_calloc_without_backtrace(cnt, size);
   if (!result) {
     ten_backtrace_dump_global(0);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -78,6 +80,7 @@ void *ten_realloc(void *p, size_t size) {
   void *result = ten_realloc_without_backtrace(p, size);
   if (!result) {
     ten_backtrace_dump_global(0);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -112,6 +115,7 @@ char *ten_strdup(const char *str) {
   char *result = ten_strdup_without_backtrace(str);
   if (!result) {
     ten_backtrace_dump_global(0);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -149,6 +153,7 @@ char *ten_strndup(const char *str, size_t size) {
   char *result = ten_strndup_without_backtrace(str, size);
   if (!result) {
     ten_backtrace_dump_global(0);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

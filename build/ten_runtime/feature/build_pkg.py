@@ -10,6 +10,7 @@ import os
 import sys
 import platform
 from datetime import datetime
+import time
 from build.scripts import fs_utils, cmd_exec, timestamp_proxy
 
 
@@ -157,6 +158,110 @@ def build_go_app(args: ArgumentInfo) -> int:
     return returncode
 
 
+def npm_install() -> int:
+    # 'npm install' might be failed because of the bad network connection, and
+    # it might be stuck in a situation where it cannot be recovered. Therefore,
+    # the best way is to delete the whole node_modules/, and try again.
+    returncode = 0
+
+    for i in range(1, 10):
+        returncode, output = cmd_exec.run_cmd(
+            [
+                "npm",
+                "install",
+            ]
+        )
+
+        if returncode == 0:
+            break
+        else:
+            # Delete node_modules/ and try again.
+            print(
+                (
+                    f"Failed to 'npm install', output: {output}, "
+                    "deleting node_modules/ and try again."
+                )
+            )
+            fs_utils.remove_tree("node_modules")
+            time.sleep(5)
+    if returncode != 0:
+        print("Failed to 'npm install' after 10 times retries")
+
+    return returncode
+
+
+def build_ts_extensions(app_root_path: str) -> int:
+    origin_wd = os.getcwd()
+
+    extension_dir = os.path.join(app_root_path, "ten_packages/extension")
+
+    if os.path.exists(extension_dir):
+        for extension in os.listdir(extension_dir):
+            extension_path = os.path.join(extension_dir, extension)
+            if os.path.isdir(extension_path):
+                # If the extension is a typescript extension, build it.
+                if not os.path.exists(
+                    os.path.join(extension_path, "tsconfig.json")
+                ):
+                    continue
+
+                # Change to extension directory.
+                os.chdir(extension_path)
+
+                now = datetime.now()
+                cmd = ["npm", "run", "build"]
+                returncode, output = cmd_exec.run_cmd(cmd)
+                if returncode:
+                    print(
+                        (
+                            f"Failed to build extension {extension_path}: "
+                            f"{output}"
+                        )
+                    )
+                    return 1
+
+                duration = (datetime.now() - now).seconds
+                print(
+                    (
+                        f"Profiling ====> build ts extension({extension}) "
+                        f"costs {duration} seconds."
+                    )
+                )
+
+    os.chdir(origin_wd)
+
+    return 0
+
+
+def build_nodejs_app(args: ArgumentInfo) -> int:
+    t1 = datetime.now()
+
+    status_code = npm_install()
+    if status_code != 0:
+        return status_code
+
+    cmd = ["npm", "run", "build"]
+    status_code, output = cmd_exec.run_cmd(cmd)
+    if status_code != 0:
+        print(f"Failed to npm run build, output: {output}")
+        return status_code
+
+    t2 = datetime.now()
+    duration = (t2 - t1).seconds
+    print(
+        (
+            f"Profiling ====> build node app({args.pkg_name}) "
+            f"costs {duration} seconds."
+        )
+    )
+
+    status_code = build_ts_extensions(os.getcwd())
+    if status_code != 0:
+        print(f"Failed to build ts extensions of app {args.pkg_name}")
+
+    return status_code
+
+
 def get_pkg_type(pkg_root: str) -> str:
     manifest_path = os.path.join(pkg_root, "manifest.json")
     with open(manifest_path, "r") as f:
@@ -173,6 +278,8 @@ def build_app(args: ArgumentInfo) -> int:
         returncode = build_go_app(args)
     elif args.pkg_language == "python":
         returncode = 0
+    elif args.pkg_language == "nodejs":
+        returncode = build_nodejs_app(args)
     else:
         print(f"Unknown app language: {args.pkg_language}")
         returncode = 1

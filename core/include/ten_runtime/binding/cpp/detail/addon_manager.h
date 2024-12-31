@@ -46,6 +46,7 @@
         ____ten_addon_##NAME##_register_handler__);                              \
     if (!success) {                                                              \
       TEN_LOGF("Failed to register addon: %s", #NAME);                           \
+      /* NOLINTNEXTLINE(concurrency-mt-unsafe) */                                \
       exit(EXIT_FAILURE);                                                        \
     }                                                                            \
   }

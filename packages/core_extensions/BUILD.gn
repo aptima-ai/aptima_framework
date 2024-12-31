@@ -18,4 +18,8 @@ group("core_extensions") {
       "default_extension_python",
     ]
   }
+
+  if (ten_enable_nodejs_binding) {
+    deps += [ "default_extension_nodejs" ]
+  }
 }

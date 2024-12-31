@@ -190,7 +190,9 @@ bool ten_placeholder_resolve(ten_placeholder_t *self,
               "Environment variable %s is not found, neither default value is "
               "provided.",
               variable_name);
-          exit(-1);
+
+          // NOLINTNEXTLINE(concurrency-mt-unsafe)
+          exit(EXIT_FAILURE);
 
           ten_value_reset_to_null(placeholder_value);
         } else {

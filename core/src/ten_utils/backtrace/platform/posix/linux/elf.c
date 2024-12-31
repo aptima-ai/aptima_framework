@@ -1246,11 +1246,13 @@ int main() {
   if (!elf_zstd_build_fse(lit, sizeof lit / sizeof lit[0], next, 6,
                           lit_table)) {
     fprintf(stderr, "elf_zstd_build_fse failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
   if (!elf_zstd_make_literal_baseline_fse(lit_table, 6, lit_baseline)) {
     fprintf(stderr, "elf_zstd_make_literal_baseline_fse failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -1263,11 +1265,13 @@ int main() {
   if (!elf_zstd_build_fse(match, sizeof match / sizeof match[0], next, 6,
                           match_table)) {
     fprintf(stderr, "elf_zstd_build_fse failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
   if (!elf_zstd_make_match_baseline_fse(match_table, 6, match_baseline)) {
     fprintf(stderr, "elf_zstd_make_match_baseline_fse failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -1280,11 +1284,13 @@ int main() {
   if (!elf_zstd_build_fse(offset, sizeof offset / sizeof offset[0], next, 5,
                           offset_table)) {
     fprintf(stderr, "elf_zstd_build_fse failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
   if (!elf_zstd_make_offset_baseline_fse(offset_table, 5, offset_baseline)) {
     fprintf(stderr, "elf_zstd_make_offset_baseline_fse failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

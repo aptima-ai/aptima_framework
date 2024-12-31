@@ -40,6 +40,7 @@ static void ten_global_ignore_sigpipe(void) {
   if (sigaction(SIGPIPE, &act, NULL) < 0) {
     TEN_LOGF("Failed to ignore SIGPIPE.");
     TEN_ASSERT(0, "Should not happen.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 }
@@ -63,6 +64,7 @@ static void ten_global_signal_handler(int signo, TEN_UNUSED siginfo_t *info,
     sigint_count++;
     if (sigint_count >= 2) {
       TEN_LOGW("Received SIGINT/SIGTERM twice, exit directly.");
+      // NOLINTNEXTLINE(concurrency-mt-unsafe)
       exit(EXIT_FAILURE);
     }
   }
@@ -100,13 +102,15 @@ static void ten_global_setup_sig_handler(void) {
   stack_t ss;
   ss.ss_sp = g_alt_stack;
   if (ss.ss_sp == NULL) {
-    exit(-TEN_ERRNO_GENERIC);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    exit(EXIT_FAILURE);
   }
   ss.ss_size = ALT_STACK_SIZE;
   ss.ss_flags = 0;
   if (sigaltstack(&ss, NULL) == -1) {
     perror("sigaltstack");
-    exit(-TEN_ERRNO_GENERIC);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    exit(EXIT_FAILURE);
   }
 
   // If the app process runs on a GO runtime, the `SA_ONSTACK` flag must be set
@@ -120,17 +124,20 @@ static void ten_global_setup_sig_handler(void) {
 
   if (0 != sigaction(SIGINT, &act, NULL)) {
     TEN_LOGF("Failed to install SIGINT handler.");
-    exit(-TEN_ERRNO_GENERIC);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    exit(EXIT_FAILURE);
   }
 
   if (0 != sigaction(SIGTERM, &act, NULL)) {
     TEN_LOGF("Failed to install SIGTERM handler.");
-    exit(-TEN_ERRNO_GENERIC);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    exit(EXIT_FAILURE);
   }
 
   if (0 != sigaction(SIGUSR1, &act, NULL)) {
     TEN_LOGF("Failed to install SIGUSR1 handler.");
-    exit(-TEN_ERRNO_GENERIC);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -170,6 +177,7 @@ BOOL WINAPI ConsoleHandler(DWORD dwCtrlType) {
       ctrl_c_count++;
       if (ctrl_c_count >= 2) {
         TEN_LOGW("Received CTRL+C/CTRL+BREAK twice, exit directly.");
+        // NOLINTNEXTLINE(concurrency-mt-unsafe)
         exit(EXIT_FAILURE);
       }
       return TRUE;  // Signal has been handled.
@@ -186,7 +194,8 @@ void ten_global_setup_signal_stuff(void) {
   } else {
     if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
       TEN_LOGF("Failed to set control handler.");
-      exit(-TEN_ERRNO_GENERIC);
+      // NOLINTNEXTLINE(concurrency-mt-unsafe)
+      exit(EXIT_FAILURE);
     }
   }
 }

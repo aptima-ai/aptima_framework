@@ -164,6 +164,7 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
       &self->manifest_info, ten_app_get_base_dir(self), &self->manifest, &err);
   if (!rc) {
     TEN_LOGW("Failed to load app manifest data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -171,6 +172,7 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
       &self->property_info, ten_app_get_base_dir(self), &self->property, &err);
   if (!rc) {
     TEN_LOGW("Failed to load app property data, FATAL ERROR.");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

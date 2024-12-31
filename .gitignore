@@ -57,6 +57,9 @@ out/
 node_modules/
 *.tsbuildinfo
 
+# Nodejs binding
+core/src/ten_runtime/binding/nodejs/build
+
 # Cache files
 .cache
 *.code-workspace
@@ -70,18 +73,11 @@ node_modules/
 # Clangd index file
 .clangd
 
-# rust generated files
+# Rust generated files
 core/src/ten_manager/target/
 core/src/ten_rust/src/schema/bindings.rs
 core/src/ten_rust/target/
 /.cargo
-
-# private modules
-packages/private_apps
-packages/private_extensions
-tests/private
-third_party/private
-build/private
 
 # zlib auto-generated files
 third_party/zlib/zconf.h.included

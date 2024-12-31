@@ -316,6 +316,7 @@ void ten_sanitizer_memory_record_dump(void) {
     __lsan_enable();
 #endif
 
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 

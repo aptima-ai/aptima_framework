@@ -83,6 +83,16 @@ def check_version_of_system_packages(
             "python",
             "manifest.json",
         ),
+        # ten_runtime_nodejs
+        os.path.join(
+            repo_base_dir,
+            "core",
+            "src",
+            "ten_runtime",
+            "binding",
+            "nodejs",
+            "manifest.json",
+        ),
     ]
 
     for manifest_file in manifest_files:

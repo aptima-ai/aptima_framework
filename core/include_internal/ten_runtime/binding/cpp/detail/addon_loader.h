@@ -97,6 +97,7 @@ class addon_loader_t : public binding_handle_t {
       on_init();
     } catch (...) {
       TEN_ASSERT(0, "Should not happen.");
+      // NOLINTNEXTLINE(concurrency-mt-unsafe)
       exit(EXIT_FAILURE);
     }
   }
@@ -106,6 +107,7 @@ class addon_loader_t : public binding_handle_t {
       on_deinit();
     } catch (...) {
       TEN_ASSERT(0, "Should not happen.");
+      // NOLINTNEXTLINE(concurrency-mt-unsafe)
       exit(EXIT_FAILURE);
     }
   }
@@ -116,6 +118,7 @@ class addon_loader_t : public binding_handle_t {
       on_load_addon(addon_type, addon_name);
     } catch (...) {
       TEN_ASSERT(0, "Should not happen.");
+      // NOLINTNEXTLINE(concurrency-mt-unsafe)
       exit(EXIT_FAILURE);
     }
   }

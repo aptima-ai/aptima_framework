@@ -332,6 +332,7 @@ int main() {
 
   if (!elf_zlib_inflate_table(&codes[0], 288, &table[0], &table[0])) {
     fprintf(stderr, "elf_zlib_inflate_table failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
@@ -360,6 +361,7 @@ int main() {
 
   if (!elf_zlib_inflate_table(&codes[0], 32, &table[0], &table[0])) {
     fprintf(stderr, "elf_zlib_inflate_table failed\n");
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
   }
 
