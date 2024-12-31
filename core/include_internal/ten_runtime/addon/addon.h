@@ -49,8 +49,6 @@ typedef struct ten_addon_t {
   ten_addon_on_create_instance_func_t on_create_instance;
   ten_addon_on_destroy_instance_func_t on_destroy_instance;
 
-  ten_addon_on_load_addon_func_t on_load_addon;
-
   ten_addon_on_destroy_func_t on_destroy;
 
   void *user_data;
@@ -172,5 +170,4 @@ TEN_RUNTIME_API void ten_addon_init(
     ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
     ten_addon_on_destroy_instance_func_t on_destroy_instance,
-    ten_addon_on_load_addon_func_t on_load_addon,
     ten_addon_on_destroy_func_t on_destroy);

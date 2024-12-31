@@ -17,6 +17,7 @@
 #define TEN_ENV_SIGNATURE 0x1336D348DA779EA6U
 
 typedef struct ten_engine_t ten_engine_t;
+typedef struct ten_addon_loader_t ten_addon_loader_t;
 
 typedef void (*ten_env_close_handler_in_target_lang_func_t)(
     void *me_in_target_lang);

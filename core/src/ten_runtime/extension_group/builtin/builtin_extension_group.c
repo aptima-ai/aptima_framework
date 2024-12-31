@@ -218,7 +218,6 @@ static ten_addon_t builtin_extension_group_addon = {
     ten_builtin_extension_group_addon_destroy_instance,
     NULL,
     NULL,
-    NULL,
 };
 
 void ten_builtin_extension_group_addon_register(void) {

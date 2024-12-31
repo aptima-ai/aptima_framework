@@ -6,19 +6,14 @@
 #include <cstring>
 #include <string>
 
-#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/app/metadata.h"
-#include "include_internal/ten_runtime/binding/cpp/detail/ten_env_internal_accessor.h"
+#include "include_internal/ten_runtime/binding/cpp/detail/addon_loader.h"
+#include "include_internal/ten_runtime/binding/cpp/detail/addon_manager.h"
 #include "include_internal/ten_runtime/binding/python/common.h"
 #include "include_internal/ten_runtime/common/base_dir.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/metadata/manifest.h"
-#include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/addon.h"
-#include "ten_runtime/addon/addon_manager.h"
-#include "ten_runtime/binding/cpp/detail/addon.h"
-#include "ten_runtime/binding/cpp/detail/ten_env.h"
-#include "ten_runtime/binding/cpp/ten.h"
 #include "ten_utils/container/list_str.h"
 #include "ten_utils/lib/module.h"
 #include "ten_utils/lib/path.h"
@@ -108,21 +103,16 @@ static void foo() {}
 
 namespace {
 
-class python_addon_loader_addon_t : public ten::addon_t {
+class python_addon_loader_t : public ten::addon_loader_t {
  public:
-  explicit python_addon_loader_addon_t() = default;
+  explicit python_addon_loader_t(const char *name) { (void)name; };
 
-  void on_init(ten::ten_env_t &ten_env) override {
+  void on_init() override {
     // Do some initializations.
-
-    TEN_ENV_LOG_DEBUG(ten_env, "on_init");
-
-    // load_all_on_init = ten_env.get_property_bool("load_all_on_init");
 
     int py_initialized = ten_py_is_initialized();
     if (py_initialized != 0) {
-      TEN_ENV_LOG_INFO(ten_env, "Python runtime has been initialized.");
-      ten_env.on_init_done();
+      TEN_LOGI("Python runtime has been initialized.");
       return;
     }
 
@@ -149,21 +139,20 @@ class python_addon_loader_addon_t : public ten::addon_t {
         "print(sys.path)\n");
 
     const auto *sys_path = ten_py_get_path();
-    TEN_ENV_LOG_INFO(
-        ten_env,
+    TEN_LOGI(
         (std::string("python initialized, sys.path: ") + sys_path).c_str());
 
     ten_py_mem_free((void *)sys_path);
 
-    start_debugpy_server_if_needed(ten_env);
+    start_debugpy_server_if_needed();
 
     if (load_all_on_init) {
       // Traverse `ten_packages/extension` directory and import module.
-      load_python_extensions_according_to_app_manifest_dependencies(ten_env);
+      load_python_extensions_according_to_app_manifest_dependencies();
     } else {
-      TEN_ENV_LOG_INFO(ten_env,
-                       "load_all_on_init is false, skip loading all python "
-                       "extensions when startup.");
+      TEN_LOGI(
+          "load_all_on_init is false, skip loading all python "
+          "extensions when startup.");
     }
 
     // The `app_base_dir` is no longer needed afterwards, so it is released.
@@ -171,11 +160,9 @@ class python_addon_loader_addon_t : public ten::addon_t {
     app_base_dir = nullptr;
 
     py_thread_state_ = ten_py_eval_save_thread();
-
-    ten_env.on_init_done();
   }
 
-  void on_deinit(ten::ten_env_t &ten_env) override {
+  void on_deinit() override {
     // Do some de-initializations.
     if (py_thread_state_ != nullptr) {
       ten_py_eval_restore_thread(py_thread_state_);
@@ -184,23 +171,18 @@ class python_addon_loader_addon_t : public ten::addon_t {
     if (py_init_by_self_) {
       int rc = ten_py_finalize();
       if (rc < 0) {
-        TEN_ENV_LOG_FATAL(
-            ten_env, (std::string("Failed to finalize python runtime, rc: ") +
-                      std::to_string(rc))
-                         .c_str());
+        TEN_LOGF((std::string("Failed to finalize python runtime, rc: ") +
+                  std::to_string(rc))
+                     .c_str());
 
         TEN_ASSERT(0, "Should not happen.");
       }
     }
-
-    ten_env.on_deinit_done();
   }
 
-  void on_load_addon(ten::ten_env_t &ten_env, TEN_ADDON_TYPE addon_type,
-                     const char *addon_name, void *context) override {
+  void on_load_addon(TEN_ADDON_TYPE addon_type,
+                     const char *addon_name) override {
     // Load the specified addon.
-    (void)ten_env;
-    (void)context;
 
     void *ten_py_gil_state = ten_py_gil_state_ensure();
 
@@ -275,21 +257,10 @@ class python_addon_loader_addon_t : public ten::addon_t {
     return result;
   }
 
-  void load_python_extensions_according_to_app_manifest_dependencies(
-      ten::ten_env_t &ten_env) {
+  void load_python_extensions_according_to_app_manifest_dependencies() {
     ten_string_t *addon_extensions_path = get_addon_extensions_path();
 
-    // Note: The behavior below is not something a typical user-defined addon
-    // can perform. Through a private API, it accesses the C `ten_env_t`,
-    // enabling special operations that only TEN framework developers are
-    // allowed to execute.
-    ten_env_t *c_ten_env =
-        ten::ten_env_internal_accessor_t::get_c_ten_env(ten_env);
-    auto *c_app = static_cast<ten_app_t *>(
-        c_ten_env->attached_target.addon_host->user_data);
-    TEN_ASSERT(c_app, "Should not happen.");
-
-    load_all_python_modules(ten_env, addon_extensions_path);
+    load_all_python_modules(addon_extensions_path);
 
     register_all_addons();
 
@@ -298,7 +269,7 @@ class python_addon_loader_addon_t : public ten::addon_t {
 
   // Start the debugpy server according to the environment variable and wait for
   // the debugger to connect.
-  static void start_debugpy_server_if_needed(ten::ten_env_t &ten_env) {
+  static void start_debugpy_server_if_needed() {
     const char *enable_python_debug = getenv("TEN_ENABLE_PYTHON_DEBUG");
     if (enable_python_debug == nullptr ||
         strcmp(enable_python_debug, "true") != 0) {
@@ -319,9 +290,8 @@ class python_addon_loader_addon_t : public ten::addon_t {
     char *endptr = nullptr;
     int64_t port = std::strtol(python_debug_port, &endptr, 10);
     if (*endptr != '\0' || port <= 0 || port > 65535) {
-      TEN_ENV_LOG_ERROR(ten_env, (std::string("Invalid python debug port: ") +
-                                  python_debug_port)
-                                     .c_str());
+      TEN_LOGE((std::string("Invalid python debug port: ") + python_debug_port)
+                   .c_str());
       return;
     }
 
@@ -335,18 +305,16 @@ class python_addon_loader_addon_t : public ten::addon_t {
 
     ten_string_destroy(start_debug_server_script);
 
-    TEN_ENV_LOG_INFO(ten_env, (std::string("Python debug server started at ") +
-                               python_debug_host + std::to_string(port))
-                                  .c_str());
+    TEN_LOGI((std::string("Python debug server started at ") +
+              python_debug_host + std::to_string(port))
+                 .c_str());
   }
 
   // Load all python addons by import modules.
-  static void load_all_python_modules(ten::ten_env_t &ten_env,
-                                      ten_string_t *addon_extensions_path) {
+  static void load_all_python_modules(ten_string_t *addon_extensions_path) {
     if (addon_extensions_path == nullptr ||
         ten_string_is_empty(addon_extensions_path)) {
-      TEN_ENV_LOG_ERROR(
-          ten_env,
+      TEN_LOGE(
           "Failed to load python modules due to empty addon extension path.");
       return;
     }
@@ -354,11 +322,10 @@ class python_addon_loader_addon_t : public ten::addon_t {
     ten_dir_fd_t *dir =
         ten_path_open_dir(ten_string_get_raw_str(addon_extensions_path));
     if (dir == nullptr) {
-      TEN_ENV_LOG_ERROR(ten_env,
-                        (std::string("Failed to open directory: ") +
-                         ten_string_get_raw_str(addon_extensions_path) +
-                         " when loading python modules.")
-                            .c_str());
+      TEN_LOGE((std::string("Failed to open directory: ") +
+                ten_string_get_raw_str(addon_extensions_path) +
+                " when loading python modules.")
+                   .c_str());
       return;
     }
 
@@ -366,11 +333,10 @@ class python_addon_loader_addon_t : public ten::addon_t {
     while (itor != nullptr) {
       ten_string_t *short_name = ten_path_itor_get_name(itor);
       if (short_name == nullptr) {
-        TEN_ENV_LOG_ERROR(ten_env,
-                          (std::string("Failed to get short name under path ") +
-                           ten_string_get_raw_str(addon_extensions_path) +
-                           ", when loading python modules.")
-                              .c_str());
+        TEN_LOGE((std::string("Failed to get short name under path ") +
+                  ten_string_get_raw_str(addon_extensions_path) +
+                  ", when loading python modules.")
+                     .c_str());
         itor = ten_path_get_next(itor);
         continue;
       }
@@ -426,29 +392,7 @@ class python_addon_loader_addon_t : public ten::addon_t {
   }
 };
 
-void ____ten_addon_python_addon_loader_register_handler____(
-    void *register_ctx) {
-  auto *addon_instance = new python_addon_loader_addon_t();
-  ten_string_t *base_dir =
-      ten_path_get_module_path(/* NOLINTNEXTLINE */
-                               (void *)
-                                   ____ten_addon_python_addon_loader_register_handler____);
-  ten_addon_register_addon_loader(
-      "python_addon_loader", ten_string_get_raw_str(base_dir),
-      ten::addon_internal_accessor_t::get_c_addon(addon_instance),
-      register_ctx);
-  ten_string_destroy(base_dir);
-}
-
-TEN_CONSTRUCTOR(____ten_addon_python_addon_loader_registrar____) {
-  ten_addon_manager_t *manager = ten_addon_manager_get_instance();
-  bool success = ten_addon_manager_add_addon(
-      manager, "addon_loader", "python_addon_loader",
-      ____ten_addon_python_addon_loader_register_handler____);
-  if (!success) {
-    TEN_LOGF("Failed to register addon: python_addon_loader");
-    exit(EXIT_FAILURE);
-  }
-}
+TEN_CPP_REGISTER_ADDON_AS_ADDON_LOADER(python_addon_loader,
+                                       python_addon_loader_t);
 
 }  // namespace

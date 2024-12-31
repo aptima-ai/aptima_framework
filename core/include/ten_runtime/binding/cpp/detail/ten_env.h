@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ten_runtime/binding/common.h"
+#include "ten_runtime/binding/cpp/detail/binding_handle.h"
 #include "ten_runtime/binding/cpp/detail/msg/audio_frame.h"
 #include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
 #include "ten_runtime/binding/cpp/detail/msg/cmd_result.h"
@@ -39,7 +40,6 @@ class app_t;
 class extension_t;
 class extension_group_t;
 class addon_t;
-class extension_addon_t;
 class ten_env_t;
 class ten_env_proxy_t;
 class ten_env_internal_accessor_t;
@@ -697,7 +697,21 @@ class ten_env_t {
   }
 
   bool on_create_instance_done(void *instance, void *context,
-                               error_t *err = nullptr);
+                               error_t *err = nullptr) {
+    TEN_LOGE("5 %p", instance);
+
+    void *c_instance =
+        static_cast<binding_handle_t *>(instance)->get_c_instance();
+    TEN_ASSERT(c_instance, "Should not happen.");
+
+    TEN_LOGE("6 %p", c_instance);
+
+    bool rc = ten_env_on_create_instance_done(
+        c_ten_env, c_instance, context,
+        err != nullptr ? err->get_c_error() : nullptr);
+
+    return rc;
+  }
 
   bool on_destroy_instance_done(void *context, error_t *err = nullptr) {
     bool rc = ten_env_on_destroy_instance_done(
@@ -748,7 +762,7 @@ class ten_env_t {
   friend class extension_t;
   friend class extension_group_t;
   friend class addon_t;
-  friend class extension_addon_t;
+  friend class addon_loader_t;
   friend class ten_env_internal_accessor_t;
 
   ::ten_env_t *c_ten_env;

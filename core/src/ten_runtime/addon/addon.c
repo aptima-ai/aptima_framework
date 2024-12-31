@@ -54,7 +54,6 @@ void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
                     ten_addon_on_deinit_func_t on_deinit,
                     ten_addon_on_create_instance_func_t on_create_instance,
                     ten_addon_on_destroy_instance_func_t on_destroy_instance,
-                    ten_addon_on_load_addon_func_t on_load_addon,
                     ten_addon_on_destroy_func_t on_destroy) {
   ten_binding_handle_set_me_in_target_lang((ten_binding_handle_t *)self, NULL);
   ten_signature_set(&self->signature, TEN_ADDON_SIGNATURE);
@@ -63,7 +62,6 @@ void ten_addon_init(ten_addon_t *self, ten_addon_on_init_func_t on_init,
   self->on_deinit = on_deinit;
   self->on_create_instance = on_create_instance;
   self->on_destroy_instance = on_destroy_instance;
-  self->on_load_addon = on_load_addon;
   self->on_destroy = on_destroy;
 
   self->user_data = NULL;
@@ -73,13 +71,12 @@ ten_addon_t *ten_addon_create(
     ten_addon_on_init_func_t on_init, ten_addon_on_deinit_func_t on_deinit,
     ten_addon_on_create_instance_func_t on_create_instance,
     ten_addon_on_destroy_instance_func_t on_destroy_instance,
-    ten_addon_on_load_addon_func_t on_load_addon,
     ten_addon_on_destroy_func_t on_destroy) {
   ten_addon_t *self = TEN_MALLOC(sizeof(ten_addon_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_addon_init(self, on_init, on_deinit, on_create_instance,
-                 on_destroy_instance, on_load_addon, on_destroy);
+                 on_destroy_instance, on_destroy);
 
   return self;
 }

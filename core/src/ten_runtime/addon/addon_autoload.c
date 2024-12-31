@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
 
 #include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
+#include "include_internal/ten_runtime/addon_loader/addon_loader.h"
 #include "ten_runtime/addon/addon.h"
 #include "ten_runtime/common/errno.h"
 
@@ -405,24 +406,18 @@ bool ten_addon_try_load_specific_addon_from_app_base_dir(
 
 bool ten_addon_try_load_specific_addon_using_all_addon_loaders(
     TEN_ADDON_TYPE addon_type, const char *addon_name) {
-  ten_addon_store_t *addon_loader_store = ten_addon_loader_get_global_store();
-  TEN_ASSERT(addon_loader_store, "Should not happen.");
+  ten_list_t *addon_loaders = ten_addon_loader_get_global();
+  TEN_ASSERT(addon_loaders, "Should not happen.");
 
-  ten_mutex_lock(addon_loader_store->lock);
+  ten_list_foreach (addon_loaders, iter) {
+    ten_addon_loader_t *addon_loader = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(addon_loader, "Should not happen.");
 
-  ten_list_foreach (&addon_loader_store->store, iter) {
-    ten_addon_host_t *loader_addon_host = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(loader_addon_host, "Should not happen.");
-
-    if (loader_addon_host && loader_addon_host->addon &&
-        loader_addon_host->addon->on_load_addon) {
-      loader_addon_host->addon->on_load_addon(loader_addon_host->addon,
-                                              loader_addon_host->ten_env,
-                                              addon_type, addon_name, NULL);
+    // =-=-=
+    if (addon_loader) {
+      addon_loader->on_load_addon(addon_loader, addon_type, addon_name);
     }
   }
-
-  ten_mutex_unlock(addon_loader_store->lock);
 
   return true;
 }

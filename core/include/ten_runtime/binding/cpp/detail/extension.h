@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "ten_runtime/binding/common.h"
+#include "ten_runtime/binding/cpp/detail/binding_handle.h"
 #include "ten_runtime/binding/cpp/detail/common.h"
 #include "ten_runtime/binding/cpp/detail/msg/audio_frame.h"
 #include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
@@ -38,11 +39,11 @@ namespace ten {
 class ten_env_t;
 class extension_group_t;
 
-class extension_t {
+class extension_t : public binding_handle_t {
  public:
   virtual ~extension_t() {
-    TEN_ASSERT(c_extension, "Should not happen.");
-    ten_extension_destroy(c_extension);
+    TEN_ASSERT(get_c_instance(), "Should not happen.");
+    ten_extension_destroy(static_cast<ten_extension_t *>(get_c_instance()));
 
     TEN_ASSERT(cpp_ten_env, "Should not happen.");
     delete cpp_ten_env;
@@ -64,7 +65,7 @@ class extension_t {
          // better uses reinterpret_cast<> here, rather than change the type of
          // the second parameter of these callback functions from '::ten_env_t
          // *' to 'void *'
-        c_extension(::ten_extension_create(
+        binding_handle_t(::ten_extension_create(
             name,
             reinterpret_cast<ten_extension_on_configure_func_t>(
                 &proxy_on_configure),
@@ -79,13 +80,14 @@ class extension_t {
             reinterpret_cast<ten_extension_on_video_frame_func_t>(
                 &proxy_on_video_frame),
             nullptr)) {
-    TEN_ASSERT(c_extension, "Should not happen.");
+    TEN_ASSERT(get_c_instance(), "Should not happen.");
 
     ten_binding_handle_set_me_in_target_lang(
-        reinterpret_cast<ten_binding_handle_t *>(c_extension),
+        reinterpret_cast<ten_binding_handle_t *>(get_c_instance()),
         static_cast<void *>(this));
 
-    cpp_ten_env = new ten_env_t(ten_extension_get_ten_env(c_extension));
+    cpp_ten_env = new ten_env_t(ten_extension_get_ten_env(
+        static_cast<ten_extension_t *>(get_c_instance())));
     TEN_ASSERT(cpp_ten_env, "Should not happen.");
   }
 
@@ -120,9 +122,6 @@ class extension_t {
  private:
   friend class ten_env_t;
   friend class extension_group_t;
-  friend class extension_internal_accessor_t;
-
-  ::ten_extension_t *get_c_extension() const { return c_extension; }
 
   using cpp_extension_on_cmd_func_t =
       void (extension_t::*)(ten_env_t &, std::unique_ptr<cmd_t>);
@@ -526,15 +525,7 @@ class extension_t {
     }
   }
 
-  ::ten_extension_t *c_extension;
   ten_env_t *cpp_ten_env;
-};
-
-class extension_internal_accessor_t {
- public:
-  static ::ten_extension_t *get_c_extension(const extension_t *extension) {
-    return extension->get_c_extension();
-  }
 };
 
 }  // namespace ten

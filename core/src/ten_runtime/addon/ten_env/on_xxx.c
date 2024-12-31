@@ -10,6 +10,7 @@
 
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
+#include "include_internal/ten_runtime/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/app/on_xxx.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/engine/engine.h"
@@ -22,6 +23,7 @@
 #include "include_internal/ten_runtime/metadata/metadata_info.h"
 #include "include_internal/ten_runtime/protocol/protocol.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "ten_runtime/addon/addon.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/string.h"
@@ -263,9 +265,8 @@ static void ten_addon_extension_group_on_create_instance_done(ten_env_t *self,
   }
 }
 
-void ten_addon_protocol_on_create_instance_done(ten_env_t *self,
-                                                TEN_UNUSED void *instance,
-                                                TEN_UNUSED void *context) {
+static void ten_addon_protocol_on_create_instance_done(
+    ten_env_t *self, TEN_UNUSED void *instance, TEN_UNUSED void *context) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
   // thread-check: This function is intended to be called in any threads.
@@ -344,6 +345,62 @@ void ten_addon_protocol_on_create_instance_done(ten_env_t *self,
   }
 }
 
+static void ten_addon_addon_loader_on_create_instance_done(
+    ten_env_t *self, TEN_UNUSED void *instance, TEN_UNUSED void *context) {
+  TEN_ASSERT(self, "Invalid argument.");
+  // TEN_NOLINTNEXTLINE(thread-check)
+  // thread-check: This function is intended to be called in any threads.
+  TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
+             self);
+  TEN_ASSERT(self->attach_to == TEN_ENV_ATTACH_TO_ADDON, "Should not happen.");
+
+  ten_addon_host_t *addon_host = ten_env_get_attached_addon(self);
+  TEN_ASSERT(addon_host && ten_addon_host_check_integrity(addon_host),
+             "Should not happen.");
+  TEN_ASSERT(addon_host->type == TEN_ADDON_TYPE_ADDON_LOADER,
+             "Should not happen.");
+
+  ten_addon_loader_t *addon_loader = instance;
+  TEN_ASSERT(addon_loader, "Should not happen.");
+
+  addon_loader->addon_host = addon_host;
+
+  ten_addon_context_t *addon_context = (ten_addon_context_t *)context;
+  if (!addon_context) {
+    return;
+  }
+
+  ten_env_t *caller_ten = addon_context->caller_ten_env;
+  TEN_ASSERT(caller_ten, "Invalid argument.");
+  TEN_ASSERT(ten_env_check_integrity(caller_ten, true),
+             "Invalid use of ten_env %p.", caller_ten);
+
+  TEN_ASSERT(addon_context->create_instance_done_cb, "Should not happen.");
+
+  switch (caller_ten->attach_to) {
+    case TEN_ENV_ATTACH_TO_APP: {
+      ten_app_t *app = ten_env_get_attached_app(caller_ten);
+      TEN_ASSERT(app && ten_app_check_integrity(app, true),
+                 "Should not happen.");
+
+      ten_app_thread_on_addon_create_addon_loader_done_info_t *info =
+          ten_app_thread_on_addon_create_addon_loader_done_info_create();
+
+      info->addon_loader = instance;
+      info->addon_context = addon_context;
+
+      ten_runloop_post_task_tail(
+          ten_app_get_attached_runloop(app),
+          ten_app_thread_on_addon_create_addon_loader_done, app, info);
+      break;
+    }
+
+    default:
+      TEN_ASSERT(0, "Should not happen.");
+      break;
+  }
+}
+
 void ten_addon_on_create_instance_done(ten_env_t *self, void *instance,
                                        void *context) {
   TEN_ASSERT(self, "Invalid argument.");
@@ -368,6 +425,9 @@ void ten_addon_on_create_instance_done(ten_env_t *self, void *instance,
       break;
     case TEN_ADDON_TYPE_PROTOCOL:
       ten_addon_protocol_on_create_instance_done(self, instance, context);
+      break;
+    case TEN_ADDON_TYPE_ADDON_LOADER:
+      ten_addon_addon_loader_on_create_instance_done(self, instance, context);
       break;
 
     default:

@@ -244,7 +244,7 @@ static PyObject *ten_py_addon_create(PyTypeObject *type,
 
   ten_addon_init(&py_addon->c_addon, proxy_on_init, proxy_on_deinit,
                  proxy_on_create_instance_async,
-                 proxy_on_destroy_instance_async, NULL, NULL);
+                 proxy_on_destroy_instance_async, NULL);
 
   ten_binding_handle_set_me_in_target_lang(
       (ten_binding_handle_t *)&py_addon->c_addon, py_addon);

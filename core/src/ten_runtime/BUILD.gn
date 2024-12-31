@@ -36,6 +36,7 @@ ten_target("ten_runtime_library") {
 
   public_deps = [
     "addon",
+    "addon_loader",
     "app",
     "common",
     "connection",

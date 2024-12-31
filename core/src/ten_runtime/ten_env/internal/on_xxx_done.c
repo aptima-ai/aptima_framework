@@ -194,7 +194,7 @@ bool ten_env_on_destroy_instance_done(ten_env_t *self, void *context,
       break;
 
     default:
-      TEN_ASSERT(0, "Should not happen.");
+      TEN_ASSERT(0, "Should not happen: %d.", self->attach_to);
       break;
   }
 
