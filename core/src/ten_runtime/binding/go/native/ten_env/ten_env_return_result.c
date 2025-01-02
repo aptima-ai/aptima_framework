@@ -21,46 +21,46 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/macro/check.h"
 
-typedef struct ten_env_notify_return_result_info_t {
+typedef struct ten_env_notify_return_result_ctx_t {
   ten_shared_ptr_t *c_cmd;
   ten_shared_ptr_t *c_target_cmd;
   ten_go_handle_t handler_id;
-} ten_env_notify_return_result_info_t;
+} ten_env_notify_return_result_ctx_t;
 
-static ten_env_notify_return_result_info_t *
-ten_env_notify_return_result_info_create(ten_shared_ptr_t *c_cmd,
-                                         ten_shared_ptr_t *c_target_cmd,
-                                         ten_go_handle_t handler_id) {
+static ten_env_notify_return_result_ctx_t *
+ten_env_notify_return_result_ctx_create(ten_shared_ptr_t *c_cmd,
+                                        ten_shared_ptr_t *c_target_cmd,
+                                        ten_go_handle_t handler_id) {
   TEN_ASSERT(c_cmd, "Invalid argument.");
 
-  ten_env_notify_return_result_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_return_result_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_return_result_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_return_result_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_cmd = c_cmd;
-  info->c_target_cmd = c_target_cmd;
-  info->handler_id = handler_id;
+  ctx->c_cmd = c_cmd;
+  ctx->c_target_cmd = c_target_cmd;
+  ctx->handler_id = handler_id;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_return_result_info_destroy(
-    ten_env_notify_return_result_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_return_result_ctx_destroy(
+    ten_env_notify_return_result_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_cmd) {
-    ten_shared_ptr_destroy(info->c_cmd);
-    info->c_cmd = NULL;
+  if (ctx->c_cmd) {
+    ten_shared_ptr_destroy(ctx->c_cmd);
+    ctx->c_cmd = NULL;
   }
 
-  if (info->c_target_cmd) {
-    ten_shared_ptr_destroy(info->c_target_cmd);
-    info->c_target_cmd = NULL;
+  if (ctx->c_target_cmd) {
+    ten_shared_ptr_destroy(ctx->c_target_cmd);
+    ctx->c_target_cmd = NULL;
   }
 
-  info->handler_id = 0;
+  ctx->handler_id = 0;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void proxy_handle_return_error(ten_env_t *ten_env, void *user_data,
@@ -68,7 +68,7 @@ static void proxy_handle_return_error(ten_env_t *ten_env, void *user_data,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_go_callback_info_t *callback_info = user_data;
+  ten_go_callback_ctx_t *callback_info = user_data;
   TEN_ASSERT(callback_info, "Should not happen.");
 
   ten_go_error_t cgo_error;
@@ -86,7 +86,7 @@ static void proxy_handle_return_error(ten_env_t *ten_env, void *user_data,
   tenGoOnError(ten_env_bridge->bridge.go_instance, callback_info->callback_id,
                cgo_error);
 
-  ten_go_callback_info_destroy(callback_info);
+  ten_go_callback_ctx_destroy(callback_info);
 }
 
 static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
@@ -95,8 +95,8 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_return_result_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_return_result_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_go_error_t cgo_error;
   ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
@@ -105,26 +105,26 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
   ten_error_init(&err);
 
   bool rc = false;
-  if (info->handler_id == TEN_GO_NO_RESPONSE_HANDLER) {
-    if (info->c_target_cmd) {
-      rc = ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd, NULL,
+  if (ctx->handler_id == TEN_GO_NO_RESPONSE_HANDLER) {
+    if (ctx->c_target_cmd) {
+      rc = ten_env_return_result(ten_env, ctx->c_cmd, ctx->c_target_cmd, NULL,
                                  NULL, &err);
       TEN_ASSERT(rc, "Should not happen.");
     } else {
-      rc = ten_env_return_result_directly(ten_env, info->c_cmd, NULL, NULL,
-                                          &err);
+      rc =
+          ten_env_return_result_directly(ten_env, ctx->c_cmd, NULL, NULL, &err);
       TEN_ASSERT(rc, "Should not happen.");
     }
   } else {
-    ten_go_callback_info_t *callback_info =
-        ten_go_callback_info_create(info->handler_id);
-    if (info->c_target_cmd) {
+    ten_go_callback_ctx_t *callback_info =
+        ten_go_callback_ctx_create(ctx->handler_id);
+    if (ctx->c_target_cmd) {
       rc =
-          ten_env_return_result(ten_env, info->c_cmd, info->c_target_cmd,
+          ten_env_return_result(ten_env, ctx->c_cmd, ctx->c_target_cmd,
                                 proxy_handle_return_error, callback_info, &err);
     } else {
       rc = ten_env_return_result_directly(
-          ten_env, info->c_cmd, proxy_handle_return_error, callback_info, &err);
+          ten_env, ctx->c_cmd, proxy_handle_return_error, callback_info, &err);
     }
 
     if (!rc) {
@@ -133,16 +133,16 @@ static void ten_env_proxy_notify_return_result(ten_env_t *ten_env,
 
       ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
 
-      tenGoOnError(ten_env_bridge->bridge.go_instance, info->handler_id,
+      tenGoOnError(ten_env_bridge->bridge.go_instance, ctx->handler_id,
                    cgo_error);
 
-      ten_go_callback_info_destroy(callback_info);
+      ten_go_callback_ctx_destroy(callback_info);
     }
   }
 
   ten_error_deinit(&err);
 
-  ten_env_notify_return_result_info_destroy(info);
+  ten_env_notify_return_result_ctx_destroy(ctx);
 }
 
 ten_go_error_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
@@ -169,15 +169,15 @@ ten_go_error_t ten_go_ten_env_return_result(uintptr_t bridge_addr,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_return_result_info_t *return_result_info =
-      ten_env_notify_return_result_info_create(
+  ten_env_notify_return_result_ctx_t *return_result_info =
+      ten_env_notify_return_result_ctx_create(
           ten_go_msg_move_c_msg(cmd_result), ten_go_msg_move_c_msg(cmd),
           handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
                             ten_env_proxy_notify_return_result,
                             return_result_info, false, &err)) {
-    ten_env_notify_return_result_info_destroy(return_result_info);
+    ten_env_notify_return_result_ctx_destroy(return_result_info);
     ten_go_error_from_error(&cgo_error, &err);
   }
 
@@ -207,15 +207,15 @@ ten_go_error_t ten_go_ten_env_return_result_directly(
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_return_result_info_t *return_result_info =
-      ten_env_notify_return_result_info_create(
+  ten_env_notify_return_result_ctx_t *return_result_info =
+      ten_env_notify_return_result_ctx_create(
           ten_go_msg_move_c_msg(cmd_result), NULL,
           handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
                             ten_env_proxy_notify_return_result,
                             return_result_info, false, &err)) {
-    ten_env_notify_return_result_info_destroy(return_result_info);
+    ten_env_notify_return_result_ctx_destroy(return_result_info);
     ten_go_error_from_error(&cgo_error, &err);
   }
 

@@ -10,39 +10,38 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_log_info_t {
+typedef struct ten_env_notify_log_ctx_t {
   int32_t level;
   ten_string_t func_name;
   ten_string_t file_name;
   int32_t line_no;
   ten_string_t msg;
   ten_event_t *completed;
-} ten_env_notify_log_info_t;
+} ten_env_notify_log_ctx_t;
 
-static ten_env_notify_log_info_t *ten_env_notify_log_info_create() {
-  ten_env_notify_log_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_log_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_log_ctx_t *ten_env_notify_log_ctx_create(void) {
+  ten_env_notify_log_ctx_t *ctx = TEN_MALLOC(sizeof(ten_env_notify_log_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->level = 0;
-  ten_string_init(&info->func_name);
-  ten_string_init(&info->file_name);
-  info->line_no = 0;
-  ten_string_init(&info->msg);
-  info->completed = ten_event_create(0, 1);
+  ctx->level = 0;
+  ten_string_init(&ctx->func_name);
+  ten_string_init(&ctx->file_name);
+  ctx->line_no = 0;
+  ten_string_init(&ctx->msg);
+  ctx->completed = ten_event_create(0, 1);
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_log_info_destroy(ten_env_notify_log_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_log_ctx_destroy(ten_env_notify_log_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  ten_string_deinit(&info->func_name);
-  ten_string_deinit(&info->file_name);
-  ten_string_deinit(&info->msg);
-  ten_event_destroy(info->completed);
+  ten_string_deinit(&ctx->func_name);
+  ten_string_deinit(&ctx->file_name);
+  ten_string_deinit(&ctx->msg);
+  ten_event_destroy(ctx->completed);
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void ten_env_proxy_notify_log(ten_env_t *ten_env, void *user_data) {
@@ -50,14 +49,14 @@ static void ten_env_proxy_notify_log(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_log_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_log_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  ten_env_log(ten_env, info->level, ten_string_get_raw_str(&info->func_name),
-              ten_string_get_raw_str(&info->file_name), info->line_no,
-              ten_string_get_raw_str(&info->msg));
+  ten_env_log(ten_env, ctx->level, ten_string_get_raw_str(&ctx->func_name),
+              ten_string_get_raw_str(&ctx->file_name), ctx->line_no,
+              ten_string_get_raw_str(&ctx->msg));
 
-  ten_event_set(info->completed);
+  ten_event_set(ctx->completed);
 }
 
 napi_value ten_nodejs_ten_env_log_internal(napi_env env,
@@ -76,7 +75,7 @@ napi_value ten_nodejs_ten_env_log_internal(napi_env env,
   RETURN_UNDEFINED_IF_NAPI_FAIL(status == napi_ok && ten_env_bridge != NULL,
                                 "Failed to get ten_env bridge: %d", status);
 
-  ten_env_notify_log_info_t *notify_info = ten_env_notify_log_info_create();
+  ten_env_notify_log_ctx_t *notify_info = ten_env_notify_log_ctx_create();
   TEN_ASSERT(notify_info, "Failed to create log notify_info.");
 
   status = napi_get_value_int32(env, args[1], &notify_info->level);
@@ -113,7 +112,7 @@ napi_value ten_nodejs_ten_env_log_internal(napi_env env,
   }
 
   ten_error_deinit(&err);
-  ten_env_notify_log_info_destroy(notify_info);
+  ten_env_notify_log_ctx_destroy(notify_info);
 
   return js_undefined(env);
 }

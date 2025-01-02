@@ -53,9 +53,9 @@ typedef struct ten_go_ten_env_t {
   ten_rwlock_t *lock;
 } ten_go_ten_env_t;
 
-typedef struct ten_go_callback_info_t {
+typedef struct ten_go_callback_ctx_t {
   ten_go_handle_t callback_id;
-} ten_go_callback_info_t;
+} ten_go_callback_ctx_t;
 
 extern void tenGoOnCmdResult(ten_go_handle_t ten_env_bridge,
                              ten_go_handle_t cmd_result_bridge,
@@ -66,11 +66,11 @@ extern void tenGoOnError(ten_go_handle_t ten_env_bridge,
                          ten_go_handle_t error_handler,
                          ten_go_error_t cgo_error);
 
-TEN_RUNTIME_PRIVATE_API ten_go_callback_info_t *ten_go_callback_info_create(
+TEN_RUNTIME_PRIVATE_API ten_go_callback_ctx_t *ten_go_callback_ctx_create(
     ten_go_handle_t handler_id);
 
-TEN_RUNTIME_PRIVATE_API void ten_go_callback_info_destroy(
-    ten_go_callback_info_t *self);
+TEN_RUNTIME_PRIVATE_API void ten_go_callback_ctx_destroy(
+    ten_go_callback_ctx_t *self);
 
 TEN_RUNTIME_PRIVATE_API void proxy_send_xxx_callback(
     ten_env_t *ten_env, ten_shared_ptr_t *cmd_result, void *callback_info,

@@ -9,83 +9,83 @@
 #include "ten_runtime/ten_env/internal/return.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_return_result_directly_info_t {
+typedef struct ten_env_notify_return_result_directly_ctx_t {
   ten_shared_ptr_t *c_cmd_result;
   ten_nodejs_tsfn_t *js_cb;
-} ten_env_notify_return_result_directly_info_t;
+} ten_env_notify_return_result_directly_ctx_t;
 
-typedef struct ten_nodejs_return_result_directly_callback_call_info_t {
+typedef struct ten_nodejs_return_result_directly_callback_call_ctx_t {
   ten_nodejs_tsfn_t *js_cb;
   ten_error_t *error;
-} ten_nodejs_return_result_directly_callback_call_info_t;
+} ten_nodejs_return_result_directly_callback_call_ctx_t;
 
-static ten_env_notify_return_result_directly_info_t *
-ten_env_notify_return_result_directly_info_create(
-    ten_shared_ptr_t *c_cmd_result, ten_nodejs_tsfn_t *js_cb) {
-  ten_env_notify_return_result_directly_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_return_result_directly_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_return_result_directly_ctx_t *
+ten_env_notify_return_result_directly_ctx_create(ten_shared_ptr_t *c_cmd_result,
+                                                 ten_nodejs_tsfn_t *js_cb) {
+  ten_env_notify_return_result_directly_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_return_result_directly_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_cmd_result = c_cmd_result;
-  info->js_cb = js_cb;
+  ctx->c_cmd_result = c_cmd_result;
+  ctx->js_cb = js_cb;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_return_result_directly_info_destroy(
-    ten_env_notify_return_result_directly_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_return_result_directly_ctx_destroy(
+    ten_env_notify_return_result_directly_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_cmd_result) {
-    ten_shared_ptr_destroy(info->c_cmd_result);
-    info->c_cmd_result = NULL;
+  if (ctx->c_cmd_result) {
+    ten_shared_ptr_destroy(ctx->c_cmd_result);
+    ctx->c_cmd_result = NULL;
   }
 
-  info->js_cb = NULL;
+  ctx->js_cb = NULL;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
-static ten_nodejs_return_result_directly_callback_call_info_t *
-ten_nodejs_return_result_directly_callback_call_info_create(
+static ten_nodejs_return_result_directly_callback_call_ctx_t *
+ten_nodejs_return_result_directly_callback_call_ctx_create(
     ten_nodejs_tsfn_t *js_cb, ten_error_t *error) {
-  ten_nodejs_return_result_directly_callback_call_info_t *info = TEN_MALLOC(
-      sizeof(ten_nodejs_return_result_directly_callback_call_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_nodejs_return_result_directly_callback_call_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_nodejs_return_result_directly_callback_call_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->js_cb = js_cb;
-  info->error = error;
+  ctx->js_cb = js_cb;
+  ctx->error = error;
 
-  return info;
+  return ctx;
 }
 
-static void ten_nodejs_return_result_directly_callback_call_info_destroy(
-    ten_nodejs_return_result_directly_callback_call_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_nodejs_return_result_directly_callback_call_ctx_destroy(
+    ten_nodejs_return_result_directly_callback_call_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->error) {
-    ten_error_destroy(info->error);
-    info->error = NULL;
+  if (ctx->error) {
+    ten_error_destroy(ctx->error);
+    ctx->error = NULL;
   }
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void tsfn_proxy_return_result_directly_callback(napi_env env,
                                                        napi_value js_cb,
                                                        void *context,
                                                        void *data) {
-  ten_nodejs_return_result_directly_callback_call_info_t *info = data;
-  TEN_ASSERT(info, "Invalid argument.");
+  ten_nodejs_return_result_directly_callback_call_ctx_t *ctx = data;
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  ten_nodejs_tsfn_t *js_cb_tsfn = info->js_cb;
+  ten_nodejs_tsfn_t *js_cb_tsfn = ctx->js_cb;
   TEN_ASSERT(js_cb_tsfn && ten_nodejs_tsfn_check_integrity(js_cb_tsfn, false),
              "Should not happen.");
 
   napi_value js_error = NULL;
 
-  if (info->error) {
-    js_error = ten_nodejs_create_error(env, info->error);
+  if (ctx->error) {
+    js_error = ten_nodejs_create_error(env, ctx->error);
     ASSERT_IF_NAPI_FAIL(js_error, "Failed to create JS error", NULL);
   } else {
     js_error = js_undefined(env);
@@ -99,9 +99,9 @@ static void tsfn_proxy_return_result_directly_callback(napi_env env,
                       "Failed to call JS callback of TenEnv::return_result: %d",
                       status);
 
-  ten_nodejs_tsfn_release(info->js_cb);
+  ten_nodejs_tsfn_release(ctx->js_cb);
 
-  ten_nodejs_return_result_directly_callback_call_info_destroy(info);
+  ten_nodejs_return_result_directly_callback_call_ctx_destroy(ctx);
 }
 
 static void proxy_return_result_directly_error_callback(ten_env_t *self,
@@ -109,10 +109,10 @@ static void proxy_return_result_directly_error_callback(ten_env_t *self,
                                                         ten_error_t *error) {
   TEN_ASSERT(self && ten_env_check_integrity(self, true), "Should not happen.");
 
-  ten_env_notify_return_result_directly_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_return_result_directly_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  ten_nodejs_tsfn_t *js_cb = info->js_cb;
+  ten_nodejs_tsfn_t *js_cb = ctx->js_cb;
   TEN_ASSERT(js_cb && ten_nodejs_tsfn_check_integrity(js_cb, false),
              "Should not happen.");
 
@@ -122,15 +122,15 @@ static void proxy_return_result_directly_error_callback(ten_env_t *self,
     ten_error_copy(cloned_error, error);
   }
 
-  ten_nodejs_return_result_directly_callback_call_info_t *call_info =
-      ten_nodejs_return_result_directly_callback_call_info_create(js_cb,
-                                                                  cloned_error);
+  ten_nodejs_return_result_directly_callback_call_ctx_t *call_info =
+      ten_nodejs_return_result_directly_callback_call_ctx_create(js_cb,
+                                                                 cloned_error);
   TEN_ASSERT(call_info, "Failed to create callback call info.");
 
   bool rc = ten_nodejs_tsfn_invoke(js_cb, call_info);
   TEN_ASSERT(rc, "Should not happen.");
 
-  ten_env_notify_return_result_directly_info_destroy(info);
+  ten_env_notify_return_result_directly_ctx_destroy(ctx);
 }
 
 static void ten_env_proxy_notify_return_result_directly(ten_env_t *ten_env,
@@ -139,17 +139,17 @@ static void ten_env_proxy_notify_return_result_directly(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_return_result_directly_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_return_result_directly_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
 
   bool rc = ten_env_return_result_directly(
-      ten_env, info->c_cmd_result, proxy_return_result_directly_error_callback,
-      info, &err);
+      ten_env, ctx->c_cmd_result, proxy_return_result_directly_error_callback,
+      ctx, &err);
   if (!rc) {
-    proxy_return_result_directly_error_callback(ten_env, info, &err);
+    proxy_return_result_directly_error_callback(ten_env, ctx, &err);
   }
 
   ten_error_deinit(&err);
@@ -189,8 +189,8 @@ napi_value ten_nodejs_ten_env_return_result_directly(napi_env env,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_return_result_directly_info_t *notify_info =
-      ten_env_notify_return_result_directly_info_create(
+  ten_env_notify_return_result_directly_ctx_t *notify_info =
+      ten_env_notify_return_result_directly_ctx_create(
           ten_shared_ptr_clone(cmd_result_bridge->msg.msg), cb_tsfn);
   bool rc = ten_env_proxy_notify(ten_env_bridge->c_ten_env_proxy,
                                  ten_env_proxy_notify_return_result_directly,
@@ -208,7 +208,7 @@ napi_value ten_nodejs_ten_env_return_result_directly(napi_env env,
     // The JS callback will not be called, so release the TSFN here.
     ten_nodejs_tsfn_release(cb_tsfn);
 
-    ten_env_notify_return_result_directly_info_destroy(notify_info);
+    ten_env_notify_return_result_directly_ctx_destroy(notify_info);
   }
 
   ten_error_deinit(&err);

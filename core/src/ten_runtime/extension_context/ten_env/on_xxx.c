@@ -75,11 +75,11 @@ void ten_extension_context_on_addon_destroy_extension_group_done(
   ten_addon_context_destroy(addon_context);
 }
 
-ten_extension_context_on_addon_create_extension_group_done_info_t *
-ten_extension_context_on_addon_create_extension_group_done_info_create(void) {
-  ten_extension_context_on_addon_create_extension_group_done_info_t *self =
+ten_extension_context_on_addon_create_extension_group_done_ctx_t *
+ten_extension_context_on_addon_create_extension_group_done_ctx_create(void) {
+  ten_extension_context_on_addon_create_extension_group_done_ctx_t *self =
       TEN_MALLOC(sizeof(
-          ten_extension_context_on_addon_create_extension_group_done_info_t));
+          ten_extension_context_on_addon_create_extension_group_done_ctx_t));
 
   self->addon_context = NULL;
   self->extension_group = NULL;
@@ -87,8 +87,8 @@ ten_extension_context_on_addon_create_extension_group_done_info_create(void) {
   return self;
 }
 
-void ten_extension_context_on_addon_create_extension_group_done_info_destroy(
-    ten_extension_context_on_addon_create_extension_group_done_info_t *self) {
+void ten_extension_context_on_addon_create_extension_group_done_ctx_destroy(
+    ten_extension_context_on_addon_create_extension_group_done_ctx_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   TEN_FREE(self);
 }

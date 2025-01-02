@@ -17,18 +17,17 @@
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/macro/check.h"
 
-ten_go_callback_info_t *ten_go_callback_info_create(
-    ten_go_handle_t handler_id) {
-  ten_go_callback_info_t *info =
-      (ten_go_callback_info_t *)TEN_MALLOC(sizeof(ten_go_callback_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+ten_go_callback_ctx_t *ten_go_callback_ctx_create(ten_go_handle_t handler_id) {
+  ten_go_callback_ctx_t *ctx =
+      (ten_go_callback_ctx_t *)TEN_MALLOC(sizeof(ten_go_callback_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->callback_id = handler_id;
+  ctx->callback_id = handler_id;
 
-  return info;
+  return ctx;
 }
 
-void ten_go_callback_info_destroy(ten_go_callback_info_t *self) {
+void ten_go_callback_ctx_destroy(ten_go_callback_ctx_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   TEN_FREE(self);
@@ -44,7 +43,7 @@ void proxy_send_xxx_callback(ten_env_t *ten_env, ten_shared_ptr_t *cmd_result,
 
   ten_go_ten_env_t *ten_env_bridge = ten_go_ten_env_wrap(ten_env);
   ten_go_handle_t handler_id =
-      ((ten_go_callback_info_t *)callback_info)->callback_id;
+      ((ten_go_callback_ctx_t *)callback_info)->callback_id;
 
   // Same as Extension::OnCmd, the GO cmd result is only used for the GO
   // extension, so it can be created in GO world. We do not need to call GO
@@ -63,5 +62,5 @@ void proxy_send_xxx_callback(ten_env_t *ten_env, ten_shared_ptr_t *cmd_result,
   tenGoOnCmdResult(ten_env_bridge->bridge.go_instance, cmd_result_bridge_addr,
                    handler_id, cgo_error);
 
-  ten_go_callback_info_destroy(callback_info);
+  ten_go_callback_ctx_destroy(callback_info);
 }

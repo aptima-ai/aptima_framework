@@ -14,9 +14,9 @@ static void tsfn_proxy_get_property_to_json_callback(napi_env env,
                                                      napi_value js_cb,
                                                      void *context,
                                                      void *data) {
-  ten_nodejs_get_property_call_info_t *info =
-      (ten_nodejs_get_property_call_info_t *)data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_nodejs_get_property_call_ctx_t *ctx =
+      (ten_nodejs_get_property_call_ctx_t *)data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   napi_value js_res = NULL;
   napi_value js_error = NULL;
@@ -24,10 +24,10 @@ static void tsfn_proxy_get_property_to_json_callback(napi_env env,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_value_t *value = info->value;
+  ten_value_t *value = ctx->value;
   if (!value) {
-    if (info->error) {
-      js_error = ten_nodejs_create_error(env, info->error);
+    if (ctx->error) {
+      js_error = ten_nodejs_create_error(env, ctx->error);
       ASSERT_IF_NAPI_FAIL(js_error, "Failed to create JS error", NULL);
     } else {
       ten_error_set(&err, TEN_ERRNO_GENERIC, "Failed to get property value");
@@ -74,9 +74,9 @@ static void tsfn_proxy_get_property_to_json_callback(napi_env env,
       status == napi_ok,
       "Failed to call JS callback of TenEnv::getPropertyToJson: %d", status);
 
-  ten_nodejs_tsfn_release(info->cb_tsfn);
+  ten_nodejs_tsfn_release(ctx->cb_tsfn);
 
-  ten_nodejs_get_property_call_info_destroy(info);
+  ten_nodejs_get_property_call_ctx_destroy(ctx);
 }
 
 napi_value ten_nodejs_ten_env_get_property_to_json(napi_env env,

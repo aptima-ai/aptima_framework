@@ -22,43 +22,43 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
-typedef struct ten_env_notify_send_data_info_t {
+typedef struct ten_env_notify_send_data_ctx_t {
   ten_shared_ptr_t *c_data;
   ten_go_handle_t callback_handle;
-} ten_env_notify_send_data_info_t;
+} ten_env_notify_send_data_ctx_t;
 
-static ten_env_notify_send_data_info_t *ten_env_notify_send_data_info_create(
+static ten_env_notify_send_data_ctx_t *ten_env_notify_send_data_ctx_create(
     ten_shared_ptr_t *c_data, ten_go_handle_t callback_handle) {
   TEN_ASSERT(c_data, "Invalid argument.");
 
-  ten_env_notify_send_data_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_send_data_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_send_data_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_send_data_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_data = c_data;
-  info->callback_handle = callback_handle;
+  ctx->c_data = c_data;
+  ctx->callback_handle = callback_handle;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_send_data_info_destroy(
-    ten_env_notify_send_data_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_send_data_ctx_destroy(
+    ten_env_notify_send_data_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_data) {
-    ten_shared_ptr_destroy(info->c_data);
-    info->c_data = NULL;
+  if (ctx->c_data) {
+    ten_shared_ptr_destroy(ctx->c_data);
+    ctx->c_data = NULL;
   }
 
-  info->callback_handle = 0;
+  ctx->callback_handle = 0;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void proxy_handle_data_error(ten_env_t *ten_env,
                                     TEN_UNUSED ten_shared_ptr_t *cmd_result,
                                     void *callback_info_, ten_error_t *err) {
-  ten_go_callback_info_t *callback_info = callback_info_;
+  ten_go_callback_ctx_t *callback_info = callback_info_;
   TEN_ASSERT(callback_info, "Should not happen.");
 
   ten_go_error_t cgo_error;
@@ -76,7 +76,7 @@ static void proxy_handle_data_error(ten_env_t *ten_env,
   tenGoOnError(ten_env_bridge->bridge.go_instance, callback_info->callback_id,
                cgo_error);
 
-  ten_go_callback_info_destroy(callback_info);
+  ten_go_callback_ctx_destroy(callback_info);
 }
 
 static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
@@ -85,7 +85,7 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_data_info_t *notify_info = user_data;
+  ten_env_notify_send_data_ctx_t *notify_info = user_data;
   TEN_ASSERT(notify_info, "Should not happen.");
 
   ten_go_error_t cgo_error;
@@ -99,10 +99,10 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
   if (notify_info->callback_handle == TEN_GO_NO_RESPONSE_HANDLER) {
     res = ten_env_send_data(ten_env, notify_info->c_data, NULL, NULL, &err);
   } else {
-    ten_go_callback_info_t *info =
-        ten_go_callback_info_create(notify_info->callback_handle);
+    ten_go_callback_ctx_t *ctx =
+        ten_go_callback_ctx_create(notify_info->callback_handle);
     res = ten_env_send_data(ten_env, notify_info->c_data,
-                            proxy_handle_data_error, info, &err);
+                            proxy_handle_data_error, ctx, &err);
 
     if (!res) {
       // Prepare error information to pass to Go.
@@ -113,14 +113,14 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
       tenGoOnError(ten_env_bridge->bridge.go_instance,
                    notify_info->callback_handle, cgo_error);
 
-      ten_go_callback_info_destroy(info);
+      ten_go_callback_ctx_destroy(ctx);
     }
   }
 
   ten_error_deinit(&err);
 
   // The notify_info is no longer needed.
-  ten_env_notify_send_data_info_destroy(notify_info);
+  ten_env_notify_send_data_ctx_destroy(notify_info);
 }
 
 ten_go_error_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
@@ -143,8 +143,8 @@ ten_go_error_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_send_data_info_t *notify_info =
-      ten_env_notify_send_data_info_create(
+  ten_env_notify_send_data_ctx_t *notify_info =
+      ten_env_notify_send_data_ctx_create(
           ten_go_msg_move_c_msg(data),
           handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id);
 
@@ -152,7 +152,7 @@ ten_go_error_t ten_go_ten_env_send_data(uintptr_t bridge_addr,
                             ten_env_proxy_notify_send_data, notify_info, false,
                             &err)) {
     // Failed to invoke ten_env_proxy_notify.
-    ten_env_notify_send_data_info_destroy(notify_info);
+    ten_env_notify_send_data_ctx_destroy(notify_info);
     ten_go_error_from_error(&cgo_error, &err);
   }
 

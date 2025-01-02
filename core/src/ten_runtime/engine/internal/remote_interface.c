@@ -68,12 +68,12 @@ static size_t ten_engine_weak_remotes_cnt_in_specified_uri(ten_engine_t *self,
   return cnt;
 }
 
-static ten_engine_on_protocol_created_info_t *
-ten_engine_on_protocol_created_info_create(ten_engine_on_remote_created_cb_t cb,
-                                           void *user_data) {
-  ten_engine_on_protocol_created_info_t *self =
-      (ten_engine_on_protocol_created_info_t *)TEN_MALLOC(
-          sizeof(ten_engine_on_protocol_created_info_t));
+static ten_engine_on_protocol_created_ctx_t *
+ten_engine_on_protocol_created_ctx_create(ten_engine_on_remote_created_cb_t cb,
+                                          void *user_data) {
+  ten_engine_on_protocol_created_ctx_t *self =
+      (ten_engine_on_protocol_created_ctx_t *)TEN_MALLOC(
+          sizeof(ten_engine_on_protocol_created_ctx_t));
 
   self->cb = cb;
   self->user_data = user_data;
@@ -81,8 +81,8 @@ ten_engine_on_protocol_created_info_create(ten_engine_on_remote_created_cb_t cb,
   return self;
 }
 
-static void ten_engine_on_protocol_created_info_destroy(
-    ten_engine_on_protocol_created_info_t *self) {
+static void ten_engine_on_protocol_created_ctx_destroy(
+    ten_engine_on_protocol_created_ctx_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
   TEN_FREE(self);
@@ -254,8 +254,8 @@ static void ten_engine_on_remote_protocol_created(ten_env_t *ten_env,
   TEN_ASSERT(self && ten_engine_check_integrity(self, true),
              "Should not happen.");
 
-  ten_engine_on_protocol_created_info_t *info =
-      (ten_engine_on_protocol_created_info_t *)cb_data;
+  ten_engine_on_protocol_created_ctx_t *ctx =
+      (ten_engine_on_protocol_created_ctx_t *)cb_data;
 
   ten_connection_t *connection = ten_connection_create(protocol);
   TEN_ASSERT(connection, "Should not happen.");
@@ -269,11 +269,11 @@ static void ten_engine_on_remote_protocol_created(ten_env_t *ten_env,
       ten_string_get_raw_str(&protocol->uri), self, connection);
   TEN_ASSERT(remote, "Should not happen.");
 
-  if (info->cb) {
-    info->cb(self, remote, info->user_data);
+  if (ctx->cb) {
+    ctx->cb(self, remote, ctx->user_data);
   }
 
-  ten_engine_on_protocol_created_info_destroy(info);
+  ten_engine_on_protocol_created_ctx_destroy(ctx);
 }
 
 static bool ten_engine_create_remote_async(
@@ -288,18 +288,18 @@ static bool ten_engine_create_remote_async(
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_engine_on_protocol_created_info_t *info =
-      ten_engine_on_protocol_created_info_create(on_remote_created_cb, cb_data);
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_engine_on_protocol_created_ctx_t *ctx =
+      ten_engine_on_protocol_created_ctx_create(on_remote_created_cb, cb_data);
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
   bool rc = ten_addon_create_protocol_with_uri(
       self->ten_env, uri, TEN_PROTOCOL_ROLE_OUT_DEFAULT,
-      ten_engine_on_remote_protocol_created, info, &err);
+      ten_engine_on_remote_protocol_created, ctx, &err);
   if (!rc) {
     TEN_LOGE("Failed to create protocol for %s. err: %s", uri,
              ten_error_errmsg(&err));
     ten_error_deinit(&err);
-    ten_engine_on_protocol_created_info_destroy(info);
+    ten_engine_on_protocol_created_ctx_destroy(ctx);
     return false;
   }
 

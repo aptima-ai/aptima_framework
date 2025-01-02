@@ -21,41 +21,41 @@ typedef void (*ten_py_get_property_cb)(ten_env_t *ten_env, ten_value_t *value,
                                        ten_error_t *error,
                                        PyObject *py_cb_func);
 
-typedef struct ten_env_notify_get_property_async_info_t {
+typedef struct ten_env_notify_get_property_async_ctx_t {
   ten_string_t path;
   PyObject *py_cb_func;
   ten_py_get_property_cb cb;
-} ten_env_notify_get_property_async_info_t;
+} ten_env_notify_get_property_async_ctx_t;
 
-static ten_env_notify_get_property_async_info_t *
-ten_env_notify_get_property_async_info_create(const char *path,
-                                              PyObject *py_cb_func,
-                                              ten_py_get_property_cb cb) {
-  ten_env_notify_get_property_async_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_get_property_async_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_get_property_async_ctx_t *
+ten_env_notify_get_property_async_ctx_create(const char *path,
+                                             PyObject *py_cb_func,
+                                             ten_py_get_property_cb cb) {
+  ten_env_notify_get_property_async_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_get_property_async_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  ten_string_init_formatted(&info->path, "%s", path);
-  info->py_cb_func = py_cb_func;
-  info->cb = cb;
+  ten_string_init_formatted(&ctx->path, "%s", path);
+  ctx->py_cb_func = py_cb_func;
+  ctx->cb = cb;
 
   if (py_cb_func != NULL) {
     Py_INCREF(py_cb_func);
   }
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_get_property_async_info_destroy(
-    ten_env_notify_get_property_async_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_get_property_async_ctx_destroy(
+    ten_env_notify_get_property_async_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  ten_string_deinit(&info->path);
+  ten_string_deinit(&ctx->path);
 
-  info->py_cb_func = NULL;
-  info->cb = NULL;
+  ctx->py_cb_func = NULL;
+  ctx->cb = NULL;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
@@ -64,23 +64,23 @@ static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_get_property_async_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_get_property_async_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
 
   ten_value_t *c_value =
-      ten_env_peek_property(ten_env, ten_string_get_raw_str(&info->path), &err);
+      ten_env_peek_property(ten_env, ten_string_get_raw_str(&ctx->path), &err);
 
   if (c_value) {
-    info->cb(ten_env, c_value, NULL, info->py_cb_func);
+    ctx->cb(ten_env, c_value, NULL, ctx->py_cb_func);
   } else {
-    info->cb(ten_env, NULL, &err, info->py_cb_func);
+    ctx->cb(ten_env, NULL, &err, ctx->py_cb_func);
   }
 
   ten_error_deinit(&err);
-  ten_env_notify_get_property_async_info_destroy(info);
+  ten_env_notify_get_property_async_ctx_destroy(ctx);
 }
 
 static bool ten_py_get_property_async(ten_py_ten_env_t *self, const char *path,
@@ -91,16 +91,16 @@ static bool ten_py_get_property_async(ten_py_ten_env_t *self, const char *path,
 
   bool success = true;
 
-  ten_env_notify_get_property_async_info_t *info =
-      ten_env_notify_get_property_async_info_create(path, py_cb_func, cb);
+  ten_env_notify_get_property_async_ctx_t *ctx =
+      ten_env_notify_get_property_async_ctx_create(path, py_cb_func, cb);
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_env_proxy_notify_get_property, info, false,
+                            ten_env_proxy_notify_get_property, ctx, false,
                             error)) {
     if (py_cb_func) {
       Py_XDECREF(py_cb_func);
     }
 
-    ten_env_notify_get_property_async_info_destroy(info);
+    ten_env_notify_get_property_async_ctx_destroy(ctx);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to get property");
   }

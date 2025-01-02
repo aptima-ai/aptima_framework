@@ -16,33 +16,33 @@
 #include "ten_utils/value/value.h"
 #include "ten_utils/value/value_json.h"
 
-typedef struct ten_env_notify_set_property_async_info_t {
+typedef struct ten_env_notify_set_property_async_ctx_t {
   ten_string_t path;
   ten_value_t *c_value;
   PyObject *py_cb_func;
-} ten_env_notify_set_property_async_info_t;
+} ten_env_notify_set_property_async_ctx_t;
 
-static ten_env_notify_set_property_async_info_t *
-ten_env_notify_set_property_async_info_create(const void *path,
-                                              ten_value_t *value,
-                                              PyObject *py_cb_func) {
-  ten_env_notify_set_property_async_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_set_property_async_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_set_property_async_ctx_t *
+ten_env_notify_set_property_async_ctx_create(const void *path,
+                                             ten_value_t *value,
+                                             PyObject *py_cb_func) {
+  ten_env_notify_set_property_async_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_set_property_async_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  ten_string_init_formatted(&info->path, "%s", path);
-  info->c_value = value;
-  info->py_cb_func = py_cb_func;
+  ten_string_init_formatted(&ctx->path, "%s", path);
+  ctx->c_value = value;
+  ctx->py_cb_func = py_cb_func;
 
   if (py_cb_func != NULL) {
     Py_INCREF(py_cb_func);
   }
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_set_property_async_info_destroy(
-    ten_env_notify_set_property_async_info_t *self) {
+static void ten_env_notify_set_property_async_ctx_destroy(
+    ten_env_notify_set_property_async_ctx_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_string_deinit(&self->path);
@@ -58,16 +58,16 @@ static void ten_env_proxy_notify_set_property_async(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_set_property_async_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_set_property_async_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  TEN_ASSERT(info->py_cb_func, "Invalid argument.");
+  TEN_ASSERT(ctx->py_cb_func, "Invalid argument.");
 
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_env_set_property(ten_env, ten_string_get_raw_str(&info->path),
-                                 info->c_value, &err);
+  bool rc = ten_env_set_property(ten_env, ten_string_get_raw_str(&ctx->path),
+                                 ctx->c_value, &err);
 
   // About to call the Python function, so it's necessary to ensure that the GIL
   // has been acquired.
@@ -88,14 +88,14 @@ static void ten_env_proxy_notify_set_property_async(ten_env_t *ten_env,
 
   ten_error_deinit(&err);
 
-  PyObject *result = PyObject_CallObject(info->py_cb_func, arglist);
+  PyObject *result = PyObject_CallObject(ctx->py_cb_func, arglist);
   Py_XDECREF(result);  // Ensure cleanup if an error occurred.
 
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
   Py_XDECREF(arglist);
-  Py_XDECREF(info->py_cb_func);
+  Py_XDECREF(ctx->py_cb_func);
 
   if (py_error) {
     ten_py_error_invalidate(py_error);
@@ -103,7 +103,7 @@ static void ten_env_proxy_notify_set_property_async(ten_env_t *ten_env,
 
   ten_py_gil_state_release_internal(prev_state);
 
-  ten_env_notify_set_property_async_info_destroy(info);
+  ten_env_notify_set_property_async_ctx_destroy(ctx);
 }
 
 static bool ten_py_ten_env_set_property_async(ten_py_ten_env_t *self,
@@ -117,14 +117,14 @@ static bool ten_py_ten_env_set_property_async(ten_py_ten_env_t *self,
 
   bool success = true;
 
-  ten_env_notify_set_property_async_info_t *info =
-      ten_env_notify_set_property_async_info_create(path, value, py_cb_func);
+  ten_env_notify_set_property_async_ctx_t *ctx =
+      ten_env_notify_set_property_async_ctx_create(path, value, py_cb_func);
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_env_proxy_notify_set_property_async, info,
-                            false, err)) {
+                            ten_env_proxy_notify_set_property_async, ctx, false,
+                            err)) {
     Py_XDECREF(py_cb_func);
 
-    ten_env_notify_set_property_async_info_destroy(info);
+    ten_env_notify_set_property_async_ctx_destroy(ctx);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to set property");
   }

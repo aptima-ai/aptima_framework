@@ -32,32 +32,31 @@ typedef struct ten_nodejs_ten_env_t {
   ten_env_proxy_t *c_ten_env_proxy;
 } ten_nodejs_ten_env_t;
 
-typedef struct ten_nodejs_get_property_call_info_t {
+typedef struct ten_nodejs_get_property_call_ctx_t {
   ten_nodejs_tsfn_t *cb_tsfn;
   ten_value_t *value;
   ten_error_t *error;
-} ten_nodejs_get_property_call_info_t;
+} ten_nodejs_get_property_call_ctx_t;
 
-typedef struct ten_nodejs_set_property_call_info_t {
+typedef struct ten_nodejs_set_property_call_ctx_t {
   ten_nodejs_tsfn_t *cb_tsfn;
   bool success;
   ten_error_t *error;
-} ten_nodejs_set_property_call_info_t;
+} ten_nodejs_set_property_call_ctx_t;
 
-TEN_RUNTIME_PRIVATE_API ten_nodejs_get_property_call_info_t *
-ten_nodejs_get_property_call_info_create(ten_nodejs_tsfn_t *cb_tsfn,
-                                         ten_value_t *value,
-                                         ten_error_t *error);
+TEN_RUNTIME_PRIVATE_API ten_nodejs_get_property_call_ctx_t *
+ten_nodejs_get_property_call_ctx_create(ten_nodejs_tsfn_t *cb_tsfn,
+                                        ten_value_t *value, ten_error_t *error);
 
-TEN_RUNTIME_PRIVATE_API void ten_nodejs_get_property_call_info_destroy(
-    ten_nodejs_get_property_call_info_t *info);
+TEN_RUNTIME_PRIVATE_API void ten_nodejs_get_property_call_ctx_destroy(
+    ten_nodejs_get_property_call_ctx_t *ctx);
 
-TEN_RUNTIME_PRIVATE_API ten_nodejs_set_property_call_info_t *
-ten_nodejs_set_property_call_info_create(ten_nodejs_tsfn_t *cb_tsfn,
-                                         bool success, ten_error_t *error);
+TEN_RUNTIME_PRIVATE_API ten_nodejs_set_property_call_ctx_t *
+ten_nodejs_set_property_call_ctx_create(ten_nodejs_tsfn_t *cb_tsfn,
+                                        bool success, ten_error_t *error);
 
-TEN_RUNTIME_PRIVATE_API void ten_nodejs_set_property_call_info_destroy(
-    ten_nodejs_set_property_call_info_t *info);
+TEN_RUNTIME_PRIVATE_API void ten_nodejs_set_property_call_ctx_destroy(
+    ten_nodejs_set_property_call_ctx_t *ctx);
 
 TEN_RUNTIME_API napi_value ten_nodejs_ten_env_module_init(napi_env env,
                                                           napi_value exports);

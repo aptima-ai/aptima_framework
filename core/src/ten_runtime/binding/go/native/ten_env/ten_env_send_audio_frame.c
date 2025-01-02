@@ -18,44 +18,44 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
-typedef struct ten_env_notify_send_audio_frame_info_t {
+typedef struct ten_env_notify_send_audio_frame_ctx_t {
   ten_shared_ptr_t *c_audio_frame;
   ten_go_handle_t callback_handle;
-} ten_env_notify_send_audio_frame_info_t;
+} ten_env_notify_send_audio_frame_ctx_t;
 
-static ten_env_notify_send_audio_frame_info_t *
-ten_env_notify_send_audio_frame_info_create(ten_shared_ptr_t *c_audio_frame,
-                                            ten_go_handle_t callback_handle) {
+static ten_env_notify_send_audio_frame_ctx_t *
+ten_env_notify_send_audio_frame_ctx_create(ten_shared_ptr_t *c_audio_frame,
+                                           ten_go_handle_t callback_handle) {
   TEN_ASSERT(c_audio_frame, "Invalid argument.");
 
-  ten_env_notify_send_audio_frame_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_send_audio_frame_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_send_audio_frame_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_send_audio_frame_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_audio_frame = c_audio_frame;
-  info->callback_handle = callback_handle;
+  ctx->c_audio_frame = c_audio_frame;
+  ctx->callback_handle = callback_handle;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_send_audio_frame_info_destroy(
-    ten_env_notify_send_audio_frame_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_send_audio_frame_ctx_destroy(
+    ten_env_notify_send_audio_frame_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_audio_frame) {
-    ten_shared_ptr_destroy(info->c_audio_frame);
-    info->c_audio_frame = NULL;
+  if (ctx->c_audio_frame) {
+    ten_shared_ptr_destroy(ctx->c_audio_frame);
+    ctx->c_audio_frame = NULL;
   }
 
-  info->callback_handle = 0;
+  ctx->callback_handle = 0;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void proxy_handle_audio_frame_error(
     ten_env_t *ten_env, TEN_UNUSED ten_shared_ptr_t *cmd_result,
     void *callback_info_, ten_error_t *err) {
-  ten_go_callback_info_t *callback_info = callback_info_;
+  ten_go_callback_ctx_t *callback_info = callback_info_;
   TEN_ASSERT(callback_info, "Should not happen.");
 
   ten_go_error_t cgo_error;
@@ -73,7 +73,7 @@ static void proxy_handle_audio_frame_error(
   tenGoOnError(ten_env_bridge->bridge.go_instance, callback_info->callback_id,
                cgo_error);
 
-  ten_go_callback_info_destroy(callback_info);
+  ten_go_callback_ctx_destroy(callback_info);
 }
 
 static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
@@ -82,7 +82,7 @@ static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_audio_frame_info_t *notify_info = user_data;
+  ten_env_notify_send_audio_frame_ctx_t *notify_info = user_data;
   TEN_ASSERT(notify_info, "Should not happen.");
 
   ten_go_error_t cgo_error;
@@ -97,8 +97,8 @@ static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
     res = ten_env_send_audio_frame(ten_env, notify_info->c_audio_frame, NULL,
                                    NULL, &err);
   } else {
-    ten_go_callback_info_t *info =
-        ten_go_callback_info_create(notify_info->callback_handle);
+    ten_go_callback_ctx_t *ctx =
+        ten_go_callback_ctx_create(notify_info->callback_handle);
 
     res = ten_env_send_audio_frame(ten_env, notify_info->c_audio_frame,
                                    proxy_handle_audio_frame_error, notify_info,
@@ -113,13 +113,13 @@ static void ten_env_proxy_notify_send_audio_frame(ten_env_t *ten_env,
       tenGoOnError(ten_env_bridge->bridge.go_instance,
                    notify_info->callback_handle, cgo_error);
 
-      ten_go_callback_info_destroy(info);
+      ten_go_callback_ctx_destroy(ctx);
     }
   }
 
   ten_error_deinit(&err);
 
-  ten_env_notify_send_audio_frame_info_destroy(notify_info);
+  ten_env_notify_send_audio_frame_ctx_destroy(notify_info);
 }
 
 ten_go_error_t ten_go_ten_env_send_audio_frame(
@@ -142,15 +142,15 @@ ten_go_error_t ten_go_ten_env_send_audio_frame(
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_send_audio_frame_info_t *notify_info =
-      ten_env_notify_send_audio_frame_info_create(
+  ten_env_notify_send_audio_frame_ctx_t *notify_info =
+      ten_env_notify_send_audio_frame_ctx_create(
           ten_go_msg_move_c_msg(audio_frame),
           handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
                             ten_env_proxy_notify_send_audio_frame, notify_info,
                             false, &err)) {
-    ten_env_notify_send_audio_frame_info_destroy(notify_info);
+    ten_env_notify_send_audio_frame_ctx_destroy(notify_info);
     ten_go_error_from_error(&cgo_error, &err);
   }
 

@@ -62,14 +62,14 @@ bool ten_addon_create_extension(ten_env_t *ten_env, const char *addon_name,
                                            addon_name, instance_name, cb,
                                            cb_data);
   } else {
-    ten_addon_on_create_extension_instance_info_t *info =
-        ten_addon_on_create_extension_instance_info_create(
+    ten_addon_on_create_extension_instance_ctx_t *ctx =
+        ten_addon_on_create_extension_instance_ctx_create(
             TEN_ADDON_TYPE_EXTENSION, addon_name, instance_name, cb, cb_data);
 
     ten_runloop_post_task_tail(
         ten_extension_group_get_attached_runloop(extension_group),
         ten_extension_thread_create_extension_instance,
-        extension_group->extension_thread, info);
+        extension_group->extension_thread, ctx);
     return true;
   }
 }
@@ -103,9 +103,9 @@ bool ten_addon_destroy_extension(ten_env_t *ten_env, ten_extension_t *extension,
     return ten_addon_host_destroy_instance_async(addon_host, ten_env, extension,
                                                  cb, cb_data);
   } else {
-    ten_addon_on_destroy_instance_info_t *destroy_instance_info =
-        ten_addon_host_on_destroy_instance_info_create(addon_host, extension,
-                                                       cb, cb_data);
+    ten_addon_on_destroy_instance_ctx_t *destroy_instance_info =
+        ten_addon_host_on_destroy_instance_ctx_create(addon_host, extension, cb,
+                                                      cb_data);
 
     ten_runloop_post_task_tail(
         ten_extension_group_get_attached_runloop(extension_group),

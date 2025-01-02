@@ -18,43 +18,43 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_send_cmd_info_t {
+typedef struct ten_env_notify_send_cmd_ctx_t {
   ten_shared_ptr_t *c_cmd;
   PyObject *py_cb_func;
   bool is_ex;
-} ten_env_notify_send_cmd_info_t;
+} ten_env_notify_send_cmd_ctx_t;
 
-static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
+static ten_env_notify_send_cmd_ctx_t *ten_env_notify_send_cmd_ctx_create(
     ten_shared_ptr_t *c_cmd, PyObject *py_cb_func, bool is_ex) {
   TEN_ASSERT(c_cmd, "Invalid argument.");
 
-  ten_env_notify_send_cmd_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_send_cmd_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_send_cmd_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_send_cmd_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_cmd = c_cmd;
-  info->py_cb_func = py_cb_func;
-  info->is_ex = is_ex;
+  ctx->c_cmd = c_cmd;
+  ctx->py_cb_func = py_cb_func;
+  ctx->is_ex = is_ex;
 
   if (py_cb_func != NULL) {
     Py_INCREF(py_cb_func);
   }
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_send_cmd_info_destroy(
-    ten_env_notify_send_cmd_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_send_cmd_ctx_destroy(
+    ten_env_notify_send_cmd_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_cmd) {
-    ten_shared_ptr_destroy(info->c_cmd);
-    info->c_cmd = NULL;
+  if (ctx->c_cmd) {
+    ten_shared_ptr_destroy(ctx->c_cmd);
+    ctx->c_cmd = NULL;
   }
 
-  info->py_cb_func = NULL;
+  ctx->py_cb_func = NULL;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void proxy_send_xxx_callback(ten_env_t *ten_env,
@@ -120,7 +120,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_cmd_info_t *notify_info = user_data;
+  ten_env_notify_send_cmd_ctx_t *notify_info = user_data;
 
   ten_error_t err;
   ten_error_init(&err);
@@ -168,7 +168,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
 
   ten_error_deinit(&err);
 
-  ten_env_notify_send_cmd_info_destroy(notify_info);
+  ten_env_notify_send_cmd_ctx_destroy(notify_info);
 }
 
 PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
@@ -204,8 +204,8 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
   }
 
   ten_shared_ptr_t *cloned_cmd = ten_shared_ptr_clone(py_cmd->msg.c_msg);
-  ten_env_notify_send_cmd_info_t *notify_info =
-      ten_env_notify_send_cmd_info_create(cloned_cmd, cb_func, is_ex);
+  ten_env_notify_send_cmd_ctx_t *notify_info =
+      ten_env_notify_send_cmd_ctx_create(cloned_cmd, cb_func, is_ex);
 
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_cmd, notify_info, false,
@@ -214,7 +214,7 @@ PyObject *ten_py_ten_env_send_cmd(PyObject *self, PyObject *args) {
       Py_XDECREF(cb_func);
     }
 
-    ten_env_notify_send_cmd_info_destroy(notify_info);
+    ten_env_notify_send_cmd_ctx_destroy(notify_info);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to send cmd.");
     goto done;

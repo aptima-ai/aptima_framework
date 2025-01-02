@@ -84,62 +84,62 @@ bool ten_nodejs_ten_env_check_integrity(ten_nodejs_ten_env_t *self,
   return true;
 }
 
-ten_nodejs_get_property_call_info_t *ten_nodejs_get_property_call_info_create(
+ten_nodejs_get_property_call_ctx_t *ten_nodejs_get_property_call_ctx_create(
     ten_nodejs_tsfn_t *cb_tsfn, ten_value_t *value, ten_error_t *error) {
   TEN_ASSERT(cb_tsfn, "Invalid argument.");
 
-  ten_nodejs_get_property_call_info_t *info =
-      (ten_nodejs_get_property_call_info_t *)TEN_MALLOC(
-          sizeof(ten_nodejs_get_property_call_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_nodejs_get_property_call_ctx_t *ctx =
+      (ten_nodejs_get_property_call_ctx_t *)TEN_MALLOC(
+          sizeof(ten_nodejs_get_property_call_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->cb_tsfn = cb_tsfn;
-  info->value = value;
-  info->error = error;
+  ctx->cb_tsfn = cb_tsfn;
+  ctx->value = value;
+  ctx->error = error;
 
-  return info;
+  return ctx;
 }
 
-void ten_nodejs_get_property_call_info_destroy(
-    ten_nodejs_get_property_call_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+void ten_nodejs_get_property_call_ctx_destroy(
+    ten_nodejs_get_property_call_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->value) {
-    ten_value_destroy(info->value);
+  if (ctx->value) {
+    ten_value_destroy(ctx->value);
   }
 
-  if (info->error) {
-    ten_error_destroy(info->error);
+  if (ctx->error) {
+    ten_error_destroy(ctx->error);
   }
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
-ten_nodejs_set_property_call_info_t *ten_nodejs_set_property_call_info_create(
+ten_nodejs_set_property_call_ctx_t *ten_nodejs_set_property_call_ctx_create(
     ten_nodejs_tsfn_t *cb_tsfn, bool success, ten_error_t *error) {
   TEN_ASSERT(cb_tsfn, "Invalid argument.");
 
-  ten_nodejs_set_property_call_info_t *info =
-      (ten_nodejs_set_property_call_info_t *)TEN_MALLOC(
-          sizeof(ten_nodejs_set_property_call_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_nodejs_set_property_call_ctx_t *ctx =
+      (ten_nodejs_set_property_call_ctx_t *)TEN_MALLOC(
+          sizeof(ten_nodejs_set_property_call_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->cb_tsfn = cb_tsfn;
-  info->success = success;
-  info->error = error;
+  ctx->cb_tsfn = cb_tsfn;
+  ctx->success = success;
+  ctx->error = error;
 
-  return info;
+  return ctx;
 }
 
-void ten_nodejs_set_property_call_info_destroy(
-    ten_nodejs_set_property_call_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+void ten_nodejs_set_property_call_ctx_destroy(
+    ten_nodejs_set_property_call_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->error) {
-    ten_error_destroy(info->error);
+  if (ctx->error) {
+    ten_error_destroy(ctx->error);
   }
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 napi_value ten_nodejs_ten_env_create_new_js_object_and_wrap(

@@ -19,39 +19,39 @@
 #include "ten_utils/lib/error.h"
 #include "ten_utils/macro/check.h"
 
-typedef struct ten_env_notify_send_cmd_info_t {
+typedef struct ten_env_notify_send_cmd_ctx_t {
   ten_shared_ptr_t *c_cmd;
   ten_go_handle_t handler_id;
   bool is_ex;
-} ten_env_notify_send_cmd_info_t;
+} ten_env_notify_send_cmd_ctx_t;
 
-static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
+static ten_env_notify_send_cmd_ctx_t *ten_env_notify_send_cmd_ctx_create(
     ten_shared_ptr_t *c_cmd, ten_go_handle_t handler_id, bool is_ex) {
   TEN_ASSERT(c_cmd, "Invalid argument.");
 
-  ten_env_notify_send_cmd_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_send_cmd_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_send_cmd_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_send_cmd_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_cmd = c_cmd;
-  info->handler_id = handler_id;
-  info->is_ex = is_ex;
+  ctx->c_cmd = c_cmd;
+  ctx->handler_id = handler_id;
+  ctx->is_ex = is_ex;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_send_cmd_info_destroy(
-    ten_env_notify_send_cmd_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_send_cmd_ctx_destroy(
+    ten_env_notify_send_cmd_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_cmd) {
-    ten_shared_ptr_destroy(info->c_cmd);
-    info->c_cmd = NULL;
+  if (ctx->c_cmd) {
+    ten_shared_ptr_destroy(ctx->c_cmd);
+    ctx->c_cmd = NULL;
   }
 
-  info->handler_id = 0;
+  ctx->handler_id = 0;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
@@ -59,7 +59,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_cmd_info_t *notify_info = user_data;
+  ten_env_notify_send_cmd_ctx_t *notify_info = user_data;
   TEN_ASSERT(notify_info, "Should not happen.");
 
   ten_error_t err;
@@ -76,13 +76,13 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   if (notify_info->handler_id == TEN_GO_NO_RESPONSE_HANDLER) {
     res = send_cmd_func(ten_env, notify_info->c_cmd, NULL, NULL, &err);
   } else {
-    ten_go_callback_info_t *info =
-        ten_go_callback_info_create(notify_info->handler_id);
+    ten_go_callback_ctx_t *ctx =
+        ten_go_callback_ctx_create(notify_info->handler_id);
     res = send_cmd_func(ten_env, notify_info->c_cmd, proxy_send_xxx_callback,
-                        info, &err);
+                        ctx, &err);
 
     if (!res) {
-      ten_go_callback_info_destroy(info);
+      ten_go_callback_ctx_destroy(ctx);
     }
   }
 
@@ -101,7 +101,7 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
 
   ten_error_deinit(&err);
 
-  ten_env_notify_send_cmd_info_destroy(notify_info);
+  ten_env_notify_send_cmd_ctx_destroy(notify_info);
 }
 
 ten_go_error_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
@@ -125,15 +125,15 @@ ten_go_error_t ten_go_ten_env_send_cmd(uintptr_t bridge_addr,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_send_cmd_info_t *notify_info =
-      ten_env_notify_send_cmd_info_create(
+  ten_env_notify_send_cmd_ctx_t *notify_info =
+      ten_env_notify_send_cmd_ctx_create(
           ten_go_msg_move_c_msg(cmd),
           handler_id <= 0 ? TEN_GO_NO_RESPONSE_HANDLER : handler_id, is_ex);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
                             ten_env_proxy_notify_send_cmd, notify_info, false,
                             &err)) {
-    ten_env_notify_send_cmd_info_destroy(notify_info);
+    ten_env_notify_send_cmd_ctx_destroy(notify_info);
     ten_go_error_from_error(&cgo_error, &err);
   }
 

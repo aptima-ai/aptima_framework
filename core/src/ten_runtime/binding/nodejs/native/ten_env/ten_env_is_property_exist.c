@@ -14,11 +14,11 @@
 static void tsfn_proxy_is_property_exist_callback(napi_env env,
                                                   napi_value js_cb,
                                                   void *context, void *data) {
-  ten_nodejs_get_property_call_info_t *info =
-      (ten_nodejs_get_property_call_info_t *)data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_nodejs_get_property_call_ctx_t *ctx =
+      (ten_nodejs_get_property_call_ctx_t *)data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  ten_value_t *value = info->value;
+  ten_value_t *value = ctx->value;
   bool is_property_exist = value != NULL;
 
   napi_value js_res = NULL;
@@ -31,9 +31,9 @@ static void tsfn_proxy_is_property_exist_callback(napi_env env,
       status == napi_ok,
       "Failed to call JS callback of TenEnv::isPropertyExist: %d", status);
 
-  ten_nodejs_tsfn_release(info->cb_tsfn);
+  ten_nodejs_tsfn_release(ctx->cb_tsfn);
 
-  ten_nodejs_get_property_call_info_destroy(info);
+  ten_nodejs_get_property_call_ctx_destroy(ctx);
 }
 
 napi_value ten_nodejs_ten_env_is_property_exist(napi_env env,

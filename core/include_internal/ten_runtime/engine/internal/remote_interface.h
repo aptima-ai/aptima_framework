@@ -20,10 +20,10 @@ typedef void (*ten_engine_on_remote_created_cb_t)(ten_engine_t *engine,
 typedef void (*ten_engine_on_connected_to_graph_remote_cb_t)(
     ten_engine_t *engine, bool success, void *user_data);
 
-typedef struct ten_engine_on_protocol_created_info_t {
+typedef struct ten_engine_on_protocol_created_ctx_t {
   ten_engine_on_remote_created_cb_t cb;
   void *user_data;
-} ten_engine_on_protocol_created_info_t;
+} ten_engine_on_protocol_created_ctx_t;
 
 TEN_RUNTIME_PRIVATE_API void ten_engine_upgrade_weak_remote_to_normal_remote(
     ten_engine_t *self, ten_remote_t *remote);

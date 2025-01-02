@@ -13,16 +13,16 @@
 typedef struct ten_env_t ten_env_t;
 
 typedef struct
-    ten_extension_context_on_addon_create_extension_group_done_info_t {
+    ten_extension_context_on_addon_create_extension_group_done_ctx_t {
   ten_extension_group_t *extension_group;
   ten_addon_context_t *addon_context;
-} ten_extension_context_on_addon_create_extension_group_done_info_t;
+} ten_extension_context_on_addon_create_extension_group_done_ctx_t;
 
-ten_extension_context_on_addon_create_extension_group_done_info_t *
-ten_extension_context_on_addon_create_extension_group_done_info_create(void);
+ten_extension_context_on_addon_create_extension_group_done_ctx_t *
+ten_extension_context_on_addon_create_extension_group_done_ctx_create(void);
 
-void ten_extension_context_on_addon_create_extension_group_done_info_destroy(
-    ten_extension_context_on_addon_create_extension_group_done_info_t *self);
+void ten_extension_context_on_addon_create_extension_group_done_ctx_destroy(
+    ten_extension_context_on_addon_create_extension_group_done_ctx_t *self);
 
 TEN_RUNTIME_PRIVATE_API void
 ten_extension_context_on_addon_create_extension_group_done(

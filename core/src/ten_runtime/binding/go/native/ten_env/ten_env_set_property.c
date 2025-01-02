@@ -23,38 +23,38 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/value/value.h"
 
-typedef struct ten_env_notify_set_property_info_t {
+typedef struct ten_env_notify_set_property_ctx_t {
   ten_string_t path;
   ten_value_t *c_value;
   uintptr_t callback_handle;
-} ten_env_notify_set_property_info_t;
+} ten_env_notify_set_property_ctx_t;
 
-static ten_env_notify_set_property_info_t *
-ten_env_notify_set_property_info_create(const void *path, int path_len,
-                                        ten_value_t *value,
-                                        uintptr_t callback_handle) {
-  ten_env_notify_set_property_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_set_property_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_set_property_ctx_t *
+ten_env_notify_set_property_ctx_create(const void *path, int path_len,
+                                       ten_value_t *value,
+                                       uintptr_t callback_handle) {
+  ten_env_notify_set_property_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_set_property_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  ten_string_init_formatted(&info->path, "%.*s", path_len, path);
-  info->c_value = value;
-  info->callback_handle = callback_handle;
+  ten_string_init_formatted(&ctx->path, "%.*s", path_len, path);
+  ctx->c_value = value;
+  ctx->callback_handle = callback_handle;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_set_property_info_destroy(
-    ten_env_notify_set_property_info_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
+static void ten_env_notify_set_property_ctx_destroy(
+    ten_env_notify_set_property_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  ten_string_deinit(&self->path);
-  if (self->c_value) {
-    ten_value_destroy(self->c_value);
-    self->c_value = NULL;
+  ten_string_deinit(&ctx->path);
+  if (ctx->c_value) {
+    ten_value_destroy(ctx->c_value);
+    ctx->c_value = NULL;
   }
 
-  TEN_FREE(self);
+  TEN_FREE(ctx);
 }
 
 static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
@@ -63,8 +63,8 @@ static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_set_property_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_set_property_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_go_error_t cgo_error;
   ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
@@ -72,23 +72,23 @@ static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
   ten_error_t err;
   ten_error_init(&err);
 
-  bool res = ten_env_set_property(ten_env, ten_string_get_raw_str(&info->path),
-                                  info->c_value, &err);
+  bool res = ten_env_set_property(ten_env, ten_string_get_raw_str(&ctx->path),
+                                  ctx->c_value, &err);
   if (res) {
     // The ownership of the C value has been successfully transferred to the TEN
     // runtime.
-    info->c_value = NULL;
+    ctx->c_value = NULL;
   } else {
     // Prepare error information to pass to Go.
     ten_go_error_from_error(&cgo_error, &err);
   }
 
   // Call back into Go to signal that the async operation in C is complete.
-  tenGoCAsyncApiCallback(info->callback_handle, cgo_error);
+  tenGoCAsyncApiCallback(ctx->callback_handle, cgo_error);
 
   ten_error_deinit(&err);
 
-  ten_env_notify_set_property_info_destroy(info);
+  ten_env_notify_set_property_ctx_destroy(ctx);
 }
 
 static ten_go_error_t ten_go_ten_env_set_property(ten_go_ten_env_t *self,
@@ -111,15 +111,15 @@ static ten_go_error_t ten_go_ten_env_set_property(ten_go_ten_env_t *self,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_set_property_info_t *info =
-      ten_env_notify_set_property_info_create(path, path_len, value,
-                                              callback_handle);
+  ten_env_notify_set_property_ctx_t *ctx =
+      ten_env_notify_set_property_ctx_create(path, path_len, value,
+                                             callback_handle);
 
   if (!ten_env_proxy_notify(self->c_ten_env_proxy,
-                            ten_env_proxy_notify_set_property, info, false,
+                            ten_env_proxy_notify_set_property, ctx, false,
                             &err)) {
     // Failed to invoke ten_env_proxy_notify.
-    ten_env_notify_set_property_info_destroy(info);
+    ten_env_notify_set_property_ctx_destroy(ctx);
     ten_go_error_from_error(&cgo_error, &err);
   }
 

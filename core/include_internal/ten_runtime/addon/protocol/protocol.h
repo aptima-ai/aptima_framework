@@ -20,12 +20,12 @@ typedef struct ten_addon_store_t ten_addon_store_t;
 typedef void (*ten_env_addon_on_create_protocol_async_cb_t)(
     ten_env_t *ten_env, ten_protocol_t *protocol, void *cb_data);
 
-typedef struct ten_addon_create_protocol_info_t {
+typedef struct ten_addon_create_protocol_ctx_t {
   ten_string_t uri;
   TEN_PROTOCOL_ROLE role;
   ten_env_addon_on_create_protocol_async_cb_t cb;
   void *user_data;
-} ten_addon_create_protocol_info_t;
+} ten_addon_create_protocol_ctx_t;
 
 TEN_RUNTIME_PRIVATE_API bool ten_addon_create_protocol_with_uri(
     ten_env_t *ten_env, const char *uri, TEN_PROTOCOL_ROLE role,

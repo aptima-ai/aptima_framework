@@ -239,16 +239,16 @@ static void ten_addon_register_internal(ten_addon_store_t *addon_store,
                           addon_host->addon->on_init);
 }
 
-ten_addon_on_create_extension_instance_info_t *
-ten_addon_on_create_extension_instance_info_create(
+ten_addon_on_create_extension_instance_ctx_t *
+ten_addon_on_create_extension_instance_ctx_create(
     TEN_ADDON_TYPE addon_type, const char *addon_name,
     const char *instance_name, ten_env_addon_create_instance_done_cb_t cb,
     void *cb_data) {
   TEN_ASSERT(addon_name && instance_name, "Should not happen.");
 
-  ten_addon_on_create_extension_instance_info_t *self =
-      (ten_addon_on_create_extension_instance_info_t *)TEN_MALLOC(
-          sizeof(ten_addon_on_create_extension_instance_info_t));
+  ten_addon_on_create_extension_instance_ctx_t *self =
+      (ten_addon_on_create_extension_instance_ctx_t *)TEN_MALLOC(
+          sizeof(ten_addon_on_create_extension_instance_ctx_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
 
   ten_string_init_formatted(&self->addon_name, "%s", addon_name);
@@ -260,8 +260,8 @@ ten_addon_on_create_extension_instance_info_create(
   return self;
 }
 
-void ten_addon_on_create_extension_instance_info_destroy(
-    ten_addon_on_create_extension_instance_info_t *self) {
+void ten_addon_on_create_extension_instance_ctx_destroy(
+    ten_addon_on_create_extension_instance_ctx_t *self) {
   TEN_ASSERT(self, "Should not happen.");
 
   ten_string_deinit(&self->addon_name);
@@ -270,27 +270,27 @@ void ten_addon_on_create_extension_instance_info_destroy(
   TEN_FREE(self);
 }
 
-ten_addon_on_destroy_instance_info_t *
-ten_addon_host_on_destroy_instance_info_create(
+ten_addon_on_destroy_instance_ctx_t *
+ten_addon_host_on_destroy_instance_ctx_create(
     ten_addon_host_t *self, void *instance,
     ten_env_addon_destroy_instance_done_cb_t cb, void *cb_data) {
   TEN_ASSERT(self && instance, "Should not happen.");
 
-  ten_addon_on_destroy_instance_info_t *info =
-      (ten_addon_on_destroy_instance_info_t *)TEN_MALLOC(
-          sizeof(ten_addon_on_destroy_instance_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_addon_on_destroy_instance_ctx_t *ctx =
+      (ten_addon_on_destroy_instance_ctx_t *)TEN_MALLOC(
+          sizeof(ten_addon_on_destroy_instance_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->addon_host = self;
-  info->instance = instance;
-  info->cb = cb;
-  info->cb_data = cb_data;
+  ctx->addon_host = self;
+  ctx->instance = instance;
+  ctx->cb = cb;
+  ctx->cb_data = cb_data;
 
-  return info;
+  return ctx;
 }
 
-void ten_addon_on_destroy_instance_info_destroy(
-    ten_addon_on_destroy_instance_info_t *self) {
+void ten_addon_on_destroy_instance_ctx_destroy(
+    ten_addon_on_destroy_instance_ctx_t *self) {
   TEN_ASSERT(self && self->addon_host && self->instance, "Should not happen.");
   TEN_FREE(self);
 }

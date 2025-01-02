@@ -12,92 +12,92 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_send_cmd_info_t {
+typedef struct ten_env_notify_send_cmd_ctx_t {
   ten_shared_ptr_t *c_cmd;
   ten_nodejs_tsfn_t *js_cb;
-} ten_env_notify_send_cmd_info_t;
+} ten_env_notify_send_cmd_ctx_t;
 
-typedef struct ten_nodejs_send_cmd_callback_call_info_t {
+typedef struct ten_nodejs_send_cmd_callback_call_ctx_t {
   ten_nodejs_tsfn_t *js_cb;
   ten_shared_ptr_t *c_cmd_result;
   ten_error_t *error;
-} ten_nodejs_send_cmd_callback_call_info_t;
+} ten_nodejs_send_cmd_callback_call_ctx_t;
 
-static ten_env_notify_send_cmd_info_t *ten_env_notify_send_cmd_info_create(
+static ten_env_notify_send_cmd_ctx_t *ten_env_notify_send_cmd_ctx_create(
     ten_shared_ptr_t *c_cmd, ten_nodejs_tsfn_t *js_cb) {
-  ten_env_notify_send_cmd_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_send_cmd_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_send_cmd_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_send_cmd_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_cmd = c_cmd;
-  info->js_cb = js_cb;
+  ctx->c_cmd = c_cmd;
+  ctx->js_cb = js_cb;
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_send_cmd_info_destroy(
-    ten_env_notify_send_cmd_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_send_cmd_ctx_destroy(
+    ten_env_notify_send_cmd_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_cmd) {
-    ten_shared_ptr_destroy(info->c_cmd);
-    info->c_cmd = NULL;
+  if (ctx->c_cmd) {
+    ten_shared_ptr_destroy(ctx->c_cmd);
+    ctx->c_cmd = NULL;
   }
 
-  info->js_cb = NULL;
+  ctx->js_cb = NULL;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
-static ten_nodejs_send_cmd_callback_call_info_t *
-ten_nodejs_send_cmd_callback_call_info_create(ten_nodejs_tsfn_t *js_cb,
-                                              ten_shared_ptr_t *c_cmd_result,
-                                              ten_error_t *error) {
-  ten_nodejs_send_cmd_callback_call_info_t *info =
-      TEN_MALLOC(sizeof(ten_nodejs_send_cmd_callback_call_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_nodejs_send_cmd_callback_call_ctx_t *
+ten_nodejs_send_cmd_callback_call_ctx_create(ten_nodejs_tsfn_t *js_cb,
+                                             ten_shared_ptr_t *c_cmd_result,
+                                             ten_error_t *error) {
+  ten_nodejs_send_cmd_callback_call_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_nodejs_send_cmd_callback_call_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->js_cb = js_cb;
-  info->c_cmd_result = c_cmd_result;
-  info->error = error;
+  ctx->js_cb = js_cb;
+  ctx->c_cmd_result = c_cmd_result;
+  ctx->error = error;
 
-  return info;
+  return ctx;
 }
 
-static void ten_nodejs_send_cmd_callback_call_info_destroy(
-    ten_nodejs_send_cmd_callback_call_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_nodejs_send_cmd_callback_call_ctx_destroy(
+    ten_nodejs_send_cmd_callback_call_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_cmd_result) {
-    ten_shared_ptr_destroy(info->c_cmd_result);
-    info->c_cmd_result = NULL;
+  if (ctx->c_cmd_result) {
+    ten_shared_ptr_destroy(ctx->c_cmd_result);
+    ctx->c_cmd_result = NULL;
   }
 
-  if (info->error) {
-    ten_error_destroy(info->error);
-    info->error = NULL;
+  if (ctx->error) {
+    ten_error_destroy(ctx->error);
+    ctx->error = NULL;
   }
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void tsfn_proxy_send_cmd_callback(napi_env env, napi_value js_cb,
                                          void *context, void *data) {
-  ten_nodejs_send_cmd_callback_call_info_t *info = data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_nodejs_send_cmd_callback_call_ctx_t *ctx = data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   napi_value js_error = NULL;
   napi_value js_cmd_result = NULL;
 
-  if (info->error) {
-    js_error = ten_nodejs_create_error(env, info->error);
+  if (ctx->error) {
+    js_error = ten_nodejs_create_error(env, ctx->error);
     ASSERT_IF_NAPI_FAIL(js_error, "Failed to create JS error", NULL);
   } else {
     js_error = js_undefined(env);
   }
 
-  if (info->c_cmd_result) {
-    js_cmd_result = ten_nodejs_cmd_result_wrap(env, info->c_cmd_result);
+  if (ctx->c_cmd_result) {
+    js_cmd_result = ten_nodejs_cmd_result_wrap(env, ctx->c_cmd_result);
     ASSERT_IF_NAPI_FAIL(js_cmd_result, "Failed to create JS Msg", NULL);
   } else {
     js_cmd_result = js_undefined(env);
@@ -108,9 +108,9 @@ static void tsfn_proxy_send_cmd_callback(napi_env env, napi_value js_cb,
       napi_call_function(env, js_undefined(env), js_cb, 2, argv, NULL);
   ASSERT_IF_NAPI_FAIL(status == napi_ok, "Failed to call JS callback", NULL);
 
-  ten_nodejs_tsfn_release(info->js_cb);
+  ten_nodejs_tsfn_release(ctx->js_cb);
 
-  ten_nodejs_send_cmd_callback_call_info_destroy(info);
+  ten_nodejs_send_cmd_callback_call_ctx_destroy(ctx);
 }
 
 static void proxy_send_cmd_callback(ten_env_t *ten_env, ten_shared_ptr_t *msg,
@@ -118,10 +118,10 @@ static void proxy_send_cmd_callback(ten_env_t *ten_env, ten_shared_ptr_t *msg,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_cmd_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_send_cmd_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  ten_nodejs_tsfn_t *js_cb = info->js_cb;
+  ten_nodejs_tsfn_t *js_cb = ctx->js_cb;
   TEN_ASSERT(js_cb && ten_nodejs_tsfn_check_integrity(js_cb, false),
              "Should not happen.");
 
@@ -136,15 +136,15 @@ static void proxy_send_cmd_callback(ten_env_t *ten_env, ten_shared_ptr_t *msg,
     cloned_msg = ten_shared_ptr_clone(msg);
   }
 
-  ten_nodejs_send_cmd_callback_call_info_t *call_info =
-      ten_nodejs_send_cmd_callback_call_info_create(js_cb, cloned_msg,
-                                                    cloned_error);
+  ten_nodejs_send_cmd_callback_call_ctx_t *call_info =
+      ten_nodejs_send_cmd_callback_call_ctx_create(js_cb, cloned_msg,
+                                                   cloned_error);
   TEN_ASSERT(call_info, "Failed to create callback call info.");
 
-  bool rc = ten_nodejs_tsfn_invoke(info->js_cb, call_info);
+  bool rc = ten_nodejs_tsfn_invoke(ctx->js_cb, call_info);
   TEN_ASSERT(rc, "Should not happen.");
 
-  ten_env_notify_send_cmd_info_destroy(info);
+  ten_env_notify_send_cmd_ctx_destroy(ctx);
 }
 
 static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
@@ -152,16 +152,16 @@ static void ten_env_proxy_notify_send_cmd(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_cmd_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_send_cmd_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
 
-  bool rc = ten_env_send_cmd(ten_env, info->c_cmd, proxy_send_cmd_callback,
-                             info, &err);
+  bool rc =
+      ten_env_send_cmd(ten_env, ctx->c_cmd, proxy_send_cmd_callback, ctx, &err);
   if (!rc) {
-    proxy_send_cmd_callback(ten_env, NULL, info, &err);
+    proxy_send_cmd_callback(ten_env, NULL, ctx, &err);
   }
 
   ten_error_deinit(&err);
@@ -200,8 +200,8 @@ napi_value ten_nodejs_ten_env_send_cmd(napi_env env, napi_callback_info info) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_send_cmd_info_t *notify_info =
-      ten_env_notify_send_cmd_info_create(
+  ten_env_notify_send_cmd_ctx_t *notify_info =
+      ten_env_notify_send_cmd_ctx_create(
           ten_shared_ptr_clone(cmd_bridge->msg.msg), cb_tsfn);
   TEN_ASSERT(notify_info, "Failed to create notify info.");
 
@@ -221,7 +221,7 @@ napi_value ten_nodejs_ten_env_send_cmd(napi_env env, napi_callback_info info) {
     // The JS callback will not be called, so release the TSFN here.
     ten_nodejs_tsfn_release(cb_tsfn);
 
-    ten_env_notify_send_cmd_info_destroy(notify_info);
+    ten_env_notify_send_cmd_ctx_destroy(notify_info);
   }
 
   ten_error_deinit(&err);

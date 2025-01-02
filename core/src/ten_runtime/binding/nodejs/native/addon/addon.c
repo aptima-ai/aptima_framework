@@ -26,37 +26,37 @@ typedef struct addon_on_xxx_callback_info_t {
   ten_env_t *ten_env;
 } addon_on_xxx_callback_info_t;
 
-typedef struct addon_on_create_instance_callback_info_t {
+typedef struct addon_on_create_instance_callback_ctx_t {
   ten_nodejs_addon_t *addon_bridge;
   ten_env_t *ten_env;
   ten_string_t instance_name;
   void *context;
-} addon_on_create_instance_callback_info_t;
+} addon_on_create_instance_callback_ctx_t;
 
-static addon_on_create_instance_callback_info_t *
-addon_on_create_instance_callback_info_create(ten_nodejs_addon_t *addon_bridge,
-                                              ten_env_t *ten_env,
-                                              const char *instance_name,
-                                              void *context) {
-  addon_on_create_instance_callback_info_t *info =
-      TEN_MALLOC(sizeof(addon_on_create_instance_callback_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static addon_on_create_instance_callback_ctx_t *
+addon_on_create_instance_callback_ctx_create(ten_nodejs_addon_t *addon_bridge,
+                                             ten_env_t *ten_env,
+                                             const char *instance_name,
+                                             void *context) {
+  addon_on_create_instance_callback_ctx_t *ctx =
+      TEN_MALLOC(sizeof(addon_on_create_instance_callback_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->addon_bridge = addon_bridge;
-  info->ten_env = ten_env;
-  ten_string_init_from_c_str(&info->instance_name, instance_name,
+  ctx->addon_bridge = addon_bridge;
+  ctx->ten_env = ten_env;
+  ten_string_init_from_c_str(&ctx->instance_name, instance_name,
                              strlen(instance_name));
-  info->context = context;
+  ctx->context = context;
 
-  return info;
+  return ctx;
 }
 
-static void addon_on_create_instance_callback_info_destroy(
-    addon_on_create_instance_callback_info_t *info) {
-  TEN_ASSERT(info, "Should not happen.");
+static void addon_on_create_instance_callback_ctx_destroy(
+    addon_on_create_instance_callback_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  ten_string_deinit(&info->instance_name);
-  TEN_FREE(info);
+  ten_string_deinit(&ctx->instance_name);
+  TEN_FREE(ctx);
 }
 
 bool ten_nodejs_addon_check_integrity(ten_nodejs_addon_t *self,
@@ -212,7 +212,7 @@ done:
 
 void ten_nodejs_invoke_addon_js_on_create_instance(napi_env env, napi_value fn,
                                                    void *context, void *data) {
-  addon_on_create_instance_callback_info_t *call_info = data;
+  addon_on_create_instance_callback_ctx_t *call_info = data;
   TEN_ASSERT(call_info, "Should not happen.");
 
   TEN_ASSERT(call_info->addon_bridge && ten_nodejs_addon_check_integrity(
@@ -272,7 +272,7 @@ error:
   TEN_LOGE("Failed to call JS addon on_create_instance().");
 
 done:
-  addon_on_create_instance_callback_info_destroy(call_info);
+  addon_on_create_instance_callback_ctx_destroy(call_info);
 }
 
 static void proxy_on_init(ten_addon_t *addon, ten_env_t *ten_env) {
@@ -351,9 +351,9 @@ static void proxy_on_create_instance(ten_addon_t *addon, ten_env_t *ten_env,
                  ten_nodejs_addon_check_integrity(addon_bridge, false),
              "Should not happen.");
 
-  addon_on_create_instance_callback_info_t *call_info =
-      addon_on_create_instance_callback_info_create(addon_bridge, ten_env, name,
-                                                    context);
+  addon_on_create_instance_callback_ctx_t *call_info =
+      addon_on_create_instance_callback_ctx_create(addon_bridge, ten_env, name,
+                                                   context);
 
   bool rc =
       ten_nodejs_tsfn_invoke(addon_bridge->js_on_create_instance, call_info);

@@ -13,30 +13,30 @@
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_init_property_info_t {
+typedef struct ten_env_notify_init_property_ctx_t {
   ten_string_t value;
   ten_event_t *completed;
-} ten_env_notify_init_property_info_t;
+} ten_env_notify_init_property_ctx_t;
 
-typedef struct ten_env_notify_init_property_async_info_t {
+typedef struct ten_env_notify_init_property_async_ctx_t {
   ten_string_t value;
   PyObject *py_cb_func;
-} ten_env_notify_init_property_async_info_t;
+} ten_env_notify_init_property_async_ctx_t;
 
-static ten_env_notify_init_property_info_t *
-ten_env_notify_init_property_info_create(const void *value, size_t value_len) {
-  ten_env_notify_init_property_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_init_property_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_init_property_ctx_t *
+ten_env_notify_init_property_ctx_create(const void *value, size_t value_len) {
+  ten_env_notify_init_property_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_init_property_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  ten_string_init_formatted(&info->value, "%.*s", value_len, value);
-  info->completed = ten_event_create(0, 1);
+  ten_string_init_formatted(&ctx->value, "%.*s", value_len, value);
+  ctx->completed = ten_event_create(0, 1);
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_init_property_info_destroy(
-    ten_env_notify_init_property_info_t *self) {
+static void ten_env_notify_init_property_ctx_destroy(
+    ten_env_notify_init_property_ctx_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_string_deinit(&self->value);
@@ -45,26 +45,26 @@ static void ten_env_notify_init_property_info_destroy(
   TEN_FREE(self);
 }
 
-static ten_env_notify_init_property_async_info_t *
-ten_env_notify_init_property_async_info_create(const void *value,
-                                               size_t value_len,
-                                               PyObject *py_cb_func) {
-  ten_env_notify_init_property_async_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_init_property_async_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+static ten_env_notify_init_property_async_ctx_t *
+ten_env_notify_init_property_async_ctx_create(const void *value,
+                                              size_t value_len,
+                                              PyObject *py_cb_func) {
+  ten_env_notify_init_property_async_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_init_property_async_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  ten_string_init_formatted(&info->value, "%.*s", value_len, value);
-  info->py_cb_func = py_cb_func;
+  ten_string_init_formatted(&ctx->value, "%.*s", value_len, value);
+  ctx->py_cb_func = py_cb_func;
 
   if (py_cb_func != NULL) {
     Py_INCREF(py_cb_func);
   }
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_init_property_async_info_destroy(
-    ten_env_notify_init_property_async_info_t *self) {
+static void ten_env_notify_init_property_async_ctx_destroy(
+    ten_env_notify_init_property_async_ctx_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
 
   ten_string_deinit(&self->value);
@@ -79,16 +79,16 @@ static void ten_env_proxy_notify_init_property_from_json(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_init_property_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_init_property_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_init_property_from_json(ten_env, ten_string_get_raw_str(&info->value),
+  ten_env_init_property_from_json(ten_env, ten_string_get_raw_str(&ctx->value),
                                   &err);
 
-  ten_event_set(info->completed);
+  ten_event_set(ctx->completed);
 
   ten_error_deinit(&err);
 }
@@ -99,14 +99,14 @@ static void ten_env_proxy_notify_init_property_from_json_async(
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_init_property_async_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_init_property_async_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
   ten_error_t err;
   ten_error_init(&err);
 
   bool rc = ten_env_init_property_from_json(
-      ten_env, ten_string_get_raw_str(&info->value), &err);
+      ten_env, ten_string_get_raw_str(&ctx->value), &err);
 
   // About to call the Python function, so it's necessary to ensure that the
   // GIL
@@ -125,14 +125,14 @@ static void ten_env_proxy_notify_init_property_from_json_async(
     arglist = Py_BuildValue("(O)", py_error);
   }
 
-  PyObject *result = PyObject_CallObject(info->py_cb_func, arglist);
+  PyObject *result = PyObject_CallObject(ctx->py_cb_func, arglist);
   Py_XDECREF(result);  // Ensure cleanup if an error occurred.
 
   bool err_occurred = ten_py_check_and_clear_py_error();
   TEN_ASSERT(!err_occurred, "Should not happen.");
 
   Py_XDECREF(arglist);
-  Py_XDECREF(info->py_cb_func);
+  Py_XDECREF(ctx->py_cb_func);
 
   if (py_error) {
     ten_py_error_invalidate(py_error);
@@ -142,7 +142,7 @@ static void ten_env_proxy_notify_init_property_from_json_async(
 
   ten_error_deinit(&err);
 
-  ten_env_notify_init_property_async_info_destroy(info);
+  ten_env_notify_init_property_async_ctx_destroy(ctx);
 }
 
 PyObject *ten_py_ten_env_init_property_from_json(PyObject *self,
@@ -166,21 +166,21 @@ PyObject *ten_py_ten_env_init_property_from_json(PyObject *self,
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_env_notify_init_property_info_t *info =
-      ten_env_notify_init_property_info_create(json_str, strlen(json_str));
+  ten_env_notify_init_property_ctx_t *ctx =
+      ten_env_notify_init_property_ctx_create(json_str, strlen(json_str));
 
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
-                            ten_env_proxy_notify_init_property_from_json, info,
+                            ten_env_proxy_notify_init_property_from_json, ctx,
                             false, NULL)) {
     goto done;
   }
 
   PyThreadState *saved_py_thread_state = PyEval_SaveThread();
-  ten_event_wait(info->completed, -1);
+  ten_event_wait(ctx->completed, -1);
   PyEval_RestoreThread(saved_py_thread_state);
 
 done:
-  ten_env_notify_init_property_info_destroy(info);
+  ten_env_notify_init_property_ctx_destroy(ctx);
   ten_error_deinit(&err);
 
   Py_RETURN_NONE;
@@ -218,15 +218,15 @@ PyObject *ten_py_ten_env_init_property_from_json_async(PyObject *self,
 
   bool success = true;
 
-  ten_env_notify_init_property_async_info_t *info =
-      ten_env_notify_init_property_async_info_create(json_str, strlen(json_str),
-                                                     py_cb_func);
+  ten_env_notify_init_property_async_ctx_t *ctx =
+      ten_env_notify_init_property_async_ctx_create(json_str, strlen(json_str),
+                                                    py_cb_func);
 
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_init_property_from_json_async,
-                            info, false, &err)) {
+                            ctx, false, &err)) {
     Py_XDECREF(py_cb_func);
-    ten_env_notify_init_property_async_info_destroy(info);
+    ten_env_notify_init_property_async_ctx_destroy(ctx);
 
     ten_py_raise_py_value_error_exception("Failed to init property from json");
 

@@ -18,7 +18,7 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_log_info_t {
+typedef struct ten_env_notify_log_ctx_t {
   int32_t level;
   const char *func_name;
   size_t func_name_len;
@@ -28,35 +28,34 @@ typedef struct ten_env_notify_log_info_t {
   const char *msg;
   size_t msg_len;
   ten_event_t *completed;
-} ten_env_notify_log_info_t;
+} ten_env_notify_log_ctx_t;
 
-static ten_env_notify_log_info_t *ten_env_notify_log_info_create(
+static ten_env_notify_log_ctx_t *ten_env_notify_log_ctx_create(
     int32_t level, const char *func_name, size_t func_name_len,
     const char *file_name, size_t file_name_len, size_t line_no,
     const char *msg, size_t msg_len) {
-  ten_env_notify_log_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_log_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_log_ctx_t *ctx = TEN_MALLOC(sizeof(ten_env_notify_log_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->level = level;
-  info->func_name = func_name;
-  info->func_name_len = func_name_len;
-  info->file_name = file_name;
-  info->file_name_len = file_name_len;
-  info->line_no = line_no;
-  info->msg = msg;
-  info->msg_len = msg_len;
-  info->completed = ten_event_create(0, 1);
+  ctx->level = level;
+  ctx->func_name = func_name;
+  ctx->func_name_len = func_name_len;
+  ctx->file_name = file_name;
+  ctx->file_name_len = file_name_len;
+  ctx->line_no = line_no;
+  ctx->msg = msg;
+  ctx->msg_len = msg_len;
+  ctx->completed = ten_event_create(0, 1);
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_log_info_destroy(ten_env_notify_log_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_log_ctx_destroy(ten_env_notify_log_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  ten_event_destroy(info->completed);
+  ten_event_destroy(ctx->completed);
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void ten_env_proxy_notify_log(ten_env_t *ten_env, void *user_data) {
@@ -64,15 +63,14 @@ static void ten_env_proxy_notify_log(ten_env_t *ten_env, void *user_data) {
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_log_info_t *info = user_data;
-  TEN_ASSERT(info, "Should not happen.");
+  ten_env_notify_log_ctx_t *ctx = user_data;
+  TEN_ASSERT(ctx, "Should not happen.");
 
-  ten_env_log_with_size_formatted(ten_env, info->level, info->func_name,
-                                  info->func_name_len, info->file_name,
-                                  info->file_name_len, info->line_no, "%.*s",
-                                  info->msg_len, info->msg);
+  ten_env_log_with_size_formatted(
+      ten_env, ctx->level, ctx->func_name, ctx->func_name_len, ctx->file_name,
+      ctx->file_name_len, ctx->line_no, "%.*s", ctx->msg_len, ctx->msg);
 
-  ten_event_set(info->completed);
+  ten_event_set(ctx->completed);
 }
 
 void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
@@ -101,7 +99,7 @@ void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
     msg_value = (const char *)msg;
   }
 
-  ten_env_notify_log_info_t *info = ten_env_notify_log_info_create(
+  ten_env_notify_log_ctx_t *ctx = ten_env_notify_log_ctx_create(
       level, func_name_value, func_name_len, file_name_value, file_name_len,
       line_no, msg_value, msg_len);
 
@@ -116,18 +114,18 @@ void ten_go_ten_env_log(uintptr_t bridge_addr, int level, const void *func_name,
     // completely removed, and comprehensive thread safety checking can be
     // implemented.
     ten_env_log_with_size_formatted_without_check_thread(
-        self->c_ten_env, info->level, info->func_name, info->func_name_len,
-        info->file_name, info->file_name_len, info->line_no, "%.*s",
-        info->msg_len, info->msg);
+        self->c_ten_env, ctx->level, ctx->func_name, ctx->func_name_len,
+        ctx->file_name, ctx->file_name_len, ctx->line_no, "%.*s", ctx->msg_len,
+        ctx->msg);
   } else {
     if (!ten_env_proxy_notify(self->c_ten_env_proxy, ten_env_proxy_notify_log,
-                              info, false, &err)) {
+                              ctx, false, &err)) {
       goto done;
     }
-    ten_event_wait(info->completed, -1);
+    ten_event_wait(ctx->completed, -1);
   }
 
 done:
   ten_error_deinit(&err);
-  ten_env_notify_log_info_destroy(info);
+  ten_env_notify_log_ctx_destroy(ctx);
 }

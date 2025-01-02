@@ -12,41 +12,41 @@
 #include "ten_utils/macro/mark.h"
 #include "ten_utils/macro/memory.h"
 
-typedef struct ten_env_notify_send_data_info_t {
+typedef struct ten_env_notify_send_data_ctx_t {
   ten_shared_ptr_t *c_data;
   PyObject *py_cb_func;
-} ten_env_notify_send_data_info_t;
+} ten_env_notify_send_data_ctx_t;
 
-static ten_env_notify_send_data_info_t *ten_env_notify_send_data_info_create(
+static ten_env_notify_send_data_ctx_t *ten_env_notify_send_data_ctx_create(
     ten_shared_ptr_t *c_data, PyObject *py_cb_func) {
   TEN_ASSERT(c_data, "Invalid argument.");
 
-  ten_env_notify_send_data_info_t *info =
-      TEN_MALLOC(sizeof(ten_env_notify_send_data_info_t));
-  TEN_ASSERT(info, "Failed to allocate memory.");
+  ten_env_notify_send_data_ctx_t *ctx =
+      TEN_MALLOC(sizeof(ten_env_notify_send_data_ctx_t));
+  TEN_ASSERT(ctx, "Failed to allocate memory.");
 
-  info->c_data = c_data;
-  info->py_cb_func = py_cb_func;
+  ctx->c_data = c_data;
+  ctx->py_cb_func = py_cb_func;
 
   if (py_cb_func != NULL) {
     Py_INCREF(py_cb_func);
   }
 
-  return info;
+  return ctx;
 }
 
-static void ten_env_notify_send_data_info_destroy(
-    ten_env_notify_send_data_info_t *info) {
-  TEN_ASSERT(info, "Invalid argument.");
+static void ten_env_notify_send_data_ctx_destroy(
+    ten_env_notify_send_data_ctx_t *ctx) {
+  TEN_ASSERT(ctx, "Invalid argument.");
 
-  if (info->c_data) {
-    ten_shared_ptr_destroy(info->c_data);
-    info->c_data = NULL;
+  if (ctx->c_data) {
+    ten_shared_ptr_destroy(ctx->c_data);
+    ctx->c_data = NULL;
   }
 
-  info->py_cb_func = NULL;
+  ctx->py_cb_func = NULL;
 
-  TEN_FREE(info);
+  TEN_FREE(ctx);
 }
 
 static void proxy_send_data_callback(ten_env_t *ten_env,
@@ -98,7 +98,7 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
   TEN_ASSERT(ten_env && ten_env_check_integrity(ten_env, true),
              "Should not happen.");
 
-  ten_env_notify_send_data_info_t *notify_info = user_data;
+  ten_env_notify_send_data_ctx_t *notify_info = user_data;
   TEN_ASSERT(notify_info, "Invalid argument.");
 
   ten_error_t err;
@@ -142,7 +142,7 @@ static void ten_env_proxy_notify_send_data(ten_env_t *ten_env,
 
   ten_error_deinit(&err);
 
-  ten_env_notify_send_data_info_destroy(notify_info);
+  ten_env_notify_send_data_ctx_destroy(notify_info);
 }
 
 PyObject *ten_py_ten_env_send_data(PyObject *self, PyObject *args) {
@@ -172,8 +172,8 @@ PyObject *ten_py_ten_env_send_data(PyObject *self, PyObject *args) {
   }
 
   ten_shared_ptr_t *cloned_data = ten_shared_ptr_clone(py_data->msg.c_msg);
-  ten_env_notify_send_data_info_t *notify_info =
-      ten_env_notify_send_data_info_create(cloned_data, cb_func);
+  ten_env_notify_send_data_ctx_t *notify_info =
+      ten_env_notify_send_data_ctx_create(cloned_data, cb_func);
 
   if (!ten_env_proxy_notify(py_ten_env->c_ten_env_proxy,
                             ten_env_proxy_notify_send_data, notify_info, false,
@@ -182,7 +182,7 @@ PyObject *ten_py_ten_env_send_data(PyObject *self, PyObject *args) {
       Py_XDECREF(cb_func);
     }
 
-    ten_env_notify_send_data_info_destroy(notify_info);
+    ten_env_notify_send_data_ctx_destroy(notify_info);
     success = false;
     ten_py_raise_py_runtime_error_exception("Failed to send data.");
     goto done;
