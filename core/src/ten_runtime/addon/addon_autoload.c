@@ -6,11 +6,6 @@
 //
 #include "include_internal/ten_runtime/addon/addon_autoload.h"
 
-#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
-#include "include_internal/ten_runtime/addon_loader/addon_loader.h"
-#include "ten_runtime/addon/addon.h"
-#include "ten_runtime/common/errno.h"
-
 #if defined(OS_LINUX)
 #define _GNU_SOURCE
 #endif
@@ -24,12 +19,14 @@
 
 #include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_runtime/addon/addon_manager.h"
-#include "include_internal/ten_runtime/addon/extension/extension.h"
+#include "include_internal/ten_runtime/addon_loader/addon_loader.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
 #include "include_internal/ten_runtime/global/global.h"
 #include "include_internal/ten_runtime/global/signal.h"
 #include "include_internal/ten_runtime/metadata/manifest.h"
 #include "include_internal/ten_utils/log/log.h"
+#include "ten_runtime/addon/addon.h"
+#include "ten_runtime/common/errno.h"
 #include "ten_utils/container/list.h"
 #include "ten_utils/container/list_node_str.h"
 #include "ten_utils/lib/error.h"
@@ -91,13 +88,6 @@ static void load_all_dynamic_libraries_under_path(const char *path) {
 
     file_path = ten_path_itor_get_full_name(itor);
     if (!file_path || !ten_path_is_shared_library(file_path)) {
-      goto continue_loop;
-    }
-
-    ten_addon_host_t *addon_host = ten_addon_store_find(
-        ten_extension_get_global_store(), ten_string_get_raw_str(short_name));
-    if (addon_host) {
-      // Do _not_ register again.
       goto continue_loop;
     }
 

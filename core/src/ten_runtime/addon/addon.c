@@ -295,7 +295,7 @@ void ten_addon_on_destroy_instance_ctx_destroy(
   TEN_FREE(self);
 }
 
-static ten_addon_host_t *ten_addon_host_create(TEN_ADDON_TYPE type) {
+ten_addon_host_t *ten_addon_host_create(TEN_ADDON_TYPE type) {
   ten_addon_host_t *self =
       (ten_addon_host_t *)TEN_MALLOC(sizeof(ten_addon_host_t));
   TEN_ASSERT(self, "Failed to allocate memory.");
@@ -328,11 +328,11 @@ ten_addon_t *ten_addon_unregister(ten_addon_store_t *store,
   return ten_addon_store_del(store, addon_name);
 }
 
-static ten_addon_host_t *ten_addon_host_find(TEN_ADDON_TYPE type,
+static ten_addon_host_t *ten_addon_host_find(TEN_ADDON_TYPE addon_type,
                                              const char *addon_name) {
   TEN_ASSERT(addon_name, "Should not happen.");
 
-  switch (type) {
+  switch (addon_type) {
     case TEN_ADDON_TYPE_EXTENSION:
       return ten_addon_store_find(ten_extension_get_global_store(), addon_name);
 
@@ -346,6 +346,35 @@ static ten_addon_host_t *ten_addon_host_find(TEN_ADDON_TYPE type,
     case TEN_ADDON_TYPE_ADDON_LOADER:
       return ten_addon_store_find(ten_addon_loader_get_global_store(),
                                   addon_name);
+
+    default:
+      TEN_ASSERT(0, "Should not happen.");
+      break;
+  }
+
+  return NULL;
+}
+
+static ten_addon_host_t *ten_addon_host_find_or_create_one_if_not_found(
+    TEN_ADDON_TYPE addon_type, const char *addon_name) {
+  TEN_ASSERT(addon_name, "Should not happen.");
+
+  switch (addon_type) {
+    case TEN_ADDON_TYPE_EXTENSION:
+      return ten_addon_store_find_or_create_one_if_not_found(
+          ten_extension_get_global_store(), addon_type, addon_name);
+
+    case TEN_ADDON_TYPE_EXTENSION_GROUP:
+      return ten_addon_store_find_or_create_one_if_not_found(
+          ten_extension_group_get_global_store(), addon_type, addon_name);
+
+    case TEN_ADDON_TYPE_PROTOCOL:
+      return ten_addon_store_find_or_create_one_if_not_found(
+          ten_protocol_get_global_store(), addon_type, addon_name);
+
+    case TEN_ADDON_TYPE_ADDON_LOADER:
+      return ten_addon_store_find_or_create_one_if_not_found(
+          ten_addon_loader_get_global_store(), addon_type, addon_name);
 
     default:
       TEN_ASSERT(0, "Should not happen.");
@@ -461,6 +490,7 @@ bool ten_addon_create_instance_async(ten_env_t *ten_env,
       return false;
     }
 
+    // Find again.
     addon_host = ten_addon_host_find(addon_type, addon_name);
   }
 
@@ -584,14 +614,31 @@ const char *ten_addon_host_get_base_dir(ten_addon_host_t *self) {
 }
 
 ten_addon_host_t *ten_addon_register(TEN_ADDON_TYPE addon_type,
-                                     const char *name, const char *base_dir,
-                                     ten_addon_t *addon, void *register_ctx) {
+                                     const char *addon_name,
+                                     const char *base_dir, ten_addon_t *addon,
+                                     void *register_ctx) {
   TEN_ASSERT(addon_type != TEN_ADDON_TYPE_INVALID, "Invalid argument.");
 
-  if (!name || strlen(name) == 0) {
+  if (!addon_name || strlen(addon_name) == 0) {
     TEN_LOGE("The addon name is required.");
     // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit(EXIT_FAILURE);
+  }
+
+  // Since addons can be dynamically loaded during the app's runtime, such as
+  // extension addons, the action of checking for unregistered addons and adding
+  // a new addon needs to be atomic. This ensures that the same addon is not
+  // loaded multiple times.
+  ten_addon_host_t *addon_host =
+      ten_addon_host_find_or_create_one_if_not_found(addon_type, addon_name);
+  TEN_ASSERT(addon_host, "Should not happen.");
+
+  if (register_ctx) {
+    // If `register_ctx` exists, its content will be used to assist in the addon
+    // registration process.
+    ten_addon_register_ctx_t *register_ctx_ =
+        (ten_addon_register_ctx_t *)register_ctx;
+    addon_host->user_data = register_ctx_->app;
   }
 
   ten_addon_store_t *addon_store = NULL;
@@ -613,23 +660,8 @@ ten_addon_host_t *ten_addon_register(TEN_ADDON_TYPE addon_type,
   }
   TEN_ASSERT(addon_store, "Should not happen.");
 
-  ten_addon_host_t *addon_host = ten_addon_store_find(addon_store, name);
-  if (addon_host) {
-    return addon_host;
-  }
-
-  addon_host = ten_addon_host_create(addon_type);
-  TEN_ASSERT(addon_host, "Should not happen.");
-
-  if (register_ctx) {
-    // If `register_ctx` exists, its content will be used to assist in the addon
-    // registration process.
-    ten_addon_register_ctx_t *register_ctx_ =
-        (ten_addon_register_ctx_t *)register_ctx;
-    addon_host->user_data = register_ctx_->app;
-  }
-
-  ten_addon_register_internal(addon_store, addon_host, name, base_dir, addon);
+  ten_addon_register_internal(addon_store, addon_host, addon_name, base_dir,
+                              addon);
 
   return addon_host;
 }

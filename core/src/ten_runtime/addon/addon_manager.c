@@ -107,6 +107,16 @@ void ten_addon_manager_register_all_addons(ten_addon_manager_t *self,
                                            void *register_ctx) {
   TEN_ASSERT(self, "Invalid argument.");
 
+  // Basically, the relationship between an app and a process is one-to-one,
+  // meaning a process will only have one app. In this scenario, theoretically,
+  // the mutex lock/unlock protection below would not be necessary. However, in
+  // special cases, such as under gtest, a single gtest process may execute
+  // multiple apps, with some apps starting in parallel. As a result, this
+  // function could potentially be called multiple times in parallel. In such
+  // cases, the mutex lock/unlock is indeed necessary. In normal circumstances,
+  // where the relationship is one-to-one, performing the mutex lock/unlock
+  // action causes no harm. Therefore, mutex lock/unlock is uniformly applied
+  // here.
   ten_mutex_lock(self->mutex);
 
   ten_list_iterator_t iter = ten_list_begin(&self->registry);

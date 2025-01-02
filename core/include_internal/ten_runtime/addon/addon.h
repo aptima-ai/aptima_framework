@@ -127,6 +127,9 @@ ten_addon_host_on_destroy_instance_ctx_create(
 TEN_RUNTIME_PRIVATE_API void ten_addon_on_destroy_instance_ctx_destroy(
     ten_addon_on_destroy_instance_ctx_t *self);
 
+TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_host_create(
+    TEN_ADDON_TYPE type);
+
 TEN_RUNTIME_PRIVATE_API ten_addon_store_t *ten_addon_get_store(void);
 
 TEN_RUNTIME_PRIVATE_API bool ten_addon_create_instance_async(
