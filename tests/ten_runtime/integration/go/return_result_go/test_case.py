@@ -82,6 +82,7 @@ def test_return_result_go():
                 "return_result_go_app/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     server_cmd = os.path.join(base_path, "return_result_go_app/bin/start")

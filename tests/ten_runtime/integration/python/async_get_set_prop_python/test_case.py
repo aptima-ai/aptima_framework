@@ -111,6 +111,7 @@ def test_async_get_set_prop_python():
             )
 
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     server_cmd = os.path.join(

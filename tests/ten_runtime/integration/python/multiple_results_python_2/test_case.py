@@ -111,6 +111,7 @@ def test_multiple_results_python_2():
             )
 
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     server_cmd = os.path.join(

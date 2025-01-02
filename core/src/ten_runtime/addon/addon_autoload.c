@@ -349,7 +349,7 @@ static bool ten_addon_load_specific_addon_from_app_base_dir(
 
   if (!ten_path_exists(ten_string_get_raw_str(&addon_lib_folder_path)) ||
       !ten_path_is_dir(&addon_lib_folder_path)) {
-    TEN_LOGE("Addon lib/ folder does not exist or is not a directory: %s",
+    TEN_LOGI("Addon lib/ folder does not exist or is not a directory: %s",
              ten_string_get_raw_str(&addon_lib_folder_path));
     success = false;
     goto done;

@@ -104,6 +104,7 @@ def start_app(app_name: str, port: int) -> subprocess.Popen:
                 f"{app_name}/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     if not os.path.isfile(server_cmd):
@@ -171,6 +172,7 @@ def start_client(app_name: str) -> subprocess.Popen:
                 f"{app_name}/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     client = subprocess.Popen(

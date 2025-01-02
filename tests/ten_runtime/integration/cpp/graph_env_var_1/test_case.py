@@ -101,6 +101,7 @@ def test_graph_env_var_1_app():
                 "graph_env_var_1_app/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     my_env["TEST_ENV_VAR"] = "set_from_real_env_var"

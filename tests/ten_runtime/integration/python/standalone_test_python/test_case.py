@@ -63,6 +63,7 @@ def test_standalone_test_python():
             )
 
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     tester_process = subprocess.Popen(

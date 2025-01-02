@@ -114,6 +114,7 @@ def test_go_app_async_extension_python():
             )
 
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     server_cmd = os.path.join(

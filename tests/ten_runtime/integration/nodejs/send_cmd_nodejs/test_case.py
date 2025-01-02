@@ -62,6 +62,7 @@ def test_send_cmd_nodejs():
             )
 
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     server_cmd = os.path.join(base_path, "send_cmd_nodejs_app/bin/start")

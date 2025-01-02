@@ -85,6 +85,7 @@ def build_and_install_app():
                 "exit_signal_go_app/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     # Store environment and paths for use in starting the server

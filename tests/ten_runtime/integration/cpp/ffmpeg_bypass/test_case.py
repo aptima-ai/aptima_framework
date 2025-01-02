@@ -96,6 +96,7 @@ def test_ffmpeg_bypass_app():
                 "ffmpeg_bypass_app/ten_packages/system/ten_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
+                print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
     server = subprocess.Popen(
