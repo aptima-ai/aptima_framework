@@ -7,10 +7,7 @@
 #include <cstdio>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
-#include "include_internal/ten_runtime/addon/extension/extension.h"
-#include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
-#include "include_internal/ten_runtime/addon/protocol/protocol.h"
+#include "include_internal/ten_runtime/addon/addon.h"
 #include "include_internal/ten_utils/lib/env.h"
 
 class GlobalTestEnvironment : public ::testing::Environment {
@@ -31,12 +28,7 @@ class GlobalTestEnvironment : public ::testing::Environment {
   }
 
   // This method is run after all test cases.
-  void TearDown() override {
-    ten_addon_unregister_all_extension();
-    ten_addon_unregister_all_extension_group();
-    ten_addon_unregister_all_addon_loader();
-    ten_addon_unregister_all_protocol();
-  }
+  void TearDown() override { ten_unregister_all_addons_and_cleanup(); }
 };
 
 GTEST_API_ int main(int argc, char **argv) {

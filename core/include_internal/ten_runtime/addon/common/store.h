@@ -35,4 +35,5 @@ TEN_RUNTIME_PRIVATE_API ten_addon_host_t *ten_addon_store_find(
 TEN_RUNTIME_PRIVATE_API ten_addon_host_t *
 ten_addon_store_find_or_create_one_if_not_found(ten_addon_store_t *store,
                                                 TEN_ADDON_TYPE addon_type,
-                                                const char *addon_name);
+                                                const char *addon_name,
+                                                bool *newly_created);

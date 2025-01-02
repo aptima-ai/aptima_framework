@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/extension/base_dir.h"

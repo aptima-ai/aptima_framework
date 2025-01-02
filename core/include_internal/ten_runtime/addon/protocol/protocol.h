@@ -47,4 +47,4 @@ TEN_RUNTIME_API ten_addon_host_t *ten_addon_register_protocol(
 
 TEN_RUNTIME_API ten_addon_t *ten_addon_unregister_protocol(const char *name);
 
-TEN_RUNTIME_API void ten_addon_unregister_all_protocol(void);
+TEN_RUNTIME_PRIVATE_API void ten_addon_unregister_all_protocol(void);

@@ -6,6 +6,7 @@
 //
 #include "ten_runtime/ten_env/internal/metadata.h"
 
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/app/ten_env/metadata.h"
 #include "include_internal/ten_runtime/common/constant_str.h"

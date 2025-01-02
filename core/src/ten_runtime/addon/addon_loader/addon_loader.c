@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/addon/addon_loader/addon_loader.h"
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/app/app.h"
 #include "include_internal/ten_runtime/common/constant_str.h"
@@ -90,15 +91,15 @@ ten_addon_host_t *ten_addon_addon_loader_find(const char *addon_loader) {
   ten_mutex_lock(store->lock);
 
   ten_list_foreach (&store->store, iter) {
-    ten_addon_host_t *addon = ten_ptr_listnode_get(iter.node);
-    TEN_ASSERT(addon && addon->type == TEN_ADDON_TYPE_PROTOCOL,
+    ten_addon_host_t *addon_host = ten_ptr_listnode_get(iter.node);
+    TEN_ASSERT(addon_host && addon_host->type == TEN_ADDON_TYPE_PROTOCOL,
                "Should not happen.");
 
-    if (!ten_addon_addon_loader_match_addon_loader(addon, addon_loader)) {
+    if (!ten_addon_addon_loader_match_addon_loader(addon_host, addon_loader)) {
       continue;
     }
 
-    result = addon;
+    result = addon_host;
     break;
   }
 

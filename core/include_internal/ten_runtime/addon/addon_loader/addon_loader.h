@@ -30,7 +30,7 @@ TEN_RUNTIME_API ten_addon_host_t *ten_addon_register_addon_loader(
 TEN_RUNTIME_API ten_addon_t *ten_addon_unregister_addon_loader(
     const char *name);
 
-TEN_RUNTIME_API void ten_addon_unregister_all_addon_loader(void);
+TEN_RUNTIME_PRIVATE_API void ten_addon_unregister_all_addon_loader(void);
 
 TEN_RUNTIME_PRIVATE_API bool ten_addon_create_addon_loader(
     ten_env_t *ten_env, const char *addon_name, const char *instance_name,

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/extension/extension.h"
 #include "include_internal/ten_runtime/extension_group/on_xxx.h"
 #include "include_internal/ten_runtime/extension_thread/extension_thread.h"

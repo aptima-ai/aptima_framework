@@ -12,7 +12,10 @@ from glob import glob
 from typing import Callable, Dict, Type, Optional
 
 from .addon import Addon
-from libten_runtime_python import _register_addon_as_extension
+from libten_runtime_python import (
+    _register_addon_as_extension,
+    _unregister_all_addons_and_cleanup,
+)
 
 
 class _AddonManager:
@@ -183,3 +186,7 @@ def register_addon_as_extension(name: str, base_dir: Optional[str] = None):
         return cls
 
     return decorator
+
+
+def unregister_all_addons_and_cleanup() -> None:
+    _unregister_all_addons_and_cleanup()

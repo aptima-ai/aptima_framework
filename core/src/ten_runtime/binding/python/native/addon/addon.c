@@ -7,6 +7,7 @@
 #include "ten_runtime/addon/addon.h"
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/binding/common.h"
 #include "include_internal/ten_runtime/binding/python/addon/addon.h"
 #include "include_internal/ten_runtime/binding/python/common/common.h"

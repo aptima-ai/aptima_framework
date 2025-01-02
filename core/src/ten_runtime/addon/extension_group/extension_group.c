@@ -7,6 +7,7 @@
 #include "include_internal/ten_runtime/addon/extension_group/extension_group.h"
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/engine/engine.h"
 #include "include_internal/ten_runtime/extension_group/extension_group.h"

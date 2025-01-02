@@ -9,7 +9,11 @@ from .extension import Extension
 from .async_extension import AsyncExtension
 from .async_ten_env import AsyncTenEnv
 from .addon import Addon
-from .addon_manager import register_addon_as_extension, _AddonManager
+from .addon_manager import (
+    register_addon_as_extension,
+    unregister_all_addons_and_cleanup,
+    _AddonManager,
+)
 from .ten_env import TenEnv
 from .cmd import Cmd
 from .cmd_result import CmdResult, StatusCode
@@ -26,6 +30,7 @@ __all__ = [
     "Addon",
     "_AddonManager",
     "register_addon_as_extension",
+    "unregister_all_addons_and_cleanup",
     "App",
     "Extension",
     "AsyncExtension",

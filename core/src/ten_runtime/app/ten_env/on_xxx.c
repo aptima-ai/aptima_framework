@@ -29,6 +29,7 @@
 #include "include_internal/ten_runtime/ten_env/log.h"
 #include "include_internal/ten_runtime/ten_env/metadata_cb.h"
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
+#include "include_internal/ten_runtime/test/test_extension.h"
 #include "ten_runtime/app/app.h"
 #include "ten_runtime/ten_env/internal/on_xxx_done.h"
 #include "ten_runtime/ten_env/ten_env.h"
@@ -193,13 +194,19 @@ void ten_app_on_configure_done(ten_env_t *ten_env) {
   ten_addon_load_all_from_ten_package_base_dirs(&self->ten_package_base_dirs,
                                                 &err);
 
+  // @{
   // Register all addons.
+  ten_builtin_extension_group_addon_register();
+  ten_builtin_test_extension_addon_register();
+
   ten_addon_manager_t *manager = ten_addon_manager_get_instance();
   ten_addon_register_ctx_t *register_ctx = ten_addon_register_ctx_create();
   register_ctx->app = self;
   ten_addon_manager_register_all_addons(manager, (void *)register_ctx);
   ten_addon_register_ctx_destroy(register_ctx);
+  // @}
 
+  // Create addon loader singleton instances.
   bool need_to_wait_all_addon_loaders_created =
       ten_addon_loader_addons_create_singleton_instance(ten_env);
   if (!need_to_wait_all_addon_loaders_created) {
@@ -268,31 +275,39 @@ static void ten_app_unregister_addons_after_app_close(ten_app_t *self) {
     return;
   }
 
-  // App is close, so unregister all addon loaders to avoid memory leak.
-  ten_addon_loader_addons_destroy_singleton_instance();
-
-  ten_addon_unregister_all_extension();
-  ten_addon_unregister_all_extension_group();
-  ten_addon_unregister_all_addon_loader();
-
-  // BUG(Wei): Refer to the bug in `ten_app_destroy`.
-  // ten_addon_unregister_all_protocol();
+  ten_unregister_all_addons_and_cleanup();
 }
 
 void ten_app_on_deinit(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
-  // At the final stage of addon deinitialization, `ten_env_t::on_deinit_done`
-  // is required, which in turn depends on the runloop. Therefore, the addon
-  // deinitialization process must be performed before the app's runloop ends.
-  // After `app::on_deinit`, the app's runloop will be terminated soon, leaving
-  // no runloop within the TEN runtime. As a result, addon cleanup must be
-  // performed during the app's `on_deinit` phase.
-  ten_app_unregister_addons_after_app_close(self);
-
   // The world outside of TEN would do some operations after the app_run()
   // returns, so it's best to perform the on_deinit callback _before_ the
   // runloop is stopped.
+
+  // @{
+  // **Note:** The two functions below will invoke functions like `on_deinit`,
+  // which may call into different language environments, such as the
+  // `on_deinit` function of a Python addon. Therefore, these two functions must
+  // not be called within the call flow of the C API initiated by those
+  // languages. In other words, these two functions cannot be invoked within the
+  // call flow of functions like `on_deinit_done`. Instead, they must be called
+  // within the call flow of a purely C-native thread; otherwise, it may
+  // potentially lead to a deadlock.
+
+  // The `on_deinit` of the protocol instance needs to call the `on_deinit_done`
+  // of the addon host, so this logic must be performed before unregistering the
+  // protocol addons.
+  if (self->endpoint_protocol) {
+    ten_ref_dec_ref(&self->endpoint_protocol->ref);
+  }
+
+  // At the final stage of addon deinitialization, `ten_env_t::on_deinit_done`
+  // is required, which in turn depends on the runloop. Therefore, the addon
+  // deinitialization process must be performed _before_ the app's runloop
+  // ends.
+  ten_app_unregister_addons_after_app_close(self);
+  // @}
 
   if (self->on_deinit) {
     // Call the registered on_deinit callback if exists.

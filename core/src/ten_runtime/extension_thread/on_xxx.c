@@ -9,6 +9,8 @@
 #include <stdbool.h>
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
+#include "include_internal/ten_runtime/addon/extension/extension.h"
 #include "include_internal/ten_runtime/common/loc.h"
 #include "include_internal/ten_runtime/engine/on_xxx.h"
 #include "include_internal/ten_runtime/extension/close.h"
@@ -270,7 +272,7 @@ void ten_extension_thread_destroy_addon_instance(void *self_, void *arg) {
   TEN_ASSERT(ten_extension_thread_check_integrity(self, true),
              "Invalid use of extension_thread %p.", self);
 
-  ten_addon_on_destroy_instance_ctx_t *destroy_instance_info = arg;
+  ten_addon_host_on_destroy_instance_ctx_t *destroy_instance_info = arg;
   TEN_ASSERT(destroy_instance_info, "Should not happen.");
 
   ten_addon_host_destroy_instance_async(
@@ -278,7 +280,7 @@ void ten_extension_thread_destroy_addon_instance(void *self_, void *arg) {
       destroy_instance_info->instance, destroy_instance_info->cb,
       destroy_instance_info->cb_data);
 
-  ten_addon_on_destroy_instance_ctx_destroy(destroy_instance_info);
+  ten_addon_host_on_destroy_instance_ctx_destroy(destroy_instance_info);
 }
 
 ten_extension_thread_on_addon_create_extension_done_ctx_t *

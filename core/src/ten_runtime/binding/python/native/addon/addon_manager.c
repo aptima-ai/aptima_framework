@@ -57,3 +57,10 @@ PyObject *ten_py_addon_manager_register_addon_as_extension(PyObject *self,
 
   Py_RETURN_NONE;
 }
+
+PyObject *ten_py_unregister_all_addons_and_cleanup(PyObject *self,
+                                                   PyObject *args) {
+  ten_unregister_all_addons_and_cleanup();
+
+  Py_RETURN_NONE;
+}

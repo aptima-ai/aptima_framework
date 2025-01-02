@@ -7,6 +7,7 @@
 #include "ten_runtime/addon/extension/extension.h"
 
 #include "include_internal/ten_runtime/addon/addon.h"
+#include "include_internal/ten_runtime/addon/addon_host.h"
 #include "include_internal/ten_runtime/addon/common/store.h"
 #include "include_internal/ten_runtime/addon/extension/extension.h"
 #include "include_internal/ten_runtime/extension/extension.h"
@@ -18,6 +19,7 @@
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
+#include "ten_utils/macro/memory.h"
 
 static ten_addon_store_t g_extension_store = {
     false,
@@ -28,6 +30,37 @@ static ten_addon_store_t g_extension_store = {
 ten_addon_store_t *ten_extension_get_global_store(void) {
   ten_addon_store_init(&g_extension_store);
   return &g_extension_store;
+}
+
+static ten_addon_on_create_extension_instance_ctx_t *
+ten_addon_on_create_extension_instance_ctx_create(
+    TEN_ADDON_TYPE addon_type, const char *addon_name,
+    const char *instance_name, ten_env_addon_create_instance_done_cb_t cb,
+    void *cb_data) {
+  TEN_ASSERT(addon_name && instance_name, "Should not happen.");
+
+  ten_addon_on_create_extension_instance_ctx_t *self =
+      (ten_addon_on_create_extension_instance_ctx_t *)TEN_MALLOC(
+          sizeof(ten_addon_on_create_extension_instance_ctx_t));
+  TEN_ASSERT(self, "Failed to allocate memory.");
+
+  ten_string_init_formatted(&self->addon_name, "%s", addon_name);
+  ten_string_init_formatted(&self->instance_name, "%s", instance_name);
+  self->addon_type = addon_type;
+  self->cb = cb;
+  self->cb_data = cb_data;
+
+  return self;
+}
+
+void ten_addon_on_create_extension_instance_ctx_destroy(
+    ten_addon_on_create_extension_instance_ctx_t *self) {
+  TEN_ASSERT(self, "Should not happen.");
+
+  ten_string_deinit(&self->addon_name);
+  ten_string_deinit(&self->instance_name);
+
+  TEN_FREE(self);
 }
 
 bool ten_addon_create_extension(ten_env_t *ten_env, const char *addon_name,
@@ -103,7 +136,7 @@ bool ten_addon_destroy_extension(ten_env_t *ten_env, ten_extension_t *extension,
     return ten_addon_host_destroy_instance_async(addon_host, ten_env, extension,
                                                  cb, cb_data);
   } else {
-    ten_addon_on_destroy_instance_ctx_t *destroy_instance_info =
+    ten_addon_host_on_destroy_instance_ctx_t *destroy_instance_info =
         ten_addon_host_on_destroy_instance_ctx_create(addon_host, extension, cb,
                                                       cb_data);
 
