@@ -145,6 +145,8 @@ PyTypeObject *ten_py_ten_env_tester_type(void) {
        NULL},
       {"send_video_frame", ten_py_ten_env_tester_send_video_frame, METH_VARARGS,
        NULL},
+      {"return_result", ten_py_ten_env_tester_return_result, METH_VARARGS,
+       NULL},
       {NULL, NULL, 0, NULL},
   };
 

@@ -257,6 +257,12 @@ class _TenEnvTester:
     def send_video_frame(
         self, video_frame: _VideoFrame, error_handler: TestErrorHandler
     ) -> None: ...
+    def return_result(
+        self,
+        result: _CmdResult,
+        target_cmd: _Cmd,
+        error_handler: TestErrorHandler,
+    ) -> None: ...
     def stop_test(self) -> None: ...
 
 class _ExtensionTester:

@@ -44,5 +44,11 @@ TEN_RUNTIME_API bool ten_env_tester_send_video_frame(
     ten_env_tester_error_handler_func_t handler, void *user_data,
     ten_error_t *error);
 
+TEN_RUNTIME_API bool ten_env_tester_return_result(
+    ten_env_tester_t *self, ten_shared_ptr_t *result,
+    ten_shared_ptr_t *target_cmd,
+    ten_env_tester_error_handler_func_t error_handler, void *user_data,
+    ten_error_t *error);
+
 TEN_RUNTIME_API bool ten_env_tester_stop_test(ten_env_tester_t *self,
                                               ten_error_t *error);
