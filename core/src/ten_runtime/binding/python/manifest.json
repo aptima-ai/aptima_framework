@@ -7,6 +7,11 @@
       "type": "system",
       "name": "ten_runtime",
       "version": "0.6.0"
+    },
+    {
+      "type": "addon_loader",
+      "name": "python_addon_loader",
+      "version": "0.6.0"
     }
   ],
   "package": {

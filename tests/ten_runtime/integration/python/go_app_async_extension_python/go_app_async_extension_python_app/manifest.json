@@ -31,11 +31,6 @@
       "version": "0.6.0"
     },
     {
-      "type": "addon_loader",
-      "name": "python_addon_loader",
-      "version": "0.6.0"
-    },
-    {
       "type": "extension",
       "name": "simple_echo_cpp",
       "version": "0.1.0"

@@ -8,7 +8,6 @@ from typing import Callable, Optional
 
 from libten_runtime_python import _Extension, _TenEnv
 from .error import TenError
-from .ten_env_attach_to_enum import _TenEnvAttachTo
 from .cmd_result import CmdResult
 from .cmd import Cmd
 from .video_frame import VideoFrame
@@ -43,19 +42,6 @@ class TenEnv(TenEnvBase):
             self._release_handler()
 
     def on_configure_done(self) -> None:
-        from .addon_manager import _AddonManager
-
-        if self._internal._attach_to == _TenEnvAttachTo.APP:
-            # Load all python addons when app on_configure_done.
-            _AddonManager.load_all_addons()
-
-            # In the current use of the TEN framework's Python environment,
-            # there is no need to pass any `register_ctx` object into the
-            # register handler of the Python addon. Therefore, for now, simply
-            # passing `None` is sufficient. If needed in the future, we can
-            # consider what information should be passed to the register
-            # handler of the Python addon.
-            _AddonManager.register_all_addons(None)
         return self._internal.on_configure_done()
 
     def on_init_done(self) -> None:
