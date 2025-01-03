@@ -18,5 +18,4 @@ export PYTHONPATH=.ten/app/ten_packages/system/ten_runtime_python/lib:.ten/app/t
 #
 # Refer to https://github.com/pytorch/pytorch/issues/102360?from_wecom=1#issuecomment-1708989096
 
-python -m pytest -s tests/test_basic.py
-python -m pytest -s tests/test_set_property.py
+python -m pytest -s tests/
