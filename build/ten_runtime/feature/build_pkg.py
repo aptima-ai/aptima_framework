@@ -190,7 +190,7 @@ def npm_install() -> int:
     return returncode
 
 
-def build_ts_extensions(app_root_path: str) -> int:
+def build_nodejs_extensions(app_root_path: str) -> int:
     origin_wd = os.getcwd()
 
     extension_dir = os.path.join(app_root_path, "ten_packages/extension")
@@ -255,7 +255,7 @@ def build_nodejs_app(args: ArgumentInfo) -> int:
         )
     )
 
-    status_code = build_ts_extensions(os.getcwd())
+    status_code = build_nodejs_extensions(os.getcwd())
     if status_code != 0:
         print(f"Failed to build ts extensions of app {args.pkg_name}")
 

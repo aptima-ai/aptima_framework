@@ -40,7 +40,7 @@ def test_get_set_property_nodejs():
             assert False, "Failed to build package."
 
         # Compile typescript extensions.
-        rc = build_pkg.build_ts_extensions(app_root_path)
+        rc = build_pkg.build_nodejs_extensions(app_root_path)
         if rc != 0:
             assert False, "Failed to build TypeScript extensions."
 
