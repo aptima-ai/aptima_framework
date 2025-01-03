@@ -74,7 +74,7 @@ ten_go_error_t ten_go_video_frame_lock_buf(uintptr_t bridge_addr,
       "Invalid argument.");
 
   ten_shared_ptr_t *c_video_frame = ten_go_msg_c_msg(video_frame_bridge);
-  ten_buf_t *c_video_frame_data = ten_video_frame_peek_data(c_video_frame);
+  ten_buf_t *c_video_frame_data = ten_video_frame_peek_buf(c_video_frame);
 
   ten_error_t c_err;
   ten_error_init(&c_err);
@@ -122,7 +122,8 @@ ten_go_error_t ten_go_video_frame_unlock_buf(uintptr_t bridge_addr,
 }
 
 ten_go_error_t ten_go_video_frame_get_buf(uintptr_t bridge_addr,
-                                          const void *buf_addr, int buf_size) {
+                                          const void *buf_addr,
+                                          uint64_t buf_size) {
   TEN_ASSERT(bridge_addr && buf_addr && buf_size > 0, "Invalid argument.");
 
   ten_go_error_t cgo_error;
@@ -134,13 +135,31 @@ ten_go_error_t ten_go_video_frame_get_buf(uintptr_t bridge_addr,
       "Invalid argument.");
 
   ten_shared_ptr_t *c_video_frame = ten_go_msg_c_msg(video_frame_bridge);
-  uint64_t size = ten_video_frame_peek_data(c_video_frame)->size;
+  uint64_t size = ten_video_frame_peek_buf(c_video_frame)->size;
   if (buf_size < size) {
     ten_go_error_set(&cgo_error, TEN_ERRNO_GENERIC, "buffer is not enough");
   } else {
-    ten_buf_t *data = ten_video_frame_peek_data(c_video_frame);
+    ten_buf_t *data = ten_video_frame_peek_buf(c_video_frame);
     memcpy((void *)buf_addr, data->data, size);
   }
+
+  return cgo_error;
+}
+
+ten_go_error_t ten_go_video_frame_get_buf_size(uintptr_t bridge_addr,
+                                               uint64_t *buf_size) {
+  TEN_ASSERT(bridge_addr && buf_size, "Invalid argument.");
+
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
+
+  ten_go_msg_t *video_frame_bridge = ten_go_msg_reinterpret(bridge_addr);
+  TEN_ASSERT(
+      video_frame_bridge && ten_go_msg_check_integrity(video_frame_bridge),
+      "Invalid argument.");
+
+  ten_shared_ptr_t *c_video_frame = ten_go_msg_c_msg(video_frame_bridge);
+  *buf_size = ten_video_frame_peek_buf(c_video_frame)->size;
 
   return cgo_error;
 }

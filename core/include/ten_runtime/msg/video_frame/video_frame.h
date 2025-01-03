@@ -62,4 +62,4 @@ TEN_RUNTIME_API bool ten_video_frame_set_pixel_fmt(ten_shared_ptr_t *self,
 TEN_RUNTIME_API uint8_t *ten_video_frame_alloc_data(ten_shared_ptr_t *self,
                                                     size_t size);
 
-TEN_RUNTIME_API ten_buf_t *ten_video_frame_peek_data(ten_shared_ptr_t *self);
+TEN_RUNTIME_API ten_buf_t *ten_video_frame_peek_buf(ten_shared_ptr_t *self);

@@ -407,7 +407,8 @@ ten_go_error_t ten_go_audio_frame_unlock_buf(uintptr_t bridge_addr,
 }
 
 ten_go_error_t ten_go_audio_frame_get_buf(uintptr_t bridge_addr,
-                                          const void *buf_addr, int buf_size) {
+                                          const void *buf_addr,
+                                          uint64_t buf_size) {
   TEN_ASSERT(bridge_addr && buf_addr && buf_size > 0, "Invalid argument.");
 
   ten_go_error_t cgo_error;
@@ -426,6 +427,25 @@ ten_go_error_t ten_go_audio_frame_get_buf(uintptr_t bridge_addr,
     ten_buf_t *data = ten_audio_frame_peek_buf(c_audio_frame);
     memcpy((void *)buf_addr, data->data, size);
   }
+
+  return cgo_error;
+}
+
+ten_go_error_t ten_go_audio_frame_get_buf_size(uintptr_t bridge_addr,
+                                               uint64_t *buf_size) {
+  TEN_ASSERT(bridge_addr && buf_size, "Invalid argument.");
+  TEN_ASSERT(buf_size, "Invalid argument.");
+
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
+
+  ten_go_msg_t *audio_frame_bridge = ten_go_msg_reinterpret(bridge_addr);
+  TEN_ASSERT(
+      audio_frame_bridge && ten_go_msg_check_integrity(audio_frame_bridge),
+      "Invalid argument.");
+
+  ten_shared_ptr_t *c_audio_frame = ten_go_msg_c_msg(audio_frame_bridge);
+  *buf_size = ten_audio_frame_peek_buf(c_audio_frame)->size;
 
   return cgo_error;
 }

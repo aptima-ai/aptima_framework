@@ -170,13 +170,13 @@ static napi_value ten_nodejs_video_frame_lock_buf(napi_env env,
 
   if (!ten_msg_add_locked_res_buf(
           video_frame_bridge->msg.msg,
-          ten_video_frame_peek_data(video_frame_bridge->msg.msg)->data, &err)) {
+          ten_video_frame_peek_buf(video_frame_bridge->msg.msg)->data, &err)) {
     napi_fatal_error(NULL, NAPI_AUTO_LENGTH, "Failed to lock buffer.",
                      NAPI_AUTO_LENGTH);
     TEN_ASSERT(0, "Failed to lock buffer.");
   }
 
-  ten_buf_t *buf = ten_video_frame_peek_data(video_frame_bridge->msg.msg);
+  ten_buf_t *buf = ten_video_frame_peek_buf(video_frame_bridge->msg.msg);
 
   napi_value js_buf = NULL;
   status = napi_create_external_arraybuffer(
@@ -252,7 +252,7 @@ static napi_value ten_nodejs_video_frame_get_buf(napi_env env,
     TEN_ASSERT(0, "Failed to unwrap JS video_frame object: %d", status);
   }
 
-  ten_buf_t *buf = ten_video_frame_peek_data(video_frame_bridge->msg.msg);
+  ten_buf_t *buf = ten_video_frame_peek_buf(video_frame_bridge->msg.msg);
   if (!buf) {
     napi_fatal_error(NULL, NAPI_AUTO_LENGTH, "Failed to get buffer.",
                      NAPI_AUTO_LENGTH);

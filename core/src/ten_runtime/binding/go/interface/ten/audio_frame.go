@@ -68,7 +68,6 @@ type AudioFrame interface {
 
 type audioFrame struct {
 	*msg
-	size int
 }
 
 func newAudioFrame(bridge C.uintptr_t) *audioFrame {
@@ -337,24 +336,30 @@ func (p *audioFrame) AllocBuf(size int) error {
 		return withCGoError(&apiStatus)
 	})
 
-	if err == nil {
-		p.size = size
-	}
-
 	return err
 }
 
 func (p *audioFrame) GetBuf() ([]byte, error) {
-	if p.size == 0 {
-		return nil, newTenError(ErrnoInvalidArgument, "call AllocBuf() first")
+	var bufSize C.uint64_t
+	err := withCGOLimiter(func() error {
+		apiStatus := C.ten_go_audio_frame_get_buf_size(p.getCPtr(), &bufSize)
+		return withCGoError(&apiStatus)
+	})
+
+	if err != nil {
+		return nil, err
 	}
 
-	buf := make([]byte, p.size)
-	err := withCGOLimiter(func() error {
+	if bufSize == 0 {
+		return make([]byte, 0), nil
+	}
+
+	buf := make([]byte, bufSize)
+	err = withCGOLimiter(func() error {
 		apiStatus := C.ten_go_audio_frame_get_buf(
 			p.getCPtr(),
 			unsafe.Pointer(&buf[0]),
-			C.int(p.size),
+			bufSize,
 		)
 
 		return withCGoError(&apiStatus)

@@ -108,7 +108,7 @@ PyObject *ten_py_video_frame_lock_buf(PyObject *self, PyObject *args) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_buf_t *data = ten_video_frame_peek_data(py_video_frame->msg.c_msg);
+  ten_buf_t *data = ten_video_frame_peek_buf(py_video_frame->msg.c_msg);
 
   if (!ten_msg_add_locked_res_buf(py_video_frame->msg.c_msg, data->data,
                                   &err)) {
@@ -167,7 +167,7 @@ PyObject *ten_py_video_frame_get_buf(PyObject *self, PyObject *args) {
   ten_error_t err;
   ten_error_init(&err);
 
-  ten_buf_t *buf = ten_video_frame_peek_data(py_video_frame->msg.c_msg);
+  ten_buf_t *buf = ten_video_frame_peek_buf(py_video_frame->msg.c_msg);
   uint8_t *data = buf->data;
   size_t data_size = buf->size;
   if (!data) {

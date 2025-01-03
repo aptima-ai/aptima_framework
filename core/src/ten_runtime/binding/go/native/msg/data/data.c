@@ -120,7 +120,7 @@ ten_go_error_t ten_go_data_unlock_buf(uintptr_t bridge_addr,
 }
 
 ten_go_error_t ten_go_data_get_buf(uintptr_t bridge_addr, const void *buf_addr,
-                                   int buf_size) {
+                                   uint64_t buf_size) {
   TEN_ASSERT(bridge_addr && buf_addr && buf_size > 0, "Invalid argument.");
 
   ten_go_error_t cgo_error;
@@ -138,6 +138,25 @@ ten_go_error_t ten_go_data_get_buf(uintptr_t bridge_addr, const void *buf_addr,
     uint8_t *data = ten_data_peek_buf(c_data)->data;
     memcpy((void *)buf_addr, data, size);
   }
+
+  return cgo_error;
+}
+
+ten_go_error_t ten_go_data_get_buf_size(uintptr_t bridge_addr,
+                                        uint64_t *buf_size) {
+  TEN_ASSERT(bridge_addr, "Invalid argument.");
+
+  ten_go_error_t cgo_error;
+  ten_go_error_init_with_errno(&cgo_error, TEN_ERRNO_OK);
+
+  ten_go_msg_t *data_bridge = ten_go_msg_reinterpret(bridge_addr);
+  TEN_ASSERT(data_bridge && ten_go_msg_check_integrity(data_bridge),
+             "Invalid argument.");
+
+  ten_shared_ptr_t *c_data = ten_go_msg_c_msg(data_bridge);
+  uint64_t size = ten_data_peek_buf(c_data)->size;
+
+  *buf_size = size;
 
   return cgo_error;
 }

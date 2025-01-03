@@ -24,7 +24,11 @@ ten_go_error_t ten_go_video_frame_unlock_buf(uintptr_t bridge_addr,
                                              const void *buf_addr);
 
 ten_go_error_t ten_go_video_frame_get_buf(uintptr_t bridge_addr,
-                                          const void *buf_addr, int buf_size);
+                                          const void *buf_addr,
+                                          uint64_t buf_size);
+
+ten_go_error_t ten_go_video_frame_get_buf_size(uintptr_t bridge_addr,
+                                               uint64_t *buf_size);
 
 ten_go_error_t ten_go_video_frame_set_width(uintptr_t bridge_addr,
                                             int32_t width);

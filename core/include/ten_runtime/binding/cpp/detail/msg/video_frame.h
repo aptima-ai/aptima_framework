@@ -96,13 +96,13 @@ class video_frame_t : public msg_t {
 
   buf_t lock_buf(error_t *err = nullptr) const {
     if (!ten_msg_add_locked_res_buf(
-            c_msg, ten_video_frame_peek_data(c_msg)->data,
+            c_msg, ten_video_frame_peek_buf(c_msg)->data,
             err != nullptr ? err->get_c_error() : nullptr)) {
       return buf_t{};
     }
 
-    buf_t result{ten_video_frame_peek_data(c_msg)->data,
-                 ten_video_frame_peek_data(c_msg)->size};
+    buf_t result{ten_video_frame_peek_buf(c_msg)->data,
+                 ten_video_frame_peek_buf(c_msg)->size};
 
     return result;
   }
