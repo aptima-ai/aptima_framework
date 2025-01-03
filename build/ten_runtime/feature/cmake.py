@@ -345,7 +345,7 @@ cmake.py will consider it as its own command line option."
             + f" --target {self.args.project_name}"
         )
 
-        if self.args.target_os != "win":
+        if self.args.target_os != "win" and self.args.target_os != "mac":
             cmd += " --parallel $(nproc)"
 
         if self.args.log_level > 1:

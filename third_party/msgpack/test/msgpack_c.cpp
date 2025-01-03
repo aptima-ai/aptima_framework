@@ -1612,6 +1612,111 @@ TEST(MSGPACKC, object_bin_print_buffer_overflow) {
   EXPECT_STREQ("\"test\"", buffer);
 }
 
+TEST(MSGPACKC, init_msgpack_obj_nil) {
+    msgpack_object obj;
+    msgpack_object_init_nil(&obj);
+    EXPECT_EQ(MSGPACK_OBJECT_NIL, obj.type);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_boolean) {
+    msgpack_object obj;
+    msgpack_object_init_boolean(&obj, true);
+    EXPECT_EQ(MSGPACK_OBJECT_BOOLEAN, obj.type);
+    EXPECT_EQ(true, obj.via.boolean);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_unsigned_integer) {
+    msgpack_object obj;
+    msgpack_object_init_unsigned_integer(&obj, 123);
+    EXPECT_EQ(MSGPACK_OBJECT_POSITIVE_INTEGER, obj.type);
+    EXPECT_EQ(static_cast<uint64_t>(123), obj.via.u64);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_signed_integer1) {
+    msgpack_object obj;
+    msgpack_object_init_signed_integer(&obj, -123);
+    EXPECT_EQ(MSGPACK_OBJECT_NEGATIVE_INTEGER, obj.type);
+    EXPECT_EQ(-123, obj.via.i64);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_signed_integer2) {
+    msgpack_object obj;
+    msgpack_object_init_signed_integer(&obj, 123);
+    EXPECT_EQ(MSGPACK_OBJECT_POSITIVE_INTEGER, obj.type);
+    EXPECT_EQ(static_cast<uint64_t>(123), obj.via.u64);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_float32) {
+    msgpack_object obj;
+    float val = 1.23f;
+    msgpack_object_init_float32(&obj, val);
+    EXPECT_EQ(MSGPACK_OBJECT_FLOAT32, obj.type);
+    EXPECT_TRUE(fabs(obj.via.f64 - val) <= kEPS);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_float64) {
+    msgpack_object obj;
+    double val = 1.23;
+    msgpack_object_init_float64(&obj, val);
+    EXPECT_EQ(MSGPACK_OBJECT_FLOAT64, obj.type);
+    EXPECT_TRUE(fabs(obj.via.f64 - val) <= kEPS);
+}
+
+
+TEST(MSGPACKC, init_msgpack_obj_string) {
+    msgpack_object obj;
+    char buffer[] = "test";
+    msgpack_object_init_str(&obj, buffer, (uint32_t)strlen(buffer));
+    EXPECT_EQ(MSGPACK_OBJECT_STR, obj.type);
+    EXPECT_STREQ(buffer, obj.via.str.ptr);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_bin) {
+    msgpack_object obj;
+    char buffer[] = "test";
+    msgpack_object_init_bin(&obj, buffer, (uint32_t)strlen(buffer));
+    EXPECT_EQ(MSGPACK_OBJECT_BIN, obj.type);
+    EXPECT_STREQ(buffer, obj.via.bin.ptr);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_ext) {
+    msgpack_object obj;
+    char buffer[] = "test";
+    msgpack_object_init_ext(&obj, 1, buffer, (uint32_t)strlen(buffer));
+    EXPECT_EQ(MSGPACK_OBJECT_EXT, obj.type);
+    EXPECT_EQ(1, obj.via.ext.type);
+    EXPECT_STREQ(buffer, obj.via.ext.ptr);
+}
+
+TEST(MSGPACKC, init_msgpack_obj_array) {
+    msgpack_object obj;
+    char buffer[][7] = {"test_1", "test_2", "test_3", "test_4"};
+    uint32_t buffer_size = 4;
+    msgpack_object array[buffer_size];
+    for(size_t i = 0; i < buffer_size; i++) {
+        msgpack_object_init_str(&array[i], buffer[i], (uint32_t)strlen(buffer[i]));
+    }
+    msgpack_object_init_array(&obj, array, buffer_size);
+    EXPECT_EQ(MSGPACK_OBJECT_ARRAY, obj.type);
+    for(size_t i = 0; i < buffer_size; i++) {
+        EXPECT_STREQ(buffer[i], obj.via.array.ptr[i].via.str.ptr);
+    }
+}
+
+TEST(MSGPACKC, init_msgpack_obj_map) {
+    msgpack_object obj;
+    char key_str[] = "test_key";
+    char value_str[] = "test_value";
+    msgpack_object key,value;
+    msgpack_object_init_str(&key, key_str, (uint32_t)strlen(key_str));
+    msgpack_object_init_str(&value, value_str, (uint32_t)strlen(value_str));
+    msgpack_object_kv map = { key, value };
+    msgpack_object_init_map(&obj, &map, 1);
+    EXPECT_EQ(MSGPACK_OBJECT_MAP, obj.type);
+    EXPECT_STREQ(key_str, obj.via.map.ptr->key.via.str.ptr);
+    EXPECT_STREQ(value_str, obj.via.map.ptr->val.via.str.ptr);
+}
+
 /* test for vrefbuffer */
 #define GEN_TEST_VREFBUFFER_PREPARE(...)                       \
     msgpack_vrefbuffer vbuf;                                   \

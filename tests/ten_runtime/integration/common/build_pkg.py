@@ -525,7 +525,7 @@ def prepare_and_build_app(
     return rc
 
 
-def build_ts_extensions(app_root_path: str):
+def build_nodejs_extensions(app_root_path: str):
     origin_wd = os.getcwd()
 
     extension_dir = os.path.join(app_root_path, "ten_packages/extension")

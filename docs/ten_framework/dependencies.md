@@ -32,7 +32,7 @@ This is one of the event loop libraries used in the TEN runtime. Please refer to
 
 ## msgpack-c
 
-Version: 6.0.0
+Version: 6.1.0
 
 [Boost Software License, Version 1.0](https://github.com/msgpack/msgpack-c#license)
 
