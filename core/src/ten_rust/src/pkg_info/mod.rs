@@ -59,8 +59,11 @@ pub struct PkgInfo {
 
     pub compatible_score: i32,
 
-    // Source information.
-    pub is_local_installed: bool,
+    /// This indicates that the package has been installed in the correct
+    /// location. For example, in the case of an extension, it means it has
+    /// been installed under the `ten_packages/` directory.
+    pub is_installed: bool,
+
     pub url: String,
     pub hash: String,
 
@@ -68,6 +71,10 @@ pub struct PkgInfo {
     pub property: Option<Property>,
 
     pub schema_store: Option<SchemaStore>,
+
+    /// Indicates that the `pkg_info` represents a local dependency package.
+    pub is_local_dependency: bool,
+    pub local_dependency_path: Option<String>,
 }
 
 impl PkgInfo {
@@ -82,13 +89,16 @@ impl PkgInfo {
             api: PkgApi::from_manifest(manifest)?,
             compatible_score: -1,
 
-            is_local_installed: false,
+            is_installed: false,
             url: String::new(),
             hash: String::new(),
 
             manifest: Some(manifest.clone()),
             property: property.clone(),
             schema_store: SchemaStore::from_manifest(manifest)?,
+
+            is_local_dependency: false,
+            local_dependency_path: None,
         };
 
         pkg_info.hash = pkg_info.gen_hash_hex();
@@ -176,13 +186,16 @@ impl PkgInfo {
     }
 }
 
-pub fn get_pkg_info_from_path(pkg_path: &Path) -> Result<PkgInfo> {
+pub fn get_pkg_info_from_path(
+    pkg_path: &Path,
+    is_installed: bool,
+) -> Result<PkgInfo> {
     let manifest = parse_manifest_in_folder(pkg_path)?;
     let property = parse_property_in_folder(pkg_path)?;
 
     let mut pkg_info: PkgInfo = PkgInfo::from_metadata(&manifest, &property)?;
 
-    pkg_info.is_local_installed = true;
+    pkg_info.is_installed = is_installed;
     pkg_info.url = pkg_path.to_string_lossy().to_string();
 
     Ok(pkg_info)
@@ -192,7 +205,7 @@ fn collect_pkg_info_from_path(
     base_path: &Path,
     pkgs_info: &mut HashMap<PkgTypeAndName, PkgInfo>,
 ) -> Result<Manifest> {
-    let pkg_info = get_pkg_info_from_path(base_path)?;
+    let pkg_info = get_pkg_info_from_path(base_path, true)?;
 
     let pkg_type_name = PkgTypeAndName::from(&pkg_info);
     if pkgs_info.contains_key(&pkg_type_name) {
@@ -350,7 +363,7 @@ pub fn find_to_be_replaced_local_pkgs<'a>(
             // `is_local_installed` of that package in the dependency tree will
             // also not be `true`. Therefore, we will uniformly use
             // `is_local_installed` to make overall judgments.
-            if !pkg_in_dependencies.is_local_installed {
+            if !pkg_in_dependencies.is_installed {
                 result.push((pkg_in_dependencies, local_pkg));
             }
         }

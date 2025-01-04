@@ -24,6 +24,7 @@ use ten_rust::pkg_info::{
 };
 
 use crate::{
+    cmd::cmd_install::InstallCommand,
     config::TmanConfig,
     install::{install_pkg_info, PkgIdentityMapping},
 };
@@ -110,6 +111,7 @@ pub fn filter_solver_results_by_type_and_name<'a>(
 
 pub async fn install_solver_results_in_app_folder(
     tman_config: &TmanConfig,
+    command_data: &InstallCommand,
     solver_results: &Vec<&PkgInfo>,
     pkg_identity_mappings: &Vec<PkgIdentityMapping>,
     template_ctx: Option<&serde_json::Value>,
@@ -148,6 +150,7 @@ pub async fn install_solver_results_in_app_folder(
 
         install_pkg_info(
             tman_config,
+            command_data,
             solver_result,
             pkg_identity_mappings,
             template_ctx,
@@ -163,6 +166,7 @@ pub async fn install_solver_results_in_app_folder(
 
 pub async fn install_solver_results_in_standalone_mode(
     tman_config: &TmanConfig,
+    command_data: &InstallCommand,
     solver_results: &Vec<&PkgInfo>,
     pkg_identity_mappings: &Vec<PkgIdentityMapping>,
     template_ctx: Option<&serde_json::Value>,
@@ -171,6 +175,7 @@ pub async fn install_solver_results_in_standalone_mode(
     for solver_result in solver_results {
         install_pkg_info(
             tman_config,
+            command_data,
             solver_result,
             pkg_identity_mappings,
             template_ctx,

@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 use std::collections::{HashMap, HashSet};
+use std::path::Path;
 
 use anyhow::{anyhow, Result};
 use semver::{Version, VersionReq};
@@ -16,7 +17,7 @@ use ten_rust::pkg_info::pkg_type_and_name::PkgTypeAndName;
 use ten_rust::pkg_info::supports::{
     is_pkg_supports_compatible_with, PkgSupport,
 };
-use ten_rust::pkg_info::PkgInfo;
+use ten_rust::pkg_info::{get_pkg_info_from_path, PkgInfo};
 
 use super::config::TmanConfig;
 use super::registry::{get_package_list, SearchCriteria};
@@ -113,106 +114,131 @@ async fn process_dependencies_to_get_candidates(
     new_pkgs_to_be_searched: &mut Vec<PkgInfo>,
 ) -> Result<()> {
     for dependency in input_dependencies {
-        // Check if we need to get the package info from the slow path.
-        let changed =
-            merge_dependency_to_dependencies(merged_dependencies, dependency)?;
-        if !changed {
-            // There is no new information, so we won't proceed further.
-            continue;
-        }
+        if dependency.is_local() {
+            // Enforce having only one candidate: the package info parsed from
+            // the specified path.
 
-        // With the current design, if there is new information, it will
-        // definitely be only this version requirement. Although there may be
-        // some overlap with previous version requirements, given the current
-        // design, this is the best we can do for now. The answer won't be
-        // wrong, but the efficiency might be somewhat lower.
-        let criteria = SearchCriteria {
-            version_req: dependency.version_req.clone(),
-        };
+            // Construct a `PkgInfo` to represent the package corresponding to
+            // the specified path.
+            let pkg_info: PkgInfo = get_pkg_info_from_path(
+                Path::new(&dependency.path.as_ref().unwrap()),
+                false,
+            )?;
 
-        // Retrieve all packages from the registry that meet the specified
-        // criteria.
-        let results = get_package_list(
-            tman_config,
-            dependency.type_and_name.pkg_type,
-            &dependency.type_and_name.name,
-            &criteria,
-        )
-        .await?;
+            let candidate_map =
+                all_candidates.entry((&pkg_info).into()).or_default();
 
-        let mut candidate_pkg_infos: Vec<PkgInfo> = vec![];
-
-        // Put all the results returned by the registry into
-        // `candidate_pkg_infos`, making it convenient for `supports` filtering
-        // later.
-        for result in results {
-            let mut candidate_pkg_info: PkgInfo =
-                (&result.pkg_registry_info).into();
-
-            candidate_pkg_info.url = pathbuf_to_string(result.url)?;
-            candidate_pkg_info.is_local_installed = false;
-
-            tman_verbose_println!(
-                tman_config,
-                "Collect candidate: {:?}",
-                candidate_pkg_info
-            );
-
-            candidate_pkg_infos.push(candidate_pkg_info);
-        }
-
-        // Find packages from the all_candidates that meet the specified
-        // criteria and add them to the candidate_pkg_infos.
-        //
-        // Since `all_candidates` includes the ten packages installed locally,
-        // searching through `all_candidates` allows those locally installed
-        // packages to be added to `new_pkgs_to_be_searched`, ensuring that the
-        // dependencies within those packages are processed.
-        if let Some(candidates) = all_candidates.get(&dependency.into()) {
-            for candidate in candidates {
-                if dependency.version_req.matches(&candidate.0.version) {
-                    tman_verbose_println!(
-                        tman_config,
-                        "Collect candidate: {:?}",
-                        candidate
-                    );
-
-                    candidate_pkg_infos.push(candidate.1.clone());
-                }
+            candidate_map.insert((&pkg_info).into(), pkg_info);
+        } else {
+            // Check if we need to get the package info from the slow path.
+            let changed = merge_dependency_to_dependencies(
+                merged_dependencies,
+                dependency,
+            )?;
+            if !changed {
+                // There is no new information, so we won't proceed further.
+                continue;
             }
-        }
 
-        for mut candidate_pkg_info in candidate_pkg_infos {
-            tman_verbose_println!(
+            // With the current design, if there is new information, it will
+            // definitely be only this version requirement. Although there may
+            // be some overlap with previous version requirements,
+            // given the current design, this is the best we can do
+            // for now. The answer won't be wrong, but the
+            // efficiency might be somewhat lower.
+            let criteria = SearchCriteria {
+                version_req: dependency.version_req.clone(),
+            };
+
+            // Retrieve all packages from the registry that meet the specified
+            // criteria.
+            let results = get_package_list(
                 tman_config,
-                "Check candidate support: {:?}",
-                candidate_pkg_info
-            );
+                dependency.type_and_name.pkg_type,
+                &dependency.type_and_name.name,
+                &criteria,
+            )
+            .await?;
 
-            let compatible_score = is_pkg_supports_compatible_with(
-                &candidate_pkg_info.basic_info.supports,
-                support,
-            );
+            let mut candidate_pkg_infos: Vec<PkgInfo> = vec![];
 
-            // A package is considered a candidate only when compatible_score >=
-            // 0.
-            if compatible_score >= 0 {
-                // Record the package's compatible_score so that we can later
-                // select the most appropriate one.
-                candidate_pkg_info.compatible_score = compatible_score;
+            // Put all the results returned by the registry into
+            // `candidate_pkg_infos`, making it convenient for `supports`
+            // filtering later.
+            for result in results {
+                let mut candidate_pkg_info: PkgInfo =
+                    (&result.pkg_registry_info).into();
+
+                candidate_pkg_info.url = pathbuf_to_string(result.url)?;
+                candidate_pkg_info.is_installed = false;
 
                 tman_verbose_println!(
                     tman_config,
-                    "Found a candidate: {:?}",
+                    "Collect candidate: {:?}",
                     candidate_pkg_info
                 );
 
-                all_candidates.entry(dependency.into()).or_default().insert(
-                    (&candidate_pkg_info).into(),
-                    candidate_pkg_info.clone(),
+                candidate_pkg_infos.push(candidate_pkg_info);
+            }
+
+            // Find packages from the all_candidates that meet the specified
+            // criteria and add them to the candidate_pkg_infos.
+            //
+            // Since `all_candidates` includes the ten packages installed
+            // locally, searching through `all_candidates` allows
+            // those locally installed packages to be added to
+            // `new_pkgs_to_be_searched`, ensuring that the
+            // dependencies within those packages are processed.
+            if let Some(candidates) = all_candidates.get(&dependency.into()) {
+                for candidate in candidates {
+                    if dependency.version_req.matches(&candidate.0.version) {
+                        tman_verbose_println!(
+                            tman_config,
+                            "Collect candidate: {:?}",
+                            candidate
+                        );
+
+                        candidate_pkg_infos.push(candidate.1.clone());
+                    }
+                }
+            }
+
+            for mut candidate_pkg_info in candidate_pkg_infos {
+                tman_verbose_println!(
+                    tman_config,
+                    "Check candidate support: {:?}",
+                    candidate_pkg_info
                 );
 
-                new_pkgs_to_be_searched.push(candidate_pkg_info);
+                let compatible_score = is_pkg_supports_compatible_with(
+                    &candidate_pkg_info.basic_info.supports,
+                    support,
+                );
+
+                // A package is considered a candidate only when
+                // compatible_score >= 0.
+                if compatible_score >= 0 {
+                    // Record the package's compatible_score so that we can
+                    // later select the most appropriate
+                    // one.
+                    candidate_pkg_info.compatible_score = compatible_score;
+
+                    tman_verbose_println!(
+                        tman_config,
+                        "Found a candidate: {:?}",
+                        candidate_pkg_info
+                    );
+
+                    all_candidates
+                        .entry(dependency.into())
+                        .or_default()
+                        .insert(
+                            (&candidate_pkg_info).into(),
+                            candidate_pkg_info.clone(),
+                        );
+
+                    new_pkgs_to_be_searched.push(candidate_pkg_info);
+                }
             }
         }
     }

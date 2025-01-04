@@ -41,10 +41,11 @@ impl Graph {
 
             // Check if the graph node exists in the specified app.
             let found = existed_pkgs_of_app.iter().find(|pkg| {
+                assert!(pkg.is_installed, "Should not happen.");
+
                 pkg.basic_info.type_and_name.pkg_type
                     == node.type_and_name.pkg_type
                     && pkg.basic_info.type_and_name.name == node.addon
-                    && pkg.is_local_installed
             });
             if found.is_none() {
                 not_installed_pkgs.push((

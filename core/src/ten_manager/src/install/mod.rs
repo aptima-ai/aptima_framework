@@ -7,7 +7,10 @@
 pub mod installed_paths;
 pub mod template;
 
-use std::path::{Path, PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 use anyhow::Result;
 use installed_paths::{
@@ -19,7 +22,9 @@ use ten_rust::pkg_info::{pkg_type::PkgType, PkgInfo};
 
 use super::{config::TmanConfig, fs::merge_folders, registry::get_package};
 use crate::{
-    log::tman_verbose_println, package_file::unzip::extract_and_process_zip,
+    cmd::cmd_install::{InstallCommand, LocalInstallMode},
+    log::tman_verbose_println,
+    package_file::unzip::extract_and_process_zip,
 };
 
 pub struct PkgIdentityMapping {
@@ -31,12 +36,13 @@ pub struct PkgIdentityMapping {
 
 pub async fn install_pkg_info(
     tman_config: &TmanConfig,
+    command_data: &InstallCommand,
     pkg_info: &PkgInfo,
     pkg_identity_mappings: &Vec<PkgIdentityMapping>,
     template_ctx: Option<&serde_json::Value>,
     base_dir: &Path,
 ) -> Result<()> {
-    if pkg_info.is_local_installed {
+    if pkg_info.is_installed {
         tman_verbose_println!(
             tman_config,
             "{}:{} has already been installed.\n",
@@ -59,16 +65,38 @@ pub async fn install_pkg_info(
         }
     }
 
-    let path;
+    let target_path;
     if let Some(found_pkg_identity_mapping) = found_pkg_identity_mapping {
-        path = Path::new(&base_dir)
+        target_path = Path::new(&base_dir)
             .join(found_pkg_identity_mapping.dest_pkg_name.clone());
     } else {
-        path = PathBuf::from(&base_dir)
+        target_path = PathBuf::from(&base_dir)
             .join(pkg_info.basic_info.type_and_name.name.clone());
     }
 
-    let output_dir = path.to_string_lossy().to_string();
+    let output_dir = target_path.to_string_lossy().to_string();
+
+    if pkg_info.is_local_dependency {
+        assert!(
+            pkg_info.local_dependency_path.is_some(),
+            "Should not happen.",
+        );
+
+        let src_path = pkg_info.local_dependency_path.as_ref().unwrap();
+
+        match command_data.local_install_mode {
+            LocalInstallMode::Copy => {
+                fs::copy(src_path, &output_dir)?;
+            }
+            LocalInstallMode::Link => {
+                #[cfg(unix)]
+                std::os::unix::fs::symlink(src_path, &output_dir)?;
+
+                #[cfg(windows)]
+                std::os::windows::fs::symlink_dir(src_path, &output_dir)?;
+            }
+        }
+    }
 
     let mut temp_file = NamedTempFile::new()?;
     get_package(tman_config, &pkg_info.url, &mut temp_file).await?;

@@ -207,6 +207,9 @@ pub struct ManifestLockItem {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub supports: Option<Vec<ManifestSupport>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
 }
 
 impl TryFrom<&ManifestLockItem> for PkgTypeAndName {
@@ -245,7 +248,7 @@ fn get_encodable_deps_from_pkg_deps(
 
 impl<'a> From<&'a PkgInfo> for ManifestLockItem {
     fn from(pkg_info: &'a PkgInfo) -> Self {
-        ManifestLockItem {
+        let mut item = ManifestLockItem {
             pkg_type: pkg_info.basic_info.type_and_name.pkg_type.to_string(),
             name: pkg_info.basic_info.type_and_name.name.clone(),
             version: pkg_info.basic_info.version.to_string(),
@@ -260,38 +263,37 @@ impl<'a> From<&'a PkgInfo> for ManifestLockItem {
             supports: Some(get_manifest_supports_from_pkg(
                 &pkg_info.basic_info.supports,
             )),
+            path: None,
+        };
+
+        if pkg_info.is_local_dependency {
+            item.path = pkg_info.local_dependency_path.clone();
         }
+
+        item
     }
 }
 
 impl<'a> From<&'a ManifestLockItem> for PkgInfo {
-    fn from(val: &'a ManifestLockItem) -> Self {
+    fn from(locked_item: &'a ManifestLockItem) -> Self {
         PkgInfo {
-            basic_info: PkgBasicInfo::try_from(val).unwrap(),
-            dependencies: val
+            basic_info: PkgBasicInfo::try_from(locked_item).unwrap(),
+            dependencies: locked_item
                 .clone()
                 .dependencies
-                .map(|deps| {
-                    deps.into_iter()
-                        .map(|dep| PkgDependency {
-                            type_and_name: PkgTypeAndName {
-                                pkg_type: PkgType::from_str(&dep.pkg_type)
-                                    .unwrap(),
-                                name: dep.name,
-                            },
-                            version_req: VersionReq::STAR,
-                        })
-                        .collect()
-                })
+                .map(|deps| deps.into_iter().map(|dep| (&dep).into()).collect())
                 .unwrap_or_default(),
             api: None,
             compatible_score: 0, // TODO(xilin): default value.
-            is_local_installed: false,
+            is_installed: false,
             url: "".to_string(), // TODO(xilin): default value.
-            hash: val.hash.clone(),
+            hash: locked_item.hash.clone(),
             manifest: None,
             property: None,
             schema_store: None,
+
+            is_local_dependency: locked_item.path.is_some(),
+            local_dependency_path: locked_item.path.clone(),
         }
     }
 }
@@ -309,6 +311,19 @@ impl From<PkgDependency> for ManifestLockItemDependencyItem {
         ManifestLockItemDependencyItem {
             pkg_type: pkg_dep.type_and_name.pkg_type.to_string(),
             name: pkg_dep.type_and_name.name,
+        }
+    }
+}
+
+impl From<&ManifestLockItemDependencyItem> for PkgDependency {
+    fn from(dependency: &ManifestLockItemDependencyItem) -> Self {
+        PkgDependency {
+            type_and_name: PkgTypeAndName {
+                pkg_type: PkgType::from_str(&dependency.pkg_type).unwrap(),
+                name: dependency.name.clone(),
+            },
+            version_req: VersionReq::default(),
+            path: None,
         }
     }
 }

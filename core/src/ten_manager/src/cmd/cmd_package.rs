@@ -45,7 +45,7 @@ pub async fn execute_cmd(
 
     let cwd = crate::utils::get_cwd()?;
 
-    let pkg_info = get_pkg_info_from_path(&cwd)?;
+    let pkg_info = get_pkg_info_from_path(&cwd, true)?;
     let output_zip_file_name = get_package_zip_file_name(&pkg_info)?;
 
     let output_zip_file_path_str =

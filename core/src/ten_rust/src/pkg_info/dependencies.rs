@@ -6,11 +6,14 @@
 //
 use std::str::FromStr;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use semver::VersionReq;
 use serde::{Deserialize, Serialize};
 
-use super::{pkg_type::PkgType, pkg_type_and_name::PkgTypeAndName};
+use super::{
+    constants::MANIFEST_JSON_FILENAME, pkg_type::PkgType,
+    pkg_type_and_name::PkgTypeAndName,
+};
 use crate::pkg_info::manifest::{dependency::ManifestDependency, Manifest};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -25,6 +28,8 @@ pub struct PkgDependency {
     // The `version_req_str` is the original value in string form, while
     // `version_req` is the result after being converted to `VersionReq`.
     pub version_req: VersionReq,
+
+    pub path: Option<String>,
 }
 
 impl PkgDependency {
@@ -36,7 +41,12 @@ impl PkgDependency {
         PkgDependency {
             type_and_name: PkgTypeAndName { pkg_type, name },
             version_req,
+            path: None,
         }
+    }
+
+    pub fn is_local(&self) -> bool {
+        self.path.is_some()
     }
 }
 
@@ -49,14 +59,45 @@ impl From<&PkgDependency> for PkgTypeAndName {
 impl TryFrom<&ManifestDependency> for PkgDependency {
     type Error = anyhow::Error;
 
-    fn try_from(manifest_dep: &ManifestDependency) -> Result<Self> {
-        Ok(PkgDependency {
-            type_and_name: PkgTypeAndName {
-                pkg_type: PkgType::from_str(&manifest_dep.pkg_type)?,
-                name: manifest_dep.name.clone(),
-            },
-            version_req: VersionReq::parse(&manifest_dep.version)?,
-        })
+    fn try_from(dep: &ManifestDependency) -> Result<Self> {
+        match dep {
+            ManifestDependency::RegistryDependency {
+                pkg_type,
+                name,
+                version,
+            } => Ok(PkgDependency {
+                type_and_name: PkgTypeAndName {
+                    pkg_type: PkgType::from_str(pkg_type)?,
+                    name: name.clone(),
+                },
+                version_req: VersionReq::parse(version)?,
+                path: None,
+            }),
+
+            ManifestDependency::LocalDependency { path } => {
+                // Check if there is a manifest.json file under the path.
+                let manifest_path =
+                    std::path::Path::new(path).join(MANIFEST_JSON_FILENAME);
+                if !manifest_path.exists() {
+                    return Err(anyhow!("Local dependency path '{}' does not contain manifest.json", path));
+                }
+
+                // Parse the `manifest.json` file to retrieve the `type`,
+                // `name`, and `version`.
+                let local_manifest =
+                    crate::pkg_info::manifest::parse_manifest_from_file(
+                        &manifest_path,
+                    )?;
+
+                Ok(PkgDependency {
+                    type_and_name: local_manifest.type_and_name.clone(),
+                    version_req: semver::VersionReq::parse(
+                        &local_manifest.version,
+                    )?,
+                    path: Some(path.clone()),
+                })
+            }
+        }
     }
 }
 

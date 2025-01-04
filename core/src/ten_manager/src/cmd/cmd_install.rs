@@ -256,39 +256,107 @@ fn is_installing_package_standalone(
 
 fn update_package_manifest(
     base_pkg_info: &mut PkgInfo,
-    added_pkg_info: &PkgInfo,
+    added_dependency: &PkgInfo,
 ) -> Result<()> {
     if let Some(ref mut dependencies) =
         base_pkg_info.manifest.as_mut().unwrap().dependencies
     {
-        let is_present = dependencies.iter().any(|dep| {
-            dep.pkg_type
-                == added_pkg_info.basic_info.type_and_name.pkg_type.to_string()
-                && dep.name == added_pkg_info.basic_info.type_and_name.name
-        });
+        let mut is_present = false;
+        let mut deps_to_remove = Vec::new();
 
+        for (i, dep) in dependencies.iter().enumerate() {
+            match dep {
+                ManifestDependency::RegistryDependency {
+                    pkg_type,
+                    name,
+                    ..
+                } => {
+                    let manifest_dependency_type_and_name = PkgTypeAndName {
+                        pkg_type: PkgType::from_str(pkg_type)?,
+                        name: name.clone(),
+                    };
+
+                    if manifest_dependency_type_and_name
+                        == added_dependency.basic_info.type_and_name
+                    {
+                        if !added_dependency.is_local_dependency {
+                            is_present = true;
+                        } else {
+                            // The `manifest.json` specifies a registry
+                            // dependency, but a local dependency is being
+                            // added. Therefore, remove the original dependency
+                            // item from `manifest.json`.
+                            deps_to_remove.push(i);
+                        }
+                        break;
+                    }
+                }
+                ManifestDependency::LocalDependency { path } => {
+                    let manifest_dependency_pkg_info =
+                        match get_pkg_info_from_path(Path::new(&path), false) {
+                            Ok(info) => info,
+                            Err(_) => {
+                                panic!(
+                                    "Failed to get package info from path: {}",
+                                    path
+                                );
+                            }
+                        };
+
+                    if manifest_dependency_pkg_info.basic_info.type_and_name
+                        == added_dependency.basic_info.type_and_name
+                    {
+                        if added_dependency.is_local_dependency {
+                            assert!(
+                                added_dependency
+                                    .local_dependency_path
+                                    .is_some(),
+                                "Should not happen."
+                            );
+
+                            if path
+                                == added_dependency
+                                    .local_dependency_path
+                                    .as_ref()
+                                    .unwrap()
+                            {
+                                is_present = true;
+                            } else {
+                                // The `manifest.json` specifies a local
+                                // dependency, but a different local dependency
+                                // is being added. Therefore, remove the
+                                // original dependency item from
+                                // `manifest.json`.
+                                deps_to_remove.push(i);
+                            }
+                        } else {
+                            // The `manifest.json` specifies a local dependency,
+                            // but a registry dependency is being added.
+                            // Therefore, remove the original dependency item
+                            // from `manifest.json`.
+                            deps_to_remove.push(i);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Remove dependencies to remove in reverse order to prevent index shift
+        for &i in deps_to_remove.iter().rev() {
+            dependencies.remove(i);
+        }
+
+        // If the added dependency does not exist in the `manifest.json`, add
+        // it.
         if !is_present {
-            dependencies.push(ManifestDependency {
-                pkg_type: added_pkg_info
-                    .basic_info
-                    .type_and_name
-                    .pkg_type
-                    .to_string(),
-                name: added_pkg_info.basic_info.type_and_name.name.clone(),
-                version: added_pkg_info.basic_info.version.to_string(),
-            });
+            dependencies.push(added_dependency.into());
         }
     } else {
+        // If the `manifest.json` does not have a `dependencies` field, add the
+        // dependency directly.
         base_pkg_info.manifest.clone().unwrap().dependencies =
-            Some(vec![ManifestDependency {
-                pkg_type: added_pkg_info
-                    .basic_info
-                    .type_and_name
-                    .pkg_type
-                    .to_string(),
-                name: added_pkg_info.basic_info.type_and_name.name.clone(),
-                version: added_pkg_info.basic_info.version.to_string(),
-            }]);
+            Some(vec![added_dependency.into()]);
     }
 
     let manifest_path: PathBuf =
@@ -561,12 +629,14 @@ pub async fn execute_cmd(
     let desired_pkg_dest_name = template_ctx
         .and_then(|ctx| ctx.get("package_name").and_then(|val| val.as_str()));
 
-    if let Some(package_type_str) = command_data.package_type {
+    if let Some(package_type_str) = command_data.package_type.as_ref() {
         // Case 1: tman install <package_type> <package_name>
 
         let desired_pkg_type_: PkgType = package_type_str.parse()?;
         let (desired_pkg_src_name_, desired_pkg_src_version_) =
-            parse_pkg_name_version(&command_data.package_name.unwrap())?;
+            parse_pkg_name_version(
+                command_data.package_name.as_ref().unwrap(),
+            )?;
 
         desired_pkg_type = Some(desired_pkg_type_);
         desired_pkg_src_name = Some(desired_pkg_src_name_.clone());
@@ -591,11 +661,11 @@ pub async fn execute_cmd(
         } else {
             // If it is not a standalone install, then the `cwd` must be within
             // the base directory of a TEN app.
-            let app_pkg_ = get_pkg_info_from_path(&cwd)?;
+            let app_pkg_ = get_pkg_info_from_path(&cwd, true)?;
             affected_pkg_name = app_pkg_.basic_info.type_and_name.name.clone();
 
             // Push the app itself into the initial_input_pkgs.
-            initial_input_pkgs.push(get_pkg_info_from_path(&cwd)?);
+            initial_input_pkgs.push(app_pkg_.clone());
 
             all_existing_local_pkgs =
                 tman_get_all_existed_pkgs_info_of_app(tman_config, &cwd)?;
@@ -621,6 +691,7 @@ pub async fn execute_cmd(
                         name: desired_pkg_src_name_.clone(),
                     },
                     version_req: desired_pkg_src_version_.clone(),
+                    path: None,
                 },
             };
             extra_dependency_relationships.push(extra_dependency_relationship);
@@ -655,7 +726,7 @@ pub async fn execute_cmd(
                 check_is_app_folder(&cwd)?;
 
                 // Push the app itself into the initial_input_pkgs.
-                initial_input_pkgs.push(get_pkg_info_from_path(&cwd)?);
+                initial_input_pkgs.push(get_pkg_info_from_path(&cwd, true)?);
 
                 all_existing_local_pkgs =
                     tman_get_all_existed_pkgs_info_of_app(tman_config, &cwd)?;
@@ -677,7 +748,7 @@ pub async fn execute_cmd(
                     fs::create_dir_all(path)?;
                 }
 
-                initial_input_pkgs.push(get_pkg_info_from_path(&cwd)?);
+                initial_input_pkgs.push(get_pkg_info_from_path(&cwd, true)?);
 
                 filter_compatible_pkgs_to_candidates(
                     tman_config,
@@ -789,6 +860,7 @@ pub async fn execute_cmd(
             // `package-name` arg?
             install_solver_results_in_standalone_mode(
                 tman_config,
+                &command_data,
                 &affected_pkg,
                 &pkg_identity_mappings,
                 template_ctx,
@@ -862,6 +934,7 @@ do you want to continue?",
 
             install_solver_results_in_app_folder(
                 tman_config,
+                &command_data,
                 &remaining_solver_results,
                 &pkg_identity_mappings,
                 template_ctx,
@@ -896,6 +969,7 @@ do you want to continue?",
                     ))
                     .into());
                 }
+
                 if desired_pkg.len() > 1 {
                     return Err(TmanError::Custom(format!(
                     "Found the possibility of multiple {}:{} being incorrect.",
