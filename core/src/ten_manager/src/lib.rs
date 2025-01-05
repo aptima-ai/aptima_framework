@@ -36,7 +36,6 @@ mod package_file;
 mod package_info;
 mod registry;
 mod solver;
-mod utils;
 mod version;
 
 #[cfg(not(target_os = "windows"))]

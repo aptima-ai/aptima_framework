@@ -105,7 +105,7 @@ mod tests {
             graphs::update::{update_graph, GraphUpdateRequest},
             mock::tests::inject_all_pkgs_for_mock,
         },
-        utils::read_file_to_string,
+        fs::read_file_to_string,
     };
 
     #[actix_web::test]

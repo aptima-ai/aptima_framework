@@ -20,13 +20,25 @@ pub enum ManifestDependency {
 
     LocalDependency {
         path: String,
+
+        // Used to record the folder path where the `manifest.json` containing
+        // this dependency is located. It is primarily used to parse the `path`
+        // field when it contains a relative path.
+        #[serde(skip)]
+        base_dir: String,
     },
 }
 
 impl From<&PkgDependency> for ManifestDependency {
     fn from(pkg_dependency: &PkgDependency) -> Self {
-        if let Some(path) = &pkg_dependency.path {
-            ManifestDependency::LocalDependency { path: path.clone() }
+        if pkg_dependency.is_local() {
+            assert!(pkg_dependency.path.is_some(), "Should not happen.");
+            assert!(pkg_dependency.base_dir.is_some(), "Should not happen.");
+
+            ManifestDependency::LocalDependency {
+                path: pkg_dependency.path.as_ref().unwrap().clone(),
+                base_dir: pkg_dependency.base_dir.as_ref().unwrap().clone(),
+            }
         } else {
             ManifestDependency::RegistryDependency {
                 pkg_type: pkg_dependency.type_and_name.pkg_type.to_string(),
@@ -48,6 +60,14 @@ impl From<&PkgInfo> for ManifestDependency {
                     );
 
                     pkg_info.local_dependency_path.as_ref().unwrap().clone()
+                },
+                base_dir: {
+                    assert!(
+                        pkg_info.local_dependency_base_dir.is_some(),
+                        "Should not happen."
+                    );
+
+                    pkg_info.local_dependency_base_dir.as_ref().unwrap().clone()
                 },
             }
         } else {

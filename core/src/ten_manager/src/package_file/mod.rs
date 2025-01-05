@@ -25,8 +25,8 @@ use crate::{
     constants::{
         DOT_TEN_DIR, MANIFEST_JSON_FILENAME, PACKAGE_DIR_IN_DOT_TEN_DIR,
     },
+    fs::pathbuf_to_string_lossy,
     log::tman_verbose_println,
-    utils::pathbuf_to_string_lossy,
 };
 
 pub fn get_package_zip_file_name(pkg_info: &PkgInfo) -> Result<String> {

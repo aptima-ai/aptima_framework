@@ -388,7 +388,7 @@
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/out/linux/x64/ten_manager/bin/tman",
-      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_manager/install_all/install_all_in_local_file_system/test_app",
+      "cwd": "${workspaceFolder}/out/linux/x64/tests/ten_manager/install/mock_app/mock_app",
       "args": [
         "--config-file=${workspaceFolder}/out/linux/x64/tests/local_registry/config.json",
         "install",

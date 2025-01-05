@@ -13,7 +13,7 @@ use serde_json::Value;
 
 use crate::{
     cmd::cmd_modify::jq_util::jq_run, config::TmanConfig,
-    constants::PROPERTY_JSON_FILENAME, utils::read_file_to_string,
+    constants::PROPERTY_JSON_FILENAME, fs::read_file_to_string,
 };
 
 #[derive(Debug)]

@@ -13,6 +13,7 @@ group("install_all") {
     "install_dependencies_of_local_pkgs",
     "install_locked_pkg_same_version",
     "install_under_the_guidance_of_lock",
+    "local_dependency_link",
     "not_install_again_for_installed_extension",
     "update_pkgs_that_local_pkgs_depend_on",
   ]

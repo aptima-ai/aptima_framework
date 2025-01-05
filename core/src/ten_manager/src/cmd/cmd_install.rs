@@ -39,6 +39,7 @@ use crate::{
     constants::{APP_DIR_IN_DOT_TEN_DIR, DOT_TEN_DIR, MANIFEST_JSON_FILENAME},
     dep_and_candidate::get_all_candidates_from_deps,
     error::TmanError,
+    fs::{check_is_app_folder, check_is_package_folder},
     install::PkgIdentityMapping,
     log::tman_verbose_println,
     manifest_lock::{
@@ -56,11 +57,11 @@ use crate::{
             install_solver_results_in_standalone_mode,
         },
     },
-    utils::{check_is_app_folder, check_is_package_folder},
 };
 
 #[derive(Debug, Clone, Copy)]
 pub enum LocalInstallMode {
+    Invalid,
     Copy,
     Link,
 }
@@ -145,7 +146,7 @@ pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
                 .long("local-install-mode")
                 .help("Local install mode: copy or link")
                 .value_parser(["copy", "link"])
-                .default_value("copy")
+                .default_value("link")
                 .required(false),
         )
 }
@@ -166,7 +167,8 @@ pub fn parse_sub_cmd(sub_cmd_args: &ArgMatches) -> Result<InstallCommand> {
             .get_one::<bool>("TEMPLATE_MODE")
             .unwrap_or(&false),
         template_data: HashMap::new(),
-        local_install_mode: LocalInstallMode::Copy,
+
+        local_install_mode: LocalInstallMode::Invalid,
     };
 
     let _ = cmd.support.set_defaults();
@@ -291,7 +293,7 @@ fn update_package_manifest(
                         break;
                     }
                 }
-                ManifestDependency::LocalDependency { path } => {
+                ManifestDependency::LocalDependency { path, .. } => {
                     let manifest_dependency_pkg_info =
                         match get_pkg_info_from_path(Path::new(&path), false) {
                             Ok(info) => info,
@@ -553,7 +555,7 @@ pub async fn execute_cmd(
 
     let started = Instant::now();
 
-    let cwd = crate::utils::get_cwd()?;
+    let cwd = crate::fs::get_cwd()?;
 
     // The package affected by tman install command, which is the root declared
     // in the resolver.
@@ -692,6 +694,7 @@ pub async fn execute_cmd(
                     },
                     version_req: desired_pkg_src_version_.clone(),
                     path: None,
+                    base_dir: None,
                 },
             };
             extra_dependency_relationships.push(extra_dependency_relationship);

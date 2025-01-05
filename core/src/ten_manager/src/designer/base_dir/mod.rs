@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use super::{response::ErrorResponse, DesignerState};
 use crate::{
     designer::response::{ApiResponse, Status},
-    utils::check_is_app_folder,
+    fs::check_is_app_folder,
 };
 
 #[derive(Deserialize, Serialize, Debug)]

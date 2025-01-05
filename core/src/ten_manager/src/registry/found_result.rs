@@ -95,6 +95,7 @@ impl From<&PkgRegistryInfo> for PkgInfo {
 
             is_local_dependency: false,
             local_dependency_path: None,
+            local_dependency_base_dir: None,
         };
 
         pkg_info.hash = pkg_info.gen_hash_hex();

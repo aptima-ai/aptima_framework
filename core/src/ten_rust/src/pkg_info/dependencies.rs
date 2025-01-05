@@ -29,7 +29,12 @@ pub struct PkgDependency {
     // `version_req` is the result after being converted to `VersionReq`.
     pub version_req: VersionReq,
 
+    // If the `path` field is not `None`, it indicates that this is a local
+    // dependency.
     pub path: Option<String>,
+
+    // Refer to `base_dir` of ManifestDependency.
+    pub base_dir: Option<String>,
 }
 
 impl PkgDependency {
@@ -42,6 +47,7 @@ impl PkgDependency {
             type_and_name: PkgTypeAndName { pkg_type, name },
             version_req,
             path: None,
+            base_dir: None,
         }
     }
 
@@ -72,12 +78,15 @@ impl TryFrom<&ManifestDependency> for PkgDependency {
                 },
                 version_req: VersionReq::parse(version)?,
                 path: None,
+                base_dir: None,
             }),
 
-            ManifestDependency::LocalDependency { path } => {
+            ManifestDependency::LocalDependency { path, base_dir } => {
                 // Check if there is a manifest.json file under the path.
-                let manifest_path =
-                    std::path::Path::new(path).join(MANIFEST_JSON_FILENAME);
+                let manifest_path = std::path::Path::new(base_dir)
+                    .join(path)
+                    .join(MANIFEST_JSON_FILENAME);
+
                 if !manifest_path.exists() {
                     return Err(anyhow!("Local dependency path '{}' does not contain manifest.json", path));
                 }
@@ -95,6 +104,7 @@ impl TryFrom<&ManifestDependency> for PkgDependency {
                         &local_manifest.version,
                     )?,
                     path: Some(path.clone()),
+                    base_dir: Some(base_dir.clone()),
                 })
             }
         }

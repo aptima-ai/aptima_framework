@@ -75,6 +75,7 @@ pub struct PkgInfo {
     /// Indicates that the `pkg_info` represents a local dependency package.
     pub is_local_dependency: bool,
     pub local_dependency_path: Option<String>,
+    pub local_dependency_base_dir: Option<String>,
 }
 
 impl PkgInfo {
@@ -99,6 +100,7 @@ impl PkgInfo {
 
             is_local_dependency: false,
             local_dependency_path: None,
+            local_dependency_base_dir: None,
         };
 
         pkg_info.hash = pkg_info.gen_hash_hex();

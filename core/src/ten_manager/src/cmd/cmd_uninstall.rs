@@ -23,9 +23,9 @@ use crate::{
         DOT_TEN_DIR, INSTALLED_PATHS_JSON_FILENAME, INSTALL_PATHS_APP_PREFIX,
         PACKAGE_INFO_DIR_IN_DOT_TEN_DIR,
     },
+    fs::check_is_app_folder,
     install::installed_paths::InstalledPaths,
     log::tman_verbose_println,
-    utils::check_is_app_folder,
 };
 
 #[derive(Debug)]
@@ -149,7 +149,7 @@ pub async fn execute_cmd(
 
     let started = Instant::now();
 
-    let cwd = crate::utils::get_cwd()?;
+    let cwd = crate::fs::get_cwd()?;
     check_is_app_folder(&cwd)?;
 
     remove_installed_paths(&cwd, &command_data).await?;

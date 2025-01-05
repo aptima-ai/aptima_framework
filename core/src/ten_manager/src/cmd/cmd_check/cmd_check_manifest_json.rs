@@ -9,7 +9,7 @@ use clap::{Arg, ArgMatches, Command};
 use console::Emoji;
 use ten_rust::json_schema::ten_validate_manifest_json_string;
 
-use crate::{config::TmanConfig, utils::read_file_to_string};
+use crate::{config::TmanConfig, fs::read_file_to_string};
 
 #[derive(Debug)]
 pub struct CheckManifestJsonCommand {

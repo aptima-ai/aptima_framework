@@ -143,7 +143,7 @@ impl ManifestLock {
 
 fn are_equal_lockfiles(lock_file_path: &Path, resolve_str: &str) -> bool {
     // Read the contents of the lock file.
-    let lock_file_str = crate::utils::read_file_to_string(lock_file_path)
+    let lock_file_str = crate::fs::read_file_to_string(lock_file_path)
         .unwrap_or_else(|_| "".to_string());
 
     // Compare the lock file contents with the new resolve string.
@@ -174,7 +174,7 @@ fn parse_manifest_lock_from_file<P: AsRef<Path>>(
     manifest_lock_file_path: P,
 ) -> Result<ManifestLock> {
     // Read the contents of the manifest-lock.json file.
-    let content = crate::utils::read_file_to_string(manifest_lock_file_path)?;
+    let content = crate::fs::read_file_to_string(manifest_lock_file_path)?;
 
     ManifestLock::from_str(&content)
 }
@@ -294,6 +294,7 @@ impl<'a> From<&'a ManifestLockItem> for PkgInfo {
 
             is_local_dependency: locked_item.path.is_some(),
             local_dependency_path: locked_item.path.clone(),
+            local_dependency_base_dir: None,
         }
     }
 }
@@ -324,6 +325,7 @@ impl From<&ManifestLockItemDependencyItem> for PkgDependency {
             },
             version_req: VersionReq::default(),
             path: None,
+            base_dir: None,
         }
     }
 }

@@ -6,14 +6,12 @@
 #
 import("//build/ten_runtime/feature/test.gni")
 
-ten_package_test_prepare_auxiliary_resources(
-    "template_mode_with_same_name_extension") {
+ten_package_test_prepare_auxiliary_resources("local_dependency_link") {
   resources = [
     "//.gnfiles/build/scripts/cmd_exec.py=>common/cmd_exec.py",
     "__init__.py",
-    "mock_app/expected.json",
-    "mock_app/manifest.json",
-    "mock_app/ten_packages",
+    "test_app/local_c/manifest.json=>test_app/local_c/manifest.json",
+    "test_app/manifest.json",
     "test_case.py",
   ]
   deps = [

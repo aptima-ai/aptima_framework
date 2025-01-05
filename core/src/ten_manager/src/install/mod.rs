@@ -12,26 +12,136 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use anyhow::Result;
-use installed_paths::{
-    modify_installed_paths_for_system_package, save_installed_paths,
-};
+use anyhow::{Context, Result};
 use tempfile::NamedTempFile;
 
 use ten_rust::pkg_info::{pkg_type::PkgType, PkgInfo};
 
-use super::{config::TmanConfig, fs::merge_folders, registry::get_package};
+use super::{config::TmanConfig, registry::get_package};
 use crate::{
     cmd::cmd_install::{InstallCommand, LocalInstallMode},
+    fs::copy_folder_recursively,
     log::tman_verbose_println,
     package_file::unzip::extract_and_process_zip,
 };
+use installed_paths::save_installed_paths;
 
 pub struct PkgIdentityMapping {
     pub pkg_type: PkgType,
 
     pub src_pkg_name: String,
     pub dest_pkg_name: String,
+}
+
+fn install_local_dependency_pkg_info(
+    command_data: &InstallCommand,
+    pkg_info: &PkgInfo,
+    dest_dir_path: &String,
+) -> Result<()> {
+    assert!(
+        pkg_info.local_dependency_path.is_some(),
+        "Should not happen.",
+    );
+
+    let src_path = pkg_info.local_dependency_path.as_ref().unwrap();
+    let src_base_dir =
+        pkg_info.local_dependency_base_dir.as_deref().unwrap_or("");
+
+    let src_dir_path = Path::new(&src_base_dir)
+        .join(src_path)
+        .canonicalize()
+        .with_context(|| {
+        format!(
+            "Failed to canonicalize path: {} + {}",
+            src_base_dir, src_path
+        )
+    })?;
+
+    let src_dir_path_metadata = fs::metadata(&src_dir_path)
+        .expect("Failed to get metadata for src_path");
+    assert!(
+        src_dir_path_metadata.is_dir(),
+        "Source path must be a directory."
+    );
+
+    match command_data.local_install_mode {
+        LocalInstallMode::Invalid => panic!("Should not happen."),
+        LocalInstallMode::Copy => {
+            copy_folder_recursively(
+                &src_dir_path.to_string_lossy().to_string(),
+                dest_dir_path,
+            )?;
+        }
+        LocalInstallMode::Link => {
+            #[cfg(unix)]
+            {
+                std::os::unix::fs::symlink(src_dir_path, dest_dir_path)
+                    .map_err(|e| {
+                        anyhow::anyhow!("Failed to create symlink: {}", e)
+                    })?;
+            }
+
+            #[cfg(windows)]
+            {
+                std::os::windows::fs::symlink_dir(src_dir_path, &dest_dir_path)
+                    .map_err(|e| {
+                        anyhow::anyhow!(
+                            "Failed to create directory symlink: {}",
+                            e
+                        )
+                    })?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+async fn install_non_local_dependency_pkg_info(
+    tman_config: &TmanConfig,
+    pkg_info: &PkgInfo,
+    template_ctx: Option<&serde_json::Value>,
+    dest_dir_path: &String,
+) -> Result<()> {
+    let mut temp_file = NamedTempFile::new()?;
+    get_package(tman_config, &pkg_info.url, &mut temp_file).await?;
+
+    let mut installed_paths = extract_and_process_zip(
+        &temp_file.path().to_string_lossy(),
+        dest_dir_path,
+        template_ctx,
+    )?;
+
+    // After installation (after decompression), check whether the content
+    // of property.json is correct based on the decompressed
+    // content.
+    ten_rust::pkg_info::property::check_property_json_of_pkg(dest_dir_path)
+        .map_err(|e| {
+            anyhow::anyhow!(
+                "Failed to check property.json for {}:{}, {}",
+                pkg_info.basic_info.type_and_name.pkg_type,
+                pkg_info.basic_info.type_and_name.name,
+                e
+            )
+        })?;
+
+    // base_dir is also an installed_path.
+    installed_paths.paths.push(".".to_string());
+
+    tman_verbose_println!(
+        tman_config,
+        "Install files for {}:{}",
+        pkg_info.basic_info.type_and_name.pkg_type,
+        pkg_info.basic_info.type_and_name.name
+    );
+    for install_path in &installed_paths.paths {
+        tman_verbose_println!(tman_config, "{}", install_path);
+    }
+    tman_verbose_println!(tman_config, "");
+
+    save_installed_paths(&installed_paths, Path::new(&dest_dir_path))?;
+
+    Ok(())
 }
 
 pub async fn install_pkg_info(
@@ -51,8 +161,6 @@ pub async fn install_pkg_info(
         );
         return Ok(());
     }
-
-    let cwd = crate::utils::get_cwd()?;
 
     let mut found_pkg_identity_mapping = None;
     for pkg_identity_mapping in pkg_identity_mappings {
@@ -74,84 +182,23 @@ pub async fn install_pkg_info(
             .join(pkg_info.basic_info.type_and_name.name.clone());
     }
 
-    let output_dir = target_path.to_string_lossy().to_string();
+    let dest_dir_path = target_path.to_string_lossy().to_string();
 
     if pkg_info.is_local_dependency {
-        assert!(
-            pkg_info.local_dependency_path.is_some(),
-            "Should not happen.",
-        );
-
-        let src_path = pkg_info.local_dependency_path.as_ref().unwrap();
-
-        match command_data.local_install_mode {
-            LocalInstallMode::Copy => {
-                fs::copy(src_path, &output_dir)?;
-            }
-            LocalInstallMode::Link => {
-                #[cfg(unix)]
-                std::os::unix::fs::symlink(src_path, &output_dir)?;
-
-                #[cfg(windows)]
-                std::os::windows::fs::symlink_dir(src_path, &output_dir)?;
-            }
-        }
-    }
-
-    let mut temp_file = NamedTempFile::new()?;
-    get_package(tman_config, &pkg_info.url, &mut temp_file).await?;
-
-    let mut installed_paths = extract_and_process_zip(
-        &temp_file.path().to_string_lossy(),
-        &output_dir,
-        template_ctx,
-    )?;
-
-    // After installation (after decompression), check whether the content of
-    // property.json is correct based on the decompressed content.
-    ten_rust::pkg_info::property::check_property_json_of_pkg(&output_dir)
-        .map_err(|e| {
-            anyhow::anyhow!(
-                "Failed to check property.json for {}:{}, {}",
-                pkg_info.basic_info.type_and_name.pkg_type,
-                pkg_info.basic_info.type_and_name.name,
-                e
-            )
-        })?;
-
-    // Special handling for the system package.
-    //
-    // NOTE: This feature is not currently in use, but a command-line argument
-    // could be added to copy the lib/ or include/ from the system package to
-    // ten_packages/system/. This would reduce the number of rpaths.
-    if pkg_info.basic_info.type_and_name.pkg_type == PkgType::System {
-        let inclusions = vec![];
-        merge_folders(
-            Path::new(&output_dir),
-            &PathBuf::from(&cwd).join("ten_packages").join("system"),
-            &inclusions,
+        install_local_dependency_pkg_info(
+            command_data,
+            pkg_info,
+            &dest_dir_path,
         )?;
-        modify_installed_paths_for_system_package(
-            &mut installed_paths,
-            &inclusions,
-        );
+    } else {
+        install_non_local_dependency_pkg_info(
+            tman_config,
+            pkg_info,
+            template_ctx,
+            &dest_dir_path,
+        )
+        .await?;
     }
-
-    // base_dir is also an installed_path.
-    installed_paths.paths.push(".".to_string());
-
-    tman_verbose_println!(
-        tman_config,
-        "Install files for {}:{}",
-        pkg_info.basic_info.type_and_name.pkg_type,
-        pkg_info.basic_info.type_and_name.name
-    );
-    for install_path in &installed_paths.paths {
-        tman_verbose_println!(tman_config, "{}", install_path);
-    }
-    tman_verbose_println!(tman_config, "");
-
-    save_installed_paths(&installed_paths, Path::new(&output_dir))?;
 
     Ok(())
 }

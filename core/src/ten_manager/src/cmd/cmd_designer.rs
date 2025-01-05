@@ -19,8 +19,8 @@ use console::Emoji;
 use crate::{
     config::TmanConfig,
     designer::{configure_routes, DesignerState},
+    fs::{check_is_app_folder, get_cwd},
     log::tman_verbose_println,
-    utils::{check_is_app_folder, get_cwd},
 };
 
 #[derive(Clone, Debug)]

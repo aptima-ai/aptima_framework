@@ -86,9 +86,42 @@ pub fn parse_manifest_from_file<P: AsRef<Path>>(
     manifest_file_path: P,
 ) -> Result<Manifest> {
     // Read the contents of the manifest.json file.
-    let content = read_file_to_string(manifest_file_path)?;
+    let content = read_file_to_string(&manifest_file_path)?;
 
-    Manifest::from_str(&content)
+    let mut manifest: Manifest =
+        serde_json::from_str(&content).with_context(|| {
+            format!(
+                "Failed to parse JSON from '{}'",
+                manifest_file_path.as_ref().display()
+            )
+        })?;
+
+    let manifest_folder_path =
+        manifest_file_path.as_ref().parent().ok_or_else(|| {
+            anyhow::anyhow!(
+                "Failed to determine the parent directory of '{}'",
+                manifest_file_path.as_ref().display()
+            )
+        })?;
+
+    if let Some(dependencies) = &mut manifest.dependencies {
+        for dep in dependencies.iter_mut() {
+            if let ManifestDependency::LocalDependency { base_dir, .. } = dep {
+                let base_dir_str = manifest_folder_path
+                    .to_str()
+                    .ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "Failed to convert folder path to string"
+                        )
+                    })?
+                    .to_string();
+
+                *base_dir = base_dir_str;
+            }
+        }
+    }
+
+    Ok(manifest)
 }
 
 pub fn parse_manifest_in_folder(folder_path: &Path) -> Result<Manifest> {

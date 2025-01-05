@@ -67,7 +67,7 @@ pub async fn execute_cmd(
     tman_verbose_println!(tman_config, "Executing run command: {:?}", cmd);
 
     // Read `manifest.json` in the current working directory.
-    let cwd = crate::utils::get_cwd()?;
+    let cwd = crate::fs::get_cwd()?;
     let manifest_path = cwd.join(MANIFEST_JSON_FILENAME);
     if !manifest_path.exists() {
         return Err(anyhow!(
@@ -78,10 +78,10 @@ pub async fn execute_cmd(
     }
 
     // Parse `manifest.json`.
-    let manifest_json_str = crate::utils::read_file_to_string(&manifest_path)
+    let manifest_json_str = crate::fs::read_file_to_string(&manifest_path)
         .map_err(|e| {
-        anyhow!("Failed to read {}: {}", MANIFEST_JSON_FILENAME, e)
-    })?;
+            anyhow!("Failed to read {}: {}", MANIFEST_JSON_FILENAME, e)
+        })?;
     let manifest_value: serde_json::Value =
         serde_json::from_str(&manifest_json_str).map_err(|e| {
             anyhow!("Failed to parse {}: {}", MANIFEST_JSON_FILENAME, e)
