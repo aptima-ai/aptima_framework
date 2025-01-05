@@ -55,13 +55,6 @@ template("ten_package_test_prepare_app") {
         rebase_path(install_app_dummy_output_file),
       ]
 
-      args += [ "--build-type" ]
-      if (is_debug) {
-        args += [ "debug" ]
-      } else {
-        args += [ "release" ]
-      }
-
       args += [
         "--config-file",
         rebase_path("${root_out_dir}/tests/local_registry/config.json"),
@@ -195,13 +188,6 @@ template("ten_package_test_prepare_app") {
         "--tg-timestamp-proxy-file",
         rebase_path(install_all_dummy_output_file),
       ]
-
-      args += [ "--build-type" ]
-      if (is_debug) {
-        args += [ "debug" ]
-      } else {
-        args += [ "release" ]
-      }
 
       args += [
         "--assume-yes",
@@ -625,13 +611,6 @@ template("ten_package_standalone_pkg") {
       invoker.pkg_template,
     ]
 
-    args += [ "--build-type" ]
-    if (is_debug) {
-      args += [ "debug" ]
-    } else {
-      args += [ "release" ]
-    }
-
     args += [
       "--config-file",
       rebase_path("${root_out_dir}/tests/local_registry/config.json"),
@@ -705,13 +684,6 @@ template("ten_package_standalone_pkg") {
       "--tg-timestamp-proxy-file",
       rebase_path(install_all_dummy_output_file),
     ]
-
-    args += [ "--build-type" ]
-    if (is_debug) {
-      args += [ "debug" ]
-    } else {
-      args += [ "release" ]
-    }
 
     args += [
       "--assume-yes",

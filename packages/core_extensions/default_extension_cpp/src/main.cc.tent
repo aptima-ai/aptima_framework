@@ -5,11 +5,11 @@
 //
 #include "ten_runtime/binding/cpp/ten.h"
 
-namespace {{package_name}}_extension {
+namespace {{package_name}} {
 
-class {{package_name}}_extension_t : public ten::extension_t {
+class {{package_name}}_t : public ten::extension_t {
  public:
-  explicit {{package_name}}_extension_t(const char *name) : extension_t(name) {}
+  explicit {{package_name}}_t(const char *name) : extension_t(name) {}
 
   void on_init(ten::ten_env_t &ten_env) override {
     // Do some initializes.
@@ -50,6 +50,6 @@ class {{package_name}}_extension_t : public ten::extension_t {
   }
 };
 
-TEN_CPP_REGISTER_ADDON_AS_EXTENSION({{package_name}}_extension_cpp, {{package_name}}_extension_t);
+TEN_CPP_REGISTER_ADDON_AS_EXTENSION({{package_name}}, {{package_name}}_t);
 
-}  // namespace {{package_name}}_extension
+}  // namespace {{package_name}}

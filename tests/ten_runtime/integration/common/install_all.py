@@ -14,7 +14,6 @@ class ArgumentInfo(argparse.Namespace):
     def __init__(self):
         self.tman_path: str
         self.pkg_src_root_dir: str
-        self.build_type: str
         self.config_file: str
         self.log_level: int
         self.assume_yes: bool
@@ -36,9 +35,6 @@ def main(args: ArgumentInfo) -> int:
             cmd += ["--yes"]
 
         cmd += ["install"]
-
-        if args.build_type is not None:
-            cmd += ["--build-type=" + args.build_type]
 
         returncode, output_text = cmd_exec.run_cmd(cmd, args.log_level)
         if returncode:
@@ -70,12 +66,6 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="Path to app root folder",
-    )
-    parser.add_argument(
-        "--build-type",
-        type=str,
-        required=False,
-        help="'debug', 'release'",
     )
     parser.add_argument(
         "--config-file",

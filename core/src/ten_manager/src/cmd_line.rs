@@ -96,6 +96,7 @@ fn create_cmd() -> clap::ArgMatches {
                 .action(clap::ArgAction::SetTrue)
                 .hide(true),
         )
+        .subcommand(crate::cmd::cmd_create::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_install::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_uninstall::create_sub_cmd(&args_cfg))
         .subcommand(crate::cmd::cmd_package::create_sub_cmd(&args_cfg))
@@ -121,6 +122,9 @@ pub fn parse_cmd(
     tman_config.mi_mode = matches.get_flag("MI");
 
     let command_data = match matches.subcommand() {
+        Some(("create", sub_cmd_args)) => crate::cmd::CommandData::Create(
+            crate::cmd::cmd_create::parse_sub_cmd(sub_cmd_args)?,
+        ),
         Some(("install", sub_cmd_args)) => crate::cmd::CommandData::Install(
             crate::cmd::cmd_install::parse_sub_cmd(sub_cmd_args)?,
         ),

@@ -5,6 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 pub mod cmd_check;
+pub mod cmd_create;
 pub mod cmd_delete;
 pub mod cmd_designer;
 pub mod cmd_install;
@@ -19,6 +20,7 @@ use anyhow::Result;
 use super::config::TmanConfig;
 
 pub enum CommandData {
+    Create(self::cmd_create::CreateCommand),
     Install(self::cmd_install::InstallCommand),
     Uninstall(self::cmd_uninstall::UninstallCommand),
     Package(self::cmd_package::PackageCommand),
@@ -35,6 +37,9 @@ pub async fn execute_cmd(
     command_data: CommandData,
 ) -> Result<()> {
     match command_data {
+        CommandData::Create(cmd) => {
+            crate::cmd::cmd_create::execute_cmd(tman_config, cmd).await
+        }
         CommandData::Install(cmd) => {
             crate::cmd::cmd_install::execute_cmd(tman_config, cmd).await
         }

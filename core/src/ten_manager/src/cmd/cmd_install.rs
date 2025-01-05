@@ -18,7 +18,6 @@ use clap::{Arg, ArgAction, ArgMatches, Command};
 use console::Emoji;
 use indicatif::HumanDuration;
 use inquire::Confirm;
-use semver::VersionReq;
 
 use ten_rust::pkg_info::{
     dependencies::PkgDependency,
@@ -57,6 +56,7 @@ use crate::{
             install_solver_results_in_standalone_mode,
         },
     },
+    version_utils::parse_pkg_name_version_req,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -116,13 +116,6 @@ pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
                 .long("arch")
                 .help("The CPU architecture")
                 .value_parser(args_cfg.arch.possible_values.clone())
-                .required(false),
-        )
-        .arg(
-            Arg::new("BUILD_TYPE")
-                .long("build-type")
-                .help("The build type")
-                .value_parser(args_cfg.build_type.possible_values.clone())
                 .required(false),
         )
         .arg(
@@ -393,17 +386,6 @@ fn write_pkgs_into_lock(pkgs: &Vec<&PkgInfo>, app_dir: &Path) -> Result<()> {
     Ok(())
 }
 
-fn parse_pkg_name_version(
-    pkg_name_version: &str,
-) -> Result<(String, VersionReq)> {
-    let parts: Vec<&str> = pkg_name_version.split('@').collect();
-    if parts.len() == 2 {
-        Ok((parts[0].to_string(), VersionReq::parse(parts[1])?))
-    } else {
-        Ok((pkg_name_version.to_string(), VersionReq::STAR))
-    }
-}
-
 fn filter_compatible_pkgs_to_candidates(
     tman_config: &TmanConfig,
     all_existing_local_pkgs: &Vec<PkgInfo>,
@@ -636,7 +618,7 @@ pub async fn execute_cmd(
 
         let desired_pkg_type_: PkgType = package_type_str.parse()?;
         let (desired_pkg_src_name_, desired_pkg_src_version_) =
-            parse_pkg_name_version(
+            parse_pkg_name_version_req(
                 command_data.package_name.as_ref().unwrap(),
             )?;
 

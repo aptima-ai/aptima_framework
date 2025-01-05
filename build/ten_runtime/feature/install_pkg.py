@@ -159,12 +159,11 @@ if __name__ == "__main__":
                 args.src_pkg += f"@{versions[0]}"
 
         cmd += [
-            "install",
+            "create",
             args.pkg_type,
+            generated_app_name,
+            "--template",
             args.src_pkg,
-            "--template-mode",
-            "--template-data",
-            f"package_name={generated_app_name}",
         ]
 
         if args.build_type is not None:

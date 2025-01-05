@@ -25,6 +25,7 @@ pub mod cmd;
 pub mod cmd_line;
 pub mod config;
 pub mod constants;
+mod create;
 mod dep_and_candidate;
 pub mod designer;
 mod error;
@@ -37,6 +38,7 @@ mod package_info;
 mod registry;
 mod solver;
 mod version;
+mod version_utils;
 
 #[cfg(not(target_os = "windows"))]
 use mimalloc::MiMalloc;
