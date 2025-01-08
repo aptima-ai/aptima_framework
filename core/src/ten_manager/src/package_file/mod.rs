@@ -133,9 +133,6 @@ pub fn create_package_zip_file(
     // Add exclude pattern for DOT_TEN_DIR.
     overrides.add(&format!("!/{}/", DOT_TEN_DIR))?;
 
-    // Add exclude pattern for TEN_PACKAGES_DIR.
-    overrides.add(&format!("!/{}/", TEN_PACKAGES_DIR))?;
-
     let overrides = overrides.build()?;
     ignore_builder.overrides(overrides);
 
