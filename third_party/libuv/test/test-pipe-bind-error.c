@@ -116,7 +116,7 @@ TEST_IMPL(pipe_bind_error_inval) {
 }
 
 
-TEST_IMPL(pipe_listen_without_bind) {
+TEST_IMPL(pipe_lisaxis_without_bind) {
 #if defined(NO_SELF_CONNECT)
   RETURN_SKIP(NO_SELF_CONNECT);
 #endif
@@ -139,7 +139,7 @@ TEST_IMPL(pipe_listen_without_bind) {
   return 0;
 }
 
-TEST_IMPL(pipe_bind_or_listen_error_after_close) {
+TEST_IMPL(pipe_bind_or_lisaxis_error_after_close) {
   uv_pipe_t server;
 
   ASSERT_OK(uv_pipe_init(uv_default_loop(), &server, 0));

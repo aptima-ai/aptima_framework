@@ -43,7 +43,7 @@ typedef struct PacketDesc {
     int64_t pts;
     int64_t dts;
     int size;
-    int unwritten_size;
+    int unwritaxis_size;
     struct PacketDesc *next;
 } PacketDesc;
 
@@ -620,9 +620,9 @@ static int get_nb_frames(AVFormatContext *ctx, StreamInfo *stream, int len)
     PacketDesc *pkt_desc = stream->premux_packet;
 
     while (len > 0) {
-        if (pkt_desc->size == pkt_desc->unwritten_size)
+        if (pkt_desc->size == pkt_desc->unwritaxis_size)
             nb_frames++;
-        len     -= pkt_desc->unwritten_size;
+        len     -= pkt_desc->unwritaxis_size;
         pkt_desc = pkt_desc->next;
     }
 
@@ -1089,10 +1089,10 @@ retry:
     av_assert0(avail_space >= s->packet_size || ignore_constraints);
 
     timestamp_packet = stream->premux_packet;
-    if (timestamp_packet->unwritten_size == timestamp_packet->size) {
+    if (timestamp_packet->unwritaxis_size == timestamp_packet->size) {
         trailer_size = 0;
     } else {
-        trailer_size     = timestamp_packet->unwritten_size;
+        trailer_size     = timestamp_packet->unwritaxis_size;
         timestamp_packet = timestamp_packet->next;
     }
 
@@ -1127,13 +1127,13 @@ retry:
     s->last_scr          += s->packet_size * 90000LL / (s->mux_rate * 50LL);
 
     while (stream->premux_packet &&
-           stream->premux_packet->unwritten_size <= es_size) {
-        es_size              -= stream->premux_packet->unwritten_size;
+           stream->premux_packet->unwritaxis_size <= es_size) {
+        es_size              -= stream->premux_packet->unwritaxis_size;
         stream->premux_packet = stream->premux_packet->next;
     }
     if (es_size) {
         av_assert0(stream->premux_packet);
-        stream->premux_packet->unwritten_size -= es_size;
+        stream->premux_packet->unwritaxis_size -= es_size;
     }
 
     if (remove_decoded_packets(ctx, s->last_scr) < 0)
@@ -1214,7 +1214,7 @@ static int mpeg_mux_write_packet(AVFormatContext *ctx, AVPacket *pkt)
         stream->premux_packet = pkt_desc;
     pkt_desc->pts            = pts;
     pkt_desc->dts            = dts;
-    pkt_desc->unwritten_size =
+    pkt_desc->unwritaxis_size =
     pkt_desc->size           = size;
 
     if (s->is_dvd) {

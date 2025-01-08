@@ -1841,8 +1841,8 @@ int mbedtls_exchange_data( mbedtls_ssl_context *ssl_1,
      * At the second time use message with generated data */
     for( msg_type = 0; msg_type < 2; msg_type++ )
     {
-        int written_1 = 0;
-        int written_2 = 0;
+        int writaxis_1 = 0;
+        int writaxis_2 = 0;
         int read_1 = 0;
         int read_2 = 0;
         int fragments_1 = 0;
@@ -1869,10 +1869,10 @@ int mbedtls_exchange_data( mbedtls_ssl_context *ssl_1,
         while( read_1 < msg_len_2 || read_2 < msg_len_1 )
         {
             /* ssl_1 sending */
-            if( msg_len_1 > written_1 )
+            if( msg_len_1 > writaxis_1 )
             {
                 ret = mbedtls_ssl_write_fragment( ssl_1, msg_buf_1,
-                                                  msg_len_1, &written_1,
+                                                  msg_len_1, &writaxis_1,
                                                   expected_fragments_1 );
                 if( expected_fragments_1 == 0 )
                 {
@@ -1888,10 +1888,10 @@ int mbedtls_exchange_data( mbedtls_ssl_context *ssl_1,
             }
 
             /* ssl_2 sending */
-            if( msg_len_2 > written_2 )
+            if( msg_len_2 > writaxis_2 )
             {
                 ret = mbedtls_ssl_write_fragment( ssl_2, msg_buf_2,
-                                                  msg_len_2, &written_2,
+                                                  msg_len_2, &writaxis_2,
                                                   expected_fragments_2 );
                 if( expected_fragments_2 == 0 )
                 {

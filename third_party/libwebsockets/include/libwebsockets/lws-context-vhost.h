@@ -113,10 +113,10 @@
 	 * info for .origin (if any) will be used directly.
 	 */
 #define LWS_SERVER_OPTION_FALLBACK_TO_RAW /* use below name */	 (1ll << 20)
-#define LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG (1ll << 20)
+#define LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG (1ll << 20)
 	/**< (VH) if invalid http is coming in the first line, then abandon
 	 * trying to treat the connection as http, and belatedly apply the
-	 * .listen_accept_role / .listen_accept_protocol info struct members to
+	 * .lisaxis_accept_role / .lisaxis_accept_protocol info struct members to
 	 * the connection.  If they are NULL, for backwards-compatibility the
 	 * connection is bound to "raw-skt" role, and in order of priority:
 	 * 1) the vh protocol with a pvo named "raw", 2) the vh protocol with a
@@ -130,10 +130,10 @@
 	/**< (CTX) Use libevent event loop */
 
 #define LWS_SERVER_OPTION_ONLY_RAW /* Use below name instead */	(1ll << 22)
-#define LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG	(1ll << 22)
+#define LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG	(1ll << 22)
 	/**< (VH) All connections to this vhost / port are bound to the
-	 * role and protocol given in .listen_accept_role /
-	 * .listen_accept_protocol.
+	 * role and protocol given in .lisaxis_accept_role /
+	 * .lisaxis_accept_protocol.
 	 *
 	 * If those explicit user-controlled names are NULL, for backwards-
 	 * compatibility the connection is bound to "raw-skt" role, and in order
@@ -141,9 +141,9 @@
 	 * protocol with a pvo named "default", or 3) protocols[0].
 	 *
 	 * It's much preferred to specify the role + protocol using the
-	 * .listen_accept_role and .listen_accept_protocol in the info struct.
+	 * .lisaxis_accept_role and .lisaxis_accept_protocol in the info struct.
 	 */
-#define LWS_SERVER_OPTION_ALLOW_LISTEN_SHARE			(1ll << 23)
+#define LWS_SERVER_OPTION_ALLOW_LISaxis_SHARE			(1ll << 23)
 	/**< (VH) Set to allow multiple listen sockets on one interface +
 	 * address + port.  The default is to strictly allow only one
 	 * listen socket at a time.  This is automatically selected if you
@@ -325,13 +325,13 @@ struct lws_context_creation_info {
 	 *          "/404.html" */
 	int port;
 	/**< VHOST: Port to listen on. Use CONTEXT_PORT_NO_LISTEN to suppress
-	 * listening for a client. Use CONTEXT_PORT_NO_LISTEN_SERVER if you are
+	 * listening for a client. Use CONTEXT_PORT_NO_LISaxis_SERVER if you are
 	 * writing a server but you are using \ref sock-adopt instead of the
 	 * built-in listener.
 	 *
 	 * You can also set port to 0, in which case the kernel will pick
 	 * a random port that is not already in use.  You can find out what
-	 * port the vhost is listening on using lws_get_vhost_listen_port() */
+	 * port the vhost is listening on using lws_get_vhost_lisaxis_port() */
 
 	unsigned int http_proxy_port;
 	/**< VHOST: If http_proxy_address was non-NULL, uses this port */
@@ -726,12 +726,12 @@ struct lws_context_creation_info {
 	/**< VHOST: opaque pointer lws ignores but passes to the finalize
 	 *	    callback.  If you don't care, leave it NULL.
 	 */
-	const char *listen_accept_role;
+	const char *lisaxis_accept_role;
 	/**< VHOST: NULL for default, or force accepted incoming connections to
 	 * bind to this role.  Uses the role names from their ops struct, eg,
 	 * "raw-skt".
 	 */
-	const char *listen_accept_protocol;
+	const char *lisaxis_accept_protocol;
 	/**< VHOST: NULL for default, or force accepted incoming connections to
 	 * bind to this vhost protocol name.
 	 */
@@ -869,7 +869,7 @@ struct lws_context_creation_info {
 	 */
 #endif
 
-	int					fo_listen_queue;
+	int					fo_lisaxis_queue;
 	/**< VHOST: 0 = no TCP_FASTOPEN, nonzero = enable TCP_FASTOPEN if the
 	 * platform supports it, with the given queue length for the listen
 	 * socket.

@@ -1,0 +1,50 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/glob.gni")
+import("//build/axis_runtime/ten.gni")
+
+glob("axis_unit_tests") {
+  file_list = [
+    "axis_error_test.cc",
+    "axis_msg_test.cc",
+    "axis_schema_test.cc",
+  ]
+
+  public_deps = [
+    "//core/src/axis_utils",
+    "//third_party/googlemock",
+    "//third_party/googletest",
+  ]
+  include_dirs = [ "//core/include" ]
+}
+
+axis_executable("axis_runtime_unit_test") {
+  output_dir = "${root_out_dir}/tests/standalone"
+
+  deps = [
+    ":axis_unit_tests",
+    "//core/src/axis_runtime",
+    "//core/src/axis_utils",
+    "//tests/axis_runtime:copy_libraries_for_test",
+  ]
+
+  if (enable_sanitizer) {
+    if (!is_clang) {
+      deps += [ "//build/axis_common/asan:package_asan_lib_for_axis_framework_standalone_test" ]
+    }
+  }
+
+  public_deps = [
+    "//third_party/googlemock",
+    "//third_party/googletest",
+    "//third_party/googletest:gtest_main",
+  ]
+}
+
+group("unit") {
+  deps = [ ":axis_runtime_unit_test" ]
+}

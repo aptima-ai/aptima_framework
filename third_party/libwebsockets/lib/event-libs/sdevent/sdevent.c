@@ -210,7 +210,7 @@ io_sd(struct lws *wsi, unsigned int flags)
 }
 
 static int
-init_vhost_listen_wsi_sd(struct lws *wsi)
+init_vhost_lisaxis_wsi_sd(struct lws *wsi)
 {
 	struct lws_context_per_thread *pt;
 
@@ -232,11 +232,11 @@ init_vhost_listen_wsi_sd(struct lws *wsi)
 }
 
 static int
-elops_listen_init_sdevent(struct lws_dll2 *d, void *user)
+elops_lisaxis_init_sdevent(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
-	if (init_vhost_listen_wsi_sd(wsi) == -1)
+	if (init_vhost_lisaxis_wsi_sd(wsi) == -1)
 		return -1;
 
 	return 0;
@@ -274,7 +274,7 @@ init_pt_sd(struct lws_context *context, void *_loop, int tsi)
 		  */
 		first = 0;
 
-	lws_vhost_foreach_listen_wsi(context, NULL, elops_listen_init_sdevent);
+	lws_vhost_foreach_lisaxis_wsi(context, NULL, elops_lisaxis_init_sdevent);
 
 	if (first) {
 
@@ -366,9 +366,9 @@ run_pt_sd(struct lws_context *context, int tsi)
 }
 
 static int
-elops_listen_destroy_sdevent(struct lws_dll2 *d, void *user)
+elops_lisaxis_destroy_sdevent(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
 	wsi_logical_close_sd(wsi);
 
@@ -381,7 +381,7 @@ destroy_pt_sd(struct lws_context *context, int tsi)
 	struct lws_context_per_thread *pt = &context->pt[tsi];
 	struct lws_pt_eventlibs_sdevent *ptpriv = pt_to_priv_sd(pt);
 
-	lws_vhost_foreach_listen_wsi(context, NULL, elops_listen_destroy_sdevent);
+	lws_vhost_foreach_lisaxis_wsi(context, NULL, elops_lisaxis_destroy_sdevent);
 
 	if (ptpriv->sultimer) {
 		sd_event_source_set_enabled(ptpriv->sultimer,
@@ -408,7 +408,7 @@ const struct lws_event_loop_ops event_loop_ops_sdevent = {
 		.init_context			= NULL,
 		.destroy_context1		= NULL,
 		.destroy_context2		= NULL,
-		.init_vhost_listen_wsi		= init_vhost_listen_wsi_sd,
+		.init_vhost_lisaxis_wsi		= init_vhost_lisaxis_wsi_sd,
 		.init_pt			= init_pt_sd,
 		.wsi_logical_close		= wsi_logical_close_sd,
 		.check_client_connect_ok	= NULL,

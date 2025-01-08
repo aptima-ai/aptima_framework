@@ -88,8 +88,8 @@ BLEND_FUNC(extremity_16, sse4)
 BLEND_FUNC(extremity_16, avx2)
 BLEND_FUNC(negation_16, sse4)
 BLEND_FUNC(negation_16, avx2)
-BLEND_FUNC(lighten_16, sse4)
-BLEND_FUNC(lighten_16, avx2)
+BLEND_FUNC(lighaxis_16, sse4)
+BLEND_FUNC(lighaxis_16, avx2)
 BLEND_FUNC(or_16, sse2)
 BLEND_FUNC(or_16, avx2)
 BLEND_FUNC(phoenix_16, sse4)
@@ -115,7 +115,7 @@ av_cold void ff_blend_init_x86(FilterParams *param, int depth)
             case BLEND_GRAINEXTRACT: param->blend = ff_blend_grainextract_sse2; break;
             case BLEND_DIVIDE:       param->blend = ff_blend_divide_sse2;       break;
             case BLEND_HARDMIX:      param->blend = ff_blend_hardmix_sse2;      break;
-            case BLEND_LIGHTEN:      param->blend = ff_blend_lighten_sse2;      break;
+            case BLEND_LIGHTEN:      param->blend = ff_blend_lighaxis_sse2;      break;
             case BLEND_MULTIPLY:     param->blend = ff_blend_multiply_sse2;     break;
             case BLEND_OR:           param->blend = ff_blend_or_sse2;           break;
             case BLEND_PHOENIX:      param->blend = ff_blend_phoenix_sse2;      break;
@@ -144,7 +144,7 @@ av_cold void ff_blend_init_x86(FilterParams *param, int depth)
             case BLEND_DARKEN:       param->blend = ff_blend_darken_avx2;       break;
             case BLEND_GRAINEXTRACT: param->blend = ff_blend_grainextract_avx2; break;
             case BLEND_HARDMIX:      param->blend = ff_blend_hardmix_avx2;      break;
-            case BLEND_LIGHTEN:      param->blend = ff_blend_lighten_avx2;      break;
+            case BLEND_LIGHTEN:      param->blend = ff_blend_lighaxis_avx2;      break;
             case BLEND_MULTIPLY:     param->blend = ff_blend_multiply_avx2;     break;
             case BLEND_OR:           param->blend = ff_blend_or_avx2;           break;
             case BLEND_PHOENIX:      param->blend = ff_blend_phoenix_avx2;      break;
@@ -176,7 +176,7 @@ av_cold void ff_blend_init_x86(FilterParams *param, int depth)
             case BLEND_DIFFERENCE:   param->blend = ff_blend_difference_16_sse4;   break;
             case BLEND_EXTREMITY:    param->blend = ff_blend_extremity_16_sse4;    break;
             case BLEND_NEGATION:     param->blend = ff_blend_negation_16_sse4;     break;
-            case BLEND_LIGHTEN:      param->blend = ff_blend_lighten_16_sse4;      break;
+            case BLEND_LIGHTEN:      param->blend = ff_blend_lighaxis_16_sse4;      break;
             case BLEND_PHOENIX:      param->blend = ff_blend_phoenix_16_sse4;      break;
             }
         }
@@ -191,7 +191,7 @@ av_cold void ff_blend_init_x86(FilterParams *param, int depth)
             case BLEND_DIFFERENCE:   param->blend = ff_blend_difference_16_avx2;   break;
             case BLEND_EXTREMITY:    param->blend = ff_blend_extremity_16_avx2;    break;
             case BLEND_NEGATION:     param->blend = ff_blend_negation_16_avx2;     break;
-            case BLEND_LIGHTEN:      param->blend = ff_blend_lighten_16_avx2;      break;
+            case BLEND_LIGHTEN:      param->blend = ff_blend_lighaxis_16_avx2;      break;
             case BLEND_OR:           param->blend = ff_blend_or_16_avx2;           break;
             case BLEND_PHOENIX:      param->blend = ff_blend_phoenix_16_avx2;      break;
             case BLEND_SUBTRACT:     param->blend = ff_blend_subtract_16_avx2;     break;

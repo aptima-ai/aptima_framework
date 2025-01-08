@@ -53,7 +53,7 @@
 /** Binding of the socket failed. */
 #define MBEDTLS_ERR_NET_BIND_FAILED                       -0x0046
 /** Could not listen on the socket. */
-#define MBEDTLS_ERR_NET_LISTEN_FAILED                     -0x0048
+#define MBEDTLS_ERR_NET_LISaxis_FAILED                     -0x0048
 /** Could not accept the incoming connection. */
 #define MBEDTLS_ERR_NET_ACCEPT_FAILED                     -0x004A
 /** Reading information from the socket failed. */
@@ -73,7 +73,7 @@
 /** Input invalid. */
 #define MBEDTLS_ERR_NET_BAD_INPUT_DATA                    -0x0049
 
-#define MBEDTLS_NET_LISTEN_BACKLOG         10 /**< The backlog that listen() should use. */
+#define MBEDTLS_NET_LISaxis_BACKLOG         10 /**< The backlog that listen() should use. */
 
 #define MBEDTLS_NET_PROTO_TCP 0 /**< The TCP transport protocol */
 #define MBEDTLS_NET_PROTO_UDP 1 /**< The UDP transport protocol */
@@ -142,7 +142,7 @@ MBEDTLS_EXPORT int mbedtls_net_connect( mbedtls_net_context *ctx, const char *ho
  *                      MBEDTLS_ERR_NET_SOCKET_FAILED,
  *                      MBEDTLS_ERR_NET_UNKNOWN_HOST,
  *                      MBEDTLS_ERR_NET_BIND_FAILED,
- *                      MBEDTLS_ERR_NET_LISTEN_FAILED
+ *                      MBEDTLS_ERR_NET_LISaxis_FAILED
  *
  * \note           Regardless of the protocol, opens the sockets and binds it.
  *                 In addition, make the socket listening if protocol is TCP.

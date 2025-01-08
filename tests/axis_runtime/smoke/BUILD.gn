@@ -1,0 +1,111 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/glob.gni")
+import("//build/axis_runtime/ten.gni")
+
+glob("axis_runtime_smoke_tests") {
+  file_list = all_native_files
+
+  public_deps = [
+    "//core/src/axis_utils",
+    "//third_party/googlemock",
+    "//third_party/googletest",
+  ]
+
+  include_dirs = [ "//core/include" ]
+}
+
+axis_executable("axis_runtime_smoke_test") {
+  output_dir = "${root_out_dir}/tests/standalone"
+
+  deps = [
+    ":axis_runtime_smoke_tests",
+    "//core/src/axis_runtime",
+    "//core/src/axis_utils:axis_utils_shared",
+    "//packages/core_protocols/msgpack:msgpack_files",
+    "//tests/axis_runtime:copy_libraries_for_test",
+    "//third_party/nlohmann_json",
+  ]
+
+  deps += [
+    "audio_frame_test",
+    "basic",
+    "cmd_conversion",
+    "cmd_result_test",
+    "command",
+    "concurrent",
+    "data_test",
+    "dest",
+    "engine",
+    "error",
+    "extension",
+    "extension_group",
+    "graph",
+    "graph_name",
+    "graph_test",
+    "lock",
+    "log_test",
+    "msg_property",
+    "msg_test",
+    "multi_dest",
+    "notify_test",
+    "outer_thread",
+    "path",
+    "predefined_graph",
+    "prepare_to_stop",
+    "property",
+    "resp_handler",
+    "result_conversion",
+    "return",
+    "same_thread_ext_on_xxx",
+    "send",
+    "standalone_test",
+    "start_graph",
+    "suspend_resume",
+    "axis_env_call_timing",
+    "axis_proxy",
+    "timer",
+    "video_frame_test",
+  ]
+
+  if (axis_enable_axis_rust && axis_enable_axis_rust_apis) {
+    deps += [
+      "interface_test",
+      "schema_test",
+    ]
+  }
+
+  if (axis_enable_curl) {
+    deps += [ "//third_party/curl" ]
+  }
+
+  if (axis_enable_libwebsockets) {
+    deps += [
+      "//third_party/libwebsockets",
+      "//third_party/mbedtls",
+    ]
+  }
+
+  if (enable_sanitizer) {
+    if (!is_clang) {
+      deps += [ "//build/axis_common/asan:package_asan_lib_for_axis_framework_standalone_test" ]
+    }
+  }
+
+  public_deps = [
+    "//third_party/googlemock",
+    "//third_party/googletest",
+  ]
+
+  if (axis_enable_libwebsockets && axis_enable_curl) {
+    deps += [ "http_server_extension" ]
+  }
+}
+
+group("smoke") {
+  public_deps = [ ":axis_runtime_smoke_test" ]
+}

@@ -211,10 +211,10 @@ lws_server_socket_service_ssl(struct lws *wsi, lws_sockfd_type accept_fd, char f
 			 *     Destroy the TLS, continue and serve normally
 			 *     using http
 			 *
-			 * LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG:
+			 * LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG:
 			 *     Destroy the TLS, apply whatever role and protocol
 			 *     were told in the vhost info struct
-			 *     .listen_accept_role / .listen_accept_protocol and
+			 *     .lisaxis_accept_role / .lisaxis_accept_protocol and
 			 *     continue with that
 			 */
 
@@ -255,7 +255,7 @@ lws_server_socket_service_ssl(struct lws *wsi, lws_sockfd_type accept_fd, char f
 				}
 
 				if (lws_check_opt(wsi->a.vhost->options,
-		    LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG)) {
+		    LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG)) {
 					if (lws_http_to_fallback(wsi, NULL, 0))
 						goto fail;
 					lwsl_info("%s: allowing non-tls "

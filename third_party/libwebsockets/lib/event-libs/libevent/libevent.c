@@ -174,9 +174,9 @@ lws_event_sigint_cb(evutil_socket_t sock_fd, short revents, void *ctx)
 }
 
 static int
-elops_listen_init_event(struct lws_dll2 *d, void *user)
+elops_lisaxis_init_event(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct lws_context *context = (struct lws_context *)user;
 	struct lws_context_per_thread *pt = &context->pt[(int)wsi->tsi];
 	struct lws_pt_eventlibs_libevent *ptpr = pt_to_priv_event(pt);
@@ -214,7 +214,7 @@ elops_init_pt_event(struct lws_context *context, void *_loop, int tsi)
 
 	ptpr->io_loop = loop;
 
-	lws_vhost_foreach_listen_wsi(context, context, elops_listen_init_event);
+	lws_vhost_foreach_lisaxis_wsi(context, context, elops_lisaxis_init_event);
 
 	/* static event loop objects */
 
@@ -332,9 +332,9 @@ elops_run_pt_event(struct lws_context *context, int tsi)
 }
 
 static int
-elops_listen_destroy_event(struct lws_dll2 *d, void *user)
+elops_lisaxis_destroy_event(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct lws_wsi_eventlibs_libevent *w = wsi_to_priv_event(wsi);
 
 	event_free(w->w_read.watcher);
@@ -354,7 +354,7 @@ elops_destroy_pt_event(struct lws_context *context, int tsi)
 	if (!ptpr->io_loop)
 		return;
 
-	lws_vhost_foreach_listen_wsi(context, context, elops_listen_destroy_event);
+	lws_vhost_foreach_lisaxis_wsi(context, context, elops_lisaxis_destroy_event);
 
 	event_free(ptpr->hrtimer);
 	event_free(ptpr->idle_timer);
@@ -404,7 +404,7 @@ elops_wsi_logical_close_event(struct lws *wsi)
 }
 
 static int
-elops_init_vhost_listen_wsi_event(struct lws *wsi)
+elops_init_vhost_lisaxis_wsi_event(struct lws *wsi)
 {
 	struct lws_context_per_thread *pt;
 	struct lws_pt_eventlibs_libevent *ptpr;
@@ -480,7 +480,7 @@ static const struct lws_event_loop_ops event_loop_ops_event = {
 	/* init_context */		elops_init_context_event,
 	/* destroy_context1 */		NULL,
 	/* destroy_context2 */		elops_destroy_context2_event,
-	/* init_vhost_listen_wsi */	elops_init_vhost_listen_wsi_event,
+	/* init_vhost_lisaxis_wsi */	elops_init_vhost_lisaxis_wsi_event,
 	/* init_pt */			elops_init_pt_event,
 	/* wsi_logical_close */		elops_wsi_logical_close_event,
 	/* check_client_connect_ok */	NULL,

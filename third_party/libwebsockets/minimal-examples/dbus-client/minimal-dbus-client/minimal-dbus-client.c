@@ -28,7 +28,7 @@ static int interrupted;
 #define THIS_OBJECT	 "/org/libwebsockets/test"
 #define THIS_BUSNAME	 "org.libwebsockets.test"
 
-#define THIS_LISTEN_PATH "unix:abstract=org.libwebsockets.test"
+#define THIS_LISaxis_PATH "unix:abstract=org.libwebsockets.test"
 
 
 static DBusHandlerResult
@@ -249,7 +249,7 @@ int main(int argc, const char **argv)
 	if (!vh)
 		goto bail;
 
-	dbus_ctx = create_dbus_client_conn(vh, 0, THIS_LISTEN_PATH);
+	dbus_ctx = create_dbus_client_conn(vh, 0, THIS_LISaxis_PATH);
 	if (!dbus_ctx)
 		goto bail1;
 

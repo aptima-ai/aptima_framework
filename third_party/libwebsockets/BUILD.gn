@@ -4,11 +4,11 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/ten_runtime/feature/cmake.gni")
+import("//build/axis_runtime/feature/cmake.gni")
 import("//third_party/libwebsockets/output_libs.gni")
 import("//third_party/mbedtls/output_libs.gni")
 
-ten_mbedtls_copy_deps("websockets_copy_mbedtls") {
+axis_mbedtls_copy_deps("websockets_copy_mbedtls") {
   basedir = "${root_gen_dir}/cmake/websockets/install/"
 
   # Because libwebsockets depends on mbedtls, so this is for the building of

@@ -239,8 +239,8 @@ static const char *const h264_nal_type_name[32] = {
     "Reserved 17", // H264_NAL_RESERVED17
     "Reserved 18", // H264_NAL_RESERVED18
     "Auxiliary coded picture without partitioning", // H264_NAL_AUXILIARY_SLICE
-    "Slice extension", // H264_NAL_EXTEN_SLICE
-    "Slice extension for a depth view or a 3D-AVC texture view", // H264_NAL_DEPTH_EXTEN_SLICE
+    "Slice extension", // H264_NAL_EXaxis_SLICE
+    "Slice extension for a depth view or a 3D-AVC texture view", // H264_NAL_DEPTH_EXaxis_SLICE
     "Reserved 22", // H264_NAL_RESERVED22
     "Reserved 23", // H264_NAL_RESERVED23
     "Unspecified 24", // H264_NAL_UNSPECIFIED24

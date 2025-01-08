@@ -1771,7 +1771,7 @@ struct Curl_cftype Curl_cft_tcp_accept = {
   cf_socket_query,
 };
 
-CURLcode Curl_conn_tcp_listen_set(struct Curl_easy *data,
+CURLcode Curl_conn_tcp_lisaxis_set(struct Curl_easy *data,
                                   struct connectdata *conn,
                                   int sockindex, curl_socket_t *s)
 {
@@ -1801,7 +1801,7 @@ CURLcode Curl_conn_tcp_listen_set(struct Curl_easy *data,
   ctx->active = TRUE;
   ctx->connected_at = Curl_now();
   cf->connected = TRUE;
-  DEBUGF(LOG_CF(data, cf, "Curl_conn_tcp_listen_set(%"
+  DEBUGF(LOG_CF(data, cf, "Curl_conn_tcp_lisaxis_set(%"
                 CURL_FORMAT_SOCKET_T ")", ctx->sock));
 
 out:

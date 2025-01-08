@@ -27,9 +27,9 @@ part of lws will fail the connection and close it.  (We will look at that flow
 in a moment in detail for both unencrypted and tls listeners.)
 
 However if the first configured vhost for the port was created with the
-vhost creation info struct `.options` flag `LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG`,
+vhost creation info struct `.options` flag `LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG`,
 then instead of the error, the connection transitions to whatever role was
-given in the vhost creation info struct `.listen_accept_role` and `.listen_accept_protocol`.
+given in the vhost creation info struct `.lisaxis_accept_role` and `.lisaxis_accept_protocol`.
 
 With lejp-conf / lwsws, the options can be applied to the first vhost using:
 
@@ -66,7 +66,7 @@ role / protocol.
 
 |Flag|lejp-conf / lwsws|Function|
 |---|---|---|
-|`LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG`|`"fallback-listen-accept": "1"`|Enable fallback processing|
+|`LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG`|`"fallback-listen-accept": "1"`|Enable fallback processing|
 
 ### TLS https flow
 
@@ -77,7 +77,7 @@ protocol will fail is earlier, when the tls tunnel is being set up.
 
 |Flag|lejp-conf / lwsws|Function|
 |---|---|---|
-|`LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG`|`"fallback-listen-accept": "1"`|Enable fallback processing|
+|`LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG`|`"fallback-listen-accept": "1"`|Enable fallback processing|
 |`LWS_SERVER_OPTION_REDIRECT_HTTP_TO_HTTPS`|`"redirect-http": "1"`|Treat invalid tls packet as http, issue http redirect to https://|
 |`LWS_SERVER_OPTION_ALLOW_HTTP_ON_HTTPS_LISTENER`|`"allow-http-on-https": "1"`|Accept unencrypted http connections on this tls port (dangerous)|
 
@@ -92,7 +92,7 @@ vhost on the port to use the specified role and protocol in the first place.
 
 |Flag|lejp-conf / lwsws|Function|
 |---|---|---|
-|LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG|`"apply-listen-accept": "1"`|Force vhost to use listen-accept-role / listen-accept-protocol|
+|LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG|`"apply-listen-accept": "1"`|Force vhost to use listen-accept-role / listen-accept-protocol|
 
 ## Using http(s) fallback with raw-proxy
 
@@ -129,9 +129,9 @@ want...
 ... and set up the fallback enable and bindings...
 
 ```
-	info.options |= LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG;
-	info.listen_accept_role = "raw_proxy";
-	info.listen_accept_proxy = "raw_proxy";
+	info.options |= LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG;
+	info.lisaxis_accept_role = "raw_proxy";
+	info.lisaxis_accept_proxy = "raw_proxy";
 	info.pvo = &pvo;
 ```
 

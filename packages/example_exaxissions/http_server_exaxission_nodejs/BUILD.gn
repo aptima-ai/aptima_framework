@@ -1,0 +1,32 @@
+#
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file for more information.
+#
+import("//build/feature/axis_package.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/glob.gni")
+import("//build/axis_runtime/options.gni")
+
+axis_package("http_server_extension_nodejs") {
+  package_kind = "extension"
+
+  resources = [
+    "BUILD.gn",
+    "manifest.json",
+    "package.json",
+    "property.json",
+    "src/index.ts",
+    "tsconfig.json",
+  ]
+
+  deps = [ "//core/src/axis_runtime" ]
+}
+
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_http_server_extension_nodejs_to_server") {
+    base_dir = rebase_path(
+            "${root_out_dir}/axis_packages/extension/http_server_extension_nodejs")
+    deps = [ ":http_server_extension_nodejs" ]
+  }
+}

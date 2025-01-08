@@ -39,7 +39,7 @@ static int video_decode_example(const char *input_filename)
     uint8_t *byte_buffer = NULL;
     AVPacket *pkt;
     AVFormatContext *fmt_ctx = NULL;
-    int number_of_written_bytes;
+    int number_of_writaxis_bytes;
     int video_stream;
     int byte_buffer_size;
     int i = 0;
@@ -145,17 +145,17 @@ static int video_decode_example(const char *input_filename)
                 return result;
             }
 
-            number_of_written_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
+            number_of_writaxis_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
                                     (const uint8_t* const *)fr->data, (const int*) fr->linesize,
                                     ctx->pix_fmt, ctx->width, ctx->height, 1);
-            if (number_of_written_bytes < 0) {
+            if (number_of_writaxis_bytes < 0) {
                 av_log(NULL, AV_LOG_ERROR, "Can't copy image to buffer\n");
                 av_frame_unref(fr);
-                return number_of_written_bytes;
+                return number_of_writaxis_bytes;
             }
             printf("%d, %s, %s, %8"PRId64", %8d, 0x%08"PRIx32"\n", video_stream,
                    av_ts2str(fr->pts), av_ts2str(fr->pkt_dts), fr->duration,
-                   number_of_written_bytes, av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_written_bytes));
+                   number_of_writaxis_bytes, av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_writaxis_bytes));
 
             av_frame_unref(fr);
         }

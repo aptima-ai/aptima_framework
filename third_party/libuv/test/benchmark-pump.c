@@ -49,7 +49,7 @@ static uv_loop_t* loop;
 static uv_tcp_t tcpServer;
 static uv_pipe_t pipeServer;
 static uv_stream_t* server;
-static struct sockaddr_in listen_addr;
+static struct sockaddr_in lisaxis_addr;
 static struct sockaddr_in connect_addr;
 
 static int64_t start_time;
@@ -379,13 +379,13 @@ HELPER_IMPL(tcp_pump_server) {
   type = TCP;
   loop = uv_default_loop();
 
-  ASSERT_OK(uv_ip4_addr("0.0.0.0", TEST_PORT, &listen_addr));
+  ASSERT_OK(uv_ip4_addr("0.0.0.0", TEST_PORT, &lisaxis_addr));
 
   /* Server */
   server = (uv_stream_t*)&tcpServer;
   r = uv_tcp_init(loop, &tcpServer);
   ASSERT_OK(r);
-  r = uv_tcp_bind(&tcpServer, (const struct sockaddr*) &listen_addr, 0);
+  r = uv_tcp_bind(&tcpServer, (const struct sockaddr*) &lisaxis_addr, 0);
   ASSERT_OK(r);
   r = uv_listen((uv_stream_t*)&tcpServer, MAX_WRITE_HANDLES, connection_cb);
   ASSERT_OK(r);

@@ -1,0 +1,68 @@
+{
+  "axisframework": "TEN 框架",
+  "header": {
+    "title": "Ten 管理器",
+    "menu": {
+      "edit": "编辑",
+      "openExistingGraph": "打开现有图表",
+      "autoLayout": "自动布局",
+      "openAppFolder": "打开应用文件夹",
+      "file": "文件",
+      "help": "帮助",
+      "about": "关于",
+      "language": "语言",
+      "language.enUS": "英语",
+      "language.zhCN": "简体中文",
+      "theme": "主题",
+      "theme.light": "明亮",
+      "theme.dark": "暗黑",
+      "theme.system": "系统"
+    },
+    "officialSite": "官方网站",
+    "poweredBy": "技术支持",
+    "poweredBy2": "Powered by",
+    "github": "GitHub"
+  },
+  "action": {
+    "edit": "编辑",
+    "delete": "删除",
+    "launchTerminal": "启动终端",
+    "ok": "确定",
+    "cancel": "取消",
+    "selected": "已选择",
+    "autoStart": "自动启动",
+    "confirm": "确认",
+    "upstream": "上游",
+    "downstream": "下游"
+  },
+  "toast": {
+    "saveFileSuccess": "文件保存成功",
+    "saveFileFailed": "文件保存失败"
+  },
+  "popup": {
+    "editor": {
+      "confirmSaveFile": "确定要保存文件吗？"
+    },
+    "selectGraph": {
+      "title": "选择图表"
+    },
+    "customNodeConn": {
+      "srcTitle": "节点[{{source}}]连接",
+      "connectTitle": "连接详情",
+      "title": "连接"
+    }
+  },
+  "dataTable": {
+    "no": "序号",
+    "upstream": "上游",
+    "downstream": "下游",
+    "type": "类型",
+    "source": "源",
+    "target": "目标",
+    "actions": "操作",
+    "viewDetails": "查看详情",
+    "delete": "删除",
+    "openMenu": "打开菜单",
+    "noResults": "无结果"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  global:
+    axis_*;
+    PyInit_libaxis_runtime_python;
+  local:
+    *;
+};

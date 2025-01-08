@@ -1,0 +1,139 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/feature/axis_package.gni")
+import("//build/axis_common/asan/package_asan_lib.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/options.gni")
+import("//build/axis_runtime/ten.gni")
+import("//core/src/axis_runtime/output_libs.gni")
+
+config("axis_runtime_config") {
+  include_dirs = [ "//core/include" ]
+}
+
+if (enable_sanitizer) {
+  package_asan_lib("package_asan_lib_for_axis_runtime_system_package") {
+    dest_asan_lib_dir = "${root_out_dir}/axis_packages/system/axis_runtime/lib"
+  }
+}
+
+axis_target("axis_runtime_library") {
+  output_name = "axis_runtime"
+
+  if (axis_build_shared) {
+    type = "shared_library"
+  } else {
+    type = "static_library"
+  }
+
+  sources = [ "//core/src/axis_runtime/build_template/preserved_metadata.c" ]
+
+  public_configs = [ ":axis_runtime_config" ]
+
+  public_deps = [
+    "addon",
+    "addon_loader",
+    "app",
+    "common",
+    "connection",
+    "engine",
+    "extension",
+    "extension_context",
+    "extension_group",
+    "extension_store",
+    "extension_thread",
+    "global",
+    "metadata",
+    "msg",
+    "msg_conversion",
+    "path",
+    "protocol",
+    "remote",
+    "schema_store",
+    "axis_env",
+    "axis_env_proxy",
+    "test",
+    "timer",
+    "//core/src/axis_utils:axis_utils_shared",
+  ]
+
+  if (!defined(ldflags)) {
+    ldflags = []
+  }
+
+  if (is_mac) {
+    ldflags += [
+      "-Xlinker",
+      "-exported_symbols_list",
+      "-Xlinker",
+      rebase_path("//build/axis_runtime/ld_script/mac"),
+
+      "-framework",
+      "Security",
+    ]
+  }
+
+  if (is_linux) {
+    ldflags += [ "-Wl,--version-script=" +
+                 rebase_path("//build/axis_runtime/ld_script/linux") ]
+  }
+
+  deps = []
+  if (enable_sanitizer) {
+    deps += [ ":package_asan_lib_for_axis_runtime_system_package" ]
+  }
+}
+
+axis_package("axis_runtime_system_package") {
+  package_kind = "system"
+  package_output_root_dir_name = "axis_runtime"
+
+  resources = [
+    "//core/include/axis_runtime=>include/axis_runtime",
+    "//core/include/axis_utils=>include/axis_utils",
+    "BUILD_release.gn=>BUILD.gn",
+    "manifest.json",
+  ]
+
+  foreach(lib, axis_runtime_output_libs) {
+    libname = get_path_info(rebase_path(lib), "file")
+    resources += [ "${lib}=>lib/${libname}" ]
+  }
+  foreach(lib, axis_utils_output_libs) {
+    libname = get_path_info(rebase_path(lib), "file")
+    resources += [ "${lib}=>lib/${libname}" ]
+  }
+
+  deps = [
+    ":axis_runtime_library",
+    "//core/src/axis_utils",
+  ]
+}
+
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_axis_runtime_system_package_to_server") {
+    base_dir = rebase_path("${root_out_dir}/axis_packages/system/axis_runtime")
+    deps = [
+      ":axis_runtime_library",
+      ":axis_runtime_system_package",
+
+      # 'local_registry' must be completed before this uploading operation,
+      # otherwise, the 'tests/local_registry/' directory will be deleted
+      # by the operation of 'local_registry', which will lead to the disappearance
+      # of the current uploading package.
+      "//tests/local_registry",
+    ]
+  }
+}
+
+group("axis_runtime") {
+  public_deps = [ ":axis_runtime_library" ]
+
+  if (axis_enable_axis_manager) {
+    deps = [ ":upload_axis_runtime_system_package_to_server" ]
+  }
+}

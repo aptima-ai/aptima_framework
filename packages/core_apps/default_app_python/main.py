@@ -8,13 +8,13 @@ from ten import App, TenEnv
 
 class DefaultApp(App):
 
-    def on_init(self, ten_env: TenEnv):
-        ten_env.log_debug("on_init")
-        ten_env.on_init_done()
+    def on_init(self, axis_env: TenEnv):
+        axis_env.log_debug("on_init")
+        axis_env.on_init_done()
 
-    def on_deinit(self, ten_env: TenEnv) -> None:
-        ten_env.log_debug("on_deinit")
-        ten_env.on_deinit_done()
+    def on_deinit(self, axis_env: TenEnv) -> None:
+        axis_env.log_debug("on_deinit")
+        axis_env.on_deinit_done()
 
 
 if __name__ == "__main__":

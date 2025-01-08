@@ -183,20 +183,20 @@
     #define JSON_HEDLEY_SUNPRO_VERSION_CHECK(major,minor,patch) (0)
 #endif
 
-#if defined(JSON_HEDLEY_EMSCRIPTEN_VERSION)
-    #undef JSON_HEDLEY_EMSCRIPTEN_VERSION
+#if defined(JSON_HEDLEY_EMSCRIPaxis_VERSION)
+    #undef JSON_HEDLEY_EMSCRIPaxis_VERSION
 #endif
-#if defined(__EMSCRIPTEN__)
-    #define JSON_HEDLEY_EMSCRIPTEN_VERSION JSON_HEDLEY_VERSION_ENCODE(__EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__)
+#if defined(__EMSCRIPaxis__)
+    #define JSON_HEDLEY_EMSCRIPaxis_VERSION JSON_HEDLEY_VERSION_ENCODE(__EMSCRIPaxis_major__, __EMSCRIPaxis_minor__, __EMSCRIPaxis_tiny__)
 #endif
 
-#if defined(JSON_HEDLEY_EMSCRIPTEN_VERSION_CHECK)
-    #undef JSON_HEDLEY_EMSCRIPTEN_VERSION_CHECK
+#if defined(JSON_HEDLEY_EMSCRIPaxis_VERSION_CHECK)
+    #undef JSON_HEDLEY_EMSCRIPaxis_VERSION_CHECK
 #endif
-#if defined(JSON_HEDLEY_EMSCRIPTEN_VERSION)
-    #define JSON_HEDLEY_EMSCRIPTEN_VERSION_CHECK(major,minor,patch) (JSON_HEDLEY_EMSCRIPTEN_VERSION >= JSON_HEDLEY_VERSION_ENCODE(major, minor, patch))
+#if defined(JSON_HEDLEY_EMSCRIPaxis_VERSION)
+    #define JSON_HEDLEY_EMSCRIPaxis_VERSION_CHECK(major,minor,patch) (JSON_HEDLEY_EMSCRIPaxis_VERSION >= JSON_HEDLEY_VERSION_ENCODE(major, minor, patch))
 #else
-    #define JSON_HEDLEY_EMSCRIPTEN_VERSION_CHECK(major,minor,patch) (0)
+    #define JSON_HEDLEY_EMSCRIPaxis_VERSION_CHECK(major,minor,patch) (0)
 #endif
 
 #if defined(JSON_HEDLEY_ARM_VERSION)

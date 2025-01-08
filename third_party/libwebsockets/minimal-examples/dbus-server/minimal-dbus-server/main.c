@@ -35,7 +35,7 @@ static char session;
 #define THIS_OBJECT	 "/org/libwebsockets/test"
 #define THIS_BUSNAME	 "org.libwebsockets.test"
 
-#define THIS_LISTEN_PATH "unix:abstract=org.libwebsockets.test"
+#define THIS_LISaxis_PATH "unix:abstract=org.libwebsockets.test"
 
 static const char *
 server_introspection_xml =
@@ -499,7 +499,7 @@ int main(int argc, const char **argv)
 		if (create_dbus_server_conn(&dbus_ctx, DBUS_BUS_SESSION))
 			goto bail;
 	} else {
-		if (create_dbus_listener(THIS_LISTEN_PATH)) {
+		if (create_dbus_listener(THIS_LISaxis_PATH)) {
 			lwsl_err("%s: create_dbus_listener failed\n", __func__);
 			goto bail;
 		}

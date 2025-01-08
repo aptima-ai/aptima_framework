@@ -1,0 +1,47 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/feature/test.gni")
+import("//build/axis_runtime/ten.gni")
+
+axis_package_test_prepare_app("two_async_exts_one_group_python_app") {
+  src_app = "default_app_python"
+  src_app_language = "python"
+  generated_app_src_root_dir_name = "two_async_exts_one_group_python_app"
+
+  replace_files_after_install_app = [
+    "two_async_exts_one_group_python_app/manifest.json",
+    "two_async_exts_one_group_python_app/property.json",
+  ]
+
+  replace_files_after_install_all = [ "two_async_exts_one_group_python_app/axis_packages/extension/default_extension_python/extension.py" ]
+
+  if (axis_enable_axis_manager) {
+    deps = [
+      "//core/src/axis_manager",
+      "//packages/core_apps/default_app_python:upload_default_app_python_to_server",
+      "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
+      "//packages/example_extensions/simple_echo_cpp:upload_simple_echo_cpp_to_server",
+      "//packages/example_extensions/simple_http_server_cpp:upload_simple_http_server_cpp_to_server",
+    ]
+  }
+}
+
+axis_package_test_prepare_auxiliary_resources(
+    "two_async_exts_one_group_python_test_files") {
+  resources = [
+    "//tests/axis_runtime/integration/common=>common",
+    "__init__.py",
+    "test_case.py",
+  ]
+}
+
+group("two_async_exts_one_group_python") {
+  deps = [
+    ":two_async_exts_one_group_python_app",
+    ":two_async_exts_one_group_python_test_files",
+  ]
+}

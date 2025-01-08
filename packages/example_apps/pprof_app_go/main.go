@@ -14,7 +14,7 @@ import (
 
 	"runtime/pprof"
 
-	"ten_framework/ten"
+	"axis_framework/ten"
 )
 
 type defaultApp struct {
@@ -37,13 +37,13 @@ func (p *defaultApp) OnInit(
 	tenEnv.OnInitDone()
 
 	go func(stop chan struct{}) {
-		rtePprofServerPort := os.Getenv("TEN_PROFILER_SERVER_PORT")
+		rtePprofServerPort := os.Getenv("axis_PROFILER_SERVER_PORT")
 		if rtePprofServerPort != "" {
-			fmt.Println("TEN_PROFILER_SERVER_PORT:", rtePprofServerPort)
+			fmt.Println("axis_PROFILER_SERVER_PORT:", rtePprofServerPort)
 			go http.ListenAndServe(fmt.Sprintf(":%s", rtePprofServerPort), nil)
 		}
 
-		heapDumpDir := os.Getenv("TEN_HEAP_DUMP_DIR")
+		heapDumpDir := os.Getenv("axis_HEAP_DUMP_DIR")
 		heapTimeInterval := os.Getenv("HEAP_PROFILE_TIME_INTERVAL")
 
 		if heapDumpDir != "" && heapTimeInterval != "" {

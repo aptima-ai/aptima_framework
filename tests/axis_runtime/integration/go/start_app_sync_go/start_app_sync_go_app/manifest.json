@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    {
+      "type": "extension",
+      "name": "default_extension_go",
+      "version": "0.6.2"
+    },
+    {
+      "type": "protocol",
+      "name": "msgpack",
+      "version": "0.6.2"
+    }
+  ]
+}

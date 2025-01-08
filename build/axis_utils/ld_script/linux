@@ -1,0 +1,6 @@
+{
+  global:
+    axis_*;
+  local:
+    *;
+};

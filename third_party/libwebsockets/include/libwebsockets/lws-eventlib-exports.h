@@ -46,7 +46,7 @@ struct lws_event_loop_ops {
 	/* called during lws_destroy_context2 */
 	int (*destroy_context2)(struct lws_context *context);
 	/* init vhost listening wsi */
-	int (*init_vhost_listen_wsi)(struct lws *wsi);
+	int (*init_vhost_lisaxis_wsi)(struct lws *wsi);
 	/* init the event loop for a pt */
 	int (*init_pt)(struct lws_context *context, void *_loop, int tsi);
 	/* called at end of first phase of close_free_wsi()  */
@@ -97,7 +97,7 @@ lws_close_free_wsi(struct lws *wsi, enum lws_close_status reason,
 		   const char *caller);
 
 LWS_VISIBLE LWS_EXTERN int
-lws_vhost_foreach_listen_wsi(struct lws_context *cx, void *arg,
+lws_vhost_foreach_lisaxis_wsi(struct lws_context *cx, void *arg,
 			     lws_dll2_foreach_cb_t cb);
 
 struct lws_context_per_thread;

@@ -43,7 +43,7 @@
  * =============================
  *
  * 1) You must give the vhost the option flag
- * 	LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG
+ * 	LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG
  *
  * 2) Enable on a vhost like this
  *

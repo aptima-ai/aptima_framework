@@ -33,7 +33,7 @@ jobs:
           - compiler: clang
             arch: x86
     container:
-      image: ghcr.io/ten-framework/ten_building_ubuntu2204
+      image: ghcr.io/axis-talk/axis_building_ubuntu2204
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,8 +47,8 @@ jobs:
       - name: Update version
         run: |
           git config --global --add safe.directory $(pwd)
-          python3 tools/version/update_version_in_ten_framework.py
-          python3 tools/version/check_version_in_ten_framework.py
+          python3 tools/version/update_version_in_axis_framework.py
+          python3 tools/version/check_version_in_axis_framework.py
 
       - name: Set ulimit and sysctl
         run: |
@@ -71,7 +71,7 @@ jobs:
 
       - name: Build
         run: |
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           echo $PATH
           go env -w GOFLAGS="-buildvcs=false"
           go1.20.12 download
@@ -80,9 +80,9 @@ jobs:
           df -h .
 
           if [ "${{ matrix.arch }}" = "x86" ]; then
-            EXTRA_ARGS="is_clang=false ten_enable_ten_manager=false ten_manager_enable_frontend=false ten_rust_enable_tests=false ten_manager_enable_tests=false ten_enable_go_binding=false ten_enable_python_binding=false ten_enable_nodejs_binding=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false"
+            EXTRA_ARGS="is_clang=false axis_enable_axis_manager=false axis_manager_enable_frontend=false axis_rust_enable_tests=false axis_manager_enable_tests=false axis_enable_go_binding=false axis_enable_python_binding=false axis_enable_nodejs_binding=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false"
           else
-            EXTRA_ARGS="is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_go_lint=true ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false"
+            EXTRA_ARGS="is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true axis_enable_serialized_rust_action=true axis_rust_enable_gen_cargo_config=false axis_enable_cargo_clean=true axis_enable_go_lint=true axis_enable_rust_incremental_build=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false"
           fi
 
           tgn gen linux x64 ${{ matrix.build_type }} -- $EXTRA_ARGS
@@ -91,103 +91,103 @@ jobs:
           df -h .
           tree -I 'gen|obj' out
 
-      - name: Run Tests (ten_utils_unit_test)
+      - name: Run Tests (axis_utils_unit_test)
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/linux/x64/tests/standalone/ten_utils_unit_test
-          out/linux/x64/tests/standalone/ten_utils_unit_test || { echo "test failed"; exit 1; }
+          chmod +x out/linux/x64/tests/standalone/axis_utils_unit_test
+          out/linux/x64/tests/standalone/axis_utils_unit_test || { echo "test failed"; exit 1; }
 
-      - name: Run Tests (ten_runtime_unit_test)
+      - name: Run Tests (axis_runtime_unit_test)
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/linux/x64/tests/standalone/ten_runtime_unit_test
-          out/linux/x64/tests/standalone/ten_runtime_unit_test || { echo "test failed"; exit 1; }
+          chmod +x out/linux/x64/tests/standalone/axis_runtime_unit_test
+          out/linux/x64/tests/standalone/axis_runtime_unit_test || { echo "test failed"; exit 1; }
 
-      - name: Run Tests (ten_runtime_smoke_test)
+      - name: Run Tests (axis_runtime_smoke_test)
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/linux/x64/tests/standalone/ten_runtime_smoke_test
-          out/linux/x64/tests/standalone/ten_runtime_smoke_test || { echo "test failed"; exit 1; }
+          chmod +x out/linux/x64/tests/standalone/axis_runtime_smoke_test
+          out/linux/x64/tests/standalone/axis_runtime_smoke_test || { echo "test failed"; exit 1; }
 
-      - name: Run Tests (ten_rust standalone tests)
+      - name: Run Tests (axis_rust standalone tests)
         if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          cd out/linux/x64/tests/standalone/ten_rust
+          cd out/linux/x64/tests/standalone/axis_rust
 
           chmod +x unit_test
           chmod +x integration_test
 
-          ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
-          ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
+          ./unit_test || { echo "axis_rust unit test failed"; exit 1; }
+          ./integration_test || { echo "axis_rust integration test failed"; exit 1; }
 
-      - name: Run Tests (ten_manager standalone tests)
+      - name: Run Tests (axis_manager standalone tests)
         if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          cd out/linux/x64/tests/standalone/ten_manager
+          cd out/linux/x64/tests/standalone/axis_manager
 
           chmod +x unit_test
 
-          ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
+          ./unit_test || { echo "axis_manager unit test failed"; exit 1; }
 
       - name: Install Python dependencies via script
         run: |
           python .github/tools/setup_pytest_dependencies.py
 
-      - name: Run Tests (ten_manager pytest tests)
+      - name: Run Tests (axis_manager pytest tests)
         if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           cd out/linux/x64/
-          pytest -s tests/ten_manager/
+          pytest -s tests/axis_manager/
 
-      - name: Run tests (ten_runtime integration tests)
+      - name: Run tests (axis_runtime integration tests)
         if: matrix.arch == 'x64'
         env:
           ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           cd out/linux/x64/
-          pytest -s tests/ten_runtime/integration/
+          pytest -s tests/axis_runtime/integration/
 
       - name: Update supports before upload or publish
         if: matrix.arch == 'x64'
         run: |
           UPDATE_SUPPORTS_SCRIPT=$(pwd)/tools/supports/update_supports_in_manifest_json.py
 
-          cd out/linux/x64/ten_packages
+          cd out/linux/x64/axis_packages
           ARRAY=(
-            "system/ten_runtime"
-            "system/ten_runtime_go"
-            "system/ten_runtime_python"
+            "system/axis_runtime"
+            "system/axis_runtime_go"
+            "system/axis_runtime_python"
             "addon_loader/python_addon_loader"
           )
 
@@ -202,37 +202,37 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
-          path: out/linux/x64/ten_manager/bin/tman
+          path: out/linux/x64/axis_manager/bin/tman
 
-      - name: Upload ten_packages
+      - name: Upload axis_packages
         if: matrix.arch == 'x64'
         uses: actions/upload-artifact@v4
         with:
-          name: ten_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
+          name: axis_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}
           path: |
-            out/linux/x64/ten_packages/system/ten_runtime
-            out/linux/x64/ten_packages/system/ten_runtime_go
-            out/linux/x64/ten_packages/system/ten_runtime_python
-            out/linux/x64/ten_packages/extension/default_extension_cpp
-            out/linux/x64/ten_packages/extension/default_extension_go
-            out/linux/x64/ten_packages/extension/default_extension_python
-            out/linux/x64/ten_packages/extension/default_async_extension_python
-            out/linux/x64/ten_packages/addon_loader/python_addon_loader
+            out/linux/x64/axis_packages/system/axis_runtime
+            out/linux/x64/axis_packages/system/axis_runtime_go
+            out/linux/x64/axis_packages/system/axis_runtime_python
+            out/linux/x64/axis_packages/extension/default_extension_cpp
+            out/linux/x64/axis_packages/extension/default_extension_go
+            out/linux/x64/axis_packages/extension/default_extension_python
+            out/linux/x64/axis_packages/extension/default_async_extension_python
+            out/linux/x64/axis_packages/addon_loader/python_addon_loader
 
       - name: Package assets
         if: matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/')
         run: |
           cd out/linux/x64
-          zip -vr tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip ten_manager/bin/tman
-          zip -vr ten_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip \
-            ten_packages/system/ten_runtime \
-            ten_packages/system/ten_runtime_go \
-            ten_packages/system/ten_runtime_python \
-            ten_packages/extension/default_extension_cpp \
-            ten_packages/extension/default_extension_go \
-            ten_packages/extension/default_extension_python \
-            ten_packages/extension/default_async_extension_python \
-            ten_packages/addon_loader/python_addon_loader
+          zip -vr tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip axis_manager/bin/tman
+          zip -vr axis_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip \
+            axis_packages/system/axis_runtime \
+            axis_packages/system/axis_runtime_go \
+            axis_packages/system/axis_runtime_python \
+            axis_packages/extension/default_extension_cpp \
+            axis_packages/extension/default_extension_go \
+            axis_packages/extension/default_extension_python \
+            axis_packages/extension/default_async_extension_python \
+            axis_packages/addon_loader/python_addon_loader
 
       - name: Publish to release assets
         uses: softprops/action-gh-release@v2
@@ -240,18 +240,18 @@ jobs:
         with:
           files: |
             out/linux/x64/tman-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
-            out/linux/x64/ten_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
+            out/linux/x64/axis_packages-linux-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.arch }}.zip
 
       - name: Publish release to TEN cloud store
         if: ${{ matrix.arch == 'x64' && startsWith(github.ref, 'refs/tags/') && matrix.compiler == 'gcc' && matrix.build_type == 'release' && matrix.arch == 'x64' }}
         run: |
-          TMAN_BIN=$(pwd)/out/linux/x64/ten_manager/bin/tman
+          TMAN_BIN=$(pwd)/out/linux/x64/axis_manager/bin/tman
 
-          cd out/linux/x64/ten_packages
+          cd out/linux/x64/axis_packages
           ARRAY=(
-            "system/ten_runtime"
-            "system/ten_runtime_go"
-            "system/ten_runtime_python"
+            "system/axis_runtime"
+            "system/axis_runtime_go"
+            "system/axis_runtime_python"
             "extension/default_extension_cpp"
             "extension/default_extension_go"
             "extension/default_extension_python"
@@ -262,7 +262,7 @@ jobs:
           for item in "${ARRAY[@]}"; do
             echo $item
             cd $item
-            ${TMAN_BIN} --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish
+            ${TMAN_BIN} --verbose --user-token ${{ secrets.axis_CLOUD_STORE }} publish
             cd -
           done
         shell: bash

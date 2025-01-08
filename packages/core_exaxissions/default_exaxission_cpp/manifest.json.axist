@@ -1,0 +1,18 @@
+{
+  "type": "extension",
+  "name": "{{package_name}}",
+  "version": "0.6.2",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.2"
+    }
+  ],
+  "package": {
+    "include": [
+      "**"
+    ]
+  },
+  "api": {}
+}

@@ -741,8 +741,8 @@ HTTP[s] and WS[s].  If the first bytes written on the connection are not a
 valid HTTP method, then the connection switches to RAW mode.
 
 This is disabled by default, you enable it by setting the `.options` flag
-LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG, and setting
-`.listen_accept_role` to `"raw-skt"` when creating the vhost.
+LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG, and setting
+`.lisaxis_accept_role` to `"raw-skt"` when creating the vhost.
 
 RAW mode socket connections receive the following callbacks
 
@@ -754,7 +754,7 @@ RAW mode socket connections receive the following callbacks
 ```
 
 You can control which protocol on your vhost handles these RAW mode
-incoming connections by setting the vhost info struct's `.listen_accept_protocol`
+incoming connections by setting the vhost info struct's `.lisaxis_accept_protocol`
 to the vhost protocol name to use.
 
 `protocol-lws-raw-test` plugin provides a method for testing this with

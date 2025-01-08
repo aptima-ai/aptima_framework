@@ -39,7 +39,7 @@
 #include "gtest/gtest.h"
 
 // This macro defines 10 dummy tests.
-#define TEN_TESTS_(test_case_name) \
+#define axis_TESTS_(test_case_name) \
   TEST(test_case_name, T0) {} \
   TEST(test_case_name, T1) {} \
   TEST(test_case_name, T2) {} \
@@ -53,16 +53,16 @@
 
 // This macro defines 100 dummy tests.
 #define HUNDRED_TESTS_(test_case_name_prefix) \
-  TEN_TESTS_(test_case_name_prefix ## 0) \
-  TEN_TESTS_(test_case_name_prefix ## 1) \
-  TEN_TESTS_(test_case_name_prefix ## 2) \
-  TEN_TESTS_(test_case_name_prefix ## 3) \
-  TEN_TESTS_(test_case_name_prefix ## 4) \
-  TEN_TESTS_(test_case_name_prefix ## 5) \
-  TEN_TESTS_(test_case_name_prefix ## 6) \
-  TEN_TESTS_(test_case_name_prefix ## 7) \
-  TEN_TESTS_(test_case_name_prefix ## 8) \
-  TEN_TESTS_(test_case_name_prefix ## 9)
+  axis_TESTS_(test_case_name_prefix ## 0) \
+  axis_TESTS_(test_case_name_prefix ## 1) \
+  axis_TESTS_(test_case_name_prefix ## 2) \
+  axis_TESTS_(test_case_name_prefix ## 3) \
+  axis_TESTS_(test_case_name_prefix ## 4) \
+  axis_TESTS_(test_case_name_prefix ## 5) \
+  axis_TESTS_(test_case_name_prefix ## 6) \
+  axis_TESTS_(test_case_name_prefix ## 7) \
+  axis_TESTS_(test_case_name_prefix ## 8) \
+  axis_TESTS_(test_case_name_prefix ## 9)
 
 // This macro defines 1000 dummy tests.
 #define THOUSAND_TESTS_(test_case_name_prefix) \

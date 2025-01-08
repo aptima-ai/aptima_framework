@@ -1,0 +1,14 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/glob.gni")
+
+glob("extension") {
+  configs = [
+    "//core/src/axis_runtime/binding/python/native:axis_runtime_python_config",
+  ]
+  file_list = all_native_files
+}

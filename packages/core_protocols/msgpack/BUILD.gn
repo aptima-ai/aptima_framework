@@ -4,9 +4,9 @@
 # See the LICENSE file for more information.
 #
 import("//.gnfiles/build/feature/glob.gni")
-import("//build/feature/ten_package.gni")
-import("//build/ten_runtime/feature/publish.gni")
-import("//build/ten_runtime/options.gni")
+import("//build/feature/axis_package.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/options.gni")
 
 glob("msgpack_files") {
   file_list = all_native_files
@@ -17,12 +17,12 @@ glob("msgpack_files") {
   deps = [
     "common",
     "msg",
-    "//core/src/ten_runtime:ten_runtime_library",
+    "//core/src/axis_runtime:axis_runtime_library",
     "//third_party/msgpack:msgpackc",
   ]
 }
 
-ten_package("msgpack") {
+axis_package("msgpack") {
   package_kind = "protocol"
   enable_build = true
 
@@ -39,14 +39,14 @@ ten_package("msgpack") {
   deps = [
     "common",
     "msg",
-    "//core/src/ten_runtime:ten_runtime_library",
+    "//core/src/axis_runtime:axis_runtime_library",
     "//third_party/msgpack:msgpackc",
   ]
 }
 
-if (ten_enable_ten_manager) {
-  ten_package_publish("upload_protocol_msgpack_to_server") {
-    base_dir = rebase_path("${root_out_dir}/ten_packages/protocol/msgpack")
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_protocol_msgpack_to_server") {
+    base_dir = rebase_path("${root_out_dir}/axis_packages/protocol/msgpack")
     deps = [ ":msgpack" ]
   }
 }

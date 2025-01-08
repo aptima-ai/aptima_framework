@@ -4121,7 +4121,7 @@ Changes since version 1.7.3:
 
 * unix: fix error check when closing process pipe fd (Ben Noordhuis)
 
-* test,freebsd: fix ipc_listen_xx_write tests (Santiago Gimeno)
+* test,freebsd: fix ipc_lisaxis_xx_write tests (Santiago Gimeno)
 
 * win: fix unsavory rwlock fallback implementation (Bert Belder)
 

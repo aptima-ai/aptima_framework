@@ -1098,9 +1098,9 @@ const uint8_t ff_eac3_frm_expstr[32][6] = {
 
 /**
  * Table E.25: Spectral Extension Attenuation Table
- * ff_eac3_spx_atten_tab[code][bin]=pow(2.0,(bin+1)*(code+1)/-15.0);
+ * ff_eac3_spx_ataxis_tab[code][bin]=pow(2.0,(bin+1)*(code+1)/-15.0);
  */
-const float ff_eac3_spx_atten_tab[32][3] = {
+const float ff_eac3_spx_ataxis_tab[32][3] = {
     { 0.954841603910416503f, 0.911722488558216804f, 0.870550563296124125f },
     { 0.911722488558216804f, 0.831237896142787758f, 0.757858283255198995f },
     { 0.870550563296124125f, 0.757858283255198995f, 0.659753955386447100f },

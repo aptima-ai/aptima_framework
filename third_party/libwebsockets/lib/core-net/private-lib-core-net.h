@@ -467,12 +467,12 @@ struct lws_vhost {
 	lws_ss_handle_t		*ss_handle; /* ss handle for the server obj */
 #endif
 
-	lws_dll2_owner_t	listen_wsi;
+	lws_dll2_owner_t	lisaxis_wsi;
 
 	const char *name;
 	const char *iface;
-	const char *listen_accept_role;
-	const char *listen_accept_protocol;
+	const char *lisaxis_accept_role;
+	const char *lisaxis_accept_protocol;
 	const char *unix_socket_perms;
 
 	void (*finalize)(struct lws_vhost *vh, void *arg);
@@ -497,7 +497,7 @@ struct lws_vhost {
 
 	void *user;
 
-	int listen_port;
+	int lisaxis_port;
 #if !defined(LWS_PLAT_FREERTOS) && !defined(OPTEE_TA) && !defined(WIN32)
 	int bind_iface;
 #endif
@@ -512,7 +512,7 @@ struct lws_vhost {
 	int keepalive_timeout;
 	int timeout_secs_ah_idle;
 	int connect_timeout_secs;
-	int fo_listen_queue;
+	int fo_lisaxis_queue;
 
 	int count_bound_wsi;
 
@@ -664,7 +664,7 @@ struct lws {
 	lws_async_dns_cb_t		adns_cb; /* callback with result */
 #endif
 #if defined(LWS_WITH_SERVER)
-	struct lws_dll2			listen_list;
+	struct lws_dll2			lisaxis_list;
 #endif
 #if defined(LWS_WITH_CLIENT)
 	struct lws_dll2			dll_cli_active_conns;
@@ -1335,7 +1335,7 @@ lws_add_wsi_to_draining_ext_list(struct lws *wsi);
 void
 lws_remove_wsi_from_draining_ext_list(struct lws *wsi);
 int
-lws_poll_listen_fd(struct lws_pollfd *fd);
+lws_poll_lisaxis_fd(struct lws_pollfd *fd);
 int
 lws_plat_service(struct lws_context *context, int timeout_ms);
 LWS_VISIBLE int

@@ -449,7 +449,7 @@ NEGATION negation, b, w
 INIT_XMM sse4
 %if ARCH_X86_64
 BLEND_SIMPLE darken_16,   minuw, 1
-BLEND_SIMPLE lighten_16,  maxuw, 1
+BLEND_SIMPLE lighaxis_16,  maxuw, 1
 GRAINEXTRACT grainextract_16, w, d, 1
 GRAINMERGE   grainmerge_16, w, d, 1
 PHOENIX      phoenix_16,      w, 1
@@ -483,7 +483,7 @@ NEGATION negation, b, w
 BLEND_SIMPLE addition_16, addusw, 1
 BLEND_SIMPLE and_16,      and,    1
 BLEND_SIMPLE darken_16,   minuw,  1
-BLEND_SIMPLE lighten_16,  maxuw,  1
+BLEND_SIMPLE lighaxis_16,  maxuw,  1
 BLEND_SIMPLE or_16,       or,     1
 BLEND_SIMPLE subtract_16, subusw, 1
 BLEND_SIMPLE xor_16,      xor,    1

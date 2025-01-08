@@ -198,17 +198,17 @@ enum lejp_vhost_paths {
 	LEJPVP_IGNORE_MISSING_CERT,
 	LEJPVP_ERROR_DOCUMENT_404,
 	LEJPVP_ALPN,
-	LWJPVP_FO_LISTEN_QUEUE,
+	LWJPVP_FO_LISaxis_QUEUE,
 	LEJPVP_SSL_CLIENT_OPTION_SET,
 	LEJPVP_SSL_CLIENT_OPTION_CLEAR,
 	LEJPVP_TLS13_CIPHERS,
 	LEJPVP_CLIENT_TLS13_CIPHERS,
 	LEJPVP_FLAG_STRICT_HOST_CHECK,
 
-	LEJPVP_LISTEN_ACCEPT_ROLE,
-	LEJPVP_LISTEN_ACCEPT_PROTOCOL,
-	LEJPVP_FLAG_APPLY_LISTEN_ACCEPT,
-	LEJPVP_FLAG_FALLBACK_LISTEN_ACCEPT,
+	LEJPVP_LISaxis_ACCEPT_ROLE,
+	LEJPVP_LISaxis_ACCEPT_PROTOCOL,
+	LEJPVP_FLAG_APPLY_LISaxis_ACCEPT,
+	LEJPVP_FLAG_FALLBACK_LISaxis_ACCEPT,
 	LEJPVP_FLAG_ALLOW_NON_TLS,
 	LEJPVP_FLAG_REDIRECT_HTTP,
 	LEJPVP_FLAG_ALLOW_HTTP_ON_HTTPS,
@@ -705,8 +705,8 @@ lejp_vhosts_cb(struct lejp_ctx *ctx, char reason)
 	case LEJPVP_CGI_TIMEOUT:
 		a->m.cgi_timeout = atoi(ctx->buf);
 		return 0;
-	case LWJPVP_FO_LISTEN_QUEUE:
-		a->info->fo_listen_queue = atoi(ctx->buf);
+	case LWJPVP_FO_LISaxis_QUEUE:
+		a->info->fo_lisaxis_queue = atoi(ctx->buf);
 		return 0;
 	case LEJPVP_KEEPALIVE_TIMEOUT:
 		a->info->keepalive_timeout = atoi(ctx->buf);
@@ -819,7 +819,7 @@ lejp_vhosts_cb(struct lejp_ctx *ctx, char reason)
 
 	case LEJPVP_FLAG_ONLYRAW:
 		set_reset_flag(&a->info->options, ctx->buf,
-			    LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG);
+			    LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG);
 		return 0;
 
 	case LEJPVP_IPV6ONLY:
@@ -870,22 +870,22 @@ lejp_vhosts_cb(struct lejp_ctx *ctx, char reason)
 		break;
 #endif
 
-	case LEJPVP_LISTEN_ACCEPT_ROLE:
-		a->info->listen_accept_role = a->p;
+	case LEJPVP_LISaxis_ACCEPT_ROLE:
+		a->info->lisaxis_accept_role = a->p;
 		break;
-	case LEJPVP_LISTEN_ACCEPT_PROTOCOL:
-		a->info->listen_accept_protocol = a->p;
+	case LEJPVP_LISaxis_ACCEPT_PROTOCOL:
+		a->info->lisaxis_accept_protocol = a->p;
 		break;
 
-	case LEJPVP_FLAG_APPLY_LISTEN_ACCEPT:
+	case LEJPVP_FLAG_APPLY_LISaxis_ACCEPT:
 		set_reset_flag(&a->info->options, ctx->buf,
-			LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG);
+			LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG);
 		return 0;
-	case LEJPVP_FLAG_FALLBACK_LISTEN_ACCEPT:
-		lwsl_notice("vh %s: LEJPVP_FLAG_FALLBACK_LISTEN_ACCEPT: %s\n",
+	case LEJPVP_FLAG_FALLBACK_LISaxis_ACCEPT:
+		lwsl_notice("vh %s: LEJPVP_FLAG_FALLBACK_LISaxis_ACCEPT: %s\n",
 			    a->info->vhost_name, ctx->buf);
 		set_reset_flag(&a->info->options, ctx->buf,
-		      LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG);
+		      LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG);
 		return 0;
 	case LEJPVP_FLAG_ALLOW_NON_TLS:
 		set_reset_flag(&a->info->options, ctx->buf,

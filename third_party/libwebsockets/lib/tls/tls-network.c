@@ -209,9 +209,9 @@ lws_gate_accepts(struct lws_context *context, int on)
 
 	while (v) {
 		lws_start_foreach_dll(struct lws_dll2 *, d,
-				      lws_dll2_get_head(&v->listen_wsi)) {
+				      lws_dll2_get_head(&v->lisaxis_wsi)) {
 			struct lws *wsi = lws_container_of(d, struct lws,
-							   listen_list);
+							   lisaxis_list);
 
 			if (v->tls.use_ssl &&
 			    lws_change_pollfd(wsi, on ? LWS_POLLIN : 0,

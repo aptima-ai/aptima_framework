@@ -193,7 +193,7 @@ int main(int argc, const char **argv)
 
 	lwsl_user("LWS minimal raw audio\n");
 
-	info.port = CONTEXT_PORT_NO_LISTEN_SERVER;
+	info.port = CONTEXT_PORT_NO_LISaxis_SERVER;
 	info.protocols = protocols;
 
 	context = lws_create_context(&info);

@@ -72,9 +72,9 @@ int main(int argc, const char **argv)
 	info.port = 7681;
 	info.protocols = protocols;
 	info.pvo = &pvo;
-	info.options = LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG;
-	info.listen_accept_role = "raw-proxy";
-	info.listen_accept_protocol = "raw-proxy";
+	info.options = LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG;
+	info.lisaxis_accept_role = "raw-proxy";
+	info.lisaxis_accept_protocol = "raw-proxy";
 
 	context = lws_create_context(&info);
 	if (!context) {

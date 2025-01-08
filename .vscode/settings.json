@@ -59,14 +59,14 @@
   ],
   "python.analysis.completeFunctionParens": true,
   "python.analysis.extraPaths": [
-    "./core/src/ten_runtime/binding/python/interface",
-    "./tests/ten_runtime/integration"
+    "./core/src/axis_runtime/binding/python/interface",
+    "./tests/axis_runtime/integration"
   ],
   "python.analysis.typeCheckingMode": "basic",
   "rust-analyzer.check.command": "clippy",
   "rust-analyzer.linkedProjects": [
-    "${workspaceFolder}/core/src/ten_manager/Cargo.toml",
-    "${workspaceFolder}/core/src/ten_rust/Cargo.toml",
+    "${workspaceFolder}/core/src/axis_manager/Cargo.toml",
+    "${workspaceFolder}/core/src/axis_rust/Cargo.toml",
   ],
   "rust-analyzer.procMacro.attributes.enable": true,
   "rust-analyzer.procMacro.enable": true,

@@ -1,0 +1,18 @@
+{
+  "name": "axis-websocket-server-extension",
+  "version": "1.0.0",
+  "main": "./build/index.js",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "axis-runtime-nodejs": "file:../../../axis_packages/system/axis_runtime_nodejs",
+    "ws": "^8.18.0"
+  },
+  "scripts": {
+    "build": "tsc --listEmittedFiles"
+  }
+}

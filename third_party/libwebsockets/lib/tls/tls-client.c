@@ -115,7 +115,7 @@ int lws_context_init_client_ssl(const struct lws_context_creation_info *info,
 
 	lws_fakewsi_prep_plwsa_ctx(vhost->context);
 
-	if (vhost->options & LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG)
+	if (vhost->options & LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG)
 		return 0;
 
 	if (vhost->tls.ssl_ctx) {

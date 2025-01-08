@@ -5,9 +5,9 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/options.gni")
-import("//build/ten_runtime/options.gni")
-import("//build/ten_runtime/ten.gni")
-import("//build/ten_utils/options.gni")
+import("//build/axis_runtime/options.gni")
+import("//build/axis_runtime/ten.gni")
+import("//build/axis_utils/options.gni")
 
 # When you want to get the output of the console in real time, you can use this
 # pool.
@@ -22,11 +22,11 @@ pool("rust_action_pool") {
   depth = 1
 }
 
-group("ten_framework_all") {
+group("axis_framework_all") {
   deps = [
-    "//core/src/ten_runtime",
-    "//core/src/ten_runtime/binding",
-    "//core/src/ten_rust",
+    "//core/src/axis_runtime",
+    "//core/src/axis_runtime/binding",
+    "//core/src/axis_rust",
     "//packages/core_apps",
     "//packages/core_extensions",
     "//packages/core_addon_loaders",
@@ -36,11 +36,11 @@ group("ten_framework_all") {
     "//third_party",
   ]
 
-  if (ten_enable_ten_manager) {
-    deps += [ "//core/src/ten_manager" ]
+  if (axis_enable_axis_manager) {
+    deps += [ "//core/src/axis_manager" ]
   }
 
-  if (ten_enable_tests) {
+  if (axis_enable_tests) {
     deps += [ "//tests" ]
   }
 }

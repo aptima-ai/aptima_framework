@@ -4,9 +4,9 @@ set -e
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-export LD_LIBRARY_PATH=ten_packages/system/ten_runtime_nodejs/lib:ten_packages/system/ten_runtime/lib
-export LD_PRELOAD=ten_packages/system/ten_runtime/lib/libasan.so
+export LD_LIBRARY_PATH=axis_packages/system/axis_runtime_nodejs/lib:axis_packages/system/axis_runtime/lib
+export LD_PRELOAD=axis_packages/system/axis_runtime/lib/libasan.so
 
-export NODE_PATH=ten_packages/system/ten_runtime_nodejs/lib:$NODE_PATH
+export NODE_PATH=axis_packages/system/axis_runtime_nodejs/lib:$NODE_PATH
 
 exec node --expose-gc build/start.js

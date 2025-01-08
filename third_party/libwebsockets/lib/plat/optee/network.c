@@ -78,7 +78,7 @@ lws_send_pipe_choked(struct lws *wsi)
 }
 
 int
-lws_poll_listen_fd(struct lws_pollfd *fd)
+lws_poll_lisaxis_fd(struct lws_pollfd *fd)
 {
 //	return poll(fd, 1, 0);
 

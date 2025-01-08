@@ -74,7 +74,7 @@ int main( void )
     int ret = 1;
     int exit_code = MBEDTLS_EXIT_FAILURE;
     size_t n, buflen;
-    mbedtls_net_context listen_fd, client_fd;
+    mbedtls_net_context lisaxis_fd, client_fd;
 
     unsigned char buf[2048];
     unsigned char hash[32];
@@ -89,7 +89,7 @@ int main( void )
 
     mbedtls_mpi N, P, Q, D, E;
 
-    mbedtls_net_init( &listen_fd );
+    mbedtls_net_init( &lisaxis_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_dhm_init( &dhm );
     mbedtls_aes_init( &aes );
@@ -184,13 +184,13 @@ int main( void )
     mbedtls_printf( "\n  . Waiting for a remote connection" );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_bind( &listen_fd, NULL, SERVER_PORT, MBEDTLS_NET_PROTO_TCP ) ) != 0 )
+    if( ( ret = mbedtls_net_bind( &lisaxis_fd, NULL, SERVER_PORT, MBEDTLS_NET_PROTO_TCP ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_bind returned %d\n\n", ret );
         goto exit;
     }
 
-    if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
+    if( ( ret = mbedtls_net_accept( &lisaxis_fd, &client_fd,
                                     NULL, 0, NULL ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_accept returned %d\n\n", ret );
@@ -314,7 +314,7 @@ exit:
     mbedtls_mpi_free( &D ); mbedtls_mpi_free( &E );
 
     mbedtls_net_free( &client_fd );
-    mbedtls_net_free( &listen_fd );
+    mbedtls_net_free( &lisaxis_fd );
 
     mbedtls_aes_free( &aes );
     mbedtls_rsa_free( &rsa );

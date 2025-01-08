@@ -19,21 +19,21 @@ config("ffmpeg_common_libs") {
 config("ffmpeg_common_config") {
   configs = [ ":ffmpeg_common_libs" ]
 
-  include_dirs = [ "//ten_packages/system/ffmpeg/include" ]
-  lib_dirs = [ "//ten_packages/system/ffmpeg/lib" ]
+  include_dirs = [ "//axis_packages/system/ffmpeg/include" ]
+  lib_dirs = [ "//axis_packages/system/ffmpeg/lib" ]
 }
 
 config("config_for_app") {
   configs = [ ":ffmpeg_common_config" ]
 
   if (is_linux) {
-    ldflags = [ "-Wl,-rpath=\$ORIGIN/../ten_packages/system/ffmpeg/lib" ]
+    ldflags = [ "-Wl,-rpath=\$ORIGIN/../axis_packages/system/ffmpeg/lib" ]
   } else if (is_mac) {
-    ldflags = [ "-Wl,-rpath,@loader_path/../ten_packages/system/ffmpeg/lib" ]
+    ldflags = [ "-Wl,-rpath,@loader_path/../axis_packages/system/ffmpeg/lib" ]
   }
 }
 
-config("config_for_ten_packages") {
+config("config_for_axis_packages") {
   configs = [ ":ffmpeg_common_config" ]
 
   if (is_linux) {
@@ -43,9 +43,9 @@ config("config_for_ten_packages") {
   }
 }
 
-config("config_for_standalone_ten_packages") {
+config("config_for_standalone_axis_packages") {
   configs = [ ":ffmpeg_common_libs" ]
 
-  include_dirs = [ "//.ten/app/ten_packages/system/ffmpeg/include" ]
-  lib_dirs = [ "//.ten/app/ten_packages/system/ffmpeg/lib" ]
+  include_dirs = [ "//.ten/app/axis_packages/system/ffmpeg/include" ]
+  lib_dirs = [ "//.ten/app/axis_packages/system/ffmpeg/lib" ]
 }

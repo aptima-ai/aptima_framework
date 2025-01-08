@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-import("//build/ten_runtime/options.gni")
+import("//build/axis_runtime/options.gni")
 
 group("core_protocols") {
   deps = [ "msgpack" ]

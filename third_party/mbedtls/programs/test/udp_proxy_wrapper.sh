@@ -94,13 +94,13 @@ if [ -z "$server_port_orig" ]; then
     server_port_orig=4433
 fi
 echo "  * Server port:       $server_port_orig"
-tpxy_cmd_snippet="$tpxy_cmd_snippet \"listen_port=\$server_port_orig\""
+tpxy_cmd_snippet="$tpxy_cmd_snippet \"lisaxis_port=\$server_port_orig\""
 tpxy_cmd_snippet="$tpxy_cmd_snippet \"server_port=\$server_port\""
 
 if [ -n "$server_addr_orig" ]; then
     echo "  * Server address:    $server_addr_orig"
     tpxy_cmd_snippet="$tpxy_cmd_snippet \"server_addr=\$server_addr_orig\""
-    tpxy_cmd_snippet="$tpxy_cmd_snippet \"listen_addr=\$server_addr_orig\""
+    tpxy_cmd_snippet="$tpxy_cmd_snippet \"lisaxis_addr=\$server_addr_orig\""
 fi
 
 server_port=$(( server_port_orig + 1 ))

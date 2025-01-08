@@ -1,0 +1,318 @@
+//
+// Copyright © 2025 Agora
+// This file is part of TEN Framework, an open source project.
+// Licensed under the Apache License, Version 2.0, with certain conditions.
+// Refer to the "LICENSE" file in the root directory for more information.
+//
+#include "include_internal/axis_runtime/extension/msg_handling.h"
+
+#include <stdbool.h>
+
+#include "include_internal/axis_runtime/extension/extension.h"
+#include "include_internal/axis_runtime/extension/extension_info/extension_info.h"
+#include "include_internal/axis_runtime/msg/cmd_base/cmd_base.h"
+#include "include_internal/axis_runtime/msg/cmd_base/cmd_result/cmd.h"
+#include "include_internal/axis_runtime/msg/msg.h"
+#include "include_internal/axis_runtime/msg/msg_info.h"
+#include "include_internal/axis_runtime/msg_conversion/msg_and_its_result_conversion.h"
+#include "include_internal/axis_runtime/msg_conversion/msg_conversion_context.h"
+#include "include_internal/axis_runtime/path/common.h"
+#include "include_internal/axis_runtime/path/path.h"
+#include "include_internal/axis_runtime/path/path_group.h"
+#include "include_internal/axis_runtime/path/path_table.h"
+#include "axis_runtime/extension/extension.h"
+#include "axis_runtime/msg/cmd_result/cmd_result.h"
+#include "axis_runtime/axis_env/internal/return.h"
+#include "axis_utils/container/list.h"
+#include "axis_utils/container/list_ptr.h"
+#include "axis_utils/lib/error.h"
+#include "axis_utils/lib/smart_ptr.h"
+#include "axis_utils/macro/check.h"
+
+static void axis_extension_cache_cmd_result_to_in_path_for_auto_return(
+    axis_extension_t *extension, axis_shared_ptr_t *cmd) {
+  axis_ASSERT(extension && axis_extension_check_integrity(extension, true),
+             "Invalid argument.");
+  axis_ASSERT(cmd && axis_msg_get_type(cmd) == axis_MSG_TYPE_CMD_RESULT &&
+                 axis_cmd_base_check_integrity(cmd),
+             "Should not happen.");
+
+  axis_LOGV(
+      "[%s] Receives a cmd result (%p) for '%s', and will cache it to do some "
+      "post processing later.",
+      axis_extension_get_name(extension, true), axis_shared_ptr_get_data(cmd),
+      axis_msg_type_to_string(axis_cmd_result_get_original_cmd_type(cmd)));
+
+  // axis_msg_dump(cmd, NULL, "The received cmd result: ^m");
+
+  axis_path_t *in_path =
+      (axis_path_t *)axis_extension_get_cmd_return_path_from_itself(
+          extension, axis_cmd_base_get_cmd_id(cmd));
+  if (!in_path) {
+    // The cmd result may has returned before.
+    axis_LOGV("[%s] No return path found for cmd result (%p) for '%s'.",
+             axis_string_get_raw_str(&extension->name),
+             axis_shared_ptr_get_data(cmd),
+             axis_msg_type_to_string(axis_cmd_result_get_original_cmd_type(cmd)));
+    return;
+  }
+
+  axis_path_set_result(in_path, cmd);
+}
+
+void axis_extension_handle_in_msg(axis_extension_t *self, axis_shared_ptr_t *msg) {
+  axis_ASSERT(self && axis_extension_check_integrity(self, true),
+             "Invalid argument.");
+  axis_ASSERT(msg && axis_msg_check_integrity(msg), "Invalid argument.");
+
+  axis_error_t err;
+  axis_error_init(&err);
+
+  bool delete_msg = false;
+
+  // - During on_configure(), on_init() and on_deinit(), the extension should
+  //   not receive any messages, because it is not ready to handle any messages.
+  // - In other time periods, it is possible to receive and send messages to
+  //   other extensions and receive cmd result.
+  //
+  // The messages, from other extensions, sent to this extension will be
+  // delivered to this extension only after its on_start(). Therefore, all
+  // messages sent to this extension before on_start() will be queued until
+  // on_start() is triggered. On the other hand, the cmd result of the
+  // command sent by this extension in any time can be delivered to this
+  // extension before its on_start().
+
+  bool msg_is_cmd_result = axis_msg_is_cmd_result(msg);
+
+  if (self->state < axis_EXTENSION_STATE_ON_START_DONE && !msg_is_cmd_result) {
+    // The extension is not initialized, and the msg is not a cmd result, so
+    // cache the msg to the pending list.
+    axis_list_push_smart_ptr_back(&self->pending_msgs, msg);
+    goto done;
+  }
+
+  if (self->state >= axis_EXTENSION_STATE_ON_DEINIT) {
+    // The extension is in its de-initialization phase, and is not ready to
+    // handle any messages, so drop any messages.
+    goto done;
+  }
+
+  // Because 'commands' has 'results', TEN will perform some bookkeeping for
+  // 'commands' before sending it to the extension.
+
+  if (msg_is_cmd_result) {
+    // Set the cmd result to the corresponding OUT path to indicate that
+    // there has been a cmd result flow through that OUT path.
+    axis_path_t *out_path =
+        axis_path_table_set_result(self->path_table, axis_PATH_OUT, msg);
+    if (!out_path) {
+      // The OUT path is gone, it means the current cmd result should be
+      // discarded (not sending it to the extension).
+      msg = NULL;
+    } else {
+      axis_ASSERT(axis_path_check_integrity(out_path, true), "Invalid argument.");
+
+      bool is_final_result = axis_cmd_result_is_final(msg, &err);
+
+      // If a non-final result is received, it indicates the use of streaming
+      // result mode. Currently, the TEN runtime does not support using
+      // streaming result mode together with multiple destination mode. This
+      // is because the TEN runtime tries to summarize all the received results
+      // and return one to the extension, whereas streaming result mode sends
+      // all results directly to the extension. Therefore, the two modes are
+      // inherently inconsistent in their approach. To accommodate streaming
+      // result mode, the TEN runtime would need to send all received results
+      // to the extension even in multiple destination mode. In this mode, the
+      // TEN runtime does not process any of the results itself but leaves all
+      // result handling to the extension, which may not be very practical.
+      // Therefore, unless there is a clear need, the simultaneous use of
+      // these modes is currently blocked.
+      axis_ASSERT(
+          is_final_result || !axis_path_is_in_a_group(out_path),
+          "Streaming return is not supported for multiple destinations.");
+
+      // The path will be removed from the path table if the cmd result is
+      // determined. It's fine here, as we are in the target extension (the
+      // consumer of the cmd result), and the producer extension (the
+      // extension calls return_xxx()) can not get any information (ex: the
+      // result of conversion or schema validation) from this extension. The
+      // producer extension has no opportunity to retry even if something
+      // fails, so the path can be removed.
+      msg = axis_path_table_determine_actual_cmd_result(
+          self->path_table, axis_PATH_OUT, out_path, is_final_result);
+      if (msg) {
+        // The cmd result should be sent to the extension.
+
+        // Because the cmd result might not be handled in the extension, in
+        // other words, there might not be 'return_xxx' in the extension for
+        // this cmd result, so we cache the cmd result to the
+        // corresponding IN path (if exists), and will handle this status
+        // command (if the IN path still exists) when on_cmd_done().
+        //
+        // TODO(Xilin): Currently, there is no mechanism for auto return, so the
+        // relevant codes should be able to be disabled.
+        axis_extension_cache_cmd_result_to_in_path_for_auto_return(self, msg);
+        delete_msg = true;
+      }
+    }
+  }
+
+  if (!msg) {
+    goto done;
+  }
+
+  bool should_this_msg_do_msg_conversion =
+      // The builtin cmds (e.g., 'status', 'timeout') could not be converted.
+      (axis_msg_get_type(msg) == axis_MSG_TYPE_CMD ||
+       axis_msg_get_type(msg) == axis_MSG_TYPE_DATA ||
+       axis_msg_get_type(msg) == axis_MSG_TYPE_VIDEO_FRAME ||
+       axis_msg_get_type(msg) == axis_MSG_TYPE_AUDIO_FRAME) &&
+      // If there is no message conversions exist, put the original command to
+      // the list directly.
+      self->extension_info &&
+      axis_list_size(&self->extension_info->msg_conversion_contexts) > 0;
+
+  // The type of elements is 'axis_msg_and_its_result_conversion_t'.
+  axis_list_t converted_msgs = axis_LIST_INIT_VAL;
+
+  if (should_this_msg_do_msg_conversion) {
+    // Perform the command conversion, and get the actual commands.
+    axis_error_t err;
+    axis_error_init(&err);
+    if (!axis_extension_convert_msg(self, msg, &converted_msgs, &err)) {
+      axis_LOGE("[%s] Failed to convert msg %s: %s",
+               axis_extension_get_name(self, true), axis_msg_get_name(msg),
+               axis_error_errmsg(&err));
+    }
+    axis_error_deinit(&err);
+  } else {
+    axis_list_push_ptr_back(&converted_msgs,
+                           axis_msg_and_its_result_conversion_create(msg, NULL),
+                           (axis_ptr_listnode_destroy_func_t)
+                               axis_msg_and_its_result_conversion_destroy);
+  }
+
+  // Get the actual messages which should be sent to the extension. Handle those
+  // messages now.
+
+  if (!msg_is_cmd_result) {
+    // Create the corresponding IN paths for the input commands.
+
+    axis_list_foreach (&converted_msgs, iter) {
+      axis_msg_and_its_result_conversion_t *msg_and_result_conversion =
+          axis_ptr_listnode_get(iter.node);
+      axis_ASSERT(msg_and_result_conversion, "Invalid argument.");
+
+      axis_shared_ptr_t *actual_cmd = msg_and_result_conversion->msg;
+      axis_ASSERT(actual_cmd && axis_msg_check_integrity(actual_cmd),
+                 "Should not happen.");
+
+      if (axis_msg_is_cmd(actual_cmd)) {
+        if (axis_msg_info[axis_msg_get_type(actual_cmd)].create_in_path) {
+          // Add a path entry to the IN path table of this extension.
+          axis_path_table_add_in_path(
+              self->path_table, actual_cmd,
+              msg_and_result_conversion->result_conversion);
+        }
+      }
+    }
+  }
+
+  // The path table processing is completed, it's time to check the schema. And
+  // the schema validation must be happened after conversions, as the schemas of
+  // the msgs are defined in the extension, and the msg structure is expected to
+  // be matched with the schema. The correctness of the msg structure is
+  // guaranteed by the conversions.
+  bool pass_schema_check = true;
+  axis_list_foreach (&converted_msgs, iter) {
+    axis_msg_and_its_result_conversion_t *msg_and_result_conversion =
+        axis_ptr_listnode_get(iter.node);
+    axis_ASSERT(msg_and_result_conversion, "Invalid argument.");
+
+    axis_shared_ptr_t *actual_msg = msg_and_result_conversion->msg;
+    axis_ASSERT(actual_msg && axis_msg_check_integrity(actual_msg),
+               "Should not happen.");
+
+    if (!axis_extension_validate_msg_schema(self, actual_msg, false, &err)) {
+      pass_schema_check = false;
+      break;
+    }
+  }
+
+  if (pass_schema_check) {
+    // The schema checking is pass, it's time to start sending the commands to
+    // the extension.
+
+    axis_list_foreach (&converted_msgs, iter) {
+      axis_msg_and_its_result_conversion_t *msg_and_result_conversion =
+          axis_ptr_listnode_get(iter.node);
+      axis_ASSERT(msg_and_result_conversion, "Invalid argument.");
+
+      axis_shared_ptr_t *actual_msg = msg_and_result_conversion->msg;
+      axis_ASSERT(actual_msg && axis_msg_check_integrity(actual_msg),
+                 "Should not happen.");
+
+      // Clear destination before sending to Extension, so that when Extension
+      // sends msg back to the TEN core, we can check if the destination is not
+      // empty to determine if TEN core needs to determine the destinations
+      // according to the graph.
+      axis_msg_clear_dest(actual_msg);
+
+      if (axis_msg_get_type(actual_msg) == axis_MSG_TYPE_CMD_RESULT) {
+        axis_env_msg_result_handler_func_t result_handler =
+            axis_cmd_base_get_raw_cmd_base(actual_msg)->result_handler;
+        if (result_handler) {
+          result_handler(
+              self->axis_env, actual_msg,
+              axis_cmd_base_get_raw_cmd_base(actual_msg)->result_handler_data,
+              NULL);
+        } else {
+          // If the cmd result does not have an associated result handler,
+          // TEN runtime will return the cmd result to the upstream extension
+          // (if existed) automatically. For example:
+          //
+          //              cmdA                 cmdA
+          // ExtensionA --------> ExtensionB ---------> ExtensionC
+          //    ^                   |    ^                |
+          //    |                   |    |                |
+          //    |                   v    |                v
+          //     -------------------      ----------------
+          //       cmdA's result         cmdA's result
+          //
+          // ExtensionB only needs to send the received cmdA to ExtensionC and
+          // does not need to handle the result of cmdA. The TEN runtime will
+          // help ExtensionB to return the result of cmdA to ExtensionA.
+          axis_env_return_result_directly(self->axis_env, actual_msg, NULL, NULL,
+                                         NULL);
+        }
+      } else {
+        switch (axis_msg_get_type(msg)) {
+          case axis_MSG_TYPE_CMD:
+          case axis_MSG_TYPE_CMD_TIMEOUT:
+            axis_extension_on_cmd(self, actual_msg);
+            break;
+          case axis_MSG_TYPE_DATA:
+            axis_extension_on_data(self, actual_msg);
+            break;
+          case axis_MSG_TYPE_AUDIO_FRAME:
+            axis_extension_on_audio_frame(self, actual_msg);
+            break;
+          case axis_MSG_TYPE_VIDEO_FRAME:
+            axis_extension_on_video_frame(self, actual_msg);
+            break;
+          default:
+            axis_ASSERT(0 && "Should handle more types.", "Should not happen.");
+            break;
+        }
+      }
+    }
+  }
+
+  axis_list_clear(&converted_msgs);
+
+done:
+  if (delete_msg && msg) {
+    axis_shared_ptr_destroy(msg);
+  }
+  axis_error_deinit(&err);
+}

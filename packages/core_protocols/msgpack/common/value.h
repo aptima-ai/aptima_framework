@@ -5,29 +5,29 @@
 //
 #pragma once
 
-#include "ten_runtime/ten_config.h"
+#include "axis_runtime/axis_config.h"
 
 #include <msgpack/pack.h>
 #include <msgpack/unpack.h>
 
-#include "ten_utils/value/value_kv.h"
+#include "axis_utils/value/value_kv.h"
 
-TEN_RUNTIME_PRIVATE_API bool ten_msgpack_value_deserialize(
-    ten_value_t *value, msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
+axis_RUNTIME_PRIVATE_API bool axis_msgpack_value_deserialize(
+    axis_value_t *value, msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API bool ten_msgpack_value_deserialize_inplace(
-    ten_value_t *value, msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
+axis_RUNTIME_PRIVATE_API bool axis_msgpack_value_deserialize_inplace(
+    axis_value_t *value, msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API ten_value_t *
-ten_msgpack_create_value_through_deserialization(msgpack_unpacker *unpacker,
+axis_RUNTIME_PRIVATE_API axis_value_t *
+axis_msgpack_create_value_through_deserialization(msgpack_unpacker *unpacker,
                                                  msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API ten_value_kv_t *
-ten_msgpack_create_value_kv_through_deserialization(msgpack_unpacker *unpacker,
+axis_RUNTIME_PRIVATE_API axis_value_kv_t *
+axis_msgpack_create_value_kv_through_deserialization(msgpack_unpacker *unpacker,
                                                     msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API void ten_msgpack_value_serialize(ten_value_t *value,
+axis_RUNTIME_PRIVATE_API void axis_msgpack_value_serialize(axis_value_t *value,
                                                          msgpack_packer *pck);
 
-TEN_RUNTIME_PRIVATE_API void ten_msgpack_value_kv_serialize(
-    ten_value_kv_t *kv, msgpack_packer *pck);
+axis_RUNTIME_PRIVATE_API void axis_msgpack_value_kv_serialize(
+    axis_value_kv_t *kv, msgpack_packer *pck);

@@ -959,7 +959,7 @@ lws_get_vhost_name(struct lws_vhost *vhost)
 int
 lws_get_vhost_port(struct lws_vhost *vhost)
 {
-	return vhost->listen_port;
+	return vhost->lisaxis_port;
 }
 
 void *

@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    {
+      "type": "extension",
+      "name": "extension_a",
+      "version": "0.3.0-alpha"
+    },
+    {
+      "type": "protocol",
+      "name": "msgpack",
+      "version": "0.6.2"
+    }
+  ]
+}

@@ -245,7 +245,7 @@ TEST_IMPL(tcp_bind_invalid_flags) {
 }
 
 
-TEST_IMPL(tcp_listen_without_bind) {
+TEST_IMPL(tcp_lisaxis_without_bind) {
   int r;
   uv_tcp_t server;
 
@@ -298,7 +298,7 @@ TEST_IMPL(tcp_bind_writable_flags) {
   return 0;
 }
 
-TEST_IMPL(tcp_bind_or_listen_error_after_close) {
+TEST_IMPL(tcp_bind_or_lisaxis_error_after_close) {
   uv_tcp_t tcp;
   struct sockaddr_in addr;
 

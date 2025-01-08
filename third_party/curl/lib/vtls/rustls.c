@@ -288,7 +288,7 @@ cr_send(struct Curl_cfilter *cf, struct Curl_easy *data,
   struct io_ctx io_ctx;
   size_t plainwritten = 0;
   size_t tlswritten = 0;
-  size_t tlswritten_total = 0;
+  size_t tlswritaxis_total = 0;
   rustls_result rresult;
   rustls_io_result io_error;
   char errorbuf[256];
@@ -323,7 +323,7 @@ cr_send(struct Curl_cfilter *cf, struct Curl_easy *data,
                                            &tlswritten);
     if(io_error == EAGAIN || io_error == EWOULDBLOCK) {
       DEBUGF(LOG_CF(data, cf, "cf_send: EAGAIN after %zu bytes",
-                    tlswritten_total));
+                    tlswritaxis_total));
       *err = CURLE_AGAIN;
       return -1;
     }
@@ -340,7 +340,7 @@ cr_send(struct Curl_cfilter *cf, struct Curl_easy *data,
       return -1;
     }
     DEBUGF(LOG_CF(data, cf, "cf_send: wrote %zu TLS bytes", tlswritten));
-    tlswritten_total += tlswritten;
+    tlswritaxis_total += tlswritten;
   }
 
   return plainwritten;

@@ -1,0 +1,64 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/feature/axis_package.gni")
+
+config("axis_runtime_python_common_libs") {
+  if (is_win) {
+    libs = [ "axis_runtime_python.dll.lib" ]
+  } else {
+    libs = [ "axis_runtime_python" ]
+  }
+}
+
+config("axis_runtime_python_common_config") {
+  configs = [ ":axis_runtime_python_common_libs" ]
+
+  include_dirs = [ "//axis_packages/system/axis_runtime_python/include" ]
+  lib_dirs = [ "//axis_packages/system/axis_runtime_python/lib" ]
+}
+
+config("config_for_app") {
+  configs = [ ":axis_runtime_python_common_config" ]
+
+  if (is_linux) {
+    ldflags =
+        [ "-Wl,-rpath=\$ORIGIN/../axis_packages/system/axis_runtime_python/lib" ]
+  } else if (is_mac) {
+    ldflags = [
+      "-Wl,-rpath,@loader_path/../axis_packages/system/axis_runtime_python/lib",
+    ]
+  }
+}
+
+config("config_for_axis_packages") {
+  configs = [ ":axis_runtime_python_common_config" ]
+
+  if (is_linux) {
+    ldflags = [ "-Wl,-rpath=\$ORIGIN/../../../system/axis_runtime_python/lib" ]
+  } else if (is_mac) {
+    ldflags =
+        [ "-Wl,-rpath,@loader_path/../../../system/axis_runtime_python/lib" ]
+  }
+}
+
+config("config_for_standalone_axis_packages") {
+  configs = [ ":axis_runtime_python_common_libs" ]
+
+  include_dirs = [ "//.ten/app/axis_packages/system/axis_runtime_python/include" ]
+  lib_dirs = [ "//.ten/app/axis_packages/system/axis_runtime_python/lib" ]
+}
+
+axis_package("axis_runtime_python") {
+  package_kind = "system"
+
+  resources = [
+    "interface",
+    "lib",
+    "manifest.json",
+    "tools",
+  ]
+}

@@ -74,16 +74,16 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: false
 AllowAllConstructorInitializersOnNextLine: true
 FixNamespaceComments: true
 ForEachMacros:
-  - ten_list_foreach
+  - axis_list_foreach
 IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '"ten_runtime/ten_config.h"'
+  - Regex: '"axis_runtime/axis_config.h"'
     Priority: -1
-  - Regex: '"ten_utils/ten_config.h"'
+  - Regex: '"axis_utils/axis_config.h"'
     Priority: -1
-  - Regex: '"ten_rust/ten_config.h"'
+  - Regex: '"axis_rust/axis_config.h"'
     Priority: -1
   - Regex: '^<ext/.*\.h>'
     Priority: 2

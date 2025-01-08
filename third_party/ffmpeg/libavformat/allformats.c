@@ -417,7 +417,7 @@ extern const FFOutputFormat ff_segment_muxer;
 extern const FFOutputFormat ff_stream_segment_muxer;
 extern const AVInputFormat  ff_ser_demuxer;
 extern const AVInputFormat  ff_sga_demuxer;
-extern const AVInputFormat  ff_shorten_demuxer;
+extern const AVInputFormat  ff_shoraxis_demuxer;
 extern const AVInputFormat  ff_siff_demuxer;
 extern const AVInputFormat  ff_simbiosis_imx_demuxer;
 extern const AVInputFormat  ff_sln_demuxer;

@@ -111,17 +111,17 @@ static void ff_eac3_apply_spectral_extension(AC3DecodeContext *s)
 
         /* Apply a notch filter at transitions between normal and extension
            bands and at all wrap points. */
-        if (s->spx_atten_code[ch] >= 0) {
-            const float *atten_tab = ff_eac3_spx_atten_tab[s->spx_atten_code[ch]];
+        if (s->spx_ataxis_code[ch] >= 0) {
+            const float *ataxis_tab = ff_eac3_spx_ataxis_tab[s->spx_ataxis_code[ch]];
             bin = s->spx_src_start_freq - 2;
             for (bnd = 0; bnd < s->num_spx_bands; bnd++) {
                 if (wrapflag[bnd]) {
                     INTFLOAT *coeffs = &s->transform_coeffs[ch][bin];
-                    coeffs[0] *= atten_tab[0];
-                    coeffs[1] *= atten_tab[1];
-                    coeffs[2] *= atten_tab[2];
-                    coeffs[3] *= atten_tab[1];
-                    coeffs[4] *= atten_tab[0];
+                    coeffs[0] *= ataxis_tab[0];
+                    coeffs[1] *= ataxis_tab[1];
+                    coeffs[2] *= ataxis_tab[2];
+                    coeffs[3] *= ataxis_tab[1];
+                    coeffs[4] *= ataxis_tab[0];
                 }
                 bin += s->spx_band_sizes[bnd];
             }
@@ -290,7 +290,7 @@ static void ff_eac3_decode_transform_coeffs_aht_ch(AC3DecodeContext *s, int ch)
 static int ff_eac3_parse_header(AC3DecodeContext *s)
 {
     int i, blk, ch;
-    int ac3_exponent_strategy, parse_aht_info, parse_spx_atten_data;
+    int ac3_exponent_strategy, parse_aht_info, parse_spx_ataxis_data;
     int parse_transient_proc_info;
     int num_cpl_blocks;
     GetBitContext *gbc = &s->gbc;
@@ -507,7 +507,7 @@ static int ff_eac3_parse_header(AC3DecodeContext *s)
     s->fast_gain_syntax  = get_bits1(gbc);
     s->dba_syntax        = get_bits1(gbc);
     s->skip_syntax       = get_bits1(gbc);
-    parse_spx_atten_data = get_bits1(gbc);
+    parse_spx_ataxis_data = get_bits1(gbc);
 
     /* coupling strategy occurrence and coupling use per block */
     num_cpl_blocks = 0;
@@ -596,10 +596,10 @@ static int ff_eac3_parse_header(AC3DecodeContext *s)
 
     /* spectral extension attenuation data */
     for (ch = 1; ch <= s->fbw_channels; ch++) {
-        if (parse_spx_atten_data && get_bits1(gbc)) {
-            s->spx_atten_code[ch] = get_bits(gbc, 5);
+        if (parse_spx_ataxis_data && get_bits1(gbc)) {
+            s->spx_ataxis_code[ch] = get_bits(gbc, 5);
         } else {
-            s->spx_atten_code[ch] = -1;
+            s->spx_ataxis_code[ch] = -1;
         }
     }
 

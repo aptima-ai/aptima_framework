@@ -1,0 +1,19 @@
+{
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.0"
+    },
+    {
+      "type": "extension",
+      "name": "websocket_server_python",
+      "version": "0.1.0"
+    },
+    {
+      "type": "extension",
+      "name": "aio_http_server_python",
+      "version": "0.1.0"
+    }
+  ]
+}

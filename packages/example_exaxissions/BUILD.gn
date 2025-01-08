@@ -1,0 +1,36 @@
+#
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file for more information.
+#
+import("//build/axis_runtime/options.gni")
+
+group("example_extensions") {
+  deps = []
+
+  if (axis_enable_example_packages) {
+    deps += []
+
+    if (axis_enable_ffmpeg_extensions) {
+      deps += [
+        "ffmpeg_client",
+        "ffmpeg_demuxer",
+        "ffmpeg_muxer",
+      ]
+    }
+
+    if (axis_enable_python_binding) {
+      deps += [
+        "aio_http_server_python",
+        "pil_demo_python",
+      ]
+    }
+
+    if (axis_enable_nodejs_binding) {
+      deps += [
+        "http_server_extension_nodejs",
+        "websocket_server_nodejs",
+      ]
+    }
+  }
+}

@@ -4,9 +4,9 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/ten_manager/options.gni")
-import("//build/ten_runtime/options.gni")
-import("//build/ten_utils/options.gni")
+import("//build/axis_manager/options.gni")
+import("//build/axis_runtime/options.gni")
+import("//build/axis_utils/options.gni")
 import("//third_party/jansson/output_libs.gni")
 
 # Because there is no 'rpath' mechanism in Windows, we need to copy all the
@@ -20,18 +20,18 @@ copy("copy_jansson_library_for_test") {
 
 group("tests") {
   deps = [
-    "ten_runtime",
-    "ten_utils",
-    "//tests/ten_runtime",
+    "axis_runtime",
+    "axis_utils",
+    "//tests/axis_runtime",
   ]
 
-  if (ten_enable_ten_manager) {
+  if (axis_enable_axis_manager) {
     deps += [ "local_registry:copy_local_registry" ]
 
-    if (ten_manager_enable_tests) {
+    if (axis_manager_enable_tests) {
       deps += [
-        "ten_manager",
-        "//core/src/ten_manager:tman_test",
+        "axis_manager",
+        "//core/src/axis_manager:tman_test",
       ]
     }
   }

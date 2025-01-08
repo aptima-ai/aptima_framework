@@ -45,7 +45,7 @@ if (is_win) {
   ]
 }
 
-template("ten_mbedtls_copy_deps") {
+template("axis_mbedtls_copy_deps") {
   basedir = invoker.basedir
 
   copy_files_for_development = false
@@ -53,7 +53,7 @@ template("ten_mbedtls_copy_deps") {
     copy_files_for_development = invoker.copy_files_for_development
   }
 
-  action("ten_mbedtls_copy_runtime_libs") {
+  action("axis_mbedtls_copy_runtime_libs") {
     runtime_libs_dest_dir_in_win_is_bin = false
     if (defined(invoker.runtime_libs_dest_dir_in_win_is_bin)) {
       runtime_libs_dest_dir_in_win_is_bin =
@@ -74,7 +74,7 @@ template("ten_mbedtls_copy_deps") {
       }
     }
 
-    script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+    script = "//build/axis_common/scripts/copy_files_with_pattern.py"
     args = [
       "--sources",
       rebase_path(runtime_libs_src_dir),
@@ -97,7 +97,7 @@ template("ten_mbedtls_copy_deps") {
     deps = [ "//third_party/mbedtls" ]
   }
 
-  all_deps = [ ":ten_mbedtls_copy_runtime_libs" ]
+  all_deps = [ ":axis_mbedtls_copy_runtime_libs" ]
 
   if (copy_files_for_development) {
     headers_src_dir = "${root_gen_dir}/cmake/mbedtls/install/include"
@@ -107,8 +107,8 @@ template("ten_mbedtls_copy_deps") {
       headers_dest_dir += "/" + invoker.subdir
     }
 
-    action("ten_mbedtls_copy_headers_mbedtls") {
-      script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+    action("axis_mbedtls_copy_headers_mbedtls") {
+      script = "//build/axis_common/scripts/copy_files_with_pattern.py"
       args = [
         "--sources",
         rebase_path(headers_src_dir + "/mbedtls"),
@@ -131,10 +131,10 @@ template("ten_mbedtls_copy_deps") {
       outputs = [ "${target_gen_dir}/copy_headers_mbedtls_dummy_output_file" ]
     }
 
-    all_deps += [ ":ten_mbedtls_copy_headers_mbedtls" ]
+    all_deps += [ ":axis_mbedtls_copy_headers_mbedtls" ]
 
-    action("ten_mbedtls_copy_headers_psa") {
-      script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+    action("axis_mbedtls_copy_headers_psa") {
+      script = "//build/axis_common/scripts/copy_files_with_pattern.py"
       args = [
         "--sources",
         rebase_path(headers_src_dir + "/psa"),
@@ -157,11 +157,11 @@ template("ten_mbedtls_copy_deps") {
       outputs = [ "${target_gen_dir}/copy_headers_psa_dummy_output_file" ]
     }
 
-    all_deps += [ ":ten_mbedtls_copy_headers_psa" ]
+    all_deps += [ ":axis_mbedtls_copy_headers_psa" ]
 
     if (is_win) {
-      action("ten_mbedtls_copy_win_exported_libs") {
-        script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+      action("axis_mbedtls_copy_win_exported_libs") {
+        script = "//build/axis_common/scripts/copy_files_with_pattern.py"
         args = [
           "--sources",
           rebase_path("${root_gen_dir}/cmake/mbedtls/install/lib"),
@@ -188,7 +188,7 @@ template("ten_mbedtls_copy_deps") {
             [ "${target_gen_dir}/copy_win_exported_libs_dummy_output_file" ]
       }
 
-      all_deps += [ ":ten_mbedtls_copy_win_exported_libs" ]
+      all_deps += [ ":axis_mbedtls_copy_win_exported_libs" ]
     }
   }
 

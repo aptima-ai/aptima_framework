@@ -144,19 +144,19 @@ lws_role_call_adoption_bind(struct lws *wsi, int type, const char *prot)
 	 * then look it up by name and try to bind to the specific role.
 	 */
 	if (lws_check_opt(wsi->a.vhost->options,
-			  LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG) &&
-	    wsi->a.vhost->listen_accept_role) {
+			  LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG) &&
+	    wsi->a.vhost->lisaxis_accept_role) {
 		const struct lws_role_ops *role =
-			lws_role_by_name(wsi->a.vhost->listen_accept_role);
+			lws_role_by_name(wsi->a.vhost->lisaxis_accept_role);
 
 		if (!prot)
-			prot = wsi->a.vhost->listen_accept_protocol;
+			prot = wsi->a.vhost->lisaxis_accept_protocol;
 
 		if (!role)
 			lwsl_wsi_err(wsi, "can't find role '%s'",
-					  wsi->a.vhost->listen_accept_role);
+					  wsi->a.vhost->lisaxis_accept_role);
 
-		if (!strcmp(wsi->a.vhost->listen_accept_role, "raw-proxy"))
+		if (!strcmp(wsi->a.vhost->lisaxis_accept_role, "raw-proxy"))
 			type |= LWS_ADOPT_FLAG_RAW_PROXY;
 
 		if (role && lws_rops_fidx(role, LWS_ROPS_adoption_bind)) {
@@ -176,7 +176,7 @@ lws_role_call_adoption_bind(struct lws *wsi, int type, const char *prot)
 
 		lwsl_wsi_warn(wsi, "adoption bind to role '%s', "
 			  "protocol '%s', type 0x%x, failed",
-			  wsi->a.vhost->listen_accept_role, prot, type);
+			  wsi->a.vhost->lisaxis_accept_role, prot, type);
 	}
 
 	/*
@@ -700,10 +700,10 @@ lws_create_vhost(struct lws_context *context,
 	vh->user			= info->user;
 	vh->finalize			= info->finalize;
 	vh->finalize_arg		= info->finalize_arg;
-	vh->listen_accept_role		= info->listen_accept_role;
-	vh->listen_accept_protocol	= info->listen_accept_protocol;
+	vh->lisaxis_accept_role		= info->lisaxis_accept_role;
+	vh->lisaxis_accept_protocol	= info->lisaxis_accept_protocol;
 	vh->unix_socket_perms		= info->unix_socket_perms;
-	vh->fo_listen_queue		= info->fo_listen_queue;
+	vh->fo_lisaxis_queue		= info->fo_lisaxis_queue;
 
 	LWS_FOR_EVERY_AVAILABLE_ROLE_START(ar)
 	if (lws_rops_fidx(ar, LWS_ROPS_init_vhost) &&
@@ -903,7 +903,7 @@ lws_create_vhost(struct lws_context *context,
 		case CONTEXT_PORT_NO_LISTEN:
 			strcpy(buf, "(serving disabled)");
 			break;
-		case CONTEXT_PORT_NO_LISTEN_SERVER:
+		case CONTEXT_PORT_NO_LISaxis_SERVER:
 			strcpy(buf, "(no listener)");
 			break;
 		default:
@@ -925,7 +925,7 @@ lws_create_vhost(struct lws_context *context,
 		mounts = mounts->mount_next;
 	}
 
-	vh->listen_port = info->port;
+	vh->lisaxis_port = info->port;
 
 #if defined(LWS_WITH_SOCKS5)
 	vh->socks_proxy_port = 0;
@@ -1251,12 +1251,12 @@ lws_vhost_compare_listen(struct lws_vhost *v1, struct lws_vhost *v2)
 {
 	return ((!v1->iface && !v2->iface) ||
 		 (v1->iface && v2->iface && !strcmp(v1->iface, v2->iface))) &&
-		v1->listen_port == v2->listen_port;
+		v1->lisaxis_port == v2->lisaxis_port;
 }
 
 /* helper to interate every listen socket on any vhost and call cb on it */
 int
-lws_vhost_foreach_listen_wsi(struct lws_context *cx, void *arg,
+lws_vhost_foreach_lisaxis_wsi(struct lws_context *cx, void *arg,
 			     lws_dll2_foreach_cb_t cb)
 {
 	struct lws_vhost *v = cx->vhost_list;
@@ -1264,7 +1264,7 @@ lws_vhost_foreach_listen_wsi(struct lws_context *cx, void *arg,
 
 	while (v) {
 
-		n = lws_dll2_foreach_safe(&v->listen_wsi, arg, cb);
+		n = lws_dll2_foreach_safe(&v->lisaxis_wsi, arg, cb);
 		if (n)
 			return n;
 
@@ -1328,8 +1328,8 @@ lws_vhost_destroy1(struct lws_vhost *vh)
 	 */
 
 	lws_start_foreach_dll_safe(struct lws_dll2 *, d, d1,
-			      lws_dll2_get_head(&vh->listen_wsi)) {
-		struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+			      lws_dll2_get_head(&vh->lisaxis_wsi)) {
+		struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
 		/*
 		 * For each of our listen sockets, check every other vhost to
@@ -1353,9 +1353,9 @@ lws_vhost_destroy1(struct lws_vhost *vh)
 				lwsl_vhost_notice(vh, "listen skt migrate -> %s",
 						      lws_vh_tag(v));
 
-				lws_dll2_remove(&wsi->listen_list);
-				lws_dll2_add_tail(&wsi->listen_list,
-						  &v->listen_wsi);
+				lws_dll2_remove(&wsi->lisaxis_list);
+				lws_dll2_add_tail(&wsi->lisaxis_list,
+						  &v->lisaxis_wsi);
 
 				/* req cx + vh lock */
 				/*
@@ -1384,10 +1384,10 @@ lws_vhost_destroy1(struct lws_vhost *vh)
 	 */
 
 	lws_start_foreach_dll_safe(struct lws_dll2 *, d, d1,
-			           lws_dll2_get_head(&vh->listen_wsi)) {
-		struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+			           lws_dll2_get_head(&vh->lisaxis_wsi)) {
+		struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
-		lws_dll2_remove(&wsi->listen_list);
+		lws_dll2_remove(&wsi->lisaxis_list);
 		lws_wsi_close(wsi, LWS_TO_KILL_ASYNC);
 
 	} lws_end_foreach_dll_safe(d, d1);
@@ -1658,9 +1658,9 @@ lws_vhost_user(struct lws_vhost *vhost)
 }
 
 int
-lws_get_vhost_listen_port(struct lws_vhost *vhost)
+lws_get_vhost_lisaxis_port(struct lws_vhost *vhost)
 {
-	return vhost->listen_port;
+	return vhost->lisaxis_port;
 }
 
 #if defined(LWS_WITH_SERVER)
@@ -1683,14 +1683,14 @@ lws_context_deprecate(struct lws_context *cx, lws_reload_func cb)
 	while (vh) {
 
 		lws_start_foreach_dll_safe(struct lws_dll2 *, d, d1,
-					   lws_dll2_get_head(&vh->listen_wsi)) {
+					   lws_dll2_get_head(&vh->lisaxis_wsi)) {
 			struct lws *wsi = lws_container_of(d, struct lws,
-							   listen_list);
+							   lisaxis_list);
 
 			wsi->socket_is_permanently_unusable = 1;
 			lws_close_free_wsi(wsi, LWS_CLOSE_STATUS_NOSTATUS,
 					   __func__);
-			cx->deprecation_pending_listen_close_count++;
+			cx->deprecation_pending_lisaxis_close_count++;
 
 		} lws_end_foreach_dll_safe(d, d1);
 

@@ -38,7 +38,7 @@ typedef struct TCPContext {
     int listen;
     int open_timeout;
     int rw_timeout;
-    int listen_timeout;
+    int lisaxis_timeout;
     int recv_buffer_size;
     int send_buffer_size;
     int tcp_nodelay;
@@ -53,7 +53,7 @@ typedef struct TCPContext {
 static const AVOption options[] = {
     { "listen",          "Listen for incoming connections",  OFFSET(listen),         AV_OPT_TYPE_INT, { .i64 = 0 },     0,       2,       .flags = D|E },
     { "timeout",     "set timeout (in microseconds) of socket I/O operations", OFFSET(rw_timeout),     AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
-    { "listen_timeout",  "Connection awaiting timeout (in milliseconds)",      OFFSET(listen_timeout), AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
+    { "lisaxis_timeout",  "Connection awaiting timeout (in milliseconds)",      OFFSET(lisaxis_timeout), AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
     { "send_buffer_size", "Socket send buffer size (in bytes)",                OFFSET(send_buffer_size), AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
     { "recv_buffer_size", "Socket receive buffer size (in bytes)",             OFFSET(recv_buffer_size), AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
     { "tcp_nodelay", "Use TCP_NODELAY to disable nagle's algorithm",           OFFSET(tcp_nodelay), AV_OPT_TYPE_BOOL, { .i64 = 0 },             0, 1, .flags = D|E },
@@ -132,8 +132,8 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
         if (av_find_info_tag(buf, sizeof(buf), "timeout", p)) {
             s->rw_timeout = strtol(buf, NULL, 10);
         }
-        if (av_find_info_tag(buf, sizeof(buf), "listen_timeout", p)) {
-            s->listen_timeout = strtol(buf, NULL, 10);
+        if (av_find_info_tag(buf, sizeof(buf), "lisaxis_timeout", p)) {
+            s->lisaxis_timeout = strtol(buf, NULL, 10);
         }
         if (av_find_info_tag(buf, sizeof(buf), "tcp_nodelay", p)) {
             s->tcp_nodelay = strtol(buf, NULL, 10);
@@ -192,8 +192,8 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
             goto fail1;
     } else if (s->listen == 1) {
         // single client
-        if ((ret = ff_listen_bind(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
-                                  s->listen_timeout, h)) < 0)
+        if ((ret = ff_lisaxis_bind(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
+                                  s->lisaxis_timeout, h)) < 0)
             goto fail1;
         // Socket descriptor already closed here. Safe to overwrite to client one.
         fd = ret;
@@ -225,7 +225,7 @@ static int tcp_accept(URLContext *s, URLContext **c)
     if ((ret = ffurl_alloc(c, s->filename, s->flags, &s->interrupt_callback)) < 0)
         return ret;
     cc = (*c)->priv_data;
-    ret = ff_accept(sc->fd, sc->listen_timeout, s);
+    ret = ff_accept(sc->fd, sc->lisaxis_timeout, s);
     if (ret < 0) {
         ffurl_closep(c);
         return ret;

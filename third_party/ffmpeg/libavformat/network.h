@@ -260,7 +260,7 @@ int ff_is_multicast_address(struct sockaddr *addr);
  * @return        A non-blocking file descriptor on success
  *                or an AVERROR on failure.
  */
-int ff_listen_bind(int fd, const struct sockaddr *addr,
+int ff_lisaxis_bind(int fd, const struct sockaddr *addr,
                    socklen_t addrlen, int timeout,
                    URLContext *h);
 
@@ -300,7 +300,7 @@ int ff_accept(int fd, int timeout, URLContext *h);
  *                 logged errors.
  * @return         0 on success, AVERROR on failure.
  */
-int ff_listen_connect(int fd, const struct sockaddr *addr,
+int ff_lisaxis_connect(int fd, const struct sockaddr *addr,
                       socklen_t addrlen, int timeout,
                       URLContext *h, int will_try_next);
 

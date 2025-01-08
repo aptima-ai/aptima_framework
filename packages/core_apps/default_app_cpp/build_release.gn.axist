@@ -1,0 +1,18 @@
+#
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file for more information.
+#
+import("//build/feature/axis_package.gni")
+
+axis_package("{{package_name}}") {
+  package_kind = "app"
+  enable_build = true
+
+  resources = [
+    "manifest.json",
+    "property.json",
+  ]
+
+  sources = [ "src/main.cc" ]
+}

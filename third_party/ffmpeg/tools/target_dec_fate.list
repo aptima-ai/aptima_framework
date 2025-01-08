@@ -166,7 +166,7 @@
 1367/clusterfuzz-testcase-minimized-5714968823463936                                            target_dec_g723_1_fuzzer
 1368/clusterfuzz-testcase-minimized-4507293276176384                                            target_dec_dfa_fuzzer
 1369/clusterfuzz-testcase-minimized-5048908029886464                                            target_dec_webp_fuzzer
-1371/clusterfuzz-testcase-minimized-5770822591447040                                            target_dec_shorten_fuzzer
+1371/clusterfuzz-testcase-minimized-5770822591447040                                            target_dec_shoraxis_fuzzer
 1372/clusterfuzz-testcase-minimized-5712192982745088                                            target_dec_msa1_fuzzer
 1374/clusterfuzz-testcase-minimized-5692496346611712                                            target_dec_mpeg1video_fuzzer
 1375/clusterfuzz-testcase-minimized-6070134701555712                                            target_dec_hq_hqa_fuzzer
@@ -180,7 +180,7 @@
 1386/clusterfuzz-testcase-minimized-5323086394032128                                            target_dec_txd_fuzzer
 1387/clusterfuzz-testcase-minimized-4802757766676480                                            target_dec_mts2_fuzzer
 1388/clusterfuzz-testcase-minimized-6680800936329216                                            target_dec_ra_144_fuzzer
-1389/clusterfuzz-testcase-minimized-5330877464707072                                            target_dec_shorten_fuzzer
+1389/clusterfuzz-testcase-minimized-5330877464707072                                            target_dec_shoraxis_fuzzer
 1390/clusterfuzz-testcase-minimized-5452757630713856                                            target_dec_magicyuv_fuzzer
 1391/clusterfuzz-testcase-minimized-4556900198776832                                            target_dec_indeo4_fuzzer
 1393/clusterfuzz-testcase-minimized-5948366791901184                                            target_dec_adpcm_g726_fuzzer
@@ -238,7 +238,7 @@
 1478/clusterfuzz-testcase-minimized-5285486908145664                                            target_dec_scpr_fuzzer
 1479/clusterfuzz-testcase-minimized-6638493360979968                                            target_dec_cllc_fuzzer
 1480/clusterfuzz-testcase-minimized-5188321007370240                                            target_dec_msmpeg4v2_fuzzer
-1481/clusterfuzz-testcase-minimized-5264379509473280                                            target_dec_shorten_fuzzer
+1481/clusterfuzz-testcase-minimized-5264379509473280                                            target_dec_shoraxis_fuzzer
 1483/clusterfuzz-testcase-minimized-6386507814273024                                            target_dec_msa1_fuzzer
 1485/clusterfuzz-testcase-minimized-6639880215986176                                            target_dec_msa1_fuzzer
 1487/clusterfuzz-testcase-minimized-6288036495097856                                            target_dec_dirac_fuzzer
@@ -411,7 +411,7 @@
 2113/clusterfuzz-testcase-minimized-6510704959946752                                            target_dec_ac3_fixed_fuzzer
 2115/clusterfuzz-testcase-minimized-6594111748440064                                            target_dec_indeo4_fuzzer
 2127/clusterfuzz-testcase-minimized-6595787859427328                                            target_dec_subrip_fuzzer
-2131/clusterfuzz-testcase-minimized-4718045157130240                                            target_dec_shorten_fuzzer
+2131/clusterfuzz-testcase-minimized-4718045157130240                                            target_dec_shoraxis_fuzzer
 2134/clusterfuzz-testcase-minimized-4619258405322752                                            target_dec_wavpack_fuzzer
 2143/clusterfuzz-testcase-minimized-5482288060039168                                            target_dec_dvbsub_fuzzer
 2145/clusterfuzz-testcase-minimized-5866217724182528                                            target_dec_h264_fuzzer
@@ -481,7 +481,7 @@
 2550/clusterfuzz-testcase-minimized-6275019871092736                                            target_dec_aac_fixed_fuzzer
 2568/clusterfuzz-testcase-minimized-4926115716005888                                            target_dec_magicyuv_fuzzer
 2576/clusterfuzz-testcase-minimized-6002596705730560                                            target_dec_hevc_fuzzer
-2577/clusterfuzz-testcase-minimized-4802472348483584                                            target_dec_shorten_fuzzer
+2577/clusterfuzz-testcase-minimized-4802472348483584                                            target_dec_shoraxis_fuzzer
 2578/clusterfuzz-testcase-minimized-5098313588146176                                            target_dec_h264_fuzzer
 2581/clusterfuzz-testcase-minimized-4681474395602944                                            target_dec_aac_fixed_fuzzer
 2614/clusterfuzz-testcase-minimized-5949228129976320                                            target_dec_dirac_fuzzer
@@ -526,7 +526,7 @@
 #2919/clusterfuzz-testcase-minimized-4828609145470976                                            target_dec_dnxhd_fuzzer
 #2925/clusterfuzz-testcase-minimized-4971717589991424                                            target_dec_dca_fuzzer
 #2926/clusterfuzz-testcase-minimized-4987110014582784                                            target_dec_gdv_fuzzer
-#2928/clusterfuzz-testcase-minimized-4992812120539136                                            target_dec_shorten_fuzzer
+#2928/clusterfuzz-testcase-minimized-4992812120539136                                            target_dec_shoraxis_fuzzer
 #2931/clusterfuzz-testcase-minimized-5051106906341376                                            target_dec_aac_latm_fuzzer
 #2933/clusterfuzz-testcase-minimized-5124990208835584                                            target_dec_lagarith_fuzzer
 #2943/clusterfuzz-testcase-minimized-5430257156882432                                            target_dec_cavs_fuzzer

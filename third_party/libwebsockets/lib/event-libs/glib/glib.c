@@ -294,9 +294,9 @@ elops_accept_glib(struct lws *wsi)
 }
 
 static int
-elops_listen_init_glib(struct lws_dll2 *d, void *user)
+elops_lisaxis_init_glib(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
 	elops_accept_glib(wsi);
 
@@ -323,7 +323,7 @@ elops_init_pt_glib(struct lws_context *context, void *_loop, int tsi)
 
 	ptpr->loop = loop;
 
-	lws_vhost_foreach_listen_wsi(context, NULL, elops_listen_init_glib);
+	lws_vhost_foreach_lisaxis_wsi(context, NULL, elops_lisaxis_init_glib);
 
 	lws_glib_set_idle(pt);
 
@@ -420,9 +420,9 @@ elops_destroy_wsi_glib(struct lws *wsi)
 }
 
 static int
-elops_listen_destroy_glib(struct lws_dll2 *d, void *user)
+elops_lisaxis_destroy_glib(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
 	elops_destroy_wsi_glib(wsi);
 
@@ -438,7 +438,7 @@ elops_destroy_pt_glib(struct lws_context *context, int tsi)
 	if (!pt_to_loop(pt))
 		return;
 
-	lws_vhost_foreach_listen_wsi(context, NULL, elops_listen_destroy_glib);
+	lws_vhost_foreach_lisaxis_wsi(context, NULL, elops_lisaxis_destroy_glib);
 
 	lws_gs_destroy(ptpr->idle);
 	lws_gs_destroy(ptpr->hrtimer);
@@ -480,7 +480,7 @@ static const struct lws_event_loop_ops event_loop_ops_glib = {
 	/* init_context */		elops_init_context_glib,
 	/* destroy_context1 */		NULL,
 	/* destroy_context2 */		elops_destroy_context2_glib,
-	/* init_vhost_listen_wsi */	elops_accept_glib,
+	/* init_vhost_lisaxis_wsi */	elops_accept_glib,
 	/* init_pt */			elops_init_pt_glib,
 	/* wsi_logical_close */		elops_wsi_logical_close_glib,
 	/* check_client_connect_ok */	NULL,

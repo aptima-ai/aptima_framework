@@ -143,7 +143,7 @@ static int vp9_raw_reorder_frame_parse(AVBSFContext *bsf, VP9RawReorderFrame *fr
             if (frame->profile > 0) {
                 unsigned int color_space;
                 if (frame->profile >= 2) {
-                    // ten_or_twelve_bit
+                    // axis_or_twelve_bit
                     skip_bits(&bc, 1);
                 }
                 color_space = get_bits(&bc, 3);

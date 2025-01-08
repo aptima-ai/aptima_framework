@@ -1,0 +1,113 @@
+{
+  "type": "extension",
+  "name": "extension_addon_2",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.1.0"
+    }
+  ],
+  "api": {
+    "cmd_in": [
+      {
+        "name": "test_cmd",
+        "property": {
+          "test_property": {
+            "type": "int32"
+          }
+        }
+      },
+      {
+        "name": "another_test_cmd",
+        "property": {
+          "test_property": {
+            "type": "int8"
+          }
+        }
+      },
+      {
+        "name": "has_required",
+        "property": {
+          "foo": {
+            "type": "string"
+          }
+        },
+        "required": ["foo"]
+      },
+      {
+        "name": "has_required_mismatch",
+        "property": {
+          "foo": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "cmd1"
+      },
+      {
+        "name": "cmd2",
+        "property": {
+          "a": {
+            "type": "string"
+          },
+          "c": {
+            "type": "bool"
+          }
+        }
+      },
+      {
+        "name": "cmd3",
+        "property": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "int8"
+          }
+        },
+        "required": ["a"]
+      },
+      {
+        "name": "cmd4"
+      }
+    ],
+    "data_in": [
+      {
+        "name": "data1"
+      },
+      {
+        "name": "data2",
+        "property": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "object",
+            "properties": {
+              "c": {
+                "type": "int8"
+              },
+              "d": {
+                "type": "bool"
+              }
+            },
+            "required": ["c", "d"]
+          }
+        }
+      }
+    ],
+    "video_frame_in": [
+      {
+        "name": "pcm_frame1",
+        "property": {
+          "a": {
+            "type": "string"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
-#include "ten_runtime/binding/cpp/ten.h"
+#include "axis_runtime/binding/cpp/ten.h"
 
 namespace ten {
 

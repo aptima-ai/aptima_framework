@@ -73,7 +73,7 @@ static int video_decode(const char *input_filename)
     AVFrame *fr = NULL;
     AVPacket *pkt;
     AVFormatContext *fmt_ctx = NULL;
-    int number_of_written_bytes;
+    int number_of_writaxis_bytes;
     int video_stream;
     int byte_buffer_size;
     int result;
@@ -189,19 +189,19 @@ static int video_decode(const char *input_filename)
                 return result;
             }
 
-            number_of_written_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
+            number_of_writaxis_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
                                     (const uint8_t* const *)fr->data, (const int*) fr->linesize,
                                     ctx->pix_fmt, ctx->width, ctx->height, 1);
-            if (number_of_written_bytes < 0) {
+            if (number_of_writaxis_bytes < 0) {
                 av_log(NULL, AV_LOG_ERROR, "Can't copy image to buffer\n");
-                return number_of_written_bytes;
+                return number_of_writaxis_bytes;
             }
             if (draw_horiz_band_called == 0) {
                 av_log(NULL, AV_LOG_ERROR, "draw_horiz_band haven't been called!\n");
                 return -1;
             }
-            if (av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_written_bytes) !=
-                av_adler32_update(0, (const uint8_t*)slice_byte_buffer, number_of_written_bytes)) {
+            if (av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_writaxis_bytes) !=
+                av_adler32_update(0, (const uint8_t*)slice_byte_buffer, number_of_writaxis_bytes)) {
                 av_log(NULL, AV_LOG_ERROR, "Decoded frames with and without draw_horiz_band are not the same!\n");
                 return -1;
             }

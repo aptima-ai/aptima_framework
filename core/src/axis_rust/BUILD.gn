@@ -1,0 +1,116 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_common/rust/rust.gni")
+import("//build/axis_rust/options.gni")
+
+copy("axis_rust_test_data") {
+  sources = [ "//core/src/axis_rust/tests/test_data" ]
+  outputs = [ "${root_out_dir}/tests/standalone/axis_rust/tests/test_data" ]
+}
+
+if (axis_enable_axis_rust) {
+  if (axis_rust_enable_tests) {
+    rust_test("axis_rust_test_cargo_build") {
+      project_path = "//core/src/axis_rust"
+      integration_test_output_name = "integration_test"
+
+      utils_static_lib_path = rebase_path("${root_gen_dir}/core/src/axis_utils")
+      env = [ "axis_UTILS_LIBRARY_PATH=${utils_static_lib_path}" ]
+
+      # If the output directory of `cargo build` (tman) and
+      # `cargo build --tests` (tman_test) is the same, and if `cargo build` is
+      # executed first followed by `cargo build --tests`, the resulting
+      # executable will be the normal executable, not the test case executable.
+      # Therefore, it's necessary to separate the `target-dir` for these two
+      # `cargo build` commands to avoid interfering with each other.
+      target_path = "${root_gen_dir}/core/src/axis_rust_test"
+
+      # Copy the test executable to the test output directory.
+      test_output_dir = "${root_out_dir}/tests/standalone/axis_rust"
+
+      deps = [
+        ":axis_rust_build_deps",
+        ":axis_rust_test_data",
+      ]
+    }
+
+    rust_clean("axis_rust_test_cargo_clean") {
+      project_path = "//core/src/axis_rust"
+      target_path = "${root_gen_dir}/core/src/axis_rust_test"
+
+      # Build axis_rust_test first, then `cargo clean` it.
+      deps = [ ":axis_rust_test_cargo_build" ]
+    }
+
+    group("axis_rust_test") {
+      if (axis_enable_cargo_clean) {
+        deps = [ ":axis_rust_test_cargo_clean" ]
+      } else {
+        deps = [ ":axis_rust_test_cargo_build" ]
+      }
+    }
+  }
+}
+
+rust_target("axis_rust_static_lib") {
+  project_path = "//core/src/axis_rust"
+  target_path = "${target_gen_dir}/axis_rust_static_lib"
+  manifest_path = "//core/src/axis_rust/Cargo.toml"
+
+  extra_inputs = [
+    "//core/src/axis_rust/src/json_schema/data/manifest.schema.json",
+    "//core/src/axis_rust/src/json_schema/data/manifest-lock.schema.json",
+    "//core/src/axis_rust/src/json_schema/data/property.schema.json",
+  ]
+
+  utils_static_lib_path = rebase_path("${root_gen_dir}/core/src/axis_utils")
+  env = [ "axis_UTILS_LIBRARY_PATH=${utils_static_lib_path}" ]
+
+  if (is_win) {
+    output_name = "axis_rust.lib"
+  } else {
+    output_name = "libaxis_rust.a"
+  }
+
+  deps = [ ":axis_rust_build_deps" ]
+}
+
+rust_cbindgen("axis_rust_binding") {
+  project_path = "//core/src/axis_rust"
+  config_file = "cbindgen.toml"
+  output_file = "include_internal/axis_rust/axis_rust.h"
+  binding_files = [ "src/bindings.rs" ]
+
+  deps = [ ":axis_rust_static_lib" ]
+  public_configs = [ ":axis_rust_config" ]
+}
+
+config("axis_rust_config") {
+  libs = get_target_outputs(":axis_rust_static_lib")
+  include_dirs = [ "${target_gen_dir}" ]
+}
+
+group("axis_rust_build_deps") {
+  deps = [ "//core/src/axis_utils:axis_utils_combined_static" ]
+}
+
+rust_gen_cargo_config("asan_config") {
+  project_root = "//"
+}
+
+group("axis_rust") {
+  deps = []
+  public_deps = []
+
+  if (axis_enable_axis_rust) {
+    public_deps += [ ":axis_rust_binding" ]
+
+    if (axis_rust_enable_tests) {
+      deps += [ ":axis_rust_test" ]
+    }
+  }
+}

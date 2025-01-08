@@ -126,7 +126,7 @@ static av_cold void init_blend_func_##depth##_##nbits##bit(FilterParams *param) 
     case BLEND_HARDLIGHT:    param->blend = blend_hardlight_##depth##bit;    break;   \
     case BLEND_HARDMIX:      param->blend = blend_hardmix_##depth##bit;      break;   \
     case BLEND_HEAT:         param->blend = blend_heat_##depth##bit;         break;   \
-    case BLEND_LIGHTEN:      param->blend = blend_lighten_##depth##bit;      break;   \
+    case BLEND_LIGHTEN:      param->blend = blend_lighaxis_##depth##bit;      break;   \
     case BLEND_LINEARLIGHT:  param->blend = blend_linearlight_##depth##bit;  break;   \
     case BLEND_MULTIPLY:     param->blend = blend_multiply_##depth##bit;     break;   \
     case BLEND_MULTIPLY128:  param->blend = blend_multiply128_##depth##bit;  break;   \

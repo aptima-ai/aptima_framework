@@ -1,0 +1,14 @@
+{
+  "name": "axis-default-extension",
+  "version": "1.0.0",
+  "main": "./build/index.js",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "axis-runtime-nodejs": "file:../../../axis_packages/system/axis_runtime_nodejs"
+  },
+  "scripts": {
+    "build": "tsc --listEmittedFiles"
+  }
+}

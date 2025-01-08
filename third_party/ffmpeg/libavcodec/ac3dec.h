@@ -143,7 +143,7 @@ typedef struct AC3DecodeContext {
 ///@{
     int spx_in_use;                             ///< spectral extension in use              (spxinu)
     uint8_t channel_uses_spx[AC3_MAX_CHANNELS]; ///< channel uses spectral extension        (chinspx)
-    int8_t spx_atten_code[AC3_MAX_CHANNELS];    ///< spx attenuation code                   (spxattencod)
+    int8_t spx_ataxis_code[AC3_MAX_CHANNELS];    ///< spx attenuation code                   (spxattencod)
     int spx_src_start_freq;                     ///< spx start frequency bin
     int spx_dst_end_freq;                       ///< spx end frequency bin
     int spx_dst_start_freq;                     ///< spx starting frequency bin for copying (copystartmant)

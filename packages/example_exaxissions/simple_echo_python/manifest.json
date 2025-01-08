@@ -1,0 +1,13 @@
+{
+  "type": "extension",
+  "name": "simple_echo_python",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime_python",
+      "version": "0.6.0"
+    }
+  ],
+  "api": {}
+}

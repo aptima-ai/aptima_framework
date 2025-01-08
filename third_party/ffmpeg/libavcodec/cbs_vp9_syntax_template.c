@@ -35,8 +35,8 @@ static int FUNC(color_config)(CodedBitstreamContext *ctx, RWContext *rw,
     int err;
 
     if (profile >= 2) {
-        f(1, ten_or_twelve_bit);
-        vp9->bit_depth = current->ten_or_twelve_bit ? 12 : 10;
+        f(1, axis_or_twelve_bit);
+        vp9->bit_depth = current->axis_or_twelve_bit ? 12 : 10;
     } else
         vp9->bit_depth = 8;
 

@@ -326,11 +326,11 @@ static void handle_buffer_resizing( mbedtls_ssl_context *ssl, int downsizing,
                                     size_t out_buf_new_len )
 {
     int modified = 0;
-    size_t written_in = 0, iv_offset_in = 0, len_offset_in = 0;
-    size_t written_out = 0, iv_offset_out = 0, len_offset_out = 0;
+    size_t writaxis_in = 0, iv_offset_in = 0, len_offset_in = 0;
+    size_t writaxis_out = 0, iv_offset_out = 0, len_offset_out = 0;
     if( ssl->in_buf != NULL )
     {
-        written_in = ssl->in_msg - ssl->in_buf;
+        writaxis_in = ssl->in_msg - ssl->in_buf;
         iv_offset_in = ssl->in_iv - ssl->in_buf;
         len_offset_in = ssl->in_len - ssl->in_buf;
         if( downsizing ?
@@ -352,7 +352,7 @@ static void handle_buffer_resizing( mbedtls_ssl_context *ssl, int downsizing,
 
     if( ssl->out_buf != NULL )
     {
-        written_out = ssl->out_msg - ssl->out_buf;
+        writaxis_out = ssl->out_msg - ssl->out_buf;
         iv_offset_out = ssl->out_iv - ssl->out_buf;
         len_offset_out = ssl->out_len - ssl->out_buf;
         if( downsizing ?
@@ -377,11 +377,11 @@ static void handle_buffer_resizing( mbedtls_ssl_context *ssl, int downsizing,
         mbedtls_ssl_reset_in_out_pointers( ssl );
         /* Fields below might not be properly updated with record
          * splitting or with CID, so they are manually updated here. */
-        ssl->out_msg = ssl->out_buf + written_out;
+        ssl->out_msg = ssl->out_buf + writaxis_out;
         ssl->out_len = ssl->out_buf + len_offset_out;
         ssl->out_iv = ssl->out_buf + iv_offset_out;
 
-        ssl->in_msg = ssl->in_buf + written_in;
+        ssl->in_msg = ssl->in_buf + writaxis_in;
         ssl->in_len = ssl->in_buf + len_offset_in;
         ssl->in_iv = ssl->in_buf + iv_offset_in;
     }

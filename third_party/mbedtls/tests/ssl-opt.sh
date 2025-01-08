@@ -983,7 +983,7 @@ analyze_test_commands() {
         PXY_CMD="$P_PXY"
         case " $SRV_CMD " in
             *' server_addr=::1 '*)
-                PXY_CMD="$PXY_CMD server_addr=::1 listen_addr=::1";;
+                PXY_CMD="$PXY_CMD server_addr=::1 lisaxis_addr=::1";;
         esac
     fi
 
@@ -1547,7 +1547,7 @@ SRV_DELAY_SECONDS=0
 # machines that will resolve to ::1, and we don't want ipv6 here.
 P_SRV="$P_SRV server_addr=127.0.0.1 server_port=$SRV_PORT"
 P_CLI="$P_CLI server_addr=127.0.0.1 server_port=+SRV_PORT"
-P_PXY="$P_PXY server_addr=127.0.0.1 server_port=$SRV_PORT listen_addr=127.0.0.1 listen_port=$PXY_PORT ${SEED:+"seed=$SEED"}"
+P_PXY="$P_PXY server_addr=127.0.0.1 server_port=$SRV_PORT lisaxis_addr=127.0.0.1 lisaxis_port=$PXY_PORT ${SEED:+"seed=$SEED"}"
 O_SRV="$O_SRV -accept $SRV_PORT"
 O_CLI="$O_CLI -connect 127.0.0.1:+SRV_PORT"
 G_SRV="$G_SRV -p $SRV_PORT"

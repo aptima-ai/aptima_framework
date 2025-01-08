@@ -682,7 +682,7 @@ static int rtsp_listen(AVFormatContext *s)
 
     /* Create TCP connection */
     ff_url_join(tcpname, sizeof(tcpname), lower_proto, NULL, host, port,
-                "?listen&listen_timeout=%d", rt->initial_timeout * 1000);
+                "?listen&lisaxis_timeout=%d", rt->initial_timeout * 1000);
 
     if (ret = ffurl_open_whitelist(&rt->rtsp_hd, tcpname, AVIO_FLAG_READ_WRITE,
                                    &s->interrupt_callback, NULL,

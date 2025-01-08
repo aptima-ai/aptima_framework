@@ -1,0 +1,42 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/ten.gni")
+
+config("axis_runtime_nodejs_config") {
+  include_dirs = axis_runtime_common_includes
+  include_dirs += [ "//third_party/node-api-headers/include" ]
+
+  if (!is_win) {
+    cflags = [ "-fPIC" ]
+  }
+}
+
+axis_shared_library("axis_runtime_nodejs") {
+  configs = [ ":axis_runtime_nodejs_config" ]
+
+  output_extension = "node"
+
+  if (is_mac || is_linux) {
+    add_configs = [ "//.gnfiles/build/toolchain/common:allow_undefined" ]
+    remove_configs = [ "//.gnfiles/build/toolchain/common:disallow_undefined" ]
+  }
+
+  sources = [
+    "//core/src/axis_runtime/binding/nodejs/native/build_template/preserved_metadata.c",
+    "init.c",
+  ]
+
+  deps = [
+    "addon",
+    "app",
+    "common",
+    "extension",
+    "msg",
+    "axis_env",
+    "//core/src/axis_runtime:axis_runtime_library",
+  ]
+}

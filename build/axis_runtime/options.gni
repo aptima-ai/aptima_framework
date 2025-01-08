@@ -1,0 +1,83 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//.gnfiles/build/feature/base_options.gni")
+import("//build/options.gni")
+
+declare_args() {
+  # If set, build TEN runtime as shared library, otherwise static library
+  axis_build_shared = true
+
+  # If set, enable libwebsockets dependency, it will be used in http/websocket
+  # client and protocol.
+  axis_enable_libwebsockets = true
+
+  axis_enable_curl = true
+}
+
+# axis_runtime binding
+declare_args() {
+  axis_enable_go_binding = true
+  axis_enable_python_binding = true
+  axis_enable_nodejs_binding = true
+}
+
+# axis_runtime extensions
+declare_args() {
+  # If set, enable example extensions
+  # The original value is: (is_linux || is_mac || is_win) && target_cpu == "x64"
+  axis_enable_example_packages = true
+
+  # If set, build native ffmpeg relevant extension and app
+  #
+  # ffmpeg has continuously made modifications, and those modifications might
+  # not be backward compatible. In order to simplified the coding and the CI
+  # environments, we embed a ffmpeg source codes in the TEN framework source
+  # tree, and build it by ourselves. This embedded ffmpeg can be built on clang
+  # and gcc, debug or release. To minimize the CI resource comsuption, and
+  # increase the CI efficiency, we just enable the building of the ffmpeg
+  # relevant modules in a restricted combination.
+  axis_enable_ffmpeg_extensions =
+      is_linux && is_debug && is_clang && target_cpu == "x64"
+}
+
+declare_args() {
+  # The go lint only depends on GO SDK which is platform independent, so only
+  # one CI node is enough to run the lint.
+  axis_enable_go_lint = false
+
+  # Whether to call apis in the axis_rust library from axis_runtime.
+  axis_enable_axis_rust_apis = true
+}
+
+declare_args() {
+  axis_enable_tests = true
+  axis_enable_unit_tests = true
+  axis_enable_smoke_tests = true
+  axis_enable_integration_tests = true
+}
+
+axis_runtime_common_defines = common_defines
+if (axis_enable_memory_check) {
+  axis_runtime_common_defines += [ "axis_ENABLE_MEMORY_CHECK" ]
+}
+
+if (axis_enable_axis_rust && axis_enable_axis_rust_apis) {
+  axis_runtime_common_defines += [ "axis_ENABLE_axis_RUST_APIS" ]
+}
+
+common_deps = []
+common_public_deps = []
+
+axis_runtime_common_includes = common_includes
+axis_runtime_common_includes += [
+  "$root_build_dir/src",
+  "${root_out_dir}",
+  "${root_out_dir}/obj",
+  "//core",
+  "//core/src",
+  "//core/include",
+]

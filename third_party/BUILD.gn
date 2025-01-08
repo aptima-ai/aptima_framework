@@ -4,8 +4,8 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/ten_runtime/feature/cmake.gni")
-import("//build/ten_runtime/options.gni")
+import("//build/axis_runtime/feature/cmake.gni")
+import("//build/axis_runtime/options.gni")
 
 config("third_party_config") {
   cflags = []
@@ -28,11 +28,11 @@ group("third_party") {
     "nlohmann_json",
   ]
 
-  if (ten_enable_libwebsockets) {
+  if (axis_enable_libwebsockets) {
     public_deps += [ "libwebsockets" ]
   }
 
-  if (ten_enable_ffmpeg_extensions) {
+  if (axis_enable_ffmpeg_extensions) {
     public_deps += [ "ffmpeg" ]
   }
 }

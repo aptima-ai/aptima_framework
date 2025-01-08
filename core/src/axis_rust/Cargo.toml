@@ -1,0 +1,38 @@
+[package]
+name = "axis_rust"
+version = "0.1.0"
+edition = "2021"
+build = "src/build.rs"
+
+[lib]
+name = "axis_rust"
+
+# The `axis_rust` crate will be used in the following two ways:
+#
+# 1. Used as a dependency in other Rust crates, ex: tman. In this case, the
+# crate type can not be `staticlib`, as the native library can not be
+# interpreted by rustc in the linkage. Instead, the crate should be compiled
+# into a `rlib`, which is a Rust static library, and can be interpreted by rustc
+# in the linkage.
+#
+# 2. Used as a native library in other languages, ex: ten runtime. In this case,
+# the crate type should be a native static or dynamic library. That's what the
+# `staticlib` crate type is for.
+crate-type = ["staticlib", "rlib"]
+test = true
+
+[dependencies]
+anyhow = { version = "1.0" }
+json5 = { version = "0.4" }
+jsonschema = { version = "0.28", default-features = false }
+libc = { version = "0.2" }
+linked-hash-map = { version = "0.5", features = ["serde_impl"] }
+regex = { version = "1.11" }
+semver = { version = "1.0", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+sha2 = { version = "0.10" }
+tempfile = { version = "3.10" }
+
+[build-dependencies]
+bindgen = { version = "0.70" }

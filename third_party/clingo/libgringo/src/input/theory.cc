@@ -469,7 +469,7 @@ CreateBody TheoryAtom::toGroundBody(ToGroundArg &x, Ground::UStmVec &stms, NAF n
 
 HeadTheoryLiteral::HeadTheoryLiteral(TheoryAtom &&atom, bool rewritten)
 : atom_(std::move(atom))
-, rewritten_(rewritten)
+, rewritaxis_(rewritten)
 { }
 
 CreateHead HeadTheoryLiteral::toGround(ToGroundArg &x, Ground::UStmVec &stms) const {
@@ -479,8 +479,8 @@ CreateHead HeadTheoryLiteral::toGround(ToGroundArg &x, Ground::UStmVec &stms) co
 }
 
 UHeadAggr HeadTheoryLiteral::rewriteAggregates(UBodyAggrVec &aggr) {
-    rewritten_ = true;
-    auto lit = make_locatable<BodyTheoryLiteral>(loc(), NAF::POS, atom_.clone(), rewritten_);
+    rewritaxis_ = true;
+    auto lit = make_locatable<BodyTheoryLiteral>(loc(), NAF::POS, atom_.clone(), rewritaxis_);
     aggr.emplace_back(std::move(lit));
     return nullptr;
 }
@@ -528,12 +528,12 @@ size_t HeadTheoryLiteral::hash() const {
 }
 
 void HeadTheoryLiteral::print(std::ostream &out) const {
-    if (rewritten_) { out << "#false"; }
+    if (rewritaxis_) { out << "#false"; }
     else            { atom_.print(out); }
 }
 
 HeadTheoryLiteral *HeadTheoryLiteral::clone() const {
-    auto *ret = make_locatable<HeadTheoryLiteral>(loc(), get_clone(atom_), rewritten_).release();
+    auto *ret = make_locatable<HeadTheoryLiteral>(loc(), get_clone(atom_), rewritaxis_).release();
     return ret;
 }
 
@@ -552,7 +552,7 @@ void HeadTheoryLiteral::initTheory(TheoryDefs &defs, bool hasBody, Logger &log) 
 BodyTheoryLiteral::BodyTheoryLiteral(NAF naf, TheoryAtom &&atom, bool rewritten)
 : atom_(std::move(atom))
 , naf_(naf)
-, rewritten_(rewritten)
+, rewritaxis_(rewritten)
 { }
 
 bool BodyTheoryLiteral::hasPool() const {
@@ -572,7 +572,7 @@ UBodyAggrVecVec BodyTheoryLiteral::unpoolComparison() const {
     atom.unpoolComparison();
     UBodyAggrVecVec ret;
     ret.emplace_back();
-    ret.back().emplace_back(make_locatable<BodyTheoryLiteral>(loc(), naf_, std::move(atom), rewritten_).release());
+    ret.back().emplace_back(make_locatable<BodyTheoryLiteral>(loc(), naf_, std::move(atom), rewritaxis_).release());
     return ret;
 }
 
@@ -623,12 +623,12 @@ size_t BodyTheoryLiteral::hash() const {
 }
 
 void BodyTheoryLiteral::print(std::ostream &out) const {
-    if (rewritten_) { out << "not " << atom_; }
+    if (rewritaxis_) { out << "not " << atom_; }
     else            { out << naf_ << atom_; }
 }
 
 BodyTheoryLiteral *BodyTheoryLiteral::clone() const {
-    return make_locatable<BodyTheoryLiteral>(loc(), naf_, get_clone(atom_), rewritten_).release();
+    return make_locatable<BodyTheoryLiteral>(loc(), naf_, get_clone(atom_), rewritaxis_).release();
 }
 
 bool BodyTheoryLiteral::operator==(BodyAggregate const &other) const {

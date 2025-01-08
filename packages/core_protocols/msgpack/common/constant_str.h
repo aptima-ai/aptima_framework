@@ -5,4 +5,4 @@
 //
 #pragma once
 
-#define TEN_STR_MSGPACK "msgpack"
+#define axis_STR_MSGPACK "msgpack"

@@ -12,7 +12,7 @@ glob("field") {
     "//packages",
   ]
   deps = [
-    "//core/src/ten_runtime:ten_runtime_library",
+    "//core/src/axis_runtime:axis_runtime_library",
     "//third_party/msgpack:msgpackc",
   ]
 }

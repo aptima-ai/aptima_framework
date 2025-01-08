@@ -152,7 +152,7 @@ CURLcode Curl_cf_unix_create(struct Curl_cfilter **pcf,
 /**
  * Creates a cfilter that keeps a listening socket.
  */
-CURLcode Curl_conn_tcp_listen_set(struct Curl_easy *data,
+CURLcode Curl_conn_tcp_lisaxis_set(struct Curl_easy *data,
                                   struct connectdata *conn,
                                   int sockindex,
                                   curl_socket_t *s);

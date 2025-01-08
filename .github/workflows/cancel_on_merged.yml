@@ -1,0 +1,46 @@
+name: Cancel Workflows on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cancel_workflows:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Related Workflow Runs
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
+            const headSha = context.payload.pull_request.head.sha;
+
+            console.log(`Cancelling workflows related to PR #${prNumber} (SHA: ${headSha})`);
+
+            // Retrieve all workflow runs associated with the head SHA of the PR.
+            const runs = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              head_sha: headSha,
+              status: 'in_progress',
+            });
+
+            if (runs.data.workflow_runs.length === 0) {
+              console.log('No workflow runs found to cancel.');
+              return;
+            }
+
+            // Cancel all related workflow runs.
+            for (const run of runs.data.workflow_runs) {
+              console.log(`Cancel workflow run: ${run.id} (${run.name})`);
+              await github.rest.actions.cancelWorkflowRun({
+                owner,
+                repo,
+                run_id: run.id,
+              });
+            }
+
+            console.log('All related workflow runs have been canceled.');

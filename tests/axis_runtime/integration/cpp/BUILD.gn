@@ -1,0 +1,38 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/options.gni")
+
+group("cpp") {
+  deps = [
+    "check_start_graph",
+    "graph_env_var_1",
+    "graph_env_var_2",
+    "graph_env_var_3",
+    "hello_world",
+    "http_basic",
+    "large_result",
+  ]
+
+  if (axis_enable_axis_manager) {
+    # The standalone testing for the C++ extension depends on the Googletest
+    # system package.
+    deps += [ "standalone_test_cpp" ]
+  }
+
+  if (axis_enable_ffmpeg_extensions) {
+    deps += [
+      "ffmpeg_basic",
+      "ffmpeg_bypass",
+    ]
+  }
+
+  if (axis_enable_axis_rust && axis_enable_axis_rust_apis) {
+    # This case will start an invalid graph, and it will be failed without
+    # graph checking.
+    deps += [ "multi_apps" ]
+  }
+}

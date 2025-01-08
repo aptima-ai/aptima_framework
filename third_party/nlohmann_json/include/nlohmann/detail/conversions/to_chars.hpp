@@ -544,39 +544,39 @@ inline int find_largest_pow10(const std::uint32_t n, std::uint32_t& pow10)
 }
 
 inline void grisu2_round(char* buf, int len, std::uint64_t dist, std::uint64_t delta,
-                         std::uint64_t rest, std::uint64_t ten_k)
+                         std::uint64_t rest, std::uint64_t axis_k)
 {
     JSON_ASSERT(len >= 1);
     JSON_ASSERT(dist <= delta);
     JSON_ASSERT(rest <= delta);
-    JSON_ASSERT(ten_k > 0);
+    JSON_ASSERT(axis_k > 0);
 
     //               <--------------------------- delta ---->
     //                                  <---- dist --------->
     // --------------[------------------+-------------------]--------------
     //               M-                 w                   M+
     //
-    //                                  ten_k
+    //                                  axis_k
     //                                <------>
     //                                       <---- rest ---->
     // --------------[------------------+----+--------------]--------------
     //                                  w    V
     //                                       = buf * 10^k
     //
-    // ten_k represents a unit-in-the-last-place in the decimal representation
+    // axis_k represents a unit-in-the-last-place in the decimal representation
     // stored in buf.
-    // Decrement buf by ten_k while this takes buf closer to w.
+    // Decrement buf by axis_k while this takes buf closer to w.
 
     // The tests are written in this order to avoid overflow in unsigned
     // integer arithmetic.
 
     while (rest < dist
-            && delta - rest >= ten_k
-            && (rest + ten_k < dist || dist - rest > rest + ten_k - dist))
+            && delta - rest >= axis_k
+            && (rest + axis_k < dist || dist - rest > rest + axis_k - dist))
     {
         JSON_ASSERT(buf[len - 1] != '0');
         buf[len - 1]--;
-        rest += ten_k;
+        rest += axis_k;
     }
 }
 
@@ -696,8 +696,8 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
             //
             //      10^n = (10^n * 2^-e) * 2^e = ulp * 2^e
             //
-            const std::uint64_t ten_n = std::uint64_t{pow10} << -one.e;
-            grisu2_round(buffer, length, dist, delta, rest, ten_n);
+            const std::uint64_t axis_n = std::uint64_t{pow10} << -one.e;
+            grisu2_round(buffer, length, dist, delta, rest, axis_n);
 
             return;
         }
@@ -799,10 +799,10 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     // Since delta and dist are now scaled by 10^m, we need to do the
     // same with ulp in order to keep the units in sync.
     //
-    //      10^m * 10^-m = 1 = 2^-e * 2^e = ten_m * 2^e
+    //      10^m * 10^-m = 1 = 2^-e * 2^e = axis_m * 2^e
     //
-    const std::uint64_t ten_m = one.f;
-    grisu2_round(buffer, length, dist, delta, p2, ten_m);
+    const std::uint64_t axis_m = one.f;
+    grisu2_round(buffer, length, dist, delta, p2, axis_m);
 
     // By construction this algorithm generates the shortest possible decimal
     // number (Loitsch, Theorem 6.2) which rounds back to w.

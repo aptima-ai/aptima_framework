@@ -1,0 +1,21 @@
+{
+  "type": "system",
+  "name": "axis_runtime_nodejs",
+  "version": "0.6.2",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.2"
+    }
+  ],
+  "package": {
+    "include": [
+      "manifest.json",
+      "build/**",
+      "lib/**",
+      "package.json",
+      "package-lock.json"
+    ]
+  }
+}

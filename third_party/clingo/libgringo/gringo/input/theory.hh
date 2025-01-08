@@ -159,7 +159,7 @@ public:
 private:
     TheoryAtom atom_;
     NAF naf_;
-    bool rewritten_;
+    bool rewritaxis_;
 };
 
 // }}}1
@@ -200,7 +200,7 @@ public:
 
 private:
     TheoryAtom atom_;
-    bool rewritten_;
+    bool rewritaxis_;
 };
 
 } } // namespace Gringo Input

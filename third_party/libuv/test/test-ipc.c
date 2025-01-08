@@ -210,7 +210,7 @@ static void on_read(uv_stream_t* handle,
 }
 
 #ifdef _WIN32
-static void on_read_listen_after_bound_twice(uv_stream_t* handle,
+static void on_read_lisaxis_after_bound_twice(uv_stream_t* handle,
                                              ssize_t nread,
                                              const uv_buf_t* buf) {
   int r;
@@ -429,11 +429,11 @@ static int run_ipc_test(const char* helper, uv_read_cb read_cb) {
 }
 
 
-TEST_IMPL(ipc_listen_before_write) {
+TEST_IMPL(ipc_lisaxis_before_write) {
 #if defined(NO_SEND_HANDLE_ON_PIPE)
   RETURN_SKIP(NO_SEND_HANDLE_ON_PIPE);
 #endif
-  int r = run_ipc_test("ipc_helper_listen_before_write", on_read);
+  int r = run_ipc_test("ipc_helper_lisaxis_before_write", on_read);
   ASSERT_EQ(1, local_conn_accepted);
   ASSERT_EQ(1, remote_conn_accepted);
   ASSERT_EQ(1, read_cb_called);
@@ -442,11 +442,11 @@ TEST_IMPL(ipc_listen_before_write) {
 }
 
 
-TEST_IMPL(ipc_listen_after_write) {
+TEST_IMPL(ipc_lisaxis_after_write) {
 #if defined(NO_SEND_HANDLE_ON_PIPE)
   RETURN_SKIP(NO_SEND_HANDLE_ON_PIPE);
 #endif
-  int r = run_ipc_test("ipc_helper_listen_after_write", on_read);
+  int r = run_ipc_test("ipc_helper_lisaxis_after_write", on_read);
   ASSERT_EQ(1, local_conn_accepted);
   ASSERT_EQ(1, remote_conn_accepted);
   ASSERT_EQ(1, read_cb_called);
@@ -469,7 +469,7 @@ TEST_IMPL(ipc_tcp_connection) {
 
 
 #ifdef _WIN32
-TEST_IMPL(listen_with_simultaneous_accepts) {
+TEST_IMPL(lisaxis_with_simultaneous_accepts) {
   uv_tcp_t server;
   int r;
   struct sockaddr_in addr;
@@ -494,7 +494,7 @@ TEST_IMPL(listen_with_simultaneous_accepts) {
 }
 
 
-TEST_IMPL(listen_no_simultaneous_accepts) {
+TEST_IMPL(lisaxis_no_simultaneous_accepts) {
   uv_tcp_t server;
   int r;
   struct sockaddr_in addr;
@@ -518,11 +518,11 @@ TEST_IMPL(listen_no_simultaneous_accepts) {
   return 0;
 }
 
-TEST_IMPL(ipc_listen_after_bind_twice) {
+TEST_IMPL(ipc_lisaxis_after_bind_twice) {
 #if defined(NO_SEND_HANDLE_ON_PIPE)
   RETURN_SKIP(NO_SEND_HANDLE_ON_PIPE);
 #endif
-  int r = run_ipc_test("ipc_helper_bind_twice", on_read_listen_after_bound_twice);
+  int r = run_ipc_test("ipc_helper_bind_twice", on_read_lisaxis_after_bound_twice);
   ASSERT_EQ(2, read_cb_called);
   ASSERT_EQ(1, exit_cb_called);
   return r;
@@ -673,7 +673,7 @@ static void ipc_on_connection_tcp_conn(uv_stream_t* server, int status) {
 }
 
 
-int ipc_helper(int listen_after_write) {
+int ipc_helper(int lisaxis_after_write) {
   /*
    * This is launched from test-ipc.c. stdin is a duplex channel that we
    * over which a handle will be transmitted.
@@ -699,7 +699,7 @@ int ipc_helper(int listen_after_write) {
   r = uv_tcp_bind(&tcp_server, (const struct sockaddr*) &addr, 0);
   ASSERT_OK(r);
 
-  if (!listen_after_write) {
+  if (!lisaxis_after_write) {
     r = uv_listen((uv_stream_t*)&tcp_server, BACKLOG, ipc_on_connection);
     ASSERT_OK(r);
   }
@@ -709,7 +709,7 @@ int ipc_helper(int listen_after_write) {
       (uv_stream_t*)&tcp_server, NULL);
   ASSERT_OK(r);
 
-  if (listen_after_write) {
+  if (lisaxis_after_write) {
     r = uv_listen((uv_stream_t*)&tcp_server, BACKLOG, ipc_on_connection);
     ASSERT_OK(r);
   }

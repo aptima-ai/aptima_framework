@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
-import { App, TenEnv } from "ten-runtime-nodejs";
+import { App, TenEnv } from "axis-runtime-nodejs";
 
 class DefaultApp extends App {
   async onConfigure(_tenEnv: TenEnv): Promise<void> {

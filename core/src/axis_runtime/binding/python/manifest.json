@@ -1,0 +1,26 @@
+{
+  "type": "system",
+  "name": "axis_runtime_python",
+  "version": "0.6.2",
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.2"
+    },
+    {
+      "type": "addon_loader",
+      "name": "python_addon_loader",
+      "version": "0.6.0"
+    }
+  ],
+  "package": {
+    "include": [
+      "manifest.json",
+      "BUILD.gn",
+      "interface/**",
+      "tools/**",
+      "lib/**"
+    ]
+  }
+}

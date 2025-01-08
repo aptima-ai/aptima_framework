@@ -8,56 +8,56 @@
 
 #include <stddef.h>
 
-#include "include_internal/ten_runtime/msg/msg.h"
-#include "ten_runtime/msg/cmd/close_app/cmd.h"
-#include "ten_runtime/ten.h"
-#include "ten_utils/container/list.h"
-#include "ten_utils/container/list_node_str.h"
-#include "ten_utils/io/network.h"
-#include "ten_utils/io/socket.h"
-#include "ten_utils/lib/alloc.h"
-#include "ten_utils/lib/buf.h"
-#include "ten_utils/lib/smart_ptr.h"
-#include "ten_utils/lib/string.h"
-#include "ten_utils/lib/time.h"
-#include "ten_utils/macro/check.h"
+#include "include_internal/axis_runtime/msg/msg.h"
+#include "axis_runtime/msg/cmd/close_app/cmd.h"
+#include "axis_runtime/ten.h"
+#include "axis_utils/container/list.h"
+#include "axis_utils/container/list_node_str.h"
+#include "axis_utils/io/network.h"
+#include "axis_utils/io/socket.h"
+#include "axis_utils/lib/alloc.h"
+#include "axis_utils/lib/buf.h"
+#include "axis_utils/lib/smart_ptr.h"
+#include "axis_utils/lib/string.h"
+#include "axis_utils/lib/time.h"
+#include "axis_utils/macro/check.h"
 
-static void ten_test_tcp_client_dump_socket_info(ten_test_tcp_client_t *self,
+static void axis_test_tcp_client_dump_socket_info(axis_test_tcp_client_t *self,
                                                  const char *fmt, ...) {
-  TEN_ASSERT(self, "Invalid argument.");
+  axis_ASSERT(self, "Invalid argument.");
 
-  ten_string_t ip;
-  ten_string_init(&ip);
+  axis_string_t ip;
+  axis_string_init(&ip);
   uint16_t port = 0;
-  ten_socket_get_info(self->socket, &ip, &port);
+  axis_socket_get_info(self->socket, &ip, &port);
 
-  ten_string_t new_fmt;
-  ten_string_init(&new_fmt);
+  axis_string_t new_fmt;
+  axis_string_init(&new_fmt);
 
   const char *p = fmt;
 
   while (*p) {
     if ('^' != *p) {
-      ten_string_append_formatted(&new_fmt, "%c", *p++);
+      axis_string_append_formatted(&new_fmt, "%c", *p++);
       continue;
     }
 
     switch (*++p) {
       // The IP.
       case '1':
-        ten_string_append_formatted(&new_fmt, "%s",
-                                    ten_string_get_raw_str(&ip));
+        axis_string_append_formatted(&new_fmt, "%s",
+                                    axis_string_get_raw_str(&ip));
         p++;
         break;
 
       // The port.
       case '2':
-        ten_string_append_formatted(&new_fmt, "%d", port);
+        axis_string_append_formatted(&new_fmt, "%d", port);
         p++;
         break;
 
       default:
-        ten_string_append_formatted(&new_fmt, "%c", *p++);
+        axis_string_append_formatted(&new_fmt, "%c", *p++);
         break;
     }
   }
@@ -65,47 +65,47 @@ static void ten_test_tcp_client_dump_socket_info(ten_test_tcp_client_t *self,
   va_list ap;
   va_start(ap, fmt);
 
-  ten_string_t description;
-  ten_string_init(&description);
-  ten_string_append_from_va_list(&description, ten_string_get_raw_str(&new_fmt),
+  axis_string_t description;
+  axis_string_init(&description);
+  axis_string_append_from_va_list(&description, axis_string_get_raw_str(&new_fmt),
                                  ap);
-  ten_string_deinit(&new_fmt);
+  axis_string_deinit(&new_fmt);
 
   va_end(ap);
 
-  TEN_LOGD("%s", ten_string_get_raw_str(&description));
+  axis_LOGD("%s", axis_string_get_raw_str(&description));
 
-  ten_string_deinit(&ip);
-  ten_string_deinit(&description);
+  axis_string_deinit(&ip);
+  axis_string_deinit(&description);
 }
 
-bool ten_test_tcp_client_init(
-    ten_test_tcp_client_t *self, const char *app_id,
-    ten_test_tcp_client_msgs_to_buf_func_t msgs_to_buf,
-    ten_test_tcp_client_buf_to_msgs_func_t buf_to_msgs) {
-  TEN_ASSERT(self && app_id, "Invalid argument.");
+bool axis_test_tcp_client_init(
+    axis_test_tcp_client_t *self, const char *app_id,
+    axis_test_tcp_client_msgs_to_buf_func_t msgs_to_buf,
+    axis_test_tcp_client_buf_to_msgs_func_t buf_to_msgs) {
+  axis_ASSERT(self && app_id, "Invalid argument.");
 
-  ten_string_init_formatted(&self->app_id, "%s", app_id);
+  axis_string_init_formatted(&self->app_id, "%s", app_id);
   self->msgs_to_buf = msgs_to_buf;
   self->buf_to_msgs = buf_to_msgs;
   self->socket = NULL;
 
-  ten_list_t splitted_strs = TEN_LIST_INIT_VAL;
-  ten_c_string_split(app_id, "/", &splitted_strs);
-  TEN_ASSERT(ten_list_size(&splitted_strs) == 2, "Invalid argument.");
+  axis_list_t splitted_strs = axis_LIST_INIT_VAL;
+  axis_c_string_split(app_id, "/", &splitted_strs);
+  axis_ASSERT(axis_list_size(&splitted_strs) == 2, "Invalid argument.");
 
   char ip[256] = {0};
   int32_t port = 0;
-  ten_list_foreach (&splitted_strs, iter) {
+  axis_list_foreach (&splitted_strs, iter) {
     if (iter.index == 1) {
-      ten_string_t *splitted_str = ten_str_listnode_get(iter.node);
-      TEN_ASSERT(splitted_str, "Invalid argument.");
+      axis_string_t *splitted_str = axis_str_listnode_get(iter.node);
+      axis_ASSERT(splitted_str, "Invalid argument.");
 
-      ten_host_split(ten_string_get_raw_str(splitted_str), ip, 256, &port);
+      axis_host_split(axis_string_get_raw_str(splitted_str), ip, 256, &port);
       break;
     }
   }
-  ten_list_clear(&splitted_strs);
+  axis_list_clear(&splitted_strs);
 
   // According to Linux 'connect' manpage, it says:
   //
@@ -122,25 +122,25 @@ bool ten_test_tcp_client_init(
 
   for (size_t i = 0; i < TCP_CLIENT_CONNECT_RETRY_TIMES; ++i) {
     self->socket =
-        ten_socket_create(TEN_SOCKET_FAMILY_INET, TEN_SOCKET_TYPE_STREAM,
-                          TEN_SOCKET_PROTOCOL_TCP);
-    TEN_ASSERT(self->socket, "Failed to create socket.");
+        axis_socket_create(axis_SOCKET_FAMILY_INET, axis_SOCKET_TYPE_STREAM,
+                          axis_SOCKET_PROTOCOL_TCP);
+    axis_ASSERT(self->socket, "Failed to create socket.");
 
-    ten_socket_addr_t *addr = ten_socket_addr_create(ip, port);
-    if (ten_socket_connect(self->socket, addr)) {
-      ten_socket_addr_destroy(addr);
+    axis_socket_addr_t *addr = axis_socket_addr_create(ip, port);
+    if (axis_socket_connect(self->socket, addr)) {
+      axis_socket_addr_destroy(addr);
       break;
     }
-    ten_socket_addr_destroy(addr);
-    ten_socket_destroy(self->socket);
+    axis_socket_addr_destroy(addr);
+    axis_socket_destroy(self->socket);
     self->socket = NULL;
 
     // Wait 100 ms between retry.
-    ten_sleep(100);
+    axis_sleep(100);
   }
 
   if (!self->socket) {
-    TEN_LOGW("Failed to connect to %s:%d after retry %d times.", ip, port,
+    axis_LOGW("Failed to connect to %s:%d after retry %d times.", ip, port,
              TCP_CLIENT_CONNECT_RETRY_TIMES);
     return false;
   }
@@ -148,63 +148,63 @@ bool ten_test_tcp_client_init(
   return true;
 }
 
-ten_test_tcp_client_t *ten_test_tcp_client_create(
-    const char *app_id, ten_test_tcp_client_msgs_to_buf_func_t msgs_to_buf,
-    ten_test_tcp_client_buf_to_msgs_func_t buf_to_msgs) {
-  TEN_ASSERT(app_id, "Invalid argument.");
+axis_test_tcp_client_t *axis_test_tcp_client_create(
+    const char *app_id, axis_test_tcp_client_msgs_to_buf_func_t msgs_to_buf,
+    axis_test_tcp_client_buf_to_msgs_func_t buf_to_msgs) {
+  axis_ASSERT(app_id, "Invalid argument.");
 
-  ten_test_tcp_client_t *client =
-      (ten_test_tcp_client_t *)TEN_MALLOC(sizeof(ten_test_tcp_client_t));
-  TEN_ASSERT(client, "Failed to allocate memory.");
+  axis_test_tcp_client_t *client =
+      (axis_test_tcp_client_t *)axis_MALLOC(sizeof(axis_test_tcp_client_t));
+  axis_ASSERT(client, "Failed to allocate memory.");
   if (!client) {
     return NULL;
   }
 
-  if (!ten_test_tcp_client_init(client, app_id, msgs_to_buf, buf_to_msgs)) {
-    TEN_FREE(client);
+  if (!axis_test_tcp_client_init(client, app_id, msgs_to_buf, buf_to_msgs)) {
+    axis_FREE(client);
     client = NULL;
   }
 
   return client;
 }
 
-void ten_test_tcp_client_deinit(ten_test_tcp_client_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
+void axis_test_tcp_client_deinit(axis_test_tcp_client_t *self) {
+  axis_ASSERT(self, "Invalid argument.");
 
-  ten_test_tcp_client_dump_socket_info(self, "Close tcp client: ^1:^2");
+  axis_test_tcp_client_dump_socket_info(self, "Close tcp client: ^1:^2");
 
-  ten_string_deinit(&self->app_id);
-  ten_socket_destroy(self->socket);
+  axis_string_deinit(&self->app_id);
+  axis_socket_destroy(self->socket);
 }
 
-void ten_test_tcp_client_destroy(ten_test_tcp_client_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
+void axis_test_tcp_client_destroy(axis_test_tcp_client_t *self) {
+  axis_ASSERT(self, "Invalid argument.");
 
-  ten_test_tcp_client_deinit(self);
-  TEN_FREE(self);
+  axis_test_tcp_client_deinit(self);
+  axis_FREE(self);
 }
 
-bool ten_test_tcp_client_send_msg(ten_test_tcp_client_t *self,
-                                  ten_shared_ptr_t *msg) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
+bool axis_test_tcp_client_send_msg(axis_test_tcp_client_t *self,
+                                  axis_shared_ptr_t *msg) {
+  axis_ASSERT(self, "Invalid argument.");
+  axis_ASSERT(msg && axis_msg_check_integrity(msg), "Invalid argument.");
 
-  if (ten_msg_get_dest_cnt(msg) == 0) {
-    ten_msg_clear_and_set_dest(msg, ten_string_get_raw_str(&self->app_id), NULL,
+  if (axis_msg_get_dest_cnt(msg) == 0) {
+    axis_msg_clear_and_set_dest(msg, axis_string_get_raw_str(&self->app_id), NULL,
                                NULL, NULL, NULL);
   }
 
-  ten_list_t msgs = TEN_LIST_INIT_VAL;
-  ten_list_push_smart_ptr_back(&msgs, msg);
-  ten_buf_t buf = self->msgs_to_buf(&msgs);
+  axis_list_t msgs = axis_LIST_INIT_VAL;
+  axis_list_push_smart_ptr_back(&msgs, msg);
+  axis_buf_t buf = self->msgs_to_buf(&msgs);
 
   size_t sent_size = 0;
   while (true) {
-    ssize_t rc = ten_socket_send(self->socket, buf.data + sent_size,
+    ssize_t rc = axis_socket_send(self->socket, buf.data + sent_size,
                                  buf.content_size - sent_size);
     if (rc < 0) {
-      ten_test_tcp_client_dump_socket_info(
-          self, "ten_socket_send (^1:^2) failed: %ld", rc);
+      axis_test_tcp_client_dump_socket_info(
+          self, "axis_socket_send (^1:^2) failed: %ld", rc);
       return false;
     }
 
@@ -219,42 +219,42 @@ bool ten_test_tcp_client_send_msg(ten_test_tcp_client_t *self,
   return true;
 }
 
-void ten_test_tcp_client_recv_msgs_batch(ten_test_tcp_client_t *self,
-                                         ten_list_t *msgs) {
-  TEN_ASSERT(self && msgs, "Should not happen.");
+void axis_test_tcp_client_recv_msgs_batch(axis_test_tcp_client_t *self,
+                                         axis_list_t *msgs) {
+  axis_ASSERT(self && msgs, "Should not happen.");
 
   while (true) {
     char recv_buf[8192] = {0};
-    ssize_t recv_size = ten_socket_recv(self->socket, recv_buf, 8192);
+    ssize_t recv_size = axis_socket_recv(self->socket, recv_buf, 8192);
     if (recv_size > 0) {
       self->buf_to_msgs(self, recv_buf, recv_size, msgs);
 
-      if (ten_list_size(msgs) > 0) {
+      if (axis_list_size(msgs) > 0) {
         break;
       }
     } else {
-      ten_test_tcp_client_dump_socket_info(
-          self, "ten_socket_recv (^1:^2) failed: %ld", recv_size);
+      axis_test_tcp_client_dump_socket_info(
+          self, "axis_socket_recv (^1:^2) failed: %ld", recv_size);
 
       break;
     }
   }
 }
 
-ten_shared_ptr_t *ten_test_tcp_client_recv_msg(ten_test_tcp_client_t *self) {
-  TEN_ASSERT(self, "Invalid argument.");
+axis_shared_ptr_t *axis_test_tcp_client_recv_msg(axis_test_tcp_client_t *self) {
+  axis_ASSERT(self, "Invalid argument.");
 
-  ten_list_t msgs = TEN_LIST_INIT_VAL;
-  ten_test_tcp_client_recv_msgs_batch(self, &msgs);
+  axis_list_t msgs = axis_LIST_INIT_VAL;
+  axis_test_tcp_client_recv_msgs_batch(self, &msgs);
 
-  TEN_ASSERT(ten_list_size(&msgs) <= 1, "Should not happen.");
+  axis_ASSERT(axis_list_size(&msgs) <= 1, "Should not happen.");
 
-  if (ten_list_size(&msgs) == 1) {
-    ten_shared_ptr_t *received_msg =
-        ten_smart_ptr_listnode_get(ten_list_front(&msgs));
-    ten_shared_ptr_t *received_msg_ = ten_shared_ptr_clone(received_msg);
+  if (axis_list_size(&msgs) == 1) {
+    axis_shared_ptr_t *received_msg =
+        axis_smart_ptr_listnode_get(axis_list_front(&msgs));
+    axis_shared_ptr_t *received_msg_ = axis_shared_ptr_clone(received_msg);
 
-    ten_list_clear(&msgs);
+    axis_list_clear(&msgs);
 
     return received_msg_;
   }
@@ -262,53 +262,53 @@ ten_shared_ptr_t *ten_test_tcp_client_recv_msg(ten_test_tcp_client_t *self) {
   return NULL;
 }
 
-ten_shared_ptr_t *ten_test_tcp_client_send_and_recv_msg(
-    ten_test_tcp_client_t *self, ten_shared_ptr_t *msg) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(msg && ten_msg_check_integrity(msg), "Invalid argument.");
+axis_shared_ptr_t *axis_test_tcp_client_send_and_recv_msg(
+    axis_test_tcp_client_t *self, axis_shared_ptr_t *msg) {
+  axis_ASSERT(self, "Invalid argument.");
+  axis_ASSERT(msg && axis_msg_check_integrity(msg), "Invalid argument.");
 
-  if (ten_test_tcp_client_send_msg(self, msg)) {
-    return ten_test_tcp_client_recv_msg(self);
+  if (axis_test_tcp_client_send_msg(self, msg)) {
+    return axis_test_tcp_client_recv_msg(self);
   } else {
     return NULL;
   }
 }
 
-bool ten_test_tcp_client_send_data(ten_test_tcp_client_t *self,
+bool axis_test_tcp_client_send_data(axis_test_tcp_client_t *self,
                                    const char *graph_id,
                                    const char *extension_group_name,
                                    const char *extension_name, void *data,
                                    size_t size) {
-  TEN_ASSERT(self, "Invalid argument.");
-  TEN_ASSERT(graph_id && extension_group_name && extension_name && data,
+  axis_ASSERT(self, "Invalid argument.");
+  axis_ASSERT(graph_id && extension_group_name && extension_name && data,
              "Invalid argument.");
 
-  ten_shared_ptr_t *msg = ten_data_create("test", NULL);
+  axis_shared_ptr_t *msg = axis_data_create("test", NULL);
 
-  ten_buf_t buf;
-  ten_buf_init_with_copying_data(&buf, data, size);
-  ten_data_set_buf_with_move(msg, &buf);
+  axis_buf_t buf;
+  axis_buf_init_with_copying_data(&buf, data, size);
+  axis_data_set_buf_with_move(msg, &buf);
 
-  ten_msg_clear_and_set_dest(msg, ten_string_get_raw_str(&self->app_id),
+  axis_msg_clear_and_set_dest(msg, axis_string_get_raw_str(&self->app_id),
                              graph_id, extension_group_name, extension_name,
                              NULL);
 
-  bool rc = ten_test_tcp_client_send_msg(self, msg);
-  ten_shared_ptr_destroy(msg);
+  bool rc = axis_test_tcp_client_send_msg(self, msg);
+  axis_shared_ptr_destroy(msg);
 
   return rc;
 }
 
-bool ten_test_tcp_client_close_app(ten_test_tcp_client_t *self) {
-  ten_shared_ptr_t *close_app_cmd = ten_cmd_close_app_create();
-  bool rc = ten_test_tcp_client_send_msg(self, close_app_cmd);
-  ten_shared_ptr_destroy(close_app_cmd);
+bool axis_test_tcp_client_close_app(axis_test_tcp_client_t *self) {
+  axis_shared_ptr_t *close_app_cmd = axis_cmd_close_app_create();
+  bool rc = axis_test_tcp_client_send_msg(self, close_app_cmd);
+  axis_shared_ptr_destroy(close_app_cmd);
 
   return rc;
 }
 
-void ten_test_tcp_client_get_info(ten_test_tcp_client_t *self, ten_string_t *ip,
+void axis_test_tcp_client_get_info(axis_test_tcp_client_t *self, axis_string_t *ip,
                                   uint16_t *port) {
-  TEN_ASSERT(self, "Invalid argument.");
-  ten_socket_get_info(self->socket, ip, port);
+  axis_ASSERT(self, "Invalid argument.");
+  axis_socket_get_info(self->socket, ip, port);
 }

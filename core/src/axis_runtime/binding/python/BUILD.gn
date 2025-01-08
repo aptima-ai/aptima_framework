@@ -1,0 +1,50 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/feature/axis_package.gni")
+import("//build/options.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/options.gni")
+import("//build/axis_runtime/ten.gni")
+import("//core/src/axis_runtime/output_libs.gni")
+
+axis_package("axis_python_binding_system_package") {
+  package_kind = "system"
+  package_output_root_dir_name = "axis_runtime_python"
+
+  resources = [
+    "//core/src/axis_runtime/binding/python/interface=>interface",
+    "//core/src/axis_runtime/binding/python/tools=>tools",
+    "BUILD_release.gn=>BUILD.gn",
+    "manifest.json",
+  ]
+
+  foreach(lib, axis_runtime_python_output_libs) {
+    libname = get_path_info(rebase_path(lib), "file")
+    resources += [ "${lib}=>lib/${libname}" ]
+  }
+
+  deps = [ "native:axis_runtime_python" ]
+}
+
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_axis_python_binding_system_package_to_server") {
+    base_dir =
+        rebase_path("${root_out_dir}/axis_packages/system/axis_runtime_python")
+    deps = [
+      ":axis_python_binding_system_package",
+      "native:axis_runtime_python",
+    ]
+  }
+}
+
+group("python") {
+  deps = [ "native:axis_runtime_python" ]
+
+  if (axis_enable_axis_manager) {
+    deps += [ ":upload_axis_python_binding_system_package_to_server" ]
+  }
+}

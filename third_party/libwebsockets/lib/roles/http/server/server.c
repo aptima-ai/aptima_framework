@@ -63,7 +63,7 @@ struct vh_sock_args {
 static int
 check_extant(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct vh_sock_args *a = (struct vh_sock_args *)user;
 
 	if (!lws_vhost_compare_listen(wsi->a.vhost, a->vhost))
@@ -99,7 +99,7 @@ _lws_vhost_init_server_af(struct vh_sock_args *a)
 
 	lwsl_info("%s: af %d\n", __func__, (int)a->af);
 
-	if (lws_vhost_foreach_listen_wsi(a->vhost->context, a, check_extant))
+	if (lws_vhost_foreach_lisaxis_wsi(a->vhost->context, a, check_extant))
 		return 0;
 
 deal:
@@ -111,7 +111,7 @@ deal:
 		 * of the interface he wants to bind to...
 		 */
 		is = lws_socket_bind(a->vhost, NULL, LWS_SOCK_INVALID,
-				     a->vhost->listen_port, a->vhost->iface,
+				     a->vhost->lisaxis_port, a->vhost->iface,
 				     a->af);
 		lwsl_debug("initial if check says %d\n", is);
 
@@ -159,7 +159,7 @@ done_list:
 			/* first time */
 			lwsl_err("%s: VH %s: iface %s port %d DOESN'T EXIST\n",
 				 __func__, a->vhost->name, a->vhost->iface,
-				 a->vhost->listen_port);
+				 a->vhost->lisaxis_port);
 
 			return (a->info->options &
 				LWS_SERVER_OPTION_FAIL_UPON_UNABLE_TO_BIND) ==
@@ -173,7 +173,7 @@ done_list:
 
 			lwsl_err("%s: VH %s: iface %s port %d NOT USABLE\n",
 				 __func__, a->vhost->name, a->vhost->iface,
-				 a->vhost->listen_port);
+				 a->vhost->lisaxis_port);
 
 			return (a->info->options &
 				LWS_SERVER_OPTION_FAIL_UPON_UNABLE_TO_BIND) ==
@@ -218,7 +218,7 @@ done_list:
 		 * for lws, to match Linux, we default to exclusive listen
 		 */
 		if (!lws_check_opt(a->vhost->options,
-				LWS_SERVER_OPTION_ALLOW_LISTEN_SHARE)) {
+				LWS_SERVER_OPTION_ALLOW_LISaxis_SHARE)) {
 			if (setsockopt(sockfd, SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
 				       (const void *)&opt, sizeof(opt)) < 0) {
 				lwsl_err("reuseaddr failed\n");
@@ -259,7 +259,7 @@ done_list:
 		n = 1;
 #else
 		n = lws_check_opt(a->vhost->options,
-				  LWS_SERVER_OPTION_ALLOW_LISTEN_SHARE);
+				  LWS_SERVER_OPTION_ALLOW_LISaxis_SHARE);
 #endif
 		if (n || cx->count_threads > 1) /* ... also implied by threads > 1 */
 			if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT,
@@ -272,7 +272,7 @@ done_list:
 		lws_plat_set_socket_options(a->vhost, sockfd, 0);
 
 		is = lws_socket_bind(a->vhost, NULL, sockfd,
-				     a->vhost->listen_port,
+				     a->vhost->lisaxis_port,
 				     a->vhost->iface, a->af);
 
 		if (is == LWS_ITOSA_BUSY) {
@@ -314,7 +314,7 @@ done_list:
 #endif
 		{
 			wsi->unix_skt = 1;
-			a->vhost->listen_port = is;
+			a->vhost->lisaxis_port = is;
 
 			lwsl_debug("%s: lws_socket_bind says %d\n", __func__, is);
 		}
@@ -324,8 +324,8 @@ done_list:
 		lws_vhost_bind_wsi(a->vhost, wsi);
 		wsi->listener = 1;
 
-		if (wsi->a.context->event_loop_ops->init_vhost_listen_wsi)
-			wsi->a.context->event_loop_ops->init_vhost_listen_wsi(wsi);
+		if (wsi->a.context->event_loop_ops->init_vhost_lisaxis_wsi)
+			wsi->a.context->event_loop_ops->init_vhost_lisaxis_wsi(wsi);
 
 		pt = &cx->pt[m];
 		lws_pt_lock(pt, __func__);
@@ -336,11 +336,11 @@ done_list:
 			goto bail;
 		}
 
-		lws_dll2_add_tail(&wsi->listen_list, &a->vhost->listen_wsi);
+		lws_dll2_add_tail(&wsi->lisaxis_list, &a->vhost->lisaxis_wsi);
 		lws_pt_unlock(pt);
 
 #if defined(WIN32) && defined(TCP_FASTOPEN)
-		if (a->vhost->fo_listen_queue) {
+		if (a->vhost->fo_lisaxis_queue) {
 			int optval = 1;
 			if (setsockopt(wsi->desc.sockfd, IPPROTO_TCP,
 				       TCP_FASTOPEN,
@@ -352,8 +352,8 @@ done_list:
 		}
 #else
 #if defined(TCP_FASTOPEN)
-		if (a->vhost->fo_listen_queue) {
-			int qlen = a->vhost->fo_listen_queue;
+		if (a->vhost->fo_lisaxis_queue) {
+			int qlen = a->vhost->fo_lisaxis_queue;
 
 			if (setsockopt(wsi->desc.sockfd, SOL_TCP, TCP_FASTOPEN,
 				       &qlen, sizeof(qlen)))
@@ -365,7 +365,7 @@ done_list:
 		n = listen(wsi->desc.sockfd, LWS_SOMAXCONN);
 		if (n < 0) {
 			lwsl_err("listen failed with error %d\n", LWS_ERRNO);
-			lws_dll2_remove(&wsi->listen_list);
+			lws_dll2_remove(&wsi->lisaxis_list);
 			__remove_wsi_socket_from_fds(wsi);
 			goto bail;
 		}
@@ -376,7 +376,7 @@ done_list:
 				     &wsi->lc, "listen|%s|%s|%d",
 				     a->vhost->name,
 				     a->vhost->iface ? a->vhost->iface : "",
-				     (int)a->vhost->listen_port);
+				     (int)a->vhost->lisaxis_port);
 
 	} /* for each thread able to independently listen */
 
@@ -388,10 +388,10 @@ done_list:
 #endif
 			lwsl_info(" Listening on %s:%d\n",
 					a->vhost->iface,
-					a->vhost->listen_port);
+					a->vhost->lisaxis_port);
         }
 
-	// info->port = vhost->listen_port;
+	// info->port = vhost->lisaxis_port;
 
 	return 0;
 
@@ -413,13 +413,13 @@ _lws_vhost_init_server(const struct lws_context_creation_info *info,
 
 	if (info) {
 		vhost->iface = info->iface;
-		vhost->listen_port = info->port;
+		vhost->lisaxis_port = info->port;
 	}
 
 	/* set up our external listening socket we serve on */
 
-	if (vhost->listen_port == CONTEXT_PORT_NO_LISTEN ||
-	    vhost->listen_port == CONTEXT_PORT_NO_LISTEN_SERVER)
+	if (vhost->lisaxis_port == CONTEXT_PORT_NO_LISTEN ||
+	    vhost->lisaxis_port == CONTEXT_PORT_NO_LISaxis_SERVER)
 		return 0;
 
 	/*
@@ -516,7 +516,7 @@ lws_select_vhost(struct lws_context *context, int port, const char *servername)
 	/* Priotity 1: first try exact matches */
 
 	while (vhost) {
-		if (port == vhost->listen_port &&
+		if (port == vhost->lisaxis_port &&
 		    !strncmp(vhost->name, servername, (unsigned int)colon)) {
 			lwsl_info("SNI: Found: %s\n", servername);
 			return vhost;
@@ -534,7 +534,7 @@ lws_select_vhost(struct lws_context *context, int port, const char *servername)
 	vhost = context->vhost_list;
 	while (vhost) {
 		int m = (int)strlen(vhost->name);
-		if (port && port == vhost->listen_port &&
+		if (port && port == vhost->lisaxis_port &&
 		    m <= (colon - 2) &&
 		    servername[colon - m - 1] == '.' &&
 		    !strncmp(vhost->name, servername + colon - m, (unsigned int)m)) {
@@ -549,7 +549,7 @@ lws_select_vhost(struct lws_context *context, int port, const char *servername)
 
 	vhost = context->vhost_list;
 	while (vhost) {
-		if (port && port == vhost->listen_port) {
+		if (port && port == vhost->lisaxis_port) {
 			lwsl_info("%s: vhost match to %s based on port %d\n",
 					__func__, vhost->name, port);
 			return vhost;
@@ -1439,7 +1439,7 @@ lws_http_proxy_start(struct lws *wsi, const struct lws_http_mount *hit,
 
 	if (i.host)
 		lws_snprintf(host, sizeof(host), "%s:%u", i.host,
-					wsi->a.vhost->listen_port);
+					wsi->a.vhost->lisaxis_port);
 	else
 		lws_snprintf(host, sizeof(host), "%s:%d", i.address, i.port);
 
@@ -2118,9 +2118,9 @@ lws_confirm_host_header(struct lws *wsi)
 		if (e != LWS_TOKZE_ENDED)
 			goto bad_format;
 
-	if (wsi->a.vhost->listen_port != port) {
+	if (wsi->a.vhost->lisaxis_port != port) {
 		lwsl_info("%s: host port %d mismatches vhost port %d\n",
-			  __func__, port, wsi->a.vhost->listen_port);
+			  __func__, port, wsi->a.vhost->lisaxis_port);
 		return 1;
 	}
 
@@ -2144,13 +2144,13 @@ lws_http_to_fallback(struct lws *wsi, unsigned char *obuf, size_t olen)
 	char ipbuf[64];
 	int n;
 
-	if (wsi->a.vhost->listen_accept_role &&
-	    lws_role_by_name(wsi->a.vhost->listen_accept_role))
-		role = lws_role_by_name(wsi->a.vhost->listen_accept_role);
+	if (wsi->a.vhost->lisaxis_accept_role &&
+	    lws_role_by_name(wsi->a.vhost->lisaxis_accept_role))
+		role = lws_role_by_name(wsi->a.vhost->lisaxis_accept_role);
 
-	if (wsi->a.vhost->listen_accept_protocol) {
+	if (wsi->a.vhost->lisaxis_accept_protocol) {
 		p1 = lws_vhost_name_to_protocol(wsi->a.vhost,
-			    wsi->a.vhost->listen_accept_protocol);
+			    wsi->a.vhost->lisaxis_accept_protocol);
 		if (p1)
 			protocol = p1;
 	}
@@ -2230,7 +2230,7 @@ lws_handshake_server(struct lws *wsi, unsigned char **buf, size_t len)
 
 			/*
 			 * http parser went off the rails and
-			 * LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_
+			 * LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_
 			 * ACCEPT_CONFIG is set on this vhost.
 			 *
 			 * We are transitioning from http with an AH, to
@@ -2265,10 +2265,10 @@ raw_transition:
 
 		/* select vhost */
 
-		if (wsi->a.vhost->listen_port &&
+		if (wsi->a.vhost->lisaxis_port &&
 		    lws_hdr_total_length(wsi, WSI_TOKEN_HOST)) {
 			struct lws_vhost *vhost = lws_select_vhost(
-				context, wsi->a.vhost->listen_port,
+				context, wsi->a.vhost->lisaxis_port,
 				lws_hdr_simple_ptr(wsi, WSI_TOKEN_HOST));
 
 			if (vhost)

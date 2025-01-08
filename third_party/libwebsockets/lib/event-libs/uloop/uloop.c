@@ -133,9 +133,9 @@ lws_uloop_cb(struct uloop_fd *ufd, unsigned int revents)
 }
 
 static int
-elops_listen_init_uloop(struct lws_dll2 *d, void *user)
+elops_lisaxis_init_uloop(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct lws_wsi_eventlibs_uloop *wu = wsi_to_priv_uloop(wsi);
 
 	wu->wsi = wsi;
@@ -155,7 +155,7 @@ elops_init_pt_uloop(struct lws_context *context, void *v, int tsi)
 
 	ptpr->pt = pt;
 
-	lws_vhost_foreach_listen_wsi(context, NULL, elops_listen_init_uloop);
+	lws_vhost_foreach_lisaxis_wsi(context, NULL, elops_lisaxis_init_uloop);
 
 	/* static event loop objects */
 
@@ -215,9 +215,9 @@ elops_run_pt_uloop(struct lws_context *context, int tsi)
 }
 
 static int
-elops_listen_destroy_uloop(struct lws_dll2 *d, void *user)
+elops_lisaxis_destroy_uloop(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct lws_wsi_eventlibs_uloop *wu = wsi_to_priv_uloop(wsi);
 
 	uloop_fd_delete(&wu->fd);
@@ -231,7 +231,7 @@ elops_destroy_pt_uloop(struct lws_context *context, int tsi)
 	struct lws_context_per_thread *pt = &context->pt[tsi];
 	struct lws_pt_eventlibs_uloop *ptpr = pt_to_priv_uloop(pt);
 
-	lws_vhost_foreach_listen_wsi(context, NULL, elops_listen_destroy_uloop);
+	lws_vhost_foreach_lisaxis_wsi(context, NULL, elops_lisaxis_destroy_uloop);
 
 	uloop_timeout_cancel(&ptpr->hrtimer);
 	uloop_timeout_cancel(&ptpr->idle_timer);
@@ -261,7 +261,7 @@ elops_wsi_logical_close_uloop(struct lws *wsi)
 }
 
 static int
-elops_init_vhost_listen_wsi_uloop(struct lws *wsi)
+elops_init_vhost_lisaxis_wsi_uloop(struct lws *wsi)
 {
 	struct lws_wsi_eventlibs_uloop *wu;
 
@@ -286,7 +286,7 @@ static const struct lws_event_loop_ops event_loop_ops_uloop = {
 	/* init_context */		NULL,
 	/* destroy_context1 */		NULL,
 	/* destroy_context2 */		NULL,
-	/* init_vhost_listen_wsi */	elops_init_vhost_listen_wsi_uloop,
+	/* init_vhost_lisaxis_wsi */	elops_init_vhost_lisaxis_wsi_uloop,
 	/* init_pt */			elops_init_pt_uloop,
 	/* wsi_logical_close */		elops_wsi_logical_close_uloop,
 	/* check_client_connect_ok */	NULL,

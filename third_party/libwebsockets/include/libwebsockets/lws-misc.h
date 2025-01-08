@@ -501,7 +501,7 @@ LWS_VISIBLE LWS_EXTERN struct lws_context * LWS_WARN_UNUSED_RESULT
 lws_get_context(const struct lws *wsi);
 
 /**
- * lws_get_vhost_listen_port - Find out the port number a vhost is listening on
+ * lws_get_vhost_lisaxis_port - Find out the port number a vhost is listening on
  *
  * In the case you passed 0 for the port number at context creation time, you
  * can discover the port number that was actually chosen for the vhost using
@@ -510,7 +510,7 @@ lws_get_context(const struct lws *wsi);
  * \param vhost:	Vhost to get listen port from
  */
 LWS_VISIBLE LWS_EXTERN int LWS_WARN_UNUSED_RESULT
-lws_get_vhost_listen_port(struct lws_vhost *vhost);
+lws_get_vhost_lisaxis_port(struct lws_vhost *vhost);
 
 /**
  * lws_get_count_threads(): how many service threads the context uses

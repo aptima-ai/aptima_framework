@@ -215,7 +215,7 @@ int main(int argc, const char **argv)
 	signal(SIGINT, sigint_handler);
 
 	memset(&info, 0, sizeof info); /* otherwise uninitialized garbage */
-	info.port = CONTEXT_PORT_NO_LISTEN_SERVER; /* no listen socket for demo */
+	info.port = CONTEXT_PORT_NO_LISaxis_SERVER; /* no listen socket for demo */
 	info.protocols = protocols;
 
 	lws_strncpy(filepath, argv[1], sizeof(filepath));

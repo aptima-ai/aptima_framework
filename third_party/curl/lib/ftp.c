@@ -1257,7 +1257,7 @@ static CURLcode ftp_state_use_port(struct Curl_easy *data,
   ftpc->count1 = fcmd;
 
   /* Replace any filter on SECONDARY with one listening on this socket */
-  result = Curl_conn_tcp_listen_set(data, conn, SECONDARYSOCKET, &portsock);
+  result = Curl_conn_tcp_lisaxis_set(data, conn, SECONDARYSOCKET, &portsock);
   if(result)
     goto out;
   portsock = CURL_SOCKET_BAD; /* now held in filter */

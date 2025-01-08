@@ -33,17 +33,17 @@ jobs:
       - name: Update version
         run: |
           git config --global --add safe.directory $(pwd)
-          python3 tools/version/update_version_in_ten_framework.py
-          python3 tools/version/check_version_in_ten_framework.py
+          python3 tools/version/update_version_in_axis_framework.py
+          python3 tools/version/check_version_in_axis_framework.py
 
       - name: Update supports
         run: |
           UPDATE_SUPPORTS_SCRIPT=$(pwd)/tools/supports/update_supports_in_manifest_json.py
 
           ARRAY=(
-            "core/src/ten_runtime"
-            "core/src/ten_runtime/binding/go"
-            "core/src/ten_runtime/binding/python"
+            "core/src/axis_runtime"
+            "core/src/axis_runtime/binding/go"
+            "core/src/axis_runtime/binding/python"
             "packages/core_addon_loaders/python_addon_loader"
           )
 
@@ -71,9 +71,9 @@ jobs:
         run: |
           docker run --rm --platform linux/arm64 \
             -v $(pwd):/${{ github.workspace }} -w ${{ github.workspace }} \
-            ghcr.io/ten-framework/ten_building_ubuntu2204 \
+            ghcr.io/axis-talk/axis_building_ubuntu2204 \
             bash -c "\
-              export PATH=$(pwd)/core/ten_gn:/usr/local/go/bin:/root/go/bin:/root/.cargo/bin:$PATH && \
+              export PATH=$(pwd)/core/axis_gn:/usr/local/go/bin:/root/go/bin:/root/.cargo/bin:$PATH && \
               echo $PATH && \
               go env -w GOFLAGS="-buildvcs=false" && \
               go1.20.12 download && \
@@ -83,7 +83,7 @@ jobs:
               apt-get install -y nodejs && \
               rustup default nightly && \
               df -h . && \
-              tgn gen linux arm64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_enable_tests=false ten_rust_enable_tests=false ten_manager_enable_tests=false ten_enable_libwebsockets=false ten_enable_cargo_clean=true ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false ten_enable_nodejs_binding=false && \
+              tgn gen linux arm64 ${{ matrix.build_type }} -- is_clang=${{ matrix.compiler == 'gcc' && 'false' || 'true' }} log_level=1 enable_serialized_actions=true axis_enable_serialized_rust_action=true axis_enable_tests=false axis_rust_enable_tests=false axis_manager_enable_tests=false axis_enable_libwebsockets=false axis_enable_cargo_clean=true axis_enable_rust_incremental_build=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false axis_enable_nodejs_binding=false && \
               tgn build linux arm64 ${{ matrix.build_type }} && \
               df -h . && \
               tree -I 'gen|obj' out \
@@ -93,36 +93,36 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tman-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}
-          path: out/linux/arm64/ten_manager/bin/tman
+          path: out/linux/arm64/axis_manager/bin/tman
 
-      - name: Upload ten_packages
+      - name: Upload axis_packages
         uses: actions/upload-artifact@v4
         with:
-          name: ten_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}
+          name: axis_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}
           path: |
-            out/linux/arm64/ten_packages/system/ten_runtime
-            out/linux/arm64/ten_packages/system/ten_runtime_go
-            out/linux/arm64/ten_packages/system/ten_runtime_python
-            out/linux/arm64/ten_packages/extension/default_extension_cpp
-            out/linux/arm64/ten_packages/extension/default_extension_go
-            out/linux/arm64/ten_packages/extension/default_extension_python
-            out/linux/arm64/ten_packages/extension/default_async_extension_python
-            out/linux/arm64/ten_packages/addon_loader/python_addon_loader
+            out/linux/arm64/axis_packages/system/axis_runtime
+            out/linux/arm64/axis_packages/system/axis_runtime_go
+            out/linux/arm64/axis_packages/system/axis_runtime_python
+            out/linux/arm64/axis_packages/extension/default_extension_cpp
+            out/linux/arm64/axis_packages/extension/default_extension_go
+            out/linux/arm64/axis_packages/extension/default_extension_python
+            out/linux/arm64/axis_packages/extension/default_async_extension_python
+            out/linux/arm64/axis_packages/addon_loader/python_addon_loader
 
       - name: Package assets
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           cd out/linux/arm64
-          zip -vr tman-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip ten_manager/bin/tman
-          zip -vr ten_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip \
-            ten_packages/system/ten_runtime \
-            ten_packages/system/ten_runtime_go \
-            ten_packages/system/ten_runtime_python \
-            ten_packages/extension/default_extension_cpp \
-            ten_packages/extension/default_extension_go \
-            ten_packages/extension/default_extension_python \
-            ten_packages/extension/default_async_extension_python \
-            ten_packages/addon_loader/python_addon_loader
+          zip -vr tman-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip axis_manager/bin/tman
+          zip -vr axis_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip \
+            axis_packages/system/axis_runtime \
+            axis_packages/system/axis_runtime_go \
+            axis_packages/system/axis_runtime_python \
+            axis_packages/extension/default_extension_cpp \
+            axis_packages/extension/default_extension_go \
+            axis_packages/extension/default_extension_python \
+            axis_packages/extension/default_async_extension_python \
+            axis_packages/addon_loader/python_addon_loader
 
       - name: Publish to release assets
         uses: softprops/action-gh-release@v2
@@ -130,19 +130,19 @@ jobs:
         with:
           files: |
             out/linux/arm64/tman-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
-            out/linux/arm64/ten_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
+            out/linux/arm64/axis_packages-linux-arm64-${{ matrix.compiler }}-${{ matrix.build_type }}.zip
 
       - name: Publish release to TEN cloud store
         if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.compiler == 'gcc' && matrix.build_type == 'release' }}
         run: |
           docker run --rm --platform linux/arm64 \
               -v $(pwd):/${{ github.workspace }} -w ${{ github.workspace }} --entrypoint /bin/bash \
-              ghcr.io/ten-framework/ten_building_ubuntu2204 -c "\
+              ghcr.io/axis-talk/axis_building_ubuntu2204 -c "\
               set -x && \
-              cd out/linux/arm64/ten_packages && \
-              cd system/ten_runtime && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - && \
-              cd system/ten_runtime_go && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - && \
-              cd system/ten_runtime_python && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - && \
-              cd addon_loader/python_addon_loader && ../../../ten_manager/bin/tman --verbose --user-token ${{ secrets.TEN_CLOUD_STORE }} publish && cd - \
+              cd out/linux/arm64/axis_packages && \
+              cd system/axis_runtime && ../../../axis_manager/bin/tman --verbose --user-token ${{ secrets.axis_CLOUD_STORE }} publish && cd - && \
+              cd system/axis_runtime_go && ../../../axis_manager/bin/tman --verbose --user-token ${{ secrets.axis_CLOUD_STORE }} publish && cd - && \
+              cd system/axis_runtime_python && ../../../axis_manager/bin/tman --verbose --user-token ${{ secrets.axis_CLOUD_STORE }} publish && cd - && \
+              cd addon_loader/python_addon_loader && ../../../axis_manager/bin/tman --verbose --user-token ${{ secrets.axis_CLOUD_STORE }} publish && cd - \
           "
         shell: bash

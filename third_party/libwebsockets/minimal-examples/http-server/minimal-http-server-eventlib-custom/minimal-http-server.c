@@ -251,7 +251,7 @@ static const struct lws_event_loop_ops event_loop_ops_custom = {
 	.name				= "custom",
 
 	.init_pt			= init_pt_custom,
-	.init_vhost_listen_wsi		= sock_accept_custom,
+	.init_vhost_lisaxis_wsi		= sock_accept_custom,
 	.sock_accept			= sock_accept_custom,
 	.io				= io_custom,
 	.wsi_logical_close		= wsi_logical_close_custom,

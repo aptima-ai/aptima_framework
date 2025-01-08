@@ -1,0 +1,27 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/feature/test.gni")
+import("//build/axis_runtime/ten.gni")
+
+axis_package_test_prepare_auxiliary_resources("standalone_test_cpp_files") {
+  resources = [
+    "//tests/axis_runtime/integration/common=>common",
+    "//tests/axis_runtime/integration/cpp/standalone_test_cpp/default_extension_cpp=>default_extension_cpp",
+    "__init__.py",
+    "test_case.py",
+  ]
+
+  if (axis_enable_axis_manager) {
+    # The standalone testing for the C++ extension depends on the googletest
+    # system package.
+    deps = [ "//third_party/googletest:googletest_system_package" ]
+  }
+}
+
+group("standalone_test_cpp") {
+  deps = [ ":standalone_test_cpp_files" ]
+}

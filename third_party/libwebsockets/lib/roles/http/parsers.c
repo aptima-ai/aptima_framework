@@ -1354,7 +1354,7 @@ nope:
 				 * in these cases?
 				 */
 				if (lws_check_opt(wsi->a.vhost->options,
-		    LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG)) {
+		    LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG)) {
 					lwsl_notice("%s: http fail fallback\n",
 						    __func__);
 					 /* transition to other role */

@@ -1,0 +1,26 @@
+{
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.2"
+    },
+    {
+      "type": "extension",
+      "name": "default_extension_cpp",
+      "version": "0.6.2"
+    },
+    {
+      "type": "protocol",
+      "name": "msgpack",
+      "version": "0.6.2"
+    }
+  ],
+  "api": {
+    "property": {
+      "hello": {
+        "type": "string"
+      }
+    }
+  }
+}

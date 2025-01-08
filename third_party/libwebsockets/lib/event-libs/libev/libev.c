@@ -134,9 +134,9 @@ lws_ev_sigint_cb(struct ev_loop *loop, struct ev_signal *watcher, int revents)
 }
 
 static int
-elops_listen_init_ev(struct lws_dll2 *d, void *user)
+elops_lisaxis_init_ev(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct lws_context *context = (struct lws_context *)user;
 	struct lws_context_per_thread *pt = &context->pt[(int)wsi->tsi];
 	struct lws_pt_eventlibs_libev *ptpr = pt_to_priv_ev(pt);
@@ -182,7 +182,7 @@ elops_init_pt_ev(struct lws_context *context, void *_loop, int tsi)
 
 	ptpr->io_loop = loop;
 
-	lws_vhost_foreach_listen_wsi(context, context, elops_listen_init_ev);
+	lws_vhost_foreach_lisaxis_wsi(context, context, elops_lisaxis_init_ev);
 
 	/* Register the signal watcher unless it's a foreign loop */
 	if (!context->pt[tsi].event_loop_foreign) {
@@ -238,9 +238,9 @@ elops_init_pt_ev(struct lws_context *context, void *_loop, int tsi)
 }
 
 static int
-elops_listen_destroy_ev(struct lws_dll2 *d, void *user)
+elops_lisaxis_destroy_ev(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 	struct lws_context *context = (struct lws_context *)user;
 	struct lws_context_per_thread *pt = &context->pt[(int)wsi->tsi];
 	struct lws_pt_eventlibs_libev *ptpr = pt_to_priv_ev(pt);
@@ -257,7 +257,7 @@ elops_destroy_pt_ev(struct lws_context *context, int tsi)
 	struct lws_context_per_thread *pt = &context->pt[tsi];
 	struct lws_pt_eventlibs_libev *ptpr = pt_to_priv_ev(pt);
 
-	lws_vhost_foreach_listen_wsi(context, context, elops_listen_destroy_ev);
+	lws_vhost_foreach_lisaxis_wsi(context, context, elops_lisaxis_destroy_ev);
 
 	/* static assets */
 
@@ -375,7 +375,7 @@ elops_destroy_context2_ev(struct lws_context *context)
 }
 
 static int
-elops_init_vhost_listen_wsi_ev(struct lws *wsi)
+elops_init_vhost_lisaxis_wsi_ev(struct lws *wsi)
 {
 	struct lws_wsi_eventlibs_libev *w;
 	int fd;
@@ -418,7 +418,7 @@ static const struct lws_event_loop_ops event_loop_ops_ev = {
 	/* init_context */		elops_init_context_ev,
 	/* destroy_context1 */		NULL,
 	/* destroy_context2 */		elops_destroy_context2_ev,
-	/* init_vhost_listen_wsi */	elops_init_vhost_listen_wsi_ev,
+	/* init_vhost_lisaxis_wsi */	elops_init_vhost_lisaxis_wsi_ev,
 	/* init_pt */			elops_init_pt_ev,
 	/* wsi_logical_close */		NULL,
 	/* check_client_connect_ok */	NULL,

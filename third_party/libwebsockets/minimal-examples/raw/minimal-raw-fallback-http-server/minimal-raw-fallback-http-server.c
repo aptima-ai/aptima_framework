@@ -115,9 +115,9 @@ int main(int argc, const char **argv)
 	info.error_document_404 = "/404.html";
 	info.options =
 		LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE |
-		LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISTEN_ACCEPT_CONFIG;
-	info.listen_accept_role = "raw-skt";
-	info.listen_accept_protocol = "raw-echo";
+		LWS_SERVER_OPTION_FALLBACK_TO_APPLY_LISaxis_ACCEPT_CONFIG;
+	info.lisaxis_accept_role = "raw-skt";
+	info.lisaxis_accept_protocol = "raw-echo";
 
 #if defined(LWS_WITH_TLS)
 	if (lws_cmdline_option(argc, argv, "-s")) {

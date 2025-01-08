@@ -1,0 +1,586 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$defs": {
+    "packageType": {
+      "type": "string",
+      "enum": [
+        "app",
+        "extension",
+        "system",
+        "protocol",
+        "addon_loader"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "os": {
+      "type": "string",
+      "enum": [
+        "linux",
+        "win",
+        "mac"
+      ]
+    },
+    "arch": {
+      "type": "string",
+      "enum": [
+        "x86",
+        "x64",
+        "arm",
+        "arm64"
+      ]
+    },
+    "supportItem": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "$ref": "#/$defs/os"
+        },
+        "arch": {
+          "$ref": "#/$defs/arch"
+        }
+      }
+    },
+    "notEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alphanumericCharacters": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "versionRequirement": {
+      "type": "string",
+      "pattern": "^(\\^|~|>|<|>=|<=|=)?\\d+(\\.\\d+)?(\\.\\d+)?(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?([\\s\\,]*\\|\\|[\\s\\,]*(\\^|~|>|<|>=|<=)?\\d+(\\.\\d+)?(\\.\\d+)?(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?)*$"
+    },
+    "httpsUri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "fileUri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^file://"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path"
+            ],
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/path"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "name",
+              "version"
+            ],
+            "properties": {
+              "type": {
+                "$ref": "#/$defs/packageType"
+              },
+              "name": {
+                "$ref": "#/$defs/alphanumericCharacters"
+              },
+              "version": {
+                "$ref": "#/$defs/versionRequirement"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "valueType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "bool",
+            "int8",
+            "int16",
+            "int32",
+            "int64",
+            "uint8",
+            "uint16",
+            "uint32",
+            "uint64",
+            "float32",
+            "float64",
+            "string",
+            "buf",
+            "ptr",
+            "array",
+            "object"
+          ]
+        },
+        "items": { // Use when the type is an array.
+          "$ref": "#/$defs/valueType"
+        },
+        "properties": { // Use when the type is an object.
+          "type": "object",
+          "propertyNames": { // The property name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "patternProperties": {
+            "^[A-Za-z_][A-Za-z0-9_]*$": {
+              "$ref": "#/$defs/valueType"
+            }
+          },
+          "additionalProperties": false
+        },
+        "required": { // Use when the type is an object.
+          "type": "array",
+          "items": "string",
+          "minItems": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "array"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "items"
+            ],
+            "not": {
+              "required": [
+                "properties"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "object"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "properties"
+            ],
+            "not": {
+              "required": [
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "type": {
+                  "const": "array"
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "type": {
+                  "const": "object"
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "properties"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "cmdLikeApi": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": { // The api name should be alphanumericCharacters.
+          "$ref": "#/$defs/alphanumericCharacters"
+        },
+        "property": {
+          "type": "object",
+          "propertyNames": { // The property name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "patternProperties": {
+            "^[A-Za-z_][A-Za-z0-9_]*$": {
+              "$ref": "#/$defs/valueType"
+            }
+          },
+          "additionalProperties": false
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "result": {
+          "type": "object",
+          "required": [
+            "property"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "property": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { // The property name should be alphanumericCharacters.
+                "$ref": "#/$defs/alphanumericCharacters"
+              },
+              "patternProperties": {
+                "^[A-Za-z_][A-Za-z0-9_]*$": {
+                  "$ref": "#/$defs/valueType"
+                }
+              },
+              "additionalProperties": false
+            },
+            "required": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            }
+          }
+        }
+      }
+    },
+    "dataLikeApi": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": { // The api name should be alphanumericCharacters.
+          "$ref": "#/$defs/alphanumericCharacters"
+        },
+        "property": {
+          "type": "object",
+          "propertyNames": { // The property name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "patternProperties": {
+            "^[A-Za-z_][A-Za-z0-9_]*$": {
+              "$ref": "#/$defs/valueType"
+            }
+          },
+          "additionalProperties": false
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "interface_standalone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": { // The api name should be alphanumericCharacters.
+          "$ref": "#/$defs/alphanumericCharacters"
+        },
+        "cmd": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cmdLikeApi"
+          }
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "audio_frame": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "video_frame": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        }
+      }
+    },
+    "interface_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "$ref"
+      ],
+      "properties": {
+        "name": { // The api name should be alphanumericCharacters.
+          "$ref": "#/$defs/alphanumericCharacters"
+        },
+        "$ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/httpsUri"
+            },
+            {
+              "$ref": "#/$defs/fileUri"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "type": {
+      "$ref": "#/$defs/packageType"
+    },
+    "name": {
+      "$ref": "#/$defs/alphanumericCharacters"
+    },
+    "version": {
+      "$ref": "#/$defs/version"
+    },
+    "dependencies": {
+      "$ref": "#/$defs/dependencies"
+    },
+    "api": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property": {
+          "type": "object",
+          "propertyNames": { // The property name should be alphanumericCharacters.
+            "$ref": "#/$defs/alphanumericCharacters"
+          },
+          "patternProperties": {
+            "^[A-Za-z_][A-Za-z0-9_]*$": {
+              "$ref": "#/$defs/valueType"
+            }
+          },
+          "additionalProperties": false
+        },
+        "cmd_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cmdLikeApi"
+          }
+        },
+        "cmd_out": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cmdLikeApi"
+          }
+        },
+        "data_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "data_out": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "audio_frame_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "audio_frame_out": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "video_frame_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "video_frame_out": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataLikeApi"
+          }
+        },
+        "interface_in": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/interface_standalone"
+              },
+              {
+                "$ref": "#/$defs/interface_ref"
+              }
+            ]
+          }
+        },
+        "interface_out": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/interface_standalone"
+              },
+              {
+                "$ref": "#/$defs/interface_ref"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "supports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/supportItem"
+      }
+    },
+    "package": {
+      "type": "object",
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "scripts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "type",
+    "name",
+    "version"
+  ],
+  "additionalProperties": false,
+  "if": {
+    "anyOf": [
+      {
+        "properties": {
+          "type": {
+            "const": "system"
+          }
+        }
+      },
+      {
+        "properties": {
+          "type": {
+            "const": "protocol"
+          }
+        }
+      },
+      {
+        "properties": {
+          "type": {
+            "const": "addon_loader"
+          }
+        }
+      }
+    ]
+  },
+  "then": {
+    "not": {
+      "required": [
+        "predefined_graphs",
+        "api"
+      ]
+    }
+  },
+  "else": {
+    "if": {
+      "properties": {
+        "type": {
+          "const": "extension"
+        }
+      }
+    },
+    "then": {
+      "not": {
+        "required": [
+          "predefined_graphs"
+        ]
+      }
+    }
+  }
+}

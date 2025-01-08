@@ -360,7 +360,7 @@ lws_pthread_mutex_unlock(pthread_mutex_t *lock)
 
 
 #define CONTEXT_PORT_NO_LISTEN -1
-#define CONTEXT_PORT_NO_LISTEN_SERVER -2
+#define CONTEXT_PORT_NO_LISaxis_SERVER -2
 
 #include <libwebsockets/lws-logs.h>
 

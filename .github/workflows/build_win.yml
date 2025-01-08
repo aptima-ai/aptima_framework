@@ -70,65 +70,65 @@ jobs:
 
       - name: Build
         run: |
-          $ENV:PATH += ";$PWD/core/ten_gn"
-          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_go_binding=false ten_enable_nodejs_binding=false ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false
+          $ENV:PATH += ";$PWD/core/axis_gn"
+          tgn gen win x64 ${{ matrix.build_type }} -- vs_version=2022 log_level=1 enable_serialized_actions=true axis_enable_serialized_rust_action=true axis_rust_enable_gen_cargo_config=false axis_enable_cargo_clean=true axis_enable_python_binding=false axis_enable_go_binding=false axis_enable_nodejs_binding=false axis_enable_rust_incremental_build=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false
           tgn build win x64 ${{ matrix.build_type }}
 
-      - name: Run Tests (ten_utils_unit_test)
+      - name: Run Tests (axis_utils_unit_test)
         env:
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/win/x64/tests/standalone/ten_utils_unit_test
-          out/win/x64/tests/standalone/ten_utils_unit_test
+          chmod +x out/win/x64/tests/standalone/axis_utils_unit_test
+          out/win/x64/tests/standalone/axis_utils_unit_test
 
-      - name: Run Tests (ten_runtime_unit_test)
+      - name: Run Tests (axis_runtime_unit_test)
         env:
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/win/x64/tests/standalone/ten_runtime_unit_test
-          out/win/x64/tests/standalone/ten_runtime_unit_test
+          chmod +x out/win/x64/tests/standalone/axis_runtime_unit_test
+          out/win/x64/tests/standalone/axis_runtime_unit_test
 
-      - name: Run Tests (ten_runtime_smoke_test)
+      - name: Run Tests (axis_runtime_smoke_test)
         env:
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/win/x64/tests/standalone/ten_runtime_smoke_test
-          out/win/x64/tests/standalone/ten_runtime_smoke_test
+          chmod +x out/win/x64/tests/standalone/axis_runtime_smoke_test
+          out/win/x64/tests/standalone/axis_runtime_smoke_test
 
-      - name: Run Tests (ten_rust standalone tests)
+      - name: Run Tests (axis_rust standalone tests)
         run: |
-          cd out/win/x64/tests/standalone/ten_rust
+          cd out/win/x64/tests/standalone/axis_rust
 
           chmod +x unit_test
           chmod +x integration_test
 
-          ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
-          ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
+          ./unit_test || { echo "axis_rust unit test failed"; exit 1; }
+          ./integration_test || { echo "axis_rust integration test failed"; exit 1; }
 
-      - name: Run Tests (ten_manager standalone tests)
+      - name: Run Tests (axis_manager standalone tests)
         run: |
-          cd out/win/x64/tests/standalone/ten_manager
+          cd out/win/x64/tests/standalone/axis_manager
 
           chmod +x unit_test
 
-          ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
+          ./unit_test || { echo "axis_manager unit test failed"; exit 1; }
 
       - name: Install Python dependencies via script
         run: |
           python .github/tools/setup_pytest_dependencies.py
 
-      - name: Run Tests (ten_manager pytest tests)
+      - name: Run Tests (axis_manager pytest tests)
         run: |
           cd out/win/x64/
-          pytest -s tests/ten_manager/
+          pytest -s tests/axis_manager/
 
-      - name: Run Tests (ten_runtime pytest tests)
+      - name: Run Tests (axis_runtime pytest tests)
         env:
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          $ENV:PATH += ";$PWD/core/ten_gn"
+          $ENV:PATH += ";$PWD/core/axis_gn"
           cd out/win/x64/
-          pytest -s tests/ten_runtime/integration/
+          pytest -s tests/axis_runtime/integration/
       #   continue-on-error: true
 
       # - name: Setup tmate session

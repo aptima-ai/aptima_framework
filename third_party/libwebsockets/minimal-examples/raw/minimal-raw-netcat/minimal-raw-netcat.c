@@ -164,7 +164,7 @@ int main(int argc, const char **argv)
 		return 1;
 	}
 
-	info.port = CONTEXT_PORT_NO_LISTEN_SERVER;
+	info.port = CONTEXT_PORT_NO_LISaxis_SERVER;
 	info.protocols = protocols;
 
 	vhost = lws_create_vhost(context, &info);

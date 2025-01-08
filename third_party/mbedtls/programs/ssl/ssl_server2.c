@@ -1018,7 +1018,7 @@ int psk_callback( void *p_info, mbedtls_ssl_context *ssl,
 }
 #endif /* MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED */
 
-static mbedtls_net_context listen_fd, client_fd;
+static mbedtls_net_context lisaxis_fd, client_fd;
 
 /* Interruption handler to ensure clean exit (for valgrind testing) */
 #if !defined(_WIN32)
@@ -1027,7 +1027,7 @@ void term_handler( int sig )
 {
     ((void) sig);
     received_sigterm = 1;
-    mbedtls_net_free( &listen_fd ); /* causes mbedtls_net_accept() to abort */
+    mbedtls_net_free( &lisaxis_fd ); /* causes mbedtls_net_accept() to abort */
     mbedtls_net_free( &client_fd ); /* causes net_read() to abort */
 }
 #endif
@@ -1474,7 +1474,7 @@ int main( int argc, char *argv[] )
      * Make sure memory references are valid in case we exit early.
      */
     mbedtls_net_init( &client_fd );
-    mbedtls_net_init( &listen_fd );
+    mbedtls_net_init( &lisaxis_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
     rng_init( &rng );
@@ -3278,7 +3278,7 @@ int main( int argc, char *argv[] )
             opt.server_port );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_bind( &listen_fd, opt.server_addr, opt.server_port,
+    if( ( ret = mbedtls_net_bind( &lisaxis_fd, opt.server_addr, opt.server_port,
                           opt.transport == MBEDTLS_SSL_TRANSPORT_STREAM ?
                           MBEDTLS_NET_PROTO_TCP : MBEDTLS_NET_PROTO_UDP ) ) != 0 )
     {
@@ -3324,7 +3324,7 @@ reset:
     mbedtls_printf( "  . Waiting for a remote connection ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
+    if( ( ret = mbedtls_net_accept( &lisaxis_fd, &client_fd,
                     client_ip, sizeof( client_ip ), &cliip_len ) ) != 0 )
     {
 #if !defined(_WIN32)
@@ -4187,7 +4187,7 @@ exit:
     }
 
     mbedtls_net_free( &client_fd );
-    mbedtls_net_free( &listen_fd );
+    mbedtls_net_free( &lisaxis_fd );
 
     mbedtls_ssl_free( &ssl );
     mbedtls_ssl_config_free( &conf );

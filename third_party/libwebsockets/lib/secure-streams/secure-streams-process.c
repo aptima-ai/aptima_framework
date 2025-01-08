@@ -771,7 +771,7 @@ lws_ss_proxy_create(struct lws_context *context, const char *bind, int port)
 	memset(&info, 0, sizeof(info));
 
 	info.vhost_name			= "ssproxy";
-	info.options = LWS_SERVER_OPTION_ADOPT_APPLY_LISTEN_ACCEPT_CONFIG |
+	info.options = LWS_SERVER_OPTION_ADOPT_APPLY_LISaxis_ACCEPT_CONFIG |
 			LWS_SERVER_OPTION_SS_PROXY;
 	info.port = port;
 	if (!port) {
@@ -788,8 +788,8 @@ lws_ss_proxy_create(struct lws_context *context, const char *bind, int port)
 	info.unix_socket_perms		= "root:root";
 #else
 #endif
-	info.listen_accept_role		= "raw-skt";
-	info.listen_accept_protocol	= "ssproxy-protocol";
+	info.lisaxis_accept_role		= "raw-skt";
+	info.lisaxis_accept_protocol	= "ssproxy-protocol";
 	info.protocols			= protocols;
 
 	if (!lws_create_vhost(context, &info)) {

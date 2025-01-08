@@ -1,0 +1,44 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/feature/test.gni")
+import("//build/axis_runtime/ten.gni")
+
+axis_package_test_prepare_app("websocket_server_nodejs_app") {
+  src_app = "default_app_nodejs"
+  src_app_language = "nodejs"
+  generated_app_src_root_dir_name = "websocket_server_nodejs_app"
+
+  replace_files_after_install_app = [
+    "websocket_server_nodejs_app/manifest.json",
+    "websocket_server_nodejs_app/property.json",
+  ]
+
+  if (axis_enable_axis_manager) {
+    deps = [
+      "//core/src/axis_manager",
+      "//packages/core_apps/default_app_nodejs:upload_default_app_nodejs_to_server",
+      "//packages/example_extensions/http_server_extension_nodejs:upload_http_server_extension_nodejs_to_server",
+      "//packages/example_extensions/websocket_server_nodejs:upload_websocket_server_nodejs_to_server",
+    ]
+  }
+}
+
+axis_package_test_prepare_auxiliary_resources(
+    "websocket_server_nodejs_test_files") {
+  resources = [
+    "//tests/axis_runtime/integration/common=>common",
+    "__init__.py",
+    "test_case.py",
+  ]
+}
+
+group("websocket_server_nodejs") {
+  deps = [
+    ":websocket_server_nodejs_app",
+    ":websocket_server_nodejs_test_files",
+  ]
+}

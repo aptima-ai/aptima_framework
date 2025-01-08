@@ -1,0 +1,65 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/options.gni")
+import("//build/axis_runtime/ten.gni")
+
+axis_shared_library("axis_runtime_go") {
+  if (is_mac || is_linux) {
+    add_configs = [ "//.gnfiles/build/toolchain/common:allow_undefined" ]
+    remove_configs = [ "//.gnfiles/build/toolchain/common:disallow_undefined" ]
+  }
+
+  sources = [ "//core/src/axis_runtime/binding/go/native/build_template/preserved_metadata.c" ]
+
+  include_dirs = axis_runtime_common_includes
+  include_dirs += [
+    "//src",
+    "${root_out_dir}/obj",
+    "${root_gen_dir}/cmake/jansson/include",
+  ]
+
+  cflags = []
+  if (!is_win) {
+    cflags += [ "-fPIC" ]
+  }
+
+  if (!defined(ldflags)) {
+    ldflags = []
+  }
+
+  # Add rpath to find axis_runtime library.
+  if (is_mac) {
+    ldflags += [ "-Wl,-rpath,@loader_path/../../axis_runtime/lib" ]
+  } else if (is_linux) {
+    ldflags += [ "-Wl,-rpath=\$ORIGIN/../../axis_runtime/lib" ]
+  }
+
+  # Only export "ten" relevant symbols.
+  if (is_mac) {
+    ldflags += [
+      "-Xlinker",
+      "-exported_symbols_list",
+      "-Xlinker",
+      rebase_path("//build/axis_runtime/ld_script/mac"),
+    ]
+  } else if (is_linux) {
+    ldflags += [ "-Wl,--version-script=" +
+                 rebase_path("//build/axis_runtime/ld_script/linux") ]
+  }
+
+  deps = [
+    "addon",
+    "app",
+    "extension",
+    "internal",
+    "msg",
+    "axis_env",
+    "test",
+    "value",
+    "//core/src/axis_runtime:axis_runtime_library",
+  ]
+}

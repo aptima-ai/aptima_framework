@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "ten_runtime/ten_config.h"
+#include "axis_runtime/axis_config.h"
 
 #define MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES 3
 

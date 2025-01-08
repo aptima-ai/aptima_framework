@@ -77,16 +77,16 @@ lws_mbedtls_sni_cb(void *arg, mbedtls_ssl_context *mbedtls_ctx,
 		return 0;
 	}
 
-	vhost = lws_select_vhost(context, vh->listen_port,
+	vhost = lws_select_vhost(context, vh->lisaxis_port,
 				 (const char *)servername);
 	if (!vhost) {
-		lwsl_info("SNI: none: %s:%d\n", servername, vh->listen_port);
+		lwsl_info("SNI: none: %s:%d\n", servername, vh->lisaxis_port);
 
 		return 0;
 	}
 
 	lwsl_info("SNI: Found: %s:%d at vhost '%s'\n", servername,
-					vh->listen_port, vhost->name);
+					vh->lisaxis_port, vhost->name);
 
 	if (!vhost->tls.ssl_ctx) {
 		lwsl_err("%s: vhost %s matches SNI but no valid cert\n",

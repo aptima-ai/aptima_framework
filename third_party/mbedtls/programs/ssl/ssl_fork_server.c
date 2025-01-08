@@ -96,7 +96,7 @@ int main( void )
 {
     int ret = 1, len, cnt = 0, pid;
     int exit_code = MBEDTLS_EXIT_FAILURE;
-    mbedtls_net_context listen_fd, client_fd;
+    mbedtls_net_context lisaxis_fd, client_fd;
     unsigned char buf[1024];
     const char *pers = "ssl_fork_server";
 
@@ -107,7 +107,7 @@ int main( void )
     mbedtls_x509_crt srvcert;
     mbedtls_pk_context pkey;
 
-    mbedtls_net_init( &listen_fd );
+    mbedtls_net_init( &lisaxis_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
@@ -205,7 +205,7 @@ int main( void )
     mbedtls_printf( "  . Bind on https://localhost:4433/ ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_bind( &listen_fd, NULL, "4433", MBEDTLS_NET_PROTO_TCP ) ) != 0 )
+    if( ( ret = mbedtls_net_bind( &lisaxis_fd, NULL, "4433", MBEDTLS_NET_PROTO_TCP ) ) != 0 )
     {
         mbedtls_printf( " failed!  mbedtls_net_bind returned %d\n\n", ret );
         goto exit;
@@ -224,7 +224,7 @@ int main( void )
         mbedtls_printf( "  . Waiting for a remote connection ...\n" );
         fflush( stdout );
 
-        if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
+        if( ( ret = mbedtls_net_accept( &lisaxis_fd, &client_fd,
                                         NULL, 0, NULL ) ) != 0 )
         {
             mbedtls_printf( " failed!  mbedtls_net_accept returned %d\n\n", ret );
@@ -262,7 +262,7 @@ int main( void )
             continue;
         }
 
-        mbedtls_net_close( &listen_fd );
+        mbedtls_net_close( &lisaxis_fd );
 
         pid = getpid();
 
@@ -398,7 +398,7 @@ int main( void )
 
 exit:
     mbedtls_net_free( &client_fd );
-    mbedtls_net_free( &listen_fd );
+    mbedtls_net_free( &lisaxis_fd );
 
     mbedtls_x509_crt_free( &srvcert );
     mbedtls_pk_free( &pkey );

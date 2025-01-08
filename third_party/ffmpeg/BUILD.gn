@@ -4,9 +4,9 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/feature/ten_package.gni")
-import("//build/ten_runtime/feature/autotool.gni")
-import("//build/ten_runtime/feature/publish.gni")
+import("//build/feature/axis_package.gni")
+import("//build/axis_runtime/feature/autotool.gni")
+import("//build/axis_runtime/feature/publish.gni")
 import("//third_party/ffmpeg/output_libs.gni")
 
 config("ffmpeg_common_config") {
@@ -23,7 +23,7 @@ config("ffmpeg_common_config") {
   ]
 }
 
-config("ffmpeg_config_for_ten_packages") {
+config("ffmpeg_config_for_axis_packages") {
   configs = [ ":ffmpeg_common_config" ]
 
   if (is_linux) {
@@ -65,7 +65,7 @@ autotool_project("build_ffmpeg") {
                        ] + ffmpeg_output_libs
 }
 
-ten_package("ffmpeg_system_package") {
+axis_package("ffmpeg_system_package") {
   package_kind = "system"
   package_output_root_dir_name = "ffmpeg"
 
@@ -79,20 +79,20 @@ ten_package("ffmpeg_system_package") {
   ]
 }
 
-if (ten_enable_ten_manager) {
-  ten_package_publish("upload_ffmpeg_system_package_to_server") {
-    base_dir = rebase_path("${root_out_dir}/ten_packages/system/ffmpeg")
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_ffmpeg_system_package_to_server") {
+    base_dir = rebase_path("${root_out_dir}/axis_packages/system/ffmpeg")
     deps = [ ":ffmpeg_system_package" ]
   }
 }
 
-group("ffmpeg_for_ten_packages") {
+group("ffmpeg_for_axis_packages") {
   deps = [ ":ffmpeg" ]
-  public_configs = [ ":ffmpeg_config_for_ten_packages" ]
+  public_configs = [ ":ffmpeg_config_for_axis_packages" ]
 }
 
 group("ffmpeg") {
-  if (ten_enable_ten_manager) {
+  if (axis_enable_axis_manager) {
     deps = [ ":upload_ffmpeg_system_package_to_server" ]
   }
 }

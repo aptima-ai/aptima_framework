@@ -5,35 +5,35 @@
 //
 #pragma once
 
-#include "ten_runtime/ten_config.h"
+#include "axis_runtime/axis_config.h"
 
 #include <stdint.h>
 
 #include "core_protocols/msgpack/common/parser.h"
-#include "include_internal/ten_runtime/msg/msg.h"
+#include "include_internal/axis_runtime/msg/msg.h"
 
-typedef struct ten_msg_deserialize_info_t {
+typedef struct axis_msg_deserialize_info_t {
   msgpack_unpacker *unpacker;
   msgpack_unpacked *unpacked;
-} ten_msg_deserialize_info_t;
+} axis_msg_deserialize_info_t;
 
-TEN_RUNTIME_PRIVATE_API ten_msg_deserialize_info_t *
-ten_msg_deserialize_info_create(msgpack_unpacker *unpacker,
+axis_RUNTIME_PRIVATE_API axis_msg_deserialize_info_t *
+axis_msg_deserialize_info_create(msgpack_unpacker *unpacker,
                                 msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_PRIVATE_API void ten_msg_deserialize_info_destroy(
-    ten_msg_deserialize_info_t *self);
+axis_RUNTIME_PRIVATE_API void axis_msg_deserialize_info_destroy(
+    axis_msg_deserialize_info_t *self);
 
-TEN_RUNTIME_PRIVATE_API bool ten_msgpack_serialize_msg(ten_shared_ptr_t *self,
+axis_RUNTIME_PRIVATE_API bool axis_msgpack_serialize_msg(axis_shared_ptr_t *self,
                                                        msgpack_packer *pck,
-                                                       ten_error_t *err);
+                                                       axis_error_t *err);
 
-TEN_RUNTIME_PRIVATE_API ten_shared_ptr_t *ten_msgpack_deserialize_msg(
+axis_RUNTIME_PRIVATE_API axis_shared_ptr_t *axis_msgpack_deserialize_msg(
     msgpack_unpacker *unpacker, msgpack_unpacked *unpacked);
 
-TEN_RUNTIME_API ten_buf_t ten_msgpack_serialize_msgs(ten_list_t *msgs,
-                                                     ten_error_t *err);
+axis_RUNTIME_API axis_buf_t axis_msgpack_serialize_msgs(axis_list_t *msgs,
+                                                     axis_error_t *err);
 
-TEN_RUNTIME_API void ten_msgpack_deserialize_msgs(ten_msgpack_parser_t *parser,
-                                                  ten_buf_t input_buf,
-                                                  ten_list_t *result_msgs);
+axis_RUNTIME_API void axis_msgpack_deserialize_msgs(axis_msgpack_parser_t *parser,
+                                                  axis_buf_t input_buf,
+                                                  axis_list_t *result_msgs);

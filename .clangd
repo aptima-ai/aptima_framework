@@ -4,6 +4,6 @@ Diagnostics:
   ClangTidy:
     Remove: boost-use-ranges
   Includes:
-    IgnoreHeader: ten_config\.h
+    IgnoreHeader: axis_config\.h
 InlayHints:
   Enabled: No

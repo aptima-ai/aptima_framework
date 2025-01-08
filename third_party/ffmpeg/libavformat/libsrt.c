@@ -54,7 +54,7 @@ typedef struct SRTContext {
     int fd;
     int eid;
     int64_t rw_timeout;
-    int64_t listen_timeout;
+    int64_t lisaxis_timeout;
     int recv_buffer_size;
     int send_buffer_size;
 
@@ -98,7 +98,7 @@ typedef struct SRTContext {
 #define OFFSET(x) offsetof(SRTContext, x)
 static const AVOption libsrt_options[] = {
     { "timeout",        "Timeout of socket I/O operations (in microseconds)",                   OFFSET(rw_timeout),       AV_OPT_TYPE_INT64, { .i64 = -1 }, -1, INT64_MAX, .flags = D|E },
-    { "listen_timeout", "Connection awaiting timeout (in microseconds)" ,                       OFFSET(listen_timeout),   AV_OPT_TYPE_INT64, { .i64 = -1 }, -1, INT64_MAX, .flags = D|E },
+    { "lisaxis_timeout", "Connection awaiting timeout (in microseconds)" ,                       OFFSET(lisaxis_timeout),   AV_OPT_TYPE_INT64, { .i64 = -1 }, -1, INT64_MAX, .flags = D|E },
     { "send_buffer_size", "Socket send buffer size (in bytes)",                                 OFFSET(send_buffer_size), AV_OPT_TYPE_INT,      { .i64 = -1 }, -1, INT_MAX,   .flags = D|E },
     { "recv_buffer_size", "Socket receive buffer size (in bytes)",                              OFFSET(recv_buffer_size), AV_OPT_TYPE_INT,      { .i64 = -1 }, -1, INT_MAX,   .flags = D|E },
     { "pkt_size",       "Maximum SRT packet size",                                              OFFSET(payload_size),     AV_OPT_TYPE_INT,      { .i64 = -1 }, -1, SRT_LIVE_MAX_PAYLOAD_SIZE, .flags = D|E, "payload_size" },
@@ -265,7 +265,7 @@ static int libsrt_listen(int eid, int fd, const struct sockaddr *addr, socklen_t
     return ret;
 }
 
-static int libsrt_listen_connect(int eid, int fd, const struct sockaddr *addr, socklen_t addrlen, int64_t timeout, URLContext *h, int will_try_next)
+static int libsrt_lisaxis_connect(int eid, int fd, const struct sockaddr *addr, socklen_t addrlen, int64_t timeout, URLContext *h, int will_try_next)
 {
     int ret;
 
@@ -405,8 +405,8 @@ static int libsrt_setup(URLContext *h, const char *uri, int flags)
         if (av_find_info_tag(buf, sizeof(buf), "timeout", p)) {
             s->rw_timeout = strtoll(buf, NULL, 10);
         }
-        if (av_find_info_tag(buf, sizeof(buf), "listen_timeout", p)) {
-            s->listen_timeout = strtoll(buf, NULL, 10);
+        if (av_find_info_tag(buf, sizeof(buf), "lisaxis_timeout", p)) {
+            s->lisaxis_timeout = strtoll(buf, NULL, 10);
         }
     }
     if (s->rw_timeout >= 0) {
@@ -459,7 +459,7 @@ static int libsrt_setup(URLContext *h, const char *uri, int flags)
         goto fail1;
     if (s->mode == SRT_MODE_LISTENER) {
         // multi-client
-        ret = libsrt_listen(write_eid, fd, cur_ai->ai_addr, cur_ai->ai_addrlen, h, s->listen_timeout);
+        ret = libsrt_listen(write_eid, fd, cur_ai->ai_addr, cur_ai->ai_addrlen, h, s->lisaxis_timeout);
         srt_epoll_release(write_eid);
         if (ret < 0)
             goto fail1;
@@ -474,7 +474,7 @@ static int libsrt_setup(URLContext *h, const char *uri, int flags)
             }
         }
 
-        ret = libsrt_listen_connect(write_eid, fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
+        ret = libsrt_lisaxis_connect(write_eid, fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
                                     open_timeout, h, !!cur_ai->ai_next);
         srt_epoll_release(write_eid);
         if (ret < 0) {

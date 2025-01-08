@@ -1326,15 +1326,15 @@ static int read_access_unit(AVCodecContext *avctx, AVFrame *frame,
         skip_bits(&gb, (-get_bits_count(&gb)) & 15);
 
         if (substream_data_len[substr] * 8 - get_bits_count(&gb) >= 32) {
-            int shorten_by;
+            int shoraxis_by;
 
             if (get_bits(&gb, 16) != 0xD234)
                 return AVERROR_INVALIDDATA;
 
-            shorten_by = get_bits(&gb, 16);
-            if      (m->avctx->codec_id == AV_CODEC_ID_TRUEHD && shorten_by  & 0x2000)
-                s->blockpos -= FFMIN(shorten_by & 0x1FFF, s->blockpos);
-            else if (m->avctx->codec_id == AV_CODEC_ID_MLP    && shorten_by != 0xD234)
+            shoraxis_by = get_bits(&gb, 16);
+            if      (m->avctx->codec_id == AV_CODEC_ID_TRUEHD && shoraxis_by  & 0x2000)
+                s->blockpos -= FFMIN(shoraxis_by & 0x1FFF, s->blockpos);
+            else if (m->avctx->codec_id == AV_CODEC_ID_MLP    && shoraxis_by != 0xD234)
                 return AVERROR_INVALIDDATA;
 
             av_log(m->avctx, AV_LOG_DEBUG, "End of stream indicated.\n");

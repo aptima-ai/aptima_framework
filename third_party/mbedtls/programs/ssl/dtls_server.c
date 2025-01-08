@@ -99,7 +99,7 @@ static void my_debug( void *ctx, int level,
 int main( void )
 {
     int ret, len;
-    mbedtls_net_context listen_fd, client_fd;
+    mbedtls_net_context lisaxis_fd, client_fd;
     unsigned char buf[1024];
     const char *pers = "dtls_server";
     unsigned char client_ip[16] = { 0 };
@@ -117,7 +117,7 @@ int main( void )
     mbedtls_ssl_cache_context cache;
 #endif
 
-    mbedtls_net_init( &listen_fd );
+    mbedtls_net_init( &lisaxis_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
@@ -193,7 +193,7 @@ int main( void )
     printf( "  . Bind on udp/*/4433 ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_bind( &listen_fd, BIND_IP, "4433", MBEDTLS_NET_PROTO_UDP ) ) != 0 )
+    if( ( ret = mbedtls_net_bind( &lisaxis_fd, BIND_IP, "4433", MBEDTLS_NET_PROTO_UDP ) ) != 0 )
     {
         printf( " failed\n  ! mbedtls_net_bind returned %d\n\n", ret );
         goto exit;
@@ -274,7 +274,7 @@ reset:
     printf( "  . Waiting for a remote connection ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
+    if( ( ret = mbedtls_net_accept( &lisaxis_fd, &client_fd,
                     client_ip, sizeof( client_ip ), &cliip_len ) ) != 0 )
     {
         printf( " failed\n  ! mbedtls_net_accept returned %d\n\n", ret );
@@ -403,7 +403,7 @@ exit:
 #endif
 
     mbedtls_net_free( &client_fd );
-    mbedtls_net_free( &listen_fd );
+    mbedtls_net_free( &lisaxis_fd );
 
     mbedtls_x509_crt_free( &srvcert );
     mbedtls_pk_free( &pkey );

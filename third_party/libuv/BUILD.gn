@@ -4,13 +4,13 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/ten_runtime/feature/cmake.gni")
+import("//build/axis_runtime/feature/cmake.gni")
 
 config("uv_header") {
   include_dirs = [ "${root_gen_dir}/cmake/uv_a/install/include" ]
 }
 
-# The codes of libuv will be statically linked into 'libten_utils.so', so
+# The codes of libuv will be statically linked into 'libaxis_utils.so', so
 # 'libuv.so' does not actually need to be generated.
 
 cmake_project("uv_a") {

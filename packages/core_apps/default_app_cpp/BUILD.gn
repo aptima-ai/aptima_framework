@@ -3,12 +3,12 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-import("//build/feature/ten_package.gni")
-import("//build/ten_runtime/feature/publish.gni")
-import("//build/ten_runtime/glob.gni")
-import("//build/ten_runtime/options.gni")
+import("//build/feature/axis_package.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/glob.gni")
+import("//build/axis_runtime/options.gni")
 
-ten_package("default_app_cpp") {
+axis_package("default_app_cpp") {
   package_kind = "app"
 
   resources = [
@@ -21,14 +21,14 @@ ten_package("default_app_cpp") {
   ]
 
   deps = []
-  if (ten_enable_ten_manager) {
+  if (axis_enable_axis_manager) {
     deps +=
-        [ "//core/src/ten_runtime:upload_ten_runtime_system_package_to_server" ]
+        [ "//core/src/axis_runtime:upload_axis_runtime_system_package_to_server" ]
   }
 }
 
-if (ten_enable_ten_manager) {
-  ten_package_publish("upload_default_app_cpp_to_server") {
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_default_app_cpp_to_server") {
     base_dir = rebase_path("${root_out_dir}/app/default_app_cpp")
     deps = [ ":default_app_cpp" ]
   }

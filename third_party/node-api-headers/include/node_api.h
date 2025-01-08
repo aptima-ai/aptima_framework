@@ -17,7 +17,7 @@ struct uv_loop_s;  // Forward declaration.
 #ifdef _WIN32
 #define NAPI_MODULE_EXPORT __declspec(dllexport)
 #else
-#ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPaxis__
 #define NAPI_MODULE_EXPORT                                                     \
   __attribute__((visibility("default"))) __attribute__((used))
 #else

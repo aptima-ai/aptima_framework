@@ -85,8 +85,8 @@ int main( void )
 
 #define DFL_SERVER_ADDR         "localhost"
 #define DFL_SERVER_PORT         "4433"
-#define DFL_LISTEN_ADDR         "localhost"
-#define DFL_LISTEN_PORT         "5556"
+#define DFL_LISaxis_ADDR         "localhost"
+#define DFL_LISaxis_PORT         "5556"
 #define DFL_PACK                0
 
 #if defined(MBEDTLS_TIMING_C)
@@ -102,8 +102,8 @@ int main( void )
     "\n acceptable parameters:\n"                                           \
     "    server_addr=%%s      default: localhost\n"                         \
     "    server_port=%%d      default: 4433\n"                              \
-    "    listen_addr=%%s      default: localhost\n"                         \
-    "    listen_port=%%d      default: 4433\n"                              \
+    "    lisaxis_addr=%%s      default: localhost\n"                         \
+    "    lisaxis_port=%%d      default: 4433\n"                              \
     "\n"                                                                    \
     "    duplicate=%%d        default: 0 (no duplication)\n"                \
     "                        duplicate about 1:N packets randomly\n"        \
@@ -151,8 +151,8 @@ static struct options
 {
     const char *server_addr;    /* address to forward packets to            */
     const char *server_port;    /* port to forward packets to               */
-    const char *listen_addr;    /* address for accepting client connections */
-    const char *listen_port;    /* port for accepting client connections    */
+    const char *lisaxis_addr;    /* address for accepting client connections */
+    const char *lisaxis_port;    /* port for accepting client connections    */
 
     int duplicate;              /* duplicate 1 in N packets (none if 0)     */
     int delay;                  /* delay 1 packet in N (none if 0)          */
@@ -193,8 +193,8 @@ static void get_options( int argc, char *argv[] )
 
     opt.server_addr    = DFL_SERVER_ADDR;
     opt.server_port    = DFL_SERVER_PORT;
-    opt.listen_addr    = DFL_LISTEN_ADDR;
-    opt.listen_port    = DFL_LISTEN_PORT;
+    opt.lisaxis_addr    = DFL_LISaxis_ADDR;
+    opt.lisaxis_port    = DFL_LISaxis_PORT;
     opt.pack           = DFL_PACK;
     /* Other members default to 0 */
 
@@ -214,10 +214,10 @@ static void get_options( int argc, char *argv[] )
             opt.server_addr = q;
         else if( strcmp( p, "server_port" ) == 0 )
             opt.server_port = q;
-        else if( strcmp( p, "listen_addr" ) == 0 )
-            opt.listen_addr = q;
-        else if( strcmp( p, "listen_port" ) == 0 )
-            opt.listen_port = q;
+        else if( strcmp( p, "lisaxis_addr" ) == 0 )
+            opt.lisaxis_addr = q;
+        else if( strcmp( p, "lisaxis_port" ) == 0 )
+            opt.lisaxis_port = q;
         else if( strcmp( p, "duplicate" ) == 0 )
         {
             opt.duplicate = atoi( q );
@@ -809,7 +809,7 @@ int main( int argc, char *argv[] )
     int exit_code = MBEDTLS_EXIT_FAILURE;
     uint8_t delay_idx;
 
-    mbedtls_net_context listen_fd, client_fd, server_fd;
+    mbedtls_net_context lisaxis_fd, client_fd, server_fd;
 
 #if defined( MBEDTLS_TIMING_C )
     struct timeval tm;
@@ -820,7 +820,7 @@ int main( int argc, char *argv[] )
     int nb_fds;
     fd_set read_fds;
 
-    mbedtls_net_init( &listen_fd );
+    mbedtls_net_init( &lisaxis_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_net_init( &server_fd );
 
@@ -866,10 +866,10 @@ int main( int argc, char *argv[] )
      * 1. Setup the "listening" UDP socket
      */
     mbedtls_printf( "  . Bind on UDP/%s/%s ...",
-            opt.listen_addr, opt.listen_port );
+            opt.lisaxis_addr, opt.lisaxis_port );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_bind( &listen_fd, opt.listen_addr, opt.listen_port,
+    if( ( ret = mbedtls_net_bind( &lisaxis_fd, opt.lisaxis_addr, opt.lisaxis_port,
                           MBEDTLS_NET_PROTO_UDP ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_bind returned %d\n\n", ret );
@@ -887,7 +887,7 @@ accept:
     mbedtls_printf( "  . Waiting for a remote connection ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
+    if( ( ret = mbedtls_net_accept( &lisaxis_fd, &client_fd,
                                     NULL, 0, NULL ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_accept returned %d\n\n", ret );
@@ -905,8 +905,8 @@ accept:
     nb_fds = client_fd.fd;
     if( nb_fds < server_fd.fd )
         nb_fds = server_fd.fd;
-    if( nb_fds < listen_fd.fd )
-        nb_fds = listen_fd.fd;
+    if( nb_fds < lisaxis_fd.fd )
+        nb_fds = lisaxis_fd.fd;
     ++nb_fds;
 
 #if defined(MBEDTLS_TIMING_C)
@@ -965,7 +965,7 @@ accept:
         FD_ZERO( &read_fds );
         FD_SET( server_fd.fd, &read_fds );
         FD_SET( client_fd.fd, &read_fds );
-        FD_SET( listen_fd.fd, &read_fds );
+        FD_SET( lisaxis_fd.fd, &read_fds );
 
         if( ( ret = select( nb_fds, &read_fds, NULL, NULL, tm_ptr ) ) < 0 )
         {
@@ -973,7 +973,7 @@ accept:
             goto exit;
         }
 
-        if( FD_ISSET( listen_fd.fd, &read_fds ) )
+        if( FD_ISSET( lisaxis_fd.fd, &read_fds ) )
             goto accept;
 
         if( FD_ISSET( client_fd.fd, &read_fds ) )
@@ -1014,7 +1014,7 @@ exit:
 
     mbedtls_net_free( &client_fd );
     mbedtls_net_free( &server_fd );
-    mbedtls_net_free( &listen_fd );
+    mbedtls_net_free( &lisaxis_fd );
 
     mbedtls_exit( exit_code );
 }

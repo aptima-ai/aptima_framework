@@ -590,7 +590,7 @@ elops_io_uv(struct lws *wsi, unsigned int flags)
 }
 
 static int
-elops_init_vhost_listen_wsi_uv(struct lws *wsi)
+elops_init_vhost_lisaxis_wsi_uv(struct lws *wsi)
 {
 	struct lws_context_per_thread *pt;
 	struct lws_pt_eventlibs_libuv *ptpriv;
@@ -695,11 +695,11 @@ elops_destroy_pt_uv(struct lws_context *context, int tsi)
 }
 
 static int
-elops_listen_init_uv(struct lws_dll2 *d, void *user)
+elops_lisaxis_init_uv(struct lws_dll2 *d, void *user)
 {
-	struct lws *wsi = lws_container_of(d, struct lws, listen_list);
+	struct lws *wsi = lws_container_of(d, struct lws, lisaxis_list);
 
-	if (elops_init_vhost_listen_wsi_uv(wsi) == -1)
+	if (elops_init_vhost_lisaxis_wsi_uv(wsi) == -1)
 		return -1;
 
 	return 0;
@@ -772,7 +772,7 @@ elops_init_pt_uv(struct lws_context *context, void *_loop, int tsi)
 	 * We have to do it here because the uv loop(s) are not
 	 * initialized until after context creation.
 	 */
-	lws_vhost_foreach_listen_wsi(context, context, elops_listen_init_uv);
+	lws_vhost_foreach_lisaxis_wsi(context, context, elops_lisaxis_init_uv);
 
 	if (!first)
 		return status;
@@ -806,8 +806,8 @@ lws_libuv_closewsi(uv_handle_t* handle)
 	if (wsi->role_ops && !strcmp(wsi->role_ops->name, "listen") &&
 	    wsi->a.context->deprecated) {
 		lspd = 1;
-		context->deprecation_pending_listen_close_count--;
-		if (!context->deprecation_pending_listen_close_count)
+		context->deprecation_pending_lisaxis_close_count--;
+		if (!context->deprecation_pending_lisaxis_close_count)
 			lspd = 2;
 	}
 #endif
@@ -912,7 +912,7 @@ static const struct lws_event_loop_ops event_loop_ops_uv = {
 	/* init_context */		elops_init_context_uv,
 	/* destroy_context1 */		elops_destroy_context1_uv,
 	/* destroy_context2 */		elops_destroy_context2_uv,
-	/* init_vhost_listen_wsi */	elops_init_vhost_listen_wsi_uv,
+	/* init_vhost_lisaxis_wsi */	elops_init_vhost_lisaxis_wsi_uv,
 	/* init_pt */			elops_init_pt_uv,
 	/* wsi_logical_close */		elops_wsi_logical_close_uv,
 	/* check_client_connect_ok */	elops_check_client_connect_ok_uv,

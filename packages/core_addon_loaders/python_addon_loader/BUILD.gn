@@ -3,12 +3,12 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-import("//build/feature/ten_package.gni")
-import("//build/ten_runtime/feature/publish.gni")
-import("//build/ten_runtime/glob.gni")
-import("//build/ten_runtime/options.gni")
+import("//build/feature/axis_package.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/glob.gni")
+import("//build/axis_runtime/options.gni")
 
-ten_package("python_addon_loader") {
+axis_package("python_addon_loader") {
   package_kind = "addon_loader"
   enable_build = true
 
@@ -23,24 +23,24 @@ ten_package("python_addon_loader") {
   ldflags = []
   if (is_mac) {
     ldflags +=
-        [ "-Wl,-rpath,@loader_path/../../../system/ten_runtime_python/lib" ]
+        [ "-Wl,-rpath,@loader_path/../../../system/axis_runtime_python/lib" ]
   } else if (is_linux) {
     ldflags += [
-      "-Wl,-rpath=\$ORIGIN/../../../system/ten_runtime_python/lib",
-      "-Wl,-rpath-link=\$ORIGIN/../../../system/ten_runtime_python/lib",
+      "-Wl,-rpath=\$ORIGIN/../../../system/axis_runtime_python/lib",
+      "-Wl,-rpath-link=\$ORIGIN/../../../system/axis_runtime_python/lib",
     ]
   }
 
   deps = [
-    "//core/src/ten_runtime",
-    "//core/src/ten_runtime/binding/python",
+    "//core/src/axis_runtime",
+    "//core/src/axis_runtime/binding/python",
   ]
 }
 
-if (ten_enable_ten_manager) {
-  ten_package_publish("upload_python_addon_loader_to_server") {
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_python_addon_loader_to_server") {
     base_dir = rebase_path(
-            "${root_out_dir}/ten_packages/addon_loader/python_addon_loader")
+            "${root_out_dir}/axis_packages/addon_loader/python_addon_loader")
     deps = [ ":python_addon_loader" ]
   }
 }

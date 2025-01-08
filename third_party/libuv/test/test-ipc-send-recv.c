@@ -363,7 +363,7 @@ static void send_recv_start(void) {
   ASSERT_OK(r);
 }
 
-static void listen_cb(uv_stream_t* handle, int status) {
+static void lisaxis_cb(uv_stream_t* handle, int status) {
   int r;
   ASSERT_PTR_EQ(handle, (uv_stream_t*)&ctx2.listen);
   ASSERT_OK(status);
@@ -391,7 +391,7 @@ int run_ipc_send_recv_helper(uv_loop_t* loop, int inprocess) {
     r = uv_pipe_bind(&ctx2.listen, TEST_PIPENAME_3);
     ASSERT_OK(r);
 
-    r = uv_listen((uv_stream_t*)&ctx2.listen, SOMAXCONN, listen_cb);
+    r = uv_listen((uv_stream_t*)&ctx2.listen, SOMAXCONN, lisaxis_cb);
     ASSERT_OK(r);
   } else {
     r = uv_pipe_open(&ctx2.channel, 0);

@@ -1,0 +1,27 @@
+{
+  "_ten": {
+    "predefined_graphs": [
+      {
+        "name": "default",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension",
+            "name": "extension_1",
+            "addon": "extension_addon_1",
+            "extension_group": "extension_group_1"
+          },
+          {
+            "type": "extension",
+            "name": "extension_2",
+            "addon": "extension_addon_2",
+            "extension_group": "extension_group_1",
+            "property": {
+              "a": 1
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

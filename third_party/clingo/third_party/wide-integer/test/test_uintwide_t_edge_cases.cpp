@@ -644,23 +644,23 @@ auto test_various_roots_and_pow_etc() -> bool
 {
   auto result_is_ok = true;
 
-  const auto ten_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
+  const auto axis_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
 
   {
-    const auto u_root = rootk(ten_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(1)));
+    const auto u_root = rootk(axis_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(1)));
 
-    const auto result_u_root_is_ok = (u_root == ten_pow_forty);
+    const auto result_u_root_is_ok = (u_root == axis_pow_forty);
 
     result_is_ok = (result_u_root_is_ok && result_is_ok);
   }
 
   {
-    const auto u_root = rootk(ten_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(2)));
+    const auto u_root = rootk(axis_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(2)));
 
-    const auto ten_pow_twenty = local_uintwide_t_small_unsigned_type("100000000000000000000");
+    const auto axis_pow_twenty = local_uintwide_t_small_unsigned_type("100000000000000000000");
 
-    const auto result_u_root_is_ok = (   (u_root == ten_pow_twenty)
-                                      && (u_root == sqrt(ten_pow_forty)));
+    const auto result_u_root_is_ok = (   (u_root == axis_pow_twenty)
+                                      && (u_root == sqrt(axis_pow_forty)));
 
     result_is_ok = (result_u_root_is_ok && result_is_ok);
   }
@@ -1387,9 +1387,9 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   }
 
   {
-    const auto ten_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
+    const auto axis_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
 
-          auto a(ten_pow_forty);
+          auto a(axis_pow_forty);
     const auto b(local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000"));
 
     const auto& c(a %= b);

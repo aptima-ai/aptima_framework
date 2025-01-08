@@ -1,0 +1,50 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_utils/options.gni")
+import("//build/axis_utils/utils.gni")
+
+axis_utils_glob("unit") {
+  no_current = true
+
+  file_list = [
+    "axis_base64_test.cc",
+    "axis_list_test.cc",
+    "axis_lock_test.cc",
+    "axis_log_test.cc",
+    "axis_macro_test.cc",
+    "axis_manifest_test.cc",
+    "axis_path_test.cc",
+    "axis_random_test.cc",
+    "axis_rbtree_test.cc",
+    "axis_rwlock_test.cc",
+    "axis_schema_test.cc",
+    "axis_semver_test.cpp",
+    "axis_sharedptr_test.cc",
+    "axis_shm_test.cc",
+    "axis_skiplist_test.cc",
+    "axis_string_test.cc",
+    "axis_thread_test.cc",
+    "sm_test.cc",
+  ]
+
+  public_deps = [
+    "//core/src/axis_utils/io/general/loops",
+    "//third_party/googletest",
+    "//third_party/nlohmann_json",
+  ]
+
+  deps = [ "//tests/axis_utils/common" ]
+
+  include_dirs = [
+    "//tests",
+    "//tests/axis_utils",
+  ]
+
+  if (is_clang) {
+    cflags_cc = [ "-Wno-c++11-narrowing" ]
+  }
+}

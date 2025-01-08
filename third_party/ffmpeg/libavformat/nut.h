@@ -91,7 +91,7 @@ typedef struct ChapterContext {
 typedef struct NUTContext {
     const AVClass *av_class;
     AVFormatContext *avf;
-//    int written_packet_size;
+//    int writaxis_packet_size;
 //    int64_t packet_start;
     FrameCode frame_code[256];
     uint8_t header_len[128];

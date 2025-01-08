@@ -745,7 +745,7 @@ struct lws_context {
 	short plugin_protocol_count;
 	short plugin_extension_count;
 	short server_string_len;
-	unsigned short deprecation_pending_listen_close_count;
+	unsigned short deprecation_pending_lisaxis_close_count;
 #if defined(LWS_WITH_SECURE_STREAMS_PROXY_API)
 	uint16_t	ss_proxy_port;
 #endif

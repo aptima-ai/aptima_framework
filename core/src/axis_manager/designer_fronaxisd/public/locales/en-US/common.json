@@ -1,0 +1,68 @@
+{
+  "axisframework": "TEN Framework",
+  "header": {
+    "title": "Ten Manager",
+    "menu": {
+      "edit": "Edit",
+      "openExistingGraph": "Open Existing Graph",
+      "autoLayout": "Auto Layout",
+      "openAppFolder": "Open App Folder",
+      "file": "File",
+      "help": "Help",
+      "about": "About",
+      "language": "Language",
+      "language.enUS": "English",
+      "language.zhCN": "简体中文",
+      "theme": "Theme",
+      "theme.light": "Light",
+      "theme.dark": "Dark",
+      "theme.system": "System"
+    },
+    "officialSite": "Official site",
+    "poweredBy": "Powered by",
+    "poweredBy2": "Powered by",
+    "github": "GitHub"
+  },
+  "action": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "launchTerminal": "Launch terminal",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "selected": "Selected",
+    "autoStart": "Auto Start",
+    "confirm": "Confirm",
+    "upstream": "Upstream",
+    "downstream": "Downstream"
+  },
+  "toast": {
+    "saveFileSuccess": "File saved successfully",
+    "saveFileFailed": "Failed to save file"
+  },
+  "popup": {
+    "editor": {
+      "confirmSaveFile": "Are you sure you want to save the file?"
+    },
+    "selectGraph": {
+      "title": "Select a Graph"
+    },
+    "customNodeConn": {
+      "srcTitle": "Node[{{source}}] Connection",
+      "connectTitle": "Connection Details",
+      "title": "Connection"
+    }
+  },
+  "dataTable": {
+    "no": "No.",
+    "upstream": "Upstream",
+    "downstream": "Downstream",
+    "type": "Type",
+    "source": "Source",
+    "target": "Target",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "delete": "Delete",
+    "openMenu": "Open Menu",
+    "noResults": "No results."
+  }
+}

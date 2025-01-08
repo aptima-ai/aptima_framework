@@ -78,106 +78,106 @@ jobs:
           if [ ${{ matrix.build_type }} == "debug" ]; then
             export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"
           fi
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           echo $PATH
 
           df -h .
 
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false ten_enable_nodejs_binding=false
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true axis_enable_serialized_rust_action=true axis_rust_enable_gen_cargo_config=false axis_enable_cargo_clean=true axis_enable_python_binding=false axis_enable_rust_incremental_build=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false axis_enable_nodejs_binding=false
 
           tgn build mac arm64 ${{ matrix.build_type }}
 
           df -h .
           tree -I 'gen|obj' out
 
-      - name: Run Tests (ten_utils_unit_test)
+      - name: Run Tests (axis_utils_unit_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/arm64/tests/standalone/ten_utils_unit_test
-          out/mac/arm64/tests/standalone/ten_utils_unit_test
+          chmod +x out/mac/arm64/tests/standalone/axis_utils_unit_test
+          out/mac/arm64/tests/standalone/axis_utils_unit_test
 
-      - name: Run Tests (ten_runtime_unit_test)
+      - name: Run Tests (axis_runtime_unit_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/arm64/tests/standalone/ten_runtime_unit_test
-          out/mac/arm64/tests/standalone/ten_runtime_unit_test
+          chmod +x out/mac/arm64/tests/standalone/axis_runtime_unit_test
+          out/mac/arm64/tests/standalone/axis_runtime_unit_test
 
-      - name: Run Tests (ten_runtime_smoke_test)
+      - name: Run Tests (axis_runtime_smoke_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
-          out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+          chmod +x out/mac/arm64/tests/standalone/axis_runtime_smoke_test
+          out/mac/arm64/tests/standalone/axis_runtime_smoke_test
       #   continue-on-error: true
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
 
-      - name: Run Tests (ten_rust standalone tests)
+      - name: Run Tests (axis_rust standalone tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          cd out/mac/arm64/tests/standalone/ten_rust
+          cd out/mac/arm64/tests/standalone/axis_rust
 
           chmod +x unit_test
           chmod +x integration_test
 
-          ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
-          ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
+          ./unit_test || { echo "axis_rust unit test failed"; exit 1; }
+          ./integration_test || { echo "axis_rust integration test failed"; exit 1; }
 
-      - name: Run Tests (ten_manager standalone tests)
+      - name: Run Tests (axis_manager standalone tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          cd out/mac/arm64/tests/standalone/ten_manager
+          cd out/mac/arm64/tests/standalone/axis_manager
 
           chmod +x unit_test
 
-          ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
+          ./unit_test || { echo "axis_manager unit test failed"; exit 1; }
 
       - name: Install Python dependencies via script
         run: |
           python .github/tools/setup_pytest_dependencies.py
 
-      - name: Run Tests (ten_manager pytest tests)
+      - name: Run Tests (axis_manager pytest tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           cd out/mac/arm64/
-          pytest -s tests/ten_manager/
+          pytest -s tests/axis_manager/
 
-      - name: Run tests (ten_runtime integration tests)
+      - name: Run tests (axis_runtime integration tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           if [ ${{ matrix.build_type }} == "debug" ]; then
             export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"
           fi
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           cd out/mac/arm64/
-          pytest -s tests/ten_runtime/integration/
+          pytest -s tests/axis_runtime/integration/
       #   continue-on-error: true
 
       # - name: Setup tmate session
@@ -248,12 +248,12 @@ jobs:
           if [ ${{ matrix.build_type }} == "debug" ]; then
             export PATH="/usr/local/opt/llvm@18/bin:$PATH"
           fi
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           echo $PATH
 
           df -h .
 
-          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_cargo_clean=true ten_enable_python_binding=false ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false ten_enable_nodejs_binding=false
+          tgn gen mac x64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true axis_enable_serialized_rust_action=true axis_rust_enable_gen_cargo_config=false axis_enable_cargo_clean=true axis_enable_python_binding=false axis_enable_rust_incremental_build=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false axis_enable_nodejs_binding=false
 
           tgn build mac x64 ${{ matrix.build_type }}
 
@@ -263,100 +263,100 @@ jobs:
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
 
-      - name: Run Tests (ten_utils_unit_test)
+      - name: Run Tests (axis_utils_unit_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/x64/tests/standalone/ten_utils_unit_test
-          out/mac/x64/tests/standalone/ten_utils_unit_test
+          chmod +x out/mac/x64/tests/standalone/axis_utils_unit_test
+          out/mac/x64/tests/standalone/axis_utils_unit_test
 
-      - name: Run Tests (ten_runtime_unit_test)
+      - name: Run Tests (axis_runtime_unit_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/x64/tests/standalone/ten_runtime_unit_test
-          out/mac/x64/tests/standalone/ten_runtime_unit_test
+          chmod +x out/mac/x64/tests/standalone/axis_runtime_unit_test
+          out/mac/x64/tests/standalone/axis_runtime_unit_test
 
-      - name: Run Tests (ten_runtime_smoke_test)
+      - name: Run Tests (axis_runtime_smoke_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/x64/tests/standalone/ten_runtime_smoke_test
-          out/mac/x64/tests/standalone/ten_runtime_smoke_test
+          chmod +x out/mac/x64/tests/standalone/axis_runtime_smoke_test
+          out/mac/x64/tests/standalone/axis_runtime_smoke_test
 
-      - name: Run Tests (ten_rust standalone tests)
+      - name: Run Tests (axis_rust standalone tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          cd out/mac/x64/tests/standalone/ten_rust
+          cd out/mac/x64/tests/standalone/axis_rust
 
           chmod +x unit_test
           chmod +x integration_test
 
-          ./unit_test || { echo "ten_rust unit test failed"; exit 1; }
-          ./integration_test || { echo "ten_rust integration test failed"; exit 1; }
+          ./unit_test || { echo "axis_rust unit test failed"; exit 1; }
+          ./integration_test || { echo "axis_rust integration test failed"; exit 1; }
 
-      - name: Run Tests (ten_manager standalone tests)
+      - name: Run Tests (axis_manager standalone tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          cd out/mac/x64/tests/standalone/ten_manager
+          cd out/mac/x64/tests/standalone/axis_manager
 
           chmod +x unit_test
 
-          ./unit_test || { echo "ten_manager unit test failed"; exit 1; }
+          ./unit_test || { echo "axis_manager unit test failed"; exit 1; }
 
       - name: Install Python dependencies via script
         run: |
           python .github/tools/setup_pytest_dependencies.py
 
-      - name: Run Tests (ten_manager pytest tests)
+      - name: Run Tests (axis_manager pytest tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           cd out/mac/x64/
-          pytest -s tests/ten_manager/
+          pytest -s tests/axis_manager/
 
-      - name: Run tests (ten_runtime integration tests)
+      - name: Run tests (axis_runtime integration tests)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
           if [ ${{ matrix.build_type }} == "debug" ]; then
             export PATH="/usr/local/opt/llvm@18/bin:$PATH"
           fi
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           cd out/mac/x64/
-          pytest -s tests/ten_runtime/integration/
+          pytest -s tests/axis_runtime/integration/
       #   continue-on-error: true
 
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
 
-  # Building ten_runtime without the ten_rust library (i.e., ten_enable_ten_rust_apis=false).
-  build-mac-arm64-without-ten-rust:
+  # Building axis_runtime without the axis_rust library (i.e., axis_enable_axis_rust_apis=false).
+  build-mac-arm64-without-axis-rust:
     concurrency:
-      group: build-mac-arm64-without-ten-rust-${{ github.head_ref }}-${{ matrix.build_type }}
+      group: build-mac-arm64-without-axis-rust-${{ github.head_ref }}-${{ matrix.build_type }}
       cancel-in-progress: true
     runs-on: macos-latest
     strategy:
@@ -419,27 +419,27 @@ jobs:
           if [ ${{ matrix.build_type }} == "debug" ]; then
             export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"
           fi
-          export PATH=$(pwd)/core/ten_gn:$PATH
+          export PATH=$(pwd)/core/axis_gn:$PATH
           echo $PATH
 
           df -h .
 
-          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true ten_enable_serialized_rust_action=true ten_rust_enable_gen_cargo_config=false ten_enable_ten_rust_apis=false ten_enable_rust_incremental_build=false ten_manager_enable_frontend=false ten_enable_integration_tests_prebuilt=false ten_enable_nodejs_binding=false
+          tgn gen mac arm64 ${{ matrix.build_type }} -- log_level=1 enable_serialized_actions=true axis_enable_serialized_rust_action=true axis_rust_enable_gen_cargo_config=false axis_enable_axis_rust_apis=false axis_enable_rust_incremental_build=false axis_manager_enable_frontend=false axis_enable_integration_tests_prebuilt=false axis_enable_nodejs_binding=false
 
           tgn build mac arm64 ${{ matrix.build_type }}
 
           df -h .
           tree -I 'gen|obj' out
 
-      - name: Run Tests (ten_runtime_smoke_test)
+      - name: Run Tests (axis_runtime_smoke_test)
         env:
           ASAN_OPTIONS: detect_stack_use_after_return=1:color=always:unmap_shadow_on_exit=1:abort_on_error=1
           MALLOC_CHECK_: 3
-          TEN_ENABLE_MEMORY_TRACKING: "true"
-          TEN_ENABLE_BACKTRACE_DUMP: "true"
+          axis_ENABLE_MEMORY_TRACKING: "true"
+          axis_ENABLE_BACKTRACE_DUMP: "true"
         run: |
-          chmod +x out/mac/arm64/tests/standalone/ten_runtime_smoke_test
-          out/mac/arm64/tests/standalone/ten_runtime_smoke_test
+          chmod +x out/mac/arm64/tests/standalone/axis_runtime_smoke_test
+          out/mac/arm64/tests/standalone/axis_runtime_smoke_test
       #   continue-on-error: true
 
       # - name: Setup tmate session

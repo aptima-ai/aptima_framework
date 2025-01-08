@@ -137,7 +137,7 @@
     defined( CATCH_PLATFORM_PLAYSTATION ) ||                                   \
     defined( __CYGWIN__ ) ||                                                   \
     defined( __QNX__ ) ||                                                      \
-    defined( __EMSCRIPTEN__ ) ||                                               \
+    defined( __EMSCRIPaxis__ ) ||                                               \
     defined( __DJGPP__ ) ||                                                    \
     defined( __OS400__ )
 #    define CATCH_INTERNAL_CONFIG_NO_POSIX_SIGNALS

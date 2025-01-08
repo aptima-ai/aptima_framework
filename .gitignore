@@ -39,13 +39,13 @@ out/
 
 # Ignore all .gnfiles/ directories
 .gnfiles
-# Do not ignore core/ten_gn/.gnfiles/ directory
-!core/ten_gn/.gnfiles/
+# Do not ignore core/axis_gn/.gnfiles/ directory
+!core/axis_gn/.gnfiles/
 
 # Ignore all .gn files
 .gn
-# Do not ignore core/ten_gn/.gnfiles/.gn file
-!core/ten_gn/.gnfiles/.gn
+# Do not ignore core/axis_gn/.gnfiles/.gn file
+!core/axis_gn/.gnfiles/.gn
 
 # Ignore all .ten/ directories
 .ten/
@@ -58,7 +58,7 @@ node_modules/
 *.tsbuildinfo
 
 # Nodejs binding
-core/src/ten_runtime/binding/nodejs/build
+core/src/axis_runtime/binding/nodejs/build
 
 # Cache files
 .cache
@@ -74,9 +74,9 @@ core/src/ten_runtime/binding/nodejs/build
 .clangd
 
 # Rust generated files
-core/src/ten_manager/target/
-core/src/ten_rust/src/schema/bindings.rs
-core/src/ten_rust/target/
+core/src/axis_manager/target/
+core/src/axis_rust/src/schema/bindings.rs
+core/src/axis_rust/target/
 /.cargo
 
 # zlib auto-generated files

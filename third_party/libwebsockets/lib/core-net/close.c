@@ -137,7 +137,7 @@ __lws_reset_wsi(struct lws *wsi)
 #endif
 
 #if defined(LWS_WITH_SERVER)
-	lws_dll2_remove(&wsi->listen_list);
+	lws_dll2_remove(&wsi->lisaxis_list);
 #endif
 
 #if defined(LWS_WITH_CLIENT)

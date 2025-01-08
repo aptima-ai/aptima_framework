@@ -1,0 +1,34 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_utils/utils.gni")
+import("//core/src/axis_utils/io/feature.gni")
+
+config("loops_config") {
+  defines = []
+
+  if (utils_enable_libuv) {
+    defines += [ "axis_USE_LIBUV" ]
+  }
+
+  if (utils_enable_bare_runloop) {
+    defines += [ "axis_USE_BARE_RUNLOOP" ]
+  }
+}
+
+axis_utils_glob("loops") {
+  deps = [ "bare" ]
+
+  if (utils_enable_libuv) {
+    deps += [ "uv" ]
+  }
+
+  if (utils_enable_bare_runloop) {
+    deps += [ "bare" ]
+  }
+
+  public_configs = [ ":loops_config" ]
+}

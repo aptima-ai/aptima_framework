@@ -308,10 +308,10 @@ if(JANSSON_BUILD_SHARED_LIBS)
       ${JANSSON_HDR_PUBLIC}
       src/jansson.def)
 
-option(TEN_ENABLE_JANSSON_SYMVER "Enable default-symver linker option" OFF)
+option(axis_ENABLE_JANSSON_SYMVER "Enable default-symver linker option" OFF)
 
 # check if linker support --default-symver
-if(TEN_ENABLE_JANSSON_SYMVER)
+if(axis_ENABLE_JANSSON_SYMVER)
    list(APPEND CMAKE_REQUIRED_LIBRARIES "-Wl,--default-symver")
    check_c_source_compiles(
    "

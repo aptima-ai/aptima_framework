@@ -16,7 +16,7 @@
  * On error, including if the key representation in storage differs,
  * mark the test case as failed and return 0. On success, return 1.
  */
-static int test_written_key( const psa_key_attributes_t *attributes,
+static int test_writaxis_key( const psa_key_attributes_t *attributes,
                              const data_t *material,
                              psa_storage_uid_t uid,
                              const data_t *expected_representation )
@@ -331,7 +331,7 @@ void key_storage_save( int lifetime_arg, int type_arg, int bits_arg,
      * the key is stored. The stability of the test data in future
      * versions of Mbed TLS will guarantee that future versions
      * can read back what this version wrote. */
-    TEST_ASSERT( test_written_key( &attributes, material,
+    TEST_ASSERT( test_writaxis_key( &attributes, material,
                                    uid, representation ) );
 
 exit:

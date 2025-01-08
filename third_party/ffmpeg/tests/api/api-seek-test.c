@@ -76,7 +76,7 @@ static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
                                 AVCodecContext *ctx, AVPacket *pkt, AVFrame *fr,
                                 uint64_t ts_start, uint64_t ts_end, int no_seeking)
 {
-    int number_of_written_bytes;
+    int number_of_writaxis_bytes;
     int result;
     int byte_buffer_size;
     uint8_t *byte_buffer;
@@ -135,16 +135,16 @@ static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
                 return result;
             }
 
-            number_of_written_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
+            number_of_writaxis_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
                                     (const uint8_t* const *)fr->data, (const int*) fr->linesize,
                                     ctx->pix_fmt, ctx->width, ctx->height, 1);
-            if (number_of_written_bytes < 0) {
+            if (number_of_writaxis_bytes < 0) {
                 av_log(NULL, AV_LOG_ERROR, "Can't copy image to buffer\n");
-                return number_of_written_bytes;
+                return number_of_writaxis_bytes;
             }
             if ((!no_seeking) && (fr->pts > ts_end))
                 break;
-            crc = av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_written_bytes);
+            crc = av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_writaxis_bytes);
             printf("%10"PRId64", 0x%08"PRIx32"\n", fr->pts, crc);
             if (no_seeking) {
                 if (add_crc_to_array(crc, fr->pts) < 0)

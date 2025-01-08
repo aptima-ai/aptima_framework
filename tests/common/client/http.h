@@ -6,17 +6,17 @@
 //
 #pragma once
 
-#include "ten_runtime/ten_config.h"
+#include "axis_runtime/axis_config.h"
 
-#include "ten_utils/lib/string.h"
+#include "axis_utils/lib/string.h"
 
-TEN_RUNTIME_PRIVATE_API void ten_test_http_client_init(void);
+axis_RUNTIME_PRIVATE_API void axis_test_http_client_init(void);
 
-TEN_RUNTIME_PRIVATE_API void ten_test_http_client_deinit(void);
+axis_RUNTIME_PRIVATE_API void axis_test_http_client_deinit(void);
 
-TEN_RUNTIME_PRIVATE_API void ten_test_http_client_get(const char *url,
-                                                      ten_string_t *result);
+axis_RUNTIME_PRIVATE_API void axis_test_http_client_get(const char *url,
+                                                      axis_string_t *result);
 
-TEN_RUNTIME_PRIVATE_API void ten_test_http_client_post(const char *url,
+axis_RUNTIME_PRIVATE_API void axis_test_http_client_post(const char *url,
                                                        const char *body,
-                                                       ten_string_t *result);
+                                                       axis_string_t *result);

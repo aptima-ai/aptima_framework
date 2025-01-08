@@ -1,0 +1,18 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//build/axis_runtime/options.gni")
+
+group("axis_manager") {
+  deps = [
+    "dependency_resolve:tman_dependency_resolve",
+    "error_context",
+    "install",
+    "install_all",
+    "publish:tman_publish",
+    "//build/axis_runtime/feature:create_tman_config",
+  ]
+}

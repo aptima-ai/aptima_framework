@@ -1,0 +1,90 @@
+#
+# Copyright © 2025 Agora
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0, with certain conditions.
+# Refer to the "LICENSE" file in the root directory for more information.
+#
+import("//core/src/axis_utils/output_libs.gni")
+import("//third_party/jansson/output_libs.gni")
+
+axis_runtime_output_libs = []
+
+if (is_win) {
+  axis_runtime_output_libs += [
+    "${root_out_dir}/axis_runtime.dll",
+    "${root_out_dir}/axis_runtime.dll.lib",
+  ]
+} else if (is_mac) {
+  axis_runtime_output_libs += [ "${root_out_dir}/libaxis_runtime.dylib" ]
+} else if (is_linux) {
+  axis_runtime_output_libs += [ "${root_out_dir}/libaxis_runtime.so" ]
+}
+
+if (is_linux) {
+  axis_runtime_go_output_libs = [ "${root_out_dir}/libaxis_runtime_go.so" ]
+  axis_runtime_python_output_libs =
+      [ "${root_out_dir}/libaxis_runtime_python.so" ]
+} else if (is_mac) {
+  axis_runtime_go_output_libs = [ "${root_out_dir}/libaxis_runtime_go.dylib" ]
+
+  # According to the explanation in https://bugs.python.org/issue43898, even on
+  # macOS, when Python imports a Python C extension, the file extension must be
+  # `.so` and cannot be `.dylib`.
+  axis_runtime_python_output_libs =
+      [ "${root_out_dir}/libaxis_runtime_python.so" ]
+} else if (is_win) {
+  axis_runtime_go_output_libs = [
+    "${root_out_dir}/axis_runtime_go.dll",
+    "${root_out_dir}/axis_runtime_go.dll.lib",
+  ]
+  axis_runtime_python_output_libs = [
+    "${root_out_dir}/axis_runtime_python.dll",
+    "${root_out_dir}/axis_runtime_python.dll.lib",
+  ]
+}
+
+axis_runtime_nodejs_output_libs =
+    [ "${root_out_dir}/libaxis_runtime_nodejs.node" ]
+
+template("axis_runtime_copy_deps") {
+  basedir = invoker.basedir
+
+  action("axis_runtime_copy_runtime_libs") {
+    runtime_libs_src_dir = "${root_out_dir}"
+    runtime_libs_dest_dir = basedir + "/lib"
+
+    script = "//build/axis_common/scripts/copy_files_with_pattern.py"
+    args = [
+      "--sources",
+      rebase_path(runtime_libs_src_dir),
+      "--patterns",
+      ".*/libaxis_runtime\\..*\$",
+      "--dest-dir",
+      rebase_path(runtime_libs_dest_dir),
+      "--tg-timestamp-proxy-file",
+      rebase_path("${target_gen_dir}/tg_timestamp_proxy_file"),
+    ]
+
+    outputs = [ "${target_gen_dir}/tg_timestamp_proxy_file" ]
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "data_deps",
+                             "testonly",
+                           ])
+
+    # This action should wait for the completion of the building of runtime.
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ "//core/src/axis_runtime" ]
+  }
+
+  all_deps = [ ":axis_runtime_copy_runtime_libs" ]
+
+  group("${target_name}") {
+    deps = all_deps
+  }
+}

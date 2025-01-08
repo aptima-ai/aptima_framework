@@ -167,8 +167,8 @@ static void writeout(AVIOContext *s, const uint8_t *data, int len)
             ctx->bytes_written += len;
             s->bytes_written = ctx->bytes_written;
 
-            if (s->pos + len > ctx->written_output_size) {
-                ctx->written_output_size = s->pos + len;
+            if (s->pos + len > ctx->writaxis_output_size) {
+                ctx->writaxis_output_size = s->pos + len;
             }
         }
     }
@@ -349,8 +349,8 @@ int64_t avio_size(AVIOContext *s)
     if (!s)
         return AVERROR(EINVAL);
 
-    if (ctx->written_output_size)
-        return ctx->written_output_size;
+    if (ctx->writaxis_output_size)
+        return ctx->writaxis_output_size;
 
     if (!s->seek)
         return AVERROR(ENOSYS);

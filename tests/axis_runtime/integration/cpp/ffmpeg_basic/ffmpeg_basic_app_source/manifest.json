@@ -1,0 +1,29 @@
+{
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.2"
+    },
+    {
+      "type": "extension",
+      "name": "ffmpeg_demuxer",
+      "version": "0.1.0"
+    },
+    {
+      "type": "extension",
+      "name": "ffmpeg_muxer",
+      "version": "0.1.0"
+    },
+    {
+      "type": "extension",
+      "name": "ffmpeg_client",
+      "version": "0.1.0"
+    },
+    {
+      "type": "protocol",
+      "name": "msgpack",
+      "version": "0.6.2"
+    }
+  ]
+}

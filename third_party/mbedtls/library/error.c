@@ -672,7 +672,7 @@ const char * mbedtls_low_level_strerr( int error_code )
             return( "NET - The connection to the given server / port failed" );
         case -(MBEDTLS_ERR_NET_BIND_FAILED):
             return( "NET - Binding of the socket failed" );
-        case -(MBEDTLS_ERR_NET_LISTEN_FAILED):
+        case -(MBEDTLS_ERR_NET_LISaxis_FAILED):
             return( "NET - Could not listen on the socket" );
         case -(MBEDTLS_ERR_NET_ACCEPT_FAILED):
             return( "NET - Could not accept the incoming connection" );

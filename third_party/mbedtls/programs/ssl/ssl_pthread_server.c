@@ -313,7 +313,7 @@ static int thread_create( mbedtls_net_context *client_fd )
 int main( void )
 {
     int ret;
-    mbedtls_net_context listen_fd, client_fd;
+    mbedtls_net_context lisaxis_fd, client_fd;
     const char pers[] = "ssl_pthread_server";
 
     mbedtls_entropy_context entropy;
@@ -343,7 +343,7 @@ int main( void )
     mbedtls_ssl_config_init( &conf );
     mbedtls_ctr_drbg_init( &ctr_drbg );
     memset( threads, 0, sizeof(threads) );
-    mbedtls_net_init( &listen_fd );
+    mbedtls_net_init( &lisaxis_fd );
     mbedtls_net_init( &client_fd );
 
     mbedtls_mutex_init( &debug_mutex );
@@ -452,7 +452,7 @@ int main( void )
     mbedtls_printf( "  . Bind on https://localhost:4433/ ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_net_bind( &listen_fd, NULL, "4433", MBEDTLS_NET_PROTO_TCP ) ) != 0 )
+    if( ( ret = mbedtls_net_bind( &lisaxis_fd, NULL, "4433", MBEDTLS_NET_PROTO_TCP ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_bind returned %d\n\n", ret );
         goto exit;
@@ -476,7 +476,7 @@ reset:
      */
     mbedtls_printf( "  [ main ]  Waiting for a remote connection\n" );
 
-    if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
+    if( ( ret = mbedtls_net_accept( &lisaxis_fd, &client_fd,
                                     NULL, 0, NULL ) ) != 0 )
     {
         mbedtls_printf( "  [ main ] failed: mbedtls_net_accept returned -0x%04x\n",
@@ -507,7 +507,7 @@ exit:
     mbedtls_entropy_free( &entropy );
     mbedtls_ssl_config_free( &conf );
 
-    mbedtls_net_free( &listen_fd );
+    mbedtls_net_free( &lisaxis_fd );
 
     mbedtls_mutex_free( &debug_mutex );
 

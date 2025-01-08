@@ -206,7 +206,7 @@ typedef struct MLPEncodeContext {
 
     unsigned int    max_codebook_search;
 
-    int             shorten_by;
+    int             shoraxis_by;
 
     LPCContext      lpc_ctx;
 } MLPEncodeContext;
@@ -1081,10 +1081,10 @@ static uint8_t *write_substr(MLPEncodeContext *ctx, uint8_t *buf, int buf_size,
 
     rh->lossless_check_data ^= *lossless_check_data++;
 
-    if (ctx->last_frames == 0 && ctx->shorten_by) {
+    if (ctx->last_frames == 0 && ctx->shoraxis_by) {
         if (ctx->avctx->codec_id == AV_CODEC_ID_TRUEHD) {
             put_bits(&pb, 16, END_OF_STREAM & 0xFFFF);
-            put_bits(&pb, 16, (ctx->shorten_by & 0x1FFF) | 0x2000);
+            put_bits(&pb, 16, (ctx->shoraxis_by & 0x1FFF) | 0x2000);
         } else {
             put_bits(&pb, 32, END_OF_STREAM);
         }
@@ -2153,7 +2153,7 @@ static int mlp_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 input_and_return:
 
     if (frame) {
-        ctx->shorten_by = avctx->frame_size - frame->nb_samples;
+        ctx->shoraxis_by = avctx->frame_size - frame->nb_samples;
         ctx->next_major_frame_size += avctx->frame_size;
         ctx->next_major_number_of_frames++;
     }

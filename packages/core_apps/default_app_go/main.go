@@ -14,7 +14,7 @@ package main
 import (
 	"fmt"
 
-	"ten_framework/ten"
+	"axis_framework/ten"
 )
 
 type defaultApp struct {

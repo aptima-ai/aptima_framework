@@ -4,7 +4,7 @@ Lws supports enabling TCP_FASTOPEN oper-vhost for listen sockets.
 
 ## Enabling per vhost serving
 
-Set the `info.fo_listen_queue` to nonzero at vhost creation.  Different
+Set the `info.fo_lisaxis_queue` to nonzero at vhost creation.  Different
 platforms interpret this number differently, zero always disables it
 but on Linux, the number is interpreted as a SYN queue length.
 

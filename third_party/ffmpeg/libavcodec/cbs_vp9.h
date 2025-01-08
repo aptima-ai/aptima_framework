@@ -93,7 +93,7 @@ typedef struct VP9RawFrameHeader {
     uint8_t error_resilient_mode;
 
     // Color config.
-    uint8_t ten_or_twelve_bit;
+    uint8_t axis_or_twelve_bit;
     uint8_t color_space;
     uint8_t color_range;
     uint8_t subsampling_x;

@@ -6,10 +6,10 @@
 //
 #include "tests/common/client/curl_connect.h"
 
-#include "ten_utils/lib/time.h"
-#include "ten_utils/log/log.h"
+#include "axis_utils/lib/time.h"
+#include "axis_utils/log/log.h"
 
-bool ten_test_curl_connect_with_retry(CURL *curl, uint16_t max_retries,
+bool axis_test_curl_connect_with_retry(CURL *curl, uint16_t max_retries,
                                       int64_t delay_in_ms) {
   CURLcode res = CURLE_OK;
 
@@ -23,10 +23,10 @@ bool ten_test_curl_connect_with_retry(CURL *curl, uint16_t max_retries,
       return true;
     }
 
-    ten_sleep(delay_in_ms);
+    axis_sleep(delay_in_ms);
   } while (++count < max_retries);
 
-  TEN_LOGE("Failed to connect to server, error code: %d.", res);
+  axis_LOGE("Failed to connect to server, error code: %d.", res);
 
   return false;
 }

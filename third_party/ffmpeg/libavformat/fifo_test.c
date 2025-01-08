@@ -54,7 +54,7 @@ typedef struct FailingMuxerContext {
 
     int flush_count;
     int pts_written[MAX_TST_PACKETS];
-    int pts_written_nr;
+    int pts_writaxis_nr;
 } FailingMuxerContext;
 
 static int failing_write_header(AVFormatContext *avf)
@@ -91,7 +91,7 @@ static int failing_write_packet(AVFormatContext *avf, AVPacket *pkt)
         }
 
         if (!ret) {
-            ctx->pts_written[ctx->pts_written_nr++] = pkt->pts;
+            ctx->pts_written[ctx->pts_writaxis_nr++] = pkt->pts;
             av_packet_unref(pkt);
         }
     }
@@ -113,9 +113,9 @@ static void failing_deinit(AVFormatContext *avf)
         return;
 
     printf("flush count: %d\n", ctx->flush_count);
-    printf("pts seen nr: %d\n", ctx->pts_written_nr);
+    printf("pts seen nr: %d\n", ctx->pts_writaxis_nr);
     printf("pts seen: ");
-    for (i = 0; i < ctx->pts_written_nr; ++i ) {
+    for (i = 0; i < ctx->pts_writaxis_nr; ++i ) {
         printf(i ? ",%d" : "%d", ctx->pts_written[i]);
     }
     printf("\n");

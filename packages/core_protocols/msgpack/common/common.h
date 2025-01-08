@@ -5,17 +5,17 @@
 //
 #pragma once
 
-#include "ten_runtime/ten_config.h"
+#include "axis_runtime/axis_config.h"
 
 #include <stdint.h>
 
 #include "msgpack.h"
 
-typedef enum TEN_MSGPACK_EXT_TYPE {
-  TEN_MSGPACK_EXT_TYPE_INVALID,
+typedef enum axis_MSGPACK_EXT_TYPE {
+  axis_MSGPACK_EXT_TYPE_INVALID,
 
-  TEN_MSGPACK_EXT_TYPE_MSG,
-} TEN_MSGPACK_EXT_TYPE;
+  axis_MSGPACK_EXT_TYPE_MSG,
+} axis_MSGPACK_EXT_TYPE;
 
 #define MSGPACK_DATA_TYPE (unpacked->data.type)
 

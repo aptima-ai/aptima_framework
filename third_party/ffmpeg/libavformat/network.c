@@ -243,7 +243,7 @@ int ff_accept(int fd, int timeout, URLContext *h)
     return ret;
 }
 
-int ff_listen_bind(int fd, const struct sockaddr *addr,
+int ff_lisaxis_bind(int fd, const struct sockaddr *addr,
                    socklen_t addrlen, int timeout, URLContext *h)
 {
     int ret;
@@ -255,7 +255,7 @@ int ff_listen_bind(int fd, const struct sockaddr *addr,
     return ret;
 }
 
-int ff_listen_connect(int fd, const struct sockaddr *addr,
+int ff_lisaxis_connect(int fd, const struct sockaddr *addr,
                       socklen_t addrlen, int timeout, URLContext *h,
                       int will_try_next)
 {

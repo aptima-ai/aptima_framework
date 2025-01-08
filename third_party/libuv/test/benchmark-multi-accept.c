@@ -101,7 +101,7 @@ static void cl_connect_cb(uv_connect_t* req, int status);
 static void cl_idle_cb(uv_idle_t* handle);
 static void cl_close_cb(uv_handle_t* handle);
 
-static struct sockaddr_in listen_addr;
+static struct sockaddr_in lisaxis_addr;
 
 
 static void ipc_connection_cb(uv_stream_t* ipc_pipe, int status) {
@@ -200,7 +200,7 @@ static void ipc_read_cb(uv_stream_t* handle,
  * threads. It's kind of cumbersome for such a simple operation, maybe we
  * should revive uv_import() and uv_export().
  */
-static void send_listen_handles(uv_handle_type type,
+static void send_lisaxis_handles(uv_handle_type type,
                                 unsigned int num_servers,
                                 struct server_ctx* servers) {
   struct ipc_server_ctx ctx;
@@ -213,7 +213,7 @@ static void send_listen_handles(uv_handle_type type,
   if (type == UV_TCP) {
     ASSERT_OK(uv_tcp_init(loop, (uv_tcp_t*) &ctx.server_handle));
     ASSERT_OK(uv_tcp_bind((uv_tcp_t*) &ctx.server_handle,
-                          (const struct sockaddr*) &listen_addr,
+                          (const struct sockaddr*) &lisaxis_addr,
                           0));
   }
   else
@@ -239,7 +239,7 @@ static void send_listen_handles(uv_handle_type type,
 }
 
 
-static void get_listen_handle(uv_loop_t* loop, uv_stream_t* server_handle) {
+static void get_lisaxis_handle(uv_loop_t* loop, uv_stream_t* server_handle) {
   struct ipc_client_ctx ctx;
 
   ctx.server_handle = server_handle;
@@ -266,7 +266,7 @@ static void server_cb(void *arg) {
 
   /* Wait until the main thread is ready. */
   uv_sem_wait(&ctx->semaphore);
-  get_listen_handle(&loop, (uv_stream_t*) &ctx->server_handle);
+  get_lisaxis_handle(&loop, (uv_stream_t*) &ctx->server_handle);
   uv_sem_post(&ctx->semaphore);
 
   /* Now start the actual benchmark. */
@@ -354,7 +354,7 @@ static void cl_close_cb(uv_handle_t* handle) {
   ASSERT_OK(uv_tcp_init(handle->loop, (uv_tcp_t*) &ctx->client_handle));
   ASSERT_OK(uv_tcp_connect(&ctx->connect_req,
                            (uv_tcp_t*) &ctx->client_handle,
-                           (const struct sockaddr*) &listen_addr,
+                           (const struct sockaddr*) &lisaxis_addr,
                            cl_connect_cb));
 }
 
@@ -367,7 +367,7 @@ static int test_tcp(unsigned int num_servers, unsigned int num_clients) {
   unsigned int i;
   double time;
 
-  ASSERT_OK(uv_ip4_addr("127.0.0.1", TEST_PORT, &listen_addr));
+  ASSERT_OK(uv_ip4_addr("127.0.0.1", TEST_PORT, &lisaxis_addr));
   loop = uv_default_loop();
 
   servers = calloc(num_servers, sizeof(servers[0]));
@@ -385,7 +385,7 @@ static int test_tcp(unsigned int num_servers, unsigned int num_clients) {
     ASSERT_OK(uv_thread_create(&ctx->thread_id, server_cb, ctx));
   }
 
-  send_listen_handles(UV_TCP, num_servers, servers);
+  send_lisaxis_handles(UV_TCP, num_servers, servers);
 
   for (i = 0; i < num_clients; i++) {
     struct client_ctx* ctx = clients + i;
@@ -395,7 +395,7 @@ static int test_tcp(unsigned int num_servers, unsigned int num_clients) {
     ASSERT_OK(uv_tcp_init(loop, handle));
     ASSERT_OK(uv_tcp_connect(&ctx->connect_req,
                              handle,
-                             (const struct sockaddr*) &listen_addr,
+                             (const struct sockaddr*) &lisaxis_addr,
                              cl_connect_cb));
     ASSERT_OK(uv_idle_init(loop, &ctx->idle_handle));
   }

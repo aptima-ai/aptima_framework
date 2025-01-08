@@ -25,7 +25,7 @@ if (is_win) {
       [ "${root_gen_dir}/cmake/websockets/install/lib/libwebsockets.dylib" ]
 }
 
-template("ten_websockets_copy_deps") {
+template("axis_websockets_copy_deps") {
   basedir = invoker.basedir
 
   copy_files_for_development = false
@@ -33,7 +33,7 @@ template("ten_websockets_copy_deps") {
     copy_files_for_development = invoker.copy_files_for_development
   }
 
-  action("ten_websockets_copy_runtime_libs") {
+  action("axis_websockets_copy_runtime_libs") {
     runtime_libs_dest_dir_in_win_is_bin = false
     if (defined(invoker.runtime_libs_dest_dir_in_win_is_bin)) {
       runtime_libs_dest_dir_in_win_is_bin =
@@ -55,7 +55,7 @@ template("ten_websockets_copy_deps") {
       }
     }
 
-    script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+    script = "//build/axis_common/scripts/copy_files_with_pattern.py"
     args = [
       "--sources",
       rebase_path(runtime_libs_src_dir),
@@ -81,16 +81,16 @@ template("ten_websockets_copy_deps") {
     deps = [ "//third_party/libwebsockets" ]
   }
 
-  all_deps = [ ":ten_websockets_copy_runtime_libs" ]
+  all_deps = [ ":axis_websockets_copy_runtime_libs" ]
 
   if (copy_files_for_development) {
-    action("ten_websockets_copy_headers") {
+    action("axis_websockets_copy_headers") {
       headers_dest_dir = basedir + "/include"
       if (defined(invoker.subdir) && invoker.subdir != "") {
         headers_dest_dir += "/" + invoker.subdir
       }
 
-      script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+      script = "//build/axis_common/scripts/copy_files_with_pattern.py"
       args = [
         "--sources",
         rebase_path("${root_gen_dir}/cmake/websockets/install/include"),
@@ -114,11 +114,11 @@ template("ten_websockets_copy_deps") {
       deps = [ "//third_party/libwebsockets" ]
     }
 
-    all_deps += [ ":ten_websockets_copy_headers" ]
+    all_deps += [ ":axis_websockets_copy_headers" ]
 
     if (is_win) {
-      action("ten_websockets_copy_win_exported_libs") {
-        script = "//build/ten_common/scripts/copy_files_with_pattern.py"
+      action("axis_websockets_copy_win_exported_libs") {
+        script = "//build/axis_common/scripts/copy_files_with_pattern.py"
         args = [
           "--sources",
           rebase_path("${root_gen_dir}/cmake/websockets/install/lib"),
@@ -146,7 +146,7 @@ template("ten_websockets_copy_deps") {
         deps = [ "//third_party/libwebsockets" ]
       }
 
-      all_deps += [ ":ten_websockets_copy_win_exported_libs" ]
+      all_deps += [ ":axis_websockets_copy_win_exported_libs" ]
     }
   }
 

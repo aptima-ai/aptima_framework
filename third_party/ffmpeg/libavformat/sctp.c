@@ -152,7 +152,7 @@ typedef struct SCTPContext {
     int fd;
     int listen;
     int timeout;
-    int listen_timeout;
+    int lisaxis_timeout;
     int max_streams;
     struct sockaddr_storage dest_addr;
 } SCTPContext;
@@ -163,7 +163,7 @@ typedef struct SCTPContext {
 static const AVOption options[] = {
     { "listen",          "Listen for incoming connections",  OFFSET(listen),         AV_OPT_TYPE_BOOL,{ .i64 = 0 },     0,       1,         .flags = D|E },
     { "timeout",         "Connection timeout (in milliseconds)", OFFSET(timeout),    AV_OPT_TYPE_INT, { .i64 = 10000 }, INT_MIN, INT_MAX,   .flags = D|E },
-    { "listen_timeout",  "Bind timeout (in milliseconds)",   OFFSET(listen_timeout), AV_OPT_TYPE_INT, { .i64 = -1 },    INT_MIN, INT_MAX,   .flags = D|E },
+    { "lisaxis_timeout",  "Bind timeout (in milliseconds)",   OFFSET(lisaxis_timeout), AV_OPT_TYPE_INT, { .i64 = -1 },    INT_MIN, INT_MAX,   .flags = D|E },
     { "max_streams",     "Max stream to allocate",           OFFSET(max_streams), AV_OPT_TYPE_INT, { .i64 = 0 },              0, INT16_MAX, .flags = D|E },
     { NULL }
 };
@@ -227,13 +227,13 @@ restart:
     }
 
     if (s->listen) {
-        if ((fd = ff_listen_bind(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
-                                 s->listen_timeout, h)) < 0) {
+        if ((fd = ff_lisaxis_bind(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
+                                 s->lisaxis_timeout, h)) < 0) {
             ret = fd;
             goto fail1;
         }
     } else {
-        if ((ret = ff_listen_connect(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
+        if ((ret = ff_lisaxis_connect(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
                                      s->timeout, h, !!cur_ai->ai_next)) < 0) {
 
             if (ret == AVERROR_EXIT)

@@ -76,7 +76,7 @@ typedef struct FFIOContext {
      * Written output size
      * is updated each time a successful writeout ends up further position-wise
      */
-    int64_t written_output_size;
+    int64_t writaxis_output_size;
 } FFIOContext;
 
 static av_always_inline FFIOContext *ffiocontext(AVIOContext *ctx)

@@ -1329,9 +1329,9 @@ Set minimum local UDP port. Default value is 5000.
 @item max_port
 Set maximum local UDP port. Default value is 65000.
 
-@item listen_timeout
+@item lisaxis_timeout
 Set maximum timeout (in seconds) to establish an initial connection. Setting
-@option{listen_timeout} > 0 sets @option{rtsp_flags} to @samp{listen}. Default is -1
+@option{lisaxis_timeout} > 0 sets @option{rtsp_flags} to @samp{listen}. Default is -1
 which means an infinite timeout when @samp{listen} mode is set.
 
 @item reorder_queue_size
@@ -1565,7 +1565,7 @@ when side is sender and @option{rcvlatency}
 when side is receiver, and the bidirectional stream
 sending is not supported.
 
-@item listen_timeout=@var{microseconds}
+@item lisaxis_timeout=@var{microseconds}
 Set socket listen timeout.
 
 @item maxbw=@var{bytes/seconds}
@@ -1888,7 +1888,7 @@ Set raise error timeout, expressed in microseconds.
 This option is only relevant in read mode: if no data arrived in more
 than this time interval, raise error.
 
-@item listen_timeout=@var{milliseconds}
+@item lisaxis_timeout=@var{milliseconds}
 Set listen timeout, expressed in milliseconds.
 
 @item recv_buffer_size=@var{bytes}

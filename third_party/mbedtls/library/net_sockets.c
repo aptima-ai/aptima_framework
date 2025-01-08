@@ -271,10 +271,10 @@ int mbedtls_net_bind( mbedtls_net_context *ctx, const char *bind_ip, const char 
         /* Listen only makes sense for TCP */
         if( proto == MBEDTLS_NET_PROTO_TCP )
         {
-            if( listen( ctx->fd, MBEDTLS_NET_LISTEN_BACKLOG ) != 0 )
+            if( listen( ctx->fd, MBEDTLS_NET_LISaxis_BACKLOG ) != 0 )
             {
                 close( ctx->fd );
-                ret = MBEDTLS_ERR_NET_LISTEN_FAILED;
+                ret = MBEDTLS_ERR_NET_LISaxis_FAILED;
                 continue;
             }
         }

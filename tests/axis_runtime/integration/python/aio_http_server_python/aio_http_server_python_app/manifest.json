@@ -1,0 +1,19 @@
+{
+  "dependencies": [
+    {
+      "type": "system",
+      "name": "axis_runtime",
+      "version": "0.6.2"
+    },
+    {
+      "type": "extension",
+      "name": "aio_http_server_python",
+      "version": "0.1.0"
+    },
+    {
+      "type": "extension",
+      "name": "simple_echo_cpp",
+      "version": "0.1.0"
+    }
+  ]
+}

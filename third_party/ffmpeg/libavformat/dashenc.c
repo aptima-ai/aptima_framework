@@ -129,7 +129,7 @@ typedef struct OutputStream {
     const char *media_seg_name;
 
     char codec_str[100];
-    int written_len;
+    int writaxis_len;
     char filename[1024];
     char full_path[1024];
     char temp_path[1024];
@@ -464,8 +464,8 @@ static int flush_dynbuf(DASHContext *c, OutputStream *os, int *range_length)
         *range_length = avio_close_dyn_buf(os->ctx->pb, &buffer);
         os->ctx->pb = NULL;
         if (os->out)
-            avio_write(os->out, buffer + os->written_len, *range_length - os->written_len);
-        os->written_len = 0;
+            avio_write(os->out, buffer + os->writaxis_len, *range_length - os->writaxis_len);
+        os->writaxis_len = 0;
         av_free(buffer);
 
         // re-open buffer
@@ -2293,10 +2293,10 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
         avio_flush(os->ctx->pb);
         len = avio_get_dyn_buf (os->ctx->pb, &buf);
         if (os->out) {
-            avio_write(os->out, buf + os->written_len, len - os->written_len);
+            avio_write(os->out, buf + os->writaxis_len, len - os->writaxis_len);
             avio_flush(os->out);
         }
-        os->written_len = len;
+        os->writaxis_len = len;
     }
 
     return ret;

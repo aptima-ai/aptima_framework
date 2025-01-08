@@ -94,7 +94,7 @@ struct vhd_dbus_proxy {
 	struct lws_dbus_ctx ctx_listener;
 	struct lws_dbus_ctx_wsproxy dctx;
 
-	const char *dbus_listen_ads;
+	const char *dbus_lisaxis_ads;
 };
 
 #define THIS_INTERFACE	"org.libwebsockets.wsclientproxy"
@@ -585,7 +585,7 @@ daemon:
         vhd->ctx_listener.vh = vhd->vhost;
         vhd->ctx_listener.tsi = tsi;
 
-	if (!lws_dbus_server_listen(&vhd->ctx_listener, vhd->dbus_listen_ads,
+	if (!lws_dbus_server_listen(&vhd->ctx_listener, vhd->dbus_lisaxis_ads,
 				    &e, new_conn)) {
 		lwsl_err("%s: failed\n", __func__);
 		dbus_error_free(&e);
@@ -594,7 +594,7 @@ daemon:
 	}
 
 	lwsl_notice("%s: created DBUS listener on %s\n", __func__,
-			vhd->dbus_listen_ads);
+			vhd->dbus_lisaxis_ads);
 
 	return 0;
 #if 0
@@ -652,7 +652,7 @@ callback_minimal_dbus_wsproxy(struct lws *wsi, enum lws_callback_reasons reason,
 		vhd->context = lws_get_context(wsi);
 		vhd->vhost = lws_get_vhost(wsi);
 
-		if (lws_pvo_get_str(in, "ads", &vhd->dbus_listen_ads)) {
+		if (lws_pvo_get_str(in, "ads", &vhd->dbus_lisaxis_ads)) {
 			lwsl_err("%s: pvo 'ads' must be set\n", __func__);
 			return -1;
 		}

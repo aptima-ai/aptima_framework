@@ -1,0 +1,38 @@
+#
+# This file is part of TEN Framework, an open source project.
+# Licensed under the Apache License, Version 2.0.
+# See the LICENSE file for more information.
+#
+import("//build/feature/axis_package.gni")
+import("//build/axis_runtime/feature/publish.gni")
+import("//build/axis_runtime/glob.gni")
+import("//build/axis_runtime/options.gni")
+
+axis_package("simple_echo_cpp") {
+  package_kind = "extension"
+
+  resources = [
+    "manifest.json",
+    "property.json",
+  ]
+
+  sources = [ "src/main.cc" ]
+
+  enable_build = true
+  include_dirs = [
+    "//core/src",
+    "//core",
+  ]
+  deps = [
+    "//core/src/axis_runtime",
+    "//third_party/nlohmann_json",
+  ]
+}
+
+if (axis_enable_axis_manager) {
+  axis_package_publish("upload_simple_echo_cpp_to_server") {
+    base_dir =
+        rebase_path("${root_out_dir}/axis_packages/extension/simple_echo_cpp")
+    deps = [ ":simple_echo_cpp" ]
+  }
+}
