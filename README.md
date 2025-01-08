@@ -1,4 +1,4 @@
-[![Axis Framework Banner](https://github.com/axis-talk/axis_framework/assets/Axis_Banner.png)](https://axistalk.com)
+[![Axis Framework Banner](https://github.com/axis-talk/axis_framework/blob/main/assets/Axis_Banner.png)](https://axistalk.com)
 
 <div align="center">
 
