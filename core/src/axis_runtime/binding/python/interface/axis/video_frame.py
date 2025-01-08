@@ -6,6 +6,7 @@
 #
 from enum import IntEnum
 from typing import Type, TypeVar
+
 from libaxis_runtime_python import _VideoFrame
 
 T = TypeVar("T", bound="VideoFrame")

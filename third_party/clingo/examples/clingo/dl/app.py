@@ -3,20 +3,19 @@ This is a scaled down version of clingo-dl show casing how to implement a
 propagator for difference logic.
 '''
 
-from typing import List, Sequence, Optional, MutableMapping, Tuple, Set, cast
 import heapq
 import sys
+from typing import List, MutableMapping, Optional, Sequence, Set, Tuple, cast
 
-from clingo import ast
+from clingo import SolveResult, ast, parse_term
+from clingo.application import Application, ApplicationOptions, clingo_main
+from clingo.ast import AST, ProgramBuilder, Transformer, parse_files
+from clingo.control import Control
+from clingo.propagator import (Assignment, PropagateControl, PropagateInit,
+                               Propagator)
+from clingo.solving import Model
 from clingo.symbol import Function, Number, Symbol, SymbolType, Tuple_
 from clingo.theory_atoms import TheoryTerm, TheoryTermType
-from clingo.solving import Model
-from clingo.propagator import Assignment, PropagateControl, PropagateInit, Propagator
-from clingo.application import clingo_main, Application, ApplicationOptions
-from clingo.control import Control
-from clingo import SolveResult, parse_term
-from clingo.ast import parse_files, AST, ProgramBuilder, Transformer
-
 
 Node = Symbol # pylint: disable=invalid-name
 Weight = int

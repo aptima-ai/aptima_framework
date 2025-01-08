@@ -5,8 +5,9 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import argparse
-import sys
 import os
+import sys
+
 from . import cmd_exec
 
 

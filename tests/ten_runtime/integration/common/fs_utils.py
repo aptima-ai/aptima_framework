@@ -4,12 +4,13 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import sys
-import stat
+import inspect
 import os
 import shutil
+import stat
 import subprocess
-import inspect
+import sys
+
 from . import log
 
 

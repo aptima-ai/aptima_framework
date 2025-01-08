@@ -19,10 +19,8 @@ import random
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
-
 from collections import namedtuple
-
-from typing import List, Dict
+from typing import Dict, List
 
 seed = random.randint(0, 2 ** 32 - 1)
 number_of_shards = 5

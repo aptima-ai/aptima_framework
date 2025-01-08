@@ -33,8 +33,7 @@ import os
 import re
 import sys
 
-from cpp import ast
-from cpp import utils
+from cpp import ast, utils
 
 # Preserve compatibility with Python 2.3.
 try:

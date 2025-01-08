@@ -6,17 +6,9 @@
 #
 from pathlib import Path
 from typing import Optional
-from ten import (
-    ExtensionTester,
-    TenEnvTester,
-    Cmd,
-    Data,
-    AudioFrame,
-    VideoFrame,
-    CmdResult,
-    StatusCode,
-    TenError,
-)
+
+from ten import (AudioFrame, Cmd, CmdResult, Data, ExtensionTester, StatusCode,
+                 TenEnvTester, TenError, VideoFrame)
 
 
 class ExtensionTesterBasic(ExtensionTester):

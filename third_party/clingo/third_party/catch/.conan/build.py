@@ -3,8 +3,9 @@
 
 import os
 import re
-from cpt.packager import ConanMultiPackager
+
 from cpt.ci_manager import CIManager
+from cpt.packager import ConanMultiPackager
 from cpt.printer import Printer
 
 

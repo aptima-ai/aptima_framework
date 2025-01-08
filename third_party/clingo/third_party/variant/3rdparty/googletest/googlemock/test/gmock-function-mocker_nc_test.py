@@ -11,8 +11,7 @@ if not IS_LINUX:
 
 # Suppresses the 'Import not at the top of the file' lint complaint.
 # pylint: disable-msg=C6204
-from google3.testing.pybase import fake_target_util
-from google3.testing.pybase import googletest
+from google3.testing.pybase import fake_target_util, googletest
 
 # pylint: enable-msg=C6204
 

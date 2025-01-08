@@ -5,6 +5,7 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 from typing import Type, TypeVar
+
 from libten_runtime_python import _Data
 
 T = TypeVar("T", bound="Data")

@@ -6,14 +6,9 @@
 #
 from pathlib import Path
 from typing import Optional
-from ten import (
-    ExtensionTester,
-    TenEnvTester,
-    Cmd,
-    CmdResult,
-    StatusCode,
-    TenError,
-)
+
+from ten import (Cmd, CmdResult, ExtensionTester, StatusCode, TenEnvTester,
+                 TenError)
 
 
 class ExtensionTesterMock(ExtensionTester):

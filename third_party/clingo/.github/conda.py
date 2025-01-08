@@ -4,10 +4,10 @@ Simple script to call conda build with the current revision and version.
 '''
 
 import argparse
-import subprocess
 import json
-from re import match
 import os
+import subprocess
+from re import match
 
 NAME = 'clingo'
 

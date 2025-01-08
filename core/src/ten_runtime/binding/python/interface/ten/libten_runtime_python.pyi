@@ -6,15 +6,13 @@
 #
 from typing import Callable, Optional
 
-from .ten_env_attach_to_enum import _TenEnvAttachTo
-from .log_level import LogLevel
 from .addon import Addon
 from .error import TenError
-from .ten_env import ResultHandler, ErrorHandler
-from .test import (
-    ResultHandler as TestResultHandler,
-    ErrorHandler as TestErrorHandler,
-)
+from .log_level import LogLevel
+from .ten_env import ErrorHandler, ResultHandler
+from .ten_env_attach_to_enum import _TenEnvAttachTo
+from .test import ErrorHandler as TestErrorHandler
+from .test import ResultHandler as TestResultHandler
 
 class _TenError:
     def errno(self) -> int: ...

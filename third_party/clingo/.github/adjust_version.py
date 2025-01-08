@@ -3,9 +3,9 @@ Script to build binary wheels in manylinux 2014 docker container.
 '''
 
 import argparse
-from re import finditer, escape, match, sub, search
-from subprocess import check_output
 from os.path import exists
+from re import escape, finditer, match, search, sub
+from subprocess import check_output
 
 
 def adjust_version(url):

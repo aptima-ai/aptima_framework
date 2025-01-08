@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-import urwid
 import sys
-from clingo import SymbolType, Number, Function, clingo_main
+
+import urwid
+from clingo import Function, Number, SymbolType, clingo_main
+
 
 class Board:
 

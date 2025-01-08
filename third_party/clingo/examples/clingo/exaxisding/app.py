@@ -3,11 +3,11 @@ Example showing basic usage of clingo's application class.
 '''
 
 import sys
-from typing import Sequence, Iterator
+from typing import Iterator, Sequence
 
-from clingo.symbol import Number, Symbol
+from clingo.application import Application, clingo_main
 from clingo.control import Control
-from clingo.application import clingo_main, Application
+from clingo.symbol import Number, Symbol
 
 
 class ExampleApp(Application):

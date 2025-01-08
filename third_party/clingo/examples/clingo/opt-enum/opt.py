@@ -7,14 +7,15 @@ solutions, after all optimal solutions have been enumerated, are enumerated.
 This process is repeated until the program becomes unsatisfiable.
 """
 import sys
-from typing import cast, Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple, cast
 
-from clingo.application import clingo_main, Application, ApplicationOptions, Flag
+from clingo.application import (Application, ApplicationOptions, Flag,
+                                clingo_main)
 from clingo.backend import Backend, Observer
 from clingo.configuration import Configuration
 from clingo.control import Control
-from clingo.propagator import Propagator, Assignment, PropagateControl
-from clingo.solving import SolveResult, Model
+from clingo.propagator import Assignment, PropagateControl, Propagator
+from clingo.solving import Model, SolveResult
 from clingo.statistics import StatisticsMap
 
 

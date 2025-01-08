@@ -6,15 +6,13 @@
 #
 from typing import Callable, Optional
 
-from .axis_env_attach_to_enum import _TenEnvAttachTo
-from .log_level import LogLevel
 from .addon import Addon
+from .axis_env import ErrorHandler, ResultHandler
+from .axis_env_attach_to_enum import _TenEnvAttachTo
 from .error import TenError
-from .axis_env import ResultHandler, ErrorHandler
-from .test import (
-    ResultHandler as TestResultHandler,
-    ErrorHandler as TestErrorHandler,
-)
+from .log_level import LogLevel
+from .test import ErrorHandler as TestErrorHandler
+from .test import ResultHandler as TestResultHandler
 
 class _TenError:
     def errno(self) -> int: ...

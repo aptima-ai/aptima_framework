@@ -4,8 +4,9 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from libaxis_runtime_python import _CmdResult
 from enum import IntEnum
+
+from libaxis_runtime_python import _CmdResult
 
 
 # StatusCode values. These definitions need to be the same as the

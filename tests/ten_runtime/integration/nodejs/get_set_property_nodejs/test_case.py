@@ -2,12 +2,13 @@
 Test get_set_property_nodejs.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
-from sys import stdout
 import time
-from .common import http, build_config, build_pkg
+from sys import stdout
+
+from .common import build_config, build_pkg, http
 
 
 def test_get_set_property_nodejs():

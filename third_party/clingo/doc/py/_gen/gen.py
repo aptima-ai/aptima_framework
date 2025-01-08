@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import importlib.machinery
 import os
 import re
-import importlib.machinery
 
-import pdoc
 import clingo
+import pdoc
 
 SUB = [
     ("clingo_main", "Application", clingo.clingo_main),

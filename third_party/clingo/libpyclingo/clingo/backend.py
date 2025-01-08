@@ -30,10 +30,11 @@ observe the corresponding rule passed to the backend:
     SAT
 """
 
-from typing import ContextManager, Sequence, Optional, Tuple
 from abc import ABCMeta
+from typing import ContextManager, Optional, Sequence, Tuple
 
-from ._internal import _c_call, _cb_error_handler, _ffi, _handle_error, _lib, _to_str
+from ._internal import (_c_call, _cb_error_handler, _ffi, _handle_error, _lib,
+                        _to_str)
 from .core import OrderedEnum, TruthValue
 from .symbol import Symbol
 

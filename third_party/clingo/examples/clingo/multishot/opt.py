@@ -5,10 +5,10 @@ Exmaple to show branch and bound based optimization using multi-shot solving.
 import sys
 from typing import Optional, Sequence, cast
 
-from clingo.symbol import Number, SymbolType
-from clingo.solving import Model, SolveResult
+from clingo.application import Application, clingo_main
 from clingo.control import Control
-from clingo.application import clingo_main, Application
+from clingo.solving import Model, SolveResult
+from clingo.symbol import Number, SymbolType
 
 
 class OptApp(Application):

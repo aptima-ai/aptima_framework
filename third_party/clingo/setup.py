@@ -1,6 +1,7 @@
-import sys
 import site
+import sys
 from textwrap import dedent
+
 from skbuild import setup
 
 if not site.ENABLE_USER_SITE and "--user" in sys.argv[1:]:

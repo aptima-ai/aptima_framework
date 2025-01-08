@@ -8,11 +8,12 @@
 Test ffmpeg_bypass_app.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
-from . import video_cmp
 from sys import stdout
+
+from . import video_cmp
 from .common import build_config, build_pkg
 
 

@@ -11,13 +11,8 @@
 
 import asyncio
 from typing import Optional
-from ten import (
-    AsyncExtension,
-    AsyncTenEnv,
-    Cmd,
-    StatusCode,
-    CmdResult,
-)
+
+from ten import AsyncExtension, AsyncTenEnv, Cmd, CmdResult, StatusCode
 
 
 class DefaultExtension(AsyncExtension):

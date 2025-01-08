@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from conans import ConanFile, CMake, tools
+from conans import CMake, ConanFile, tools
+
 
 class CatchConan(ConanFile):
     name = "catch2"

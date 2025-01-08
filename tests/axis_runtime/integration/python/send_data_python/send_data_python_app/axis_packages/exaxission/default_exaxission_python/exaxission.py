@@ -4,14 +4,7 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    Data,
-    StatusCode,
-    CmdResult,
-)
+from ten import Cmd, CmdResult, Data, Extension, StatusCode, TenEnv
 
 
 class DefaultExtension(Extension):

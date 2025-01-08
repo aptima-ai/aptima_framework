@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
+import atexit
 import os
 import readline
-import atexit
 import signal
 from threading import Condition
-from clingo import Control, Number, Function
+
+from clingo import Control, Function, Number
+
 
 class Controller:
     def __init__(self):

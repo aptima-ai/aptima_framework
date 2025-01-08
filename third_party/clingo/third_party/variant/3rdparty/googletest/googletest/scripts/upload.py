@@ -31,10 +31,8 @@ against by using the '--rev' option.
 # This code is derived from appcfg.py in the App Engine SDK (open source),
 # and from ASPN recipe #146306.
 
-import cookielib
 import getpass
 import logging
-import md5
 import mimetypes
 import optparse
 import os
@@ -43,6 +41,9 @@ import socket
 import subprocess
 import sys
 import urllib
+
+import cookielib
+import md5
 import urllib2
 import urlparse
 

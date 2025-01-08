@@ -3,16 +3,15 @@ Example guess and check based solver for second level problems.
 """
 
 import sys
-from typing import Sequence, Tuple, List, cast
+from typing import List, Sequence, Tuple, cast
 
 from clingo import ast
-from clingo.solving import SolveResult
-from clingo.ast import ProgramBuilder
-from clingo.control import Control
-from clingo.application import clingo_main, Application
-from clingo.propagator import PropagateControl, PropagateInit, Propagator
+from clingo.application import Application, clingo_main
+from clingo.ast import AST, ASTType, ProgramBuilder, parse_files
 from clingo.backend import Backend
-from clingo.ast import parse_files, AST, ASTType
+from clingo.control import Control
+from clingo.propagator import PropagateControl, PropagateInit, Propagator
+from clingo.solving import SolveResult
 
 
 class Transformer:

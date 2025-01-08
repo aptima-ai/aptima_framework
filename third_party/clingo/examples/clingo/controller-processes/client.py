@@ -1,7 +1,9 @@
-import socket
-import os
 import errno
+import os
+import socket
+
 from clingo import Control, Function, Number
+
 
 class Receiver:
     def __init__(self, conn):

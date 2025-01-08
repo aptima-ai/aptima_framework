@@ -22,7 +22,6 @@ __author__ = 'nnorwitz@google.com (Neal Norwitz)'
 
 import sys
 
-
 # Set to True to see the start/end token indices.
 DEBUG = True
 

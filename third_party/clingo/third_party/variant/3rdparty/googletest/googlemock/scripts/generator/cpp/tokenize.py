@@ -27,11 +27,9 @@ except ImportError:
     # Python 2.x
     import __builtin__ as builtins
 
-
 import sys
 
 from cpp import utils
-
 
 if not hasattr(builtins, 'set'):
     # Nominal support for Python 2.3.

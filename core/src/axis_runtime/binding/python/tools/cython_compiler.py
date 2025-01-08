@@ -15,8 +15,9 @@
 # step3. the compiled dynamic library will be generated in <compile_root_dir>.
 
 import argparse
-import os
 import glob
+import os
+
 from setuptools import Extension, setup
 
 

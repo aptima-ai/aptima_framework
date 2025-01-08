@@ -4,12 +4,11 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import pytest
-import sys
 import os
-from ten import (
-    unregister_all_addons_and_cleanup,
-)
+import sys
+
+import pytest
+from ten import unregister_all_addons_and_cleanup
 
 
 @pytest.fixture(scope="session", autouse=True)

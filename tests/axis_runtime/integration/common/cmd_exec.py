@@ -4,11 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import sys
 import os
 import subprocess
+import sys
 from typing import Optional
-
 
 # `psutil` is not a builtin module, so use it if it exists.
 try:

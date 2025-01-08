@@ -6,6 +6,7 @@
 #
 from enum import IntEnum
 from typing import Type, TypeVar
+
 from libten_runtime_python import _AudioFrame
 
 T = TypeVar("T", bound="AudioFrame")

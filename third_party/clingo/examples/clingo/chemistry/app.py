@@ -2,7 +2,7 @@
 Example exploring program parts and externals.
 '''
 
-from typing import List, Sequence, Tuple, Optional
+from typing import List, Optional, Sequence, Tuple
 
 from clingo.control import Control
 from clingo.symbol import Function, Number, Symbol

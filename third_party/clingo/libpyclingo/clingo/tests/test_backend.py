@@ -2,18 +2,12 @@
 Tests for the backend/observer.
 """
 
-from unittest import TestCase
 from typing import Sequence, Tuple
+from unittest import TestCase
+
+from clingo import (Control, Function, HeuristicType, Observer, Symbol,
+                    TheorySequenceType, TruthValue)
 from clingo.symbol import parse_term
-from clingo import (
-    Control,
-    Function,
-    HeuristicType,
-    Observer,
-    Symbol,
-    TheorySequenceType,
-    TruthValue,
-)
 
 
 class TestObserverBackend(Observer):

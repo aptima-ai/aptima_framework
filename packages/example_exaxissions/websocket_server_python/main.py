@@ -4,16 +4,8 @@
 # See the LICENSE file for more information.
 #
 import websockets
-from ten import (
-    Addon,
-    AsyncExtension,
-    register_addon_as_extension,
-    TenEnv,
-    Cmd,
-    CmdResult,
-    StatusCode,
-    AsyncTenEnv,
-)
+from ten import (Addon, AsyncExtension, AsyncTenEnv, Cmd, CmdResult,
+                 StatusCode, TenEnv, register_addon_as_extension)
 
 
 class WebsocketServerExtension(AsyncExtension):

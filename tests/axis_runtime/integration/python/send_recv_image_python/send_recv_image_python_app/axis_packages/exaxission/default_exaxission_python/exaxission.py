@@ -5,16 +5,10 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import time
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    VideoFrame,
-    StatusCode,
-    CmdResult,
-    PixelFmt,
-)
+
 from PIL import Image
+from ten import (Cmd, CmdResult, Extension, PixelFmt, StatusCode, TenEnv,
+                 VideoFrame)
 
 
 class DefaultExtension(Extension):

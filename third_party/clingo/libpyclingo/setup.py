@@ -1,5 +1,6 @@
 from textwrap import dedent
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 setup(
     version = '5.5.0.post6',

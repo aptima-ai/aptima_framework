@@ -4,18 +4,17 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+import importlib.util
 import json
 import os
 import sys
-import importlib.util
 from glob import glob
-from typing import Callable, Dict, Type, Optional
+from typing import Callable, Dict, Optional, Type
+
+from libten_runtime_python import (_register_addon_as_extension,
+                                   _unregister_all_addons_and_cleanup)
 
 from .addon import Addon
-from libten_runtime_python import (
-    _register_addon_as_extension,
-    _unregister_all_addons_and_cleanup,
-)
 
 
 class _AddonManager:

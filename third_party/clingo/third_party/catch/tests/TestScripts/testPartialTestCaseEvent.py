@@ -46,6 +46,7 @@ TestCaseEnded: generator
 
 from typing import List
 
+
 def get_test_output(test_exe: str, sections: bool) -> List[str]:
     cmd = [test_exe, '--reporter', 'partial']
     if sections:

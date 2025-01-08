@@ -7,13 +7,14 @@
 from typing import Callable, Optional
 
 from libten_runtime_python import _Extension, _TenEnv
-from .error import TenError
-from .cmd_result import CmdResult
-from .cmd import Cmd
-from .video_frame import VideoFrame
+
 from .audio_frame import AudioFrame
+from .cmd import Cmd
+from .cmd_result import CmdResult
 from .data import Data
+from .error import TenError
 from .ten_env_base import TenEnvBase
+from .video_frame import VideoFrame
 
 
 class TenEnv: ...  # type: ignore

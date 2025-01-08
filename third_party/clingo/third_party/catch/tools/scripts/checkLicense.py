@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import glob
+import sys
 
 correct_licence = """\
 

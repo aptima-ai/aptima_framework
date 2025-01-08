@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
+import argparse
 import json
 import sys
-import argparse
 
 from clingo import Control, Number
+
 
 class App:
     def __init__(self, args):

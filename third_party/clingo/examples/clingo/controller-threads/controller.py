@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
+import atexit
 import os
 import readline
-import atexit
 import signal
+from threading import Condition, Thread
+
 from clingo import Control, Function, Number
-from threading import Thread, Condition
+
 
 class Connection:
     def __init__(self):

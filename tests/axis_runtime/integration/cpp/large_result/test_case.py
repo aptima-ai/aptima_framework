@@ -2,11 +2,12 @@
 Test large_result_http.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
 from sys import stdout
-from .common import http, build_config, build_pkg
+
+from .common import build_config, build_pkg, http
 
 
 def get_large_result():

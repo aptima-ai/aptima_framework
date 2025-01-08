@@ -5,17 +5,9 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 from typing import Optional
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    Data,
-    AudioFrame,
-    VideoFrame,
-    StatusCode,
-    CmdResult,
-    TenError,
-)
+
+from ten import (AudioFrame, Cmd, CmdResult, Data, Extension, StatusCode,
+                 TenEnv, TenError, VideoFrame)
 
 
 class DefaultExtension(Extension):

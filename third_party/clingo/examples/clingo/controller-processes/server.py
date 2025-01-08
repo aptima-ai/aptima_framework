@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import socket
-import os
-import readline
 import atexit
-import random
-import signal
 import errno
+import os
+import random
+import readline
+import signal
+import socket
 
 histfile = os.path.join(os.path.expanduser("~"), ".controller")
 try: readline.read_history_file(histfile)

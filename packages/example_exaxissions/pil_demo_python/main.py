@@ -3,18 +3,9 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-from ten import (
-    Addon,
-    Extension,
-    register_addon_as_extension,
-    TenEnv,
-    Cmd,
-    StatusCode,
-    CmdResult,
-    PixelFmt,
-    VideoFrame,
-)
 from PIL import Image, ImageFilter
+from ten import (Addon, Cmd, CmdResult, Extension, PixelFmt, StatusCode,
+                 TenEnv, VideoFrame, register_addon_as_extension)
 
 
 class PilDemoExtension(Extension):

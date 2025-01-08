@@ -7,10 +7,10 @@
 
 # SPDX-License-Identifier: BSL-1.0
 
-from typing import List, Tuple
-
 import os
 import subprocess
+from typing import List, Tuple
+
 
 def configure_and_build(source_path: str, project_path: str, options: List[Tuple[str, str]]):
     base_configure_cmd = ['cmake',

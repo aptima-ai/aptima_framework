@@ -2,11 +2,12 @@
 Test resp_handler_yield_python.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
 from sys import stdout
-from .common import http, build_config, build_pkg
+
+from .common import build_config, build_pkg, http
 
 
 def http_request():

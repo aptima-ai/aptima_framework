@@ -4,11 +4,8 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from ten import (
-    Addon,
-    register_addon_as_extension,
-    TenEnv,
-)
+from ten import Addon, TenEnv, register_addon_as_extension
+
 from .extension import DefaultExtension
 
 

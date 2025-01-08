@@ -15,10 +15,11 @@ subsets of tests selected, and verifying that the selected tests are in
 the same relative order.
 """
 
+import random
 import subprocess
 import sys
-import random
 import xml.etree.ElementTree as ET
+
 
 def none_to_empty_str(e):
     if e is None:

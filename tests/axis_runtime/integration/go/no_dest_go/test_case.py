@@ -2,11 +2,12 @@
 Test no_dest_go.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
 from sys import stdout
-from .common import msgpack, build_config, build_pkg
+
+from .common import build_config, build_pkg, msgpack
 
 
 def test_no_dest_go():

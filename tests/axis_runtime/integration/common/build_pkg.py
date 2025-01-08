@@ -7,16 +7,11 @@
 import json
 import os
 import platform
-from datetime import datetime
 import time
-from . import (
-    cmd_exec,
-    fs_utils,
-    build_config,
-    install_pkg,
-    install_all,
-    replace,
-)
+from datetime import datetime
+
+from . import (build_config, cmd_exec, fs_utils, install_all, install_pkg,
+               replace)
 
 
 class ArgumentInfo:

@@ -8,7 +8,8 @@ import multiprocessing as mp
 import os
 import time
 from typing import Optional
-from ten import Extension, TenEnv, Cmd, StatusCode, CmdResult, TenError
+
+from ten import Cmd, CmdResult, Extension, StatusCode, TenEnv, TenError
 
 
 class DefaultExtension(Extension):

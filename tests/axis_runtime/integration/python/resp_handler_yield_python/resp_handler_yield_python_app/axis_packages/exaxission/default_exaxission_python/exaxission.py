@@ -6,11 +6,8 @@
 #
 import queue
 import threading
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-)
+
+from ten import Cmd, Extension, TenEnv
 
 
 class DefaultExtension(Extension):

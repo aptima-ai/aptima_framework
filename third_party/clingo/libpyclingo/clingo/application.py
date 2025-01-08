@@ -23,22 +23,15 @@ The following example reproduces the default clingo application:
     clingo_main(ClingoApp(sys.argv[0]), sys.argv[1:])
 """
 
-from typing import Any, Callable, List, Optional, Sequence
-from abc import ABCMeta, abstractmethod
 import sys
+from abc import ABCMeta, abstractmethod
+from typing import Any, Callable, List, Optional, Sequence
 
-from ._internal import (
-    _cb_error_print,
-    _cb_error_panic,
-    _ffi,
-    _handle_error,
-    _lib,
-    _overwritten,
-    _to_str,
-)
+from ._internal import (_cb_error_panic, _cb_error_print, _ffi, _handle_error,
+                        _lib, _overwritten, _to_str)
+from .control import Control
 from .core import MessageCode
 from .solving import Model
-from .control import Control
 
 __all__ = ["Application", "ApplicationOptions", "Flag", "clingo_main"]
 

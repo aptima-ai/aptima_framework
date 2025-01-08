@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-import clingo, clingo.ast, subprocess, pydoc
+import pydoc
+import subprocess
+
+import clingo
+import clingo.ast
 
 print("Generating documentation for clingo version {}.".format(clingo.__version__))
 for m in [clingo, clingo.ast]:

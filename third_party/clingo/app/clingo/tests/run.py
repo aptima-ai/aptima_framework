@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import re
+import argparse
+import difflib as dl
 import os
 import os.path
-import sys
+import re
 import subprocess as sp
-import difflib as dl
-import argparse
+import sys
 
 parser = argparse.ArgumentParser(description="""
 Can be used to run and normalize tests.

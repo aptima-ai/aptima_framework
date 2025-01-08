@@ -4,19 +4,20 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import sys
 import importlib
+import sys
 from pathlib import Path
-from typing import Callable, Optional, final, Optional
+from typing import Callable, Optional, final
 
 from libten_runtime_python import _ExtensionTester, _TenEnvTester
 from ten.cmd_result import CmdResult
 from ten.error import TenError
+
+from .addon_manager import _AddonManager
+from .audio_frame import AudioFrame
 from .cmd import Cmd
 from .data import Data
-from .audio_frame import AudioFrame
 from .video_frame import VideoFrame
-from .addon_manager import _AddonManager
 
 
 class TenEnvTester: ...  # type: ignore

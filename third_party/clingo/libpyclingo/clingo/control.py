@@ -42,39 +42,23 @@ The following example shows basic (multishot) grounding and solving:
 
 import sys
 from collections import abc
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-    cast,
-    overload,
-)
+from typing import (Any, Callable, Iterator, Optional, Sequence, Tuple, Union,
+                    cast, overload)
+
 if sys.version_info >= (3, 8):
     from typing import Literal
 
-from ._internal import (
-    _CBData,
-    _Error,
-    _cb_error_handler,
-    _c_call,
-    _ffi,
-    _handle_error,
-    _lib,
-    _overwritten,
-)
+from ._internal import (_c_call, _cb_error_handler, _CBData, _Error, _ffi,
+                        _handle_error, _lib, _overwritten)
+from .backend import Backend, Observer
+from .configuration import Configuration
 from .core import Logger
+from .propagator import Propagator
+from .solving import Model, SolveHandle, SolveResult
+from .statistics import StatisticsMap, _mutable_statistics, _statistics
 from .symbol import Symbol
 from .symbolic_atoms import SymbolicAtoms
 from .theory_atoms import TheoryAtom
-from .solving import Model, SolveHandle, SolveResult
-from .propagator import Propagator
-from .backend import Backend, Observer
-from .configuration import Configuration
-from .statistics import StatisticsMap, _mutable_statistics, _statistics
 
 __all__ = ["Control"]
 

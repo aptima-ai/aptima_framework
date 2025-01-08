@@ -5,16 +5,10 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import time
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    AudioFrame,
-    StatusCode,
-    CmdResult,
-    AudioFrameDataFmt,
-)
+
 from pydub import AudioSegment
+from ten import (AudioFrame, AudioFrameDataFmt, Cmd, CmdResult, Extension,
+                 StatusCode, TenEnv)
 
 
 class DefaultExtension(Extension):

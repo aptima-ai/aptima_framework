@@ -1,9 +1,10 @@
-from sys import stdout, exit
-from textwrap import dedent
 from copy import copy
+from sys import exit, stdout
+from textwrap import dedent
 
+from clingo import Function, Number, SymbolType, ast, clingo_main
 from clingo.application import Application
-from clingo import SymbolType, Number, Function, ast, clingo_main
+
 
 class TermTransformer(ast.Transformer):
     def __init__(self, parameter):

@@ -14,11 +14,13 @@ The top level header is called `catch_all.hpp`.
 
 internal_dirs = ['detail', 'internal']
 
-from scriptCommon import catchPath
-from glob import glob
-from pprint import pprint
 import os
 import re
+from glob import glob
+from pprint import pprint
+
+from scriptCommon import catchPath
+
 
 def normalized_path(path):
     """Replaces \ in paths on Windows with /"""

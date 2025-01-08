@@ -22,12 +22,14 @@
 #
 ###########################################################################
 #
-import sys, os
+import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'http'))
 
 import pytest
 from testenv import Env
+
 
 def pytest_report_header(config, startdir):
     # Env inits its base properties only once, we can report them here

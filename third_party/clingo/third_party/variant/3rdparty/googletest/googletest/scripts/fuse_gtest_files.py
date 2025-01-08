@@ -60,6 +60,7 @@ __author__ = 'wan@google.com (Zhanyong Wan)'
 
 import os
 import re
+
 try:
   from sets import Set as set  # For Python 2.3 compatibility
 except ImportError:

@@ -9,8 +9,8 @@
 
 import os
 import re
-import sys
 import subprocess
+import sys
 
 """
 Test that Catch2 recognizes the three sharding-related environment variables

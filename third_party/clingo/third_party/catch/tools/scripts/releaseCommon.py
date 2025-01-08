@@ -1,7 +1,7 @@
+import fnmatch
 import os
 import re
 import string
-import fnmatch
 
 from scriptCommon import catchPath
 

@@ -4,17 +4,10 @@
 # See the LICENSE file for more information.
 #
 import asyncio
-from aiohttp import web, web_request, WSMsgType
-from ten import (
-    Addon,
-    AsyncExtension,
-    register_addon_as_extension,
-    TenEnv,
-    Cmd,
-    CmdResult,
-    StatusCode,
-    AsyncTenEnv,
-)
+
+from aiohttp import WSMsgType, web, web_request
+from ten import (Addon, AsyncExtension, AsyncTenEnv, Cmd, CmdResult,
+                 StatusCode, TenEnv, register_addon_as_extension)
 
 
 class HttpServerExtension(AsyncExtension):

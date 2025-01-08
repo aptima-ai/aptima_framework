@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from scriptCommon import catchPath
 import os
 import subprocess
+
+from scriptCommon import catchPath
 
 # ---------------------------------------------------
 # Update code examples

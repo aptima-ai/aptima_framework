@@ -1,15 +1,15 @@
 import sys
-from typing import Deque, Dict, Set, List, Tuple
 from collections import deque
+from typing import Deque, Dict, List, Set, Tuple
 
-from networkx import DiGraph # type: ignore
-from networkx.algorithms.components import strongly_connected_components # type: ignore
-from networkx.algorithms.dag import topological_sort # type: ignore
-
+from clingo.application import Application, clingo_main
 from clingo.control import Control
 from clingo.symbol import Symbol
-from clingo.application import Application, clingo_main
 from clingox.program import Program, ProgramObserver, Rule
+from networkx import DiGraph  # type: ignore
+from networkx.algorithms.components import \
+    strongly_connected_components  # type: ignore
+from networkx.algorithms.dag import topological_sort  # type: ignore
 
 Atom = int
 Literal = int

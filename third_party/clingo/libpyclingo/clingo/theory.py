@@ -76,12 +76,12 @@ bool PREFIX_configure(PREFIX_theory_t *theory, char const *key, char const *valu
 from typing import Any, Callable, Iterator, Optional, Tuple, Union
 
 from ._internal import _ffi, _handle_error, _lib
-from .control import Control
 from .application import ApplicationOptions
+from .ast import AST
+from .control import Control
 from .solving import Model
 from .statistics import StatisticsMap
 from .symbol import Symbol
-from .ast import AST
 
 __all__ = ["Theory"]
 

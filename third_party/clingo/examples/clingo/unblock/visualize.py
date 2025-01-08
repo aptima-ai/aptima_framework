@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
-import urwid
 import sys
 
-from clingo import SymbolType, Number, Function, Control
+import urwid
+from clingo import Control, Function, Number, SymbolType
+
 
 class Plan:
     def __init__(self, field, stone, target, move):

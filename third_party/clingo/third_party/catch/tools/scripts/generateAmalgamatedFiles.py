@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import datetime
 import os
 import re
-import datetime
 
-from scriptCommon import catchPath
 from releaseCommon import Version
+from scriptCommon import catchPath
 
 root_path = os.path.join(catchPath, 'src')
 starting_header = os.path.join(root_path, 'catch2', 'catch_all.hpp')

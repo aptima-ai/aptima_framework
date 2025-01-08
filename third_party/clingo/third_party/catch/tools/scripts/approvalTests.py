@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
+import difflib
 import io
 import os
-import sys
-import subprocess
 import re
-import difflib
 import shutil
+import subprocess
+import sys
 
 import scriptCommon
 from scriptCommon import catchPath

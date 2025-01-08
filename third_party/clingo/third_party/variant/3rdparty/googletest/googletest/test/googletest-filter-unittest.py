@@ -42,11 +42,13 @@ we test that here also.
 
 import os
 import re
+
 try:
   from sets import Set as set  # For Python 2.3 compatibility
 except ImportError:
   pass
 import sys
+
 import gtest_test_utils
 
 # Constants.

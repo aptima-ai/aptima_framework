@@ -4,13 +4,12 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from http.client import RemoteDisconnected
 import json
-import ssl
 import socket
+import ssl
 import time
-from urllib import request, error
-
+from http.client import RemoteDisconnected
+from urllib import error, request
 
 ctx = ssl.create_default_context()
 ctx.check_hostname = False

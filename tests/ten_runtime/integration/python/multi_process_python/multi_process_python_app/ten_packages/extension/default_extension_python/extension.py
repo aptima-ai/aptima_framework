@@ -4,10 +4,11 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from multiprocessing import Process
 import os
+from multiprocessing import Process
 from typing import Optional
-from ten import Extension, TenEnv, Cmd, StatusCode, CmdResult, TenError
+
+from ten import Cmd, CmdResult, Extension, StatusCode, TenEnv, TenError
 
 
 class DefaultExtension(Extension):

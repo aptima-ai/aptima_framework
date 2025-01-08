@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from clingo import SymbolType, Number, Function, Control
+from clingo import Control, Function, Number, SymbolType
+
 try:
     import Tkinter
 except ImportError:

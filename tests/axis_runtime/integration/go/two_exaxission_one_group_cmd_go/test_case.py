@@ -2,11 +2,12 @@
 Test two_extension_one_group_cmd_go.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
 from sys import stdout
-from .common import msgpack, build_config, build_pkg
+
+from .common import build_config, build_pkg, msgpack
 
 
 def test_two_extension_on_group_cmd_go():

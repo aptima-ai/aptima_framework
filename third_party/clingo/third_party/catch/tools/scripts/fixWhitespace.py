@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import os
+
 from scriptCommon import catchPath
+
 
 def isSourceFile( path ):
     return path.endswith( ".cpp" ) or path.endswith( ".h" ) or path.endswith( ".hpp" )

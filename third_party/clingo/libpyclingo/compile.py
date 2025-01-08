@@ -7,15 +7,17 @@ production, the functions in this module have been written with the least
 amount of effort possible. Always check the generated code!
 """
 
-import sys
-import re
 import argparse
 import os.path
+import re
+import sys
 from itertools import chain
+
 from cffi import FFI
 
 try:
-    from _clingo import ffi as _ffi, lib as _lib
+    from _clingo import ffi as _ffi
+    from _clingo import lib as _lib
     imported = True
 
     _an = _lib.g_clingo_ast_attribute_names

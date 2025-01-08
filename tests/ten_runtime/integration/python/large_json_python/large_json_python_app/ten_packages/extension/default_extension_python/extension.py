@@ -7,13 +7,8 @@
 import os
 import queue
 import threading
-from ten import (
-    Extension,
-    TenEnv,
-    Cmd,
-    StatusCode,
-    CmdResult,
-)
+
+from ten import Cmd, CmdResult, Extension, StatusCode, TenEnv
 
 
 class DefaultExtension(Extension):

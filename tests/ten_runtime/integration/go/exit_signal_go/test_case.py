@@ -4,12 +4,14 @@ Test exit_signal_go.
 
 import json
 import os
+import signal
 import subprocess
 import sys
-from sys import stdout
-import signal
 import time
+from sys import stdout
+
 import pytest
+
 from .common import build_config, build_pkg
 
 

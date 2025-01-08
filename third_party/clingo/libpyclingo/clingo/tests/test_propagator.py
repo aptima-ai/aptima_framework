@@ -2,20 +2,12 @@
 Tests for the propagator.
 """
 
-from unittest import TestCase
 from typing import cast
-from clingo import (
-    Assignment,
-    Control,
-    Function,
-    PropagateControl,
-    PropagateInit,
-    Propagator,
-    PropagatorCheckMode,
-    PropagatorUndoMode,
-    SolveResult,
-    SymbolicAtom,
-)
+from unittest import TestCase
+
+from clingo import (Assignment, Control, Function, PropagateControl,
+                    PropagateInit, Propagator, PropagatorCheckMode,
+                    PropagatorUndoMode, SolveResult, SymbolicAtom)
 
 from .util import _MCB, _check_sat, _p
 

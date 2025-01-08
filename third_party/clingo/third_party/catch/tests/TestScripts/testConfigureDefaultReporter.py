@@ -7,11 +7,11 @@
 
 # SPDX-License-Identifier: BSL-1.0
 
-from ConfigureTestsCommon import configure_and_build, run_and_return_output
-
 import os
 import re
 import sys
+
+from ConfigureTestsCommon import configure_and_build, run_and_return_output
 
 """
 Tests the CMake configure option for CATCH_CONFIG_DEFAULT_REPORTER

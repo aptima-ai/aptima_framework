@@ -1,28 +1,18 @@
 """
 Tests for the ast module.
 """
-from unittest import TestCase
-from typing import cast
-from textwrap import dedent
 from collections.abc import Sequence
 from copy import copy, deepcopy
+from textwrap import dedent
+from typing import cast
+from unittest import TestCase
 
 from .. import ast
-from ..ast import (
-    AST,
-    ASTSequence,
-    Id,
-    Location,
-    Program,
-    ProgramBuilder,
-    Position,
-    StrSequence,
-    SymbolicTerm,
-    TheoryUnparsedTermElement,
-    parse_string,
-)
-from ..symbol import Function, Number
+from ..ast import (AST, ASTSequence, Id, Location, Position, Program,
+                   ProgramBuilder, StrSequence, SymbolicTerm,
+                   TheoryUnparsedTermElement, parse_string)
 from ..control import Control
+from ..symbol import Function, Number
 
 
 class VariableRenamer(ast.Transformer):

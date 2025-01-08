@@ -5,7 +5,8 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import asyncio
-from ten import AsyncExtension, AsyncTenEnv, Cmd, Data, AudioFrame, VideoFrame
+
+from ten import AsyncExtension, AsyncTenEnv, AudioFrame, Cmd, Data, VideoFrame
 
 
 class DefaultAsyncExtension(AsyncExtension):

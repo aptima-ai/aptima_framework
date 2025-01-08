@@ -1,8 +1,9 @@
 """
 Tests control.
 """
-from unittest import TestCase
 from typing import cast
+from unittest import TestCase
+
 from clingo import Control, Function, Number, SolveResult
 
 

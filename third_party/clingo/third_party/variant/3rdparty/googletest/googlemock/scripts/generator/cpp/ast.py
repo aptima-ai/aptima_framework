@@ -42,10 +42,7 @@ except ImportError:
 import sys
 import traceback
 
-from cpp import keywords
-from cpp import tokenize
-from cpp import utils
-
+from cpp import keywords, tokenize, utils
 
 if not hasattr(builtins, 'reversed'):
     # Support Python 2.3 and earlier.

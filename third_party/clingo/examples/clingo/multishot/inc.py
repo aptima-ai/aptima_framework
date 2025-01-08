@@ -3,9 +3,9 @@ Example implementing an iclingo-like application.
 '''
 
 import sys
-from typing import cast, Any, Callable, Optional, Sequence
+from typing import Any, Callable, Optional, Sequence, cast
 
-from clingo.application import clingo_main, Application, ApplicationOptions
+from clingo.application import Application, ApplicationOptions, clingo_main
 from clingo.control import Control
 from clingo.solving import SolveResult
 from clingo.symbol import Function, Number

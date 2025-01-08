@@ -68,7 +68,6 @@ import os
 import re
 import sys
 
-
 TOKEN_TABLE = [
     (re.compile(r'\$var\s+'), '$var'),
     (re.compile(r'\$elif\s+'), '$elif'),

@@ -3,11 +3,12 @@ from argparse import ArgumentParser
 
 if sys.version_info >= (3, 11):
     NEW_STYLE = True
-    from sysconfig import get_config_var, get_config_vars, get_preferred_scheme, get_path
+    from sysconfig import (get_config_var, get_config_vars, get_path,
+                           get_preferred_scheme)
 else:
     NEW_STYLE = False
+    from distutils.sysconfig import get_config_vars, get_python_lib
     from site import USER_SITE
-    from distutils.sysconfig import get_python_lib, get_config_vars
 
 parser = ArgumentParser()
 if sys.version_info >= (3, 7):

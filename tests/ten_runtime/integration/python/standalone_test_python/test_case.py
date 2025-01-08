@@ -2,10 +2,11 @@
 Test standalone_test_python.
 """
 
-import subprocess
 import os
+import subprocess
 import sys
 from sys import stdout
+
 from .common import build_config
 
 

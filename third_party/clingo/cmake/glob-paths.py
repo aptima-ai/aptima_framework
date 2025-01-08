@@ -5,6 +5,7 @@ import os.path
 import re
 import sys
 
+
 def split_path(path):
     components = os.path.normpath(path).split(os.sep)
     if len(components) > 0 and components[0] == ".": del components[0]

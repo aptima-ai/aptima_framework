@@ -4,9 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
+import json
 import os
 import sys
-import json
+
 from .common import cmd_exec
 
 
