@@ -12,9 +12,9 @@ package http
 
 import (
 	"fmt"
-	"axis_packages/extension/simple_http_server_go/endpoint"
+	"aptima_packages/extension/simple_http_server_go/endpoint"
 
-	"axis_framework/ten"
+	"aptima_framework/ten"
 )
 
 type httpExtension struct {

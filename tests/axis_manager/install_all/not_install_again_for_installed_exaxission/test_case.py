@@ -11,7 +11,7 @@ from .common import cmd_exec
 
 
 def check_installed_extensions(app_dir: str) -> bool:
-    extension_dir = os.path.join(app_dir, "axis_packages/extension/")
+    extension_dir = os.path.join(app_dir, "aptima_packages/extension/")
     extensions = os.listdir(extension_dir)
 
     if len(extensions) != 2:
@@ -32,11 +32,11 @@ def test_tman_dependency_resolve():
 
     if sys.platform == "win32":
         os.environ["PATH"] = (
-            os.path.join(root_dir, "axis_manager/lib") + ";" + os.getenv("PATH")
+            os.path.join(root_dir, "aptima_manager/lib") + ";" + os.getenv("PATH")
         )
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman.exe")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman")
 
     app_dir = os.path.join(base_path, "test_app")
 

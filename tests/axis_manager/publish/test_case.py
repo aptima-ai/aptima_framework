@@ -35,11 +35,11 @@ def test_tman_publish():
     my_env = os.environ.copy()
     if sys.platform == "win32":
         my_env["PATH"] = (
-            os.path.join(root_dir, "axis_manager/lib") + ";" + my_env["PATH"]
+            os.path.join(root_dir, "aptima_manager/lib") + ";" + my_env["PATH"]
         )
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman.exe")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman")
 
     mock_extension_path = os.path.join(base_path, "mock_extension")
     os.chdir(mock_extension_path)

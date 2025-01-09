@@ -14,7 +14,7 @@ from ten import (Cmd, CmdResult, ExtensionTester, StatusCode, TenEnvTester,
 class ExtensionTesterSetProperty(ExtensionTester):
     def check_greeting(
         self,
-        axis_env: TenEnvTester,
+        aptima_env: TenEnvTester,
         result: Optional[CmdResult],
         error: Optional[TenError],
     ):
@@ -30,20 +30,20 @@ class ExtensionTesterSetProperty(ExtensionTester):
             detail = result.get_property_string("detail")
             assert detail == "hola"
 
-            axis_env.stop_test()
+            aptima_env.stop_test()
 
-    def on_start(self, axis_env: TenEnvTester) -> None:
+    def on_start(self, aptima_env: TenEnvTester) -> None:
         cmd = Cmd.create("greeting")
 
-        axis_env.send_cmd(
+        aptima_env.send_cmd(
             cmd,
-            lambda axis_env, result, error: self.check_greeting(
-                axis_env, result, error
+            lambda aptima_env, result, error: self.check_greeting(
+                aptima_env, result, error
             ),
         )
 
         print("tester on_start_done")
-        axis_env.on_start_done()
+        aptima_env.on_start_done()
 
 
 def test_set_property():

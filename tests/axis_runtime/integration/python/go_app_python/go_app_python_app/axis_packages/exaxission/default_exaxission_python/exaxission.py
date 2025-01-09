@@ -15,33 +15,33 @@ from ten import Cmd, CmdResult, Extension, StatusCode, TenEnv, TenError
 
 
 class DefaultExtension(Extension):
-    def on_configure(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_init")
+    def on_configure(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_init")
 
-        axis_env.init_property_from_json('{"testKey": "testValue"}')
-        axis_env.on_configure_done()
+        aptima_env.init_property_from_json('{"testKey": "testValue"}')
+        aptima_env.on_configure_done()
 
-    def on_start(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_start")
+    def on_start(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_start")
 
-        axis_env.set_property_from_json("testKey2", '"testValue2"')
-        testValue = axis_env.get_property_to_json("testKey")
-        testValue2 = axis_env.get_property_to_json("testKey2")
-        axis_env.log_info(f"testValue: {testValue}, testValue2: {testValue2}")
+        aptima_env.set_property_from_json("testKey2", '"testValue2"')
+        testValue = aptima_env.get_property_to_json("testKey")
+        testValue2 = aptima_env.get_property_to_json("testKey2")
+        aptima_env.log_info(f"testValue: {testValue}, testValue2: {testValue2}")
 
-        axis_env.on_start_done()
+        aptima_env.on_start_done()
 
-    def on_stop(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_stop")
-        axis_env.on_stop_done()
+    def on_stop(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_stop")
+        aptima_env.on_stop_done()
 
-    def on_deinit(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_deinit")
-        axis_env.on_deinit_done()
+    def on_deinit(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_deinit")
+        aptima_env.on_deinit_done()
 
     def check_greeting(
         self,
-        axis_env: TenEnv,
+        aptima_env: TenEnv,
         result: Optional[CmdResult],
         error: Optional[TenError],
         receivedCmd: Cmd,
@@ -52,17 +52,17 @@ class DefaultExtension(Extension):
         assert result is not None
 
         statusCode = result.get_status_code()
-        axis_env.log_info(f"check_greeting: status: {str(statusCode)}")
+        aptima_env.log_info(f"check_greeting: status: {str(statusCode)}")
 
         respCmd = CmdResult.create(StatusCode.OK)
         respCmd.set_property_string("detail", "received response")
-        axis_env.log_info("create respCmd")
+        aptima_env.log_info("create respCmd")
 
-        axis_env.return_result(respCmd, receivedCmd)
+        aptima_env.return_result(respCmd, receivedCmd)
 
     def check_hello(
         self,
-        axis_env: TenEnv,
+        aptima_env: TenEnv,
         result: Optional[CmdResult],
         error: Optional[TenError],
         receivedCmd: Cmd,
@@ -73,32 +73,32 @@ class DefaultExtension(Extension):
         assert result is not None
         statusCode = result.get_status_code()
         detail = result.get_property_string("detail")
-        axis_env.log_info(
+        aptima_env.log_info(
             f"check_hello: status: {str(statusCode)}, detail: {detail}"
         )
 
         # Send a command to go extension.
         new_cmd = Cmd.create("greeting")
-        axis_env.send_cmd(
+        aptima_env.send_cmd(
             new_cmd,
-            lambda axis_env, result, error: self.check_greeting(
-                axis_env, result, error, receivedCmd
+            lambda aptima_env, result, error: self.check_greeting(
+                aptima_env, result, error, receivedCmd
             ),
         )
 
-    def on_cmd(self, axis_env: TenEnv, cmd: Cmd) -> None:
+    def on_cmd(self, aptima_env: TenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.get_property_to_json()
-        axis_env.log_debug("on_cmd: " + cmd_json)
+        aptima_env.log_debug("on_cmd: " + cmd_json)
 
         new_cmd = Cmd.create("hello")
         new_cmd.set_property_from_json("test", '"testValue2"')
         test_value = new_cmd.get_property_to_json("test")
-        axis_env.log_info(f"on_cmd test_value: {test_value}")
+        aptima_env.log_info(f"on_cmd test_value: {test_value}")
 
         # Send command to a cpp extension.
-        axis_env.send_cmd(
+        aptima_env.send_cmd(
             new_cmd,
-            lambda axis_env, result, error: self.check_hello(
-                axis_env, result, error, cmd
+            lambda aptima_env, result, error: self.check_hello(
+                aptima_env, result, error, cmd
             ),
         )

@@ -6,47 +6,47 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "axis_utils/lib/buf.h"
+#include "aptima_utils/lib/buf.h"
 
-typedef struct axis_string_t axis_string_t;
+typedef struct aptima_string_t aptima_string_t;
 
-axis_UTILS_API int axis_file_remove(const char *filename);
+aptima_UTILS_API int aptima_file_remove(const char *filename);
 
-axis_UTILS_API int axis_file_size(const char *filename);
+aptima_UTILS_API int aptima_file_size(const char *filename);
 
-axis_UTILS_API char *axis_file_read(const char *filename);
+aptima_UTILS_API char *aptima_file_read(const char *filename);
 
-axis_UTILS_API char *axis_symlink_file_read(const char *path);
+aptima_UTILS_API char *aptima_symlink_file_read(const char *path);
 
-axis_UTILS_API int axis_file_write(const char *filename, axis_buf_t buf);
+aptima_UTILS_API int aptima_file_write(const char *filename, aptima_buf_t buf);
 
-axis_UTILS_API int axis_file_write_to_open_file(FILE *fp, axis_buf_t buf);
+aptima_UTILS_API int aptima_file_write_to_open_file(FILE *fp, aptima_buf_t buf);
 
-axis_UTILS_API int axis_file_clear_open_file_content(FILE *fp);
+aptima_UTILS_API int aptima_file_clear_open_file_content(FILE *fp);
 
-axis_UTILS_API int axis_file_copy(const char *src_filename,
+aptima_UTILS_API int aptima_file_copy(const char *src_filename,
                                 const char *dest_filename);
 
-axis_UTILS_API int axis_file_copy_to_dir(const char *src_file,
+aptima_UTILS_API int aptima_file_copy_to_dir(const char *src_file,
                                        const char *dest_dir);
 
-axis_UTILS_API int axis_symlink_file_copy(const char *src_file,
+aptima_UTILS_API int aptima_symlink_file_copy(const char *src_file,
                                         const char *dest_file);
 
-axis_UTILS_API int axis_file_get_fd(FILE *fp);
+aptima_UTILS_API int aptima_file_get_fd(FILE *fp);
 
-axis_UTILS_API int axis_file_chmod(const char *filename, uint32_t mode);
+aptima_UTILS_API int aptima_file_chmod(const char *filename, uint32_t mode);
 
-axis_UTILS_API int axis_file_clone_permission(const char *src_filename,
+aptima_UTILS_API int aptima_file_clone_permission(const char *src_filename,
                                             const char *dest_filename);
 
-axis_UTILS_API int axis_file_clone_permission_by_fd(int src_fd, int dest_fd);
+aptima_UTILS_API int aptima_file_clone_permission_by_fd(int src_fd, int dest_fd);
 
 /**
  * @brief Open a file for reading.
@@ -58,11 +58,11 @@ axis_UTILS_API int axis_file_clone_permission_by_fd(int src_fd, int dest_fd);
  *
  * @return -1 on error.
  */
-axis_UTILS_API int axis_file_open(const char *filename, bool *does_not_exist);
+aptima_UTILS_API int aptima_file_open(const char *filename, bool *does_not_exist);
 
 /**
- * @brief Close a file opened by axis_file_open().
+ * @brief Close a file opened by aptima_file_open().
  *
  * @return true on success, false on error.
  */
-axis_UTILS_API bool axis_file_close(int fd);
+aptima_UTILS_API bool aptima_file_close(int fd);

@@ -9,7 +9,7 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-axis_UTILS_API void axis_backtrace_dump_global(size_t skip);
+aptima_UTILS_API void aptima_backtrace_dump_global(size_t skip);
 
 #ifdef __cplusplus
 } /* End extern "C".  */

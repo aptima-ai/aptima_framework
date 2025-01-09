@@ -20,13 +20,13 @@ The simplest way to profile a go program is to use the pprof_app_go as your TEN 
 
 ```bash
 # Heap profiles will be stored in /data/prof
-export axis_HEAP_DUMP_DIR=/data/prof
+export aptima_HEAP_DUMP_DIR=/data/prof
 
 # The heap profile will be dumped every 30 seconds
 export HEAP_PROFILE_TIME_INTERVAL=30
 
 # The pprof server will listen on port 6060
-export axis_PROFILER_SERVER_PORT=6060
+export aptima_PROFILER_SERVER_PORT=6060
 ```
 
 ### Analyze the profile data

@@ -12,7 +12,7 @@ glob("common") {
     "//packages",
   ]
   deps = [
-    "//core/src/axis_runtime:axis_runtime_library",
+    "//core/src/aptima_runtime:aptima_runtime_library",
     "//third_party/msgpack:msgpackc",
   ]
 }

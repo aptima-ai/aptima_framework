@@ -6,17 +6,17 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-#include "axis_utils/container/list.h"
-#include "axis_utils/lib/json.h"
-#include "axis_utils/value/type.h"
+#include "aptima_utils/container/list.h"
+#include "aptima_utils/lib/json.h"
+#include "aptima_utils/value/type.h"
 
-axis_UTILS_API axis_TYPE axis_type_from_string(const char *type_str);
+aptima_UTILS_API aptima_TYPE aptima_type_from_string(const char *type_str);
 
-axis_UTILS_API const char *axis_type_to_string(axis_TYPE type);
+aptima_UTILS_API const char *aptima_type_to_string(aptima_TYPE type);
 
-axis_UTILS_PRIVATE_API axis_list_t axis_type_from_json(axis_json_t *json);
+aptima_UTILS_PRIVATE_API aptima_list_t aptima_type_from_json(aptima_json_t *json);
 
-axis_UTILS_PRIVATE_API bool axis_type_is_compatible(axis_TYPE actual,
-                                                  axis_TYPE expected);
+aptima_UTILS_PRIVATE_API bool aptima_type_is_compatible(aptima_TYPE actual,
+                                                  aptima_TYPE expected);

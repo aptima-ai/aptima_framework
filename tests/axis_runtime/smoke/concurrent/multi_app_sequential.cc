@@ -8,12 +8,12 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/lib/time.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/common/constant.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -21,10 +21,10 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      axis_env.send_cmd(std::move(cmd));
+      aptima_env.send_cmd(std::move(cmd));
       return;
     }
   }
@@ -34,19 +34,19 @@ class test_extension_2 : public ten::extension_t {
  public:
   explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
 class test_app_1 : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
+  void on_configure(ten::aptima_env_t &aptima_env) override {
     // In a scenario which contains multiple TEN app, the construction of a
     // graph might failed because not all TEN app has already been launched
     // successfully.
@@ -61,7 +61,7 @@ class test_app_1 : public ten::app_t {
     //
     // Therefore, the closing of an engine could _not_ cause the closing of the
     // app, and that's why the following 'long_running_mode' has been set.
-    bool rc = axis_env.init_property_from_json(
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -74,14 +74,14 @@ class test_app_1 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
 class test_app_2 : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -94,11 +94,11 @@ class test_app_2 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *app_thread_1_main(axis_UNUSED void *args) {
+void *app_thread_1_main(aptima_UNUSED void *args) {
   auto *app = new test_app_1();
   app->run();
   delete app;
@@ -106,7 +106,7 @@ void *app_thread_1_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-void *app_thread_2_main(axis_UNUSED void *args) {
+void *app_thread_2_main(aptima_UNUSED void *args) {
   auto *app = new test_app_2();
   app->run();
   delete app;
@@ -114,9 +114,9 @@ void *app_thread_2_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_app_sequential__extension_1,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(multi_app_sequential__extension_1,
                                     test_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_app_sequential__extension_2,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(multi_app_sequential__extension_2,
                                     test_extension_2);
 
 }  // namespace
@@ -124,9 +124,9 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_app_sequential__extension_2,
 TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
   // Start app.
   auto *app_thread_2 =
-      axis_thread_create("app thread 2", app_thread_2_main, nullptr);
+      aptima_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_thread_1 =
-      axis_thread_create("app thread 1", app_thread_1_main, nullptr);
+      aptima_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   for (size_t i = 0; i < SEQUENTIAL_CLIENT_CNT; ++i) {
     ten::msgpack_tcp_client_t *client = nullptr;
@@ -179,13 +179,13 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
           client->send_cmd_and_recv_result(std::move(start_graph_cmd));
 
       if (cmd_result) {
-        axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+        aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
         break;
       } else {
         delete client;
 
         // To prevent from busy re-trying.
-        axis_sleep(10);
+        aptima_sleep(10);
       }
     }
 
@@ -197,8 +197,8 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
     auto cmd_result =
         client->send_cmd_and_recv_result(std::move(hello_world_cmd));
 
-    axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-    axis_test::check_detail_with_string(cmd_result, "hello world, too");
+    aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+    aptima_test::check_detail_with_string(cmd_result, "hello world, too");
 
     delete client;
   }
@@ -211,6 +211,6 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
   // so we have to explicitly close the app.
   ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8002/");
 
-  axis_thread_join(app_thread_1, -1);
-  axis_thread_join(app_thread_2, -1);
+  aptima_thread_join(app_thread_1, -1);
+  aptima_thread_join(app_thread_2, -1);
 }

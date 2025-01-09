@@ -13,7 +13,7 @@ from .common import cmd_exec
 
 def analyze_resolve_result(test_app_root_folder: str) -> None:
     extension_folder = os.path.join(
-        test_app_root_folder, "axis_packages", "extension"
+        test_app_root_folder, "aptima_packages", "extension"
     )
 
     with open(
@@ -103,11 +103,11 @@ def test_tman_dependency_resolve():
 
     if sys.platform == "win32":
         os.environ["PATH"] = (
-            os.path.join(root_dir, "axis_manager/lib") + ";" + os.getenv("PATH")
+            os.path.join(root_dir, "aptima_manager/lib") + ";" + os.getenv("PATH")
         )
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman.exe")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman")
 
     test_case_root_path = os.path.join(base_path, "test_cases")
     test_cases = os.listdir(test_case_root_path)

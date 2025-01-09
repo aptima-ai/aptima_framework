@@ -9,13 +9,13 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
-#include "axis_runtime/binding/cpp/detail/axis_env.h"
-#include "axis_utils/lang/cpp/lib/error.h"
-#include "axis_utils/lib/thread.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
+#include "aptima_runtime/binding/cpp/detail/aptima_env.h"
+#include "aptima_utils/lang/cpp/lib/error.h"
+#include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -23,7 +23,7 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       hello_world_cmd = std::move(cmd);
@@ -32,20 +32,20 @@ class test_extension_1 : public ten::extension_t {
 
       auto audio_frame_no_dest =
           ten::audio_frame_t::create("audio_frame_no_dest");
-      bool rc = axis_env.send_audio_frame(std::move(audio_frame_no_dest),
+      bool rc = aptima_env.send_audio_frame(std::move(audio_frame_no_dest),
                                          nullptr, &err);
       ASSERT_EQ(rc, false);
       ASSERT_EQ(err.is_success(), false);
 
-      axis_ENV_LOG_ERROR(axis_env, err.err_msg());
+      aptima_ENV_LOG_ERROR(aptima_env, err.err_msg());
 
       auto audio_frame = ten::audio_frame_t::create("audio_frame");
-      rc = axis_env.send_audio_frame(std::move(audio_frame));
+      rc = aptima_env.send_audio_frame(std::move(audio_frame));
       ASSERT_EQ(rc, true);
     } else if (cmd->get_name() == "audio_frame_ack") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
-      bool rc = axis_env.return_result(std::move(cmd_result),
+      bool rc = aptima_env.return_result(std::move(cmd_result),
                                       std::move(hello_world_cmd));
       ASSERT_EQ(rc, true);
     }
@@ -60,17 +60,17 @@ class test_extension_2 : public ten::extension_t {
   explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_audio_frame(
-      ten::axis_env_t &axis_env,
+      ten::aptima_env_t &aptima_env,
       std::unique_ptr<ten::audio_frame_t> audio_frame) override {
     auto cmd = ten::cmd_t::create("audio_frame_ack");
-    axis_env.send_cmd(std::move(cmd));
+    aptima_env.send_cmd(std::move(cmd));
   }
 };
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -83,11 +83,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -95,9 +95,9 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(no_audio_frame_dest__test_extension_1,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(no_audio_frame_dest__test_extension_1,
                                     test_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(no_audio_frame_dest__test_extension_2,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(no_audio_frame_dest__test_extension_2,
                                     test_extension_2);
 
 }  // namespace
@@ -105,7 +105,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(no_audio_frame_dest__test_extension_2,
 TEST(ExtensionTest, NoAudioFrameDest) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -151,17 +151,17 @@ TEST(ExtensionTest, NoAudioFrameDest) {  // NOLINT
          })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extension_group", "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world, too");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

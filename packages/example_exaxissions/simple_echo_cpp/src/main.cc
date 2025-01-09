@@ -8,7 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "axis_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/ten.h"
 
 namespace {
 
@@ -16,20 +16,20 @@ class simple_echo_extension_t : public ten::extension_t {
  public:
   explicit simple_echo_extension_t(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Parse the command and return a new command with the same name but with a
     // suffix ", too" added to it.
 
     std::string cmd_name = cmd->get_name();
 
-    auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+    auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
     cmd_result->set_property("detail", cmd_name + ", too");
 
-    axis_env.return_result(std::move(cmd_result), std::move(cmd));
+    aptima_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 
-  void on_data(ten::axis_env_t &axis_env,
+  void on_data(ten::aptima_env_t &aptima_env,
                std::unique_ptr<ten::data_t> data) override {
     // Receive data from ten graph.
     auto buf = data->get_buf();
@@ -40,11 +40,11 @@ class simple_echo_extension_t : public ten::extension_t {
     memcpy(new_buf.data(), buf.data(), buf.size());
     new_data->unlock_buf(new_buf);
 
-    axis_env.send_data(std::move(new_data));
+    aptima_env.send_data(std::move(new_data));
   }
 
   void on_video_frame(
-      ten::axis_env_t &axis_env,
+      ten::aptima_env_t &aptima_env,
       std::unique_ptr<ten::video_frame_t> video_frame) override {
     // Receive video frame from ten graph.
     auto buf = video_frame->lock_buf();
@@ -64,11 +64,11 @@ class simple_echo_extension_t : public ten::extension_t {
     new_video_frame->set_timestamp(video_frame->get_timestamp());
     new_video_frame->set_eof(video_frame->is_eof());
 
-    axis_env.send_video_frame(std::move(new_video_frame));
+    aptima_env.send_video_frame(std::move(new_video_frame));
   }
 
   void on_audio_frame(
-      ten::axis_env_t &axis_env,
+      ten::aptima_env_t &aptima_env,
       std::unique_ptr<ten::audio_frame_t> audio_frame) override {
     // Receive audio frame from ten graph.
     auto buf = audio_frame->lock_buf();
@@ -94,10 +94,10 @@ class simple_echo_extension_t : public ten::extension_t {
     new_audio_frame->set_data_fmt(audio_frame->get_data_fmt());
     new_audio_frame->set_line_size(audio_frame->get_line_size());
 
-    axis_env.send_audio_frame(std::move(new_audio_frame));
+    aptima_env.send_audio_frame(std::move(new_audio_frame));
   }
 };
 
 }  // namespace
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(simple_echo_cpp, simple_echo_extension_t);
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(simple_echo_cpp, simple_echo_extension_t);

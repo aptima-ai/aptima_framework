@@ -4,8 +4,8 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/ten.gni")
 
 glob("extension_group") {
   file_list = all_native_files
@@ -15,7 +15,7 @@ glob("extension_group") {
   ]
   include_dirs = [
     "//packages",
-    "//tests/axis_runtime",
+    "//tests/aptima_runtime",
   ]
   public_deps = [
     "//third_party/googlemock",

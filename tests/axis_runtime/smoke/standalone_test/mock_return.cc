@@ -5,11 +5,11 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/binding/cpp/detail/extension.h"
-#include "axis_runtime/common/status_code.h"
-#include "axis_utils/lang/cpp/lib/value.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/detail/extension.h"
+#include "aptima_runtime/common/status_code.h"
+#include "aptima_utils/lang/cpp/lib/value.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -20,28 +20,28 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
-      bool rc = axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      bool rc = aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       EXPECT_EQ(rc, true);
 
       // Send out a command to retrieve the greeting message.
       auto fetch_cmd = ten::cmd_t::create("fetch_greeting");
-      rc = axis_env.send_cmd(
+      rc = aptima_env.send_cmd(
           std::move(fetch_cmd),
-          [](ten::axis_env_t &axis_env, std::unique_ptr<ten::cmd_result_t> result,
+          [](ten::aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_result_t> result,
              ten::error_t *err) {
-            if (result->get_status_code() == axis_STATUS_CODE_OK) {
+            if (result->get_status_code() == aptima_STATUS_CODE_OK) {
               auto detail = result->get_property_string("detail");
               EXPECT_EQ(detail, "hola");
 
               auto data = ten::data_t::create("greeting");
               data->set_property("text", detail);
 
-              bool rc = axis_env.send_data(std::move(data));
+              bool rc = aptima_env.send_data(std::move(data));
               EXPECT_EQ(rc, true);
             }
           });
@@ -50,7 +50,7 @@ class test_extension_1 : public ten::extension_t {
   }
 };
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     standalone_test_mock_return__test_extension_1, test_extension_1);
 
 }  // namespace
@@ -59,41 +59,41 @@ namespace {
 
 class extension_tester_1 : public ten::extension_tester_t {
  protected:
-  void on_start(ten::axis_env_tester_t &axis_env) override {
+  void on_start(ten::aptima_env_tester_t &aptima_env) override {
     // Send the first command to the extension.
     auto new_cmd = ten::cmd_t::create("hello_world");
 
-    axis_env.send_cmd(
+    aptima_env.send_cmd(
         std::move(new_cmd),
-        [](ten::axis_env_tester_t &axis_env,
+        [](ten::aptima_env_tester_t &aptima_env,
            std::unique_ptr<ten::cmd_result_t> result, ten::error_t *err) {
-          if (result->get_status_code() == axis_STATUS_CODE_OK) {
+          if (result->get_status_code() == aptima_STATUS_CODE_OK) {
             auto detail = result->get_property_string("detail");
             EXPECT_EQ(detail, "hello world, too");
           }
         });
 
-    axis_env.on_start_done();
+    aptima_env.on_start_done();
   }
 
-  void on_cmd(ten::axis_env_tester_t &axis_env,
+  void on_cmd(ten::aptima_env_tester_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "fetch_greeting") {
       // Mock the result of the fetch_greeting command.
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hola");
-      bool rc = axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      bool rc = aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       EXPECT_EQ(rc, true);
     }
   }
 
-  void on_data(ten::axis_env_tester_t &axis_env,
+  void on_data(ten::aptima_env_tester_t &aptima_env,
                std::unique_ptr<ten::data_t> data) override {
     if (data->get_name() == "greeting") {
       auto text = data->get_property_string("text");
       EXPECT_EQ(text, "hola");
 
-      axis_env.stop_test();
+      aptima_env.stop_test();
     }
   }
 };
@@ -105,7 +105,7 @@ TEST(StandaloneTest, MockReturn) {  // NOLINT
   tester->set_test_mode_single("standalone_test_mock_return__test_extension_1");
 
   bool rc = tester->run();
-  axis_ASSERT(rc, "Should not happen.");
+  aptima_ASSERT(rc, "Should not happen.");
 
   delete tester;
 }

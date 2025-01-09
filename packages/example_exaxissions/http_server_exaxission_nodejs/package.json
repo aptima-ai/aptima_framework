@@ -6,7 +6,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "axis-runtime-nodejs": "file:../../../axis_packages/system/axis_runtime_nodejs"
+    "aptima-runtime-nodejs": "file:../../../aptima_packages/system/aptima_runtime_nodejs"
   },
   "scripts": {
     "build": "tsc --listEmittedFiles"

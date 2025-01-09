@@ -5,28 +5,28 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "msgpack.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-typedef struct axis_msgpack_parser_t {
+typedef struct aptima_msgpack_parser_t {
   msgpack_unpacker unpacker;
   msgpack_unpacked unpacked;
-} axis_msgpack_parser_t;
+} aptima_msgpack_parser_t;
 
-axis_RUNTIME_PRIVATE_API void axis_msgpack_parser_init(
-    axis_msgpack_parser_t *self);
+aptima_RUNTIME_PRIVATE_API void aptima_msgpack_parser_init(
+    aptima_msgpack_parser_t *self);
 
-axis_RUNTIME_PRIVATE_API void axis_msgpack_parser_deinit(
-    axis_msgpack_parser_t *self);
+aptima_RUNTIME_PRIVATE_API void aptima_msgpack_parser_deinit(
+    aptima_msgpack_parser_t *self);
 
-axis_RUNTIME_PRIVATE_API void axis_msgpack_parser_feed_data(
-    axis_msgpack_parser_t *self, const char *data, size_t data_size);
+aptima_RUNTIME_PRIVATE_API void aptima_msgpack_parser_feed_data(
+    aptima_msgpack_parser_t *self, const char *data, size_t data_size);
 
-axis_RUNTIME_PRIVATE_API axis_shared_ptr_t *axis_msgpack_parser_parse_data(
-    axis_msgpack_parser_t *self);
+aptima_RUNTIME_PRIVATE_API aptima_shared_ptr_t *aptima_msgpack_parser_parse_data(
+    aptima_msgpack_parser_t *self);

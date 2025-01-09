@@ -8,65 +8,65 @@
 
 #include <memory>
 
-#include "axis_runtime/binding/common.h"
-#include "axis_runtime/binding/cpp/detail/msg/audio_frame.h"
-#include "axis_runtime/binding/cpp/detail/msg/cmd/cmd.h"
-#include "axis_runtime/binding/cpp/detail/msg/cmd_result.h"
-#include "axis_runtime/binding/cpp/detail/msg/data.h"
-#include "axis_runtime/binding/cpp/detail/msg/video_frame.h"
-#include "axis_runtime/test/env_tester.h"
-#include "axis_utils/lang/cpp/lib/error.h"
+#include "aptima_runtime/binding/common.h"
+#include "aptima_runtime/binding/cpp/detail/msg/audio_frame.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/cmd.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd_result.h"
+#include "aptima_runtime/binding/cpp/detail/msg/data.h"
+#include "aptima_runtime/binding/cpp/detail/msg/video_frame.h"
+#include "aptima_runtime/test/env_tester.h"
+#include "aptima_utils/lang/cpp/lib/error.h"
 
-using axis_extension_tester_t = struct axis_extension_tester_t;
-using axis_env_tester_t = struct axis_env_tester_t;
+using aptima_extension_tester_t = struct aptima_extension_tester_t;
+using aptima_env_tester_t = struct aptima_env_tester_t;
 
 namespace ten {
 
-class axis_env_tester_t;
+class aptima_env_tester_t;
 class extension_tester_t;
 
-using axis_env_tester_send_cmd_result_handler_func_t = std::function<void(
-    axis_env_tester_t &, std::unique_ptr<cmd_result_t>, error_t *)>;
+using aptima_env_tester_send_cmd_result_handler_func_t = std::function<void(
+    aptima_env_tester_t &, std::unique_ptr<cmd_result_t>, error_t *)>;
 
-class axis_env_tester_t {
+class aptima_env_tester_t {
  public:
   // @{
-  axis_env_tester_t(const axis_env_tester_t &) = delete;
-  axis_env_tester_t(axis_env_tester_t &&) = delete;
-  axis_env_tester_t &operator=(const axis_env_tester_t &) = delete;
-  axis_env_tester_t &operator=(const axis_env_tester_t &&) = delete;
+  aptima_env_tester_t(const aptima_env_tester_t &) = delete;
+  aptima_env_tester_t(aptima_env_tester_t &&) = delete;
+  aptima_env_tester_t &operator=(const aptima_env_tester_t &) = delete;
+  aptima_env_tester_t &operator=(const aptima_env_tester_t &&) = delete;
   // @}};
 
   bool on_start_done(error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
-    return axis_env_tester_on_start_done(
-        c_axis_env_tester, err != nullptr ? err->get_c_error() : nullptr);
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
+    return aptima_env_tester_on_start_done(
+        c_aptima_env_tester, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool send_cmd(
       std::unique_ptr<cmd_t> &&cmd,
-      axis_env_tester_send_cmd_result_handler_func_t &&result_handler = nullptr,
+      aptima_env_tester_send_cmd_result_handler_func_t &&result_handler = nullptr,
       error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
 
     bool rc = false;
 
     if (!cmd) {
-      axis_ASSERT(0, "Invalid argument.");
+      aptima_ASSERT(0, "Invalid argument.");
       return rc;
     }
 
     if (result_handler == nullptr) {
-      rc = axis_env_tester_send_cmd(
-          c_axis_env_tester, cmd->get_underlying_msg(), nullptr, nullptr,
+      rc = aptima_env_tester_send_cmd(
+          c_aptima_env_tester, cmd->get_underlying_msg(), nullptr, nullptr,
           err != nullptr ? err->get_c_error() : nullptr);
     } else {
       auto *result_handler_ptr =
-          new axis_env_tester_send_cmd_result_handler_func_t(
+          new aptima_env_tester_send_cmd_result_handler_func_t(
               std::move(result_handler));
 
-      rc = axis_env_tester_send_cmd(
-          c_axis_env_tester, cmd->get_underlying_msg(), proxy_handle_result,
+      rc = aptima_env_tester_send_cmd(
+          c_aptima_env_tester, cmd->get_underlying_msg(), proxy_handle_result,
           result_handler_ptr, err != nullptr ? err->get_c_error() : nullptr);
       if (!rc) {
         delete result_handler_ptr;
@@ -84,17 +84,17 @@ class axis_env_tester_t {
   }
 
   bool send_data(std::unique_ptr<data_t> &&data, error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
 
     bool rc = false;
 
     if (!data) {
-      axis_ASSERT(0, "Invalid argument.");
+      aptima_ASSERT(0, "Invalid argument.");
       return rc;
     }
 
-    rc = axis_env_tester_send_data(
-        c_axis_env_tester, data->get_underlying_msg(), nullptr, nullptr,
+    rc = aptima_env_tester_send_data(
+        c_aptima_env_tester, data->get_underlying_msg(), nullptr, nullptr,
         err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
@@ -109,17 +109,17 @@ class axis_env_tester_t {
 
   bool send_audio_frame(std::unique_ptr<audio_frame_t> &&audio_frame,
                         error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
 
     bool rc = false;
 
     if (!audio_frame) {
-      axis_ASSERT(0, "Invalid argument.");
+      aptima_ASSERT(0, "Invalid argument.");
       return rc;
     }
 
-    rc = axis_env_tester_send_audio_frame(
-        c_axis_env_tester, audio_frame->get_underlying_msg(), nullptr, nullptr,
+    rc = aptima_env_tester_send_audio_frame(
+        c_aptima_env_tester, audio_frame->get_underlying_msg(), nullptr, nullptr,
         err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
@@ -134,17 +134,17 @@ class axis_env_tester_t {
 
   bool send_video_frame(std::unique_ptr<video_frame_t> &&video_frame,
                         error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
 
     bool rc = false;
 
     if (!video_frame) {
-      axis_ASSERT(0, "Invalid argument.");
+      aptima_ASSERT(0, "Invalid argument.");
       return rc;
     }
 
-    rc = axis_env_tester_send_video_frame(
-        c_axis_env_tester, video_frame->get_underlying_msg(), nullptr, nullptr,
+    rc = aptima_env_tester_send_video_frame(
+        c_aptima_env_tester, video_frame->get_underlying_msg(), nullptr, nullptr,
         err != nullptr ? err->get_c_error() : nullptr);
 
     if (rc) {
@@ -160,17 +160,17 @@ class axis_env_tester_t {
   bool return_result(std::unique_ptr<cmd_result_t> &&cmd_result,
                      std::unique_ptr<cmd_t> &&target_cmd,
                      error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
 
     bool rc = false;
 
     if (!cmd_result || !target_cmd) {
-      axis_ASSERT(0, "Invalid argument.");
+      aptima_ASSERT(0, "Invalid argument.");
       return rc;
     }
 
-    rc = axis_env_tester_return_result(
-        c_axis_env_tester, cmd_result->get_underlying_msg(),
+    rc = aptima_env_tester_return_result(
+        c_aptima_env_tester, cmd_result->get_underlying_msg(),
         target_cmd->get_underlying_msg(), nullptr, nullptr,
         err != nullptr ? err->get_c_error() : nullptr);
 
@@ -191,55 +191,55 @@ class axis_env_tester_t {
   }
 
   bool stop_test(error_t *err = nullptr) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
-    return axis_env_tester_stop_test(
-        c_axis_env_tester, err != nullptr ? err->get_c_error() : nullptr);
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
+    return aptima_env_tester_stop_test(
+        c_aptima_env_tester, err != nullptr ? err->get_c_error() : nullptr);
   }
 
  private:
   friend extension_tester_t;
-  friend class axis_env_tester_proxy_t;
+  friend class aptima_env_tester_proxy_t;
 
-  ::axis_env_tester_t *c_axis_env_tester;
+  ::aptima_env_tester_t *c_aptima_env_tester;
 
-  virtual ~axis_env_tester_t() {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+  virtual ~aptima_env_tester_t() {
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
   }
 
-  explicit axis_env_tester_t(::axis_env_tester_t *c_axis_env_tester)
-      : c_axis_env_tester(c_axis_env_tester) {
-    axis_ASSERT(c_axis_env_tester, "Should not happen.");
+  explicit aptima_env_tester_t(::aptima_env_tester_t *c_aptima_env_tester)
+      : c_aptima_env_tester(c_aptima_env_tester) {
+    aptima_ASSERT(c_aptima_env_tester, "Should not happen.");
 
-    axis_binding_handle_set_me_in_target_lang(
-        reinterpret_cast<axis_binding_handle_t *>(c_axis_env_tester),
+    aptima_binding_handle_set_me_in_target_lang(
+        reinterpret_cast<aptima_binding_handle_t *>(c_aptima_env_tester),
         static_cast<void *>(this));
   }
 
-  static void proxy_handle_result(::axis_env_tester_t *c_axis_env_tester,
-                                  axis_shared_ptr_t *c_cmd_result, void *cb_data,
-                                  axis_error_t *err) {
+  static void proxy_handle_result(::aptima_env_tester_t *c_aptima_env_tester,
+                                  aptima_shared_ptr_t *c_cmd_result, void *cb_data,
+                                  aptima_error_t *err) {
     auto *result_handler =
-        static_cast<axis_env_tester_send_cmd_result_handler_func_t *>(cb_data);
-    auto *cpp_axis_env_tester = static_cast<axis_env_tester_t *>(
-        axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(c_axis_env_tester)));
+        static_cast<aptima_env_tester_send_cmd_result_handler_func_t *>(cb_data);
+    auto *cpp_aptima_env_tester = static_cast<aptima_env_tester_t *>(
+        aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(c_aptima_env_tester)));
 
     std::unique_ptr<cmd_result_t> cmd_result = nullptr;
 
     if (c_cmd_result != nullptr) {
       cmd_result = cmd_result_t::create(
           // Clone a C shared_ptr to be owned by the C++ instance.
-          axis_shared_ptr_clone(c_cmd_result));
+          aptima_shared_ptr_clone(c_cmd_result));
     }
 
     if (err != nullptr) {
       error_t cpp_err(err, false);
-      (*result_handler)(*cpp_axis_env_tester, std::move(cmd_result), &cpp_err);
+      (*result_handler)(*cpp_aptima_env_tester, std::move(cmd_result), &cpp_err);
     } else {
-      (*result_handler)(*cpp_axis_env_tester, std::move(cmd_result), nullptr);
+      (*result_handler)(*cpp_aptima_env_tester, std::move(cmd_result), nullptr);
     }
 
-    if (axis_cmd_result_is_final(c_cmd_result, nullptr)) {
+    if (aptima_cmd_result_is_final(c_cmd_result, nullptr)) {
       // Only when is_final is true should the result handler be cleared.
       // Otherwise, since more result handlers are expected, the result handler
       // should not be cleared.

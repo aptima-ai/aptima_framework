@@ -6,33 +6,33 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-#include "axis_utils/io/runloop.h"
+#include "aptima_utils/io/runloop.h"
 
-typedef struct axis_shm_channel_t axis_shm_channel_t;
+typedef struct aptima_shm_channel_t aptima_shm_channel_t;
 
-axis_UTILS_API int axis_shm_channel_create(const char *name,
-                                         axis_shm_channel_t *channel[2]);
+aptima_UTILS_API int aptima_shm_channel_create(const char *name,
+                                         aptima_shm_channel_t *channel[2]);
 
-axis_UTILS_API void axis_shm_channel_close(axis_shm_channel_t *channel);
+aptima_UTILS_API void aptima_shm_channel_close(aptima_shm_channel_t *channel);
 
-axis_UTILS_API int axis_shm_channel_active(axis_shm_channel_t *channel, int read);
+aptima_UTILS_API int aptima_shm_channel_active(aptima_shm_channel_t *channel, int read);
 
-axis_UTILS_API int axis_shm_channel_inactive(axis_shm_channel_t *channel,
+aptima_UTILS_API int aptima_shm_channel_inactive(aptima_shm_channel_t *channel,
                                            int read);
 
-axis_UTILS_API int axis_shm_channel_wait_remote(axis_shm_channel_t *channel,
+aptima_UTILS_API int aptima_shm_channel_wait_remote(aptima_shm_channel_t *channel,
                                               int wait_ms);
 
-axis_UTILS_API int axis_shm_channel_send(axis_shm_channel_t *channel, void *data,
+aptima_UTILS_API int aptima_shm_channel_send(aptima_shm_channel_t *channel, void *data,
                                        size_t size, int nonblock);
 
-axis_UTILS_API int axis_shm_channel_recv(axis_shm_channel_t *channel, void *data,
+aptima_UTILS_API int aptima_shm_channel_recv(aptima_shm_channel_t *channel, void *data,
                                        size_t size, int nonblock);
 
-axis_UTILS_API int axis_shm_channel_get_capacity(axis_shm_channel_t *channel);
+aptima_UTILS_API int aptima_shm_channel_get_capacity(aptima_shm_channel_t *channel);
 
-axis_UTILS_API int axis_shm_channel_set_signal(axis_shm_channel_t *channel,
-                                             axis_runloop_async_t *signal,
+aptima_UTILS_API int aptima_shm_channel_set_signal(aptima_shm_channel_t *channel,
+                                             aptima_runloop_async_t *signal,
                                              int read);

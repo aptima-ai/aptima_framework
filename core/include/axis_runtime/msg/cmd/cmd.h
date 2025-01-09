@@ -6,10 +6,10 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-#include "axis_utils/lib/error.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-axis_RUNTIME_API axis_shared_ptr_t *axis_cmd_create(const char *name,
-                                                 axis_error_t *err);
+aptima_RUNTIME_API aptima_shared_ptr_t *aptima_cmd_create(const char *name,
+                                                 aptima_error_t *err);

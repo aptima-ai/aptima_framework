@@ -6,29 +6,29 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 
-#include "axis_utils/container/list_node.h"
-#include "axis_utils/lib/signature.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_utils/container/list_node.h"
+#include "aptima_utils/lib/signature.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-#define axis_SMART_PTR_LISTNODE_SIGNATURE 0x00C0ADEEF6B9A421U
+#define aptima_SMART_PTR_LISTNODE_SIGNATURE 0x00C0ADEEF6B9A421U
 
-typedef struct axis_smart_ptr_listnode_t {
-  axis_listnode_t hdr;
-  axis_signature_t signature;
-  axis_smart_ptr_t *ptr;
-} axis_smart_ptr_listnode_t;
+typedef struct aptima_smart_ptr_listnode_t {
+  aptima_listnode_t hdr;
+  aptima_signature_t signature;
+  aptima_smart_ptr_t *ptr;
+} aptima_smart_ptr_listnode_t;
 
-axis_UTILS_API axis_listnode_t *axis_smart_ptr_listnode_create(
-    axis_smart_ptr_t *ptr);
+aptima_UTILS_API aptima_listnode_t *aptima_smart_ptr_listnode_create(
+    aptima_smart_ptr_t *ptr);
 
-axis_UTILS_API axis_smart_ptr_listnode_t *axis_listnode_to_smart_ptr_listnode(
-    axis_listnode_t *self);
+aptima_UTILS_API aptima_smart_ptr_listnode_t *aptima_listnode_to_smart_ptr_listnode(
+    aptima_listnode_t *self);
 
-axis_UTILS_API axis_listnode_t *axis_listnode_from_smart_ptr_listnode(
-    axis_smart_ptr_listnode_t *self);
+aptima_UTILS_API aptima_listnode_t *aptima_listnode_from_smart_ptr_listnode(
+    aptima_smart_ptr_listnode_t *self);
 
-axis_UTILS_API axis_smart_ptr_t *axis_smart_ptr_listnode_get(axis_listnode_t *self);
+aptima_UTILS_API aptima_smart_ptr_t *aptima_smart_ptr_listnode_get(aptima_listnode_t *self);

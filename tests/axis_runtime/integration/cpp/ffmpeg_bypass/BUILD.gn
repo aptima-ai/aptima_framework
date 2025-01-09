@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/ten.gni")
 
-axis_package_test_prepare_app("ffmpeg_bypass_app") {
+aptima_package_test_prepare_app("ffmpeg_bypass_app") {
   src_app = "default_app_cpp"
   src_app_language = "cpp"
   generated_app_src_root_dir_name = "ffmpeg_bypass_app_source"
@@ -18,13 +18,13 @@ axis_package_test_prepare_app("ffmpeg_bypass_app") {
   ]
 
   replace_files_after_install_all = [
-    "ffmpeg_bypass_app_source/axis_packages/extension/ffmpeg_client/src/main.cc",
-    "ffmpeg_bypass_app_source/axis_packages/extension/ffmpeg_client/manifest.json",
+    "ffmpeg_bypass_app_source/aptima_packages/extension/ffmpeg_client/src/main.cc",
+    "ffmpeg_bypass_app_source/aptima_packages/extension/ffmpeg_client/manifest.json",
   ]
 
-  if (axis_enable_axis_manager) {
+  if (aptima_enable_aptima_manager) {
     deps = [
-      "//core/src/axis_manager",
+      "//core/src/aptima_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
       "//packages/core_protocols/msgpack:upload_protocol_msgpack_to_server",
       "//packages/example_extensions/ffmpeg_client:upload_ffmpeg_client_to_server",
@@ -34,9 +34,9 @@ axis_package_test_prepare_app("ffmpeg_bypass_app") {
   }
 }
 
-axis_package_test_prepare_auxiliary_resources("ffmpeg_bypass_app_test_files") {
+aptima_package_test_prepare_auxiliary_resources("ffmpeg_bypass_app_test_files") {
   resources = [
-    "//tests/axis_runtime/integration/common=>common",
+    "//tests/aptima_runtime/integration/common=>common",
     "__init__.py",
     "test_case.py",
     "video_cmp.py",

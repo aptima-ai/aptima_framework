@@ -12,7 +12,7 @@ import {
   RegisterAddonAsExtension,
   Extension,
   TenEnv,
-} from "axis-runtime-nodejs";
+} from "aptima-runtime-nodejs";
 
 class WebsocketServerExtension extends Extension {
   tenEnv: TenEnv | null = null;

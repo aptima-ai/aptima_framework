@@ -6,20 +6,20 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "axis_utils/container/list_node.h"
+#include "aptima_utils/container/list_node.h"
 
-axis_UTILS_API void axis_list_push_str_back(axis_list_t *self, const char *str);
+aptima_UTILS_API void aptima_list_push_str_back(aptima_list_t *self, const char *str);
 
-axis_UTILS_API void axis_list_push_str_front(axis_list_t *self, const char *str);
+aptima_UTILS_API void aptima_list_push_str_front(aptima_list_t *self, const char *str);
 
-axis_UTILS_API void axis_list_push_str_with_size_back(axis_list_t *self,
+aptima_UTILS_API void aptima_list_push_str_with_size_back(aptima_list_t *self,
                                                     const char *str,
                                                     size_t size);
 
-axis_UTILS_API axis_listnode_t *axis_list_find_string(axis_list_t *self,
+aptima_UTILS_API aptima_listnode_t *aptima_list_find_string(aptima_list_t *self,
                                                    const char *str);

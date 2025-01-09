@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "axis_utils/lib/string.h"
+#include "aptima_utils/lib/string.h"
 
 namespace ten {
 
@@ -36,35 +36,35 @@ std::string cpp_string_format(const std::string &format, Args... args) {
 }
 
 static inline std::string cpp_string_uri_encode(const std::string &str) {
-  axis_string_t uri_encoded;
-  axis_string_init(&uri_encoded);
+  aptima_string_t uri_encoded;
+  aptima_string_init(&uri_encoded);
 
-  axis_c_string_uri_encode(str.c_str(), str.length(), &uri_encoded);
-  std::string result = axis_string_get_raw_str(&uri_encoded);
+  aptima_c_string_uri_encode(str.c_str(), str.length(), &uri_encoded);
+  std::string result = aptima_string_get_raw_str(&uri_encoded);
 
-  axis_string_deinit(&uri_encoded);
+  aptima_string_deinit(&uri_encoded);
   return result;
 }
 
 static inline std::string cpp_string_uri_decode(const std::string &str) {
-  axis_string_t uri_decoded;
-  axis_string_init(&uri_decoded);
+  aptima_string_t uri_decoded;
+  aptima_string_init(&uri_decoded);
 
-  axis_c_string_uri_decode(str.c_str(), str.length(), &uri_decoded);
-  std::string result = axis_string_get_raw_str(&uri_decoded);
+  aptima_c_string_uri_decode(str.c_str(), str.length(), &uri_decoded);
+  std::string result = aptima_string_get_raw_str(&uri_decoded);
 
-  axis_string_deinit(&uri_decoded);
+  aptima_string_deinit(&uri_decoded);
   return result;
 }
 
 static inline std::string cpp_string_escaped(const std::string &str) {
-  axis_string_t escaped_str;
-  axis_string_init(&escaped_str);
+  aptima_string_t escaped_str;
+  aptima_string_init(&escaped_str);
 
-  axis_c_string_escaped(str.c_str(), &escaped_str);
-  std::string result = axis_string_get_raw_str(&escaped_str);
+  aptima_c_string_escaped(str.c_str(), &escaped_str);
+  std::string result = aptima_string_get_raw_str(&escaped_str);
 
-  axis_string_deinit(&escaped_str);
+  aptima_string_deinit(&escaped_str);
   return result;
 }
 
@@ -96,13 +96,13 @@ class TenString {
   TenString() : str_(nullptr) {}
 
   TenString(const char *str)
-      : str_(str != nullptr ? axis_string_create_formatted(str) : nullptr) {}
+      : str_(str != nullptr ? aptima_string_create_formatted(str) : nullptr) {}
 
   TenString(const std::string &str)
-      : str_((!str.empty()) ? axis_string_create_formatted(str.c_str())
+      : str_((!str.empty()) ? aptima_string_create_formatted(str.c_str())
                             : nullptr) {}
 
-  TenString(const axis_string_t *str) : str_(const_cast<axis_string_t *>(str)) {}
+  TenString(const aptima_string_t *str) : str_(const_cast<aptima_string_t *>(str)) {}
 
   TenString(const TenString &rhs) : str_(nullptr) { operator=(rhs); }
 
@@ -116,12 +116,12 @@ class TenString {
     }
 
     if (str_ != nullptr) {
-      axis_string_destroy(str_);
+      aptima_string_destroy(str_);
     }
 
     str_ = nullptr;
     if (rhs.str_ != nullptr) {
-      str_ = axis_string_clone(rhs.str_);
+      str_ = aptima_string_clone(rhs.str_);
     }
 
     return *this;
@@ -133,7 +133,7 @@ class TenString {
     }
 
     if (str_ != nullptr) {
-      axis_string_destroy(str_);
+      aptima_string_destroy(str_);
     }
 
     str_ = rhs.str_;
@@ -141,7 +141,7 @@ class TenString {
     return *this;
   }
 
-  operator const axis_string_t *() const { return str_; }
+  operator const aptima_string_t *() const { return str_; }
 
   bool operator==(const TenString &rhs) const {
     if (str_ == nullptr && rhs.str_ == nullptr) {
@@ -156,10 +156,10 @@ class TenString {
       return false;
     }
 
-    return axis_string_is_equal(str_, rhs.str_);
+    return aptima_string_is_equal(str_, rhs.str_);
   }
 
-  bool operator==(const axis_string_t *rhs) const {
+  bool operator==(const aptima_string_t *rhs) const {
     if (str_ == nullptr && rhs == nullptr) {
       return true;
     }
@@ -172,7 +172,7 @@ class TenString {
       return false;
     }
 
-    return axis_string_is_equal(str_, rhs);
+    return aptima_string_is_equal(str_, rhs);
   }
 
   bool operator==(const char *rhs) const {
@@ -188,7 +188,7 @@ class TenString {
       return false;
     }
 
-    return axis_string_is_equal_c_str(str_, rhs);
+    return aptima_string_is_equal_c_str(str_, rhs);
   }
 
   bool operator==(const std::string &rhs) const {
@@ -204,12 +204,12 @@ class TenString {
       return false;
     }
 
-    return axis_string_is_equal_c_str(str_, rhs.c_str());
+    return aptima_string_is_equal_c_str(str_, rhs.c_str());
   }
 
   bool operator!=(const TenString &rhs) const { return !operator==(rhs); }
 
-  bool operator!=(const axis_string_t *rhs) const { return !operator==(rhs); }
+  bool operator!=(const aptima_string_t *rhs) const { return !operator==(rhs); }
 
   bool operator!=(const char *rhs) const { return !operator==(rhs); }
 
@@ -221,25 +221,25 @@ class TenString {
     }
 
     if (empty()) {
-      str_ = axis_string_clone(rhs.str_);
+      str_ = aptima_string_clone(rhs.str_);
       return *this;
     }
 
-    axis_string_append_formatted(str_, rhs.str_->buf);
+    aptima_string_append_formatted(str_, rhs.str_->buf);
     return *this;
   }
 
-  TenString &operator+=(const axis_string_t *rhs) {
-    if (rhs == nullptr || axis_string_is_empty(rhs)) {
+  TenString &operator+=(const aptima_string_t *rhs) {
+    if (rhs == nullptr || aptima_string_is_empty(rhs)) {
       return *this;
     }
 
     if (empty()) {
-      str_ = axis_string_clone(const_cast<axis_string_t *>(rhs));
+      str_ = aptima_string_clone(const_cast<aptima_string_t *>(rhs));
       return *this;
     }
 
-    axis_string_append_formatted(str_, rhs->buf);
+    aptima_string_append_formatted(str_, rhs->buf);
     return *this;
   }
 
@@ -249,11 +249,11 @@ class TenString {
     }
 
     if (empty()) {
-      str_ = axis_string_create_formatted(rhs);
+      str_ = aptima_string_create_formatted(rhs);
       return *this;
     }
 
-    axis_string_append_formatted(str_, rhs);
+    aptima_string_append_formatted(str_, rhs);
     return *this;
   }
 
@@ -263,11 +263,11 @@ class TenString {
     }
 
     if (empty()) {
-      str_ = axis_string_create_formatted(rhs.c_str());
+      str_ = aptima_string_create_formatted(rhs.c_str());
       return *this;
     }
 
-    axis_string_append_formatted(str_, rhs.c_str());
+    aptima_string_append_formatted(str_, rhs.c_str());
     return *this;
   }
 
@@ -277,7 +277,7 @@ class TenString {
     return result;
   }
 
-  TenString operator+(const axis_string_t *rhs) const {
+  TenString operator+(const aptima_string_t *rhs) const {
     TenString result(*this);
     result += rhs;
     return result;
@@ -295,20 +295,20 @@ class TenString {
     return result;
   }
 
-  bool empty() const { return str_ == nullptr || axis_string_is_empty(str_); }
+  bool empty() const { return str_ == nullptr || aptima_string_is_empty(str_); }
 
   ~TenString() {
     if (str_ != nullptr) {
-      axis_string_destroy(str_);
+      aptima_string_destroy(str_);
     }
   }
 
   const char *c_str() const { return str_ ? str_->buf : nullptr; }
 
-  size_t size() const { return str_ ? axis_string_len(str_) : 0; }
+  size_t size() const { return str_ ? aptima_string_len(str_) : 0; }
 
  private:
-  axis_string_t *str_;
+  aptima_string_t *str_;
 };
 
 }  // namespace ten

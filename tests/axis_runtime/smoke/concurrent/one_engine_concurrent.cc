@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
 #include "nlohmann/json_fwd.hpp"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/lib/time.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/common/constant.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -24,9 +24,9 @@ class test_extension_A : public ten::extension_t {
  public:
   explicit test_extension_A(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    axis_env.send_cmd(std::move(cmd));
+    aptima_env.send_cmd(std::move(cmd));
   }
 };
 
@@ -34,19 +34,19 @@ class test_extension_B : public ten::extension_t {
  public:
   explicit test_extension_B(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     auto detail = nlohmann::json({{"a", "b"}});
-    auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+    auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
     cmd_result->set_property_from_json("detail", detail.dump().c_str());
-    axis_env.return_result(std::move(cmd_result), std::move(cmd));
+    aptima_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 };
 
 class test_app_a : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -59,14 +59,14 @@ class test_app_a : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
 class test_app_b : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -79,11 +79,11 @@ class test_app_b : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *app_thread_1_main(axis_UNUSED void *args) {
+void *app_thread_1_main(aptima_UNUSED void *args) {
   auto *app_a = new test_app_a();
   app_a->run();
   delete app_a;
@@ -91,7 +91,7 @@ void *app_thread_1_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-void *app_thread_2_main(axis_UNUSED void *args) {
+void *app_thread_2_main(aptima_UNUSED void *args) {
   auto *app_b = new test_app_b();
   app_b->run();
   delete app_b;
@@ -101,10 +101,10 @@ void *app_thread_2_main(axis_UNUSED void *args) {
 
 std::string graph_id;
 
-void *client_thread_main(axis_UNUSED void *args) {
+void *client_thread_main(aptima_UNUSED void *args) {
   auto seq_id = (size_t)args;
 
-  axis_LOGD("Client[%zu]: start.", seq_id);
+  aptima_LOGD("Client[%zu]: start.", seq_id);
 
   auto seq_id_str = std::to_string(seq_id);
 
@@ -114,7 +114,7 @@ void *client_thread_main(axis_UNUSED void *args) {
   std::string client_ip;
   uint16_t client_port = 0;
   client->get_info(client_ip, client_port);
-  axis_LOGD("Client[%zu] ip address: %s:%d", seq_id, client_ip.c_str(),
+  aptima_LOGD("Client[%zu] ip address: %s:%d", seq_id, client_ip.c_str(),
            client_port);
 
   // Send a user-defined 'hello world' command.
@@ -124,8 +124,8 @@ void *client_thread_main(axis_UNUSED void *args) {
 
   auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
 
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_json(cmd_result, R"({"a": "b"})");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_json(cmd_result, R"({"a": "b"})");
 
   // Destroy the client.
   delete client;
@@ -133,10 +133,10 @@ void *client_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(one_engine_concurrent__extension_A,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(one_engine_concurrent__extension_A,
                                     test_extension_A);
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(one_engine_concurrent__extension_B,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(one_engine_concurrent__extension_B,
                                     test_extension_B);
 
 }  // namespace
@@ -144,9 +144,9 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(one_engine_concurrent__extension_B,
 TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
   // Start app.
   auto *app_thread_2 =
-      axis_thread_create("app thread 2", app_thread_2_main, nullptr);
+      aptima_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_thread_1 =
-      axis_thread_create("app thread 1", app_thread_1_main, nullptr);
+      aptima_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;
@@ -190,7 +190,7 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
         client->send_cmd_and_recv_result(std::move(start_graph_cmd));
 
     if (cmd_result) {
-      axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+      aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
       graph_id = cmd_result->get_property_string("detail");
 
       break;
@@ -199,31 +199,31 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
       client = nullptr;
 
       // To prevent from busy re-trying.
-      axis_sleep(10);
+      aptima_sleep(10);
     }
   }
 
-  axis_ASSERT(client, "Failed to connect to the TEN app.");
+  aptima_ASSERT(client, "Failed to connect to the TEN app.");
 
   // Now close connection. The engine will be alive due to 'long_running_mode'.
   delete client;
 
-  std::vector<axis_thread_t *> client_threads;
+  std::vector<aptima_thread_t *> client_threads;
 
   for (size_t i = 0; i < ONE_ENGINE_ALL_CLIENT_CONCURRENT_CNT; ++i) {
     auto *client_thread =
-        axis_thread_create("client_thread_main", client_thread_main, (void *)i);
+        aptima_thread_create("client_thread_main", client_thread_main, (void *)i);
 
     client_threads.push_back(client_thread);
   }
 
-  for (axis_thread_t *client_thread : client_threads) {
-    axis_thread_join(client_thread, -1);
+  for (aptima_thread_t *client_thread : client_threads) {
+    aptima_thread_join(client_thread, -1);
   }
 
   ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8001/");
   ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8002/");
 
-  axis_thread_join(app_thread_1, -1);
-  axis_thread_join(app_thread_2, -1);
+  aptima_thread_join(app_thread_1, -1);
+  aptima_thread_join(app_thread_2, -1);
 }

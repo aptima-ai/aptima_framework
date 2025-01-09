@@ -6,14 +6,14 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <memory>
 
-#include "axis_runtime/binding/cpp/detail/msg/msg.h"
-#include "axis_runtime/msg/cmd/cmd.h"
-#include "axis_runtime/msg/msg.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_runtime/binding/cpp/detail/msg/msg.h"
+#include "aptima_runtime/msg/cmd/cmd.h"
+#include "aptima_runtime/msg/msg.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
 namespace ten {
 
@@ -33,13 +33,13 @@ class cmd_t : public msg_t {
  public:
   static std::unique_ptr<cmd_t> create(const char *name,
                                        error_t *err = nullptr) {
-    axis_shared_ptr_t *c_cmd =
-        axis_cmd_create(name, err != nullptr ? err->get_c_error() : nullptr);
+    aptima_shared_ptr_t *c_cmd =
+        aptima_cmd_create(name, err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<cmd_t>(c_cmd, ctor_passkey_t());
   }
 
-  explicit cmd_t(axis_shared_ptr_t *cmd, ctor_passkey_t /*unused*/)
+  explicit cmd_t(aptima_shared_ptr_t *cmd, ctor_passkey_t /*unused*/)
       : msg_t(cmd) {}
 
   cmd_t() = default;
@@ -56,7 +56,7 @@ class cmd_t : public msg_t {
   // @{
   // Used by the constructor of the real command class to create a base command
   // first.
-  explicit cmd_t(axis_shared_ptr_t *cmd) : msg_t(cmd) {}
+  explicit cmd_t(aptima_shared_ptr_t *cmd) : msg_t(cmd) {}
   // @}
 
  private:
@@ -65,7 +65,7 @@ class cmd_t : public msg_t {
 
   void clone_internal(const cmd_t &cmd) noexcept {
     if (cmd.c_msg != nullptr) {
-      c_msg = axis_msg_clone(cmd.c_msg, nullptr);
+      c_msg = aptima_msg_clone(cmd.c_msg, nullptr);
     } else {
       c_msg = nullptr;
     }

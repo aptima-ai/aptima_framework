@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 /**
  * @brief Set an exclusive write lock on an open file. It's designed for
@@ -14,11 +14,11 @@
  * process has locked the file.
  * @return 0 if success, otherwise failed.
  */
-axis_UTILS_API int axis_file_writew_lock(int fd);
+aptima_UTILS_API int aptima_file_writew_lock(int fd);
 
 /**
  * @brief Remove lock on an open file. If the file close or process exit, lock
  * removed too.
  * @return 0 if success, otherwise failed.
  */
-axis_UTILS_API int axis_file_unlock(int fd);
+aptima_UTILS_API int aptima_file_unlock(int fd);

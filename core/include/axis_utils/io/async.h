@@ -6,42 +6,42 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-#include "axis_utils/io/runloop.h"
-#include "axis_utils/lib/atomic.h"
-#include "axis_utils/lib/signature.h"
-#include "axis_utils/lib/string.h"
-#include "axis_utils/sanitizer/thread_check.h"
+#include "aptima_utils/io/runloop.h"
+#include "aptima_utils/lib/atomic.h"
+#include "aptima_utils/lib/signature.h"
+#include "aptima_utils/lib/string.h"
+#include "aptima_utils/sanitizer/thread_check.h"
 
-#define axis_ASYNC_SIGNATURE 0xD4CD6DEDB7906C26U
+#define aptima_ASYNC_SIGNATURE 0xD4CD6DEDB7906C26U
 
-typedef struct axis_async_t {
-  axis_signature_t signature;
-  axis_sanitizer_thread_check_t thread_check;
+typedef struct aptima_async_t {
+  aptima_signature_t signature;
+  aptima_sanitizer_thread_check_t thread_check;
 
-  axis_string_t name;
-  axis_atomic_t close;
+  aptima_string_t name;
+  aptima_atomic_t close;
 
-  axis_runloop_t *loop;
-  axis_runloop_async_t *async;
-  axis_runloop_async_t *async_for_close;
+  aptima_runloop_t *loop;
+  aptima_runloop_async_t *async;
+  aptima_runloop_async_t *async_for_close;
 
-  void (*on_trigger)(struct axis_async_t *, void *);
+  void (*on_trigger)(struct aptima_async_t *, void *);
   void *on_trigger_data;
 
-  void (*on_closed)(struct axis_async_t *, void *);
+  void (*on_closed)(struct aptima_async_t *, void *);
   void *on_closed_data;
-} axis_async_t;
+} aptima_async_t;
 
-axis_UTILS_API axis_async_t *axis_async_create(const char *name,
-                                            axis_runloop_t *loop,
+aptima_UTILS_API aptima_async_t *aptima_async_create(const char *name,
+                                            aptima_runloop_t *loop,
                                             void *on_trigger,
                                             void *on_trigger_data);
 
-axis_UTILS_API void axis_async_set_on_closed(axis_async_t *self, void *on_closed,
+aptima_UTILS_API void aptima_async_set_on_closed(aptima_async_t *self, void *on_closed,
                                            void *on_closed_data);
 
-axis_UTILS_API void axis_async_trigger(axis_async_t *self);
+aptima_UTILS_API void aptima_async_trigger(aptima_async_t *self);
 
-axis_UTILS_API void axis_async_close(axis_async_t *self);
+aptima_UTILS_API void aptima_async_close(aptima_async_t *self);

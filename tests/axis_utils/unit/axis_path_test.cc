@@ -6,86 +6,86 @@
 //
 #include "common/test_utils.h"
 #include "gtest/gtest.h"
-#include "axis_utils/lang/cpp/lib/string.h"
-#include "axis_utils/lib/path.h"
-#include "axis_utils/lib/string.h"
+#include "aptima_utils/lang/cpp/lib/string.h"
+#include "aptima_utils/lib/path.h"
+#include "aptima_utils/lib/string.h"
 
 static int foo() { return 0; }
 
 TEST(PathTest, positive) {
-  ten::TenString str = axis_path_get_cwd();
+  ten::TenString str = aptima_path_get_cwd();
   const ten::TenString cwd = str;
   EXPECT_FALSE(str.empty());
   AGO_LOG("Current working directory: %s\n", str.c_str());
-  str = axis_path_get_home_path();
+  str = aptima_path_get_home_path();
   EXPECT_FALSE(str.empty());
   AGO_LOG("Current user home directory: %s\n", str.c_str());
-  str = axis_path_get_module_path((const void *)foo);
+  str = aptima_path_get_module_path((const void *)foo);
   EXPECT_FALSE(str.empty());
   AGO_LOG("Module path: %s\n", str.c_str());
-  str = axis_path_get_executable_path();
+  str = aptima_path_get_executable_path();
   EXPECT_FALSE(str.empty());
   AGO_LOG("Executable file path: %s\n", str.c_str());
   str = "/aaa/bbb/ccc.txt";
-  ten::TenString leaf = axis_path_get_filename(str);
+  ten::TenString leaf = aptima_path_get_filename(str);
   AGO_LOG("Leaf of %s is: %s\n", str.c_str(), leaf.c_str());
-  ten::TenString dir = axis_path_get_dirname(str);
+  ten::TenString dir = aptima_path_get_dirname(str);
   AGO_LOG("Dir of %s is: %s\n", str.c_str(), dir.c_str());
   EXPECT_EQ(leaf == "ccc.txt", true);
   EXPECT_EQ(dir == "/aaa/bbb", true);
   str = "/aaa";
-  leaf = axis_path_get_filename(str);
+  leaf = aptima_path_get_filename(str);
   AGO_LOG("Leaf of %s is: %s\n", str.c_str(), leaf.c_str());
-  dir = axis_path_get_dirname(str);
+  dir = aptima_path_get_dirname(str);
   AGO_LOG("Dir of %s is: %s\n", str.c_str(), dir.c_str());
   EXPECT_EQ(leaf == "aaa", true);
   EXPECT_EQ(dir == "/", true);
   str = "/";
-  leaf = axis_path_get_filename(str);
+  leaf = aptima_path_get_filename(str);
   AGO_LOG("Leaf of %s is: %s\n", str.c_str(), leaf.c_str());
-  dir = axis_path_get_dirname(str);
+  dir = aptima_path_get_dirname(str);
   AGO_LOG("Dir of %s is: %s\n", str.c_str(), dir.c_str());
   EXPECT_TRUE(leaf.empty());
   EXPECT_EQ(dir == "/", true);
   str = cwd + "/.";
-  ten::TenString abs = axis_path_realpath(str);
+  ten::TenString abs = aptima_path_realpath(str);
   AGO_LOG("Absolute path of %s is: %s\n", str.c_str(), abs.c_str());
   EXPECT_EQ(abs == cwd, true);
   str = cwd + "/..";
-  abs = axis_path_realpath(str);
-  dir = axis_path_get_dirname(cwd);
+  abs = aptima_path_realpath(str);
+  dir = aptima_path_get_dirname(cwd);
   AGO_LOG("Absolute path of %s is: %s\n", str.c_str(), abs.c_str());
   EXPECT_EQ(abs == dir, true);
   str = cwd + "/../.";
-  abs = axis_path_realpath(str);
+  abs = aptima_path_realpath(str);
   AGO_LOG("Absolute path of %s is: %s\n", str.c_str(), abs.c_str());
   EXPECT_EQ(abs == dir, true);
-  str = axis_path_get_cwd();
-  EXPECT_EQ(axis_path_is_dir(str), true);
+  str = aptima_path_get_cwd();
+  EXPECT_EQ(aptima_path_is_dir(str), true);
   str = "aaa/bbb/.";
-  EXPECT_EQ(axis_path_is_special_dir(str), true);
+  EXPECT_EQ(aptima_path_is_special_dir(str), true);
   str = "aaa/bbb/..";
-  EXPECT_EQ(axis_path_is_special_dir(str), true);
+  EXPECT_EQ(aptima_path_is_special_dir(str), true);
   str = "aaa/bbb/../../ccc.txt";
-  EXPECT_EQ(axis_path_is_special_dir(str), false);
+  EXPECT_EQ(aptima_path_is_special_dir(str), false);
   str = ".";
-  EXPECT_EQ(axis_path_is_special_dir(str), true);
+  EXPECT_EQ(aptima_path_is_special_dir(str), true);
   str = "..";
-  EXPECT_EQ(axis_path_is_special_dir(str), true);
+  EXPECT_EQ(aptima_path_is_special_dir(str), true);
   str = "aaa/bbb/ccc.so";
-  EXPECT_EQ(axis_path_is_shared_library(str), true);
+  EXPECT_EQ(aptima_path_is_shared_library(str), true);
   str = "aaa/bbb/ccc.dll";
-  EXPECT_EQ(axis_path_is_shared_library(str), true);
+  EXPECT_EQ(aptima_path_is_shared_library(str), true);
   str = "aaa/bbb/ccc.dylib";
-  EXPECT_EQ(axis_path_is_shared_library(str), true);
+  EXPECT_EQ(aptima_path_is_shared_library(str), true);
   str = "aaa/bbb/ccc.txt";
-  EXPECT_EQ(axis_path_is_shared_library(str), false);
-  str = axis_path_get_cwd();
-  EXPECT_EQ(axis_path_exists(str.c_str()), true);
+  EXPECT_EQ(aptima_path_is_shared_library(str), false);
+  str = aptima_path_get_cwd();
+  EXPECT_EQ(aptima_path_exists(str.c_str()), true);
   str += "/definitly_not_existing";
-  EXPECT_EQ(axis_path_exists(str.c_str()), false);
-  str = axis_path_get_cwd();
-  auto *fd = axis_path_open_dir(axis_string_get_raw_str(str));
+  EXPECT_EQ(aptima_path_exists(str.c_str()), false);
+  str = aptima_path_get_cwd();
+  auto *fd = aptima_path_open_dir(aptima_string_get_raw_str(str));
   EXPECT_NE(fd, nullptr);
-  EXPECT_EQ(axis_path_close_dir(fd), 0);
+  EXPECT_EQ(aptima_path_close_dir(fd), 0);
 }

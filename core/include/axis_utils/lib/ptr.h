@@ -14,37 +14,37 @@
 #define PTR_FILL_VALUE(ptr, value)                  \
   ({                                                \
     *(typeof(value) *)ptr = value;                  \
-    ptr = axis_ptr_move_in_byte(ptr, sizeof(value)); \
+    ptr = aptima_ptr_move_in_byte(ptr, sizeof(value)); \
   })
 
 #define PTR_FILL_STR(ptr, str)                    \
   ({                                              \
     *(typeof(value) *)ptr = value;                \
     strcpy(ptr, str);                             \
-    ptr = axis_ptr_move_in_byte(ptr, strlen(str)); \
+    ptr = aptima_ptr_move_in_byte(ptr, strlen(str)); \
   })
 
 // NOLINTNEXTLINE(clang-diagnostic-unused-function)
-static inline void *axis_ptr_move_in_byte(void *ptr, ptrdiff_t offset) {
+static inline void *aptima_ptr_move_in_byte(void *ptr, ptrdiff_t offset) {
   assert(ptr);
   return (void *)((uint8_t *)ptr + offset);
 }
 
 // NOLINTNEXTLINE(clang-diagnostic-unused-function)
-static inline const void *axis_const_ptr_move_in_byte(const void *ptr,
+static inline const void *aptima_const_ptr_move_in_byte(const void *ptr,
                                                      ptrdiff_t offset) {
   assert(ptr);
   return (const void *)((const uint8_t *)ptr + offset);
 }
 
 // NOLINTNEXTLINE(clang-diagnostic-unused-function)
-static inline ptrdiff_t axis_ptr_diff_in_byte(void *a, void *b) {
+static inline ptrdiff_t aptima_ptr_diff_in_byte(void *a, void *b) {
   assert(a && b && a >= b);
   return (uint8_t *)a - (uint8_t *)b;
 }
 
 // NOLINTNEXTLINE(clang-diagnostic-unused-function)
-static inline ptrdiff_t axis_const_ptr_diff_in_byte(const void *a,
+static inline ptrdiff_t aptima_const_ptr_diff_in_byte(const void *a,
                                                    const void *b) {
   assert(a && b && a >= b);
   return (const uint8_t *)a - (const uint8_t *)b;

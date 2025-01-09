@@ -6,131 +6,131 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "axis_utils/lib/signature.h"
+#include "aptima_utils/lib/signature.h"
 
-#define axis_LOGV(...)                                                       \
+#define aptima_LOGV(...)                                                       \
   do {                                                                      \
-    axis_log_log_formatted(&axis_global_log, axis_LOG_LEVEL_VERBOSE, __func__, \
+    aptima_log_log_formatted(&aptima_global_log, aptima_LOG_LEVEL_VERBOSE, __func__, \
                           __FILE__, __LINE__, __VA_ARGS__);                 \
   } while (0)
 
-#define axis_LOGD(...)                                                     \
+#define aptima_LOGD(...)                                                     \
   do {                                                                    \
-    axis_log_log_formatted(&axis_global_log, axis_LOG_LEVEL_DEBUG, __func__, \
+    aptima_log_log_formatted(&aptima_global_log, aptima_LOG_LEVEL_DEBUG, __func__, \
                           __FILE__, __LINE__, __VA_ARGS__);               \
   } while (0)
 
-#define axis_LOGI(...)                                                    \
+#define aptima_LOGI(...)                                                    \
   do {                                                                   \
-    axis_log_log_formatted(&axis_global_log, axis_LOG_LEVEL_INFO, __func__, \
+    aptima_log_log_formatted(&aptima_global_log, aptima_LOG_LEVEL_INFO, __func__, \
                           __FILE__, __LINE__, __VA_ARGS__);              \
   } while (0)
 
-#define axis_LOGW(...)                                                    \
+#define aptima_LOGW(...)                                                    \
   do {                                                                   \
-    axis_log_log_formatted(&axis_global_log, axis_LOG_LEVEL_WARN, __func__, \
+    aptima_log_log_formatted(&aptima_global_log, aptima_LOG_LEVEL_WARN, __func__, \
                           __FILE__, __LINE__, __VA_ARGS__);              \
   } while (0)
 
-#define axis_LOGE(...)                                                     \
+#define aptima_LOGE(...)                                                     \
   do {                                                                    \
-    axis_log_log_formatted(&axis_global_log, axis_LOG_LEVEL_ERROR, __func__, \
+    aptima_log_log_formatted(&aptima_global_log, aptima_LOG_LEVEL_ERROR, __func__, \
                           __FILE__, __LINE__, __VA_ARGS__);               \
   } while (0)
 
-#define axis_LOGF(...)                                                     \
+#define aptima_LOGF(...)                                                     \
   do {                                                                    \
-    axis_log_log_formatted(&axis_global_log, axis_LOG_LEVEL_FATAL, __func__, \
+    aptima_log_log_formatted(&aptima_global_log, aptima_LOG_LEVEL_FATAL, __func__, \
                           __FILE__, __LINE__, __VA_ARGS__);               \
   } while (0)
 
-#define axis_LOGV_AUX(log, ...)                                            \
+#define aptima_LOGV_AUX(log, ...)                                            \
   do {                                                                    \
-    axis_log_log_formatted(log, axis_LOG_LEVEL_VERBOSE, __func__, __FILE__, \
+    aptima_log_log_formatted(log, aptima_LOG_LEVEL_VERBOSE, __func__, __FILE__, \
                           __LINE__, __VA_ARGS__);                         \
   } while (0)
 
-#define axis_LOGD_AUX(log, ...)                                          \
+#define aptima_LOGD_AUX(log, ...)                                          \
   do {                                                                  \
-    axis_log_log_formatted(log, axis_LOG_LEVEL_DEBUG, __func__, __FILE__, \
+    aptima_log_log_formatted(log, aptima_LOG_LEVEL_DEBUG, __func__, __FILE__, \
                           __LINE__, __VA_ARGS__);                       \
   } while (0)
 
-#define axis_LOGI_AUX(log, ...)                                         \
+#define aptima_LOGI_AUX(log, ...)                                         \
   do {                                                                 \
-    axis_log_log_formatted(log, axis_LOG_LEVEL_INFO, __func__, __FILE__, \
+    aptima_log_log_formatted(log, aptima_LOG_LEVEL_INFO, __func__, __FILE__, \
                           __LINE__, __VA_ARGS__);                      \
   } while (0)
 
-#define axis_LOGW_AUX(log, ...)                                         \
+#define aptima_LOGW_AUX(log, ...)                                         \
   do {                                                                 \
-    axis_log_log_formatted(log, axis_LOG_LEVEL_WARN, __func__, __FILE__, \
+    aptima_log_log_formatted(log, aptima_LOG_LEVEL_WARN, __func__, __FILE__, \
                           __LINE__, __VA_ARGS__);                      \
   } while (0)
 
-#define axis_LOGE_AUX(log, ...)                                          \
+#define aptima_LOGE_AUX(log, ...)                                          \
   do {                                                                  \
-    axis_log_log_formatted(log, axis_LOG_LEVEL_ERROR, __func__, __FILE__, \
+    aptima_log_log_formatted(log, aptima_LOG_LEVEL_ERROR, __func__, __FILE__, \
                           __LINE__, __VA_ARGS__);                       \
   } while (0)
 
-#define axis_LOGF_AUX(log, ...)                                          \
+#define aptima_LOGF_AUX(log, ...)                                          \
   do {                                                                  \
-    axis_log_log_formatted(log, axis_LOG_LEVEL_FATAL, __func__, __FILE__, \
+    aptima_log_log_formatted(log, aptima_LOG_LEVEL_FATAL, __func__, __FILE__, \
                           __LINE__, __VA_ARGS__);                       \
   } while (0)
 
-typedef enum axis_LOG_LEVEL {
-  axis_LOG_LEVEL_INVALID,
+typedef enum aptima_LOG_LEVEL {
+  aptima_LOG_LEVEL_INVALID,
 
-  axis_LOG_LEVEL_VERBOSE,
-  axis_LOG_LEVEL_DEBUG,
-  axis_LOG_LEVEL_INFO,
-  axis_LOG_LEVEL_WARN,
-  axis_LOG_LEVEL_ERROR,
-  axis_LOG_LEVEL_FATAL,
-} axis_LOG_LEVEL;
+  aptima_LOG_LEVEL_VERBOSE,
+  aptima_LOG_LEVEL_DEBUG,
+  aptima_LOG_LEVEL_INFO,
+  aptima_LOG_LEVEL_WARN,
+  aptima_LOG_LEVEL_ERROR,
+  aptima_LOG_LEVEL_FATAL,
+} aptima_LOG_LEVEL;
 
-typedef struct axis_string_t axis_string_t;
+typedef struct aptima_string_t aptima_string_t;
 
-typedef void (*axis_log_output_func_t)(axis_string_t *msg, void *user_data);
-typedef void (*axis_log_close_func_t)(void *user_data);
-typedef void (*axis_log_formatter_func_t)(axis_string_t *buf, axis_LOG_LEVEL level,
+typedef void (*aptima_log_output_func_t)(aptima_string_t *msg, void *user_data);
+typedef void (*aptima_log_close_func_t)(void *user_data);
+typedef void (*aptima_log_formatter_func_t)(aptima_string_t *buf, aptima_LOG_LEVEL level,
                                          const char *func_name,
                                          size_t func_name_len,
                                          const char *file_name,
                                          size_t file_name_len, size_t line_no,
                                          const char *msg, size_t msg_len);
 
-typedef struct axis_log_output_t {
-  axis_log_output_func_t output_cb;
-  axis_log_close_func_t close_cb;
+typedef struct aptima_log_output_t {
+  aptima_log_output_func_t output_cb;
+  aptima_log_close_func_t close_cb;
   void *user_data;
-} axis_log_output_t;
+} aptima_log_output_t;
 
-typedef struct axis_log_formatter_t {
-  axis_log_formatter_func_t format_cb;
+typedef struct aptima_log_formatter_t {
+  aptima_log_formatter_func_t format_cb;
   void *user_data;  // In case the formatter needs any user data
-} axis_log_formatter_t;
+} aptima_log_formatter_t;
 
-typedef struct axis_log_t {
-  axis_signature_t signature;
+typedef struct aptima_log_t {
+  aptima_signature_t signature;
 
-  axis_LOG_LEVEL output_level;
-  axis_log_output_t output;
+  aptima_LOG_LEVEL output_level;
+  aptima_log_output_t output;
 
-  axis_log_formatter_t formatter;
-} axis_log_t;
+  aptima_log_formatter_t formatter;
+} aptima_log_t;
 
-axis_UTILS_API axis_log_t axis_global_log;
+aptima_UTILS_API aptima_log_t aptima_global_log;
 
-axis_UTILS_API void axis_log_log_formatted(axis_log_t *self, axis_LOG_LEVEL level,
+aptima_UTILS_API void aptima_log_log_formatted(aptima_log_t *self, aptima_LOG_LEVEL level,
                                          const char *func_name,
                                          const char *file_name, size_t line_no,
                                          const char *fmt, ...);

@@ -6,22 +6,22 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdint.h>
 
-typedef struct axis_cond_t axis_cond_t;
-typedef struct axis_mutex_t axis_mutex_t;
+typedef struct aptima_cond_t aptima_cond_t;
+typedef struct aptima_mutex_t aptima_mutex_t;
 
 /**
  * @brief Create a condition variable.
  */
-axis_UTILS_API axis_cond_t *axis_cond_create(void);
+aptima_UTILS_API aptima_cond_t *aptima_cond_create(void);
 
 /**
  * @brief Destroy a condition variable.
  */
-axis_UTILS_API void axis_cond_destroy(axis_cond_t *cond);
+aptima_UTILS_API void aptima_cond_destroy(aptima_cond_t *cond);
 
 /**
  * @brief Wait on a condition variable.
@@ -34,7 +34,7 @@ axis_UTILS_API void axis_cond_destroy(axis_cond_t *cond);
  *       when it is signaled. Surprise wakeup still happens just like pthread
  *       version of condition variable.
  */
-axis_UTILS_API int axis_cond_wait(axis_cond_t *cond, axis_mutex_t *mutex,
+aptima_UTILS_API int aptima_cond_wait(aptima_cond_t *cond, aptima_mutex_t *mutex,
                                 int64_t wait_ms);
 
 /**
@@ -50,7 +50,7 @@ axis_UTILS_API int axis_cond_wait(axis_cond_t *cond, axis_mutex_t *mutex,
  *       when it is signaled. Surprise wakeup does _not_ happen because we
  *       instantly check predicate() before leaving.
  */
-axis_UTILS_API int axis_cond_wait_while(axis_cond_t *cond, axis_mutex_t *mutex,
+aptima_UTILS_API int aptima_cond_wait_while(aptima_cond_t *cond, aptima_mutex_t *mutex,
                                       int (*predicate)(void *), void *arg,
                                       int64_t wait_ms);
 
@@ -59,11 +59,11 @@ axis_UTILS_API int axis_cond_wait_while(axis_cond_t *cond, axis_mutex_t *mutex,
  * @param cond The condition variable to signal.
  * @return 0 on success, -1 on error.
  */
-axis_UTILS_API int axis_cond_signal(axis_cond_t *cond);
+aptima_UTILS_API int aptima_cond_signal(aptima_cond_t *cond);
 
 /**
  * @brief Broadcast a condition variable.
  * @param cond The condition variable to broadcast.
  * @return 0 on success, -1 on error.
  */
-axis_UTILS_API int axis_cond_broadcast(axis_cond_t *cond);
+aptima_UTILS_API int aptima_cond_broadcast(aptima_cond_t *cond);

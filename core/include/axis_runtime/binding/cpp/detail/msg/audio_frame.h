@@ -6,18 +6,18 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <cstddef>
 #include <memory>
 
-#include "axis_runtime/binding/cpp/detail/msg/msg.h"
-#include "axis_runtime/msg/audio_frame/audio_frame.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_runtime/binding/cpp/detail/msg/msg.h"
+#include "aptima_runtime/msg/audio_frame/audio_frame.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
 namespace ten {
 
-class axis_env_t;
+class aptima_env_t;
 class extension_t;
 
 class audio_frame_t : public msg_t {
@@ -37,96 +37,96 @@ class audio_frame_t : public msg_t {
                                                error_t *err = nullptr) {
     if (name == nullptr || strlen(name) == 0) {
       if (err != nullptr && err->get_c_error() != nullptr) {
-        axis_error_set(err->get_c_error(), axis_ERRNO_INVALID_ARGUMENT,
+        aptima_error_set(err->get_c_error(), aptima_ERRNO_INVALID_ARGUMENT,
                       "audio frame name cannot be empty.");
       }
       return nullptr;
     }
 
-    auto *c_frame = axis_audio_frame_create(
+    auto *c_frame = aptima_audio_frame_create(
         name, err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<audio_frame_t>(c_frame, ctor_passkey_t());
   }
 
-  explicit audio_frame_t(axis_shared_ptr_t *audio_frame,
+  explicit audio_frame_t(aptima_shared_ptr_t *audio_frame,
                          ctor_passkey_t /*unused*/)
       : msg_t(audio_frame) {}
 
   ~audio_frame_t() override = default;
 
   int64_t get_timestamp(error_t *err = nullptr) const {
-    return axis_audio_frame_get_timestamp(c_msg);
+    return aptima_audio_frame_get_timestamp(c_msg);
   }
   bool set_timestamp(int64_t timestamp, error_t *err = nullptr) {
-    return axis_audio_frame_set_timestamp(c_msg, timestamp);
+    return aptima_audio_frame_set_timestamp(c_msg, timestamp);
   }
 
   int32_t get_sample_rate(error_t *err = nullptr) const {
-    return axis_audio_frame_get_sample_rate(c_msg);
+    return aptima_audio_frame_get_sample_rate(c_msg);
   }
   bool set_sample_rate(int32_t sample_rate, error_t *err = nullptr) {
-    return axis_audio_frame_set_sample_rate(c_msg, sample_rate);
+    return aptima_audio_frame_set_sample_rate(c_msg, sample_rate);
   }
 
   uint64_t get_channel_layout(error_t *err = nullptr) const {
-    return axis_audio_frame_get_channel_layout(c_msg);
+    return aptima_audio_frame_get_channel_layout(c_msg);
   }
   bool set_channel_layout(uint64_t channel_layout, error_t *err = nullptr) {
-    return axis_audio_frame_set_channel_layout(c_msg, channel_layout);
+    return aptima_audio_frame_set_channel_layout(c_msg, channel_layout);
   }
 
   int32_t get_samples_per_channel(error_t *err = nullptr) const {
-    return axis_audio_frame_get_samples_per_channel(c_msg);
+    return aptima_audio_frame_get_samples_per_channel(c_msg);
   }
   bool set_samples_per_channel(int32_t samples_per_channel,
                                error_t *err = nullptr) {
-    return axis_audio_frame_set_samples_per_channel(c_msg, samples_per_channel);
+    return aptima_audio_frame_set_samples_per_channel(c_msg, samples_per_channel);
   }
 
   int32_t get_bytes_per_sample(error_t *err = nullptr) const {
-    return axis_audio_frame_get_bytes_per_sample(c_msg);
+    return aptima_audio_frame_get_bytes_per_sample(c_msg);
   }
   bool set_bytes_per_sample(int32_t size, error_t *err = nullptr) {
-    return axis_audio_frame_set_bytes_per_sample(c_msg, size);
+    return aptima_audio_frame_set_bytes_per_sample(c_msg, size);
   }
 
   int32_t get_number_of_channels(error_t *err = nullptr) const {
-    return axis_audio_frame_get_number_of_channel(c_msg);
+    return aptima_audio_frame_get_number_of_channel(c_msg);
   }
   bool set_number_of_channels(int32_t number, error_t *err = nullptr) {
-    return axis_audio_frame_set_number_of_channel(c_msg, number);
+    return aptima_audio_frame_set_number_of_channel(c_msg, number);
   }
 
-  axis_AUDIO_FRAME_DATA_FMT get_data_fmt(error_t *err = nullptr) const {
-    return axis_audio_frame_get_data_fmt(c_msg);
+  aptima_AUDIO_FRAME_DATA_FMT get_data_fmt(error_t *err = nullptr) const {
+    return aptima_audio_frame_get_data_fmt(c_msg);
   }
-  bool set_data_fmt(axis_AUDIO_FRAME_DATA_FMT format, error_t *err = nullptr) {
-    return axis_audio_frame_set_data_fmt(c_msg, format);
+  bool set_data_fmt(aptima_AUDIO_FRAME_DATA_FMT format, error_t *err = nullptr) {
+    return aptima_audio_frame_set_data_fmt(c_msg, format);
   }
 
   int32_t get_line_size(error_t *err = nullptr) const {
-    return axis_audio_frame_get_line_size(c_msg);
+    return aptima_audio_frame_get_line_size(c_msg);
   }
   bool set_line_size(int32_t line_size, error_t *err = nullptr) {
-    return axis_audio_frame_set_line_size(c_msg, line_size);
+    return aptima_audio_frame_set_line_size(c_msg, line_size);
   }
 
   bool is_eof(error_t *err = nullptr) const {
-    return axis_audio_frame_is_eof(c_msg);
+    return aptima_audio_frame_is_eof(c_msg);
   }
   bool set_eof(bool eof, error_t *err = nullptr) {
-    return axis_audio_frame_set_eof(c_msg, eof);
+    return aptima_audio_frame_set_eof(c_msg, eof);
   }
 
   bool alloc_buf(size_t size, error_t *err = nullptr) {
-    return axis_audio_frame_alloc_buf(c_msg, size) != nullptr;
+    return aptima_audio_frame_alloc_buf(c_msg, size) != nullptr;
   }
 
   buf_t lock_buf(error_t *err = nullptr) const {
-    axis_buf_t *data = axis_audio_frame_peek_buf(c_msg);
+    aptima_buf_t *data = aptima_audio_frame_peek_buf(c_msg);
 
-    if (!axis_msg_add_locked_res_buf(
+    if (!aptima_msg_add_locked_res_buf(
             c_msg, data->data, err != nullptr ? err->get_c_error() : nullptr)) {
       return buf_t{};
     }
@@ -138,7 +138,7 @@ class audio_frame_t : public msg_t {
 
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     const uint8_t *data = buf.data();
-    if (!axis_msg_remove_locked_res_buf(
+    if (!aptima_msg_remove_locked_res_buf(
             c_msg, data, err != nullptr ? err->get_c_error() : nullptr)) {
       return false;
     }
@@ -146,7 +146,7 @@ class audio_frame_t : public msg_t {
     // Since the `buf` has already been given back, clearing the contents of the
     // `buf` itself not only notifies developers that this `buf` can no longer
     // be used, but also prevents it from being used incorrectly again.
-    axis_buf_init_with_owned_data(&buf.buf, 0);
+    aptima_buf_init_with_owned_data(&buf.buf, 0);
 
     return true;
   }
@@ -161,7 +161,7 @@ class audio_frame_t : public msg_t {
   // @{
   // Internal use only. This function is called in 'extension_t' to create C++
   // message from C message.
-  explicit audio_frame_t(axis_shared_ptr_t *frame) : msg_t(frame) {}
+  explicit audio_frame_t(aptima_shared_ptr_t *frame) : msg_t(frame) {}
   // @}
 
  private:

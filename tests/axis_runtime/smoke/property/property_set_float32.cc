@@ -8,11 +8,11 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lang/cpp/lib/value.h"
-#include "axis_utils/lib/thread.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lang/cpp/lib/value.h"
+#include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 #define PROP_NAME "test_prop"
 #define PROP_OLD_VAL 51.82
@@ -24,9 +24,9 @@ class test_extension : public ten::extension_t {
  public:
   explicit test_extension(const char *name) : ten::extension_t(name) {}
 
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  "{\
                     \"type\": \"extension\",\
@@ -44,21 +44,21 @@ class test_extension : public ten::extension_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       auto rc =
-          axis_env.set_property(PROP_NAME, static_cast<float_t>(PROP_NEW_VAL));
+          aptima_env.set_property(PROP_NAME, static_cast<float_t>(PROP_NEW_VAL));
       EXPECT_EQ(rc, true);
 
-      auto prop_value = axis_env.get_property_float32(PROP_NAME);
+      auto prop_value = aptima_env.get_property_float32(PROP_NAME);
       if (fabs(prop_value - PROP_NEW_VAL) < 0.01) {
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "hello world, too");
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
     }
   }
@@ -66,9 +66,9 @@ class test_extension : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  "{\
                     \"type\": \"app\",\
@@ -79,24 +79,24 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    rc = axis_env.init_property_from_json(
+    rc = aptima_env.init_property_from_json(
         "{\
            \"_ten\": {\
            \"uri\": \"msgpack://127.0.0.1:8001/\"}}");
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
 
   return nullptr;
 }
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(property_set_float32__extension,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(property_set_float32__extension,
                                     test_extension);
 
 }  // namespace
@@ -104,7 +104,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(property_set_float32__extension,
 TEST(PropertyTest, SetFloat32) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -122,7 +122,7 @@ TEST(PropertyTest, SetFloat32) {  // NOLINT
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
@@ -130,10 +130,10 @@ TEST(PropertyTest, SetFloat32) {  // NOLINT
                             "property_set_float32__extension_group",
                             "test_extension");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world, too");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

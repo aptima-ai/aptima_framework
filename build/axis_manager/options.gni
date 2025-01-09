@@ -5,6 +5,6 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 declare_args() {
-  axis_manager_enable_frontend = true
-  axis_manager_enable_tests = true
+  aptima_manager_enable_frontend = true
+  aptima_manager_enable_tests = true
 }

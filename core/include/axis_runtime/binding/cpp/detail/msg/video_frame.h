@@ -6,15 +6,15 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 
-#include "axis_runtime/binding/cpp/detail/msg/msg.h"
-#include "axis_runtime/msg/video_frame/video_frame.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_runtime/binding/cpp/detail/msg/msg.h"
+#include "aptima_runtime/msg/video_frame/video_frame.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
 namespace ten {
 
@@ -37,79 +37,79 @@ class video_frame_t : public msg_t {
                                                error_t *err = nullptr) {
     if (name == nullptr || strlen(name) == 0) {
       if (err != nullptr && err->get_c_error() != nullptr) {
-        axis_error_set(err->get_c_error(), axis_ERRNO_INVALID_ARGUMENT,
+        aptima_error_set(err->get_c_error(), aptima_ERRNO_INVALID_ARGUMENT,
                       "Video frame name cannot be empty.");
       }
       return nullptr;
     }
 
-    auto *c_frame = axis_video_frame_create(
+    auto *c_frame = aptima_video_frame_create(
         name, err != nullptr ? err->get_c_error() : nullptr);
 
     return std::make_unique<video_frame_t>(c_frame, ctor_passkey_t());
   }
 
-  explicit video_frame_t(axis_shared_ptr_t *video_frame,
+  explicit video_frame_t(aptima_shared_ptr_t *video_frame,
                          ctor_passkey_t /*unused*/)
       : msg_t(video_frame) {}
 
   ~video_frame_t() override = default;
 
   int32_t get_width(error_t *err = nullptr) const {
-    return axis_video_frame_get_width(c_msg);
+    return aptima_video_frame_get_width(c_msg);
   }
   bool set_width(int32_t width, error_t *err = nullptr) {
-    return axis_video_frame_set_width(c_msg, width);
+    return aptima_video_frame_set_width(c_msg, width);
   }
 
   int32_t get_height(error_t *err = nullptr) const {
-    return axis_video_frame_get_height(c_msg);
+    return aptima_video_frame_get_height(c_msg);
   }
   bool set_height(int32_t height, error_t *err = nullptr) const {
-    return axis_video_frame_set_height(c_msg, height);
+    return aptima_video_frame_set_height(c_msg, height);
   }
 
   int64_t get_timestamp(error_t *err = nullptr) const {
-    return axis_video_frame_get_timestamp(c_msg);
+    return aptima_video_frame_get_timestamp(c_msg);
   }
   bool set_timestamp(int64_t timestamp, error_t *err = nullptr) const {
-    return axis_video_frame_set_timestamp(c_msg, timestamp);
+    return aptima_video_frame_set_timestamp(c_msg, timestamp);
   }
 
-  axis_PIXEL_FMT get_pixel_fmt(error_t *err = nullptr) const {
-    return axis_video_frame_get_pixel_fmt(c_msg);
+  aptima_PIXEL_FMT get_pixel_fmt(error_t *err = nullptr) const {
+    return aptima_video_frame_get_pixel_fmt(c_msg);
   }
-  bool set_pixel_fmt(axis_PIXEL_FMT pixel_fmt, error_t *err = nullptr) const {
-    return axis_video_frame_set_pixel_fmt(c_msg, pixel_fmt);
+  bool set_pixel_fmt(aptima_PIXEL_FMT pixel_fmt, error_t *err = nullptr) const {
+    return aptima_video_frame_set_pixel_fmt(c_msg, pixel_fmt);
   }
 
   bool is_eof(error_t *err = nullptr) const {
-    return axis_video_frame_is_eof(c_msg);
+    return aptima_video_frame_is_eof(c_msg);
   }
   bool set_eof(bool eof, error_t *err = nullptr) {
-    return axis_video_frame_set_eof(c_msg, eof);
+    return aptima_video_frame_set_eof(c_msg, eof);
   }
 
   bool alloc_buf(size_t size, error_t *err = nullptr) {
-    return axis_video_frame_alloc_data(c_msg, size) != nullptr;
+    return aptima_video_frame_alloc_data(c_msg, size) != nullptr;
   }
 
   buf_t lock_buf(error_t *err = nullptr) const {
-    if (!axis_msg_add_locked_res_buf(
-            c_msg, axis_video_frame_peek_buf(c_msg)->data,
+    if (!aptima_msg_add_locked_res_buf(
+            c_msg, aptima_video_frame_peek_buf(c_msg)->data,
             err != nullptr ? err->get_c_error() : nullptr)) {
       return buf_t{};
     }
 
-    buf_t result{axis_video_frame_peek_buf(c_msg)->data,
-                 axis_video_frame_peek_buf(c_msg)->size};
+    buf_t result{aptima_video_frame_peek_buf(c_msg)->data,
+                 aptima_video_frame_peek_buf(c_msg)->size};
 
     return result;
   }
 
   bool unlock_buf(buf_t &buf, error_t *err = nullptr) {
     const uint8_t *data = buf.data();
-    if (!axis_msg_remove_locked_res_buf(
+    if (!aptima_msg_remove_locked_res_buf(
             c_msg, data, err != nullptr ? err->get_c_error() : nullptr)) {
       return false;
     }
@@ -117,7 +117,7 @@ class video_frame_t : public msg_t {
     // Since the `buf` has already been given back, clearing the contents of the
     // `buf` itself not only notifies developers that this `buf` can no longer
     // be used, but also prevents it from being used incorrectly again.
-    axis_buf_init_with_owned_data(&buf.buf, 0);
+    aptima_buf_init_with_owned_data(&buf.buf, 0);
 
     return true;
   }
@@ -132,7 +132,7 @@ class video_frame_t : public msg_t {
   // @{
   // Internal use only. This function is called in 'extension_t' to create C++
   // message from C message.
-  explicit video_frame_t(axis_shared_ptr_t *frame) : msg_t(frame) {}
+  explicit video_frame_t(aptima_shared_ptr_t *frame) : msg_t(frame) {}
   // @}
 };
 

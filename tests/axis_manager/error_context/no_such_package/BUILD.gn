@@ -4,18 +4,18 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
+import("//build/aptima_runtime/feature/test.gni")
 
-axis_package_test_prepare_auxiliary_resources("no_such_package") {
+aptima_package_test_prepare_auxiliary_resources("no_such_package") {
   resources = [
     "//.gnfiles/build/scripts/cmd_exec.py=>common/cmd_exec.py",
-    "//tests/axis_runtime/integration/common=>common",
+    "//tests/aptima_runtime/integration/common=>common",
     "__init__.py",
     "test_app/manifest.json",
     "test_case.py",
   ]
   deps = [
-    "//core/src/axis_manager",
+    "//core/src/aptima_manager",
     "//tests/local_registry",
   ]
 }

@@ -11,40 +11,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "include_internal/axis_utils/lib/buf.h"
-#include "axis_utils/lib/buf.h"
-#include "axis_utils/macro/check.h"
+#include "include_internal/aptima_utils/lib/buf.h"
+#include "aptima_utils/lib/buf.h"
+#include "aptima_utils/macro/check.h"
 #include "tests/common/client/curl_connect.h"
 #include "tests/common/constant.h"
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb,
                                   void *data) {
-  axis_ASSERT(data, "Invalid argument.");
+  aptima_ASSERT(data, "Invalid argument.");
 
   size_t real_size = size * nmemb;
 
-  axis_buf_t *buf = data;
-  axis_buf_reserve(buf, real_size + 1);
-  axis_buf_push(buf, ptr, real_size);
+  aptima_buf_t *buf = data;
+  aptima_buf_reserve(buf, real_size + 1);
+  aptima_buf_push(buf, ptr, real_size);
 
   ((char *)(buf->data))[buf->content_size] = 0;
 
   return real_size;
 }
 
-void axis_test_http_client_init() {
+void aptima_test_http_client_init() {
   CURLcode res = curl_global_init(CURL_GLOBAL_ALL);
-  axis_ASSERT(res == CURLE_OK, "Failed to init curl.");
+  aptima_ASSERT(res == CURLE_OK, "Failed to init curl.");
 }
 
-void axis_test_http_client_deinit() { curl_global_cleanup(); }
+void aptima_test_http_client_deinit() { curl_global_cleanup(); }
 
-void axis_test_http_client_get(const char *url, axis_string_t *result) {
-  axis_ASSERT(url && result, "Invalid argument.");
+void aptima_test_http_client_get(const char *url, aptima_string_t *result) {
+  aptima_ASSERT(url && result, "Invalid argument.");
 
   CURL *pCurl = NULL;
   pCurl = curl_easy_init();
-  axis_ASSERT(pCurl != NULL, "Failed to init CURL.");
+  aptima_ASSERT(pCurl != NULL, "Failed to init CURL.");
 
   // There maybe a timeout issue (ex: operation timed out after 3000
   // milliseconds with 0 bytes received). When the curl client does not receive
@@ -66,8 +66,8 @@ void axis_test_http_client_get(const char *url, axis_string_t *result) {
   // Do _NOT_ use http proxy in the environment variables.
   curl_easy_setopt(pCurl, CURLOPT_PROXY, "");
 
-  axis_buf_t buf;
-  axis_buf_init_with_owned_data(&buf, 0);
+  aptima_buf_t buf;
+  aptima_buf_init_with_owned_data(&buf, 0);
   curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, &buf);
 
   curl_easy_setopt(pCurl, CURLOPT_NOSIGNAL, 1L);
@@ -77,11 +77,11 @@ void axis_test_http_client_get(const char *url, axis_string_t *result) {
   struct curl_slist *pList = NULL;
   curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, pList);
 
-  bool is_connected = axis_test_curl_connect_with_retry(
+  bool is_connected = aptima_test_curl_connect_with_retry(
       pCurl, CURL_CONNECT_MAX_RETRY_TIMES, CURL_CONNECT_DELAY_IN_MS);
   if (!is_connected) {
-    axis_string_set_formatted(result, "Connection refused to server(%s).", url);
-    axis_ASSERT(0, "Should not happen.");
+    aptima_string_set_formatted(result, "Connection refused to server(%s).", url);
+    aptima_ASSERT(0, "Should not happen.");
     goto done;
   }
 
@@ -89,23 +89,23 @@ void axis_test_http_client_get(const char *url, axis_string_t *result) {
   CURLcode res = curl_easy_getinfo(pCurl, CURLINFO_RESPONSE_CODE, &res_code);
 
   if (res == CURLE_OK) {
-    axis_string_set_formatted(result, "%s", buf.data);
+    aptima_string_set_formatted(result, "%s", buf.data);
   }
 
 done:
-  axis_buf_deinit(&buf);
+  aptima_buf_deinit(&buf);
 
   curl_slist_free_all(pList);
   curl_easy_cleanup(pCurl);
 }
 
-void axis_test_http_client_post(const char *url, const char *body,
-                               axis_string_t *result) {
-  axis_ASSERT(url && body, "Invalid argument.");
+void aptima_test_http_client_post(const char *url, const char *body,
+                               aptima_string_t *result) {
+  aptima_ASSERT(url && body, "Invalid argument.");
 
   CURL *pCurl = NULL;
   pCurl = curl_easy_init();
-  axis_ASSERT(pCurl != NULL, "Failed to init CURL.");
+  aptima_ASSERT(pCurl != NULL, "Failed to init CURL.");
 
   curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 30L);
   curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT, 10L);
@@ -116,8 +116,8 @@ void axis_test_http_client_post(const char *url, const char *body,
   // Do _NOT_ use http proxy in the environment variables.
   curl_easy_setopt(pCurl, CURLOPT_PROXY, "");
 
-  axis_buf_t buf;
-  axis_buf_init_with_owned_data(&buf, 0);
+  aptima_buf_t buf;
+  aptima_buf_init_with_owned_data(&buf, 0);
   curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, &buf);
 
   curl_easy_setopt(pCurl, CURLOPT_NOSIGNAL, 1L);
@@ -132,13 +132,13 @@ void axis_test_http_client_post(const char *url, const char *body,
   pList = curl_slist_append(pList, "Content-Type:application/json");
   curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, pList);
 
-  bool is_connected = axis_test_curl_connect_with_retry(
+  bool is_connected = aptima_test_curl_connect_with_retry(
       pCurl, CURL_CONNECT_MAX_RETRY_TIMES, CURL_CONNECT_DELAY_IN_MS);
   if (!is_connected) {
     if (result) {
-      axis_string_set_formatted(result, "Connection refused to server(%s).",
+      aptima_string_set_formatted(result, "Connection refused to server(%s).",
                                url);
-      axis_ASSERT(0, "Should not happen.");
+      aptima_ASSERT(0, "Should not happen.");
     }
 
     goto done;
@@ -148,11 +148,11 @@ void axis_test_http_client_post(const char *url, const char *body,
   CURLcode res = curl_easy_getinfo(pCurl, CURLINFO_RESPONSE_CODE, &res_code);
 
   if (res == CURLE_OK && result) {
-    axis_string_set_formatted(result, "%s", buf.data);
+    aptima_string_set_formatted(result, "%s", buf.data);
   }
 
 done:
-  axis_buf_deinit(&buf);
+  aptima_buf_deinit(&buf);
 
   curl_slist_free_all(pList);
   curl_easy_cleanup(pCurl);

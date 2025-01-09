@@ -5,27 +5,27 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
-#include "axis_runtime/common/status_code.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
+#include "aptima_runtime/common/status_code.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 class test_predefined_graph : public ten::extension_t {
  public:
   explicit test_predefined_graph(const char *name) : ten::extension_t(name) {}
 
-  void on_start(ten::axis_env_t &axis_env) override {
+  void on_start(ten::aptima_env_t &aptima_env) override {
     auto start_graph_cmd = ten::cmd_start_graph_t::create();
     start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
     start_graph_cmd->set_predefined_graph_name("graph_1");
-    axis_env.send_cmd(
+    aptima_env.send_cmd(
         std::move(start_graph_cmd),
-        [](ten::axis_env_t &axis_env, std::unique_ptr<ten::cmd_result_t> cmd,
+        [](ten::aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_result_t> cmd,
            ten::error_t *err) {
           auto status_code = cmd->get_status_code();
-          ASSERT_EQ(status_code, axis_STATUS_CODE_ERROR);
+          ASSERT_EQ(status_code, aptima_STATUS_CODE_ERROR);
 
           auto detail = cmd->get_property_string("detail");
           ASSERT_EQ(detail, "Failed to connect to msgpack://127.0.0.1:8888/");
@@ -33,29 +33,29 @@ class test_predefined_graph : public ten::extension_t {
           // The app will not be closed because it is running in
           // long_running_mode.
 
-          axis_env.on_start_done();
+          aptima_env.on_start_done();
         });
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "test") {
       nlohmann::json detail = {{"id", 1}, {"name", "a"}};
 
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property_from_json("detail", detail.dump().c_str());
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     } else {
-      axis_ASSERT(0, "Should not happen.");
+      aptima_ASSERT(0, "Should not happen.");
     }
   }
 };
 
 class test_app_1 : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  R"({
                       "type": "app",
@@ -66,7 +66,7 @@ class test_app_1 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    rc = axis_env.init_property_from_json(
+    rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -118,11 +118,11 @@ class test_app_1 : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *app_thread_1_main(axis_UNUSED void *args) {
+void *app_thread_1_main(aptima_UNUSED void *args) {
   auto *app = new test_app_1();
   app->run();
   delete app;
@@ -130,7 +130,7 @@ void *app_thread_1_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     failed_to_connect_to_remote__predefined_graph_extension,
     test_predefined_graph);
 
@@ -138,7 +138,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(
 
 TEST(ExtensionTest, FailedToConnectToRemote) {  // NOLINT
   auto *app_1_thread =
-      axis_thread_create("app thread 1", app_thread_1_main, nullptr);
+      aptima_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -151,8 +151,8 @@ TEST(ExtensionTest, FailedToConnectToRemote) {  // NOLINT
                      "failed_to_connect_to_remote__predefined_graph_group",
                      "predefined_graph");
   auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_json(cmd_result, R"({"id": 1, "name": "a"})");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_json(cmd_result, R"({"id": 1, "name": "a"})");
 
   delete client;
 
@@ -160,5 +160,5 @@ TEST(ExtensionTest, FailedToConnectToRemote) {  // NOLINT
   // long_running_mode.
   ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8001/");
 
-  axis_thread_join(app_1_thread, -1);
+  aptima_thread_join(app_1_thread, -1);
 }

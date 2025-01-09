@@ -6,11 +6,11 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <cstddef>
 
-#include "axis_utils/lib/buf.h"
+#include "aptima_utils/lib/buf.h"
 
 namespace ten {
 
@@ -34,23 +34,23 @@ class msg_t;
 // result in a similar mismatch between creation and release APIs.
 class buf_t {
  public:
-  buf_t() : buf{axis_BUF_STATIC_INIT_OWNED} {}
+  buf_t() : buf{aptima_BUF_STATIC_INIT_OWNED} {}
 
-  explicit buf_t(size_t size) { axis_buf_init_with_owned_data(&buf, size); }
+  explicit buf_t(size_t size) { aptima_buf_init_with_owned_data(&buf, size); }
 
   buf_t(uint8_t *data, size_t size) {
-    axis_buf_init_with_unowned_data(&buf, data, size);
+    aptima_buf_init_with_unowned_data(&buf, data, size);
   }
 
   // Copy constructor.
   buf_t(const buf_t &other) {
-    axis_buf_init_with_copying_data(&buf, other.buf.data, other.buf.size);
+    aptima_buf_init_with_copying_data(&buf, other.buf.data, other.buf.size);
   };
 
   // Move constructor.
-  buf_t(buf_t &&other) noexcept : buf_t() { axis_buf_move(&buf, &other.buf); };
+  buf_t(buf_t &&other) noexcept : buf_t() { aptima_buf_move(&buf, &other.buf); };
 
-  ~buf_t() { axis_buf_deinit(&buf); }
+  ~buf_t() { aptima_buf_deinit(&buf); }
 
   // @{
   buf_t &operator=(const buf_t &cmd) = delete;
@@ -67,9 +67,9 @@ class buf_t {
   friend class audio_frame_t;
   friend class msg_t;
 
-  explicit buf_t(const axis_buf_t *buf) : buf{*buf} {}
+  explicit buf_t(const aptima_buf_t *buf) : buf{*buf} {}
 
-  axis_buf_t buf{};
+  aptima_buf_t buf{};
 };
 
 }  // namespace ten

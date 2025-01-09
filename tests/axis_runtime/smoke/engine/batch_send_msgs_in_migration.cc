@@ -5,9 +5,9 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -15,20 +15,20 @@ class test_migration : public ten::extension_t {
  public:
   explicit test_migration(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     nlohmann::json const detail = {{"id", 1}, {"name", "a"}};
-    auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+    auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
     cmd_result->set_property_from_json("detail", detail.dump().c_str());
-    axis_env.return_result(std::move(cmd_result), std::move(cmd));
+    aptima_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 };
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  R"({
                       "type": "app",
@@ -39,7 +39,7 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    rc = axis_env.init_property_from_json(
+    rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -63,11 +63,11 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *app_thread_main(axis_UNUSED void *args) {
+void *app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -75,13 +75,13 @@ void *app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(batch_send_msgs_in_migration__extension,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(batch_send_msgs_in_migration__extension,
                                     test_migration);
 
 }  // namespace
 
 TEST(ExtensionTest, BatchSendMsgsInMigration) {  // NOLINT
-  auto *app_thread = axis_thread_create("app thread", app_thread_main, nullptr);
+  auto *app_thread = aptima_thread_create("app thread", app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -103,13 +103,13 @@ TEST(ExtensionTest, BatchSendMsgsInMigration) {  // NOLINT
     auto cmd_results = client->batch_recv_cmd_results();
 
     for (auto &cmd_result : cmd_results) {
-      axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-      axis_test::check_detail_with_json(cmd_result, R"({"id":1,"name":"a"})");
+      aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+      aptima_test::check_detail_with_json(cmd_result, R"({"id":1,"name":"a"})");
       count++;
     }
   }
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

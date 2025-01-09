@@ -4,37 +4,37 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/ten.gni")
 
-glob("axis_unit_tests") {
+glob("aptima_unit_tests") {
   file_list = [
-    "axis_error_test.cc",
-    "axis_msg_test.cc",
-    "axis_schema_test.cc",
+    "aptima_error_test.cc",
+    "aptima_msg_test.cc",
+    "aptima_schema_test.cc",
   ]
 
   public_deps = [
-    "//core/src/axis_utils",
+    "//core/src/aptima_utils",
     "//third_party/googlemock",
     "//third_party/googletest",
   ]
   include_dirs = [ "//core/include" ]
 }
 
-axis_executable("axis_runtime_unit_test") {
+aptima_executable("aptima_runtime_unit_test") {
   output_dir = "${root_out_dir}/tests/standalone"
 
   deps = [
-    ":axis_unit_tests",
-    "//core/src/axis_runtime",
-    "//core/src/axis_utils",
-    "//tests/axis_runtime:copy_libraries_for_test",
+    ":aptima_unit_tests",
+    "//core/src/aptima_runtime",
+    "//core/src/aptima_utils",
+    "//tests/aptima_runtime:copy_libraries_for_test",
   ]
 
   if (enable_sanitizer) {
     if (!is_clang) {
-      deps += [ "//build/axis_common/asan:package_asan_lib_for_axis_framework_standalone_test" ]
+      deps += [ "//build/aptima_common/asan:package_asan_lib_for_aptima_framework_standalone_test" ]
     }
   }
 
@@ -46,5 +46,5 @@ axis_executable("axis_runtime_unit_test") {
 }
 
 group("unit") {
-  deps = [ ":axis_runtime_unit_test" ]
+  deps = [ ":aptima_runtime_unit_test" ]
 }

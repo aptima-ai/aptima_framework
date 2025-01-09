@@ -6,24 +6,24 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdbool.h>
 
-#include "axis_runtime/axis_env/axis_env.h"
-#include "axis_utils/lib/error.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_runtime/aptima_env/aptima_env.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-typedef void (*axis_env_return_result_error_handler_func_t)(axis_env_t *self,
+typedef void (*aptima_env_return_result_error_handler_func_t)(aptima_env_t *self,
                                                            void *user_data,
-                                                           axis_error_t *err);
+                                                           aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_return_result(
-    axis_env_t *self, axis_shared_ptr_t *result, axis_shared_ptr_t *target_cmd,
-    axis_env_return_result_error_handler_func_t error_handler,
-    void *error_handler_user_data, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_return_result(
+    aptima_env_t *self, aptima_shared_ptr_t *result, aptima_shared_ptr_t *target_cmd,
+    aptima_env_return_result_error_handler_func_t error_handler,
+    void *error_handler_user_data, aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_return_result_directly(
-    axis_env_t *self, axis_shared_ptr_t *cmd,
-    axis_env_return_result_error_handler_func_t error_handler,
-    void *error_handler_user_data, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_return_result_directly(
+    aptima_env_t *self, aptima_shared_ptr_t *cmd,
+    aptima_env_return_result_error_handler_func_t error_handler,
+    void *error_handler_user_data, aptima_error_t *err);

@@ -14,15 +14,15 @@ from ten import unregister_all_addons_and_cleanup
 @pytest.fixture(scope="session", autouse=True)
 def global_setup_and_teardown():
     # Set the environment variable.
-    os.environ["axis_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE"] = "true"
+    os.environ["aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE"] = "true"
 
     # Verify the environment variable is correctly set.
     if (
-        "axis_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE" not in os.environ
-        or os.environ["axis_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE"] != "true"
+        "aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE" not in os.environ
+        or os.environ["aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE"] != "true"
     ):
         print(
-            "Failed to set axis_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE",
+            "Failed to set aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE",
             file=sys.stderr,
         )
         sys.exit(1)

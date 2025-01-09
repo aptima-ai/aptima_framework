@@ -6,56 +6,56 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-#include "axis_utils/lib/alloc.h"
-#include "axis_utils/sanitizer/memory_check.h"  // IWYU pragma: keep
+#include "aptima_utils/lib/alloc.h"
+#include "aptima_utils/sanitizer/memory_check.h"  // IWYU pragma: keep
 
-#if defined(axis_ENABLE_MEMORY_CHECK)
+#if defined(aptima_ENABLE_MEMORY_CHECK)
 
-#define axis_MALLOC(size) \
-  axis_sanitizer_memory_malloc((size), __FILE__, __LINE__, __FUNCTION__)
+#define aptima_MALLOC(size) \
+  aptima_sanitizer_memory_malloc((size), __FILE__, __LINE__, __FUNCTION__)
 
-#define axis_CALLOC(cnt, size) \
-  axis_sanitizer_memory_calloc((cnt), (size), __FILE__, __LINE__, __FUNCTION__)
+#define aptima_CALLOC(cnt, size) \
+  aptima_sanitizer_memory_calloc((cnt), (size), __FILE__, __LINE__, __FUNCTION__)
 
-#define axis_FREE(address)                         \
+#define aptima_FREE(address)                         \
   do {                                            \
-    axis_sanitizer_memory_free((void *)(address)); \
+    aptima_sanitizer_memory_free((void *)(address)); \
     address = NULL;                               \
   } while (0)
 
-#define axis_FREE_(address)                        \
+#define aptima_FREE_(address)                        \
   do {                                            \
-    axis_sanitizer_memory_free((void *)(address)); \
+    aptima_sanitizer_memory_free((void *)(address)); \
   } while (0)
 
-#define axis_REALLOC(address, size)                                    \
-  axis_sanitizer_memory_realloc((address), (size), __FILE__, __LINE__, \
+#define aptima_REALLOC(address, size)                                    \
+  aptima_sanitizer_memory_realloc((address), (size), __FILE__, __LINE__, \
                                __FUNCTION__)
 
-#define axis_STRDUP(str) \
-  axis_sanitizer_memory_strdup((str), __FILE__, __LINE__, __FUNCTION__)
+#define aptima_STRDUP(str) \
+  aptima_sanitizer_memory_strdup((str), __FILE__, __LINE__, __FUNCTION__)
 
 #else
 
-#define axis_MALLOC(size) axis_malloc((size))
+#define aptima_MALLOC(size) aptima_malloc((size))
 
-#define axis_CALLOC(cnt, size) axis_calloc((cnt), (size))
+#define aptima_CALLOC(cnt, size) aptima_calloc((cnt), (size))
 
-#define axis_FREE(address)        \
+#define aptima_FREE(address)        \
   do {                           \
-    axis_free((void *)(address)); \
+    aptima_free((void *)(address)); \
     address = NULL;              \
   } while (0)
 
-#define axis_FREE_(address)       \
+#define aptima_FREE_(address)       \
   do {                           \
-    axis_free((void *)(address)); \
+    aptima_free((void *)(address)); \
   } while (0)
 
-#define axis_REALLOC(address, size) axis_realloc((address), (size))
+#define aptima_REALLOC(address, size) aptima_realloc((address), (size))
 
-#define axis_STRDUP(str) axis_strdup((str))
+#define aptima_STRDUP(str) aptima_strdup((str))
 
 #endif

@@ -8,17 +8,17 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/thread.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/thread.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
+  void on_configure(ten::aptima_env_t &aptima_env) override {
     // The protocol (error://) is not a correct one, so the listening will fail.
-    bool rc = axis_env.init_property_from_json(
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -30,11 +30,11 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -46,9 +46,9 @@ void *test_app_thread_main(axis_UNUSED void *args) {
 
 TEST(ExtensionTest, FailedToListen) {  // NOLINT
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // The app would stop automatically after the listening failed.
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

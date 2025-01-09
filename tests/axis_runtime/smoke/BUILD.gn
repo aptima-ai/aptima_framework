@@ -4,14 +4,14 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/ten.gni")
 
-glob("axis_runtime_smoke_tests") {
+glob("aptima_runtime_smoke_tests") {
   file_list = all_native_files
 
   public_deps = [
-    "//core/src/axis_utils",
+    "//core/src/aptima_utils",
     "//third_party/googlemock",
     "//third_party/googletest",
   ]
@@ -19,15 +19,15 @@ glob("axis_runtime_smoke_tests") {
   include_dirs = [ "//core/include" ]
 }
 
-axis_executable("axis_runtime_smoke_test") {
+aptima_executable("aptima_runtime_smoke_test") {
   output_dir = "${root_out_dir}/tests/standalone"
 
   deps = [
-    ":axis_runtime_smoke_tests",
-    "//core/src/axis_runtime",
-    "//core/src/axis_utils:axis_utils_shared",
+    ":aptima_runtime_smoke_tests",
+    "//core/src/aptima_runtime",
+    "//core/src/aptima_utils:aptima_utils_shared",
     "//packages/core_protocols/msgpack:msgpack_files",
-    "//tests/axis_runtime:copy_libraries_for_test",
+    "//tests/aptima_runtime:copy_libraries_for_test",
     "//third_party/nlohmann_json",
   ]
 
@@ -66,24 +66,24 @@ axis_executable("axis_runtime_smoke_test") {
     "standalone_test",
     "start_graph",
     "suspend_resume",
-    "axis_env_call_timing",
-    "axis_proxy",
+    "aptima_env_call_timing",
+    "aptima_proxy",
     "timer",
     "video_frame_test",
   ]
 
-  if (axis_enable_axis_rust && axis_enable_axis_rust_apis) {
+  if (aptima_enable_aptima_rust && aptima_enable_aptima_rust_apis) {
     deps += [
       "interface_test",
       "schema_test",
     ]
   }
 
-  if (axis_enable_curl) {
+  if (aptima_enable_curl) {
     deps += [ "//third_party/curl" ]
   }
 
-  if (axis_enable_libwebsockets) {
+  if (aptima_enable_libwebsockets) {
     deps += [
       "//third_party/libwebsockets",
       "//third_party/mbedtls",
@@ -92,7 +92,7 @@ axis_executable("axis_runtime_smoke_test") {
 
   if (enable_sanitizer) {
     if (!is_clang) {
-      deps += [ "//build/axis_common/asan:package_asan_lib_for_axis_framework_standalone_test" ]
+      deps += [ "//build/aptima_common/asan:package_asan_lib_for_aptima_framework_standalone_test" ]
     }
   }
 
@@ -101,11 +101,11 @@ axis_executable("axis_runtime_smoke_test") {
     "//third_party/googletest",
   ]
 
-  if (axis_enable_libwebsockets && axis_enable_curl) {
+  if (aptima_enable_libwebsockets && aptima_enable_curl) {
     deps += [ "http_server_extension" ]
   }
 }
 
 group("smoke") {
-  public_deps = [ ":axis_runtime_smoke_test" ]
+  public_deps = [ ":aptima_runtime_smoke_test" ]
 }

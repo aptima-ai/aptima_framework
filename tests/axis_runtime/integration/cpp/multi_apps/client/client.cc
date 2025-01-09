@@ -6,8 +6,8 @@
 //
 #include <nlohmann/json.hpp>
 
-#include "axis_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
-#include "axis_utils/macro/check.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
+#include "aptima_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 
 namespace {
@@ -36,12 +36,12 @@ void test_extension_in_app1_not_installed() {
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_ASSERT(axis_STATUS_CODE_ERROR == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_ERROR == cmd_result->get_status_code(),
              "Should not happen.");
 
   auto detail = cmd_result->get_property_string("detail");
   // NOLINTNEXTLINE
-  axis_ASSERT(!detail.empty() && detail.find("ext_e") != std::string::npos,
+  aptima_ASSERT(!detail.empty() && detail.find("ext_e") != std::string::npos,
              "Should not happen.");
 
   delete client;
@@ -83,12 +83,12 @@ void test_extension_in_app2_not_installed() {
          })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_ASSERT(axis_STATUS_CODE_ERROR == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_ERROR == cmd_result->get_status_code(),
              "Should not happen.");
 
   auto detail = cmd_result->get_property_string("detail");
   // NOLINTNEXTLINE
-  axis_ASSERT(!detail.empty() && detail.find("ext_e") != std::string::npos,
+  aptima_ASSERT(!detail.empty() && detail.find("ext_e") != std::string::npos,
              "Should not happen.");
 
   delete client;
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
          })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
   // Send a user-defined 'hello world' command.
@@ -124,9 +124,9 @@ int main(int argc, char **argv) {
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "test_extension_group", "ext_a");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
-  axis_ASSERT(static_cast<std::string>("hello world, too") ==
+  aptima_ASSERT(static_cast<std::string>("hello world, too") ==
                  cmd_result->get_property_string("detail"),
              "Should not happen.");
 

@@ -6,11 +6,11 @@
 //
 #include <nlohmann/json.hpp>
 
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/macro/mark.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/macro/mark.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 
-int main(axis_UNUSED int argc, axis_UNUSED char **argv) {
+int main(aptima_UNUSED int argc, aptima_UNUSED char **argv) {
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8007/");
 
@@ -66,25 +66,25 @@ int main(axis_UNUSED int argc, axis_UNUSED char **argv) {
     })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_LOGD("client sent json");
+  aptima_LOGD("client sent json");
 
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
-  axis_LOGD("got graph result");
+  aptima_LOGD("got graph result");
   auto A_cmd = ten::cmd_t::create("A");
   A_cmd->set_dest("msgpack://127.0.0.1:8007/", nullptr, "nodetest_group", "A");
   cmd_result = client->send_cmd_and_recv_result(std::move(A_cmd));
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
   std::string resp_str = cmd_result->get_property_string("detail");
-  axis_LOGD("got result: %s", resp_str.c_str());
-  axis_json_t *result = axis_json_from_string(resp_str.c_str(), NULL);
-  axis_ASSERT(
-      30 == axis_json_get_number_value(axis_json_object_peek(result, "result")),
+  aptima_LOGD("got result: %s", resp_str.c_str());
+  aptima_json_t *result = aptima_json_from_string(resp_str.c_str(), NULL);
+  aptima_ASSERT(
+      30 == aptima_json_get_number_value(aptima_json_object_peek(result, "result")),
       "Should not happen.");
-  axis_json_destroy(result);
+  aptima_json_destroy(result);
 
   // NOTE the order: client destroy, then connection lost, then nodejs exits
   delete client;

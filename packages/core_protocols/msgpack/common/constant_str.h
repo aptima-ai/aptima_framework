@@ -5,4 +5,4 @@
 //
 #pragma once
 
-#define axis_STR_MSGPACK "msgpack"
+#define aptima_STR_MSGPACK "msgpack"

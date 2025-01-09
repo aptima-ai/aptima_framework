@@ -12,10 +12,10 @@
 #include <string>
 
 #include "muxer.h"
-#include "axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/atomic.h"
-#include "axis_utils/lib/mutex.h"
-#include "axis_utils/lib/thread.h"
+#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/atomic.h"
+#include "aptima_utils/lib/mutex.h"
+#include "aptima_utils/lib/thread.h"
 
 namespace ten {
 namespace ffmpeg_extension {
@@ -41,7 +41,7 @@ struct demuxer_settings_t {
 
 class muxer_thread_t {
  public:
-  explicit muxer_thread_t(ten::axis_env_proxy_t *, demuxer_settings_t &,
+  explicit muxer_thread_t(ten::aptima_env_proxy_t *, demuxer_settings_t &,
                           std::string);
   ~muxer_thread_t();
 
@@ -57,8 +57,8 @@ class muxer_thread_t {
   void stop();
   void wait_for_stop();
 
-  void on_axis_audio_frame(std::unique_ptr<ten::audio_frame_t> frame);
-  void on_axis_video_frame(std::unique_ptr<ten::video_frame_t> frame);
+  void on_aptima_audio_frame(std::unique_ptr<ten::audio_frame_t> frame);
+  void on_aptima_video_frame(std::unique_ptr<ten::video_frame_t> frame);
 
  private:
   friend void *muxer_thread_main_(void *self_);
@@ -67,13 +67,13 @@ class muxer_thread_t {
   void wait_for_the_first_av_frame_();
   void notify_completed(bool success = true);
 
-  axis_thread_t *muxer_thread_;
-  axis_event_t *muxer_thread_is_started_;
-  axis_atomic_t stop_;
+  aptima_thread_t *muxer_thread_;
+  aptima_event_t *muxer_thread_is_started_;
+  aptima_atomic_t stop_;
   muxer_t *muxer_;
 
-  axis_mutex_t *out_lock_;
-  axis_event_t *out_available_;
+  aptima_mutex_t *out_lock_;
+  aptima_event_t *out_available_;
   std::list<std::unique_ptr<ten::audio_frame_t>> out_audios_;
   std::list<std::unique_ptr<ten::video_frame_t>> out_images_;
 
@@ -83,7 +83,7 @@ class muxer_thread_t {
   bool audio_eof_;
   bool video_eof_;
 
-  ten::axis_env_proxy_t *axis_env_proxy_;
+  ten::aptima_env_proxy_t *aptima_env_proxy_;
 };
 
 }  // namespace ffmpeg_extension

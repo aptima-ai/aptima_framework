@@ -25,7 +25,7 @@ def test_hello_world_app():
         os.path.join(root_dir, "tgn_args.txt"),
     )
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         print('Assembling and building package "{}".'.format(source_pkg_name))
 
         rc = build_pkg.prepare_and_build_app(
@@ -40,7 +40,7 @@ def test_hello_world_app():
             assert False, "Failed to build package."
 
     tman_install_cmd = [
-        os.path.join(root_dir, "axis_manager/bin/tman"),
+        os.path.join(root_dir, "aptima_manager/bin/tman"),
         "--config-file",
         os.path.join(root_dir, "tests/local_registry/config.json"),
         "install",
@@ -61,7 +61,7 @@ def test_hello_world_app():
     if sys.platform == "win32":
         my_env["PATH"] = (
             os.path.join(
-                base_path, "hello_world_app/axis_packages/system/axis_runtime/lib"
+                base_path, "hello_world_app/aptima_packages/system/aptima_runtime/lib"
             )
             + ";"
             + my_env["PATH"]
@@ -73,7 +73,7 @@ def test_hello_world_app():
     elif sys.platform == "darwin":
         # client depends on some libraries in the TEN app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
-            base_path, "hello_world_app/axis_packages/system/axis_runtime/lib"
+            base_path, "hello_world_app/aptima_packages/system/aptima_runtime/lib"
         )
         server_cmd = os.path.join(
             base_path, "hello_world_app/bin/hello_world_app_source"
@@ -82,7 +82,7 @@ def test_hello_world_app():
     else:
         # client depends on some libraries in the TEN app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
-            base_path, "hello_world_app/axis_packages/system/axis_runtime/lib"
+            base_path, "hello_world_app/aptima_packages/system/aptima_runtime/lib"
         )
         server_cmd = os.path.join(
             base_path, "hello_world_app/bin/hello_world_app_source"
@@ -95,7 +95,7 @@ def test_hello_world_app():
         ):
             libasan_path = os.path.join(
                 base_path,
-                "hello_world_app/axis_packages/system/axis_runtime/lib/libasan.so",
+                "hello_world_app/aptima_packages/system/aptima_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
                 print("Using AddressSanitizer library.")
@@ -145,7 +145,7 @@ def test_hello_world_app():
     assert server_rc == 0
     assert client_rc == 0
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         source_root_path = os.path.join(base_path, source_pkg_name)
 
         # Testing complete. If builds are only created during the testing phase,

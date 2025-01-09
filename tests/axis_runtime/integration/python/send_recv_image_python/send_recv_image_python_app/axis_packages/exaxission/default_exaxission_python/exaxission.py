@@ -12,23 +12,23 @@ from ten import (Cmd, CmdResult, Extension, PixelFmt, StatusCode, TenEnv,
 
 
 class DefaultExtension(Extension):
-    def on_configure(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_init")
-        axis_env.init_property_from_json('{"testKey": "testValue"}')
-        axis_env.on_configure_done()
+    def on_configure(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_init")
+        aptima_env.init_property_from_json('{"testKey": "testValue"}')
+        aptima_env.on_configure_done()
 
-    def on_start(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_start")
+    def on_start(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_start")
 
         im = Image.open("../test_data/tiger.jpg")
         self.pixels = im.convert("RGBA")
         self.image_bytes = self.pixels.tobytes()
 
-        axis_env.on_start_done()
+        aptima_env.on_start_done()
 
-    def on_cmd(self, axis_env: TenEnv, cmd: Cmd) -> None:
+    def on_cmd(self, aptima_env: TenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.get_property_to_json()
-        axis_env.log_info(f"DefaultExtension on_cmd json: {cmd_json}")
+        aptima_env.log_info(f"DefaultExtension on_cmd json: {cmd_json}")
 
         assert hasattr(self, "request_cmd") is not True
 
@@ -58,10 +58,10 @@ class DefaultExtension(Extension):
             % (width, height, pixel_fmt, timestamp)
         )
 
-        axis_env.send_video_frame(new_image)
+        aptima_env.send_video_frame(new_image)
 
-    def on_video_frame(self, axis_env: TenEnv, video_frame: VideoFrame) -> None:
-        axis_env.log_debug("on_video_frame")
+    def on_video_frame(self, aptima_env: TenEnv, video_frame: VideoFrame) -> None:
+        aptima_env.log_debug("on_video_frame")
 
         assert hasattr(self, "request_cmd") is True
 
@@ -74,4 +74,4 @@ class DefaultExtension(Extension):
 
         cmd_result = CmdResult.create(StatusCode.OK)
         cmd_result.set_property_string("detail", "success")
-        axis_env.return_result(cmd_result, self.request_cmd)
+        aptima_env.return_result(cmd_result, self.request_cmd)

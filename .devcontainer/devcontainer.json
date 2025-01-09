@@ -1,15 +1,15 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "axis_framework",
+	"name": "aptima_framework",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "ghcr.io/axis-talk/axis_building_ubuntu2204",
+	"image": "ghcr.io/aptima-ai/aptima_building_ubuntu2204",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {}
 	},
 	"remoteEnv": {
-		"PATH": "${containerWorkspaceFolder}/core/axis_gn:${containerEnv:PATH}"
+		"PATH": "${containerWorkspaceFolder}/core/aptima_gn:${containerEnv:PATH}"
 	},
 	"postCreateCommand": "git submodule update --init"
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

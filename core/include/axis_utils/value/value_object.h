@@ -6,28 +6,28 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "axis_utils/lib/error.h"
-#include "axis_utils/value/value_kv.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/value/value_kv.h"
 
-axis_UTILS_API axis_value_t *axis_value_object_peek(axis_value_t *self,
+aptima_UTILS_API aptima_value_t *aptima_value_object_peek(aptima_value_t *self,
                                                  const char *key);
 
-axis_UTILS_API bool axis_value_object_get_bool(axis_value_t *self, const char *key,
-                                             axis_error_t *err);
+aptima_UTILS_API bool aptima_value_object_get_bool(aptima_value_t *self, const char *key,
+                                             aptima_error_t *err);
 
-axis_UTILS_API const char *axis_value_object_peek_string(axis_value_t *self,
+aptima_UTILS_API const char *aptima_value_object_peek_string(aptima_value_t *self,
                                                        const char *key);
 
-axis_UTILS_API axis_list_t *axis_value_object_peek_array(axis_value_t *self,
+aptima_UTILS_API aptima_list_t *aptima_value_object_peek_array(aptima_value_t *self,
                                                       const char *key);
 
 /**
  * @note Note that the ownership of @a value is moved to the value @a self.
  */
-axis_UTILS_API bool axis_value_object_move(axis_value_t *self, const char *key,
-                                         axis_value_t *value);
+aptima_UTILS_API bool aptima_value_object_move(aptima_value_t *self, const char *key,
+                                         aptima_value_t *value);

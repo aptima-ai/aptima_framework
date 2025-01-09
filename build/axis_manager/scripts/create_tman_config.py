@@ -8,7 +8,7 @@ import argparse
 import json
 import os
 import sys
-from axis_common.scripts import delete_files
+from aptima_common.scripts import delete_files
 
 
 class ArgumentInfo(argparse.Namespace):

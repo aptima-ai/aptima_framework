@@ -6,23 +6,23 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stddef.h>
 
-#include "axis_utils/lib/buf.h"
-#include "axis_utils/lib/error.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_utils/lib/buf.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-typedef struct axis_data_t axis_data_t;
+typedef struct aptima_data_t aptima_data_t;
 
-axis_RUNTIME_API axis_shared_ptr_t *axis_data_create(const char *name,
-                                                  axis_error_t *err);
+aptima_RUNTIME_API aptima_shared_ptr_t *aptima_data_create(const char *name,
+                                                  aptima_error_t *err);
 
-axis_RUNTIME_API axis_buf_t *axis_data_peek_buf(axis_shared_ptr_t *self);
+aptima_RUNTIME_API aptima_buf_t *aptima_data_peek_buf(aptima_shared_ptr_t *self);
 
-axis_RUNTIME_API void axis_data_set_buf_with_move(axis_shared_ptr_t *self,
-                                                axis_buf_t *buf);
+aptima_RUNTIME_API void aptima_data_set_buf_with_move(aptima_shared_ptr_t *self,
+                                                aptima_buf_t *buf);
 
-axis_RUNTIME_API uint8_t *axis_data_alloc_buf(axis_shared_ptr_t *self,
+aptima_RUNTIME_API uint8_t *aptima_data_alloc_buf(aptima_shared_ptr_t *self,
                                             size_t size);

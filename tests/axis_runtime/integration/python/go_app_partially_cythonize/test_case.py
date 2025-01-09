@@ -25,7 +25,7 @@ def http_request():
 # compile pyx files in 'default python extension'.
 def compile_pyx(app_root_path: str):
     extension_folder = os.path.join(
-        app_root_path, "axis_packages/extension/default_extension_python"
+        app_root_path, "aptima_packages/extension/default_extension_python"
     )
 
     # if there is no .pyx file in the folder, return.
@@ -35,20 +35,20 @@ def compile_pyx(app_root_path: str):
     if len(pyx_file_list) == 0:
         return
 
-    # cp <app_root>/axis_packages/system/axis_runtime_python/tools/cython_compiler.py to
-    # <app_root>/axis_packages/extension/default_extension_python
+    # cp <app_root>/aptima_packages/system/aptima_runtime_python/tools/cython_compiler.py to
+    # <app_root>/aptima_packages/extension/default_extension_python
     import shutil
 
     script_file = "cython_compiler.py"
 
     script_path = os.path.join(
         app_root_path,
-        "axis_packages/system/axis_runtime_python/tools",
+        "aptima_packages/system/aptima_runtime_python/tools",
         script_file,
     )
     target_file = os.path.join(
         app_root_path,
-        "axis_packages/extension/default_extension_python",
+        "aptima_packages/extension/default_extension_python",
         script_file,
     )
     shutil.copyfile(
@@ -75,7 +75,7 @@ def compile_pyx(app_root_path: str):
 
     # remove build/
     build_dir = os.path.join(
-        app_root_path, "axis_packages/extension/default_extension_python/build"
+        app_root_path, "aptima_packages/extension/default_extension_python/build"
     )
     if os.path.exists(build_dir):
         shutil.rmtree(build_dir)
@@ -130,7 +130,7 @@ def test_go_app_partially_cythonize():
         os.path.join(root_dir, "tgn_args.txt"),
     )
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         print('Assembling and building package "{}".'.format(source_pkg_name))
 
         rc = build_pkg.prepare_and_build_app(
@@ -145,7 +145,7 @@ def test_go_app_partially_cythonize():
             assert False, "Failed to build package."
 
     tman_install_cmd = [
-        os.path.join(root_dir, "axis_manager/bin/tman"),
+        os.path.join(root_dir, "aptima_manager/bin/tman"),
         "--config-file",
         os.path.join(root_dir, "tests/local_registry/config.json"),
         "install",
@@ -181,7 +181,7 @@ def test_go_app_partially_cythonize():
         ):
             libasan_path = os.path.join(
                 base_path,
-                "go_app_partially_cythonize_app/axis_packages/system/axis_runtime/lib/libasan.so",
+                "go_app_partially_cythonize_app/aptima_packages/system/aptima_runtime/lib/libasan.so",
             )
 
             if os.path.exists(libasan_path):
@@ -235,7 +235,7 @@ def test_go_app_partially_cythonize():
 
         assert exit_code == 0
 
-        if build_config_args.axis_enable_integration_tests_prebuilt is False:
+        if build_config_args.aptima_enable_integration_tests_prebuilt is False:
             source_root_path = os.path.join(base_path, source_pkg_name)
 
             # Testing complete. If builds are only created during the testing

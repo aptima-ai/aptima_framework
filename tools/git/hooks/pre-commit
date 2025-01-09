@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # Check for changes in designer_frontend directory.
-if git diff --cached --name-only | grep -q "core/src/axis_manager/designer_frontend/"; then
+if git diff --cached --name-only | grep -q "core/src/aptima_manager/designer_frontend/"; then
     echo "Changes detected in designer_frontend. Running npm checks..."
     # Store the current directory.
     CURRENT_DIR=$(pwd)
     # Change to the designer_frontend directory.
-    cd core/src/axis_manager/designer_frontend/ || exit 1
+    cd core/src/aptima_manager/designer_frontend/ || exit 1
     # Run the npm check.
     npm run check || {
         cd "$CURRENT_DIR" || exit 1

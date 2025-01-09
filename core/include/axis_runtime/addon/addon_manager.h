@@ -6,16 +6,16 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdbool.h>
 
-typedef struct axis_addon_manager_t axis_addon_manager_t;
+typedef struct aptima_addon_manager_t aptima_addon_manager_t;
 
-typedef void (*axis_addon_registration_func_t)(void *register_ctx);
+typedef void (*aptima_addon_registration_func_t)(void *register_ctx);
 
-axis_RUNTIME_API axis_addon_manager_t *axis_addon_manager_get_instance(void);
+aptima_RUNTIME_API aptima_addon_manager_t *aptima_addon_manager_get_instance(void);
 
-axis_RUNTIME_API bool axis_addon_manager_add_addon(
-    axis_addon_manager_t *self, const char *addon_type_str,
-    const char *addon_name, axis_addon_registration_func_t func);
+aptima_RUNTIME_API bool aptima_addon_manager_add_addon(
+    aptima_addon_manager_t *self, const char *addon_type_str,
+    const char *addon_name, aptima_addon_registration_func_t func);

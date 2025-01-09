@@ -12,11 +12,11 @@
 #include <utility>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/common/status_code.h"
-#include "axis_utils/lib/thread.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/common/status_code.h"
+#include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -28,10 +28,10 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_configure(ten::axis_env_t &axis_env) override {
+  void on_configure(ten::aptima_env_t &aptima_env) override {
     // clang-format off
 
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(axis_env,
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(aptima_env,
                  R"({
                       "type": "extension",
                       "name": "schema_data_prop__test_extension_1",
@@ -52,15 +52,15 @@ class test_extension_1 : public ten::extension_t {
     // clang-format on
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "success");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
 
       // Send data.
       auto data = ten::data_t::create("data");
@@ -69,7 +69,7 @@ class test_extension_1 : public ten::extension_t {
       bool rc = data->set_property("foo", "122");
       ASSERT_EQ(rc, true);
 
-      rc = axis_env.send_data(std::move(data));
+      rc = aptima_env.send_data(std::move(data));
       ASSERT_EQ(rc, false);
 
       rc = data->set_property("foo", 12345);
@@ -78,7 +78,7 @@ class test_extension_1 : public ten::extension_t {
       // The `send_data` will be successful as the `data` matches the schema of
       // test_extension_1. But the `on_data` of test_extension_2 will not be
       // called as `12345` is out of range of `int8`.
-      rc = axis_env.send_data(std::move(data));
+      rc = aptima_env.send_data(std::move(data));
       ASSERT_EQ(rc, true);
 
       // Expected to be received by test_extension_2.
@@ -88,7 +88,7 @@ class test_extension_1 : public ten::extension_t {
       rc = data2->set_property("foo", 123);
       ASSERT_EQ(rc, true);
 
-      rc = axis_env.send_data(std::move(data2));
+      rc = aptima_env.send_data(std::move(data2));
       ASSERT_EQ(rc, true);
     }
   }
@@ -98,9 +98,9 @@ class test_extension_2 : public ten::extension_t {
  public:
   explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  R"({
                       "type": "extension",
@@ -123,11 +123,11 @@ class test_extension_2 : public ten::extension_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 
   // NOLINTNEXTLINE(misc-unused-parameters)
-  void on_data(ten::axis_env_t &axis_env,
+  void on_data(ten::aptima_env_t &aptima_env,
                std::unique_ptr<ten::data_t> data) override {
     std::unique_lock<std::mutex> lock(mutex_lock);
 
@@ -140,8 +140,8 @@ class test_extension_2 : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -154,11 +154,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -166,9 +166,9 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(schema_data_prop__test_extension_1,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(schema_data_prop__test_extension_1,
                                     test_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(schema_data_prop__test_extension_2,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(schema_data_prop__test_extension_2,
                                     test_extension_2);
 
 }  // namespace
@@ -176,7 +176,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(schema_data_prop__test_extension_2,
 TEST(SchemaTest, DataProp) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -212,7 +212,7 @@ TEST(SchemaTest, DataProp) {  // NOLINT
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
@@ -220,8 +220,8 @@ TEST(SchemaTest, DataProp) {  // NOLINT
                             "basic_extension_group", "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
 
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "success");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "success");
 
   {
     std::unique_lock<std::mutex> lock(mutex_lock);
@@ -230,5 +230,5 @@ TEST(SchemaTest, DataProp) {  // NOLINT
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

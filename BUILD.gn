@@ -5,9 +5,9 @@
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/options.gni")
-import("//build/axis_runtime/options.gni")
-import("//build/axis_runtime/ten.gni")
-import("//build/axis_utils/options.gni")
+import("//build/aptima_runtime/options.gni")
+import("//build/aptima_runtime/ten.gni")
+import("//build/aptima_utils/options.gni")
 
 # When you want to get the output of the console in real time, you can use this
 # pool.
@@ -22,11 +22,11 @@ pool("rust_action_pool") {
   depth = 1
 }
 
-group("axis_framework_all") {
+group("aptima_framework_all") {
   deps = [
-    "//core/src/axis_runtime",
-    "//core/src/axis_runtime/binding",
-    "//core/src/axis_rust",
+    "//core/src/aptima_runtime",
+    "//core/src/aptima_runtime/binding",
+    "//core/src/aptima_rust",
     "//packages/core_apps",
     "//packages/core_extensions",
     "//packages/core_addon_loaders",
@@ -36,11 +36,11 @@ group("axis_framework_all") {
     "//third_party",
   ]
 
-  if (axis_enable_axis_manager) {
-    deps += [ "//core/src/axis_manager" ]
+  if (aptima_enable_aptima_manager) {
+    deps += [ "//core/src/aptima_manager" ]
   }
 
-  if (axis_enable_tests) {
+  if (aptima_enable_tests) {
     deps += [ "//tests" ]
   }
 }

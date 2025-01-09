@@ -8,10 +8,10 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/thread.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -19,13 +19,13 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world_1") {
       auto test_string = std::make_shared<std::string>("test test test");
 
-      axis_env.send_cmd(std::move(cmd),
-                       [test_string](ten::axis_env_t &axis_env,
+      aptima_env.send_cmd(std::move(cmd),
+                       [test_string](ten::aptima_env_t &aptima_env,
                                      std::unique_ptr<ten::cmd_result_t> cmd,
                                      ten::error_t *err) {
                          nlohmann::json json =
@@ -33,47 +33,47 @@ class test_extension_1 : public ten::extension_t {
                          if (json.value("detail", "") == "hello world, too" &&
                              *test_string == "test test test") {
                            cmd->set_property("detail", "hello world 1, too");
-                           axis_env.return_result_directly(std::move(cmd));
+                           aptima_env.return_result_directly(std::move(cmd));
                          }
                        });
     } else if (cmd->get_name() == "hello_world_2") {
-      axis_env.send_cmd(
+      aptima_env.send_cmd(
           std::move(cmd),
-          [](ten::axis_env_t &axis_env,
+          [](ten::aptima_env_t &aptima_env,
              std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
             nlohmann::json json =
                 nlohmann::json::parse(cmd_result->get_property_to_json());
             if (json.value("detail", "") == "hello world, too") {
               cmd_result->set_property("detail", "hello world 2, too");
-              axis_env.return_result_directly(std::move(cmd_result));
+              aptima_env.return_result_directly(std::move(cmd_result));
             }
 
             return true;
           });
     } else if (cmd->get_name() == "hello_world_3") {
-      axis_env.send_cmd(
+      aptima_env.send_cmd(
           std::move(cmd),
-          [](ten::axis_env_t &axis_env,
+          [](ten::aptima_env_t &aptima_env,
              std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
             nlohmann::json json =
                 nlohmann::json::parse(cmd_result->get_property_to_json());
             if (json.value("detail", "") == "hello world, too") {
               cmd_result->set_property("detail", "hello world 3, too");
-              axis_env.return_result_directly(std::move(cmd_result));
+              aptima_env.return_result_directly(std::move(cmd_result));
             }
           });
     } else if (cmd->get_name() == "hello_world_4") {
       hello_world_4_cmd = std::move(cmd);
 
       auto hello_world_5_cmd = ten::cmd_t::create("hello_world_5");
-      axis_env.send_cmd(
+      aptima_env.send_cmd(
           std::move(hello_world_5_cmd),
-          [&](ten::axis_env_t &axis_env, std::unique_ptr<ten::cmd_result_t> cmd,
+          [&](ten::aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_result_t> cmd,
               ten::error_t *err) {
             if (cmd->get_property_string("detail") == "hello world, too") {
-              auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+              auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
               cmd_result->set_property("detail", "hello world 4, too");
-              axis_env.return_result(std::move(cmd_result),
+              aptima_env.return_result(std::move(cmd_result),
                                     std::move(hello_world_4_cmd));
             }
           });
@@ -83,17 +83,17 @@ class test_extension_1 : public ten::extension_t {
           std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 
       auto hello_world_6_cmd = ten::cmd_t::create("hello_world_6");
-      axis_env.send_cmd(
+      aptima_env.send_cmd(
           std::move(hello_world_6_cmd),
-          [cmd_shared](ten::axis_env_t &axis_env,
+          [cmd_shared](ten::aptima_env_t &aptima_env,
                        std::unique_ptr<ten::cmd_result_t> cmd_result,
                        ten::error_t *err) {
             nlohmann::json json =
                 nlohmann::json::parse(cmd_result->get_property_to_json());
             if (json.value("detail", "") == "hello world, too") {
-              auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+              auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
               cmd_result->set_property("detail", "hello world 5, too");
-              axis_env.return_result(std::move(cmd_result),
+              aptima_env.return_result(std::move(cmd_result),
                                     std::move(*cmd_shared));
             }
 
@@ -111,24 +111,24 @@ class test_extension_2 : public ten::extension_t {
  public:
   explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world_1" ||
         cmd->get_name() == "hello_world_2" ||
         cmd->get_name() == "hello_world_3" ||
         cmd->get_name() == "hello_world_5" ||
         cmd->get_name() == "hello_world_6") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -141,11 +141,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -153,9 +153,9 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(resp_handler_async_basic__extension_1,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(resp_handler_async_basic__extension_1,
                                     test_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(resp_handler_async_basic__extension_2,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(resp_handler_async_basic__extension_2,
                                     test_extension_2);
 
 }  // namespace
@@ -163,7 +163,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(resp_handler_async_basic__extension_2,
 TEST(ExtensionTest, RespHandlerAsyncBasic) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -222,7 +222,7 @@ TEST(ExtensionTest, RespHandlerAsyncBasic) {  // NOLINT
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
   auto hello_world_1_cmd = ten::cmd_t::create("hello_world_1");
@@ -230,38 +230,38 @@ TEST(ExtensionTest, RespHandlerAsyncBasic) {  // NOLINT
                               "resp_handler_async_basic__extension_group",
                               "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_1_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world 1, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world 1, too");
   auto hello_world_2_cmd = ten::cmd_t::create("hello_world_2");
   hello_world_2_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                               "resp_handler_async_basic__extension_group",
                               "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_2_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world 2, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world 2, too");
   auto hello_world_3_cmd = ten::cmd_t::create("hello_world_3");
   hello_world_3_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                               "resp_handler_async_basic__extension_group",
                               "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_3_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world 3, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world 3, too");
   auto hello_world_4_cmd = ten::cmd_t::create("hello_world_4");
   hello_world_4_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                               "resp_handler_async_basic__extension_group",
                               "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_4_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world 4, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world 4, too");
   auto hello_world_5_cmd = ten::cmd_t::create("hello_world_5");
   hello_world_5_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                               "resp_handler_async_basic__extension_group",
                               "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_5_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world 5, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world 5, too");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

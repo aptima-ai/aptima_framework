@@ -16,7 +16,7 @@ class HttpServerExtension(AsyncExtension):
         try:
             data = await request.json()
         except Exception as e:
-            self.axis_env.log_error("Error: " + str(e))
+            self.aptima_env.log_error("Error: " + str(e))
             return web.Response(status=400, text="Bad request")
 
         cmd_result = None
@@ -31,7 +31,7 @@ class HttpServerExtension(AsyncExtension):
             if "type" in data["_ten"] and data["_ten"]["type"] == "close_app":
                 close_app_cmd = Cmd.create("ten:close_app")
                 close_app_cmd.set_dest("localhost", None, None, None)
-                asyncio.create_task(self.axis_env.send_cmd(close_app_cmd))
+                asyncio.create_task(self.aptima_env.send_cmd(close_app_cmd))
                 return web.Response(status=200, text="OK")
             elif "name" in data["_ten"]:
                 # Send the command to the TEN runtime.
@@ -43,7 +43,7 @@ class HttpServerExtension(AsyncExtension):
                 if cmd is None:
                     return web.Response(status=400, text="Bad request")
 
-                cmd_result, _ = await self.axis_env.send_cmd(cmd)
+                cmd_result, _ = await self.aptima_env.send_cmd(cmd)
             else:
                 return web.Response(status=404, text="Not found")
 
@@ -55,7 +55,7 @@ class HttpServerExtension(AsyncExtension):
                 detail = cmd_result.get_property_string("detail")
                 return web.Response(text=detail)
             except Exception as e:
-                self.axis_env.log_error("Error: " + str(e))
+                self.aptima_env.log_error("Error: " + str(e))
                 return web.Response(status=500, text="Internal server error")
         else:
             return web.Response(status=500, text="Internal server error")
@@ -71,7 +71,7 @@ class HttpServerExtension(AsyncExtension):
                 else:
                     await ws.send_str("some websocket message payload")
             elif msg.type == WSMsgType.ERROR:
-                self.axis_env.log_error(
+                self.aptima_env.log_error(
                     "ws connection closed with exception %s" % ws.exception()
                 )
 
@@ -97,37 +97,37 @@ class HttpServerExtension(AsyncExtension):
         super().__init__(name)
         self.name = name
 
-    async def on_init(self, axis_env: AsyncTenEnv) -> None:
-        self.axis_env = axis_env
+    async def on_init(self, aptima_env: AsyncTenEnv) -> None:
+        self.aptima_env = aptima_env
 
-    async def on_start(self, axis_env: AsyncTenEnv) -> None:
-        axis_env.log_debug("on_start")
+    async def on_start(self, aptima_env: AsyncTenEnv) -> None:
+        aptima_env.log_debug("on_start")
 
         try:
-            self.server_port = await axis_env.get_property_int("server_port")
+            self.server_port = await aptima_env.get_property_int("server_port")
         except Exception as e:
-            axis_env.log_error(
+            aptima_env.log_error(
                 "Could not read 'server_port' from properties." + str(e)
             )
             self.server_port = 8002
 
         await self.start_server("0.0.0.0", self.server_port)
 
-    async def on_deinit(self, axis_env: AsyncTenEnv) -> None:
-        axis_env.log_debug("on_deinit")
+    async def on_deinit(self, aptima_env: AsyncTenEnv) -> None:
+        aptima_env.log_debug("on_deinit")
 
-    async def on_cmd(self, axis_env: AsyncTenEnv, cmd: Cmd) -> None:
-        axis_env.log_debug("on_cmd")
+    async def on_cmd(self, aptima_env: AsyncTenEnv, cmd: Cmd) -> None:
+        aptima_env.log_debug("on_cmd")
 
         # Not supported command.
-        await axis_env.return_result(CmdResult.create(StatusCode.ERROR), cmd)
+        await aptima_env.return_result(CmdResult.create(StatusCode.ERROR), cmd)
 
-    async def on_stop(self, axis_env: AsyncTenEnv) -> None:
-        axis_env.log_debug("on_stop")
+    async def on_stop(self, aptima_env: AsyncTenEnv) -> None:
+        aptima_env.log_debug("on_stop")
 
 
 @register_addon_as_extension("aio_http_server_python")
 class DefaultExtensionAddon(Addon):
-    def on_create_instance(self, axis_env: TenEnv, name: str, context) -> None:
+    def on_create_instance(self, aptima_env: TenEnv, name: str, context) -> None:
         print("on_create_instance")
-        axis_env.on_create_instance_done(HttpServerExtension(name), context)
+        aptima_env.on_create_instance_done(HttpServerExtension(name), context)

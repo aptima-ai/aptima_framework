@@ -5,17 +5,17 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdint.h>
 
 #include "msgpack.h"
 
-typedef enum axis_MSGPACK_EXT_TYPE {
-  axis_MSGPACK_EXT_TYPE_INVALID,
+typedef enum aptima_MSGPACK_EXT_TYPE {
+  aptima_MSGPACK_EXT_TYPE_INVALID,
 
-  axis_MSGPACK_EXT_TYPE_MSG,
-} axis_MSGPACK_EXT_TYPE;
+  aptima_MSGPACK_EXT_TYPE_MSG,
+} aptima_MSGPACK_EXT_TYPE;
 
 #define MSGPACK_DATA_TYPE (unpacked->data.type)
 

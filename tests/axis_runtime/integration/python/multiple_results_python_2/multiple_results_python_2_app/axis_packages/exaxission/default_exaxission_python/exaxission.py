@@ -16,13 +16,13 @@ class DefaultExtension(Extension):
 
         self.__counter = 0
 
-    def on_init(self, axis_env: TenEnv) -> None:
-        axis_env.log_debug("on_init")
-        axis_env.on_init_done()
+    def on_init(self, aptima_env: TenEnv) -> None:
+        aptima_env.log_debug("on_init")
+        aptima_env.on_init_done()
 
     def check_hello(
         self,
-        axis_env: TenEnv,
+        aptima_env: TenEnv,
         result: Optional[CmdResult],
         error: Optional[TenError],
         receivedCmd: Cmd,
@@ -36,31 +36,31 @@ class DefaultExtension(Extension):
 
         if self.__counter == 1:
             assert result.is_completed() is True
-            axis_env.log_info("receive 1 cmd result")
+            aptima_env.log_info("receive 1 cmd result")
 
             respCmd = CmdResult.create(StatusCode.OK)
             respCmd.set_property_string("detail", "nbnb")
-            axis_env.return_result(respCmd, receivedCmd)
+            aptima_env.return_result(respCmd, receivedCmd)
         else:
             assert False
 
-    def on_cmd(self, axis_env: TenEnv, cmd: Cmd) -> None:
+    def on_cmd(self, aptima_env: TenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.get_property_to_json()
-        axis_env.log_debug(f"on_cmd json: {cmd_json}")
+        aptima_env.log_debug(f"on_cmd json: {cmd_json}")
 
         if self.name == "default_extension_python_1":
             new_cmd = Cmd.create("hello")
-            axis_env.send_cmd(
+            aptima_env.send_cmd(
                 new_cmd,
-                lambda axis_env, result, error: self.check_hello(
-                    axis_env, result, error, cmd
+                lambda aptima_env, result, error: self.check_hello(
+                    aptima_env, result, error, cmd
                 ),
             )
         elif self.name == "default_extension_python_2":
-            axis_env.log_info("create respCmd")
+            aptima_env.log_info("create respCmd")
             respCmd = CmdResult.create(StatusCode.OK)
-            axis_env.return_result(respCmd, cmd)
+            aptima_env.return_result(respCmd, cmd)
         elif self.name == "default_extension_python_3":
-            axis_env.log_info("create respCmd")
+            aptima_env.log_info("create respCmd")
             respCmd = CmdResult.create(StatusCode.OK)
-            axis_env.return_result(respCmd, cmd)
+            aptima_env.return_result(respCmd, cmd)

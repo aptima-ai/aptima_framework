@@ -30,7 +30,7 @@ extern "C" {
 }
 #endif
 
-#include "axis_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/ten.h"
 
 namespace ten {
 namespace ffmpeg_extension {
@@ -85,11 +85,11 @@ class muxer_t {
   bool allocate_audio_frame_(AVCodecParameters *encoded_stream_params);
 
   bool convert_audio_frame_(AVCodecParameters *encoded_stream_params,
-                            ten::audio_frame_t &axis_audio_frame);
+                            ten::audio_frame_t &aptima_audio_frame);
   AVFrame *convert_video_frame_(ten::video_frame_t &video_frame);
 
   bool create_audio_converter_(AVCodecParameters *encoded_stream_params,
-                               ten::audio_frame_t &axis_audio_frame);
+                               ten::audio_frame_t &aptima_audio_frame);
   bool create_video_converter_(ten::video_frame_t &video_frame);
 
   // @{

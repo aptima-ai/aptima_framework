@@ -17,9 +17,9 @@
 #include "libavcodec/packet.h"
 #include "libavutil/channel_layout.h"
 #include "libswresample/swresample.h"
-#include "axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/msg/video_frame/video_frame.h"
-#include "axis_utils/macro/check.h"
+#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/msg/video_frame/video_frame.h"
+#include "aptima_utils/macro/check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,10 +46,10 @@ extern "C" {
 #endif
 
 #include "demuxer_thread.h"
-#include "axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/alloc.h"
-#include "axis_utils/log/log.h"
-#include "axis_utils/macro/check.h"
+#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/alloc.h"
+#include "aptima_utils/log/log.h"
+#include "aptima_utils/macro/check.h"
 
 #define GET_FFMPEG_ERROR_MESSAGE(err_msg, errnum)                            \
   /* NOLINTNEXTLINE */                                                       \
@@ -58,27 +58,27 @@ extern "C" {
                                                times == 0;                   \
        ++times)
 
-#define axis_AUDIO_FRAME_SAMPLE_FMT AV_SAMPLE_FMT_S16
-#define axis_VIDEO_FRAME_PIXEL_FMT AV_PIX_FMT_RGB24
+#define aptima_AUDIO_FRAME_SAMPLE_FMT AV_SAMPLE_FMT_S16
+#define aptima_VIDEO_FRAME_PIXEL_FMT AV_PIX_FMT_RGB24
 
 namespace ten {
 namespace ffmpeg_extension {
 
 void get_ffmpeg_error_message_(char *buf, size_t buf_length, int errnum) {
-  axis_ASSERT(buf && buf_length, "Invalid argument.");
+  aptima_ASSERT(buf && buf_length, "Invalid argument.");
 
   // Get error from ffmpeg.
   if (av_strerror(errnum, buf, buf_length) != 0) {
     int written =
         snprintf(buf, buf_length, "Unknown ffmpeg error code: %d", errnum);
-    axis_ASSERT(written > 0, "Should not happen.");
+    aptima_ASSERT(written > 0, "Should not happen.");
   }
 }
 
-demuxer_t::demuxer_t(ten::axis_env_proxy_t *axis_env_proxy,
+demuxer_t::demuxer_t(ten::aptima_env_proxy_t *aptima_env_proxy,
                      demuxer_thread_t *demuxer_thread)
     : demuxer_thread_(demuxer_thread),
-      axis_env_proxy_(axis_env_proxy),
+      aptima_env_proxy_(aptima_env_proxy),
       input_format_context_(nullptr),
       interrupt_cb_param_(nullptr),
       video_stream_idx_(-1),
@@ -129,11 +129,11 @@ demuxer_t::~demuxer_t() {
   }
 
   if (interrupt_cb_param_ != nullptr) {
-    axis_FREE(interrupt_cb_param_);
+    aptima_FREE(interrupt_cb_param_);
     interrupt_cb_param_ = nullptr;
   }
 
-  axis_LOGD("Demuxer instance destructed.");
+  aptima_LOGD("Demuxer instance destructed.");
 }
 
 // This is a callback which will be called during the processing of the FFmpeg,
@@ -141,7 +141,7 @@ demuxer_t::~demuxer_t() {
 // processing job of FFmpeg at that time, therefore, preventing FFmpeg from
 // blocking infinitely.
 int interrupt_cb_(void *p) {
-  axis_ASSERT(p, "Invalid argument.");
+  aptima_ASSERT(p, "Invalid argument.");
 
   auto *r = reinterpret_cast<interrupt_cb_param_t *>(p);
   if (r->last_time > 0) {
@@ -156,18 +156,18 @@ int interrupt_cb_(void *p) {
 
 AVFormatContext *demuxer_t::create_input_format_context_internal_(
     const std::string &input_stream_loc) {
-  axis_ASSERT(input_stream_loc.length() > 0, "Invalid argument.");
+  aptima_ASSERT(input_stream_loc.length() > 0, "Invalid argument.");
 
   AVFormatContext *input_format_context = avformat_alloc_context();
   if (input_format_context == nullptr) {
-    axis_LOGE("Failed to create AVFormatContext.");
+    aptima_LOGE("Failed to create AVFormatContext.");
     return nullptr;
   }
 
   if (interrupt_cb_param_ == nullptr) {
     interrupt_cb_param_ = static_cast<interrupt_cb_param_t *>(
-        axis_MALLOC(sizeof(interrupt_cb_param_t)));
-    axis_ASSERT(interrupt_cb_param_, "Failed to allocate memory.");
+        aptima_MALLOC(sizeof(interrupt_cb_param_t)));
+    aptima_ASSERT(interrupt_cb_param_, "Failed to allocate memory.");
   }
 
   input_format_context->interrupt_callback.callback = interrupt_cb_;
@@ -188,10 +188,10 @@ AVFormatContext *demuxer_t::create_input_format_context_internal_(
   av_dict_free(&av_options);
 
   if (ffmpeg_rc == 0) {
-    axis_LOGD("Open input stream %s successfully.", input_stream_loc.c_str());
+    aptima_LOGD("Open input stream %s successfully.", input_stream_loc.c_str());
   } else {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGW("Failed to open input stream %s: %s", input_stream_loc.c_str(),
+      aptima_LOGW("Failed to open input stream %s: %s", input_stream_loc.c_str(),
                err_msg);
     }
 
@@ -204,7 +204,7 @@ AVFormatContext *demuxer_t::create_input_format_context_internal_(
 
 AVFormatContext *demuxer_t::create_input_format_context_(
     const std::string &input_stream_loc) {
-  axis_ASSERT(input_stream_loc.length() > 0, "Invalid argument.");
+  aptima_ASSERT(input_stream_loc.length() > 0, "Invalid argument.");
 
   AVFormatContext *input_format_context = nullptr;
   while (true) {
@@ -216,7 +216,7 @@ AVFormatContext *demuxer_t::create_input_format_context_(
       // Does not detect any input stream, and does not create a corresponding
       // av format context yet.
       if (demuxer_thread_->is_stopped()) {
-        axis_LOGW(
+        aptima_LOGW(
             "Giving up to detect any input stream, because the demuxer thread "
             "is stopped.");
         return nullptr;
@@ -238,7 +238,7 @@ bool demuxer_t::analyze_input_stream_() {
   int ffmpeg_rc = avformat_find_stream_info(input_format_context_, nullptr);
   if (ffmpeg_rc < 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGE("Failed to find input stream info: %s", err_msg);
+      aptima_LOGE("Failed to find input stream info: %s", err_msg);
     }
     return false;
   }
@@ -247,10 +247,10 @@ bool demuxer_t::analyze_input_stream_() {
 }
 
 bool demuxer_t::open_input_stream(const std::string &input_stream_loc) {
-  axis_ASSERT(input_stream_loc.length() > 0, "Invalid argument.");
+  aptima_ASSERT(input_stream_loc.length() > 0, "Invalid argument.");
 
   if (is_av_decoder_opened_()) {
-    axis_LOGD("Demuxer has already opened.");
+    aptima_LOGD("Demuxer has already opened.");
     return true;
   }
 
@@ -269,12 +269,12 @@ bool demuxer_t::open_input_stream(const std::string &input_stream_loc) {
   open_audio_decoder_();
 
   if (!is_av_decoder_opened_()) {
-    axis_LOGW("Failed to find supported A/V codec for %s",
+    aptima_LOGW("Failed to find supported A/V codec for %s",
              input_stream_loc_.c_str());
     return false;
   }
 
-  axis_LOGD("Input stream [%s] is opened.", input_stream_loc_.c_str());
+  aptima_LOGD("Input stream [%s] is opened.", input_stream_loc_.c_str());
 
   return true;
 }
@@ -315,7 +315,7 @@ bool demuxer_t::create_audio_converter_(const AVFrame *frame) {
         (audio_sample_rate_ != 0) ? audio_sample_rate_ : frame->sample_rate;
 
     audio_converter_ctx_ = swr_alloc();
-    axis_ASSERT(audio_converter_ctx_, "Failed to create audio resampler");
+    aptima_ASSERT(audio_converter_ctx_, "Failed to create audio resampler");
 
     av_opt_set_int(audio_converter_ctx_, "in_channel_layout",
                    (int64_t)src_channel_layout, 0);
@@ -327,12 +327,12 @@ bool demuxer_t::create_audio_converter_(const AVFrame *frame) {
     av_opt_set_sample_fmt(audio_converter_ctx_, "in_sample_fmt",
                           audio_decoder_ctx_->sample_fmt, 0);
     av_opt_set_sample_fmt(audio_converter_ctx_, "out_sample_fmt",
-                          axis_AUDIO_FRAME_SAMPLE_FMT, 0);
+                          aptima_AUDIO_FRAME_SAMPLE_FMT, 0);
 
     int swr_init_rc = swr_init(audio_converter_ctx_);
     if (swr_init_rc < 0) {
       GET_FFMPEG_ERROR_MESSAGE(err_msg, swr_init_rc) {
-        axis_LOGD("Failed to initialize resampler: %s", err_msg);
+        aptima_LOGD("Failed to initialize resampler: %s", err_msg);
       }
       return false;
     }
@@ -341,9 +341,9 @@ bool demuxer_t::create_audio_converter_(const AVFrame *frame) {
   return true;
 }
 
-std::unique_ptr<ten::audio_frame_t> demuxer_t::to_axis_audio_frame_(
+std::unique_ptr<ten::audio_frame_t> demuxer_t::to_aptima_audio_frame_(
     const AVFrame *frame) {
-  axis_ASSERT(frame, "Invalid argument.");
+  aptima_ASSERT(frame, "Invalid argument.");
 
   if (!create_audio_converter_(frame)) {
     return nullptr;
@@ -356,7 +356,7 @@ std::unique_ptr<ten::audio_frame_t> demuxer_t::to_axis_audio_frame_(
   int dst_channels = frame->ch_layout.nb_channels;
 
   auto length = frame->nb_samples * dst_channels *
-                av_get_bytes_per_sample(axis_AUDIO_FRAME_SAMPLE_FMT);
+                av_get_bytes_per_sample(aptima_AUDIO_FRAME_SAMPLE_FMT);
   audio_frame->alloc_buf(length);
 
   // Convert this audio frame to the desired audio format.
@@ -369,7 +369,7 @@ std::unique_ptr<ten::audio_frame_t> demuxer_t::to_axis_audio_frame_(
                           frame_->nb_samples);
   if (ffmpeg_rc < 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGD("Failed to convert audio samples: %s", err_msg);
+      aptima_LOGD("Failed to convert audio samples: %s", err_msg);
     }
 
     audio_frame->unlock_buf(locked_out_buf);
@@ -383,9 +383,9 @@ std::unique_ptr<ten::audio_frame_t> demuxer_t::to_axis_audio_frame_(
   // because they might be queued in the swr.
   int actual_audio_samples_cnt = ffmpeg_rc;
 
-  audio_frame->set_data_fmt(axis_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
+  audio_frame->set_data_fmt(aptima_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
   audio_frame->set_bytes_per_sample(
-      av_get_bytes_per_sample(axis_AUDIO_FRAME_SAMPLE_FMT));
+      av_get_bytes_per_sample(aptima_AUDIO_FRAME_SAMPLE_FMT));
   audio_frame->set_sample_rate(frame->sample_rate);
   audio_frame->set_channel_layout(frame->channel_layout);
   audio_frame->set_number_of_channels(frame->ch_layout.nb_channels);
@@ -396,7 +396,7 @@ std::unique_ptr<ten::audio_frame_t> demuxer_t::to_axis_audio_frame_(
   int64_t start_time =
       input_format_context_->streams[audio_stream_idx_]->start_time;
   if (frame->best_effort_timestamp < start_time) {
-    axis_LOGD("Audio timestamp=%" PRId64 " < start_time=%" PRId64 "!",
+    aptima_LOGD("Audio timestamp=%" PRId64 " < start_time=%" PRId64 "!",
              frame->best_effort_timestamp, start_time);
   }
 
@@ -411,9 +411,9 @@ bool demuxer_t::create_video_converter_(int width, int height) {
   if (video_converter_ctx_ == nullptr) {
     video_converter_ctx_ = sws_getContext(
         width, height, video_decoder_ctx_->pix_fmt, width, height,
-        axis_VIDEO_FRAME_PIXEL_FMT, SWS_POINT, nullptr, nullptr, nullptr);
+        aptima_VIDEO_FRAME_PIXEL_FMT, SWS_POINT, nullptr, nullptr, nullptr);
     if (video_converter_ctx_ == nullptr) {
-      axis_LOGD("Failed to create converter context for video frame.");
+      aptima_LOGD("Failed to create converter context for video frame.");
       return false;
     }
   }
@@ -422,7 +422,7 @@ bool demuxer_t::create_video_converter_(int width, int height) {
 }
 
 // Debug purpose only.
-axis_UNUSED static void save_avframe(const AVFrame *avFrame) {
+aptima_UNUSED static void save_avframe(const AVFrame *avFrame) {
   FILE *fDump = fopen("decode", "ab");
 
   uint32_t pitchY = avFrame->linesize[0];
@@ -462,7 +462,7 @@ void save_img_frame(ten::video_frame_t &pFrame, int index) {
 
   // Open file
   int written = snprintf(szFilename, 32, "frame%d.ppm", index);
-  axis_ASSERT(written > 0, "Should not happen.");
+  aptima_ASSERT(written > 0, "Should not happen.");
 
   pFile = fopen(szFilename, "wb");
 
@@ -484,9 +484,9 @@ void save_img_frame(ten::video_frame_t &pFrame, int index) {
   (void)fclose(pFile);
 }
 
-std::unique_ptr<ten::video_frame_t> demuxer_t::to_axis_video_frame_(
+std::unique_ptr<ten::video_frame_t> demuxer_t::to_aptima_video_frame_(
     const AVFrame *frame) {
-  axis_ASSERT(frame, "Invalid argument.");
+  aptima_ASSERT(frame, "Invalid argument.");
 
   int frame_width = frame->width;
   int frame_height = frame->height;
@@ -496,26 +496,26 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_axis_video_frame_(
       input_format_context_->streams[video_stream_idx_]->start_time;
 
   if (frame->best_effort_timestamp < video_start_time) {
-    axis_LOGI("Video timestamp=%" PRId64 " < start_time=%" PRId64 "!",
+    aptima_LOGI("Video timestamp=%" PRId64 " < start_time=%" PRId64 "!",
              frame->best_effort_timestamp, video_start_time);
   }
 
-  auto axis_video_frame = ten::video_frame_t::create("video_frame");
+  auto aptima_video_frame = ten::video_frame_t::create("video_frame");
 
   if (frame->format == AV_PIX_FMT_YUV420P ||
       frame->format == AV_PIX_FMT_YUVJ420P) {
-    axis_video_frame->set_pixel_fmt(axis_PIXEL_FMT_I420);
+    aptima_video_frame->set_pixel_fmt(aptima_PIXEL_FMT_I420);
     int size = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, frame_width,
                                         frame_height, 16);
 
-    axis_video_frame->set_width(frame_width);
-    axis_video_frame->set_height(frame_height);
-    axis_video_frame->set_timestamp(av_rescale(
+    aptima_video_frame->set_width(frame_width);
+    aptima_video_frame->set_height(frame_height);
+    aptima_video_frame->set_timestamp(av_rescale(
         frame->best_effort_timestamp - video_start_time,
         static_cast<int64_t>(video_time_base.num) * 1000, video_time_base.den));
 
-    axis_video_frame->alloc_buf(size + 32);
-    ten::buf_t locked_buf = axis_video_frame->lock_buf();
+    aptima_video_frame->alloc_buf(size + 32);
+    ten::buf_t locked_buf = aptima_video_frame->lock_buf();
 
     auto *y_data = locked_buf.data();
     auto *u_data = y_data + frame_width * frame_height;
@@ -528,7 +528,7 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_axis_video_frame_(
     av_image_copy_plane(v_data, frame_width / 2, frame->data[2],
                         frame->linesize[2], frame_width / 2, frame_height / 2);
 
-    axis_video_frame->unlock_buf(locked_buf);
+    aptima_video_frame->unlock_buf(locked_buf);
 
     // convert YUV to RGB first.
 
@@ -537,20 +537,20 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_axis_video_frame_(
     // }
     // // sws_scale require 16 bytes aligned.
     // int dst_linesize = ((frame_width * 3 + 15) / 16) * 16;
-    // int size = av_image_get_buffer_size(axis_VIDEO_FRAME_PIXEL_FMT,
+    // int size = av_image_get_buffer_size(aptima_VIDEO_FRAME_PIXEL_FMT,
     // frame_width,
     //                                     frame_height, 16);
 
-    // axis_video_frame->set_width(frame_width);
-    // axis_video_frame->set_height(frame_height);
-    // axis_video_frame->set_timestamp(av_rescale(
+    // aptima_video_frame->set_width(frame_width);
+    // aptima_video_frame->set_height(frame_height);
+    // aptima_video_frame->set_timestamp(av_rescale(
     //     frame->best_effort_timestamp - video_start_time,
     //     static_cast<int64_t>(video_time_base.num) * 1000,
     //     video_time_base.den));
-    // axis_video_frame->set_buf_size(size);
-    // axis_video_frame->set_buf(static_cast<uint8_t*>(axis_MALLOC(size + 32)));
+    // aptima_video_frame->set_buf_size(size);
+    // aptima_video_frame->set_buf(static_cast<uint8_t*>(aptima_MALLOC(size + 32)));
 
-    // uint8_t* rgb_data[1] = {axis_video_frame->get_buf()};  // NOLINT
+    // uint8_t* rgb_data[1] = {aptima_video_frame->get_buf()};  // NOLINT
     // int rgb_linesize[1] = {dst_linesize};                // NOLINT
 
     // sws_scale(video_converter_ctx_, static_cast<uint8_t*
@@ -568,12 +568,12 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_axis_video_frame_(
     //   // There are paddings at each row, do "dst" => "packed".
 
     //   // sws_scale's output, with padding.
-    //   uint8_t* dst_ptr = axis_video_frame->get_buf() + dst_linesize;
+    //   uint8_t* dst_ptr = aptima_video_frame->get_buf() + dst_linesize;
 
     //   int packed_linesize = frame_width * 3;
 
     //   // Packed result, no padding.
-    //   uint8_t* packed_ptr = axis_video_frame->get_buf() + packed_linesize;
+    //   uint8_t* packed_ptr = aptima_video_frame->get_buf() + packed_linesize;
 
     //   int h = frame_height - 1;
     //   for (; h > 0; h--) {
@@ -582,38 +582,38 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_axis_video_frame_(
     //     packed_ptr += packed_linesize;
     //   }
 
-    //   axis_video_frame->set_buf_size(static_cast<int64_t>(packed_linesize) *
+    //   aptima_video_frame->set_buf_size(static_cast<int64_t>(packed_linesize) *
     //                                frame_height);
     // }
   } else if (frame->format == AV_PIX_FMT_RGB24) {
-    axis_video_frame->set_pixel_fmt(axis_PIXEL_FMT_RGB24);
-    axis_video_frame->set_width(frame_width);
-    axis_video_frame->set_height(frame_height);
-    axis_video_frame->set_timestamp(av_rescale(
+    aptima_video_frame->set_pixel_fmt(aptima_PIXEL_FMT_RGB24);
+    aptima_video_frame->set_width(frame_width);
+    aptima_video_frame->set_height(frame_height);
+    aptima_video_frame->set_timestamp(av_rescale(
         frame->best_effort_timestamp - video_start_time,
         static_cast<int64_t>(video_time_base.num) * 1000, video_time_base.den));
 
-    axis_video_frame->alloc_buf(
+    aptima_video_frame->alloc_buf(
         static_cast<int64_t>(frame_width) * frame_height * 3 + 32);
-    ten::buf_t locked_buf = axis_video_frame->lock_buf();
+    ten::buf_t locked_buf = aptima_video_frame->lock_buf();
 
     av_image_copy_plane(locked_buf.data(), frame_width * 3, frame->data[0],
                         frame->linesize[0], frame_width * 3, frame_height);
 
-    axis_video_frame->unlock_buf(locked_buf);
+    aptima_video_frame->unlock_buf(locked_buf);
   } else {
-    axis_LOGD("Input video frame format(%d) is not YUV420P(%d) nor RGB24(%d)",
+    aptima_LOGD("Input video frame format(%d) is not YUV420P(%d) nor RGB24(%d)",
              frame->format, AV_PIX_FMT_YUV420P, AV_PIX_FMT_RGB24);
   }
 
-  return axis_video_frame;
+  return aptima_video_frame;
 }
 
 bool demuxer_t::decode_next_video_packet_(DECODE_STATUS &decode_status) {
   int ffmpeg_rc = avcodec_send_packet(video_decoder_ctx_, packet_);
   if (ffmpeg_rc != 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGD("Failed to decode a video packet: %s", err_msg);
+      aptima_LOGD("Failed to decode a video packet: %s", err_msg);
     }
 
     decode_status = DECODE_STATUS_ERROR;
@@ -622,17 +622,17 @@ bool demuxer_t::decode_next_video_packet_(DECODE_STATUS &decode_status) {
 
   ffmpeg_rc = avcodec_receive_frame(video_decoder_ctx_, frame_);
   if (ffmpeg_rc == AVERROR(EAGAIN)) {
-    axis_LOGD("Need more data to decode a video frame.");
+    aptima_LOGD("Need more data to decode a video frame.");
     return true;
   } else if (ffmpeg_rc < 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGW("Failed to decode a video frame: %s", err_msg);
+      aptima_LOGW("Failed to decode a video frame: %s", err_msg);
     }
 
     decode_status = DECODE_STATUS_ERROR;
     return false;
   } else {
-    auto video_frame = to_axis_video_frame_(frame_);
+    auto video_frame = to_aptima_video_frame_(frame_);
     if (video_frame != nullptr) {
       // DEBUG
       // save_img_frame(video_frame, frame_->pts);
@@ -640,8 +640,8 @@ bool demuxer_t::decode_next_video_packet_(DECODE_STATUS &decode_status) {
           std::make_shared<std::unique_ptr<ten::video_frame_t>>(
               std::move(video_frame));
 
-      axis_env_proxy_->notify([video_frame_shared](ten::axis_env_t &axis_env) {
-        axis_env.send_video_frame(std::move(*video_frame_shared));
+      aptima_env_proxy_->notify([video_frame_shared](ten::aptima_env_t &aptima_env) {
+        aptima_env.send_video_frame(std::move(*video_frame_shared));
       });
     }
 
@@ -656,11 +656,11 @@ bool demuxer_t::decode_next_audio_packet_(DECODE_STATUS &decode_status) {
   // Skip invalid mp3 packet/frame.
   if ((AV_CODEC_ID_MP3 == audio_decoder_ctx_->codec_id) &&
       ffmpeg_rc == AVERROR_INVALIDDATA) {
-    axis_LOGD("mp3 header is missing and lookup next packet.");
+    aptima_LOGD("mp3 header is missing and lookup next packet.");
     return true;
   } else if (ffmpeg_rc != 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGE("Failed to decode audio packet: %s", err_msg);
+      aptima_LOGE("Failed to decode audio packet: %s", err_msg);
     }
 
     decode_status = DECODE_STATUS_ERROR;
@@ -673,24 +673,24 @@ bool demuxer_t::decode_next_audio_packet_(DECODE_STATUS &decode_status) {
     ffmpeg_rc = avcodec_receive_frame(audio_decoder_ctx_, frame_);
 
     if (ffmpeg_rc == AVERROR(EAGAIN)) {
-      axis_LOGD("Need more data to decode audio frame");
+      aptima_LOGD("Need more data to decode audio frame");
       return true;
     } else if (ffmpeg_rc < 0) {
       GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-        axis_LOGE("Failed to decode audio frame: %s", err_msg);
+        aptima_LOGE("Failed to decode audio frame: %s", err_msg);
       }
 
       decode_status = DECODE_STATUS_ERROR;
       return false;
     } else {
-      auto audio_frame = to_axis_audio_frame_(frame_);
+      auto audio_frame = to_aptima_audio_frame_(frame_);
       if (audio_frame != nullptr) {
         auto audio_frame_shared =
             std::make_shared<std::unique_ptr<ten::audio_frame_t>>(
                 std::move(audio_frame));
 
-        axis_env_proxy_->notify([audio_frame_shared](ten::axis_env_t &axis_env) {
-          axis_env.send_audio_frame(std::move(*audio_frame_shared));
+        aptima_env_proxy_->notify([audio_frame_shared](ten::aptima_env_t &aptima_env) {
+          aptima_env.send_audio_frame(std::move(*audio_frame_shared));
         });
       }
 
@@ -702,7 +702,7 @@ bool demuxer_t::decode_next_audio_packet_(DECODE_STATUS &decode_status) {
 
 DECODE_STATUS demuxer_t::decode_next_packet() {
   if (!is_av_decoder_opened_()) {
-    axis_LOGD("Must open stream first.");
+    aptima_LOGD("Must open stream first.");
     return DECODE_STATUS_ERROR;
   }
 
@@ -720,7 +720,7 @@ DECODE_STATUS demuxer_t::decode_next_packet() {
         return DECODE_STATUS_EOF;
       } else {
         GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-          axis_LOGE("Failed to get frame from input: %s", err_msg);
+          aptima_LOGE("Failed to get frame from input: %s", err_msg);
         }
         return DECODE_STATUS_ERROR;
       }
@@ -746,11 +746,11 @@ void demuxer_t::flush_remaining_audio_frames() {
   // Skip invalid mp3 packet/frame.
   if ((AV_CODEC_ID_MP3 == audio_decoder_ctx_->codec_id) &&
       ffmpeg_rc == AVERROR_INVALIDDATA) {
-    axis_LOGD("mp3 header is missing and lookup next packet.");
+    aptima_LOGD("mp3 header is missing and lookup next packet.");
     return;
   } else if (ffmpeg_rc != 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGE("Failed to decode audio packet when flushing: %s", err_msg);
+      aptima_LOGE("Failed to decode audio packet when flushing: %s", err_msg);
     }
     return;
   }
@@ -759,23 +759,23 @@ void demuxer_t::flush_remaining_audio_frames() {
     ffmpeg_rc = avcodec_receive_frame(audio_decoder_ctx_, frame_);
 
     if (ffmpeg_rc == AVERROR(EAGAIN)) {
-      axis_LOGD("Need more data to decode audio frame when flushing");
+      aptima_LOGD("Need more data to decode audio frame when flushing");
       ffmpeg_rc = 0;
       continue;
     } else if (ffmpeg_rc < 0) {
       GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-        axis_LOGE("Failed to decode audio frame when flushing: %s", err_msg);
+        aptima_LOGE("Failed to decode audio frame when flushing: %s", err_msg);
       }
       return;
     } else {
-      auto audio_frame = to_axis_audio_frame_(frame_);
+      auto audio_frame = to_aptima_audio_frame_(frame_);
       if (audio_frame != nullptr) {
         auto audio_frame_shared =
             std::make_shared<std::unique_ptr<ten::audio_frame_t>>(
                 std::move(audio_frame));
 
-        axis_env_proxy_->notify([audio_frame_shared](ten::axis_env_t &axis_env) {
-          axis_env.send_audio_frame(std::move(*audio_frame_shared));
+        aptima_env_proxy_->notify([audio_frame_shared](ten::aptima_env_t &aptima_env) {
+          aptima_env.send_audio_frame(std::move(*audio_frame_shared));
         });
       }
     }
@@ -786,7 +786,7 @@ void demuxer_t::flush_remaining_video_frames() {
   int ffmpeg_rc = avcodec_send_packet(video_decoder_ctx_, nullptr);
   if (ffmpeg_rc < 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGE("Failed to decode a video when flushing packet: %s", err_msg);
+      aptima_LOGE("Failed to decode a video when flushing packet: %s", err_msg);
     }
     return;
   }
@@ -794,23 +794,23 @@ void demuxer_t::flush_remaining_video_frames() {
   while (ffmpeg_rc >= 0) {
     ffmpeg_rc = avcodec_receive_frame(video_decoder_ctx_, frame_);
     if (ffmpeg_rc == AVERROR(EAGAIN)) {
-      axis_LOGD("Need more data to decode a video frame when flushing.");
+      aptima_LOGD("Need more data to decode a video frame when flushing.");
       ffmpeg_rc = 0;
       continue;
     } else if (ffmpeg_rc < 0) {
       GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-        axis_LOGW("Failed to decode a video frame when flushing: %s", err_msg);
+        aptima_LOGW("Failed to decode a video frame when flushing: %s", err_msg);
       }
       return;
     } else {
-      auto video_frame = to_axis_video_frame_(frame_);
+      auto video_frame = to_aptima_video_frame_(frame_);
       if (video_frame != nullptr) {
         auto video_frame_shared =
             std::make_shared<std::unique_ptr<ten::video_frame_t>>(
                 std::move(video_frame));
 
-        axis_env_proxy_->notify([video_frame_shared](ten::axis_env_t &axis_env) {
-          axis_env.send_video_frame(std::move(*video_frame_shared));
+        aptima_env_proxy_->notify([video_frame_shared](ten::aptima_env_t &aptima_env) {
+          aptima_env.send_video_frame(std::move(*video_frame_shared));
         });
       }
     }
@@ -821,18 +821,18 @@ void demuxer_t::dump_video_info_() {
   av_dump_format(input_format_context_, video_stream_idx_,
                  input_stream_loc_.c_str(), 0);
 
-  axis_LOGD("v:width           %d", video_decoder_ctx_->width);
-  axis_LOGD("v:height          %d", video_decoder_ctx_->height);
-  axis_LOGD("v:time_base:      %d/%d",
+  aptima_LOGD("v:width           %d", video_decoder_ctx_->width);
+  aptima_LOGD("v:height          %d", video_decoder_ctx_->height);
+  aptima_LOGD("v:time_base:      %d/%d",
            input_format_context_->streams[video_stream_idx_]->time_base.num,
            input_format_context_->streams[video_stream_idx_]->time_base.den);
-  axis_LOGD("v:start_time:     %" PRId64,
+  aptima_LOGD("v:start_time:     %" PRId64,
            input_format_context_->streams[video_stream_idx_]->start_time);
-  axis_LOGD("v:duration:       %" PRId64,
+  aptima_LOGD("v:duration:       %" PRId64,
            input_format_context_->streams[video_stream_idx_]->duration);
-  axis_LOGD("v:nb_frames:      %" PRId64,
+  aptima_LOGD("v:nb_frames:      %" PRId64,
            input_format_context_->streams[video_stream_idx_]->nb_frames);
-  axis_LOGD(
+  aptima_LOGD(
       "v:avg_frame_rate: %d/%d",
       input_format_context_->streams[video_stream_idx_]->avg_frame_rate.num,
       input_format_context_->streams[video_stream_idx_]->avg_frame_rate.den);
@@ -842,14 +842,14 @@ void demuxer_t::dump_audio_info_() {
   av_dump_format(input_format_context_, audio_stream_idx_,
                  input_stream_loc_.c_str(), 0);
 
-  axis_LOGD("a:time_base:      %d/%d",
+  aptima_LOGD("a:time_base:      %d/%d",
            input_format_context_->streams[audio_stream_idx_]->time_base.num,
            input_format_context_->streams[audio_stream_idx_]->time_base.den);
-  axis_LOGD("a:start_time:     %" PRId64,
+  aptima_LOGD("a:start_time:     %" PRId64,
            input_format_context_->streams[audio_stream_idx_]->start_time);
-  axis_LOGD("a:duration:       %" PRId64,
+  aptima_LOGD("a:duration:       %" PRId64,
            input_format_context_->streams[audio_stream_idx_]->duration);
-  axis_LOGD("a:nb_frames:      %" PRId64,
+  aptima_LOGD("a:nb_frames:      %" PRId64,
            input_format_context_->streams[audio_stream_idx_]->nb_frames);
 }
 
@@ -906,12 +906,12 @@ int64_t demuxer_t::number_of_frames() const {
 }
 
 void demuxer_t::open_video_decoder_() {
-  axis_ASSERT(input_format_context_, "Invalid argument.");
+  aptima_ASSERT(input_format_context_, "Invalid argument.");
 
   int idx = av_find_best_stream(input_format_context_, AVMEDIA_TYPE_VIDEO, -1,
                                 -1, &video_decoder_, 0);
   if (idx < 0) {
-    axis_LOGW(
+    aptima_LOGW(
         "Failed to create video decoder, because video input stream not "
         "found.");
     return;
@@ -919,26 +919,26 @@ void demuxer_t::open_video_decoder_() {
   video_stream_idx_ = idx;
 
   if (video_decoder_ == nullptr) {
-    axis_LOGE(
+    aptima_LOGE(
         "Video input stream is found, but failed to create input video "
         "decoder, it might because the input video codec is not supported.");
     return;
   }
 
   AVCodecParameters *params = get_video_decoder_params_();
-  axis_ASSERT(params, "Invalid argument.");
+  aptima_ASSERT(params, "Invalid argument.");
 
   video_decoder_ctx_ = avcodec_alloc_context3(video_decoder_);
   if ((video_decoder_ctx_ == nullptr) ||
       avcodec_parameters_to_context(video_decoder_ctx_, params) < 0) {
-    axis_LOGE("Failed to create video decoder context.");
+    aptima_LOGE("Failed to create video decoder context.");
     return;
   }
 
   int ffmpeg_rc = avcodec_open2(video_decoder_ctx_, video_decoder_, nullptr);
   if (ffmpeg_rc < 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, ffmpeg_rc) {
-      axis_LOGE("Failed to bind video decoder to video decoder context: %s",
+      aptima_LOGE("Failed to bind video decoder to video decoder context: %s",
                err_msg);
     }
     return;
@@ -946,7 +946,7 @@ void demuxer_t::open_video_decoder_() {
 
   dump_video_info_();  // For debug.
 
-  axis_LOGD("Successfully open '%s' video decoder for input stream %d",
+  aptima_LOGD("Successfully open '%s' video decoder for input stream %d",
            video_decoder_->name, video_stream_idx_);
 
   // Check metadata for rotation.
@@ -955,10 +955,10 @@ void demuxer_t::open_video_decoder_() {
   AVDictionaryEntry *tag =
       av_dict_get(metadata, "", nullptr, AV_DICT_IGNORE_SUFFIX);
   while (tag != nullptr) {
-    axis_LOGD("metadata: %s = %s", tag->key, tag->value);
+    aptima_LOGD("metadata: %s = %s", tag->key, tag->value);
     if (strcmp(tag->key, "rotate") == 0) {
       rotate_degree_ = (int)strtol(tag->value, nullptr, 10);
-      axis_LOGD("Found rotate = %d in video stream.", rotate_degree_);
+      aptima_LOGD("Found rotate = %d in video stream.", rotate_degree_);
     }
     tag = av_dict_get(metadata, "", tag, AV_DICT_IGNORE_SUFFIX);
   }
@@ -968,7 +968,7 @@ void demuxer_t::open_audio_decoder_() {
   int idx = av_find_best_stream(input_format_context_, AVMEDIA_TYPE_AUDIO, -1,
                                 -1, &audio_decoder_, 0);
   if (idx < 0) {
-    axis_LOGW(
+    aptima_LOGW(
         "Failed to create audio decoder, because audio input stream not "
         "found.");
     return;
@@ -976,7 +976,7 @@ void demuxer_t::open_audio_decoder_() {
   audio_stream_idx_ = idx;
 
   if (audio_decoder_ == nullptr) {
-    axis_LOGE(
+    aptima_LOGE(
         "Audio input stream is found, but failed to create input audio "
         "decoder, it might because the input audio codec is not supported.");
     return;
@@ -986,14 +986,14 @@ void demuxer_t::open_audio_decoder_() {
   audio_decoder_ctx_ = avcodec_alloc_context3(audio_decoder_);
   if ((audio_decoder_ctx_ == nullptr) ||
       avcodec_parameters_to_context(audio_decoder_ctx_, params) < 0) {
-    axis_LOGD("Failed to create audio decoder context.");
+    aptima_LOGD("Failed to create audio decoder context.");
     return;
   }
 
   int rc = avcodec_open2(audio_decoder_ctx_, audio_decoder_, nullptr);
   if (rc < 0) {
     GET_FFMPEG_ERROR_MESSAGE(err_msg, rc) {
-      axis_LOGE("Failed to bind audio decoder to audio decoder context: %s",
+      aptima_LOGE("Failed to bind audio decoder to audio decoder context: %s",
                err_msg);
     }
     return;
@@ -1001,7 +1001,7 @@ void demuxer_t::open_audio_decoder_() {
 
   dump_audio_info_();  // For debug.
 
-  axis_LOGD("Successfully open '%s' audio decoder for input stream %d",
+  aptima_LOGD("Successfully open '%s' audio decoder for input stream %d",
            audio_decoder_->name, audio_stream_idx_);
 
   audio_sample_rate_ = params->sample_rate;
@@ -1013,7 +1013,7 @@ void demuxer_t::open_audio_decoder_() {
     // some audio codec (ex: pcm_mclaw) doesn't have channel layout setting.
     int64_t default_change_layout =
         av_get_default_channel_layout(params->channels);
-    axis_ASSERT(default_change_layout >= 0, "Should not happen.");
+    aptima_ASSERT(default_change_layout >= 0, "Should not happen.");
     audio_channel_layout_ = (uint64_t)default_change_layout;
   }
 }

@@ -110,7 +110,7 @@ def setup_logger(logger):
     decorate_loglevel()
 
 
-logger = logging.getLogger("axis_gn")
+logger = logging.getLogger("aptima_gn")
 setup_logger(logger)
 
 

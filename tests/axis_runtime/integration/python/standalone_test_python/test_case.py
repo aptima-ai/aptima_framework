@@ -20,10 +20,10 @@ def test_standalone_test_python():
 
     # Step 1:
     #
-    # Standalone testing involves the use of axis_runtime_python, so use tman
-    # install to install the axis_runtime_python system package.
+    # Standalone testing involves the use of aptima_runtime_python, so use tman
+    # install to install the aptima_runtime_python system package.
     tman_install_cmd = [
-        os.path.join(root_dir, "axis_manager/bin/tman"),
+        os.path.join(root_dir, "aptima_manager/bin/tman"),
         "--config-file",
         os.path.join(root_dir, "tests/local_registry/config.json"),
         "install",
@@ -58,8 +58,8 @@ def test_standalone_test_python():
             libasan_path = os.path.join(
                 base_path,
                 (
-                    "default_extension_python/.ten/app/axis_packages/"
-                    "system/axis_runtime/lib/libasan.so"
+                    "default_extension_python/.ten/app/aptima_packages/"
+                    "system/aptima_runtime/lib/libasan.so"
                 ),
             )
 

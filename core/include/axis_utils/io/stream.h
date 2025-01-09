@@ -5,34 +5,34 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #pragma once
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "axis_utils/io/runloop.h"
-#include "axis_utils/lib/atomic.h"
-#include "axis_utils/lib/signature.h"
+#include "aptima_utils/io/runloop.h"
+#include "aptima_utils/lib/atomic.h"
+#include "aptima_utils/lib/signature.h"
 
-#define axis_STREAM_SIGNATURE 0xDE552052E7F8EE10U
-#define axis_STREAM_DEFAULT_BUF_SIZE (64 * 1024)
+#define aptima_STREAM_SIGNATURE 0xDE552052E7F8EE10U
+#define aptima_STREAM_DEFAULT_BUF_SIZE (64 * 1024)
 
-typedef struct axis_stream_t axis_stream_t;
-typedef struct axis_transport_t axis_transport_t;
-typedef struct axis_streambackend_t axis_streambackend_t;
+typedef struct aptima_stream_t aptima_stream_t;
+typedef struct aptima_transport_t aptima_transport_t;
+typedef struct aptima_streambackend_t aptima_streambackend_t;
 
-struct axis_stream_t {
-  axis_signature_t signature;
-  axis_atomic_t close;
+struct aptima_stream_t {
+  aptima_signature_t signature;
+  aptima_atomic_t close;
 
-  axis_transport_t *transport;
-  axis_streambackend_t *backend;
+  aptima_transport_t *transport;
+  aptima_streambackend_t *backend;
 
   void *user_data;
 
-  void (*on_message_read)(axis_stream_t *stream, void *msg, int size);
-  void (*on_message_sent)(axis_stream_t *stream, int status, void *args);
-  void (*on_message_free)(axis_stream_t *stream, int status, void *args);
+  void (*on_message_read)(aptima_stream_t *stream, void *msg, int size);
+  void (*on_message_sent)(aptima_stream_t *stream, int status, void *args);
+  void (*on_message_free)(aptima_stream_t *stream, int status, void *args);
 
   void (*on_closed)(void *on_closed_data);
   void *on_closed_data;
@@ -44,14 +44,14 @@ struct axis_stream_t {
  * @param self The stream to read from.
  * @return 0 if success, otherwise -1.
  */
-axis_UTILS_API int axis_stream_start_read(axis_stream_t *self);
+aptima_UTILS_API int aptima_stream_start_read(aptima_stream_t *self);
 
 /**
  * @brief Stop read from stream.
  * @param self The stream to read from.
  * @return 0 if success, otherwise -1.
  */
-axis_UTILS_API int axis_stream_stop_read(axis_stream_t *self);
+aptima_UTILS_API int aptima_stream_stop_read(aptima_stream_t *self);
 
 /**
  * @brief Send a message to stream.
@@ -60,14 +60,14 @@ axis_UTILS_API int axis_stream_stop_read(axis_stream_t *self);
  * @param size The size of message.
  * @return 0 if success, otherwise -1.
  */
-axis_UTILS_API int axis_stream_send(axis_stream_t *self, const char *msg,
+aptima_UTILS_API int aptima_stream_send(aptima_stream_t *self, const char *msg,
                                   uint32_t size, void *user_data);
 
 /**
  * @brief Close the stream.
  * @param self The stream to close.
  */
-axis_UTILS_API void axis_stream_close(axis_stream_t *self);
+aptima_UTILS_API void aptima_stream_close(aptima_stream_t *self);
 
 /**
  * @brief Set close callback for stream.
@@ -75,7 +75,7 @@ axis_UTILS_API void axis_stream_close(axis_stream_t *self);
  * @param close_cb The callback to set.
  * @param close_cb_data The args of |close_cb| when it's been called
  */
-axis_UTILS_API void axis_stream_set_on_closed(axis_stream_t *self, void *on_closed,
+aptima_UTILS_API void aptima_stream_set_on_closed(aptima_stream_t *self, void *on_closed,
                                             void *on_closed_data);
 
 /**
@@ -95,13 +95,13 @@ axis_UTILS_API void axis_stream_set_on_closed(axis_stream_t *self, void *on_clos
  *       3. |self| will be removed from |from| loop and no more data
  *          will be read from it
  */
-axis_UTILS_API int axis_stream_migrate(axis_stream_t *self, axis_runloop_t *from,
-                                     axis_runloop_t *to, void **user_data,
-                                     void (*cb)(axis_stream_t *new_stream,
+aptima_UTILS_API int aptima_stream_migrate(aptima_stream_t *self, aptima_runloop_t *from,
+                                     aptima_runloop_t *to, void **user_data,
+                                     void (*cb)(aptima_stream_t *new_stream,
                                                 void **user_data));
 
-axis_UTILS_API bool axis_stream_check_integrity(axis_stream_t *self);
+aptima_UTILS_API bool aptima_stream_check_integrity(aptima_stream_t *self);
 
-axis_UTILS_API void axis_stream_init(axis_stream_t *self);
+aptima_UTILS_API void aptima_stream_init(aptima_stream_t *self);
 
-axis_UTILS_API void axis_stream_on_close(axis_stream_t *self);
+aptima_UTILS_API void aptima_stream_on_close(aptima_stream_t *self);

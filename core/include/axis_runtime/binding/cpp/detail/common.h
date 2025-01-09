@@ -12,8 +12,8 @@
 
 #include <string>
 
-#include "axis_utils/lib/alloc.h"
-#include "axis_utils/macro/mark.h"
+#include "aptima_utils/lib/alloc.h"
+#include "aptima_utils/macro/mark.h"
 
 namespace ten {
 
@@ -21,13 +21,13 @@ namespace {  // NOLINT
 
 // Internal helper function to get the name of the current exception type.
 #if !defined(_WIN32)
-axis_UNUSED inline std::string curr_exception_type_name() {
+aptima_UNUSED inline std::string curr_exception_type_name() {
   int status = 0;
   char *exception_type = abi::__cxa_demangle(
       abi::__cxa_current_exception_type()->name(), nullptr, nullptr, &status);
   std::string result(exception_type);
   // NOLINTNEXTLINE(cppcoreguidelines-no-malloc,cppcoreguidelines-owning-memory,hicpp-no-malloc)
-  axis_FREE(exception_type);
+  aptima_FREE(exception_type);
   return result;
 }
 #else

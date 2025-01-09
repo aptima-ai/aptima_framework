@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "axis_utils/io/runloop.h"
+#include "aptima_utils/io/runloop.h"
 
 namespace ten {
 
@@ -19,7 +19,7 @@ using TenRunloop = std::unique_ptr<Runloop>;
 class Runloop {
  public:
   static TenRunloop Create(const std::string &impl = "") {
-    auto loop = axis_runloop_create(impl.empty() ? nullptr : impl.c_str());
+    auto loop = aptima_runloop_create(impl.empty() ? nullptr : impl.c_str());
     if (!loop) {
       return nullptr;
     }
@@ -36,22 +36,22 @@ class Runloop {
 
   Runloop &operator=(Runloop &&rhs) = delete;
 
-  ~Runloop() { axis_runloop_destroy(loop_); }
+  ~Runloop() { aptima_runloop_destroy(loop_); }
 
  public:
-  ::axis_runloop_t *get_c_loop() const { return loop_; }
+  ::aptima_runloop_t *get_c_loop() const { return loop_; }
 
-  void Run() { axis_runloop_run(loop_); }
+  void Run() { aptima_runloop_run(loop_); }
 
-  void Stop() { axis_runloop_stop(loop_); }
+  void Stop() { aptima_runloop_stop(loop_); }
 
-  bool Alive() const { return axis_runloop_alive(loop_) == 1; }
-
- private:
-  explicit Runloop(::axis_runloop_t *loop) : loop_(loop) {}
+  bool Alive() const { return aptima_runloop_alive(loop_) == 1; }
 
  private:
-  ::axis_runloop_t *loop_;
+  explicit Runloop(::aptima_runloop_t *loop) : loop_(loop) {}
+
+ private:
+  ::aptima_runloop_t *loop_;
 };
 
 }  // namespace ten

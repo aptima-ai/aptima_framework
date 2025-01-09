@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stddef.h>
 
@@ -18,7 +18,7 @@
  *
  * This function generates random data. It may fail.
  */
-axis_UTILS_API int axis_random(void *buf, size_t size);
+aptima_UTILS_API int aptima_random(void *buf, size_t size);
 
 /**
  * @brief Generate random int n that start <= n < end
@@ -26,7 +26,7 @@ axis_UTILS_API int axis_random(void *buf, size_t size);
  * @param end The end of random.
  * @return A random int number
  */
-axis_UTILS_API int axis_random_int(int start, int end);
+aptima_UTILS_API int aptima_random_int(int start, int end);
 
 /**
  * @brief Generate random printable string with given size.
@@ -34,25 +34,25 @@ axis_UTILS_API int axis_random_int(int start, int end);
  * @param size The size of the buffer.
  * @return 0 on success, -1 on failure.
  */
-axis_UTILS_API int axis_random_string(char *buf, size_t size);
+aptima_UTILS_API int aptima_random_string(char *buf, size_t size);
 
 /**
  * @brief Generate random hex string with given size.
  * @param buf The buffer to store random data.
  * @param size The size of the buffer.
  */
-axis_UTILS_API int axis_random_hex_string(char *buf, size_t size);
+aptima_UTILS_API int aptima_random_hex_string(char *buf, size_t size);
 
 /**
  * @brief Generate random base64 string with given size.
  * @param buf The buffer to store random data.
  * @param size The size of the buffer.
  */
-axis_UTILS_API int axis_random_base64_string(char *buf, size_t size);
+aptima_UTILS_API int aptima_random_base64_string(char *buf, size_t size);
 
 /**
  * @brief Generate UUID string.
  * @param buf The buffer to store random data.
  * @param size The size of the buffer.
  */
-axis_UTILS_API int axis_uuid_new(char *buf, size_t size);
+aptima_UTILS_API int aptima_uuid_new(char *buf, size_t size);

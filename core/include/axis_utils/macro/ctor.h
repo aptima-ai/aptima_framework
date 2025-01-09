@@ -7,13 +7,13 @@
 #pragma once
 
 #if defined(__GNUC__) || defined(__clang__)
-#ifndef axis_CONSTRUCTOR
-#define axis_CONSTRUCTOR(name) \
+#ifndef aptima_CONSTRUCTOR
+#define aptima_CONSTRUCTOR(name) \
   __attribute__((constructor, used)) static void name(void)
 #endif
 
-#ifndef axis_DESTRUCTOR
-#define axis_DESTRUCTOR(name) \
+#ifndef aptima_DESTRUCTOR
+#define aptima_DESTRUCTOR(name) \
   __attribute__((destructor, used)) static void name(void)
 #endif
 
@@ -21,8 +21,8 @@
 
 #if defined(__cplusplus)
 
-#ifndef axis_CONSTRUCTOR
-#define axis_CONSTRUCTOR(name)                                             \
+#ifndef aptima_CONSTRUCTOR
+#define aptima_CONSTRUCTOR(name)                                             \
   static void name(void);                                                 \
   struct ____dummy__ctor_##name##__struct {                               \
     ____dummy__ctor_##name##__struct() { name(); }                        \
@@ -32,8 +32,8 @@
   static void name(void)
 #endif
 
-#ifndef axis_DESTRUCTOR
-#define axis_DESTRUCTOR(name)                                              \
+#ifndef aptima_DESTRUCTOR
+#define aptima_DESTRUCTOR(name)                                              \
   static void name(void);                                                 \
   struct ____dummy__dtor_##name##__struct {                               \
     ____dummy__dtor_##name##__struct() {}                                 \
@@ -57,8 +57,8 @@
 
 #pragma section(".CRT$XCU", read)
 
-#ifndef AGORE_axis_CONSTRUCTOR__
-#define AGORE_axis_CONSTRUCTOR__(name, prefix)                                 \
+#ifndef AGORE_aptima_CONSTRUCTOR__
+#define AGORE_aptima_CONSTRUCTOR__(name, prefix)                                 \
   static void name(void);                                                     \
   __declspec(allocate(".CRT$XCU")) void (*____pfnDummy##name##)(void) = name; \
   __pragma(comment(linker, "/include:" prefix "____pfnDummy" #name));         \
@@ -66,12 +66,12 @@
 #endif
 
 #if defined(_WIN64)
-#ifndef axis_CONSTRUCTOR
-#define axis_CONSTRUCTOR(name) AGORE_axis_CONSTRUCTOR__(name, "")
+#ifndef aptima_CONSTRUCTOR
+#define aptima_CONSTRUCTOR(name) AGORE_aptima_CONSTRUCTOR__(name, "")
 #endif
 #else  // defined(_WIN64)
-#ifndef axis_CONSTRUCTOR
-#define axis_CONSTRUCTOR(name) AGORE_axis_CONSTRUCTOR__(name, "_")
+#ifndef aptima_CONSTRUCTOR
+#define aptima_CONSTRUCTOR(name) AGORE_aptima_CONSTRUCTOR__(name, "_")
 #endif
 #endif  // defined(_WIN64)
 
@@ -79,8 +79,8 @@
 
 // No destructor for you, sorry.
 // Function marked as destructor will _not_ be called in Windows
-#ifndef axis_DESTRUCTOR
-#define axis_DESTRUCTOR(name) static void name(void)
+#ifndef aptima_DESTRUCTOR
+#define aptima_DESTRUCTOR(name) static void name(void)
 #endif
 
 #endif  // defined(__GNUC__)

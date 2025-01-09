@@ -33,7 +33,7 @@ jobs:
           - compiler: clang
             arch: x86
     container:
-      image: ghcr.io/axis-talk/axis_building_ubuntu2204
+      image: ghcr.io/aptima-ai/axis_building_ubuntu2204
     steps:
       - uses: actions/checkout@v4
         with:

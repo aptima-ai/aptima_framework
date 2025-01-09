@@ -4,15 +4,15 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/ten.gni")
 
 glob("cpp") {
   file_list =
       [ "//packages/example_extensions/simple_http_server_cpp/src/main.cc" ]
   include_dirs = [
     "//packages",
-    "//tests/axis_runtime",
+    "//tests/aptima_runtime",
   ]
   deps = [
     "//third_party/libwebsockets",

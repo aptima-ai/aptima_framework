@@ -6,12 +6,12 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <memory>
 
-#include "axis_runtime/binding/cpp/detail/msg/cmd/cmd.h"
-#include "axis_runtime/msg/cmd/close_app/cmd.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/cmd.h"
+#include "aptima_runtime/msg/cmd/close_app/cmd.h"
 
 namespace ten {
 
@@ -29,7 +29,7 @@ class cmd_close_app_t : public cmd_t {
     explicit ctor_passkey_t() = default;
   };
 
-  explicit cmd_close_app_t(axis_shared_ptr_t *cmd) : cmd_t(cmd) {}
+  explicit cmd_close_app_t(aptima_shared_ptr_t *cmd) : cmd_t(cmd) {}
 
  public:
   static std::unique_ptr<cmd_close_app_t> create(error_t *err = nullptr) {
@@ -37,12 +37,12 @@ class cmd_close_app_t : public cmd_t {
   }
 
   explicit cmd_close_app_t(ctor_passkey_t /*unused*/)
-      : cmd_t(axis_cmd_close_app_create()) {}
+      : cmd_t(aptima_cmd_close_app_create()) {}
 
   ~cmd_close_app_t() override = default;
 
   // @{
-  cmd_close_app_t(axis_cmd_close_app_t *cmd) = delete;
+  cmd_close_app_t(aptima_cmd_close_app_t *cmd) = delete;
   cmd_close_app_t(cmd_close_app_t &other) = delete;
   cmd_close_app_t(cmd_close_app_t &&other) = delete;
   cmd_close_app_t &operator=(const cmd_close_app_t &cmd) = delete;

@@ -15,48 +15,48 @@ class DefaultExtension(Extension):
         self.recv_data_count = 0
         self.cached_cmd = None
 
-    def return_if_all_data_received(self, axis_env: TenEnv) -> None:
+    def return_if_all_data_received(self, aptima_env: TenEnv) -> None:
         if self.cached_cmd is not None and self.recv_data_count == 3:
-            axis_env.log_info("All data received")
+            aptima_env.log_info("All data received")
             cmd_result = CmdResult.create(StatusCode.OK)
-            axis_env.return_result(cmd_result, self.cached_cmd)
+            aptima_env.return_result(cmd_result, self.cached_cmd)
             self.cached_cmd = None
 
-    def on_data(self, axis_env: TenEnv, data: Data) -> None:
+    def on_data(self, aptima_env: TenEnv, data: Data) -> None:
         if data.get_name() == "test":
-            axis_env.log_info(
+            aptima_env.log_info(
                 "DefaultExtension on_data: " + data.get_property_to_json()
             )
             self.recv_data_count += 1
-            self.return_if_all_data_received(axis_env)
+            self.return_if_all_data_received(aptima_env)
 
-    def on_audio_frame(self, axis_env: TenEnv, audio_frame: AudioFrame) -> None:
+    def on_audio_frame(self, aptima_env: TenEnv, audio_frame: AudioFrame) -> None:
         if audio_frame.get_name() == "test":
-            axis_env.log_info(
+            aptima_env.log_info(
                 "DefaultExtension on_audio_frame: "
                 + audio_frame.get_property_to_json()
             )
             self.recv_data_count += 1
-            self.return_if_all_data_received(axis_env)
+            self.return_if_all_data_received(aptima_env)
 
-    def on_video_frame(self, axis_env: TenEnv, video_frame: VideoFrame) -> None:
+    def on_video_frame(self, aptima_env: TenEnv, video_frame: VideoFrame) -> None:
         if video_frame.get_name() == "test":
-            axis_env.log_info(
+            aptima_env.log_info(
                 "DefaultExtension on_video_frame: "
                 + video_frame.get_property_to_json()
             )
             self.recv_data_count += 1
-            self.return_if_all_data_received(axis_env)
+            self.return_if_all_data_received(aptima_env)
 
-    def on_cmd(self, axis_env: TenEnv, cmd: Cmd) -> None:
+    def on_cmd(self, aptima_env: TenEnv, cmd: Cmd) -> None:
         cmd_json = cmd.get_property_to_json()
-        axis_env.log_info("DefaultExtension on_cmd json: " + cmd_json)
+        aptima_env.log_info("DefaultExtension on_cmd json: " + cmd_json)
 
         if cmd.get_name() == "hello_world":
             self.cached_cmd = cmd
-            self.return_if_all_data_received(axis_env)
+            self.return_if_all_data_received(aptima_env)
         elif cmd.get_name() == "greeting":
-            greeting = axis_env.get_property_string("greeting")
+            greeting = aptima_env.get_property_string("greeting")
             cmd_result = CmdResult.create(StatusCode.OK)
             cmd_result.set_property_string("detail", greeting)
-            axis_env.return_result(cmd_result, cmd)
+            aptima_env.return_result(cmd_result, cmd)

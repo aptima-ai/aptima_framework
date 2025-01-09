@@ -6,28 +6,28 @@
 //
 #include "common/test_utils.h"
 #include "gtest/gtest.h"
-#include "axis_utils/macro/expand.h"
+#include "aptima_utils/macro/expand.h"
 
 TEST(MacroTest, positive) {
 #if defined(__clang__)
   // The following line could only be passed if this file is compiled with
   // clang.
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(), 0);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(), 0);
 #endif
 
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(a), 1);
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(a, 1), 2);
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(a, b, c), 3);
-  EXPECT_EQ(axis_MACRO_CAR(1, 2, 3), 1);
-  EXPECT_EQ(axis_MACRO_CAR("a", "b", "c"), "a");
-  EXPECT_EQ(axis_MACRO_CAR(nullptr, "b", 3), nullptr);
-  EXPECT_EQ(axis_MACRO_CAR(axis_MACRO_CAR(1, 2, 3)), 1);
-  EXPECT_EQ(axis_MACRO_CAR(axis_MACRO_CDR(1, 2, 3)), 2);
-  EXPECT_EQ(axis_MACRO_CDR(axis_MACRO_CDR(1, 2, 3)), 3);
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(axis_MACRO_CAR(1, 2, 3)), 1);
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(axis_MACRO_CDR(1, 2, 3)), 2);
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(axis_MACRO_CDR(1, 2)), 1);
-  EXPECT_EQ(axis_MACRO_ARGS_COUNT(axis_MACRO_CDR(1)), 1);
-  axis_MACRO_REPEAT(5, AGO_LOG("hello"); AGO_LOG("world"););
-  // axis_MACRO_REPEAT_WITH_INDEX(1, AGO_LOG("hello" #times);)
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(a), 1);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(a, 1), 2);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(a, b, c), 3);
+  EXPECT_EQ(aptima_MACRO_CAR(1, 2, 3), 1);
+  EXPECT_EQ(aptima_MACRO_CAR("a", "b", "c"), "a");
+  EXPECT_EQ(aptima_MACRO_CAR(nullptr, "b", 3), nullptr);
+  EXPECT_EQ(aptima_MACRO_CAR(aptima_MACRO_CAR(1, 2, 3)), 1);
+  EXPECT_EQ(aptima_MACRO_CAR(aptima_MACRO_CDR(1, 2, 3)), 2);
+  EXPECT_EQ(aptima_MACRO_CDR(aptima_MACRO_CDR(1, 2, 3)), 3);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(aptima_MACRO_CAR(1, 2, 3)), 1);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(aptima_MACRO_CDR(1, 2, 3)), 2);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(aptima_MACRO_CDR(1, 2)), 1);
+  EXPECT_EQ(aptima_MACRO_ARGS_COUNT(aptima_MACRO_CDR(1)), 1);
+  aptima_MACRO_REPEAT(5, AGO_LOG("hello"); AGO_LOG("world"););
+  // aptima_MACRO_REPEAT_WITH_INDEX(1, AGO_LOG("hello" #times);)
 }

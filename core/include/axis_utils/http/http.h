@@ -6,19 +6,19 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-typedef enum axis_HTTP_METHOD {
-  axis_HTTP_METHOD_INVALID,
+typedef enum aptima_HTTP_METHOD {
+  aptima_HTTP_METHOD_INVALID,
 
-  axis_HTTP_METHOD_GET,
-  axis_HTTP_METHOD_POST,
-  axis_HTTP_METHOD_PUT,
-  axis_HTTP_METHOD_PATCH,
-  axis_HTTP_METHOD_DELETE,
-  axis_HTTP_METHOD_HEAD,
-  axis_HTTP_METHOD_OPTIONS,
+  aptima_HTTP_METHOD_GET,
+  aptima_HTTP_METHOD_POST,
+  aptima_HTTP_METHOD_PUT,
+  aptima_HTTP_METHOD_PATCH,
+  aptima_HTTP_METHOD_DELETE,
+  aptima_HTTP_METHOD_HEAD,
+  aptima_HTTP_METHOD_OPTIONS,
 
-  axis_HTTP_METHOD_FIRST = axis_HTTP_METHOD_GET,
-  axis_HTTP_METHOD_LAST = axis_HTTP_METHOD_OPTIONS,
-} axis_HTTP_METHOD;
+  aptima_HTTP_METHOD_FIRST = aptima_HTTP_METHOD_GET,
+  aptima_HTTP_METHOD_LAST = aptima_HTTP_METHOD_OPTIONS,
+} aptima_HTTP_METHOD;

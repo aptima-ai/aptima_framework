@@ -12,7 +12,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"axis_framework/ten"
+	"aptima_framework/ten"
 )
 
 const concurrency = 100000

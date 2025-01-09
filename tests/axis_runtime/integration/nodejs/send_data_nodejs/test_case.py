@@ -36,7 +36,7 @@ def test_send_data_nodejs():
         os.path.join(root_dir, "tgn_args.txt"),
     )
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         print('Assembling and building package "{}".'.format(source_pkg_name))
 
         rc = build_pkg.prepare_and_build_app(
@@ -59,7 +59,7 @@ def test_send_data_nodejs():
         if build_config_args.enable_sanitizer:
             libasan_path = os.path.join(
                 base_path,
-                "send_data_nodejs_app/axis_packages/system/axis_runtime/lib/libasan.so",
+                "send_data_nodejs_app/aptima_packages/system/aptima_runtime/lib/libasan.so",
             )
 
             if os.path.exists(libasan_path):
@@ -107,7 +107,7 @@ def test_send_data_nodejs():
 
         assert exit_code == 0
 
-        if build_config_args.axis_enable_integration_tests_prebuilt is False:
+        if build_config_args.aptima_enable_integration_tests_prebuilt is False:
             source_root_path = os.path.join(base_path, source_pkg_name)
 
             # Testing complete. If builds are only created during the testing

@@ -6,10 +6,10 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stddef.h>
 
-axis_UTILS_API size_t axis_terminal_get_width_in_char(void);
+aptima_UTILS_API size_t aptima_terminal_get_width_in_char(void);
 
-axis_UTILS_API int axis_terminal_is_terminal(int fd);
+aptima_UTILS_API int aptima_terminal_is_terminal(int fd);

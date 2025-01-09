@@ -14,7 +14,7 @@ from ten import (AudioFrame, Cmd, CmdResult, Data, ExtensionTester, StatusCode,
 class ExtensionTesterBasic(ExtensionTester):
     def check_hello(
         self,
-        axis_env: TenEnvTester,
+        aptima_env: TenEnvTester,
         result: Optional[CmdResult],
         error: Optional[TenError],
     ):
@@ -27,25 +27,25 @@ class ExtensionTesterBasic(ExtensionTester):
         print("receive hello_world, status:" + str(statusCode))
 
         if statusCode == StatusCode.OK:
-            axis_env.stop_test()
+            aptima_env.stop_test()
 
-    def on_start(self, axis_env: TenEnvTester) -> None:
+    def on_start(self, aptima_env: TenEnvTester) -> None:
         new_cmd = Cmd.create("hello_world")
 
         print("send hello_world")
-        axis_env.send_cmd(
+        aptima_env.send_cmd(
             new_cmd,
-            lambda axis_env, result, error: self.check_hello(
-                axis_env, result, error
+            lambda aptima_env, result, error: self.check_hello(
+                aptima_env, result, error
             ),
         )
 
-        axis_env.send_data(Data.create("test"))
-        axis_env.send_audio_frame(AudioFrame.create("test"))
-        axis_env.send_video_frame(VideoFrame.create("test"))
+        aptima_env.send_data(Data.create("test"))
+        aptima_env.send_audio_frame(AudioFrame.create("test"))
+        aptima_env.send_video_frame(VideoFrame.create("test"))
 
         print("tester on_start_done")
-        axis_env.on_start_done()
+        aptima_env.on_start_done()
 
 
 def test_basic():

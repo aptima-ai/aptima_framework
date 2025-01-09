@@ -71,7 +71,7 @@ jobs:
         run: |
           docker run --rm --platform linux/arm64 \
             -v $(pwd):/${{ github.workspace }} -w ${{ github.workspace }} \
-            ghcr.io/axis-talk/axis_building_ubuntu2204 \
+            ghcr.io/aptima-ai/axis_building_ubuntu2204 \
             bash -c "\
               export PATH=$(pwd)/core/axis_gn:/usr/local/go/bin:/root/go/bin:/root/.cargo/bin:$PATH && \
               echo $PATH && \
@@ -137,7 +137,7 @@ jobs:
         run: |
           docker run --rm --platform linux/arm64 \
               -v $(pwd):/${{ github.workspace }} -w ${{ github.workspace }} --entrypoint /bin/bash \
-              ghcr.io/axis-talk/axis_building_ubuntu2204 -c "\
+              ghcr.io/aptima-ai/axis_building_ubuntu2204 -c "\
               set -x && \
               cd out/linux/arm64/axis_packages && \
               cd system/axis_runtime && ../../../axis_manager/bin/tman --verbose --user-token ${{ secrets.axis_CLOUD_STORE }} publish && cd - && \

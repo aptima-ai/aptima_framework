@@ -6,33 +6,33 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "axis_runtime/axis_env/axis_env.h"
-#include "axis_utils/lib/error.h"
+#include "aptima_runtime/aptima_env/aptima_env.h"
+#include "aptima_utils/lib/error.h"
 
-typedef struct axis_env_proxy_t axis_env_proxy_t;
-typedef struct axis_env_t axis_env_t;
+typedef struct aptima_env_proxy_t aptima_env_proxy_t;
+typedef struct aptima_env_t aptima_env_t;
 
-typedef void (*axis_env_proxy_notify_func_t)(axis_env_t *axis_env,
+typedef void (*aptima_env_proxy_notify_func_t)(aptima_env_t *aptima_env,
                                             void *user_data);
 
-axis_RUNTIME_API axis_env_proxy_t *axis_env_proxy_create(axis_env_t *axis_env,
+aptima_RUNTIME_API aptima_env_proxy_t *aptima_env_proxy_create(aptima_env_t *aptima_env,
                                                       size_t initial_thread_cnt,
-                                                      axis_error_t *err);
+                                                      aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_proxy_release(axis_env_proxy_t *self,
-                                           axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_proxy_release(aptima_env_proxy_t *self,
+                                           aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_proxy_notify(
-    axis_env_proxy_t *self, axis_env_proxy_notify_func_t notify_func,
-    void *user_data, bool sync, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_proxy_notify(
+    aptima_env_proxy_t *self, aptima_env_proxy_notify_func_t notify_func,
+    void *user_data, bool sync, aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_proxy_acquire_lock_mode(axis_env_proxy_t *self,
-                                                     axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_proxy_acquire_lock_mode(aptima_env_proxy_t *self,
+                                                     aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_proxy_release_lock_mode(axis_env_proxy_t *self,
-                                                     axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_proxy_release_lock_mode(aptima_env_proxy_t *self,
+                                                     aptima_error_t *err);

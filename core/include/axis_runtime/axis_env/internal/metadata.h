@@ -6,30 +6,30 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-#include "axis_runtime/axis_env/axis_env.h"
-#include "axis_utils/value/value.h"
+#include "aptima_runtime/aptima_env/aptima_env.h"
+#include "aptima_utils/value/value.h"
 
-typedef struct axis_env_t axis_env_t;
-typedef struct axis_error_t axis_error_t;
+typedef struct aptima_env_t aptima_env_t;
+typedef struct aptima_error_t aptima_error_t;
 
 /**
  * @brief Note that the ownership of @a value would be transferred into the
  * TEN runtime, so the caller of this function could _not_ consider the
  * value instance is still valid.
  */
-axis_RUNTIME_API bool axis_env_set_property(axis_env_t *self, const char *path,
-                                          axis_value_t *value, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_set_property(aptima_env_t *self, const char *path,
+                                          aptima_value_t *value, aptima_error_t *err);
 
-axis_RUNTIME_API axis_value_t *axis_env_peek_property(axis_env_t *self,
+aptima_RUNTIME_API aptima_value_t *aptima_env_peek_property(aptima_env_t *self,
                                                    const char *path,
-                                                   axis_error_t *err);
+                                                   aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_is_property_exist(axis_env_t *self,
+aptima_RUNTIME_API bool aptima_env_is_property_exist(aptima_env_t *self,
                                                const char *path,
-                                               axis_error_t *err);
+                                               aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_init_property_from_json(axis_env_t *self,
+aptima_RUNTIME_API bool aptima_env_init_property_from_json(aptima_env_t *self,
                                                      const char *json_str,
-                                                     axis_error_t *err);
+                                                     aptima_error_t *err);

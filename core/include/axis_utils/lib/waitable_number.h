@@ -6,36 +6,36 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include "stdint.h"
 
-typedef struct axis_waitable_object_t axis_waitable_number_t;
+typedef struct aptima_waitable_object_t aptima_waitable_number_t;
 
-axis_UTILS_API axis_waitable_number_t *axis_waitable_number_create(
+aptima_UTILS_API aptima_waitable_number_t *aptima_waitable_number_create(
     int64_t init_value);
 
-axis_UTILS_API void axis_waitable_number_destroy(axis_waitable_number_t *number);
+aptima_UTILS_API void aptima_waitable_number_destroy(aptima_waitable_number_t *number);
 
-axis_UTILS_API void axis_waitable_number_increase(axis_waitable_number_t *number,
+aptima_UTILS_API void aptima_waitable_number_increase(aptima_waitable_number_t *number,
                                                 int64_t value);
 
-axis_UTILS_API void axis_waitable_number_decrease(axis_waitable_number_t *number,
+aptima_UTILS_API void aptima_waitable_number_decrease(aptima_waitable_number_t *number,
                                                 int64_t value);
 
-axis_UTILS_API void axis_waitable_number_multiply(axis_waitable_number_t *number,
+aptima_UTILS_API void aptima_waitable_number_multiply(aptima_waitable_number_t *number,
                                                 int64_t value);
 
-axis_UTILS_API void axis_waitable_number_divide(axis_waitable_number_t *number,
+aptima_UTILS_API void aptima_waitable_number_divide(aptima_waitable_number_t *number,
                                               int64_t value);
 
-axis_UTILS_API void axis_waitable_number_set(axis_waitable_number_t *number,
+aptima_UTILS_API void aptima_waitable_number_set(aptima_waitable_number_t *number,
                                            int64_t value);
 
-axis_UTILS_API int64_t axis_waitable_number_get(axis_waitable_number_t *number);
+aptima_UTILS_API int64_t aptima_waitable_number_get(aptima_waitable_number_t *number);
 
-axis_UTILS_API int axis_waitable_number_wait_until(axis_waitable_number_t *number,
+aptima_UTILS_API int aptima_waitable_number_wait_until(aptima_waitable_number_t *number,
                                                  int64_t value, int timeout);
 
-axis_UTILS_API int axis_waitable_number_wait_while(axis_waitable_number_t *number,
+aptima_UTILS_API int aptima_waitable_number_wait_while(aptima_waitable_number_t *number,
                                                  int64_t value, int timeout);

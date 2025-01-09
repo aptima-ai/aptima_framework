@@ -6,14 +6,14 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-typedef enum axis_STATUS_CODE {
-  axis_STATUS_CODE_INVALID = -1,
+typedef enum aptima_STATUS_CODE {
+  aptima_STATUS_CODE_INVALID = -1,
 
   // 0 representing OK is a common convention.
-  axis_STATUS_CODE_OK = 0,
-  axis_STATUS_CODE_ERROR = 1,
+  aptima_STATUS_CODE_OK = 0,
+  aptima_STATUS_CODE_ERROR = 1,
 
-  axis_STATUS_CODE_LAST = 2,
-} axis_STATUS_CODE;
+  aptima_STATUS_CODE_LAST = 2,
+} aptima_STATUS_CODE;

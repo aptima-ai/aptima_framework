@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_utils/options.gni")
-import("//build/axis_utils/utils.gni")
+import("//build/aptima_utils/options.gni")
+import("//build/aptima_utils/utils.gni")
 
-axis_utils_glob("common") {
+aptima_utils_glob("common") {
   no_current = true
 
   file_list = [ "test_utils.cpp" ]

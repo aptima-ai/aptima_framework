@@ -13,7 +13,7 @@ import {
   Cmd,
   StatusCode,
   CmdResult,
-} from "axis-runtime-nodejs";
+} from "aptima-runtime-nodejs";
 
 class HttpServerExtension extends Extension {
   tenEnv: TenEnv | null = null;

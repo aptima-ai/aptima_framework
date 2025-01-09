@@ -14,27 +14,27 @@
 
 #include "demuxer.h"
 #include "libavutil/rational.h"
-#include "axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lang/cpp/lib/value.h"
-#include "axis_utils/lib/event.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/log/log.h"
-#include "axis_utils/macro/check.h"
+#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lang/cpp/lib/value.h"
+#include "aptima_utils/lib/event.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/log/log.h"
+#include "aptima_utils/macro/check.h"
 
 namespace ten {
 namespace ffmpeg_extension {
 
-demuxer_thread_t::demuxer_thread_t(ten::axis_env_proxy_t *axis_env_proxy,
+demuxer_thread_t::demuxer_thread_t(ten::aptima_env_proxy_t *aptima_env_proxy,
                                    std::unique_ptr<ten::cmd_t> start_cmd,
                                    extension_t *extension,
                                    std::string &input_stream_loc)
-    : axis_env_proxy_(axis_env_proxy),
+    : aptima_env_proxy_(aptima_env_proxy),
       extension_(extension),
       stop_(false),
       demuxer_(nullptr),
       demuxer_thread(nullptr),
-      demuxer_thread_is_started(axis_event_create(0, 0)),
-      ready_for_demuxer(axis_event_create(0, 0)),
+      demuxer_thread_is_started(aptima_event_create(0, 0)),
+      ready_for_demuxer(aptima_event_create(0, 0)),
       input_stream_loc_(input_stream_loc),
       start_cmd_(std::move(start_cmd)) {
   axis_ASSERT(extension, "Invalid argument.");

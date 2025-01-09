@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/ten.gni")
 
-axis_package_test_prepare_app("get_set_prop_python_app") {
+aptima_package_test_prepare_app("get_set_prop_python_app") {
   src_app = "default_app_python"
   src_app_language = "python"
   generated_app_src_root_dir_name = "get_set_prop_python_app"
@@ -17,11 +17,11 @@ axis_package_test_prepare_app("get_set_prop_python_app") {
     "get_set_prop_python_app/property.json",
   ]
 
-  replace_files_after_install_all = [ "get_set_prop_python_app/axis_packages/extension/default_extension_python/extension.py" ]
+  replace_files_after_install_all = [ "get_set_prop_python_app/aptima_packages/extension/default_extension_python/extension.py" ]
 
-  if (axis_enable_axis_manager) {
+  if (aptima_enable_aptima_manager) {
     deps = [
-      "//core/src/axis_manager",
+      "//core/src/aptima_manager",
       "//packages/core_apps/default_app_python:upload_default_app_python_to_server",
       "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
       "//packages/example_extensions/simple_echo_cpp:upload_simple_echo_cpp_to_server",
@@ -30,9 +30,9 @@ axis_package_test_prepare_app("get_set_prop_python_app") {
   }
 }
 
-axis_package_test_prepare_auxiliary_resources("get_set_prop_python_test_files") {
+aptima_package_test_prepare_auxiliary_resources("get_set_prop_python_test_files") {
   resources = [
-    "//tests/axis_runtime/integration/common=>common",
+    "//tests/aptima_runtime/integration/common=>common",
     "__init__.py",
     "test_case.py",
   ]

@@ -1,5 +1,5 @@
 {
-  "name": "axis-websocket-server-extension",
+  "name": "aptima-websocket-server-extension",
   "version": "1.0.0",
   "main": "./build/index.js",
   "devDependencies": {
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
-    "axis-runtime-nodejs": "file:../../../axis_packages/system/axis_runtime_nodejs",
+    "aptima-runtime-nodejs": "file:../../../aptima_packages/system/aptima_runtime_nodejs",
     "ws": "^8.18.0"
   },
   "scripts": {

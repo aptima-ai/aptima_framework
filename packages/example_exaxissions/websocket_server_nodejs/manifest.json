@@ -5,7 +5,7 @@
   "dependencies": [
     {
       "type": "system",
-      "name": "axis_runtime_nodejs",
+      "name": "aptima_runtime_nodejs",
       "version": "0.6.0"
     }
   ],

@@ -4,18 +4,18 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/options.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/options.gni")
 
-copy("copy_pytest_ini_for_axis_runtime_python_integration_test") {
-  sources = [ "//tests/axis_runtime/integration/pytest.ini" ]
-  outputs = [ "${root_out_dir}/tests/axis_runtime/integration/pytest.ini" ]
+copy("copy_pytest_ini_for_aptima_runtime_python_integration_test") {
+  sources = [ "//tests/aptima_runtime/integration/pytest.ini" ]
+  outputs = [ "${root_out_dir}/tests/aptima_runtime/integration/pytest.ini" ]
 }
 
 group("python") {
   deps = []
 
-  if (axis_enable_python_binding) {
+  if (aptima_enable_python_binding) {
     deps += [
       "aio_http_server_python",
       "async_extension_basic_python",
@@ -46,7 +46,7 @@ group("python") {
       "websocket_server_python",
     ]
 
-    if (axis_enable_python_binding && axis_enable_go_binding) {
+    if (aptima_enable_python_binding && aptima_enable_go_binding) {
       deps += [
         "go_app_cythonize",
         "go_app_partially_cythonize",
@@ -56,5 +56,5 @@ group("python") {
     }
   }
 
-  deps += [ "//tests/axis_runtime/integration/python:copy_pytest_ini_for_axis_runtime_python_integration_test" ]
+  deps += [ "//tests/aptima_runtime/integration/python:copy_pytest_ini_for_aptima_runtime_python_integration_test" ]
 }

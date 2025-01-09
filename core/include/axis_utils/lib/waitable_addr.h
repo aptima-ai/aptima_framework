@@ -6,28 +6,28 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdint.h>
 
-typedef struct axis_spinlock_t axis_spinlock_t;
-typedef struct axis_waitable_t {
+typedef struct aptima_spinlock_t aptima_spinlock_t;
+typedef struct aptima_waitable_t {
   uint32_t sig;
-} axis_waitable_t;
+} aptima_waitable_t;
 
-#define axis_WAITABLE_INIT {0}
+#define aptima_WAITABLE_INIT {0}
 
-axis_UTILS_API void axis_waitable_init(axis_waitable_t *wb);
+aptima_UTILS_API void aptima_waitable_init(aptima_waitable_t *wb);
 
-axis_UTILS_API axis_waitable_t *axis_waitable_from_addr(uint32_t *address);
+aptima_UTILS_API aptima_waitable_t *aptima_waitable_from_addr(uint32_t *address);
 
-axis_UTILS_API int axis_waitable_wait(axis_waitable_t *wb, uint32_t expect,
-                                    axis_spinlock_t *lock, int timeout);
+aptima_UTILS_API int aptima_waitable_wait(aptima_waitable_t *wb, uint32_t expect,
+                                    aptima_spinlock_t *lock, int timeout);
 
-axis_UTILS_API void axis_waitable_notify(axis_waitable_t *wb);
+aptima_UTILS_API void aptima_waitable_notify(aptima_waitable_t *wb);
 
-axis_UTILS_API void axis_waitable_notify_all(axis_waitable_t *wb);
+aptima_UTILS_API void aptima_waitable_notify_all(aptima_waitable_t *wb);
 
-axis_UTILS_API uint32_t axis_waitable_get(axis_waitable_t *wb);
+aptima_UTILS_API uint32_t aptima_waitable_get(aptima_waitable_t *wb);
 
-axis_UTILS_API void axis_waitable_set(axis_waitable_t *wb, uint32_t val);
+aptima_UTILS_API void aptima_waitable_set(aptima_waitable_t *wb, uint32_t val);

@@ -61,7 +61,7 @@ def test_send_cmd_discard_result_python():
         os.path.join(root_dir, "tgn_args.txt"),
     )
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         print('Assembling and building package "{}".'.format(source_pkg_name))
 
         rc = build_pkg.prepare_and_build_app(
@@ -76,7 +76,7 @@ def test_send_cmd_discard_result_python():
             assert False, "Failed to build package."
 
     tman_install_cmd = [
-        os.path.join(root_dir, "axis_manager/bin/tman"),
+        os.path.join(root_dir, "aptima_manager/bin/tman"),
         "--config-file",
         os.path.join(root_dir, "tests/local_registry/config.json"),
         "install",
@@ -107,7 +107,7 @@ def test_send_cmd_discard_result_python():
         if build_config_args.enable_sanitizer:
             libasan_path = os.path.join(
                 base_path,
-                "send_cmd_discard_result_python_app/axis_packages/system/axis_runtime/lib/libasan.so",
+                "send_cmd_discard_result_python_app/aptima_packages/system/aptima_runtime/lib/libasan.so",
             )
 
             if os.path.exists(libasan_path):
@@ -163,7 +163,7 @@ def test_send_cmd_discard_result_python():
 
         assert exit_code == 0
 
-        if build_config_args.axis_enable_integration_tests_prebuilt is False:
+        if build_config_args.aptima_enable_integration_tests_prebuilt is False:
             source_root_path = os.path.join(base_path, source_pkg_name)
 
             # Testing complete. If builds are only created during the testing

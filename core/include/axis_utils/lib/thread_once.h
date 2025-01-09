@@ -6,16 +6,16 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #if defined(_WIN32)
 #include <Windows.h>
-#define axis_thread_once_t INIT_ONCE
-#define axis_THREAD_ONCE_INIT INIT_ONCE_STATIC_INIT
+#define aptima_thread_once_t INIT_ONCE
+#define aptima_THREAD_ONCE_INIT INIT_ONCE_STATIC_INIT
 #else
 #include <pthread.h>
-#define axis_thread_once_t pthread_once_t
-#define axis_THREAD_ONCE_INIT PTHREAD_ONCE_INIT
+#define aptima_thread_once_t pthread_once_t
+#define aptima_THREAD_ONCE_INIT PTHREAD_ONCE_INIT
 #endif
 
 /**
@@ -26,5 +26,5 @@
  * @note This function is will guarantee that the initialization routine will be
  *       called only once.
  */
-axis_UTILS_API int axis_thread_once(axis_thread_once_t *once,
+aptima_UTILS_API int aptima_thread_once(aptima_thread_once_t *once,
                                   void (*init_routine)(void));

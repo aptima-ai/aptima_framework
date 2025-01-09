@@ -6,10 +6,10 @@
 //
 #include "tests/common/client/curl_connect.h"
 
-#include "axis_utils/lib/time.h"
-#include "axis_utils/log/log.h"
+#include "aptima_utils/lib/time.h"
+#include "aptima_utils/log/log.h"
 
-bool axis_test_curl_connect_with_retry(CURL *curl, uint16_t max_retries,
+bool aptima_test_curl_connect_with_retry(CURL *curl, uint16_t max_retries,
                                       int64_t delay_in_ms) {
   CURLcode res = CURLE_OK;
 
@@ -23,10 +23,10 @@ bool axis_test_curl_connect_with_retry(CURL *curl, uint16_t max_retries,
       return true;
     }
 
-    axis_sleep(delay_in_ms);
+    aptima_sleep(delay_in_ms);
   } while (++count < max_retries);
 
-  axis_LOGE("Failed to connect to server, error code: %d.", res);
+  aptima_LOGE("Failed to connect to server, error code: %d.", res);
 
   return false;
 }

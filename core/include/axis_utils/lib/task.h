@@ -6,13 +6,13 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdint.h>
 
-typedef int64_t axis_pid_t;
+typedef int64_t aptima_pid_t;
 
 /**
  * @brief Get process id.
  */
-axis_UTILS_API axis_pid_t axis_task_get_id();
+aptima_UTILS_API aptima_pid_t aptima_task_get_id();

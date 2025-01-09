@@ -6,14 +6,14 @@
 //
 #pragma once
 
-#include "axis_utils/macro/check.h"
+#include "aptima_utils/macro/check.h"
 
 namespace ten {
 
 class binding_handle_t {
  protected:
   explicit binding_handle_t(void *c_instance) : c_instance(c_instance) {
-    axis_ASSERT(c_instance, "Should not happen.");
+    aptima_ASSERT(c_instance, "Should not happen.");
   }
 
  public:

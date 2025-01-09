@@ -9,14 +9,14 @@ import os
 from common import get_latest_git_tag
 
 
-def check_preserved_metadata_version_of_axis_runtime(
+def check_preserved_metadata_version_of_aptima_runtime(
     repo_base_dir: str, git_version: str
 ) -> bool:
     c_preserved_metadata_file_src_file = os.path.join(
         repo_base_dir,
         "core",
         "src",
-        "axis_runtime",
+        "aptima_runtime",
         "build_template",
         "preserved_metadata.c",
     )
@@ -36,7 +36,7 @@ def check_version_of_tman(repo_base_dir: str, git_version: str) -> bool:
         repo_base_dir,
         "core",
         "src",
-        "axis_manager",
+        "aptima_manager",
         "src",
         "version.rs",
     )
@@ -55,40 +55,40 @@ def check_version_of_system_packages(
     repo_base_dir: str, git_version: str
 ) -> bool:
     manifest_files = [
-        # axis_runtime
+        # aptima_runtime
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "manifest.json",
         ),
-        # axis_runtime_go
+        # aptima_runtime_go
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "binding",
             "go",
             "manifest.json",
         ),
-        # axis_runtime_python
+        # aptima_runtime_python
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "binding",
             "python",
             "manifest.json",
         ),
-        # axis_runtime_nodejs
+        # aptima_runtime_nodejs
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "binding",
             "nodejs",
             "manifest.json",
@@ -109,14 +109,14 @@ def check_version_of_system_packages(
 
 
 def check_various_versions(repo_base_dir: str, git_version: str) -> bool:
-    if not check_preserved_metadata_version_of_axis_runtime(
+    if not check_preserved_metadata_version_of_aptima_runtime(
         repo_base_dir, git_version
     ):
-        print("axis_runtime preserved_metadata version does not match.")
+        print("aptima_runtime preserved_metadata version does not match.")
         return False
 
     if not check_version_of_tman(repo_base_dir, git_version):
-        print("axis_manager version does not match.")
+        print("aptima_manager version does not match.")
         return False
 
     if not check_version_of_system_packages(repo_base_dir, git_version):

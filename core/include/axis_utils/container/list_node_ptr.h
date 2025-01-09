@@ -6,34 +6,34 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 
-#include "axis_utils/container/list_node.h"
-#include "axis_utils/lib/signature.h"
+#include "aptima_utils/container/list_node.h"
+#include "aptima_utils/lib/signature.h"
 
-#define axis_NORMAL_PTR_LISTNODE_SIGNATURE 0xEBB1285007CA4A12U
+#define aptima_NORMAL_PTR_LISTNODE_SIGNATURE 0xEBB1285007CA4A12U
 
-typedef void (*axis_ptr_listnode_destroy_func_t)(void *ptr);
+typedef void (*aptima_ptr_listnode_destroy_func_t)(void *ptr);
 
-typedef struct axis_ptr_listnode_t {
-  axis_listnode_t hdr;
-  axis_signature_t signature;
+typedef struct aptima_ptr_listnode_t {
+  aptima_listnode_t hdr;
+  aptima_signature_t signature;
   void *ptr;
-  axis_ptr_listnode_destroy_func_t destroy;
-} axis_ptr_listnode_t;
+  aptima_ptr_listnode_destroy_func_t destroy;
+} aptima_ptr_listnode_t;
 
-axis_UTILS_API axis_listnode_t *axis_ptr_listnode_create(
-    void *ptr, axis_ptr_listnode_destroy_func_t destroy);
+aptima_UTILS_API aptima_listnode_t *aptima_ptr_listnode_create(
+    void *ptr, aptima_ptr_listnode_destroy_func_t destroy);
 
-axis_UTILS_API axis_ptr_listnode_t *axis_listnode_to_ptr_listnode(
-    axis_listnode_t *self);
+aptima_UTILS_API aptima_ptr_listnode_t *aptima_listnode_to_ptr_listnode(
+    aptima_listnode_t *self);
 
-axis_UTILS_API axis_listnode_t *axis_listnode_from_ptr_listnode(
-    axis_ptr_listnode_t *self);
+aptima_UTILS_API aptima_listnode_t *aptima_listnode_from_ptr_listnode(
+    aptima_ptr_listnode_t *self);
 
-axis_UTILS_API void *axis_ptr_listnode_get(axis_listnode_t *self);
+aptima_UTILS_API void *aptima_ptr_listnode_get(aptima_listnode_t *self);
 
-axis_UTILS_API void axis_ptr_listnode_replace(
-    axis_listnode_t *self, void *ptr, axis_ptr_listnode_destroy_func_t destroy);
+aptima_UTILS_API void aptima_ptr_listnode_replace(
+    aptima_listnode_t *self, void *ptr, aptima_ptr_listnode_destroy_func_t destroy);

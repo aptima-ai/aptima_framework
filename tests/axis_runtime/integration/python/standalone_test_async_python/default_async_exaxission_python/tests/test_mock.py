@@ -14,7 +14,7 @@ from ten import (Cmd, CmdResult, ExtensionTester, StatusCode, TenEnvTester,
 class ExtensionTesterMock(ExtensionTester):
     def check_weather(
         self,
-        axis_env: TenEnvTester,
+        aptima_env: TenEnvTester,
         result: Optional[CmdResult],
         error: Optional[TenError],
     ):
@@ -30,27 +30,27 @@ class ExtensionTesterMock(ExtensionTester):
             detail = result.get_property_string("detail")
             assert detail == "sunny"
 
-            axis_env.stop_test()
+            aptima_env.stop_test()
 
-    def on_start(self, axis_env: TenEnvTester) -> None:
+    def on_start(self, aptima_env: TenEnvTester) -> None:
         cmd = Cmd.create("query_weather")
 
-        axis_env.send_cmd(
+        aptima_env.send_cmd(
             cmd,
-            lambda axis_env, result, error: self.check_weather(
-                axis_env, result, error
+            lambda aptima_env, result, error: self.check_weather(
+                aptima_env, result, error
             ),
         )
 
-        axis_env.on_start_done()
+        aptima_env.on_start_done()
 
-    def on_cmd(self, axis_env: TenEnvTester, cmd: Cmd) -> None:
+    def on_cmd(self, aptima_env: TenEnvTester, cmd: Cmd) -> None:
         print("ExtensionTesterMock on_cmd: " + cmd.get_name())
 
         if cmd.get_name() == "query_weather":
             cmd_result = CmdResult.create(StatusCode.OK)
             cmd_result.set_property_string("detail", "sunny")
-            axis_env.return_result(cmd_result, cmd)
+            aptima_env.return_result(cmd_result, cmd)
 
 
 def test_mock_cmd_result():

@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -14,7 +14,7 @@
 
 /**
  * @brief A view of the contents of a file. This supports mmap when available.
- * A view will remain in memory even after axis_file_close is called on the
+ * A view will remain in memory even after aptima_file_close is called on the
  * file descriptor from which the view was obtained.
  *
  *        data
@@ -28,11 +28,11 @@
  * |<-----------len------------->|
  *
  */
-typedef struct axis_mmap_t {
+typedef struct aptima_mmap_t {
   const void *data;  // The data that the caller requested.
   void *base;        // The base of the view.
   size_t len;        // The total length of the view.
-} axis_mmap_t;
+} aptima_mmap_t;
 
 /**
  * @brief Create a view of @a size bytes from @a descriptor at @a offset. Store
@@ -40,10 +40,10 @@ typedef struct axis_mmap_t {
  *
  * @return 1 on success, 0 on error.
  */
-axis_UTILS_PRIVATE_API bool axis_mmap_init(axis_mmap_t *self, int descriptor,
+aptima_UTILS_PRIVATE_API bool aptima_mmap_init(aptima_mmap_t *self, int descriptor,
                                          off_t offset, uint64_t size);
 
 /**
- * @brief Release a view created by axis_mmap_init.
+ * @brief Release a view created by aptima_mmap_init.
  */
-axis_UTILS_PRIVATE_API void axis_mmap_deinit(axis_mmap_t *self);
+aptima_UTILS_PRIVATE_API void aptima_mmap_deinit(aptima_mmap_t *self);

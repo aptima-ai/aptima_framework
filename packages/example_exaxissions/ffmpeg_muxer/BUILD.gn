@@ -3,12 +3,12 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-import("//build/feature/axis_package.gni")
-import("//build/axis_runtime/feature/publish.gni")
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/options.gni")
+import("//build/feature/aptima_package.gni")
+import("//build/aptima_runtime/feature/publish.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/options.gni")
 
-axis_package("ffmpeg_muxer") {
+aptima_package("ffmpeg_muxer") {
   enable_build = true
 
   package_kind = "extension"
@@ -32,15 +32,15 @@ axis_package("ffmpeg_muxer") {
   ]
 
   deps = [
-    "//core/src/axis_runtime",
-    "//third_party/ffmpeg:ffmpeg_for_axis_packages",
+    "//core/src/aptima_runtime",
+    "//third_party/ffmpeg:ffmpeg_for_aptima_packages",
   ]
 }
 
-if (axis_enable_axis_manager) {
-  axis_package_publish("upload_ffmpeg_muxer_to_server") {
+if (aptima_enable_aptima_manager) {
+  aptima_package_publish("upload_ffmpeg_muxer_to_server") {
     base_dir =
-        rebase_path("${root_out_dir}/axis_packages/extension/ffmpeg_muxer")
+        rebase_path("${root_out_dir}/aptima_packages/extension/ffmpeg_muxer")
     deps = [ "//packages/example_extensions/ffmpeg_muxer" ]
   }
 }

@@ -20,10 +20,10 @@ def test_standalone_test_cpp():
 
     # Step 1:
     #
-    # Standalone testing involves the use of axis_runtime, so use tman install to
-    # install the axis_runtime system package.
+    # Standalone testing involves the use of aptima_runtime, so use tman install to
+    # install the aptima_runtime system package.
     tman_install_cmd = [
-        os.path.join(root_dir, "axis_manager/bin/tman"),
+        os.path.join(root_dir, "aptima_manager/bin/tman"),
         "--config-file",
         os.path.join(root_dir, "tests/local_registry/config.json"),
         "install",
@@ -55,7 +55,7 @@ def test_standalone_test_cpp():
         build_config_args.target_cpu,
         build_config_args.target_build,
         "--",
-        "axis_enable_standalone_test=true",
+        "aptima_enable_standalone_test=true",
     ]
 
     if sys.platform == "win32":
@@ -112,7 +112,7 @@ def test_standalone_test_cpp():
         ),
     ]
 
-    my_env["axis_ENABLE_MEMORY_TRACKING"] = "true" + ";" + my_env["PATH"]
+    my_env["aptima_ENABLE_MEMORY_TRACKING"] = "true" + ";" + my_env["PATH"]
 
     if build_config_args.target_os == "win":
         my_env["PATH"] = (
@@ -121,7 +121,7 @@ def test_standalone_test_cpp():
                 (
                     f"out/{build_config_args.target_os}/"
                     f"{build_config_args.target_cpu}/"
-                    "axis_packages/system/axis_runtime/lib"
+                    "aptima_packages/system/aptima_runtime/lib"
                 ),
             )
             + ";"

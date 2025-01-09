@@ -1,43 +1,43 @@
-[![Axis Framework Banner](https://github.com/axis-talk/axis_framework/blob/main/assets/Axis_Banner.png)](https://axistalk.com)
+[![Aptima Framework Banner](https://github.com/aptima-ai/aptima_framework/blob/main/assets/Aptima_Banner.png)](https://aptimatalk.com)
 
 <div align="center">
 
-[![Follow on X](https://img.shields.io/twitter/follow/axis_zh_?logo=X&color=%20%23f5f5f5)](https://twitter.com/intent/follow?screen_name=axis_zh_)
+[![Follow on X](https://img.shields.io/twitter/follow/aptima_zh_?logo=X&color=%20%23f5f5f5)](https://twitter.com/intent/follow?screen_name=aptima_zh_)
 </div>
 
-AXIS - a framework to create conversational agents.
+APTIMA - a framework to create conversational agents.
 
 ## Features
 
-The Axis Framework offers the following advantages:
+The Aptima Framework offers the following advantages:
 
 1. **High-Performance Multimodal Interactions in Real Time**
 
-   For AI applications involving complex audio-visual scenarios, the Axis Framework is your optimal solution. It provides exceptional performance and low latency, with extensive optimization of interactions across extensions to streamline the development of cutting-edge AI applications.
+   For AI applications involving complex audio-visual scenarios, the Aptima Framework is your optimal solution. It provides exceptional performance and low latency, with extensive optimization of interactions across extensions to streamline the development of cutting-edge AI applications.
 
 2. **Broad Language and Platform Compatibility**
 
-   Developers can create modular and reusable extensions using widely-used programming languages such as C++, Go, and Python, with future support for JavaScript/TypeScript. The Axis Framework is designed to run seamlessly on a variety of platforms, including Windows, Mac, Linux, and mobile devices.
+   Developers can create modular and reusable extensions using widely-used programming languages such as C++, Go, and Python, with future support for JavaScript/TypeScript. The Aptima Framework is designed to run seamlessly on a variety of platforms, including Windows, Mac, Linux, and mobile devices.
 
 3. **Seamless Edge-to-Cloud Integration**
 
-   The Axis Framework makes it easy to combine extensions deployed across edge and cloud environments, enabling diverse use cases. For privacy-focused edge deployments, smaller models utilize local computing resources to reduce costs and latency, while cloud-based large models can be integrated for a perfect blend of performance and cost-effectiveness.
+   The Aptima Framework makes it easy to combine extensions deployed across edge and cloud environments, enabling diverse use cases. For privacy-focused edge deployments, smaller models utilize local computing resources to reduce costs and latency, while cloud-based large models can be integrated for a perfect blend of performance and cost-effectiveness.
 
 4. **Breaking the Limits of Large Models**
 
-   The Axis Framework enables the creation of sophisticated AI applications that surpass the limitations of standalone large models. Developers can design custom agents using an intuitive drag-and-drop programming interface, while also integrating AI with audio-visual tools, databases, monitoring systems, retrieval-augmented generation (RAG), and more.
+   The Aptima Framework enables the creation of sophisticated AI applications that surpass the limitations of standalone large models. Developers can design custom agents using an intuitive drag-and-drop programming interface, while also integrating AI with audio-visual tools, databases, monitoring systems, retrieval-augmented generation (RAG), and more.
 
 5. **RDynamic Real-Time State Management**
 
-   The Axis Framework supports real-time agent state management, allowing AI agents to dynamically adapt and respond to changes, ensuring optimal performance in dynamic scenarios.
+   The Aptima Framework supports real-time agent state management, allowing AI agents to dynamically adapt and respond to changes, ensuring optimal performance in dynamic scenarios.
 
 6. **And more...**
 
-   Discover the full potential of the Axis Framework and access detailed documentation by visiting the official [Axis Framework documentation site.](https://axis-8.gitbook.io/axis/).
+   Discover the full potential of the Aptima Framework and access detailed documentation by visiting the official [Aptima Framework documentation site.](https://aptima-8.gitbook.io/aptima/).
 
 ## Use Cases
 
-With the Axis Framework, you can seamlessly implement the following scenarios. Explore real-world demos on our [Website and create your own Agents](https://axistalk.com):
+With the Aptima Framework, you can seamlessly implement the following scenarios. Explore real-world demos on our [Website and create your own Agents](https://aptimatalk.com):
 
 1. **Real-Time Language Interpretation**
 
@@ -61,8 +61,8 @@ With the Axis Framework, you can seamlessly implement the following scenarios. E
 
 6. **And more...**
 
- Leverage the flexibility of the Axis Framework to create innovative solutions, including virtual assistants, automated support systems, and multimedia applications.
+ Leverage the flexibility of the Aptima Framework to create innovative solutions, including virtual assistants, automated support systems, and multimedia applications.
 
 ## Documentation
 
-Please visit our [Axis Framework](https://axis-8.gitbook.io/axis/) for more information.
+Please visit our [Aptima Framework](https://aptima-8.gitbook.io/aptima/) for more information.

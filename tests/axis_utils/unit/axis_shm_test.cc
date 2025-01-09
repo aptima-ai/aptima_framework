@@ -5,35 +5,35 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "axis_utils/lib/atomic.h"
-#include "axis_utils/lib/shm.h"
+#include "aptima_utils/lib/atomic.h"
+#include "aptima_utils/lib/shm.h"
 
 TEST(ShmTest, positive) {
   // TODO(Wei): should wrapped these apis with platform target in header files
   // when not suitable for all platforms
 #if defined(OS_MACOS) || defined(OS_LINUX) || defined(OS_WINDOWS)
 
-  auto *shm1 = static_cast<axis_atomic_t *>(axis_shm_map("hello", 8));
+  auto *shm1 = static_cast<aptima_atomic_t *>(aptima_shm_map("hello", 8));
   EXPECT_NE(shm1, nullptr);
-  EXPECT_EQ(axis_shm_get_size(static_cast<void *>(shm1)), 8);
-  axis_atomic_store(shm1, 0x0000000000000077);
-  auto *shm2 = static_cast<axis_atomic_t *>(axis_shm_map("hello", 16));
+  EXPECT_EQ(aptima_shm_get_size(static_cast<void *>(shm1)), 8);
+  aptima_atomic_store(shm1, 0x0000000000000077);
+  auto *shm2 = static_cast<aptima_atomic_t *>(aptima_shm_map("hello", 16));
   EXPECT_NE(shm2, nullptr);
-  EXPECT_EQ(axis_atomic_load(shm2), 0x0000000000000077);
-  EXPECT_EQ(axis_shm_get_size(static_cast<void *>(shm2)), 8);
-  axis_shm_unmap(shm1);
-  axis_atomic_store(shm2, 0x0000000000000088);
-  auto *shm3 = static_cast<axis_atomic_t *>(axis_shm_map("hello", 8));
+  EXPECT_EQ(aptima_atomic_load(shm2), 0x0000000000000077);
+  EXPECT_EQ(aptima_shm_get_size(static_cast<void *>(shm2)), 8);
+  aptima_shm_unmap(shm1);
+  aptima_atomic_store(shm2, 0x0000000000000088);
+  auto *shm3 = static_cast<aptima_atomic_t *>(aptima_shm_map("hello", 8));
   EXPECT_NE(shm3, nullptr);
-  EXPECT_EQ(axis_atomic_load(shm3), 0x0000000000000088);
-  auto *shm4 = static_cast<axis_atomic_t *>(axis_shm_map("hi", 8));
+  EXPECT_EQ(aptima_atomic_load(shm3), 0x0000000000000088);
+  auto *shm4 = static_cast<aptima_atomic_t *>(aptima_shm_map("hi", 8));
   EXPECT_NE(shm4, nullptr);
-  EXPECT_NE(axis_atomic_load(shm4), 0x0000000000000088);
-  axis_shm_unmap(shm4);
-  axis_shm_unmap(shm3);
-  axis_shm_unmap(shm2);
-  axis_shm_unlink("/hello");
-  axis_shm_unlink("/hi");
+  EXPECT_NE(aptima_atomic_load(shm4), 0x0000000000000088);
+  aptima_shm_unmap(shm4);
+  aptima_shm_unmap(shm3);
+  aptima_shm_unmap(shm2);
+  aptima_shm_unlink("/hello");
+  aptima_shm_unlink("/hi");
 
 #endif
 }

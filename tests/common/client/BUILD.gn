@@ -4,8 +4,8 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/ten.gni")
 import("//third_party/curl/output_libs.gni")
 
 glob("msgpack_client") {
@@ -16,7 +16,7 @@ glob("msgpack_client") {
   deps = [ "//third_party/msgpack:msgpackc" ]
   include_dirs = [
     "//packages",
-    "//tests/axis_runtime",
+    "//tests/aptima_runtime",
   ]
 }
 
@@ -24,7 +24,7 @@ glob("client") {
   file_list = []
   deps = [ ":msgpack_client" ]
 
-  if (axis_enable_curl) {
+  if (aptima_enable_curl) {
     file_list += [
       "curl_connect.c",
       "http.c",
@@ -40,6 +40,6 @@ glob("client") {
 
   include_dirs = [
     "//packages",
-    "//tests/axis_runtime",
+    "//tests/aptima_runtime",
   ]
 }

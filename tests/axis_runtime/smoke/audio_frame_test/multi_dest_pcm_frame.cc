@@ -9,11 +9,11 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/macro/check.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 #define SAMPLE_RATE 16000
 #define NUM_OF_CHANNELS 1
@@ -32,7 +32,7 @@ class test_extension_1 : public ten::extension_t {
 
     auto audio_frame = ten::audio_frame_t::create("audio_frame");
     audio_frame->alloc_buf(sendBytes);
-    audio_frame->set_data_fmt(axis_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
+    audio_frame->set_data_fmt(aptima_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
     audio_frame->set_bytes_per_sample(2);
     audio_frame->set_sample_rate(sample_rate);
     audio_frame->set_number_of_channels(num_channels);
@@ -41,17 +41,17 @@ class test_extension_1 : public ten::extension_t {
     return audio_frame;
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "dispatch_data") {
       auto audio_frame = createEmptyAudioFrame(SAMPLE_RATE, NUM_OF_CHANNELS);
       audio_frame->set_property("test_prop", "test_prop_value");
 
-      axis_env.send_audio_frame(std::move(audio_frame));
+      aptima_env.send_audio_frame(std::move(audio_frame));
 
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "done");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
@@ -61,10 +61,10 @@ class test_extension_2 : public ten::extension_t {
   explicit test_extension_2(const char *name) : ten::extension_t(name) {}
 
   void on_audio_frame(
-      axis_UNUSED ten::axis_env_t &axis_env,
+      aptima_UNUSED ten::aptima_env_t &aptima_env,
       std::unique_ptr<ten::audio_frame_t> audio_frame) override {
     auto test_value = audio_frame->get_property_string("test_prop");
-    axis_ASSERT(test_value == "test_prop_value", "test_prop_value not match");
+    aptima_ASSERT(test_value == "test_prop_value", "test_prop_value not match");
 
     if (audio_frame->get_number_of_channels() == NUM_OF_CHANNELS &&
         audio_frame->get_sample_rate() == SAMPLE_RATE) {
@@ -72,17 +72,17 @@ class test_extension_2 : public ten::extension_t {
     }
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "check_received") {
       if (received) {
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_ERROR);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
         cmd_result->set_property("detail", "received failed");
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
     }
   }
@@ -96,10 +96,10 @@ class test_extension_3 : public ten::extension_t {
   explicit test_extension_3(const char *name) : ten::extension_t(name) {}
 
   void on_audio_frame(
-      axis_UNUSED ten::axis_env_t &axis_env,
+      aptima_UNUSED ten::aptima_env_t &aptima_env,
       std::unique_ptr<ten::audio_frame_t> audio_frame) override {
     auto test_value = audio_frame->get_property_string("test_prop");
-    axis_ASSERT(test_value == "test_prop_value", "test_prop_value not match");
+    aptima_ASSERT(test_value == "test_prop_value", "test_prop_value not match");
 
     if (audio_frame->get_number_of_channels() == NUM_OF_CHANNELS &&
         audio_frame->get_sample_rate() == SAMPLE_RATE) {
@@ -107,17 +107,17 @@ class test_extension_3 : public ten::extension_t {
     }
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "check_received") {
       if (received) {
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_ERROR);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
         cmd_result->set_property("detail", "received failed");
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
     }
   }
@@ -128,8 +128,8 @@ class test_extension_3 : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -142,11 +142,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -154,11 +154,11 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_1,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_1,
                                     test_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_2,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_2,
                                     test_extension_2);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_3,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_3,
                                     test_extension_3);
 
 }  // namespace
@@ -166,7 +166,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(multi_dest_audio_frame__extension_3,
 TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -210,7 +210,7 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'dispatch_data' command.
   auto dispatch_data_cmd = ten::cmd_t::create("dispatch_data");
@@ -219,8 +219,8 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
 
   cmd_result = client->send_cmd_and_recv_result(std::move(dispatch_data_cmd));
 
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "done");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "done");
 
   auto check_received_cmd = ten::cmd_t::create("check_received");
   check_received_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
@@ -228,8 +228,8 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
 
   cmd_result = client->send_cmd_and_recv_result(std::move(check_received_cmd));
 
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "received confirmed");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "received confirmed");
 
   check_received_cmd = ten::cmd_t::create("check_received");
   check_received_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
@@ -237,10 +237,10 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
 
   cmd_result = client->send_cmd_and_recv_result(std::move(check_received_cmd));
 
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "received confirmed");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "received confirmed");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

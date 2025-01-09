@@ -4,7 +4,7 @@
 // See the LICENSE file for more information.
 //
 #include "muxer_thread.h"
-#include "axis_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/ten.h"
 
 namespace ten {
 namespace ffmpeg_extension {
@@ -59,53 +59,53 @@ class muxer_extension_t : public extension_t {
  public:
   explicit muxer_extension_t(const char *name) : extension_t(name) {}
 
-  void on_start(axis_UNUSED axis_env_t &axis_env) override {
-    axis_env.on_start_done();
+  void on_start(aptima_UNUSED aptima_env_t &aptima_env) override {
+    aptima_env.on_start_done();
   }
 
-  void on_cmd(axis_env_t &axis_env, std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_t> cmd) override {
     const auto cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "start_muxer") {
-      axis_LOGE("muxer_extension_t::on_cmd, %s",
+      aptima_LOGE("muxer_extension_t::on_cmd, %s",
                cmd->get_property_to_json().c_str());
 
       auto settings = read_settings(*cmd);
       auto output = cmd->get_property_string("output_stream");
       if (output.empty()) {
-        output = "axis_packages/extension/ffmpeg_muxer/test.mp4";
+        output = "aptima_packages/extension/ffmpeg_muxer/test.mp4";
       }
 
-      auto *axis_env_proxy = ten::axis_env_proxy_t::create(axis_env);
+      auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
 
       // Start the muxer thread. ffmpeg is living in its own thread.
-      muxer_thread_ = new muxer_thread_t(axis_env_proxy, settings, output);
+      muxer_thread_ = new muxer_thread_t(aptima_env_proxy, settings, output);
       muxer_thread_->start();
       muxer_thread_->wait_for_start();
 
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "I am ready");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 
-  void on_stop(axis_UNUSED axis_env_t &axis_env) override {
+  void on_stop(aptima_UNUSED aptima_env_t &aptima_env) override {
     // Stop the muxer thread. ffmpeg is living in its own thread.
     muxer_thread_->stop();
     muxer_thread_->wait_for_stop();
     delete muxer_thread_;
 
-    axis_env.on_stop_done();
+    aptima_env.on_stop_done();
   }
 
-  void on_audio_frame(axis_UNUSED axis_env_t &axis_env,
+  void on_audio_frame(aptima_UNUSED aptima_env_t &aptima_env,
                       std::unique_ptr<audio_frame_t> frame) override {
-    muxer_thread_->on_axis_audio_frame(std::move(frame));
+    muxer_thread_->on_aptima_audio_frame(std::move(frame));
   }
 
-  void on_video_frame(axis_UNUSED axis_env_t &axis_env,
+  void on_video_frame(aptima_UNUSED aptima_env_t &aptima_env,
                       std::unique_ptr<video_frame_t> frame) override {
-    muxer_thread_->on_axis_video_frame(std::move(frame));
+    muxer_thread_->on_aptima_video_frame(std::move(frame));
   }
 
  private:
@@ -115,5 +115,5 @@ class muxer_extension_t : public extension_t {
 }  // namespace ffmpeg_extension
 }  // namespace ten
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(ffmpeg_muxer,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(ffmpeg_muxer,
                                     ten::ffmpeg_extension::muxer_extension_t);

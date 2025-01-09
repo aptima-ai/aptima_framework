@@ -6,49 +6,49 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 
-#include "axis_utils/lib/json.h"
-#include "axis_utils/lib/signature.h"
-#include "axis_utils/lib/string.h"
+#include "aptima_utils/lib/json.h"
+#include "aptima_utils/lib/signature.h"
+#include "aptima_utils/lib/string.h"
 
-typedef struct axis_value_t axis_value_t;
+typedef struct aptima_value_t aptima_value_t;
 
-typedef struct axis_value_kv_t {
-  axis_signature_t signature;
+typedef struct aptima_value_kv_t {
+  aptima_signature_t signature;
 
-  axis_string_t key;
-  axis_value_t *value;
-} axis_value_kv_t;
+  aptima_string_t key;
+  aptima_value_t *value;
+} aptima_value_kv_t;
 
-axis_UTILS_API bool axis_value_kv_check_integrity(axis_value_kv_t *self);
+aptima_UTILS_API bool aptima_value_kv_check_integrity(aptima_value_kv_t *self);
 
-axis_UTILS_API axis_value_kv_t *axis_value_kv_create_empty(const char *name);
+aptima_UTILS_API aptima_value_kv_t *aptima_value_kv_create_empty(const char *name);
 
-axis_UTILS_API axis_value_kv_t *axis_value_kv_create(const char *name,
-                                                  axis_value_t *value);
+aptima_UTILS_API aptima_value_kv_t *aptima_value_kv_create(const char *name,
+                                                  aptima_value_t *value);
 
-axis_UTILS_API void axis_value_kv_destroy(axis_value_kv_t *self);
+aptima_UTILS_API void aptima_value_kv_destroy(aptima_value_kv_t *self);
 
 // This special destroy function for the value will only deinitialize the key
 // field and will not handle the value field.
-axis_UTILS_API void axis_value_kv_destroy_key_only(axis_value_kv_t *self);
+aptima_UTILS_API void aptima_value_kv_destroy_key_only(aptima_value_kv_t *self);
 
-axis_UTILS_API axis_value_kv_t *axis_value_kv_clone(axis_value_kv_t *target);
+aptima_UTILS_API aptima_value_kv_t *aptima_value_kv_clone(aptima_value_kv_t *target);
 
-axis_UTILS_API axis_string_t *axis_value_kv_get_key(axis_value_kv_t *self);
+aptima_UTILS_API aptima_string_t *aptima_value_kv_get_key(aptima_value_kv_t *self);
 
-axis_UTILS_API axis_value_t *axis_value_kv_get_value(axis_value_kv_t *self);
+aptima_UTILS_API aptima_value_t *aptima_value_kv_get_value(aptima_value_kv_t *self);
 
-axis_UTILS_API void axis_value_kv_reset_to_value(axis_value_kv_t *self,
-                                               axis_value_t *value);
+aptima_UTILS_API void aptima_value_kv_reset_to_value(aptima_value_kv_t *self,
+                                               aptima_value_t *value);
 
-axis_UTILS_API axis_string_t *axis_value_kv_to_string(axis_value_kv_t *self,
-                                                   axis_error_t *err);
+aptima_UTILS_API aptima_string_t *aptima_value_kv_to_string(aptima_value_kv_t *self,
+                                                   aptima_error_t *err);
 
-axis_UTILS_API axis_value_kv_t *axis_value_kv_from_json(const char *key,
-                                                     axis_json_t *json);
+aptima_UTILS_API aptima_value_kv_t *aptima_value_kv_from_json(const char *key,
+                                                     aptima_json_t *json);
 
-axis_UTILS_API void axis_value_kv_to_json(axis_json_t *json, axis_value_kv_t *kv);
+aptima_UTILS_API void aptima_value_kv_to_json(aptima_json_t *json, aptima_value_kv_t *kv);

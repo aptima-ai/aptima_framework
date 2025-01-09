@@ -6,22 +6,22 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-#include "axis_utils/lib/error.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-typedef struct axis_msg_t axis_msg_t;
-typedef struct axis_cmd_start_graph_t axis_cmd_start_graph_t;
+typedef struct aptima_msg_t aptima_msg_t;
+typedef struct aptima_cmd_start_graph_t aptima_cmd_start_graph_t;
 
-axis_RUNTIME_API axis_shared_ptr_t *axis_cmd_start_graph_create(void);
+aptima_RUNTIME_API aptima_shared_ptr_t *aptima_cmd_start_graph_create(void);
 
-axis_RUNTIME_API bool axis_cmd_start_graph_set_predefined_graph_name(
-    axis_shared_ptr_t *self, const char *predefined_graph_name,
-    axis_error_t *err);
+aptima_RUNTIME_API bool aptima_cmd_start_graph_set_predefined_graph_name(
+    aptima_shared_ptr_t *self, const char *predefined_graph_name,
+    aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_cmd_start_graph_set_long_running_mode(
-    axis_shared_ptr_t *self, bool long_running_mode, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_cmd_start_graph_set_long_running_mode(
+    aptima_shared_ptr_t *self, bool long_running_mode, aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_cmd_start_graph_set_graph_from_json_str(
-    axis_shared_ptr_t *self, const char *json_str, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_cmd_start_graph_set_graph_from_json_str(
+    aptima_shared_ptr_t *self, const char *json_str, aptima_error_t *err);

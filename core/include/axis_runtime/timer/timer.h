@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-#define axis_TIMER_INFINITE 0  // Forever timer
-#define axis_TIMER_CANCEL -1   // Cancel the timer
+#define aptima_TIMER_INFINITE 0  // Forever timer
+#define aptima_TIMER_CANCEL -1   // Cancel the timer

@@ -10,42 +10,42 @@
 #include <thread>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lang/cpp/lib/value.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/lib/time.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lang/cpp/lib/value.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
 class test_extension;
 
 void outer_thread_main(test_extension *ext,
-                       ten::axis_env_proxy_t *axis_env_proxy);
+                       ten::aptima_env_proxy_t *aptima_env_proxy);
 
 class test_extension : public ten::extension_t {
  public:
   explicit test_extension(const char *name) : ten::extension_t(name) {}
 
-  void on_start(ten::axis_env_t &axis_env) override {
-    auto *axis_env_proxy = ten::axis_env_proxy_t::create(axis_env);
+  void on_start(ten::aptima_env_t &aptima_env) override {
+    auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
 
     // Create a C++ thread to call ten.xxx in it.
-    outer_thread = new std::thread(outer_thread_main, this, axis_env_proxy);
+    outer_thread = new std::thread(outer_thread_main, this, aptima_env_proxy);
 
-    axis_env.on_start_done();
+    aptima_env.on_start_done();
   }
 
-  void on_stop(ten::axis_env_t &axis_env) override {
+  void on_stop(ten::aptima_env_t &aptima_env) override {
     // Reclaim the C++ thread.
     outer_thread->join();
     delete outer_thread;
 
-    axis_env.on_stop_done();
+    aptima_env.on_stop_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       // Trigger the C++ thread to call ten.xxx function.
@@ -58,12 +58,12 @@ class test_extension : public ten::extension_t {
 
  private:
   friend void outer_thread_main(test_extension *ext,
-                                ten::axis_env_proxy_t *axis_env_proxy);
+                                ten::aptima_env_proxy_t *aptima_env_proxy);
 
-  void extension_on_notify(ten::axis_env_t &axis_env) {
-    auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+  void extension_on_notify(ten::aptima_env_t &aptima_env) {
+    auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
     cmd_result->set_property("detail", "hello world, too");
-    axis_env.return_result(std::move(cmd_result), std::move(hello_world_cmd));
+    aptima_env.return_result(std::move(cmd_result), std::move(hello_world_cmd));
   }
 
   std::thread *outer_thread{nullptr};
@@ -72,25 +72,25 @@ class test_extension : public ten::extension_t {
 };
 
 void outer_thread_main(test_extension *ext,
-                       ten::axis_env_proxy_t *axis_env_proxy) {
+                       ten::aptima_env_proxy_t *aptima_env_proxy) {
   while (true) {
     if (ext->trigger) {
-      axis_env_proxy->notify([ext](ten::axis_env_t &axis_env) {
-        ext->extension_on_notify(axis_env);
+      aptima_env_proxy->notify([ext](ten::aptima_env_t &aptima_env) {
+        ext->extension_on_notify(aptima_env);
       });
 
-      delete axis_env_proxy;
+      delete aptima_env_proxy;
       break;
     }
 
-    axis_sleep(100);
+    aptima_sleep(100);
   }
 }
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -103,11 +103,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -115,7 +115,7 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     notify_test_member_func_basic_in_lambda_2__test_extension, test_extension);
 
 }  // namespace
@@ -123,7 +123,7 @@ axis_CPP_REGISTER_ADDON_AS_EXTENSION(
 TEST(NotifyTest, MemberFuncInLambda2) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -141,17 +141,17 @@ TEST(NotifyTest, MemberFuncInLambda2) {  // NOLINT
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extension_group", "test_extension");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "hello world, too");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "hello world, too");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

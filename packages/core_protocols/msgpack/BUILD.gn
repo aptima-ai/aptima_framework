@@ -4,9 +4,9 @@
 # See the LICENSE file for more information.
 #
 import("//.gnfiles/build/feature/glob.gni")
-import("//build/feature/axis_package.gni")
-import("//build/axis_runtime/feature/publish.gni")
-import("//build/axis_runtime/options.gni")
+import("//build/feature/aptima_package.gni")
+import("//build/aptima_runtime/feature/publish.gni")
+import("//build/aptima_runtime/options.gni")
 
 glob("msgpack_files") {
   file_list = all_native_files
@@ -17,12 +17,12 @@ glob("msgpack_files") {
   deps = [
     "common",
     "msg",
-    "//core/src/axis_runtime:axis_runtime_library",
+    "//core/src/aptima_runtime:aptima_runtime_library",
     "//third_party/msgpack:msgpackc",
   ]
 }
 
-axis_package("msgpack") {
+aptima_package("msgpack") {
   package_kind = "protocol"
   enable_build = true
 
@@ -39,14 +39,14 @@ axis_package("msgpack") {
   deps = [
     "common",
     "msg",
-    "//core/src/axis_runtime:axis_runtime_library",
+    "//core/src/aptima_runtime:aptima_runtime_library",
     "//third_party/msgpack:msgpackc",
   ]
 }
 
-if (axis_enable_axis_manager) {
-  axis_package_publish("upload_protocol_msgpack_to_server") {
-    base_dir = rebase_path("${root_out_dir}/axis_packages/protocol/msgpack")
+if (aptima_enable_aptima_manager) {
+  aptima_package_publish("upload_protocol_msgpack_to_server") {
+    base_dir = rebase_path("${root_out_dir}/aptima_packages/protocol/msgpack")
     deps = [ ":msgpack" ]
   }
 }

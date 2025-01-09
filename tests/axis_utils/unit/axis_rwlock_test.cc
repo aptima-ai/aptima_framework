@@ -17,9 +17,9 @@
 
 #include "common/test_utils.h"
 #include "gtest/gtest.h"
-#include "axis_utils/lib/event.h"
-#include "axis_utils/lib/rwlock.h"
-#include "axis_utils/lib/time.h"
+#include "aptima_utils/lib/event.h"
+#include "aptima_utils/lib/rwlock.h"
+#include "aptima_utils/lib/time.h"
 
 #define TEST_THREAD_MAX 50
 
@@ -29,25 +29,25 @@
  */
 
 struct ReaderLockGuard {
-  explicit ReaderLockGuard(axis_rwlock_t *lock) : lock_(lock) {
-    axis_rwlock_lock(lock_, 1);
+  explicit ReaderLockGuard(aptima_rwlock_t *lock) : lock_(lock) {
+    aptima_rwlock_lock(lock_, 1);
   }
 
-  ~ReaderLockGuard() { axis_rwlock_unlock(lock_, 1); }
+  ~ReaderLockGuard() { aptima_rwlock_unlock(lock_, 1); }
 
  private:
-  axis_rwlock_t *lock_;
+  aptima_rwlock_t *lock_;
 };
 
 struct WriterLockGuard {
-  explicit WriterLockGuard(axis_rwlock_t *lock) : lock_(lock) {
-    axis_rwlock_lock(lock_, 0);
+  explicit WriterLockGuard(aptima_rwlock_t *lock) : lock_(lock) {
+    aptima_rwlock_lock(lock_, 0);
   }
 
-  ~WriterLockGuard() { axis_rwlock_unlock(lock_, 0); }
+  ~WriterLockGuard() { aptima_rwlock_unlock(lock_, 0); }
 
  private:
-  axis_rwlock_t *lock_;
+  aptima_rwlock_t *lock_;
 };
 
 struct RWLockStatistic {
@@ -69,13 +69,13 @@ struct ThreadBalancerStatistic {
   } Reader, Writer;
 };
 
-static void RunRWLockTest(axis_rwlock_t *lut, const std::string &impl,
+static void RunRWLockTest(aptima_rwlock_t *lut, const std::string &impl,
                           int test_ms, int write_threads, int read_threads,
                           bool perf = false) {
   RWLockStatistic stats;
   std::vector<std::thread> writers;
   std::vector<std::thread> readers;
-  axis_event_t *start_event = axis_event_create(0, 0);
+  aptima_event_t *start_event = aptima_event_create(0, 0);
   std::atomic<bool> stop = {false};
   std::atomic<int32_t> read_concurr = {0};
   std::atomic<int32_t> write_concurr = {0};
@@ -96,12 +96,12 @@ static void RunRWLockTest(axis_rwlock_t *lut, const std::string &impl,
 
     // int id = writer_id++;
     // AGO_LOG("[writer] % 2d: waiting for start event", id);
-    axis_event_wait(start_event, -1);
+    aptima_event_wait(start_event, -1);
 
     while (!stop) {
-      auto now = axis_current_time();
+      auto now = aptima_current_time();
       WriterLockGuard _(lut);
-      auto dur = axis_current_time() - now;
+      auto dur = aptima_current_time() - now;
       if (actives) {
         (*actives)++;
       }
@@ -151,12 +151,12 @@ static void RunRWLockTest(axis_rwlock_t *lut, const std::string &impl,
       actives = &reader_actives[std::this_thread::get_id()];
     }
 
-    axis_event_wait(start_event, -1);
+    aptima_event_wait(start_event, -1);
 
     while (!stop) {
-      auto now = axis_current_time();
+      auto now = aptima_current_time();
       ReaderLockGuard _(lut);
-      auto dur = axis_current_time() - now;
+      auto dur = aptima_current_time() - now;
       if (actives) {
         (*actives)++;
       }
@@ -205,7 +205,7 @@ static void RunRWLockTest(axis_rwlock_t *lut, const std::string &impl,
   }
 
   // go
-  axis_event_set(start_event);
+  aptima_event_set(start_event);
 
   std::this_thread::sleep_for(std::chrono::milliseconds(test_ms));
 
@@ -281,16 +281,16 @@ static void RunRWLockTest(axis_rwlock_t *lut, const std::string &impl,
     }
   }
 
-  axis_event_destroy(start_event);
+  aptima_event_destroy(start_event);
 
-  axis_rwlock_destroy(lut);
+  aptima_rwlock_destroy(lut);
 }
 
 static void RunRWLockImplTest(int test_ms, int write_threads, int read_threads,
                               bool perf = false) {
-  RunRWLockTest(axis_rwlock_create(axis_RW_PHASE_FAIR), "PhaseFair", test_ms,
+  RunRWLockTest(aptima_rwlock_create(aptima_RW_PHASE_FAIR), "PhaseFair", test_ms,
                 write_threads, read_threads, perf);
-  RunRWLockTest(axis_rwlock_create(axis_RW_NATIVE), "Native", test_ms,
+  RunRWLockTest(aptima_rwlock_create(aptima_RW_NATIVE), "Native", test_ms,
                 write_threads, read_threads, perf);
 }
 

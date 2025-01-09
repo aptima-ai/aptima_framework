@@ -5,7 +5,7 @@
   "dependencies": [
     {
       "type": "system",
-      "name": "axis_runtime_go",
+      "name": "aptima_runtime_go",
       "version": "0.6.2"
     }
   ],

@@ -5,12 +5,12 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
 #include "nlohmann/json_fwd.hpp"
-#include "axis_runtime/binding/cpp/detail/extension.h"
-#include "axis_runtime/common/status_code.h"
-#include "axis_utils/lang/cpp/lib/value.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "aptima_runtime/binding/cpp/detail/extension.h"
+#include "aptima_runtime/common/status_code.h"
+#include "aptima_utils/lang/cpp/lib/value.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -21,20 +21,20 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto greeting_words = axis_env.get_property_string("greeting_words");
+      auto greeting_words = aptima_env.get_property_string("greeting_words");
 
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", greeting_words);
-      bool rc = axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      bool rc = aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       EXPECT_EQ(rc, true);
     }
   }
 };
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     standalone_test_set_property_for_single_ext__test_extension_1,
     test_extension_1);
 
@@ -44,22 +44,22 @@ namespace {
 
 class extension_tester_1 : public ten::extension_tester_t {
  public:
-  void on_start(ten::axis_env_tester_t &axis_env) override {
+  void on_start(ten::aptima_env_tester_t &aptima_env) override {
     // Send the first command to the extension.
     auto new_cmd = ten::cmd_t::create("hello_world");
 
-    axis_env.send_cmd(
+    aptima_env.send_cmd(
         std::move(new_cmd),
-        [](ten::axis_env_tester_t &axis_env,
+        [](ten::aptima_env_tester_t &aptima_env,
            std::unique_ptr<ten::cmd_result_t> result, ten::error_t *err) {
-          if (result->get_status_code() == axis_STATUS_CODE_OK) {
+          if (result->get_status_code() == aptima_STATUS_CODE_OK) {
             auto detail = result->get_property_string("detail");
             EXPECT_EQ(detail, "nice to meet you");
-            axis_env.stop_test();
+            aptima_env.stop_test();
           }
         });
 
-    axis_env.on_start_done();
+    aptima_env.on_start_done();
   }
 };
 
@@ -74,7 +74,7 @@ TEST(StandaloneTest, SetPropertyForSingleExt) {  // NOLINT
       })");
 
   bool rc = tester->run();
-  axis_ASSERT(rc, "Should not happen.");
+  aptima_ASSERT(rc, "Should not happen.");
 
   delete tester;
 }

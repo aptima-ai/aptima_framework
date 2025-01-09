@@ -6,32 +6,32 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "axis_utils/container/list_node.h"
-#include "axis_utils/lib/signature.h"
-#include "axis_utils/lib/string.h"
+#include "aptima_utils/container/list_node.h"
+#include "aptima_utils/lib/signature.h"
+#include "aptima_utils/lib/string.h"
 
-#define axis_STR_LISTNODE_SIGNATURE 0x15D33B50C27A1B20U
+#define aptima_STR_LISTNODE_SIGNATURE 0x15D33B50C27A1B20U
 
-typedef struct axis_str_listnode_t {
-  axis_listnode_t hdr;
-  axis_signature_t signature;
-  axis_string_t str;
-} axis_str_listnode_t;
+typedef struct aptima_str_listnode_t {
+  aptima_listnode_t hdr;
+  aptima_signature_t signature;
+  aptima_string_t str;
+} aptima_str_listnode_t;
 
-axis_UTILS_API axis_listnode_t *axis_str_listnode_create(const char *str);
+aptima_UTILS_API aptima_listnode_t *aptima_str_listnode_create(const char *str);
 
-axis_UTILS_API axis_listnode_t *axis_str_listnode_create_with_size(const char *str,
+aptima_UTILS_API aptima_listnode_t *aptima_str_listnode_create_with_size(const char *str,
                                                                 size_t size);
 
-axis_UTILS_API axis_str_listnode_t *axis_listnode_to_str_listnode(
-    axis_listnode_t *self);
+aptima_UTILS_API aptima_str_listnode_t *aptima_listnode_to_str_listnode(
+    aptima_listnode_t *self);
 
-axis_UTILS_API axis_listnode_t *axis_listnode_from_str_listnode(
-    axis_str_listnode_t *self);
+aptima_UTILS_API aptima_listnode_t *aptima_listnode_from_str_listnode(
+    aptima_str_listnode_t *self);
 
-axis_UTILS_API axis_string_t *axis_str_listnode_get(axis_listnode_t *self);
+aptima_UTILS_API aptima_string_t *aptima_str_listnode_get(aptima_listnode_t *self);

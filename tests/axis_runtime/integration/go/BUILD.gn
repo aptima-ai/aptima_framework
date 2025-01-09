@@ -4,16 +4,16 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/options.gni")
+import("//build/aptima_runtime/options.gni")
 
 group("go") {
   deps = []
 
-  if (axis_enable_go_binding) {
+  if (aptima_enable_go_binding) {
     deps += [
       "access_property_go",
       "close_app_go",
-      "expired_axis_go",
+      "expired_aptima_go",
       "frequently_cgo_call_go",
       "handle_error_go",
       "no_dest_go",

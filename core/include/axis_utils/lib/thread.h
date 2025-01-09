@@ -6,25 +6,25 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdint.h>
 
-#include "axis_utils/lib/atomic.h"
-#include "axis_utils/lib/event.h"
+#include "aptima_utils/lib/atomic.h"
+#include "aptima_utils/lib/event.h"
 
-typedef struct axis_thread_t {
+typedef struct aptima_thread_t {
   void *(*routine)(void *);
   void *args;
-  axis_atomic_t id;
-  axis_event_t *ready;
-  axis_event_t *exit;
+  aptima_atomic_t id;
+  aptima_event_t *ready;
+  aptima_event_t *exit;
   const char *name;
-  axis_atomic_t detached;
+  aptima_atomic_t detached;
   void *aux;
-} axis_thread_t;
+} aptima_thread_t;
 
-typedef axis_atomic_t axis_tid_t;
+typedef aptima_atomic_t aptima_tid_t;
 
 /**
  * @brief Create a new thread.
@@ -33,7 +33,7 @@ typedef axis_atomic_t axis_tid_t;
  * @param args The arguments of the routine.
  * @return The thread object
  */
-axis_UTILS_API axis_thread_t *axis_thread_create(const char *name,
+aptima_UTILS_API aptima_thread_t *aptima_thread_create(const char *name,
                                               void *(*routine)(void *),
                                               void *args);
 
@@ -42,14 +42,14 @@ axis_UTILS_API axis_thread_t *axis_thread_create(const char *name,
  * @param thread The thread object to suspend.
  * @return 0 on success, -1 on error.
  */
-axis_UTILS_API int axis_thread_suspend(axis_thread_t *thread);
+aptima_UTILS_API int aptima_thread_suspend(aptima_thread_t *thread);
 
 /**
  * @brief Resume the thread.
  * @param thread The thread object to resume.
  * @return 0 on success, -1 on error.
  */
-axis_UTILS_API int axis_thread_resume(axis_thread_t *thread);
+aptima_UTILS_API int aptima_thread_resume(aptima_thread_t *thread);
 
 /**
  * @brief Join the thread.
@@ -58,7 +58,7 @@ axis_UTILS_API int axis_thread_resume(axis_thread_t *thread);
  * @return 0 on success, -1 on error.
  * @note You can not join a detached thread, crash will happen if you do.
  */
-axis_UTILS_API int axis_thread_join(axis_thread_t *thread, int wait_ms);
+aptima_UTILS_API int aptima_thread_join(aptima_thread_t *thread, int wait_ms);
 
 /**
  * @brief Detach the thread.
@@ -66,26 +66,26 @@ axis_UTILS_API int axis_thread_join(axis_thread_t *thread, int wait_ms);
  * @return 0 on success, -1 on error.
  * @note You can not detach a detached thread, crash will happen if you do.
  */
-axis_UTILS_API int axis_thread_detach(axis_thread_t *thread);
+aptima_UTILS_API int aptima_thread_detach(aptima_thread_t *thread);
 
 /**
  * @brief Get the thread id.
  * @param thread The thread object.
  * @return The thread id.
  */
-axis_UTILS_API axis_tid_t axis_thread_get_id(axis_thread_t *thread);
+aptima_UTILS_API aptima_tid_t aptima_thread_get_id(aptima_thread_t *thread);
 
 /**
  * @brief Get current thread.
  * @return The current thread object.
- * @note Will return NULL if it is not created by |axis_thread_create|
+ * @note Will return NULL if it is not created by |aptima_thread_create|
  */
-axis_UTILS_API axis_thread_t *axis_thread_self();
+aptima_UTILS_API aptima_thread_t *aptima_thread_self();
 
 /**
  * @brief Yield the thread.
  */
-axis_UTILS_API void axis_thread_yield();
+aptima_UTILS_API void aptima_thread_yield();
 
 /**
  * @brief Set the thread name.
@@ -93,19 +93,19 @@ axis_UTILS_API void axis_thread_yield();
  * @param name The name of the thread.
  * @return 0 on success, -1 on error.
  */
-axis_UTILS_API int axis_thread_set_name(axis_thread_t *thread, const char *name);
+aptima_UTILS_API int aptima_thread_set_name(aptima_thread_t *thread, const char *name);
 
 /**
  * @brief Get the thread name.
  * @param thread The thread object, will return the current thread's if NULL.
  * @return The thread name.
  */
-axis_UTILS_API const char *axis_thread_get_name(axis_thread_t *thread);
+aptima_UTILS_API const char *aptima_thread_get_name(aptima_thread_t *thread);
 
 /**
  * @brief Let current CPU run into low power mode until interrupt.
  */
-axis_UTILS_API void axis_thread_pause_cpu();
+aptima_UTILS_API void aptima_thread_pause_cpu();
 
 /**
  * @brief Set thread affinity.
@@ -115,7 +115,7 @@ axis_UTILS_API void axis_thread_pause_cpu();
  *       thread to run on CPU 0 and 2, the mask is 0x3.
  *       Currently only support 64 CPUs.
  */
-axis_UTILS_API void axis_thread_set_affinity(axis_thread_t *thread, uint64_t mask);
+aptima_UTILS_API void aptima_thread_set_affinity(aptima_thread_t *thread, uint64_t mask);
 
 /**
  * @brief Compare two threads.
@@ -123,7 +123,7 @@ axis_UTILS_API void axis_thread_set_affinity(axis_thread_t *thread, uint64_t mas
  * @param target The thread object to compare.
  * @return If the two thread are equal, it returns 1; otherwise, it returns 0.
  */
-axis_UTILS_API int axis_thread_equal(axis_thread_t *thread, axis_thread_t *target);
+aptima_UTILS_API int aptima_thread_equal(aptima_thread_t *thread, aptima_thread_t *target);
 
 /**
  * @brief Compare the threads to the current thread.
@@ -131,19 +131,19 @@ axis_UTILS_API int axis_thread_equal(axis_thread_t *thread, axis_thread_t *targe
  * @return If the thread equals to the current thread, it returns 1; otherwise,
  * it returns 0.
  */
-axis_UTILS_API int axis_thread_equal_to_current_thread(axis_thread_t *thread);
+aptima_UTILS_API int aptima_thread_equal_to_current_thread(aptima_thread_t *thread);
 
 /**
- * @brief The current thread was not created by axis_thread_create(). This
- * function is used to populate the axis_thread_t with relevant information, but
+ * @brief The current thread was not created by aptima_thread_create(). This
+ * function is used to populate the aptima_thread_t with relevant information, but
  * it doesn't actually create a native thread.
  * @return The thread object
  */
-axis_UTILS_API axis_thread_t *axis_thread_create_fake(const char *name);
+aptima_UTILS_API aptima_thread_t *aptima_thread_create_fake(const char *name);
 
 /**
  * @brief Join the fake thread.
  * @param thread The fake thread object to join.
  * @return 0 on success, -1 on error.
  */
-axis_UTILS_API int axis_thread_join_fake(axis_thread_t *thread);
+aptima_UTILS_API int aptima_thread_join_fake(aptima_thread_t *thread);

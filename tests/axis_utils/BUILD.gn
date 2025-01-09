@@ -4,30 +4,30 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_utils/options.gni")
-import("//build/axis_utils/utils.gni")
+import("//build/aptima_utils/options.gni")
+import("//build/aptima_utils/utils.gni")
 
-axis_utils_test("axis_utils_unit_test") {
+aptima_utils_test("aptima_utils_unit_test") {
   output_dir = "${root_out_dir}/tests/standalone"
 
   deps = []
   if (enable_sanitizer) {
     if (!is_clang) {
-      deps += [ "//build/axis_common/asan:package_asan_lib_for_axis_framework_standalone_test" ]
+      deps += [ "//build/aptima_common/asan:package_asan_lib_for_aptima_framework_standalone_test" ]
     }
   }
 
   public_deps = [
     "unit",
-    "//core/src/axis_utils/backtrace",
-    "//core/src/axis_utils/container",
-    "//core/src/axis_utils/io",
-    "//core/src/axis_utils/io/general/loops",
-    "//core/src/axis_utils/lib",
-    "//core/src/axis_utils/log",
-    "//core/src/axis_utils/sanitizer",
-    "//core/src/axis_utils/schema",
-    "//core/src/axis_utils/value",
+    "//core/src/aptima_utils/backtrace",
+    "//core/src/aptima_utils/container",
+    "//core/src/aptima_utils/io",
+    "//core/src/aptima_utils/io/general/loops",
+    "//core/src/aptima_utils/lib",
+    "//core/src/aptima_utils/log",
+    "//core/src/aptima_utils/sanitizer",
+    "//core/src/aptima_utils/schema",
+    "//core/src/aptima_utils/value",
     "//tests:copy_jansson_library_for_test",
   ]
 
@@ -40,8 +40,8 @@ axis_utils_test("axis_utils_unit_test") {
   public_deps += [ "//third_party/googletest:gtest_main" ]
 }
 
-axis_utils_group("axis_utils") {
-  if (axis_utils_enable_tests) {
-    public_deps = [ ":axis_utils_unit_test" ]
+aptima_utils_group("aptima_utils") {
+  if (aptima_utils_enable_tests) {
+    public_deps = [ ":aptima_utils_unit_test" ]
   }
 }

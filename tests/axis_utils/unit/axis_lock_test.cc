@@ -9,17 +9,17 @@
 #include <thread>
 
 #include "gtest/gtest.h"
-#include "axis_utils/lib/atomic.h"
-#include "axis_utils/lib/event.h"
-#include "axis_utils/lib/shared_event.h"
-#include "axis_utils/lib/spinlock.h"
-#include "axis_utils/lib/time.h"
+#include "aptima_utils/lib/atomic.h"
+#include "aptima_utils/lib/event.h"
+#include "aptima_utils/lib/shared_event.h"
+#include "aptima_utils/lib/spinlock.h"
+#include "aptima_utils/lib/time.h"
 
 struct SharedEventCheckpoint {
   uint32_t sig;
-  axis_atomic_t lock;
-  axis_shared_event_t *event;
-  axis_atomic_t value;
+  aptima_atomic_t lock;
+  aptima_shared_event_t *event;
+  aptima_atomic_t value;
 };
 
 TEST(SharedEventTest, positive) {
@@ -29,31 +29,31 @@ TEST(SharedEventTest, positive) {
   for (int index = 0; index < 2; index++) {
     SharedEventCheckpoint *p1 = t1_checkpoints + index;
     SharedEventCheckpoint *p2 = t2_checkpoints + index;
-    p1->event = axis_shared_event_create(&p1->sig, &p1->lock, 0, 0);
-    axis_atomic_store(&p1->value, 0);
-    p2->event = axis_shared_event_create(&p2->sig, &p2->lock, 0, 0);
-    axis_atomic_store(&p2->value, 0);
+    p1->event = aptima_shared_event_create(&p1->sig, &p1->lock, 0, 0);
+    aptima_atomic_store(&p1->value, 0);
+    p2->event = aptima_shared_event_create(&p2->sig, &p2->lock, 0, 0);
+    aptima_atomic_store(&p2->value, 0);
   }
 
   std::thread t1 = std::thread([p1 = t1_checkpoints, p2 = t2_checkpoints] {
-    axis_shared_event_wait(p1[0].event, -1);
-    axis_shared_event_wait(p2[1].event, -1);
-    EXPECT_EQ(axis_atomic_load(&p2[0].value), 1);
-    axis_atomic_store(&p1[0].value, 1);
-    axis_shared_event_set(p1[1].event);
+    aptima_shared_event_wait(p1[0].event, -1);
+    aptima_shared_event_wait(p2[1].event, -1);
+    EXPECT_EQ(aptima_atomic_load(&p2[0].value), 1);
+    aptima_atomic_store(&p1[0].value, 1);
+    aptima_shared_event_set(p1[1].event);
   });
 
   std::thread t2 = std::thread([p1 = t1_checkpoints, p2 = t2_checkpoints] {
-    axis_shared_event_wait(p2[0].event, -1);
-    EXPECT_EQ(axis_atomic_load(&p1[0].value), 0);
-    axis_atomic_store(&p2[0].value, 1);
-    axis_shared_event_set(p2[1].event);
-    axis_shared_event_wait(p1[1].event, -1);
-    EXPECT_EQ(axis_atomic_load(&p1[0].value), 1);
+    aptima_shared_event_wait(p2[0].event, -1);
+    EXPECT_EQ(aptima_atomic_load(&p1[0].value), 0);
+    aptima_atomic_store(&p2[0].value, 1);
+    aptima_shared_event_set(p2[1].event);
+    aptima_shared_event_wait(p1[1].event, -1);
+    EXPECT_EQ(aptima_atomic_load(&p1[0].value), 1);
   });
 
-  axis_shared_event_set(t1_checkpoints[0].event);
-  axis_shared_event_set(t2_checkpoints[0].event);
+  aptima_shared_event_set(t1_checkpoints[0].event);
+  aptima_shared_event_set(t2_checkpoints[0].event);
 
   t1.join();
   t2.join();
@@ -61,8 +61,8 @@ TEST(SharedEventTest, positive) {
   for (int index = 0; index < 2; index++) {
     SharedEventCheckpoint *p1 = t1_checkpoints + index;
     SharedEventCheckpoint *p2 = t2_checkpoints + index;
-    axis_shared_event_destroy(p1->event);
-    axis_shared_event_destroy(p2->event);
+    aptima_shared_event_destroy(p1->event);
+    aptima_shared_event_destroy(p2->event);
   }
 }
 
@@ -75,64 +75,64 @@ struct SpinlockAcquireInfo {
 TEST(SpinLockTest, test) {
   srand(time(nullptr));
 
-  axis_event_t *start_event = axis_event_create(0, 0);
+  aptima_event_t *start_event = aptima_event_create(0, 0);
 
-  axis_atomic_t addr = 0;
-  axis_spinlock_t *lock = axis_spinlock_from_addr(&addr);
+  aptima_atomic_t addr = 0;
+  aptima_spinlock_t *lock = aptima_spinlock_from_addr(&addr);
 
-  axis_atomic_t lock_cnt = {0};
+  aptima_atomic_t lock_cnt = {0};
 
   SpinlockAcquireInfo thread_info1;
   SpinlockAcquireInfo thread_info2;
   int val = 0;
 
   auto thrd_1_op = [start_event, &lock, &lock_cnt, &thread_info1, &val] {
-    axis_event_wait(start_event, -1);
+    aptima_event_wait(start_event, -1);
 
-    thread_info1.begin_time = axis_current_time();
-    axis_spinlock_lock(lock);
+    thread_info1.begin_time = aptima_current_time();
+    aptima_spinlock_lock(lock);
     val++;
     EXPECT_EQ(val, 1);
-    thread_info1.acquired_time = axis_current_time();
+    thread_info1.acquired_time = aptima_current_time();
     printf("[   LOG    ][thrd_1] acquire spin lock spent %d ms\n",
            (int)(thread_info1.acquired_time - thread_info1.begin_time));
 
     auto ran = rand() % 20 + 30;
     thread_info1.released_time = thread_info1.acquired_time + ran;
 
-    if (axis_atomic_fetch_add(&lock_cnt, 1) == 0) {
+    if (aptima_atomic_fetch_add(&lock_cnt, 1) == 0) {
       printf("[   LOG    ][thrd_1] wait %d ms before release spin lock\n",
              (int)ran);
       std::this_thread::sleep_for(std::chrono::milliseconds(ran));
     }
     EXPECT_EQ(val, 1);
     val--;
-    axis_spinlock_unlock(lock);
+    aptima_spinlock_unlock(lock);
 
     printf("[   LOG    ][thrd_1] unlocked successfully\n");
   };
 
   auto thrd_2_op = [&start_event, &lock, &lock_cnt, &thread_info2, &val] {
-    axis_event_wait(start_event, -1);
+    aptima_event_wait(start_event, -1);
 
-    thread_info2.begin_time = axis_current_time();
-    axis_spinlock_lock(lock);
+    thread_info2.begin_time = aptima_current_time();
+    aptima_spinlock_lock(lock);
     val++;
     EXPECT_EQ(val, 1);
-    thread_info2.acquired_time = axis_current_time();
+    thread_info2.acquired_time = aptima_current_time();
     printf("[   LOG    ][thrd_2] acquire spin lock spent %d ms\n",
            (int)(thread_info2.acquired_time - thread_info2.begin_time));
 
     auto ran = rand() % 20 + 30;
     thread_info2.released_time = thread_info2.acquired_time + ran;
-    if (axis_atomic_fetch_add(&lock_cnt, 1) == 0) {
+    if (aptima_atomic_fetch_add(&lock_cnt, 1) == 0) {
       printf("[   LOG    ][thrd_2] wait %d ms before release spin lock\n",
              (int)ran);
       std::this_thread::sleep_for(std::chrono::milliseconds(ran));
     }
     EXPECT_EQ(val, 1);
     val--;
-    axis_spinlock_unlock(lock);
+    aptima_spinlock_unlock(lock);
 
     printf("[   LOG    ][thrd_2] unlocked successfully\n");
   };
@@ -140,7 +140,7 @@ TEST(SpinLockTest, test) {
   auto thrd_1 = std::thread(thrd_1_op);
   auto thrd_2 = std::thread(thrd_2_op);
 
-  axis_event_set(start_event);
+  aptima_event_set(start_event);
 
   if (thrd_1.joinable()) {
     thrd_1.join();
@@ -151,7 +151,7 @@ TEST(SpinLockTest, test) {
   }
 
   EXPECT_EQ(lock_cnt, 2);
-  axis_event_destroy(start_event);
+  aptima_event_destroy(start_event);
 
   if (thread_info1.acquired_time > thread_info2.acquired_time) {
     EXPECT_GE(thread_info1.acquired_time, thread_info2.released_time);

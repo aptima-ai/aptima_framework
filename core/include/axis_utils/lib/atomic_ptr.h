@@ -6,10 +6,10 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-typedef void *axis_atomic_ptr_t;
+typedef void *aptima_atomic_ptr_t;
 
-axis_UTILS_API void *axis_atomic_ptr_load(volatile axis_atomic_ptr_t *a);
+aptima_UTILS_API void *aptima_atomic_ptr_load(volatile aptima_atomic_ptr_t *a);
 
-axis_UTILS_API void axis_atomic_ptr_store(volatile axis_atomic_ptr_t *a, void *v);
+aptima_UTILS_API void aptima_atomic_ptr_store(volatile aptima_atomic_ptr_t *a, void *v);

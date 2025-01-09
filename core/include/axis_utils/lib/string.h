@@ -6,28 +6,28 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "axis_utils/lib/buf.h"
-#include "axis_utils/lib/signature.h"
-#include "axis_utils/macro/check.h"
+#include "aptima_utils/lib/buf.h"
+#include "aptima_utils/lib/signature.h"
+#include "aptima_utils/macro/check.h"
 
-#define axis_STRING_SIGNATURE 0x178445C0402E320DU
+#define aptima_STRING_SIGNATURE 0x178445C0402E320DU
 
 #define MAX_BUFFER_SIZE (10 * 1024 * 1024)  // 10 M
 
 #if defined(NDEBUG)
-#define axis_STRING_PRE_BUF_SIZE 256
+#define aptima_STRING_PRE_BUF_SIZE 256
 #define BUFFER_ENLARGE_RATIO 2
 #else
 // In debug mode, significantly reduce the size of `prebuf` so that
-// `axis_string_reserve` is actually triggered. This way, we can test that even
-// if `malloc` occurs within `axis_string_reserve`, there will be no memory leak.
-#define axis_STRING_PRE_BUF_SIZE 8
+// `aptima_string_reserve` is actually triggered. This way, we can test that even
+// if `malloc` occurs within `aptima_string_reserve`, there will be no memory leak.
+#define aptima_STRING_PRE_BUF_SIZE 8
 
 // Because the initial buffer size of a string in debug mode is relatively
 // small, the enlargement ratio is set higher each time capacity needs to be
@@ -36,25 +36,25 @@
 #define BUFFER_ENLARGE_RATIO 30
 #endif
 
-typedef struct axis_list_t axis_list_t;
+typedef struct aptima_list_t aptima_list_t;
 
-typedef struct axis_string_t {
-  axis_signature_t signature;
+typedef struct aptima_string_t {
+  aptima_signature_t signature;
 
   char *buf;  // Pointer to allocated buffer.
-  char pre_buf[axis_STRING_PRE_BUF_SIZE];
+  char pre_buf[aptima_STRING_PRE_BUF_SIZE];
   size_t buf_size;          // Allocated capacity.
   size_t first_unused_idx;  // Index of first unused byte.
-} axis_string_t;
+} aptima_string_t;
 
-inline bool axis_string_check_integrity(const axis_string_t *self) {
-  axis_ASSERT(self, "Invalid argument.");
+inline bool aptima_string_check_integrity(const aptima_string_t *self) {
+  aptima_ASSERT(self, "Invalid argument.");
 
-  if (axis_signature_get(&self->signature) != axis_STRING_SIGNATURE) {
+  if (aptima_signature_get(&self->signature) != aptima_STRING_SIGNATURE) {
     return false;
   }
 
-  // A normal `axis_string_t`'s `buf` should be a non-NULL value, either pointing
+  // A normal `aptima_string_t`'s `buf` should be a non-NULL value, either pointing
   // to `prebuf` or to memory allocated by `malloc`.
   if (self->buf == NULL) {
     return false;
@@ -67,9 +67,9 @@ inline bool axis_string_check_integrity(const axis_string_t *self) {
  * @brief Create a string object.
  * @return A pointer to the string object.
  */
-axis_UTILS_API axis_string_t *axis_string_create(void);
+aptima_UTILS_API aptima_string_t *aptima_string_create(void);
 
-axis_UTILS_API axis_string_t *axis_string_create_from_c_str(const char *str,
+aptima_UTILS_API aptima_string_t *aptima_string_create_from_c_str(const char *str,
                                                          size_t size);
 
 /**
@@ -77,9 +77,9 @@ axis_UTILS_API axis_string_t *axis_string_create_from_c_str(const char *str,
  * @param fmt The c string.
  * @return A pointer to the string object.
  */
-axis_UTILS_API axis_string_t *axis_string_create_formatted(const char *fmt, ...);
+aptima_UTILS_API aptima_string_t *aptima_string_create_formatted(const char *fmt, ...);
 
-axis_UTILS_API axis_string_t *axis_string_create_from_va_list(const char *fmt,
+aptima_UTILS_API aptima_string_t *aptima_string_create_from_va_list(const char *fmt,
                                                            va_list ap);
 
 /**
@@ -87,31 +87,31 @@ axis_UTILS_API axis_string_t *axis_string_create_from_va_list(const char *fmt,
  * @param other The other string object.
  * @return A pointer to the string object.
  */
-axis_UTILS_API axis_string_t *axis_string_clone(const axis_string_t *other);
+aptima_UTILS_API aptima_string_t *aptima_string_clone(const aptima_string_t *other);
 
 /**
  * @brief Initialize a string object from another string object.
  * @param self The string object.
  * @param other The other string object.
  */
-axis_UTILS_API void axis_string_copy(axis_string_t *self, axis_string_t *other);
+aptima_UTILS_API void aptima_string_copy(aptima_string_t *self, aptima_string_t *other);
 
 /**
  * @brief Initialize a string object from existing memory.
  * @param self The string object.
  */
-axis_UTILS_API void axis_string_init(axis_string_t *self);
+aptima_UTILS_API void aptima_string_init(aptima_string_t *self);
 
 /**
  * @brief Initialize a string object from existing memory, and set the value.
  * @param self The string object.
  * @param fmt The c string.
  */
-axis_UTILS_API void axis_string_init_formatted(axis_string_t *self,
+aptima_UTILS_API void aptima_string_init_formatted(aptima_string_t *self,
                                              const char *fmt, ...);
 
-axis_UTILS_API void axis_string_init_from_string(axis_string_t *self,
-                                               axis_string_t *other);
+aptima_UTILS_API void aptima_string_init_from_string(aptima_string_t *self,
+                                               aptima_string_t *other);
 
 /**
  * @brief Initialize a string object from another string object.
@@ -119,43 +119,43 @@ axis_UTILS_API void axis_string_init_from_string(axis_string_t *self,
  * @param other The other string object.
  * @param size the max size, copy all if size <= 0
  */
-axis_UTILS_API void axis_string_init_from_c_str(axis_string_t *self,
+aptima_UTILS_API void aptima_string_init_from_c_str(aptima_string_t *self,
                                               const char *str, size_t size);
 
 /**
  * @brief Destroy a string object and release the memory.
  * @param self The string object.
  */
-axis_UTILS_API void axis_string_destroy(axis_string_t *self);
+aptima_UTILS_API void aptima_string_destroy(aptima_string_t *self);
 
 /**
  * @brief Destroy a string object, left the memory.
  * @param self The string object.
  */
-axis_UTILS_API void axis_string_deinit(axis_string_t *self);
+aptima_UTILS_API void aptima_string_deinit(aptima_string_t *self);
 
 /**
  * @brief Set the string object as empty.
  * @param self The string object.
  */
-axis_UTILS_API void axis_string_clear(axis_string_t *self);
+aptima_UTILS_API void aptima_string_clear(aptima_string_t *self);
 
 /**
  * @brief Reserve memory for the string object.
  * @param self The string object.
  * @param extra The size of the memory to be reserved.
  */
-axis_UTILS_API void axis_string_reserve(axis_string_t *self, size_t extra);
+aptima_UTILS_API void aptima_string_reserve(aptima_string_t *self, size_t extra);
 
 /**
  * @brief Append a c string to the string object.
  * @param self The string object.
  * @param fmt The c string.
  */
-axis_UTILS_API void axis_string_append_formatted(axis_string_t *self,
+aptima_UTILS_API void aptima_string_append_formatted(aptima_string_t *self,
                                                const char *fmt, ...);
 
-axis_UTILS_API void axis_string_append_from_va_list(axis_string_t *self,
+aptima_UTILS_API void aptima_string_append_from_va_list(aptima_string_t *self,
                                                   const char *fmt, va_list ap);
 
 /**
@@ -163,10 +163,10 @@ axis_UTILS_API void axis_string_append_from_va_list(axis_string_t *self,
  * @param self The string object.
  * @param fmt The c string.
  */
-axis_UTILS_API void axis_string_prepend_formatted(axis_string_t *self,
+aptima_UTILS_API void aptima_string_prepend_formatted(aptima_string_t *self,
                                                 const char *fmt, ...);
 
-axis_UTILS_API void axis_string_prepend_from_va_list(axis_string_t *self,
+aptima_UTILS_API void aptima_string_prepend_from_va_list(aptima_string_t *self,
                                                    const char *fmt, va_list ap);
 
 /**
@@ -174,10 +174,10 @@ axis_UTILS_API void axis_string_prepend_from_va_list(axis_string_t *self,
  * @param self The string object.
  * @param fmt The c string.
  */
-axis_UTILS_API void axis_string_set_formatted(axis_string_t *self, const char *fmt,
+aptima_UTILS_API void aptima_string_set_formatted(aptima_string_t *self, const char *fmt,
                                             ...);
 
-axis_UTILS_API void axis_string_set_from_c_str(axis_string_t *self,
+aptima_UTILS_API void aptima_string_set_from_c_str(aptima_string_t *self,
                                              const char *str, size_t size);
 
 /**
@@ -185,7 +185,7 @@ axis_UTILS_API void axis_string_set_from_c_str(axis_string_t *self,
  * @param self The string object.
  * @return true if the string object is empty, otherwise false.
  */
-axis_UTILS_API bool axis_string_is_empty(const axis_string_t *self);
+aptima_UTILS_API bool aptima_string_is_empty(const aptima_string_t *self);
 
 /**
  * @brief Check if the string object starts with the specified substring.
@@ -194,7 +194,7 @@ axis_UTILS_API bool axis_string_is_empty(const axis_string_t *self);
  * @return true if the string object starts with the specified substring,
  * otherwise false.
  */
-axis_UTILS_API bool axis_string_starts_with(const axis_string_t *self,
+aptima_UTILS_API bool aptima_string_starts_with(const aptima_string_t *self,
                                           const char *start);
 
 /**
@@ -204,8 +204,8 @@ axis_UTILS_API bool axis_string_starts_with(const axis_string_t *self,
  * @return true if the string object is equal to the other string object,
  *         otherwise false.
  */
-axis_UTILS_API bool axis_string_is_equal(const axis_string_t *self,
-                                       const axis_string_t *other);
+aptima_UTILS_API bool aptima_string_is_equal(const aptima_string_t *self,
+                                       const aptima_string_t *other);
 
 /**
  * @brief Check if the string object is equal to a c string.
@@ -213,7 +213,7 @@ axis_UTILS_API bool axis_string_is_equal(const axis_string_t *self,
  * @param other The c string.
  * @return true if the string object is equal to the c string, otherwise false.
  */
-axis_UTILS_API bool axis_string_is_equal_c_str(axis_string_t *self,
+aptima_UTILS_API bool aptima_string_is_equal_c_str(aptima_string_t *self,
                                              const char *other);
 
 /**
@@ -223,8 +223,8 @@ axis_UTILS_API bool axis_string_is_equal_c_str(axis_string_t *self,
  * @return true if the string object is equal to the c string in
  *         case-insensitive flavor, otherwise false.
  */
-axis_UTILS_API bool axis_string_is_equal_c_str_case_insensitive(
-    axis_string_t *self, const char *other);
+aptima_UTILS_API bool aptima_string_is_equal_c_str_case_insensitive(
+    aptima_string_t *self, const char *other);
 
 /**
  * @brief Check if the string contains a c string.
@@ -232,30 +232,30 @@ axis_UTILS_API bool axis_string_is_equal_c_str_case_insensitive(
  * @param b The c string.
  * @return true if the string object contains the c string, otherwise false.
  */
-axis_UTILS_API bool axis_string_contains(axis_string_t *self, const char *b);
+aptima_UTILS_API bool aptima_string_contains(aptima_string_t *self, const char *b);
 
 /**
  * @brief Convert the string object to lowercase.
  * @param self The string object.
  */
-axis_UTILS_API void axis_string_to_lower(axis_string_t *self);
+aptima_UTILS_API void aptima_string_to_lower(aptima_string_t *self);
 
 /**
  * @brief Convert the string object to uppercase.
  * @param self The string object.
  */
-axis_UTILS_API void axis_string_to_upper(axis_string_t *self);
+aptima_UTILS_API void aptima_string_to_upper(aptima_string_t *self);
 
 /**
  * @brief Get c string from the string object.
  * @param self The string object.
  * @return A pointer to the c string.
  */
-inline const char *axis_string_get_raw_str(const axis_string_t *self) {
+inline const char *aptima_string_get_raw_str(const aptima_string_t *self) {
   // It's possible that the return value of this function is used by "%s", and
   // pass NULL as the value of "%s" is an undefined behavior, so we ensure that
   // the return value of this function is not NULL.
-  axis_ASSERT(self && axis_string_check_integrity(self), "Invalid argument.");
+  aptima_ASSERT(self && aptima_string_check_integrity(self), "Invalid argument.");
   return self ? self->buf : NULL;
 }
 
@@ -264,15 +264,15 @@ inline const char *axis_string_get_raw_str(const axis_string_t *self) {
  * @param self The string object.
  * @return The length of the string object.
  */
-inline size_t axis_string_len(const axis_string_t *self) {
-  axis_ASSERT(self && axis_string_check_integrity(self), "Invalid argument.");
+inline size_t aptima_string_len(const aptima_string_t *self) {
+  aptima_ASSERT(self && aptima_string_check_integrity(self), "Invalid argument.");
   return self ? self->first_unused_idx : 0;
 }
 
 /**
  * @brief Remove @a count characters from the back of the string.
  */
-axis_UTILS_API void axis_string_erase_back(axis_string_t *self, size_t count);
+aptima_UTILS_API void aptima_string_erase_back(aptima_string_t *self, size_t count);
 
 /**
  * @brief split string by delimiter.
@@ -280,30 +280,30 @@ axis_UTILS_API void axis_string_erase_back(axis_string_t *self, size_t count);
  * @param delimiter
  * @return the splitted substring list.
  */
-axis_UTILS_API void axis_string_split(axis_string_t *self, const char *delimiter,
-                                    axis_list_t *result);
+aptima_UTILS_API void aptima_string_split(aptima_string_t *self, const char *delimiter,
+                                    aptima_list_t *result);
 
 /**
  * @brief Check if the input string is a UUID4 string.
  * @param self The input string.
  * @param result The check result.
  */
-axis_UTILS_API bool axis_string_is_uuid4(axis_string_t *self);
+aptima_UTILS_API bool aptima_string_is_uuid4(aptima_string_t *self);
 
 /**
  * @brief Convert the buffer content to a hexadecimal string.
  * @param self The string object.
  * @param buf The buffer.
  */
-axis_UTILS_API void axis_string_hex_from_buf(axis_string_t *self, axis_buf_t buf);
+aptima_UTILS_API void aptima_string_hex_from_buf(aptima_string_t *self, aptima_buf_t buf);
 
-axis_UTILS_API void axis_string_trim_trailing_slash(axis_string_t *self);
+aptima_UTILS_API void aptima_string_trim_trailing_slash(aptima_string_t *self);
 
-axis_UTILS_API void axis_string_trim_trailing_whitespace(axis_string_t *self);
+aptima_UTILS_API void aptima_string_trim_trailing_whitespace(aptima_string_t *self);
 
-axis_UTILS_API void axis_string_trim_leading_whitespace(axis_string_t *self);
+aptima_UTILS_API void aptima_string_trim_leading_whitespace(aptima_string_t *self);
 
-axis_UTILS_API char *axis_c_string_trim_trailing_whitespace(char *self);
+aptima_UTILS_API char *aptima_c_string_trim_trailing_whitespace(char *self);
 
 /**
  * @brief Check if the c string is equal to another c string object.
@@ -312,9 +312,9 @@ axis_UTILS_API char *axis_c_string_trim_trailing_whitespace(char *self);
  * @return true if the c string a is equal to the other c string b,
  *         otherwise false.
  */
-axis_UTILS_API bool axis_c_string_is_equal(const char *a, const char *b);
+aptima_UTILS_API bool aptima_c_string_is_equal(const char *a, const char *b);
 
-axis_UTILS_API bool axis_c_string_is_equal_with_size(const char *a, const char *b,
+aptima_UTILS_API bool aptima_c_string_is_equal_with_size(const char *a, const char *b,
                                                    size_t num);
 
 /**
@@ -325,10 +325,10 @@ axis_UTILS_API bool axis_c_string_is_equal_with_size(const char *a, const char *
  * @return true if the c string a is equal to the c string b in case-insensitive
  * flavor, otherwise false.
  */
-axis_UTILS_API bool axis_c_string_is_equal_case_insensitive(const char *a,
+aptima_UTILS_API bool aptima_c_string_is_equal_case_insensitive(const char *a,
                                                           const char *b);
 
-axis_UTILS_API bool axis_c_string_is_equal_with_size_case_insensitive(
+aptima_UTILS_API bool aptima_c_string_is_equal_with_size_case_insensitive(
     const char *a, const char *b, size_t num);
 
 /**
@@ -336,7 +336,7 @@ axis_UTILS_API bool axis_c_string_is_equal_with_size_case_insensitive(
  * @param self The c string object.
  * @return true if the c string object is empty, otherwise false.
  */
-axis_UTILS_API bool axis_c_string_is_empty(const char *str);
+aptima_UTILS_API bool aptima_c_string_is_empty(const char *str);
 
 /**
  * @brief Check if the c string starts with another c string.
@@ -344,7 +344,7 @@ axis_UTILS_API bool axis_c_string_is_empty(const char *str);
  * @param prefix The prefix c string object.
  * @return true if the c string starts with another c string, otherwise false.
  */
-axis_UTILS_API bool axis_c_string_starts_with(const char *str,
+aptima_UTILS_API bool aptima_c_string_starts_with(const char *str,
                                             const char *prefix);
 
 /**
@@ -353,7 +353,7 @@ axis_UTILS_API bool axis_c_string_starts_with(const char *str,
  * @param prefix The postfix c string object.
  * @return true if the c string ends with another c string, otherwise false.
  */
-axis_UTILS_API bool axis_c_string_ends_with(const char *str, const char *postfix);
+aptima_UTILS_API bool aptima_c_string_ends_with(const char *str, const char *postfix);
 
 /**
  * @brief Check if c string 'a' is smaller than 'b'. The definitions of
@@ -361,7 +361,7 @@ axis_UTILS_API bool axis_c_string_ends_with(const char *str, const char *postfix
  *   - The length is smaller.
  *   - If the length is equal, then the first unequal character is smaller.
  */
-axis_UTILS_API bool axis_c_string_is_equal_or_smaller(const char *a,
+aptima_UTILS_API bool aptima_c_string_is_equal_or_smaller(const char *a,
                                                     const char *b);
 
 /**
@@ -370,7 +370,7 @@ axis_UTILS_API bool axis_c_string_is_equal_or_smaller(const char *a,
  * @param search string to locate
  * @return the position 'serach' is first found in 'src'; -1 if not found.
  */
-axis_UTILS_API int axis_c_string_index_of(const char *src, const char *search);
+aptima_UTILS_API int aptima_c_string_index_of(const char *src, const char *search);
 
 /**
  * @brief split string by delimiter.
@@ -378,8 +378,8 @@ axis_UTILS_API int axis_c_string_index_of(const char *src, const char *search);
  * @param delimiter
  * @return the splitted substring list.
  */
-axis_UTILS_API void axis_c_string_split(const char *src, const char *delimiter,
-                                      axis_list_t *result);
+aptima_UTILS_API void aptima_c_string_split(const char *src, const char *delimiter,
+                                      aptima_list_t *result);
 
 /**
  * @brief Check if the c string contains a c string.
@@ -387,7 +387,7 @@ axis_UTILS_API void axis_c_string_split(const char *src, const char *delimiter,
  * @param b The c string.
  * @return true if the c string object contains the c string, otherwise false.
  */
-axis_UTILS_API bool axis_c_string_contains(const char *a, const char *b);
+aptima_UTILS_API bool aptima_c_string_contains(const char *a, const char *b);
 
 /**
  * @brief Convert a c string to a URI encoded string.
@@ -395,8 +395,8 @@ axis_UTILS_API bool axis_c_string_contains(const char *a, const char *b);
  * @param len The length of the source c string.
  * @param result The result string object.
  */
-axis_UTILS_API void axis_c_string_uri_encode(const char *src, size_t len,
-                                           axis_string_t *result);
+aptima_UTILS_API void aptima_c_string_uri_encode(const char *src, size_t len,
+                                           aptima_string_t *result);
 
 /**
  * @brief Convert a c string to a URI decoded string.
@@ -404,8 +404,8 @@ axis_UTILS_API void axis_c_string_uri_encode(const char *src, size_t len,
  * @param len The length of the source c string.
  * @param result The result string object.
  */
-axis_UTILS_API void axis_c_string_uri_decode(const char *src, size_t len,
-                                           axis_string_t *result);
+aptima_UTILS_API void aptima_c_string_uri_decode(const char *src, size_t len,
+                                           aptima_string_t *result);
 
 /**
  * @brief Escape a string by replacing certain special characters by a sequence
@@ -414,7 +414,7 @@ axis_UTILS_API void axis_c_string_uri_decode(const char *src, size_t len,
  * @param src The source string to escape.
  * @param result The output string.
  */
-axis_UTILS_API void axis_c_string_escaped(const char *src, axis_string_t *result);
+aptima_UTILS_API void aptima_c_string_escaped(const char *src, aptima_string_t *result);
 
-axis_UTILS_API void axis_string_slice(axis_string_t *self, axis_string_t *other,
+aptima_UTILS_API void aptima_string_slice(aptima_string_t *self, aptima_string_t *other,
                                     char sep);

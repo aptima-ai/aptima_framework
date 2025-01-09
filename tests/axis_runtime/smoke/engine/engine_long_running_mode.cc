@@ -8,12 +8,12 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/lib/time.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/common/constant.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
@@ -21,9 +21,9 @@ class ExtensionA : public ten::extension_t {
  public:
   ExtensionA(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    axis_env.send_cmd(std::move(cmd));
+    aptima_env.send_cmd(std::move(cmd));
   }
 };
 
@@ -31,21 +31,21 @@ class ExtensionB : public ten::extension_t {
  public:
   ExtensionB(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     nlohmann::json detail = {{"a", "b"}};
 
-    auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+    auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
     cmd_result->set_property_from_json("detail", detail.dump().c_str());
 
-    axis_env.return_result(std::move(cmd_result), std::move(cmd));
+    aptima_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 };
 
 class test_app_a : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -59,18 +59,18 @@ class test_app_a : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(engine_long_running_mode__extension_a,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(engine_long_running_mode__extension_a,
                                     ExtensionA);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(engine_long_running_mode__extension_b,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(engine_long_running_mode__extension_b,
                                     ExtensionB);
 
 test_app_a *app_a = nullptr;
 
-void *app_thread_1_main(axis_UNUSED void *args) {
+void *app_thread_1_main(aptima_UNUSED void *args) {
   app_a = new test_app_a();
   app_a->run();
   delete app_a;
@@ -80,8 +80,8 @@ void *app_thread_1_main(axis_UNUSED void *args) {
 
 class test_app_b : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -94,13 +94,13 @@ class test_app_b : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
 test_app_b *app_b = nullptr;
 
-void *app_thread_2_main(axis_UNUSED void *args) {
+void *app_thread_2_main(aptima_UNUSED void *args) {
   app_b = new test_app_b();
   app_b->run();
   delete app_b;
@@ -113,9 +113,9 @@ void *app_thread_2_main(axis_UNUSED void *args) {
 TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
   // Start app.
   auto *app_thread_2 =
-      axis_thread_create("app thread 2", app_thread_2_main, nullptr);
+      aptima_thread_create("app thread 2", app_thread_2_main, nullptr);
   auto *app_thread_1 =
-      axis_thread_create("app thread 1", app_thread_1_main, nullptr);
+      aptima_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   // Create a client and connect to the app.
   ten::msgpack_tcp_client_t *client = nullptr;
@@ -160,7 +160,7 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
         client->send_cmd_and_recv_result(std::move(start_graph_cmd));
 
     if (cmd_result) {
-      axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+      aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
       graph_id = cmd_result->get_property_string("detail");
 
       break;
@@ -169,11 +169,11 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
       client = nullptr;
 
       // To prevent from busy re-trying.
-      axis_sleep(10);
+      aptima_sleep(10);
     }
   }
 
-  axis_ASSERT(client, "Failed to connect to the TEN app.");
+  aptima_ASSERT(client, "Failed to connect to the TEN app.");
 
   // now close connection
   delete client;
@@ -188,8 +188,8 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
 
   auto cmd_result = client->send_cmd_and_recv_result(std::move(test_cmd));
 
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_json(cmd_result, R"({"a": "b"})");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_json(cmd_result, R"({"a": "b"})");
 
   // Destroy the client.
   delete client;
@@ -202,6 +202,6 @@ TEST(ExtensionTest, EngineLongRunningMode) {  // NOLINT
     app_b->close();
   }
 
-  axis_thread_join(app_thread_1, -1);
-  axis_thread_join(app_thread_2, -1);
+  aptima_thread_join(app_thread_1, -1);
+  aptima_thread_join(app_thread_2, -1);
 }

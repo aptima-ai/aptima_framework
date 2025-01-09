@@ -6,11 +6,11 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <curl/curl.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-axis_RUNTIME_PRIVATE_API bool axis_test_curl_connect_with_retry(
+aptima_RUNTIME_PRIVATE_API bool aptima_test_curl_connect_with_retry(
     CURL *curl, uint16_t max_retries, int64_t delay_in_ms);

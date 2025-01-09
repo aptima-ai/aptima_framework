@@ -6,19 +6,19 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 
-#include "axis_utils/lib/json.h"
+#include "aptima_utils/lib/json.h"
 
-typedef struct axis_value_t axis_value_t;
+typedef struct aptima_value_t aptima_value_t;
 
-axis_UTILS_API bool axis_value_object_merge_with_move(axis_value_t *dest,
-                                                    axis_value_t *src);
+aptima_UTILS_API bool aptima_value_object_merge_with_move(aptima_value_t *dest,
+                                                    aptima_value_t *src);
 
-axis_UTILS_API bool axis_value_object_merge_with_clone(axis_value_t *dest,
-                                                     axis_value_t *src);
+aptima_UTILS_API bool aptima_value_object_merge_with_clone(aptima_value_t *dest,
+                                                     aptima_value_t *src);
 
-axis_UTILS_API bool axis_value_object_merge_with_json(axis_value_t *dest,
-                                                    axis_json_t *src);
+aptima_UTILS_API bool aptima_value_object_merge_with_json(aptima_value_t *dest,
+                                                    aptima_json_t *src);

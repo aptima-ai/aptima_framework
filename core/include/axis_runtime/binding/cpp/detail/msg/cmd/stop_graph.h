@@ -6,13 +6,13 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <memory>
 
-#include "axis_runtime/binding/cpp/detail/msg/cmd/cmd.h"
-#include "axis_runtime/msg/cmd/stop_graph/cmd.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/cmd.h"
+#include "aptima_runtime/msg/cmd/stop_graph/cmd.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
 namespace ten {
 
@@ -30,7 +30,7 @@ class cmd_stop_graph_t : public cmd_t {
     explicit ctor_passkey_t() = default;
   };
 
-  explicit cmd_stop_graph_t(axis_shared_ptr_t *cmd) : cmd_t(cmd) {}
+  explicit cmd_stop_graph_t(aptima_shared_ptr_t *cmd) : cmd_t(cmd) {}
 
  public:
   static std::unique_ptr<cmd_stop_graph_t> create(error_t *err = nullptr) {
@@ -38,7 +38,7 @@ class cmd_stop_graph_t : public cmd_t {
   }
 
   explicit cmd_stop_graph_t(ctor_passkey_t /*unused*/)
-      : cmd_t(axis_cmd_stop_graph_create()) {}
+      : cmd_t(aptima_cmd_stop_graph_create()) {}
   ~cmd_stop_graph_t() override = default;
 
   // @{
@@ -49,10 +49,10 @@ class cmd_stop_graph_t : public cmd_t {
   // @}
 
   std::string get_graph_id(error_t *err = nullptr) const {
-    return axis_cmd_stop_graph_get_graph_id(c_msg);
+    return aptima_cmd_stop_graph_get_graph_id(c_msg);
   }
   bool set_graph_id(const char *graph_id, error_t *err = nullptr) {
-    return axis_cmd_stop_graph_set_graph_id(c_msg, graph_id);
+    return aptima_cmd_stop_graph_set_graph_id(c_msg, graph_id);
   }
 };
 

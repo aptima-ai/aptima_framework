@@ -4,8 +4,8 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/options.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/options.gni")
 
 group("nodejs") {
   deps = [

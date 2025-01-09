@@ -9,12 +9,12 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/binding/cpp/detail/axis_env.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/log/log.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/detail/aptima_env.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/log/log.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 #define LOOP_CNT 2
 
@@ -33,22 +33,22 @@ class test_extension : public ten::extension_t {
   explicit test_extension(const char *name)
       : ten::extension_t(name), name_(name) {}
 
-  void on_init(ten::axis_env_t &axis_env) override {
-    value_ = axis_env.get_property_int32("value");
-    axis_env.on_init_done();
+  void on_init(ten::aptima_env_t &aptima_env) override {
+    value_ = aptima_env.get_property_int32("value");
+    aptima_env.on_init_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
-    axis_ENV_LOG_INFO(axis_env,
+    aptima_ENV_LOG_INFO(aptima_env,
                      (std::string("xxxx on_cmd") + cmd->get_name()).c_str());
 
     if (cmd->get_name() == "sum") {
       if (counter_ == LOOP_CNT) {
         auto json = nlohmann::json::parse(cmd->get_property_to_json());
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", json.dump().c_str());
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
         counter_++;
 
@@ -57,11 +57,11 @@ class test_extension : public ten::extension_t {
 
         cmd->set_property("total", total);
 
-        axis_env.send_cmd(
+        aptima_env.send_cmd(
             std::move(cmd),
-            [](ten::axis_env_t &axis_env, std::unique_ptr<ten::cmd_result_t> cmd,
+            [](ten::aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_result_t> cmd,
                ten::error_t *err) {
-              axis_env.return_result_directly(std::move(cmd));
+              aptima_env.return_result_directly(std::move(cmd));
             });
       }
     }
@@ -75,8 +75,8 @@ class test_extension : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -89,11 +89,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -101,7 +101,7 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     graph_loop_multiple_circle_through_cmd_with_default__extension,
     test_extension);
 
@@ -122,7 +122,7 @@ TEST(ExtensionTest,
 ) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -213,7 +213,7 @@ TEST(ExtensionTest,
 
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   auto sum_cmd = ten::cmd_t::create("sum");
   sum_cmd->set_dest(
@@ -222,15 +222,15 @@ TEST(ExtensionTest,
       "A");
 
   cmd_result = client->send_cmd_and_recv_result(std::move(sum_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   nlohmann::json detail =
       nlohmann::json::parse(cmd_result->get_property_to_json("detail"));
   EXPECT_EQ((1 + 2 + 3) * LOOP_CNT, detail["total"].get<std::int32_t>());
 
-  axis_LOGI("xxxx prepare to stop graph.");
+  aptima_LOGI("xxxx prepare to stop graph.");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

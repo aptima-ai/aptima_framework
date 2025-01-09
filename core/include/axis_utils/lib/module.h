@@ -6,9 +6,9 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-#include "axis_utils/lib/string.h"
+#include "aptima_utils/lib/string.h"
 
 /**
  * @brief Dynamicly load a module.
@@ -19,14 +19,14 @@
  * @note On iOS and Android, this function do nothing and will assert your app
  *       in debug mode.
  */
-axis_UTILS_API void *axis_module_load(const axis_string_t *name, int as_local);
+aptima_UTILS_API void *aptima_module_load(const aptima_string_t *name, int as_local);
 
 /**
  * @brief Unload a module.
  * @param handle The handle of the module to unload.
  * @return 0 on success, or -1 on failure.
  */
-axis_UTILS_API int axis_module_close(void *handle);
+aptima_UTILS_API int aptima_module_close(void *handle);
 
-axis_UTILS_API void *axis_module_get_symbol(void *handle,
+aptima_UTILS_API void *aptima_module_get_symbol(void *handle,
                                           const char *symbol_name);

@@ -9,10 +9,10 @@ from ten import Addon, TenEnv, register_addon_as_extension
 
 @register_addon_as_extension("default_extension_python")
 class DefaultExtensionAddon(Addon):
-    def on_create_instance(self, axis_env: TenEnv, name: str, context) -> None:
-        axis_env.log_info("on_create_instance")
+    def on_create_instance(self, aptima_env: TenEnv, name: str, context) -> None:
+        aptima_env.log_info("on_create_instance")
         from . import extension
 
-        axis_env.on_create_instance_done(
+        aptima_env.on_create_instance_done(
             extension.DefaultExtension(name), context
         )

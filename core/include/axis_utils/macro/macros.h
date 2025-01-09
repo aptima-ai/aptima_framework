@@ -6,10 +6,10 @@
 //
 #pragma once
 
-#include "axis_utils/macro/ctor.h"
-#include "axis_utils/macro/expand.h"
-#include "axis_utils/macro/field.h"
-#include "axis_utils/macro/mark.h"
+#include "aptima_utils/macro/ctor.h"
+#include "aptima_utils/macro/expand.h"
+#include "aptima_utils/macro/field.h"
+#include "aptima_utils/macro/mark.h"
 
-#define axis_XSTR(a) axis_STR(a)
-#define axis_STR(a) #a
+#define aptima_XSTR(a) aptima_STR(a)
+#define aptima_STR(a) #a

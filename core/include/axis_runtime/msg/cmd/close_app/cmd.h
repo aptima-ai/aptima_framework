@@ -6,10 +6,10 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-typedef struct axis_cmd_close_app_t axis_cmd_close_app_t;
+typedef struct aptima_cmd_close_app_t aptima_cmd_close_app_t;
 
-axis_RUNTIME_API axis_shared_ptr_t *axis_cmd_close_app_create(void);
+aptima_RUNTIME_API aptima_shared_ptr_t *aptima_cmd_close_app_create(void);

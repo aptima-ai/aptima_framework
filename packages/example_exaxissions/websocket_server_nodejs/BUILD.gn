@@ -3,12 +3,12 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-import("//build/feature/axis_package.gni")
-import("//build/axis_runtime/feature/publish.gni")
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/options.gni")
+import("//build/feature/aptima_package.gni")
+import("//build/aptima_runtime/feature/publish.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/options.gni")
 
-axis_package("websocket_server_nodejs") {
+aptima_package("websocket_server_nodejs") {
   package_kind = "extension"
 
   resources = [
@@ -20,13 +20,13 @@ axis_package("websocket_server_nodejs") {
     "tsconfig.json",
   ]
 
-  deps = [ "//core/src/axis_runtime" ]
+  deps = [ "//core/src/aptima_runtime" ]
 }
 
-if (axis_enable_axis_manager) {
-  axis_package_publish("upload_websocket_server_nodejs_to_server") {
+if (aptima_enable_aptima_manager) {
+  aptima_package_publish("upload_websocket_server_nodejs_to_server") {
     base_dir = rebase_path(
-            "${root_out_dir}/axis_packages/extension/websocket_server_nodejs")
+            "${root_out_dir}/aptima_packages/extension/websocket_server_nodejs")
     deps = [ ":websocket_server_nodejs" ]
   }
 }

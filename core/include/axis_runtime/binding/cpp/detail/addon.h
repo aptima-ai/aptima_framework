@@ -9,31 +9,31 @@
 #include <cassert>
 #include <cstddef>
 
-#include "axis_runtime/addon/addon.h"
-#include "axis_runtime/addon/extension/extension.h"
-#include "axis_runtime/binding/common.h"
-#include "axis_runtime/binding/cpp/detail/binding_handle.h"
-#include "axis_runtime/binding/cpp/detail/common.h"
-#include "axis_runtime/binding/cpp/detail/axis_env.h"
-#include "axis_runtime/axis_env/axis_env.h"
+#include "aptima_runtime/addon/addon.h"
+#include "aptima_runtime/addon/extension/extension.h"
+#include "aptima_runtime/binding/common.h"
+#include "aptima_runtime/binding/cpp/detail/binding_handle.h"
+#include "aptima_runtime/binding/cpp/detail/common.h"
+#include "aptima_runtime/binding/cpp/detail/aptima_env.h"
+#include "aptima_runtime/aptima_env/aptima_env.h"
 
 namespace ten {
 
 class addon_t : public binding_handle_t {
  public:
   addon_t()
-      : binding_handle_t(axis_addon_create(
+      : binding_handle_t(aptima_addon_create(
             proxy_on_init, proxy_on_deinit, proxy_on_create_instance,
             proxy_on_destroy_instance, proxy_on_destroy)) {
-    axis_binding_handle_set_me_in_target_lang(
-        reinterpret_cast<axis_binding_handle_t *>(get_c_instance()), this);
+    aptima_binding_handle_set_me_in_target_lang(
+        reinterpret_cast<aptima_binding_handle_t *>(get_c_instance()), this);
   }
 
   ~addon_t() override {
-    axis_addon_destroy(static_cast<axis_addon_t *>(get_c_instance()));
+    aptima_addon_destroy(static_cast<aptima_addon_t *>(get_c_instance()));
 
-    axis_ASSERT(cpp_axis_env, "Should not happen.");
-    delete cpp_axis_env;
+    aptima_ASSERT(cpp_aptima_env, "Should not happen.");
+    delete cpp_aptima_env;
   };
 
   // @{
@@ -44,151 +44,151 @@ class addon_t : public binding_handle_t {
   // @}
 
  protected:
-  virtual void on_init(axis_env_t &axis_env) { axis_env.on_init_done(); }
+  virtual void on_init(aptima_env_t &aptima_env) { aptima_env.on_init_done(); }
 
-  virtual void on_deinit(axis_env_t &axis_env) { axis_env.on_deinit_done(); }
+  virtual void on_deinit(aptima_env_t &aptima_env) { aptima_env.on_deinit_done(); }
 
-  virtual void on_create_instance(axis_env_t &axis_env, const char *name,
+  virtual void on_create_instance(aptima_env_t &aptima_env, const char *name,
                                   void *context) {
-    (void)axis_env;
+    (void)aptima_env;
     (void)name;
     (void)context;
 
     // If a subclass requires the functionality of this function, it needs to
     // override this function.
-    axis_ASSERT(0, "Should not happen.");
+    aptima_ASSERT(0, "Should not happen.");
   };
 
-  virtual void on_destroy_instance(axis_env_t &axis_env, void *instance,
+  virtual void on_destroy_instance(aptima_env_t &aptima_env, void *instance,
                                    void *context) {
-    (void)axis_env;
+    (void)aptima_env;
     (void)instance;
     (void)context;
 
     // If a subclass requires the functionality of this function, it needs to
     // override this function.
-    axis_ASSERT(0, "Should not happen.");
+    aptima_ASSERT(0, "Should not happen.");
   };
 
  private:
-  axis_env_t *cpp_axis_env{};
+  aptima_env_t *cpp_aptima_env{};
 
-  void invoke_cpp_addon_on_init(axis_env_t &axis_env) {
+  void invoke_cpp_addon_on_init(aptima_env_t &aptima_env) {
     try {
-      on_init(axis_env);
+      on_init(aptima_env);
     } catch (...) {
-      axis_LOGW("Caught a exception of type '%s' in addon on_init().",
+      aptima_LOGW("Caught a exception of type '%s' in addon on_init().",
                curr_exception_type_name().c_str());
     }
   }
 
-  void invoke_cpp_addon_on_deinit(axis_env_t &axis_env) {
+  void invoke_cpp_addon_on_deinit(aptima_env_t &aptima_env) {
     try {
-      on_deinit(axis_env);
+      on_deinit(aptima_env);
     } catch (...) {
-      axis_LOGW("Caught a exception '%s' in addon on_deinit().",
+      aptima_LOGW("Caught a exception '%s' in addon on_deinit().",
                curr_exception_type_name().c_str());
     }
   }
 
-  void invoke_cpp_addon_on_create_instance(axis_env_t &axis_env, const char *name,
+  void invoke_cpp_addon_on_create_instance(aptima_env_t &aptima_env, const char *name,
                                            void *context) {
     try {
-      on_create_instance(axis_env, name, context);
+      on_create_instance(aptima_env, name, context);
     } catch (...) {
-      axis_LOGW("Caught a exception '%s' in addon on_create_instance(%s).",
+      aptima_LOGW("Caught a exception '%s' in addon on_create_instance(%s).",
                curr_exception_type_name().c_str(), name);
     }
   }
 
-  void invoke_cpp_addon_on_destroy_instance(axis_env_t &axis_env, void *instance,
+  void invoke_cpp_addon_on_destroy_instance(aptima_env_t &aptima_env, void *instance,
                                             void *context) {
     try {
-      on_destroy_instance(axis_env, instance, context);
+      on_destroy_instance(aptima_env, instance, context);
     } catch (...) {
-      axis_LOGW("Caught a exception '%s' in addon on_destroy_instance().",
+      aptima_LOGW("Caught a exception '%s' in addon on_destroy_instance().",
                curr_exception_type_name().c_str());
     }
   }
 
-  static void proxy_on_init(axis_addon_t *addon, ::axis_env_t *axis_env) {
-    axis_ASSERT(addon && axis_env, "Invalid argument.");
+  static void proxy_on_init(aptima_addon_t *addon, ::aptima_env_t *aptima_env) {
+    aptima_ASSERT(addon && aptima_env, "Invalid argument.");
 
     auto *cpp_addon =
-        static_cast<addon_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(addon)));
-    axis_ASSERT(!axis_binding_handle_get_me_in_target_lang(
-                   reinterpret_cast<axis_binding_handle_t *>(axis_env)),
+        static_cast<addon_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(addon)));
+    aptima_ASSERT(!aptima_binding_handle_get_me_in_target_lang(
+                   reinterpret_cast<aptima_binding_handle_t *>(aptima_env)),
                "Should not happen.");
 
-    auto *cpp_axis_env = new axis_env_t(axis_env);
-    axis_ASSERT(cpp_addon && cpp_axis_env, "Should not happen.");
+    auto *cpp_aptima_env = new aptima_env_t(aptima_env);
+    aptima_ASSERT(cpp_addon && cpp_aptima_env, "Should not happen.");
 
     // Remember it so that we can destroy it when C++ addon is destroyed.
-    cpp_addon->cpp_axis_env = cpp_axis_env;
+    cpp_addon->cpp_aptima_env = cpp_aptima_env;
 
-    cpp_addon->invoke_cpp_addon_on_init(*cpp_axis_env);
+    cpp_addon->invoke_cpp_addon_on_init(*cpp_aptima_env);
   }
 
-  static void proxy_on_deinit(axis_addon_t *addon, ::axis_env_t *axis_env) {
-    axis_ASSERT(addon && axis_env, "Should not happen.");
+  static void proxy_on_deinit(aptima_addon_t *addon, ::aptima_env_t *aptima_env) {
+    aptima_ASSERT(addon && aptima_env, "Should not happen.");
 
     auto *cpp_addon =
-        static_cast<addon_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(addon)));
-    auto *cpp_axis_env =
-        static_cast<axis_env_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(axis_env)));
-    axis_ASSERT(cpp_addon && cpp_axis_env, "Should not happen.");
+        static_cast<addon_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(addon)));
+    auto *cpp_aptima_env =
+        static_cast<aptima_env_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(aptima_env)));
+    aptima_ASSERT(cpp_addon && cpp_aptima_env, "Should not happen.");
 
-    cpp_addon->invoke_cpp_addon_on_deinit(*cpp_axis_env);
+    cpp_addon->invoke_cpp_addon_on_deinit(*cpp_aptima_env);
   }
 
-  static void proxy_on_create_instance(axis_addon_t *addon, ::axis_env_t *axis_env,
+  static void proxy_on_create_instance(aptima_addon_t *addon, ::aptima_env_t *aptima_env,
                                        const char *name, void *context) {
-    axis_ASSERT(addon && axis_env && name && strlen(name), "Invalid argument.");
+    aptima_ASSERT(addon && aptima_env && name && strlen(name), "Invalid argument.");
 
     auto *cpp_addon =
-        static_cast<addon_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(addon)));
-    axis_ASSERT(cpp_addon, "Should not happen.");
+        static_cast<addon_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(addon)));
+    aptima_ASSERT(cpp_addon, "Should not happen.");
 
-    auto *cpp_axis_env =
-        static_cast<axis_env_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(axis_env)));
-    axis_ASSERT(cpp_axis_env, "Should not happen.");
+    auto *cpp_aptima_env =
+        static_cast<aptima_env_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(aptima_env)));
+    aptima_ASSERT(cpp_aptima_env, "Should not happen.");
 
-    cpp_addon->invoke_cpp_addon_on_create_instance(*cpp_axis_env, name, context);
+    cpp_addon->invoke_cpp_addon_on_create_instance(*cpp_aptima_env, name, context);
   }
 
-  static void proxy_on_destroy_instance(axis_addon_t *addon,
-                                        ::axis_env_t *axis_env, void *instance,
+  static void proxy_on_destroy_instance(aptima_addon_t *addon,
+                                        ::aptima_env_t *aptima_env, void *instance,
                                         void *context) {
-    axis_ASSERT(addon && axis_env && instance, "Invalid argument.");
+    aptima_ASSERT(addon && aptima_env && instance, "Invalid argument.");
 
     auto *cpp_addon =
-        static_cast<addon_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(addon)));
+        static_cast<addon_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(addon)));
 
-    auto *cpp_axis_env =
-        static_cast<axis_env_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(axis_env)));
-    axis_ASSERT(cpp_axis_env, "Should not happen.");
+    auto *cpp_aptima_env =
+        static_cast<aptima_env_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(aptima_env)));
+    aptima_ASSERT(cpp_aptima_env, "Should not happen.");
 
-    auto *cpp_instance = axis_binding_handle_get_me_in_target_lang(
-        static_cast<axis_binding_handle_t *>(instance));
-    axis_ASSERT(cpp_instance, "Should not happen.");
+    auto *cpp_instance = aptima_binding_handle_get_me_in_target_lang(
+        static_cast<aptima_binding_handle_t *>(instance));
+    aptima_ASSERT(cpp_instance, "Should not happen.");
 
-    cpp_addon->invoke_cpp_addon_on_destroy_instance(*cpp_axis_env, cpp_instance,
+    cpp_addon->invoke_cpp_addon_on_destroy_instance(*cpp_aptima_env, cpp_instance,
                                                     context);
   }
 
-  static void proxy_on_destroy(axis_addon_t *addon) {
-    axis_ASSERT(addon, "Invalid argument.");
+  static void proxy_on_destroy(aptima_addon_t *addon) {
+    aptima_ASSERT(addon, "Invalid argument.");
 
     auto *cpp_addon =
-        static_cast<addon_t *>(axis_binding_handle_get_me_in_target_lang(
-            reinterpret_cast<axis_binding_handle_t *>(addon)));
+        static_cast<addon_t *>(aptima_binding_handle_get_me_in_target_lang(
+            reinterpret_cast<aptima_binding_handle_t *>(addon)));
 
     delete cpp_addon;
   }

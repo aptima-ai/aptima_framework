@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_utils/lib/sm.h"
+#include "aptima_utils/lib/sm.h"
 
 #include <memory>
 
@@ -20,10 +20,10 @@ TEST(StateMachine, positive) {
   auto ctx = std::make_unique<sm_ctx>();
   ctx->do_action1_times = ctx->do_action2_times = ctx->do_nothing_times = 0;
 
-  auto sm = axis_state_machine_create();
+  auto sm = aptima_state_machine_create();
   EXPECT_NE(sm, nullptr);
 
-  auto action1 = [](axis_sm_t *sm, const axis_sm_state_history_t *top,
+  auto action1 = [](aptima_sm_t *sm, const aptima_sm_state_history_t *top,
                     void *arg) {
     (void)sm;
     (void)top;
@@ -31,7 +31,7 @@ TEST(StateMachine, positive) {
     c->do_action1_times++;
   };
 
-  auto action2 = [](axis_sm_t *sm, const axis_sm_state_history_t *top,
+  auto action2 = [](aptima_sm_t *sm, const aptima_sm_state_history_t *top,
                     void *arg) {
     (void)sm;
     (void)top;
@@ -39,7 +39,7 @@ TEST(StateMachine, positive) {
     c->do_action2_times++;
   };
 
-  auto nothing = [](axis_sm_t *sm, const axis_sm_state_history_t *top,
+  auto nothing = [](aptima_sm_t *sm, const aptima_sm_state_history_t *top,
                     void *arg) {
     (void)sm;
     (void)top;
@@ -47,17 +47,17 @@ TEST(StateMachine, positive) {
     c->do_nothing_times++;
   };
 
-  axis_sm_state_entry_t entries[] = {{0, 0, -1, 1, action1},
+  aptima_sm_state_entry_t entries[] = {{0, 0, -1, 1, action1},
                                     {1, 1, -1, 2, action2}};
 
-  auto ret = axis_state_machine_init(
+  auto ret = aptima_state_machine_init(
       sm, 0, nothing, entries, sizeof(entries) / sizeof(entries[0]), NULL, 0);
   EXPECT_EQ(ret, 0);
-  EXPECT_EQ(axis_state_machine_trigger(sm, 0, 0, ctx.get()), 0);
+  EXPECT_EQ(aptima_state_machine_trigger(sm, 0, 0, ctx.get()), 0);
   EXPECT_EQ(ctx->do_action1_times, 1);
-  EXPECT_EQ(axis_state_machine_trigger(sm, 1, 0, ctx.get()), 0);
+  EXPECT_EQ(aptima_state_machine_trigger(sm, 1, 0, ctx.get()), 0);
   EXPECT_EQ(ctx->do_action2_times, 1);
-  EXPECT_EQ(axis_state_machine_trigger(sm, 2, 0, ctx.get()), 0);
+  EXPECT_EQ(aptima_state_machine_trigger(sm, 2, 0, ctx.get()), 0);
   EXPECT_EQ(ctx->do_nothing_times, 1);
-  axis_state_machine_destroy(sm);
+  aptima_state_machine_destroy(sm);
 }

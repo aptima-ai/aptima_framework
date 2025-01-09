@@ -7,15 +7,15 @@
 #pragma once
 
 #if defined(_WIN32)
-#define axis_alignof __alignof
+#define aptima_alignof __alignof
 #else
 #include <stdalign.h>
-#define axis_alignof alignof
+#define aptima_alignof alignof
 #endif
 
 #include <stddef.h>
 
 // Utility for aligning addresses.
-inline size_t axis_align_forward(size_t addr, size_t align) {
+inline size_t aptima_align_forward(size_t addr, size_t align) {
   return (addr + (align - 1)) & ~(align - 1);
 }

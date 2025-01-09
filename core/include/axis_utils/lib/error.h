@@ -6,59 +6,59 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "axis_utils/lib/signature.h"
-#include "axis_utils/lib/string.h"
+#include "aptima_utils/lib/signature.h"
+#include "aptima_utils/lib/string.h"
 
-typedef int64_t axis_errno_t;
+typedef int64_t aptima_errno_t;
 
-#define axis_ERROR_SIGNATURE 0xCA49E5F63FC43623U
+#define aptima_ERROR_SIGNATURE 0xCA49E5F63FC43623U
 
 // 0 is a special TEN errno value, representing success/ok.
-#define axis_ERRNO_OK 0
+#define aptima_ERRNO_OK 0
 
-typedef struct axis_error_t {
-  axis_signature_t signature;
+typedef struct aptima_error_t {
+  aptima_signature_t signature;
 
-  axis_errno_t err_no;
-  axis_string_t err_msg;
-} axis_error_t;
+  aptima_errno_t err_no;
+  aptima_string_t err_msg;
+} aptima_error_t;
 
-axis_UTILS_API bool axis_error_check_integrity(axis_error_t *self);
+aptima_UTILS_API bool aptima_error_check_integrity(aptima_error_t *self);
 
-axis_UTILS_API void axis_error_init(axis_error_t *self);
+aptima_UTILS_API void aptima_error_init(aptima_error_t *self);
 
-axis_UTILS_API void axis_error_deinit(axis_error_t *self);
+aptima_UTILS_API void aptima_error_deinit(aptima_error_t *self);
 
-axis_UTILS_API axis_error_t *axis_error_create(void);
+aptima_UTILS_API aptima_error_t *aptima_error_create(void);
 
-axis_UTILS_API void axis_error_copy(axis_error_t *self, axis_error_t *other);
+aptima_UTILS_API void aptima_error_copy(aptima_error_t *self, aptima_error_t *other);
 
 // Set error info, return true if set success, false otherwise.
-axis_UTILS_API bool axis_error_set(axis_error_t *self, axis_errno_t err_no,
+aptima_UTILS_API bool aptima_error_set(aptima_error_t *self, aptima_errno_t err_no,
                                  const char *fmt, ...);
 
-axis_UTILS_API bool axis_error_vset(axis_error_t *self, axis_errno_t err_no,
+aptima_UTILS_API bool aptima_error_vset(aptima_error_t *self, aptima_errno_t err_no,
                                   const char *fmt, va_list ap);
 
-axis_UTILS_API bool axis_error_prepend_errmsg(axis_error_t *self, const char *fmt,
+aptima_UTILS_API bool aptima_error_prepend_errmsg(aptima_error_t *self, const char *fmt,
                                             ...);
 
-axis_UTILS_API bool axis_error_append_errmsg(axis_error_t *self, const char *fmt,
+aptima_UTILS_API bool aptima_error_append_errmsg(aptima_error_t *self, const char *fmt,
                                            ...);
 
-// Get last errno in current context, return axis_ERRNO_OK if no error set
+// Get last errno in current context, return aptima_ERRNO_OK if no error set
 // before.
-axis_UTILS_API axis_errno_t axis_error_errno(axis_error_t *self);
+aptima_UTILS_API aptima_errno_t aptima_error_errno(aptima_error_t *self);
 
-axis_UTILS_API const char *axis_error_errmsg(axis_error_t *self);
+aptima_UTILS_API const char *aptima_error_errmsg(aptima_error_t *self);
 
-axis_UTILS_API void axis_error_reset(axis_error_t *self);
+aptima_UTILS_API void aptima_error_reset(aptima_error_t *self);
 
-axis_UTILS_API void axis_error_destroy(axis_error_t *self);
+aptima_UTILS_API void aptima_error_destroy(aptima_error_t *self);
 
-axis_UTILS_API bool axis_error_is_success(axis_error_t *self);
+aptima_UTILS_API bool aptima_error_is_success(aptima_error_t *self);

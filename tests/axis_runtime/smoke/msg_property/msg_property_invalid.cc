@@ -5,7 +5,7 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
 
 TEST(MsgPropertyTest, Invalid) {  // NOLINT
   auto cmd = ten::cmd_t::create("test");

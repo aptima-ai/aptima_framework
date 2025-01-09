@@ -4,11 +4,11 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/feature/axis_package.gni")
-import("//build/feature/axis_package_test.gni")
+import("//build/feature/aptima_package.gni")
+import("//build/feature/aptima_package_test.gni")
 import("//build/options.gni")
 
-axis_package("default_extension_cpp") {
+aptima_package("default_extension_cpp") {
   package_kind = "extension"
   enable_build = true
 
@@ -24,25 +24,25 @@ axis_package("default_extension_cpp") {
   ]
 }
 
-if (axis_enable_standalone_test) {
+if (aptima_enable_standalone_test) {
   # Note: To perform gtest standalone testing, need to first install the
   # googletest system package.
   #
   # ```shell
   # tman install system googletest
   # ```
-  axis_package_test("default_extension_cpp_test") {
+  aptima_package_test("default_extension_cpp_test") {
     package_kind = "extension"
 
     sources = [
-      ".ten/app/axis_packages/system/googletest/src/gtest-all.cc",
-      ".ten/app/axis_packages/system/googletest/src/gtest_main.cc",
+      ".ten/app/aptima_packages/system/googletest/src/gtest-all.cc",
+      ".ten/app/aptima_packages/system/googletest/src/gtest_main.cc",
       "tests/basic.cc",
     ]
 
     include_dirs = [
-      ".ten/app/axis_packages/system/googletest",
-      ".ten/app/axis_packages/system/googletest/include",
+      ".ten/app/aptima_packages/system/googletest",
+      ".ten/app/aptima_packages/system/googletest/include",
     ]
   }
 }

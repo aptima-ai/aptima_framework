@@ -7,8 +7,8 @@
 #include <cstdio>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/addon/addon.h"
-#include "include_internal/axis_utils/lib/env.h"
+#include "include_internal/aptima_runtime/addon/addon.h"
+#include "include_internal/aptima_utils/lib/env.h"
 
 class GlobalTestEnvironment : public ::testing::Environment {
  public:
@@ -19,8 +19,8 @@ class GlobalTestEnvironment : public ::testing::Environment {
     // should only be unloaded when the entire process ends. Currently, the
     // following environment variable is used to control whether to perform the
     // addon unload action when the app ends.
-    if (!axis_env_set("axis_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE", "true")) {
-      perror("Failed to set axis_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE");
+    if (!aptima_env_set("aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE", "true")) {
+      perror("Failed to set aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE");
 
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
       exit(EXIT_FAILURE);
@@ -28,7 +28,7 @@ class GlobalTestEnvironment : public ::testing::Environment {
   }
 
   // This method is run after all test cases.
-  void TearDown() override { axis_unregister_all_addons_and_cleanup(); }
+  void TearDown() override { aptima_unregister_all_addons_and_cleanup(); }
 };
 
 GTEST_API_ int main(int argc, char **argv) {

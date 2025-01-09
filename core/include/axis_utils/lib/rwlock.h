@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 /**
  * Reader-writer lock
@@ -52,38 +52,38 @@
  * --------------------------------------------------
  */
 
-typedef enum axis_RW_FAIRNESS {
-  axis_RW_NATIVE,
-  axis_RW_PHASE_FAIR,
-} axis_RW_FAIRNESS;
+typedef enum aptima_RW_FAIRNESS {
+  aptima_RW_NATIVE,
+  aptima_RW_PHASE_FAIR,
+} aptima_RW_FAIRNESS;
 
-#define axis_RW_DEFAULT_FAIRNESS axis_RW_PHASE_FAIR
+#define aptima_RW_DEFAULT_FAIRNESS aptima_RW_PHASE_FAIR
 
-typedef struct axis_rwlock_t axis_rwlock_t;
+typedef struct aptima_rwlock_t aptima_rwlock_t;
 
 /**
  * @brief Create a reader-writer lock
  * @param fairness The fairness flavor of the lock
  * @return The reader-writer lock
  */
-axis_UTILS_API axis_rwlock_t *axis_rwlock_create(axis_RW_FAIRNESS fair);
+aptima_UTILS_API aptima_rwlock_t *aptima_rwlock_create(aptima_RW_FAIRNESS fair);
 
 /**
  * @brief Destroy a reader-writer lock
  * @param lock The reader-writer lock
  */
-axis_UTILS_API void axis_rwlock_destroy(axis_rwlock_t *lock);
+aptima_UTILS_API void aptima_rwlock_destroy(aptima_rwlock_t *lock);
 
 /**
  * @brief Acquire a reader-writer lock
  * @param lock The reader-writer lock
  * @param reader Whether it is a read lock
  */
-axis_UTILS_API int axis_rwlock_lock(axis_rwlock_t *lock, int reader);
+aptima_UTILS_API int aptima_rwlock_lock(aptima_rwlock_t *lock, int reader);
 
 /**
  * @brief Release a reader-writer lock
  * @param lock The reader-writer lock
  * @param reader Whether it is a read lock
  */
-axis_UTILS_API int axis_rwlock_unlock(axis_rwlock_t *lock, int reader);
+aptima_UTILS_API int aptima_rwlock_unlock(aptima_rwlock_t *lock, int reader);

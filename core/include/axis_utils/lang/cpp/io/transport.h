@@ -10,10 +10,10 @@
 #include <functional>
 #include <memory>
 
-#include "axis_utils/io/stream.h"
-#include "axis_utils/io/transport.h"
-#include "axis_utils/lang/cpp/io/runloop.h"
-#include "axis_utils/lang/cpp/lib/string.h"
+#include "aptima_utils/io/stream.h"
+#include "aptima_utils/io/transport.h"
+#include "aptima_utils/lang/cpp/io/runloop.h"
+#include "aptima_utils/lang/cpp/lib/string.h"
 
 namespace ten {
 
@@ -56,7 +56,7 @@ class Stream : public std::enable_shared_from_this<Stream> {
       return -1;
     }
 
-    return axis_stream_start_read(stream_);
+    return aptima_stream_start_read(stream_);
   }
 
   int StopRead() {
@@ -64,14 +64,14 @@ class Stream : public std::enable_shared_from_this<Stream> {
       return -1;
     }
 
-    return axis_stream_stop_read(stream_);
+    return aptima_stream_stop_read(stream_);
   }
 
   int Send(const char *msg, uint32_t size, void *user_data) {
     if (!stream_) {
       return -1;
     }
-    int rc = axis_stream_send(stream_, msg, size, user_data);
+    int rc = aptima_stream_send(stream_, msg, size, user_data);
     return rc;
   }
 
@@ -90,13 +90,13 @@ class Stream : public std::enable_shared_from_this<Stream> {
     message_sent_cb_ = nullptr;
     message_read_cb_ = nullptr;
     data->self = shared_from_this();
-    axis_stream_set_close_cb(stream_, (void *)OnClose, data);
-    axis_stream_close(stream_);
+    aptima_stream_set_close_cb(stream_, (void *)OnClose, data);
+    aptima_stream_close(stream_);
     return 0;
   }
 
  private:
-  explicit Stream(axis_stream_t *stream) : stream_(stream) {
+  explicit Stream(aptima_stream_t *stream) : stream_(stream) {
     if (!stream_) {
       return;
     }
@@ -112,7 +112,7 @@ class Stream : public std::enable_shared_from_this<Stream> {
     TenStream self;
   };
 
-  static void OnMessageRead(axis_stream_t *stream, void *msg, int size) {
+  static void OnMessageRead(aptima_stream_t *stream, void *msg, int size) {
     if (!stream || !stream->user_data) {
       return;
     }
@@ -125,7 +125,7 @@ class Stream : public std::enable_shared_from_this<Stream> {
     This->message_read_cb_(msg, size);
   }
 
-  static void OnMessageSent(axis_stream_t *stream, int status, void *user_data) {
+  static void OnMessageSent(aptima_stream_t *stream, int status, void *user_data) {
     if (!stream || !stream->user_data) {
       return;
     }
@@ -138,7 +138,7 @@ class Stream : public std::enable_shared_from_this<Stream> {
     This->message_sent_cb_(status, user_data);
   }
 
-  static void OnMessageFree(axis_stream_t *stream, int status, void *user_data) {
+  static void OnMessageFree(aptima_stream_t *stream, int status, void *user_data) {
     if (!stream || !stream->user_data) {
       return;
     }
@@ -167,7 +167,7 @@ class Stream : public std::enable_shared_from_this<Stream> {
   }
 
  private:
-  ::axis_stream_t *stream_ = nullptr;
+  ::aptima_stream_t *stream_ = nullptr;
   CloseCallback close_cb_;
   MessageReadCallback message_read_cb_;
   MessageSentCallback message_sent_cb_;
@@ -186,7 +186,7 @@ class Transport : public std::enable_shared_from_this<Transport> {
     return Create(loop->get_c_loop());
   }
 
-  static TenTransport Create() { return Create(axis_runloop_current()); }
+  static TenTransport Create() { return Create(aptima_runloop_current()); }
 
   Transport() = delete;
 
@@ -216,8 +216,8 @@ class Transport : public std::enable_shared_from_this<Transport> {
     client_accept_cb_ = nullptr;
     server_connect_cb_ = nullptr;
     data->self = shared_from_this();
-    axis_transport_set_close_cb(tp_, (void *)OnClose, data);
-    return axis_transport_close(tp_);
+    aptima_transport_set_close_cb(tp_, (void *)OnClose, data);
+    return aptima_transport_close(tp_);
   }
 
   int Listen(const TenString &uri, ClientAcceptCallback &&cb) {
@@ -226,7 +226,7 @@ class Transport : public std::enable_shared_from_this<Transport> {
     }
 
     client_accept_cb_ = std::move(cb);
-    return axis_transport_listen(tp_, uri);
+    return aptima_transport_listen(tp_, uri);
   }
 
   int Connect(const TenString &uri, ServerConnectCallback &&cb) {
@@ -235,17 +235,17 @@ class Transport : public std::enable_shared_from_this<Transport> {
     }
 
     server_connect_cb_ = std::move(cb);
-    return axis_transport_connect(
-        tp_, const_cast<axis_string_t *>((const axis_string_t *)uri));
+    return aptima_transport_connect(
+        tp_, const_cast<aptima_string_t *>((const aptima_string_t *)uri));
   }
 
  private:
-  static TenTransport Create(::axis_runloop_t *loop) {
+  static TenTransport Create(::aptima_runloop_t *loop) {
     if (!loop) {
       return nullptr;
     }
 
-    auto tp = axis_transport_create(loop);
+    auto tp = aptima_transport_create(loop);
     if (!tp) {
       return nullptr;
     }
@@ -253,7 +253,7 @@ class Transport : public std::enable_shared_from_this<Transport> {
     return std::shared_ptr<Transport>(new (std::nothrow) Transport(tp));
   }
 
-  static void OnClientAccepted(axis_transport_t *transport, axis_stream_t *stream,
+  static void OnClientAccepted(aptima_transport_t *transport, aptima_stream_t *stream,
                                int status) {
     if (status != 0 || !transport || !transport->user_data || !stream) {
       return;
@@ -272,8 +272,8 @@ class Transport : public std::enable_shared_from_this<Transport> {
     This->client_accept_cb_(s, status);
   }
 
-  static void OnServerConnected(axis_transport_t *transport,
-                                axis_stream_t *stream, int status) {
+  static void OnServerConnected(aptima_transport_t *transport,
+                                aptima_stream_t *stream, int status) {
     if (status != 0 || !transport || !transport->user_data || !stream) {
       return;
     }
@@ -307,7 +307,7 @@ class Transport : public std::enable_shared_from_this<Transport> {
     delete data;
   }
 
-  explicit Transport(::axis_transport_t *tp) : tp_(tp) {
+  explicit Transport(::aptima_transport_t *tp) : tp_(tp) {
     if (!tp_) {
       return;
     }
@@ -321,7 +321,7 @@ class Transport : public std::enable_shared_from_this<Transport> {
   CloseCallback close_cb_;
   ClientAcceptCallback client_accept_cb_;
   ServerConnectCallback server_connect_cb_;
-  ::axis_transport_t *tp_ = nullptr;
+  ::aptima_transport_t *tp_ = nullptr;
 };
 
 }  // namespace ten

@@ -6,15 +6,15 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-typedef struct axis_process_mutex_t axis_process_mutex_t;
+typedef struct aptima_process_mutex_t aptima_process_mutex_t;
 
 /**
  * @brief Create a mutex.
  * @return The mutex handle.
  */
-axis_UTILS_API axis_process_mutex_t *axis_process_mutex_create(const char *name);
+aptima_UTILS_API aptima_process_mutex_t *aptima_process_mutex_create(const char *name);
 
 /**
  * @brief Lock a mutex.
@@ -23,17 +23,17 @@ axis_UTILS_API axis_process_mutex_t *axis_process_mutex_create(const char *name)
  *
  * @note This function will block until the mutex is unlocked.
  */
-axis_UTILS_API int axis_process_mutex_lock(axis_process_mutex_t *mutex);
+aptima_UTILS_API int aptima_process_mutex_lock(aptima_process_mutex_t *mutex);
 
 /**
  * @brief Unlock a mutex.
  * @param mutex The mutex handle.
  * @return 0 if success, otherwise failed.
  */
-axis_UTILS_API int axis_process_mutex_unlock(axis_process_mutex_t *mutex);
+aptima_UTILS_API int aptima_process_mutex_unlock(aptima_process_mutex_t *mutex);
 
 /**
  * @brief Destroy a mutex.
  * @param mutex The mutex handle.
  */
-axis_UTILS_API void axis_process_mutex_destroy(axis_process_mutex_t *mutex);
+aptima_UTILS_API void aptima_process_mutex_destroy(aptima_process_mutex_t *mutex);

@@ -173,7 +173,7 @@ def _build_go_app(args: ArgumentInfo) -> int:
     # TEN runtime Go binding can be used directly.
     main_go_path = "scripts/build/main.go"
     if not os.path.exists(main_go_path):
-        main_go_path = "axis_packages/system/axis_runtime_go/tools/build/main.go"
+        main_go_path = "aptima_packages/system/aptima_runtime_go/tools/build/main.go"
 
     cmd = ["go", "run", main_go_path]
     if args.log_level > 0:
@@ -251,7 +251,7 @@ def prepare_app(
     source_pkg_name: str,
     log_level: int,
 ) -> int:
-    tman_path = os.path.join(root_dir, "axis_manager/bin/tman")
+    tman_path = os.path.join(root_dir, "aptima_manager/bin/tman")
     tman_config_file = os.path.join(
         root_dir, "tests/local_registry/config.json"
     )
@@ -523,7 +523,7 @@ def prepare_and_build_app(
 def build_nodejs_extensions(app_root_path: str):
     origin_wd = os.getcwd()
 
-    extension_dir = os.path.join(app_root_path, "axis_packages/extension")
+    extension_dir = os.path.join(app_root_path, "aptima_packages/extension")
 
     if os.path.exists(extension_dir):
         for extension in os.listdir(extension_dir):

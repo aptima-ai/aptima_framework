@@ -9,17 +9,17 @@
 
 #include <functional>
 
-#include "axis_runtime/binding/cpp/detail/test/env_tester.h"
-#include "axis_runtime/test/env_tester_proxy.h"
+#include "aptima_runtime/binding/cpp/detail/test/env_tester.h"
+#include "aptima_runtime/test/env_tester_proxy.h"
 
-using axis_env_tester_t = struct axis_env_tester_t;
-using axis_env_tester_proxy_t = struct axis_env_tester_proxy_t;
+using aptima_env_tester_t = struct aptima_env_tester_t;
+using aptima_env_tester_proxy_t = struct aptima_env_tester_proxy_t;
 
 namespace ten {
 
 namespace {
 
-using tester_notify_std_func_t = std::function<void(axis_env_tester_t &)>;
+using tester_notify_std_func_t = std::function<void(aptima_env_tester_t &)>;
 
 struct tester_proxy_notify_info_t {
   explicit tester_proxy_notify_info_t(tester_notify_std_func_t &&func)
@@ -38,17 +38,17 @@ struct tester_proxy_notify_info_t {
   tester_notify_std_func_t notify_std_func;
 };
 
-inline void proxy_notify(::axis_env_tester_t *axis_env, void *data = nullptr) {
-  axis_ASSERT(data, "Invalid argument.");
+inline void proxy_notify(::aptima_env_tester_t *aptima_env, void *data = nullptr) {
+  aptima_ASSERT(data, "Invalid argument.");
 
   auto *info = static_cast<tester_proxy_notify_info_t *>(data);
-  auto *cpp_axis_env =
-      static_cast<axis_env_tester_t *>(axis_binding_handle_get_me_in_target_lang(
-          reinterpret_cast<axis_binding_handle_t *>(axis_env)));
+  auto *cpp_aptima_env =
+      static_cast<aptima_env_tester_t *>(aptima_binding_handle_get_me_in_target_lang(
+          reinterpret_cast<aptima_binding_handle_t *>(aptima_env)));
 
   if (info->notify_std_func != nullptr) {
     auto func = info->notify_std_func;
-    func(*cpp_axis_env);
+    func(*cpp_aptima_env);
   }
 
   delete info;
@@ -56,55 +56,55 @@ inline void proxy_notify(::axis_env_tester_t *axis_env, void *data = nullptr) {
 
 }  // namespace
 
-class axis_env_tester_proxy_t {
+class aptima_env_tester_proxy_t {
  private:
   // Passkey Idiom.
   struct ctor_passkey_t {
    private:
-    friend axis_env_tester_proxy_t;
+    friend aptima_env_tester_proxy_t;
 
     explicit ctor_passkey_t() = default;
   };
 
  public:
   // @{
-  axis_env_tester_proxy_t(const axis_env_tester_proxy_t &) = delete;
-  axis_env_tester_proxy_t(axis_env_tester_proxy_t &&) = delete;
-  axis_env_tester_proxy_t &operator=(const axis_env_tester_proxy_t &) = delete;
-  axis_env_tester_proxy_t &operator=(const axis_env_tester_proxy_t &&) = delete;
+  aptima_env_tester_proxy_t(const aptima_env_tester_proxy_t &) = delete;
+  aptima_env_tester_proxy_t(aptima_env_tester_proxy_t &&) = delete;
+  aptima_env_tester_proxy_t &operator=(const aptima_env_tester_proxy_t &) = delete;
+  aptima_env_tester_proxy_t &operator=(const aptima_env_tester_proxy_t &&) = delete;
   // @{
 
-  static axis_env_tester_proxy_t *create(axis_env_tester_t &axis_env_tester,
+  static aptima_env_tester_proxy_t *create(aptima_env_tester_t &aptima_env_tester,
                                         error_t *err = nullptr) {
-    return new axis_env_tester_proxy_t(axis_env_tester, ctor_passkey_t());
+    return new aptima_env_tester_proxy_t(aptima_env_tester, ctor_passkey_t());
   }
 
-  explicit axis_env_tester_proxy_t(axis_env_tester_t &axis_env_tester,
+  explicit aptima_env_tester_proxy_t(aptima_env_tester_t &aptima_env_tester,
                                   ctor_passkey_t /*unused*/)
-      : c_axis_env_tester_proxy(axis_env_tester_proxy_create(
-            axis_env_tester.c_axis_env_tester, nullptr)) {}
+      : c_aptima_env_tester_proxy(aptima_env_tester_proxy_create(
+            aptima_env_tester.c_aptima_env_tester, nullptr)) {}
 
-  ~axis_env_tester_proxy_t() {
-    if (c_axis_env_tester_proxy == nullptr) {
-      axis_ASSERT(0, "Invalid argument.");
+  ~aptima_env_tester_proxy_t() {
+    if (c_aptima_env_tester_proxy == nullptr) {
+      aptima_ASSERT(0, "Invalid argument.");
     }
 
-    bool rc = axis_env_tester_proxy_release(c_axis_env_tester_proxy, nullptr);
-    axis_ASSERT(rc, "Should not happen.");
+    bool rc = aptima_env_tester_proxy_release(c_aptima_env_tester_proxy, nullptr);
+    aptima_ASSERT(rc, "Should not happen.");
 
-    c_axis_env_tester_proxy = nullptr;
+    c_aptima_env_tester_proxy = nullptr;
   };
 
   bool notify(tester_notify_std_func_t &&notify_func, error_t *err = nullptr) {
-    if (c_axis_env_tester_proxy == nullptr) {
-      axis_ASSERT(0, "Invalid argument.");
+    if (c_aptima_env_tester_proxy == nullptr) {
+      aptima_ASSERT(0, "Invalid argument.");
       return false;
     }
 
     auto *info = new tester_proxy_notify_info_t(std::move(notify_func));
 
-    auto rc = axis_env_tester_proxy_notify(
-        c_axis_env_tester_proxy, proxy_notify, info,
+    auto rc = aptima_env_tester_proxy_notify(
+        c_aptima_env_tester_proxy, proxy_notify, info,
         err != nullptr ? err->get_c_error() : nullptr);
     if (!rc) {
       delete info;
@@ -114,6 +114,6 @@ class axis_env_tester_proxy_t {
   }
 
  private:
-  ::axis_env_tester_proxy_t *c_axis_env_tester_proxy;
+  ::aptima_env_tester_proxy_t *c_aptima_env_tester_proxy;
 };
 }  // namespace ten

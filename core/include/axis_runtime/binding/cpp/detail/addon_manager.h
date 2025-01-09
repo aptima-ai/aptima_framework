@@ -10,42 +10,42 @@
 #include <cstddef>
 #include <cstdlib>
 
-#include "axis_runtime/addon/addon_manager.h"  // IWYU pragma: export
+#include "aptima_runtime/addon/addon_manager.h"  // IWYU pragma: export
 
-#define axis_CPP_REGISTER_ADDON_AS_EXTENSION(NAME, CLASS)                         \
+#define aptima_CPP_REGISTER_ADDON_AS_EXTENSION(NAME, CLASS)                         \
   class NAME##_default_extension_addon_t : public ten::addon_t {                 \
    public:                                                                       \
-    void on_create_instance(ten::axis_env_t &axis_env, const char *name,           \
+    void on_create_instance(ten::aptima_env_t &aptima_env, const char *name,           \
                             void *context) override {                            \
       auto *instance = new CLASS(name);                                          \
-      axis_env.on_create_instance_done(instance, context);                        \
+      aptima_env.on_create_instance_done(instance, context);                        \
     }                                                                            \
-    void on_destroy_instance(ten::axis_env_t &axis_env, void *instance,            \
+    void on_destroy_instance(ten::aptima_env_t &aptima_env, void *instance,            \
                              void *context) override {                           \
       delete static_cast<CLASS *>(instance);                                     \
-      axis_env.on_destroy_instance_done(context);                                 \
+      aptima_env.on_destroy_instance_done(context);                                 \
     }                                                                            \
   };                                                                             \
-  static void ____axis_addon_##NAME##_register_handler__(void *register_ctx) {    \
+  static void ____aptima_addon_##NAME##_register_handler__(void *register_ctx) {    \
     auto *addon_instance = new NAME##_default_extension_addon_t();               \
-    axis_string_t *base_dir =                                                     \
-        axis_path_get_module_path(/* NOLINTNEXTLINE */                            \
+    aptima_string_t *base_dir =                                                     \
+        aptima_path_get_module_path(/* NOLINTNEXTLINE */                            \
                                  (void *)                                        \
-                                     ____axis_addon_##NAME##_register_handler__); \
-    axis_addon_register_extension(                                                \
-        #NAME, axis_string_get_raw_str(base_dir),                                 \
-        static_cast<axis_addon_t *>(addon_instance->get_c_instance()),            \
+                                     ____aptima_addon_##NAME##_register_handler__); \
+    aptima_addon_register_extension(                                                \
+        #NAME, aptima_string_get_raw_str(base_dir),                                 \
+        static_cast<aptima_addon_t *>(addon_instance->get_c_instance()),            \
         register_ctx);                                                           \
-    axis_string_destroy(base_dir);                                                \
+    aptima_string_destroy(base_dir);                                                \
   }                                                                              \
-  axis_CONSTRUCTOR(____axis_addon_##NAME##_registrar____) {                        \
+  aptima_CONSTRUCTOR(____aptima_addon_##NAME##_registrar____) {                        \
     /* Add addon registration function into addon manager. */                    \
-    axis_addon_manager_t *manager = axis_addon_manager_get_instance();             \
-    bool success = axis_addon_manager_add_addon(                                  \
+    aptima_addon_manager_t *manager = aptima_addon_manager_get_instance();             \
+    bool success = aptima_addon_manager_add_addon(                                  \
         manager, "extension", #NAME,                                             \
-        ____axis_addon_##NAME##_register_handler__);                              \
+        ____aptima_addon_##NAME##_register_handler__);                              \
     if (!success) {                                                              \
-      axis_LOGF("Failed to register addon: %s", #NAME);                           \
+      aptima_LOGF("Failed to register addon: %s", #NAME);                           \
       /* NOLINTNEXTLINE(concurrency-mt-unsafe) */                                \
       exit(EXIT_FAILURE);                                                        \
     }                                                                            \

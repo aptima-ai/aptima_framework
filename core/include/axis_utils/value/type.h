@@ -6,33 +6,33 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-typedef enum axis_TYPE {
-  axis_TYPE_INVALID,
+typedef enum aptima_TYPE {
+  aptima_TYPE_INVALID,
 
-  axis_TYPE_NULL,
+  aptima_TYPE_NULL,
 
-  axis_TYPE_BOOL,
+  aptima_TYPE_BOOL,
 
-  axis_TYPE_INT8,
-  axis_TYPE_INT16,
-  axis_TYPE_INT32,
-  axis_TYPE_INT64,
+  aptima_TYPE_INT8,
+  aptima_TYPE_INT16,
+  aptima_TYPE_INT32,
+  aptima_TYPE_INT64,
 
-  axis_TYPE_UINT8,
-  axis_TYPE_UINT16,
-  axis_TYPE_UINT32,
-  axis_TYPE_UINT64,
+  aptima_TYPE_UINT8,
+  aptima_TYPE_UINT16,
+  aptima_TYPE_UINT32,
+  aptima_TYPE_UINT64,
 
-  axis_TYPE_FLOAT32,
-  axis_TYPE_FLOAT64,
+  aptima_TYPE_FLOAT32,
+  aptima_TYPE_FLOAT64,
 
-  axis_TYPE_STRING,
-  axis_TYPE_BUF,
+  aptima_TYPE_STRING,
+  aptima_TYPE_BUF,
 
-  axis_TYPE_ARRAY,
-  axis_TYPE_OBJECT,
+  aptima_TYPE_ARRAY,
+  aptima_TYPE_OBJECT,
 
-  axis_TYPE_PTR,
-} axis_TYPE;
+  aptima_TYPE_PTR,
+} aptima_TYPE;

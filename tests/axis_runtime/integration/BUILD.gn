@@ -4,22 +4,22 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/options.gni")
+import("//build/aptima_runtime/options.gni")
 
 group("integration") {
   deps = []
 
   deps += [ "cpp" ]
 
-  if (axis_enable_go_binding) {
+  if (aptima_enable_go_binding) {
     deps += [ "go" ]
   }
 
-  if (axis_enable_python_binding) {
+  if (aptima_enable_python_binding) {
     deps += [ "python" ]
   }
 
-  if (axis_enable_nodejs_binding) {
+  if (aptima_enable_nodejs_binding) {
     deps += [ "nodejs" ]
   }
 }

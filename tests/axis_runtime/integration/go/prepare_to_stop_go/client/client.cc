@@ -6,10 +6,10 @@
 //
 #include <nlohmann/json.hpp>
 
-#include "axis_utils/macro/mark.h"
+#include "aptima_utils/macro/mark.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 
-int main(axis_UNUSED int argc, axis_UNUSED char **argv) {
+int main(aptima_UNUSED int argc, aptima_UNUSED char **argv) {
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8007/");
 
@@ -17,12 +17,12 @@ int main(axis_UNUSED int argc, axis_UNUSED char **argv) {
   start_cmd->set_dest("msgpack://127.0.0.1:8007/", "default", "nodetest_group",
                       "A");
   auto cmd_result = client->send_cmd_and_recv_result(std::move(start_cmd));
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
   std::string resp_str = cmd_result->get_property_string("detail");
-  axis_LOGD("got result: %s", resp_str.c_str());
-  axis_ASSERT(resp_str == "done", "Should not happen.");
+  aptima_LOGD("got result: %s", resp_str.c_str());
+  aptima_ASSERT(resp_str == "done", "Should not happen.");
 
   // NOTE the order: client destroy, then connection lost, then nodejs exits
   delete client;

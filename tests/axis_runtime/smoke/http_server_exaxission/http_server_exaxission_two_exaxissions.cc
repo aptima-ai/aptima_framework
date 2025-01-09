@@ -12,8 +12,8 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/thread.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/thread.h"
 #include "tests/common/client/http.h"
 
 namespace {
@@ -22,24 +22,24 @@ class test_extension : public ten::extension_t {
  public:
   explicit test_extension(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     http_server_extension_two_extensions__test_extension, test_extension);
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) final {
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+  void on_configure(ten::aptima_env_t &aptima_env) final {
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  R"({
                       "type": "app",
@@ -50,7 +50,7 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    rc = axis_env.init_property_from_json(
+    rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -85,13 +85,13 @@ class test_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
 ten::app_t *test_app_ = nullptr;
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   test_app_ = new test_app();
   test_app_->run(true);
   test_app_->wait();
@@ -105,22 +105,22 @@ void *test_app_thread_main(axis_UNUSED void *args) {
 
 TEST(ExtensionTest, HttpServerExtensionTwoExtensions) {  // NOLINT
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
-  axis_test_http_client_init();
+  aptima_test_http_client_init();
 
-  axis_string_t resp;
-  axis_string_init(&resp);
-  axis_test_http_client_post("http://127.0.0.1:8001/",
+  aptima_string_t resp;
+  aptima_string_init(&resp);
+  aptima_test_http_client_post("http://127.0.0.1:8001/",
                             R"({"_ten": {"name": "hello_world"}})", &resp);
-  EXPECT_EQ(std::string(axis_string_get_raw_str(&resp)), "\"hello world, too\"");
+  EXPECT_EQ(std::string(aptima_string_get_raw_str(&resp)), "\"hello world, too\"");
 
-  axis_string_deinit(&resp);
-  axis_test_http_client_deinit();
+  aptima_string_deinit(&resp);
+  aptima_test_http_client_deinit();
 
   if (test_app_ != nullptr) {
     test_app_->close();
   }
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

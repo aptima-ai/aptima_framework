@@ -12,7 +12,7 @@ from .common import cmd_exec
 
 
 def get_installed_extensions_count(app_dir: str):
-    extension_dir = os.path.join(app_dir, "axis_packages/extension/")
+    extension_dir = os.path.join(app_dir, "aptima_packages/extension/")
     extensions = os.listdir(extension_dir)
 
     return len(extensions)
@@ -26,7 +26,7 @@ def normalize_path(path):
 
 def analyze_resolve_result(app_root_folder: str) -> None:
     extension_folder = os.path.join(
-        app_root_folder, "axis_packages", "extension"
+        app_root_folder, "aptima_packages", "extension"
     )
 
     with open(
@@ -72,11 +72,11 @@ def test_tman_dependency_resolve():
 
     if sys.platform == "win32":
         os.environ["PATH"] = (
-            os.path.join(root_dir, "axis_manager/lib") + ";" + os.getenv("PATH")
+            os.path.join(root_dir, "aptima_manager/lib") + ";" + os.getenv("PATH")
         )
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman.exe")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman")
 
     app_dir = os.path.join(base_path, "test_app")
 

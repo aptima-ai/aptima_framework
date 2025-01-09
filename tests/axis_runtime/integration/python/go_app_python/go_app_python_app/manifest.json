@@ -2,12 +2,12 @@
   "dependencies": [
     {
       "type": "system",
-      "name": "axis_runtime",
+      "name": "aptima_runtime",
       "version": "0.6.2"
     },
     {
       "type": "system",
-      "name": "axis_runtime_python",
+      "name": "aptima_runtime_python",
       "version": "0.6.2"
     },
     {

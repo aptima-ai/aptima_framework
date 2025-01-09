@@ -6,22 +6,22 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-typedef struct axis_opt_long_t {
+typedef struct aptima_opt_long_t {
   const int short_name;
   const char *long_name;
   const int has_param;
   const char *help_msg;
-} axis_opt_long_t;
+} aptima_opt_long_t;
 
 /**
  * @brief Print usage message
  * @param exec_name program name
  * @param opts option longs
  */
-axis_UTILS_API void axis_print_help(const char *exec_name,
-                                  const axis_opt_long_t *opts);
+aptima_UTILS_API void aptima_print_help(const char *exec_name,
+                                  const aptima_opt_long_t *opts);
 
 /**
  * @brief Parse command line arguments
@@ -31,5 +31,5 @@ axis_UTILS_API void axis_print_help(const char *exec_name,
  * @param p pointer to store parsed arguments
  * @return short name of the option, -1 if error
  */
-axis_UTILS_API int axis_getopt_long(int argc, const char **argv,
-                                  const axis_opt_long_t *opts, char **p);
+aptima_UTILS_API int aptima_getopt_long(int argc, const char **argv,
+                                  const aptima_opt_long_t *opts, char **p);

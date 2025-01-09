@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/options.gni")
-import("//build/axis_runtime/ten.gni")
-import("//core/src/axis_runtime/output_libs.gni")
-import("//core/src/axis_utils/output_libs.gni")
+import("//build/aptima_runtime/options.gni")
+import("//build/aptima_runtime/ten.gni")
+import("//core/src/aptima_runtime/output_libs.gni")
+import("//core/src/aptima_utils/output_libs.gni")
 import("//third_party/curl/output_libs.gni")
 import("//third_party/jansson/output_libs.gni")
 import("//third_party/libwebsockets/output_libs.gni")
@@ -18,16 +18,16 @@ import("//third_party/zlib/output_libs.gni")
 # dependend libraries of 'smoke' to one folder, and setup 'PATH' before
 # executing 'smoke' and 'unit' testing.
 copy("copy_libraries_for_test") {
-  sources = axis_runtime_output_libs
-  sources += axis_utils_output_libs
+  sources = aptima_runtime_output_libs
+  sources += aptima_utils_output_libs
 
   deps = [
-    "//core/src/axis_runtime",
-    "//core/src/axis_utils:axis_utils_shared",
+    "//core/src/aptima_runtime",
+    "//core/src/aptima_utils:aptima_utils_shared",
     "//tests:copy_jansson_library_for_test",
   ]
 
-  if (axis_enable_curl) {
+  if (aptima_enable_curl) {
     sources += curl_output_libs
     deps += [ "//third_party/curl" ]
 
@@ -35,7 +35,7 @@ copy("copy_libraries_for_test") {
     deps += [ "//third_party/zlib" ]
   }
 
-  if (axis_enable_libwebsockets) {
+  if (aptima_enable_libwebsockets) {
     sources += mbedtls_output_libs
     sources += libwebsockets_output_libs
 
@@ -48,20 +48,20 @@ copy("copy_libraries_for_test") {
   outputs = [ "${root_out_dir}/tests/standalone/{{source_file_part}}" ]
 }
 
-group("axis_runtime") {
+group("aptima_runtime") {
   deps = []
 
-  if (axis_enable_tests && axis_enable_unit_tests) {
+  if (aptima_enable_tests && aptima_enable_unit_tests) {
     deps += [ "unit" ]
   }
 
-  if (axis_enable_tests && axis_enable_smoke_tests) {
+  if (aptima_enable_tests && aptima_enable_smoke_tests) {
     deps += [ "smoke" ]
   }
 
-  if (axis_enable_tests && axis_enable_integration_tests &&
-      # Almost all integration test cases needs axis_manager.
-      axis_enable_axis_manager) {
+  if (aptima_enable_tests && aptima_enable_integration_tests &&
+      # Almost all integration test cases needs aptima_manager.
+      aptima_enable_aptima_manager) {
     deps += [ "integration" ]
   }
 }

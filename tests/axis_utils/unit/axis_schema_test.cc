@@ -5,21 +5,21 @@
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/axis_utils/schema/schema.h"
-#include "axis_utils/lib/error.h"
-#include "axis_utils/lib/json.h"
-#include "axis_utils/value/value.h"
-#include "axis_utils/value/value_get.h"
-#include "axis_utils/value/value_is.h"
-#include "axis_utils/value/value_json.h"
-#include "axis_utils/value/value_object.h"
+#include "include_internal/aptima_utils/schema/schema.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/lib/json.h"
+#include "aptima_utils/value/value.h"
+#include "aptima_utils/value/value_get.h"
+#include "aptima_utils/value/value_is.h"
+#include "aptima_utils/value/value_json.h"
+#include "aptima_utils/value/value_object.h"
 
-static axis_schema_t *create_axis_schema_from_string(
+static aptima_schema_t *create_aptima_schema_from_string(
     const std::string &schema_str) {
-  auto *schema_json = axis_json_from_string(schema_str.c_str(), nullptr);
-  auto *schema = axis_schema_create_from_json(schema_json);
+  auto *schema_json = aptima_json_from_string(schema_str.c_str(), nullptr);
+  auto *schema = aptima_schema_create_from_json(schema_json);
 
-  axis_json_destroy(schema_json);
+  aptima_json_destroy(schema_json);
 
   return schema;
 }
@@ -30,35 +30,35 @@ TEST(SchemaTest, ValidStringType) {  // NOLINT
            "type": "string"
          })";
 
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  auto *str_value = axis_value_create_string("demo");
+  auto *str_value = aptima_value_create_string("demo");
 
-  bool success = axis_schema_validate_value(schema, str_value, &err);
+  bool success = aptima_schema_validate_value(schema, str_value, &err);
   ASSERT_EQ(success, true);
 
-  axis_value_destroy(str_value);
+  aptima_value_destroy(str_value);
 
-  auto *int_value = axis_value_create_int8(1);
+  auto *int_value = aptima_value_create_int8(1);
 
-  success = axis_schema_validate_value(schema, int_value, &err);
+  success = aptima_schema_validate_value(schema, int_value, &err);
   ASSERT_EQ(success, false);
-  ASSERT_EQ(axis_error_is_success(&err), false);
+  ASSERT_EQ(aptima_error_is_success(&err), false);
 
   // the value type does not match the schema type, given: int8, expected:
   // string
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg,
             "the value type does not match the schema type, given: int8, "
             "expected: string");
 
-  axis_value_destroy(int_value);
+  aptima_value_destroy(int_value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, ValidObjectType) {  // NOLINT
@@ -75,64 +75,64 @@ TEST(SchemaTest, ValidObjectType) {  // NOLINT
            },
            "required": ["name"]
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"({
                                    "name": "demo",
                                    "age": 18
                                  })";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_validate_value(schema, value, &err);
+  bool success = aptima_schema_validate_value(schema, value, &err);
   ASSERT_EQ(success, true);
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  auto *invalid_json = axis_json_from_string(R"({
+  auto *invalid_json = aptima_json_from_string(R"({
     "name": 11,
     "age": 18
   })",
                                             nullptr);
-  auto *invalid_value = axis_value_from_json(invalid_json);
-  axis_json_destroy(invalid_json);
+  auto *invalid_value = aptima_value_from_json(invalid_json);
+  aptima_json_destroy(invalid_json);
 
-  success = axis_schema_validate_value(schema, invalid_value, &err);
+  success = aptima_schema_validate_value(schema, invalid_value, &err);
   ASSERT_EQ(success, false);
 
-  axis_value_destroy(invalid_value);
+  aptima_value_destroy(invalid_value);
 
   // .name: the value type does not match the schema type, given: uint64,
   // expected: string
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg.rfind(".name:", 0) == 0, true);
 
   // Testing for required.
-  axis_error_reset(&err);
+  aptima_error_reset(&err);
 
-  auto *missing_json = axis_json_from_string(R"({
+  auto *missing_json = aptima_json_from_string(R"({
     "age": 18
   })",
                                             nullptr);
-  auto *missing_value = axis_value_from_json(missing_json);
-  axis_json_destroy(missing_json);
+  auto *missing_value = aptima_value_from_json(missing_json);
+  aptima_json_destroy(missing_json);
 
-  success = axis_schema_validate_value(schema, missing_value, &err);
+  success = aptima_schema_validate_value(schema, missing_value, &err);
   ASSERT_EQ(success, false);
 
-  axis_value_destroy(missing_value);
+  aptima_value_destroy(missing_value);
 
   // the required properties are absent: 'name'
-  err_msg = std::string(axis_error_errmsg(&err));
+  err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg, "the required properties are absent: 'name'");
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, CompositeObjectValidateErrMsg) {  // NOLINT
@@ -171,7 +171,7 @@ TEST(SchemaTest, CompositeObjectValidateErrMsg) {  // NOLINT
               }
             }
           })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"({
                                     "a": [
@@ -184,25 +184,25 @@ TEST(SchemaTest, CompositeObjectValidateErrMsg) {  // NOLINT
                                       }
                                     ]
                                   })";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_validate_value(schema, value, &err);
+  bool success = aptima_schema_validate_value(schema, value, &err);
   ASSERT_EQ(success, false);
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
   // .a[0].c[1]: the value type does not match the schema type, given: uint64,
   // expected: string
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg.rfind(".a[0].c[1]", 0), 0);
 
-  axis_error_reset(&err);
+  aptima_error_reset(&err);
 
   const std::string value_str2 = R"({
                                      "a": [
@@ -218,22 +218,22 @@ TEST(SchemaTest, CompositeObjectValidateErrMsg) {  // NOLINT
                                        }
                                      ]
                                    })";
-  auto *value_json2 = axis_json_from_string(value_str2.c_str(), nullptr);
-  auto *value2 = axis_value_from_json(value_json2);
-  axis_json_destroy(value_json2);
+  auto *value_json2 = aptima_json_from_string(value_str2.c_str(), nullptr);
+  auto *value2 = aptima_value_from_json(value_json2);
+  aptima_json_destroy(value_json2);
 
-  success = axis_schema_validate_value(schema, value2, &err);
+  success = aptima_schema_validate_value(schema, value2, &err);
   ASSERT_EQ(success, false);
 
-  axis_value_destroy(value2);
+  aptima_value_destroy(value2);
 
   // .a[0].d: the required properties are absent: 'f'
-  err_msg = std::string(axis_error_errmsg(&err));
+  err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg.rfind(".a[0].d:", 0), 0);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(schema);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, RequiredErrorMessage) {  // NOLINT
@@ -259,31 +259,31 @@ TEST(SchemaTest, RequiredErrorMessage) {  // NOLINT
            },
            "required": ["body"]
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"({
                                    "name": "demo",
                                    "body": {}
                                  })";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_validate_value(schema, value, &err);
+  bool success = aptima_schema_validate_value(schema, value, &err);
   ASSERT_EQ(success, false);
 
   // .body: the required properties are absent: 'height', 'weight'
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg.rfind(".body:", 0) == 0, true);
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, ValidArrayType) {  // NOLINT
@@ -294,38 +294,38 @@ TEST(SchemaTest, ValidArrayType) {  // NOLINT
              "type": "int64"
            }
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"([1, 2, 3])";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_validate_value(schema, value, &err);
+  bool success = aptima_schema_validate_value(schema, value, &err);
   ASSERT_EQ(success, true);
 
-  auto *invalid_json = axis_json_from_string(R"([1, "2", 3])", nullptr);
-  auto *invalid_value = axis_value_from_json(invalid_json);
-  axis_json_destroy(invalid_json);
+  auto *invalid_json = aptima_json_from_string(R"([1, "2", 3])", nullptr);
+  auto *invalid_value = aptima_value_from_json(invalid_json);
+  aptima_json_destroy(invalid_json);
 
-  success = axis_schema_validate_value(schema, invalid_value, &err);
+  success = aptima_schema_validate_value(schema, invalid_value, &err);
   ASSERT_EQ(success, false);
 
-  axis_value_destroy(invalid_value);
+  aptima_value_destroy(invalid_value);
 
   // [1]: the value type does not match the schema type, given: string,
   // expected: int64
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg.rfind("[1]:", 0) == 0, true);
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, AdjustIntValue) {  // NOLINT
@@ -333,23 +333,23 @@ TEST(SchemaTest, AdjustIntValue) {  // NOLINT
       R"({
            "type": "int64"
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
-  auto *value = axis_value_create_int8(1);
+  auto *value = aptima_value_create_int8(1);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_adjust_value_type(schema, value, &err);
+  bool success = aptima_schema_adjust_value_type(schema, value, &err);
   ASSERT_EQ(success, true);
 
-  ASSERT_TRUE(axis_value_is_int64(value));
-  ASSERT_EQ(1, axis_value_get_int64(value, &err));
+  ASSERT_TRUE(aptima_value_is_int64(value));
+  ASSERT_EQ(1, aptima_value_get_int64(value, &err));
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, AdjustObject) {  // NOLINT
@@ -365,33 +365,33 @@ TEST(SchemaTest, AdjustObject) {  // NOLINT
              }
            }
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"({
                                    "name": "demo",
                                    "age": 18
                                  })";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  auto *value_age = axis_value_object_peek(value, "age");
-  ASSERT_EQ(true, axis_value_get_uint8(value_age, &err) == 18);
+  auto *value_age = aptima_value_object_peek(value, "age");
+  ASSERT_EQ(true, aptima_value_get_uint8(value_age, &err) == 18);
 
-  bool success = axis_schema_adjust_value_type(schema, value, &err);
+  bool success = aptima_schema_adjust_value_type(schema, value, &err);
   ASSERT_EQ(success, true);
 
-  ASSERT_TRUE(axis_value_is_uint8(value_age));
-  ASSERT_EQ(18, axis_value_get_uint8(value_age, &err));
+  ASSERT_TRUE(aptima_value_is_uint8(value_age));
+  ASSERT_EQ(18, aptima_value_get_uint8(value_age, &err));
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, AdjustArray) {  // NOLINT
@@ -402,30 +402,30 @@ TEST(SchemaTest, AdjustArray) {  // NOLINT
              "type": "int32"
            }
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"([1, 2, 3])";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  auto *value_one = axis_value_array_peek(value, 0, &err);
-  ASSERT_EQ(true, axis_value_get_int32(value_one, &err) == 1);
+  auto *value_one = aptima_value_array_peek(value, 0, &err);
+  ASSERT_EQ(true, aptima_value_get_int32(value_one, &err) == 1);
 
-  bool success = axis_schema_adjust_value_type(schema, value, &err);
+  bool success = aptima_schema_adjust_value_type(schema, value, &err);
   ASSERT_EQ(success, true);
 
-  ASSERT_EQ(true, axis_value_is_int32(value_one));
-  ASSERT_EQ(1, axis_value_get_int32(value_one, &err));
+  ASSERT_EQ(true, aptima_value_is_int32(value_one));
+  ASSERT_EQ(1, aptima_value_get_int32(value_one, &err));
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, Required) {  // NOLINT
@@ -442,29 +442,29 @@ TEST(SchemaTest, Required) {  // NOLINT
            },
            "required": ["a"]
          })";
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   const std::string value_str = R"({
                                      "b": 18
                                    })";
-  auto *value_json = axis_json_from_string(value_str.c_str(), nullptr);
-  auto *value = axis_value_from_json(value_json);
+  auto *value_json = aptima_json_from_string(value_str.c_str(), nullptr);
+  auto *value = aptima_value_from_json(value_json);
 
-  axis_json_destroy(value_json);
+  aptima_json_destroy(value_json);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_adjust_value_type(schema, value, &err);
+  bool success = aptima_schema_adjust_value_type(schema, value, &err);
   ASSERT_EQ(success, true);
 
-  success = axis_schema_validate_value(schema, value, &err);
+  success = aptima_schema_validate_value(schema, value, &err);
   ASSERT_EQ(success, false);
 
-  axis_value_destroy(value);
+  aptima_value_destroy(value);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }
 
 TEST(SchemaTest, CompatibleIntSuccess) {  // NOLINT
@@ -478,19 +478,19 @@ TEST(SchemaTest, CompatibleIntSuccess) {  // NOLINT
            "type": "int64"
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleIntFail) {  // NOLINT
@@ -504,24 +504,24 @@ TEST(SchemaTest, CompatibleIntFail) {  // NOLINT
            "type": "string"
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, false);
 
   // type is incompatible, source is [int32], but target is [string]
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg,
             "type is incompatible, source is [int32], but target is [string]");
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleProperties) {  // NOLINT
@@ -551,19 +551,19 @@ TEST(SchemaTest, CompatibleProperties) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatiblePropertiesSuperSet) {  // NOLINT
@@ -590,19 +590,19 @@ TEST(SchemaTest, CompatiblePropertiesSuperSet) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatiblePropertiesSubset) {  // NOLINT
@@ -629,19 +629,19 @@ TEST(SchemaTest, CompatiblePropertiesSubset) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatiblePropertiesMismatchType) {  // NOLINT
@@ -671,23 +671,23 @@ TEST(SchemaTest, CompatiblePropertiesMismatchType) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, false);
 
   // .a: type is incompatible, source is [string], but target is [int8]
-  auto err_msg = std::string(axis_error_errmsg(&err));
+  auto err_msg = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_msg.rfind("{ .a:", 0) == 0, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleRequired) {  // NOLINT
@@ -719,19 +719,19 @@ TEST(SchemaTest, CompatibleRequired) {  // NOLINT
            "required": ["a"]
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleRequiredSubset) {  // NOLINT
@@ -763,19 +763,19 @@ TEST(SchemaTest, CompatibleRequiredSubset) {  // NOLINT
            "required": ["a", "b"]
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, false);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleRequiredSuperset) {  // NOLINT
@@ -807,19 +807,19 @@ TEST(SchemaTest, CompatibleRequiredSuperset) {  // NOLINT
            "required": ["a"]
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleRequiredSourceUndefined) {  // NOLINT
@@ -850,19 +850,19 @@ TEST(SchemaTest, CompatibleRequiredSourceUndefined) {  // NOLINT
            "required": ["a"]
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, false);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleRequiredTargetUndefined) {  // NOLINT
@@ -893,19 +893,19 @@ TEST(SchemaTest, CompatibleRequiredTargetUndefined) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleItems) {  // NOLINT
@@ -925,19 +925,19 @@ TEST(SchemaTest, CompatibleItems) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompatibleItems2) {  // NOLINT
@@ -957,19 +957,19 @@ TEST(SchemaTest, CompatibleItems2) {  // NOLINT
            }
          })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, true);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, CompositeObjectCompatibleFail) {  // NOLINT
@@ -1039,24 +1039,24 @@ TEST(SchemaTest, CompositeObjectCompatibleFail) {  // NOLINT
             }
           })";
 
-  auto *source_schema = create_axis_schema_from_string(source_schema_str);
-  auto *target_schema = create_axis_schema_from_string(target_schema_str);
+  auto *source_schema = create_aptima_schema_from_string(source_schema_str);
+  auto *target_schema = create_aptima_schema_from_string(target_schema_str);
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
   // []: { .a[]: type is incompatible, source is [int32], but target is
   // [string]; .b: type is incompatible, source is [buf], but target is
   // [string]; .c: { .d: type is incompatible, source is [int32], but target is
   // [float32]; .e[]: type is incompatible, source is [string], but target is
   // [ptr] } }
-  bool success = axis_schema_is_compatible(source_schema, target_schema, &err);
+  bool success = aptima_schema_is_compatible(source_schema, target_schema, &err);
   ASSERT_EQ(success, false);
 
-  axis_error_deinit(&err);
+  aptima_error_deinit(&err);
 
-  axis_schema_destroy(source_schema);
-  axis_schema_destroy(target_schema);
+  aptima_schema_destroy(source_schema);
+  aptima_schema_destroy(target_schema);
 }
 
 TEST(SchemaTest, PathInfoInErrMsg) {  // NOLINT
@@ -1086,49 +1086,49 @@ TEST(SchemaTest, PathInfoInErrMsg) {  // NOLINT
     }
   })";
 
-  axis_error_t err;
-  axis_error_init(&err);
+  aptima_error_t err;
+  aptima_error_init(&err);
 
-  auto *schema = create_axis_schema_from_string(schema_str);
+  auto *schema = create_aptima_schema_from_string(schema_str);
 
   // Testing for a.
-  auto *json_a = axis_json_from_string(R"({
+  auto *json_a = aptima_json_from_string(R"({
     "a": 1
   })",
                                       nullptr);
-  auto *value_a = axis_value_from_json(json_a);
-  axis_json_destroy(json_a);
+  auto *value_a = aptima_value_from_json(json_a);
+  aptima_json_destroy(json_a);
 
-  axis_schema_adjust_value_type(schema, value_a, &err);
+  aptima_schema_adjust_value_type(schema, value_a, &err);
 
-  axis_value_destroy(value_a);
+  aptima_value_destroy(value_a);
 
   // .a: unsupported conversion from `uint64` to `string`
-  auto err_a = std::string(axis_error_errmsg(&err));
+  auto err_a = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_a.rfind(".a", 0) == 0, true);
 
   // Testing for b.
-  axis_error_reset(&err);
+  aptima_error_reset(&err);
 
-  auto *json_b = axis_json_from_string(R"({
+  auto *json_b = aptima_json_from_string(R"({
     "b": ["1", 2, "3"]
   })",
                                       nullptr);
-  auto *value_b = axis_value_from_json(json_b);
-  axis_json_destroy(json_b);
+  auto *value_b = aptima_value_from_json(json_b);
+  aptima_json_destroy(json_b);
 
-  axis_schema_adjust_value_type(schema, value_b, &err);
+  aptima_schema_adjust_value_type(schema, value_b, &err);
 
-  axis_value_destroy(value_b);
+  aptima_value_destroy(value_b);
 
   // .b[1]: unsupported conversion from `uint64` to `string`
-  auto err_b = std::string(axis_error_errmsg(&err));
+  auto err_b = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_b.rfind(".b[1]", 0) == 0, true);
 
   // Testing for c.
-  axis_error_reset(&err);
+  aptima_error_reset(&err);
 
-  auto *json_c = axis_json_from_string(R"({
+  auto *json_c = aptima_json_from_string(R"({
     "c": [
       {
         "d": "1"
@@ -1142,17 +1142,17 @@ TEST(SchemaTest, PathInfoInErrMsg) {  // NOLINT
     ]
   })",
                                       nullptr);
-  auto *value_c = axis_value_from_json(json_c);
-  axis_json_destroy(json_c);
+  auto *value_c = aptima_value_from_json(json_c);
+  aptima_json_destroy(json_c);
 
-  axis_schema_adjust_value_type(schema, value_c, &err);
+  aptima_schema_adjust_value_type(schema, value_c, &err);
 
-  axis_value_destroy(value_c);
+  aptima_value_destroy(value_c);
 
   // .c[0].d: unsupported conversion from `string` to `int32`
-  auto err_c = std::string(axis_error_errmsg(&err));
+  auto err_c = std::string(aptima_error_errmsg(&err));
   ASSERT_EQ(err_c.rfind(".c[0].d", 0) == 0, true);
 
-  axis_error_deinit(&err);
-  axis_schema_destroy(schema);
+  aptima_error_deinit(&err);
+  aptima_schema_destroy(schema);
 }

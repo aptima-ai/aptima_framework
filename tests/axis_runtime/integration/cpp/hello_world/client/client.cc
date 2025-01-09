@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
 
   // Send a user-defined 'hello world' command.
@@ -33,9 +33,9 @@ int main(int argc, char **argv) {
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "test_extension_group", "test_extension");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
-  axis_ASSERT(axis_STATUS_CODE_OK == cmd_result->get_status_code(),
+  aptima_ASSERT(aptima_STATUS_CODE_OK == cmd_result->get_status_code(),
              "Should not happen.");
-  axis_ASSERT(static_cast<std::string>("hello world, too") ==
+  aptima_ASSERT(static_cast<std::string>("hello world, too") ==
                  cmd_result->get_property_string("detail"),
              "Should not happen.");
 

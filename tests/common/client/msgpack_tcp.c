@@ -10,110 +10,110 @@
 
 #include "core_protocols/msgpack/common/parser.h"
 #include "core_protocols/msgpack/msg/msg.h"
-#include "include_internal/axis_runtime/msg/msg.h"
-#include "axis_utils/container/list.h"
-#include "axis_utils/lib/alloc.h"
-#include "axis_utils/lib/smart_ptr.h"
-#include "axis_utils/lib/string.h"
-#include "axis_utils/macro/check.h"
+#include "include_internal/aptima_runtime/msg/msg.h"
+#include "aptima_utils/container/list.h"
+#include "aptima_utils/lib/alloc.h"
+#include "aptima_utils/lib/smart_ptr.h"
+#include "aptima_utils/lib/string.h"
+#include "aptima_utils/macro/check.h"
 #include "tests/common/client/tcp.h"
 
-static axis_buf_t axis_test_msgpack_tcp_client_msgs_to_buf(axis_list_t *msgs) {
-  axis_ASSERT(msgs && axis_list_check_integrity(msgs), "Invalid argument.");
-  return axis_msgpack_serialize_msgs(msgs, NULL);
+static aptima_buf_t aptima_test_msgpack_tcp_client_msgs_to_buf(aptima_list_t *msgs) {
+  aptima_ASSERT(msgs && aptima_list_check_integrity(msgs), "Invalid argument.");
+  return aptima_msgpack_serialize_msgs(msgs, NULL);
 }
 
-static void axis_test_msgpack_tcp_client_buf_to_msgs(
-    axis_test_tcp_client_t *client, void *data, size_t data_size,
-    axis_list_t *msgs) {
-  axis_ASSERT(client, "Invalid argument.");
+static void aptima_test_msgpack_tcp_client_buf_to_msgs(
+    aptima_test_tcp_client_t *client, void *data, size_t data_size,
+    aptima_list_t *msgs) {
+  aptima_ASSERT(client, "Invalid argument.");
 
-  axis_test_msgpack_tcp_client_t *msgpack_client =
-      (axis_test_msgpack_tcp_client_t *)client;
-  axis_msgpack_deserialize_msgs(
+  aptima_test_msgpack_tcp_client_t *msgpack_client =
+      (aptima_test_msgpack_tcp_client_t *)client;
+  aptima_msgpack_deserialize_msgs(
       &msgpack_client->parser,
-      axis_BUF_STATIC_INIT_WITH_DATA_UNOWNED(data, data_size), msgs);
+      aptima_BUF_STATIC_INIT_WITH_DATA_UNOWNED(data, data_size), msgs);
 }
 
-axis_test_msgpack_tcp_client_t *axis_test_msgpack_tcp_client_create(
+aptima_test_msgpack_tcp_client_t *aptima_test_msgpack_tcp_client_create(
     const char *app_id) {
-  axis_ASSERT(app_id, "Invalid argument.");
+  aptima_ASSERT(app_id, "Invalid argument.");
 
-  axis_test_msgpack_tcp_client_t *client =
-      (axis_test_msgpack_tcp_client_t *)axis_MALLOC(
-          sizeof(axis_test_msgpack_tcp_client_t));
-  axis_ASSERT(client, "Failed to allocate memory.");
+  aptima_test_msgpack_tcp_client_t *client =
+      (aptima_test_msgpack_tcp_client_t *)aptima_MALLOC(
+          sizeof(aptima_test_msgpack_tcp_client_t));
+  aptima_ASSERT(client, "Failed to allocate memory.");
 
-  if (axis_test_tcp_client_init(&client->base, app_id,
-                               axis_test_msgpack_tcp_client_msgs_to_buf,
-                               axis_test_msgpack_tcp_client_buf_to_msgs)) {
-    axis_msgpack_parser_init(&client->parser);
+  if (aptima_test_tcp_client_init(&client->base, app_id,
+                               aptima_test_msgpack_tcp_client_msgs_to_buf,
+                               aptima_test_msgpack_tcp_client_buf_to_msgs)) {
+    aptima_msgpack_parser_init(&client->parser);
   } else {
-    axis_FREE(client);
+    aptima_FREE(client);
     client = NULL;
   }
 
   return client;
 }
 
-void axis_test_msgpack_tcp_client_destroy(axis_test_msgpack_tcp_client_t *self) {
-  axis_ASSERT(self, "Invalid argument.");
+void aptima_test_msgpack_tcp_client_destroy(aptima_test_msgpack_tcp_client_t *self) {
+  aptima_ASSERT(self, "Invalid argument.");
 
-  axis_test_tcp_client_deinit(&self->base);
-  axis_msgpack_parser_deinit(&self->parser);
+  aptima_test_tcp_client_deinit(&self->base);
+  aptima_msgpack_parser_deinit(&self->parser);
 
-  axis_FREE(self);
+  aptima_FREE(self);
 }
 
-bool axis_test_msgpack_tcp_client_send_msg(axis_test_msgpack_tcp_client_t *self,
-                                          axis_shared_ptr_t *msg) {
-  axis_ASSERT(self, "Invalid argument.");
-  axis_ASSERT(msg && axis_msg_check_integrity(msg), "Invalid argument.");
+bool aptima_test_msgpack_tcp_client_send_msg(aptima_test_msgpack_tcp_client_t *self,
+                                          aptima_shared_ptr_t *msg) {
+  aptima_ASSERT(self, "Invalid argument.");
+  aptima_ASSERT(msg && aptima_msg_check_integrity(msg), "Invalid argument.");
 
-  return axis_test_tcp_client_send_msg(&self->base, msg);
+  return aptima_test_tcp_client_send_msg(&self->base, msg);
 }
 
-axis_shared_ptr_t *axis_test_msgpack_tcp_client_recv_msg(
-    axis_test_msgpack_tcp_client_t *self) {
-  axis_ASSERT(self, "Invalid argument.");
+aptima_shared_ptr_t *aptima_test_msgpack_tcp_client_recv_msg(
+    aptima_test_msgpack_tcp_client_t *self) {
+  aptima_ASSERT(self, "Invalid argument.");
 
-  return axis_test_tcp_client_recv_msg(&self->base);
+  return aptima_test_tcp_client_recv_msg(&self->base);
 }
 
-void axis_test_msgpack_tcp_client_recv_msgs_batch(
-    axis_test_msgpack_tcp_client_t *self, axis_list_t *msgs) {
-  axis_ASSERT(self && msgs, "Invalid argument.");
+void aptima_test_msgpack_tcp_client_recv_msgs_batch(
+    aptima_test_msgpack_tcp_client_t *self, aptima_list_t *msgs) {
+  aptima_ASSERT(self && msgs, "Invalid argument.");
 
-  return axis_test_tcp_client_recv_msgs_batch(&self->base, msgs);
+  return aptima_test_tcp_client_recv_msgs_batch(&self->base, msgs);
 }
 
-axis_shared_ptr_t *axis_test_msgpack_tcp_client_send_and_recv_msg(
-    axis_test_msgpack_tcp_client_t *self, axis_shared_ptr_t *msg) {
-  axis_ASSERT(self, "Invalid argument.");
-  axis_ASSERT(msg && axis_msg_check_integrity(msg), "Invalid argument.");
+aptima_shared_ptr_t *aptima_test_msgpack_tcp_client_send_and_recv_msg(
+    aptima_test_msgpack_tcp_client_t *self, aptima_shared_ptr_t *msg) {
+  aptima_ASSERT(self, "Invalid argument.");
+  aptima_ASSERT(msg && aptima_msg_check_integrity(msg), "Invalid argument.");
 
-  return axis_test_tcp_client_send_and_recv_msg(&self->base, msg);
+  return aptima_test_tcp_client_send_and_recv_msg(&self->base, msg);
 }
 
-bool axis_test_msgpack_tcp_client_send_data(axis_test_msgpack_tcp_client_t *self,
+bool aptima_test_msgpack_tcp_client_send_data(aptima_test_msgpack_tcp_client_t *self,
                                            const char *graph_id,
                                            const char *extension_group_name,
                                            const char *extension_name,
                                            void *data, size_t size) {
-  axis_ASSERT(self, "Invalid argument.");
-  axis_ASSERT(graph_id && extension_group_name && extension_name && data,
+  aptima_ASSERT(self, "Invalid argument.");
+  aptima_ASSERT(graph_id && extension_group_name && extension_name && data,
              "Invalid argument.");
 
-  return axis_test_tcp_client_send_data(
+  return aptima_test_tcp_client_send_data(
       &self->base, graph_id, extension_group_name, extension_name, data, size);
 }
 
-bool axis_test_msgpack_tcp_client_close_app(
-    axis_test_msgpack_tcp_client_t *self) {
-  return axis_test_tcp_client_close_app(&self->base);
+bool aptima_test_msgpack_tcp_client_close_app(
+    aptima_test_msgpack_tcp_client_t *self) {
+  return aptima_test_tcp_client_close_app(&self->base);
 }
 
-void axis_test_msgpack_tcp_client_get_info(axis_test_msgpack_tcp_client_t *self,
-                                          axis_string_t *ip, uint16_t *port) {
-  axis_test_tcp_client_get_info(&self->base, ip, port);
+void aptima_test_msgpack_tcp_client_get_info(aptima_test_msgpack_tcp_client_t *self,
+                                          aptima_string_t *ip, uint16_t *port) {
+  aptima_test_tcp_client_get_info(&self->base, ip, port);
 }

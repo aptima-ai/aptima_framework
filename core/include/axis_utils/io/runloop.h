@@ -12,34 +12,34 @@
  */
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#define axis_RUNLOOP_EVENT2 "event2"
-#define axis_RUNLOOP_UV "uv"
-#define axis_RUNLOOP_BARE "bare"
+#define aptima_RUNLOOP_EVENT2 "event2"
+#define aptima_RUNLOOP_UV "uv"
+#define aptima_RUNLOOP_BARE "bare"
 
 /**
  * @brief This data structure represents a runloop.
  */
-typedef struct axis_runloop_t axis_runloop_t;
+typedef struct aptima_runloop_t aptima_runloop_t;
 
 /**
  * @brief This data structure represents an asynchronous event signal.
  */
-typedef struct axis_runloop_async_t axis_runloop_async_t;
+typedef struct aptima_runloop_async_t aptima_runloop_async_t;
 
 /**
  * @brief This data structure represents a timer.
  */
-typedef struct axis_runloop_timer_t axis_runloop_timer_t;
+typedef struct aptima_runloop_timer_t aptima_runloop_timer_t;
 
-typedef struct axis_thread_t axis_thread_t;
+typedef struct aptima_thread_t aptima_thread_t;
 
-axis_UTILS_API bool axis_runloop_check_integrity(axis_runloop_t *self,
+aptima_UTILS_API bool aptima_runloop_check_integrity(aptima_runloop_t *self,
                                                bool check_thread);
 
 /**
@@ -48,7 +48,7 @@ axis_UTILS_API bool axis_runloop_check_integrity(axis_runloop_t *self,
  *             Create from a default one if |type| == NULL
  * @return The runloop. NULL if failed.
  */
-axis_UTILS_API axis_runloop_t *axis_runloop_create(const char *type);
+aptima_UTILS_API aptima_runloop_t *aptima_runloop_create(const char *type);
 
 /**
  * @brief Attach to an existing runloop with "raw loop pointer"
@@ -58,27 +58,27 @@ axis_UTILS_API axis_runloop_t *axis_runloop_create(const char *type);
  * @return The runloop.
  * @note Be careful that |raw| must has current |type| otherwise crash happens.
  */
-axis_UTILS_API axis_runloop_t *axis_runloop_attach(const char *type, void *raw);
+aptima_UTILS_API aptima_runloop_t *aptima_runloop_attach(const char *type, void *raw);
 
 /**
  * @return true if @a loop is attached to another raw runloop.
  */
-axis_UTILS_API bool axis_runloop_is_attached(axis_runloop_t *loop);
+aptima_UTILS_API bool aptima_runloop_is_attached(aptima_runloop_t *loop);
 
 /**
  * @brief Destroy a runloop.
  * @param loop The runloop to destroy.
- * @note Be _very_ careful that if loop is from |axis_runloop_attach|, timers and
+ * @note Be _very_ careful that if loop is from |aptima_runloop_attach|, timers and
  *       events created from |loop| may still be triggered unless you close them
  *       all before detaching.
  */
-axis_UTILS_API void axis_runloop_destroy(axis_runloop_t *loop);
+aptima_UTILS_API void aptima_runloop_destroy(aptima_runloop_t *loop);
 
 /**
  * @brief Get current loop.
  * @return The current loop. NULL if no loop running.
  */
-axis_UTILS_API axis_runloop_t *axis_runloop_current(void);
+aptima_UTILS_API aptima_runloop_t *aptima_runloop_current(void);
 
 /**
  * @brief Get underlying loop object.
@@ -86,33 +86,33 @@ axis_UTILS_API axis_runloop_t *axis_runloop_current(void);
  * @return The underlying loop object. NULL if failed.
  *         For example, libevent loop will return event_base*
  */
-axis_UTILS_API void *axis_runloop_get_raw(axis_runloop_t *loop);
+aptima_UTILS_API void *aptima_runloop_get_raw(aptima_runloop_t *loop);
 
 /**
  * @brief Run the loop.
  * @param loop The runloop.
  * @note This function will block until the loop is stopped.
- *       If loop is coming from |axis_runloop_attach|, nothing would happen.
+ *       If loop is coming from |aptima_runloop_attach|, nothing would happen.
  */
-axis_UTILS_API void axis_runloop_run(axis_runloop_t *loop);
+aptima_UTILS_API void aptima_runloop_run(aptima_runloop_t *loop);
 
 /**
  * @brief Stop the loop.
  * @param loop The runloop.
- * @note Stop a loop from |axis_runloop_create| will stop task queue as well as
+ * @note Stop a loop from |aptima_runloop_create| will stop task queue as well as
  *       the underlying io loop.
- *       Stop a loop from |axis_runloop_attach| will only stop task queue.
+ *       Stop a loop from |aptima_runloop_attach| will only stop task queue.
  */
-axis_UTILS_API void axis_runloop_stop(axis_runloop_t *loop);
+aptima_UTILS_API void aptima_runloop_stop(aptima_runloop_t *loop);
 
-typedef void (*axis_runloop_on_stopped_func_t)(axis_runloop_t *loop, void *data);
+typedef void (*aptima_runloop_on_stopped_func_t)(aptima_runloop_t *loop, void *data);
 
 /**
  * @brief Register a callback function which will be called when @a loop is
  * stopped completely.
  */
-axis_UTILS_API void axis_runloop_set_on_stopped(
-    axis_runloop_t *loop, axis_runloop_on_stopped_func_t on_stopped,
+aptima_UTILS_API void aptima_runloop_set_on_stopped(
+    aptima_runloop_t *loop, aptima_runloop_on_stopped_func_t on_stopped,
     void *on_stopped_data);
 
 /**
@@ -120,14 +120,14 @@ axis_UTILS_API void axis_runloop_set_on_stopped(
  * @param loop The runloop.
  * @note Notify a loop to close its relevant resources before stopping.
  */
-axis_UTILS_API void axis_runloop_close(axis_runloop_t *loop);
+aptima_UTILS_API void aptima_runloop_close(aptima_runloop_t *loop);
 
 /**
  * @brief Check whether the loop is running.
  * @param loop The runloop.
  * @return 1 if the loop is running, 0 otherwise.
  */
-axis_UTILS_API int axis_runloop_alive(axis_runloop_t *loop);
+aptima_UTILS_API int aptima_runloop_alive(aptima_runloop_t *loop);
 
 /**
  * @brief Create an async signal
@@ -135,21 +135,21 @@ axis_UTILS_API int axis_runloop_alive(axis_runloop_t *loop);
  *             Create from a default one if |type| == NULL
  * @return The signal. NULL if failed.
  */
-axis_UTILS_API axis_runloop_async_t *axis_runloop_async_create(const char *type);
+aptima_UTILS_API aptima_runloop_async_t *aptima_runloop_async_create(const char *type);
 
 /**
  * @brief Close an async signal.
  * @param async The signal.
  * @param close_cb The callback to be called when the signal is closed.
  */
-axis_UTILS_API void axis_runloop_async_close(
-    axis_runloop_async_t *async, void (*close_cb)(axis_runloop_async_t *));
+aptima_UTILS_API void aptima_runloop_async_close(
+    aptima_runloop_async_t *async, void (*close_cb)(aptima_runloop_async_t *));
 
 /**
  * @brief Destroy an async signal.
  * @param async The signal.
  */
-axis_UTILS_API void axis_runloop_async_destroy(axis_runloop_async_t *async);
+aptima_UTILS_API void aptima_runloop_async_destroy(aptima_runloop_async_t *async);
 
 /**
  * @brief Notify the signal.
@@ -157,7 +157,7 @@ axis_UTILS_API void axis_runloop_async_destroy(axis_runloop_async_t *async);
  * @return 0 if success, -1 otherwise.
  * @note The signal callback will be called in the thread of |loop| that initted
  */
-axis_UTILS_API int axis_runloop_async_notify(axis_runloop_async_t *async);
+aptima_UTILS_API int aptima_runloop_async_notify(aptima_runloop_async_t *async);
 
 /**
  * @brief Bind an async signal to a runloop.
@@ -168,11 +168,11 @@ axis_UTILS_API int axis_runloop_async_notify(axis_runloop_async_t *async);
  * @note The implementation of |loop| should be the same as the implementation
  *       of |async|, otherwise the behavior is undefined.
  */
-axis_UTILS_API int axis_runloop_async_init(
-    axis_runloop_async_t *async, axis_runloop_t *loop,
-    void (*callback)(axis_runloop_async_t *));
+aptima_UTILS_API int aptima_runloop_async_init(
+    aptima_runloop_async_t *async, aptima_runloop_t *loop,
+    void (*callback)(aptima_runloop_async_t *));
 
-typedef void (*axis_runloop_task_func_t)(void *from, void *arg);
+typedef void (*aptima_runloop_task_func_t)(void *from, void *arg);
 
 /**
  * @brief Create an async task and insert it in front.
@@ -182,8 +182,8 @@ typedef void (*axis_runloop_task_func_t)(void *from, void *arg);
  * @param arg The argument to be passed to the callback.
  * @return 0 if success, -1 otherwise.
  */
-axis_UTILS_API int axis_runloop_post_task_front(axis_runloop_t *loop,
-                                              axis_runloop_task_func_t task_cb,
+aptima_UTILS_API int aptima_runloop_post_task_front(aptima_runloop_t *loop,
+                                              aptima_runloop_task_func_t task_cb,
                                               void *from, void *arg);
 
 /**
@@ -194,8 +194,8 @@ axis_UTILS_API int axis_runloop_post_task_front(axis_runloop_t *loop,
  * @param arg The argument to be passed to the callback.
  * @return 0 if success, -1 otherwise.
  */
-axis_UTILS_API int axis_runloop_post_task_tail(axis_runloop_t *loop,
-                                             axis_runloop_task_func_t task_cb,
+aptima_UTILS_API int aptima_runloop_post_task_tail(aptima_runloop_t *loop,
+                                             aptima_runloop_task_func_t task_cb,
                                              void *from, void *arg);
 
 /**
@@ -203,13 +203,13 @@ axis_UTILS_API int axis_runloop_post_task_tail(axis_runloop_t *loop,
  * @param loop The runloop.
  * @return The pending task size.
  */
-axis_UTILS_API size_t axis_runloop_task_queue_size(axis_runloop_t *loop);
+aptima_UTILS_API size_t aptima_runloop_task_queue_size(aptima_runloop_t *loop);
 
 /**
  * @brief Execute all the remaining tasks in the runloop task queue.
  * @param loop The runloop.
  */
-axis_UTILS_API void axis_runloop_flush_task(axis_runloop_t *loop);
+aptima_UTILS_API void aptima_runloop_flush_task(aptima_runloop_t *loop);
 
 /**
  * @brief Create a timer in of a runloop
@@ -219,7 +219,7 @@ axis_UTILS_API void axis_runloop_flush_task(axis_runloop_t *loop);
  * @param periodic Whether the timer is notified periodicity
  * @return The timer. NULL if failed.
  */
-axis_UTILS_API axis_runloop_timer_t *axis_runloop_timer_create(const char *type,
+aptima_UTILS_API aptima_runloop_timer_t *aptima_runloop_timer_create(const char *type,
                                                             uint64_t timeout,
                                                             uint64_t periodic);
 
@@ -231,7 +231,7 @@ axis_UTILS_API axis_runloop_timer_t *axis_runloop_timer_create(const char *type,
  * @return 0 if success, -1 if the timer not valid.
  * @note Will not take effect immediately if already started.
  */
-axis_UTILS_API int axis_runloop_timer_set_timeout(axis_runloop_timer_t *timer,
+aptima_UTILS_API int aptima_runloop_timer_set_timeout(aptima_runloop_timer_t *timer,
                                                 uint64_t timeout,
                                                 uint64_t periodic);
 
@@ -244,17 +244,17 @@ axis_UTILS_API int axis_runloop_timer_set_timeout(axis_runloop_timer_t *timer,
  * @note The implementation of |loop| should be the same as the implementation
  *       of |timer|, otherwise the behavior is undefined.
  */
-axis_UTILS_API int axis_runloop_timer_start(
-    axis_runloop_timer_t *timer, axis_runloop_t *loop,
-    void (*callback)(axis_runloop_timer_t *, void *), void *arg);
+aptima_UTILS_API int aptima_runloop_timer_start(
+    aptima_runloop_timer_t *timer, aptima_runloop_t *loop,
+    void (*callback)(aptima_runloop_timer_t *, void *), void *arg);
 
 /**
  * @brief Stop an timer.
  * @param timer The timer.
  * @param stop_cb The callback to be called when the timer is stopped.
  */
-axis_UTILS_API void axis_runloop_timer_stop(axis_runloop_timer_t *timer,
-                                          void (*stop_cb)(axis_runloop_timer_t *,
+aptima_UTILS_API void aptima_runloop_timer_stop(aptima_runloop_timer_t *timer,
+                                          void (*stop_cb)(aptima_runloop_timer_t *,
                                                           void *),
                                           void *arg);
 
@@ -263,12 +263,12 @@ axis_UTILS_API void axis_runloop_timer_stop(axis_runloop_timer_t *timer,
  * @param timer The timer.
  * @param close_cb The callback to be called when the timer is stopped.
  */
-axis_UTILS_API void axis_runloop_timer_close(
-    axis_runloop_timer_t *timer, void (*close_cb)(axis_runloop_timer_t *, void *),
+aptima_UTILS_API void aptima_runloop_timer_close(
+    aptima_runloop_timer_t *timer, void (*close_cb)(aptima_runloop_timer_t *, void *),
     void *arg);
 
 /**
  * @brief Destroy an timer.
  * @param timer The timer.
  */
-axis_UTILS_API void axis_runloop_timer_destroy(axis_runloop_timer_t *timer);
+aptima_UTILS_API void aptima_runloop_timer_destroy(aptima_runloop_timer_t *timer);

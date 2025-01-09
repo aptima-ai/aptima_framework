@@ -11,7 +11,7 @@ from .common import cmd_exec
 
 
 def get_installed_extensions_count(app_dir: str):
-    extension_dir = os.path.join(app_dir, "axis_packages/extension/")
+    extension_dir = os.path.join(app_dir, "aptima_packages/extension/")
     extensions = os.listdir(extension_dir)
 
     return len(extensions)
@@ -29,11 +29,11 @@ def test_tman_dependency_resolve():
 
     if sys.platform == "win32":
         os.environ["PATH"] = (
-            os.path.join(root_dir, "axis_manager/lib") + ";" + os.getenv("PATH")
+            os.path.join(root_dir, "aptima_manager/lib") + ";" + os.getenv("PATH")
         )
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman.exe")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman")
 
     app_dir = os.path.join(base_path, "test_app")
 
@@ -60,7 +60,7 @@ def test_tman_dependency_resolve():
         installed_count == 2
     ), f"Expected 2 extensions, found {installed_count}."
 
-    ext_c_path = os.path.join(app_dir, "axis_packages/extension/ext_c")
+    ext_c_path = os.path.join(app_dir, "aptima_packages/extension/ext_c")
     local_c_path = os.path.join(app_dir, "local_c")
 
     # Check if `ext_c_path` exists.

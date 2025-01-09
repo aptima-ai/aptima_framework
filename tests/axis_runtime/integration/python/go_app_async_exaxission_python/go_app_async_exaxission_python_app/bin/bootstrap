@@ -6,7 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Resolve the dependencies of the Python app and generate the 'merged_requirements.txt' file.
 # get the result code of the following python script.
-python3 axis_packages/system/axis_runtime_python/tools/deps_resolver.py -i https://pypi.tuna.tsinghua.edu.cn/simple/
+python3 aptima_packages/system/aptima_runtime_python/tools/deps_resolver.py -i https://pypi.tuna.tsinghua.edu.cn/simple/
 result_code=$?
 
 # If the Python script is executed failed, exit the script.

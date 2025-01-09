@@ -6,16 +6,16 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdbool.h>
 
-#define axis_REGISTER_ADDON_AS_EXTENSION(NAME, ADDON) \
-  axis_ADDON_REGISTER(extension, NAME, ADDON)
+#define aptima_REGISTER_ADDON_AS_EXTENSION(NAME, ADDON) \
+  aptima_ADDON_REGISTER(extension, NAME, ADDON)
 
-typedef struct axis_addon_t axis_addon_t;
-typedef struct axis_addon_host_t axis_addon_host_t;
+typedef struct aptima_addon_t aptima_addon_t;
+typedef struct aptima_addon_host_t aptima_addon_host_t;
 
-axis_RUNTIME_API axis_addon_host_t *axis_addon_register_extension(
-    const char *name, const char *base_dir, axis_addon_t *addon,
+aptima_RUNTIME_API aptima_addon_host_t *aptima_addon_register_extension(
+    const char *name, const char *base_dir, aptima_addon_t *addon,
     void *register_ctx);

@@ -13,7 +13,7 @@ class BuildConfig:
         is_clang,
         enable_sanitizer,
         vs_version,
-        axis_enable_integration_tests_prebuilt,
+        aptima_enable_integration_tests_prebuilt,
     ):
         self.target_os = target_os
         self.target_cpu = target_cpu
@@ -21,8 +21,8 @@ class BuildConfig:
         self.is_clang = is_clang
         self.enable_sanitizer = enable_sanitizer
         self.vs_version = vs_version
-        self.axis_enable_integration_tests_prebuilt = (
-            axis_enable_integration_tests_prebuilt
+        self.aptima_enable_integration_tests_prebuilt = (
+            aptima_enable_integration_tests_prebuilt
         )
 
 
@@ -33,7 +33,7 @@ def parse_build_config(file_path: str) -> BuildConfig:
     is_clang = None
     enable_sanitizer = None
     vs_version = None
-    axis_enable_integration_tests_prebuilt = None
+    aptima_enable_integration_tests_prebuilt = None
 
     with open(file_path, "r") as file:
         for line in file:
@@ -50,8 +50,8 @@ def parse_build_config(file_path: str) -> BuildConfig:
                 enable_sanitizer = line.split("=")[1].strip().lower() == "true"
             elif line.startswith("vs_version"):
                 vs_version = line.split("=")[1].strip().strip('"')
-            elif line.startswith("axis_enable_integration_tests_prebuilt"):
-                axis_enable_integration_tests_prebuilt = (
+            elif line.startswith("aptima_enable_integration_tests_prebuilt"):
+                aptima_enable_integration_tests_prebuilt = (
                     line.split("=")[1].strip().lower() == "true"
                 )
 
@@ -64,5 +64,5 @@ def parse_build_config(file_path: str) -> BuildConfig:
         is_clang,
         enable_sanitizer,
         vs_version,
-        axis_enable_integration_tests_prebuilt,
+        aptima_enable_integration_tests_prebuilt,
     )

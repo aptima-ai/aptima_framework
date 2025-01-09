@@ -8,56 +8,56 @@
 
 #include <stdbool.h>
 
-#include "axis_utils/container/list_node.h"
+#include "aptima_utils/container/list_node.h"
 
 /**
  * @return The smart_ptr stored in the list.
  */
-axis_UTILS_API axis_smart_ptr_t *axis_list_push_smart_ptr_back(
-    axis_list_t *self, axis_smart_ptr_t *ptr);
+aptima_UTILS_API aptima_smart_ptr_t *aptima_list_push_smart_ptr_back(
+    aptima_list_t *self, aptima_smart_ptr_t *ptr);
 
 /**
  * @param ptr The raw pointer.
  */
-axis_UTILS_API axis_listnode_t *axis_list_find_shared_ptr(axis_list_t *self,
+aptima_UTILS_API aptima_listnode_t *aptima_list_find_shared_ptr(aptima_list_t *self,
                                                        const void *ptr);
 
-#define axis_list_find_shared_ptr_custom(self, ptr, equal_to) \
-  axis_list_find_shared_ptr_custom_(                          \
+#define aptima_list_find_shared_ptr_custom(self, ptr, equal_to) \
+  aptima_list_find_shared_ptr_custom_(                          \
       self, ptr, (bool (*)(const void *, const void *))(equal_to))
 
-axis_UTILS_API axis_listnode_t *axis_list_find_shared_ptr_custom_(
-    axis_list_t *self, const void *ptr,
+aptima_UTILS_API aptima_listnode_t *aptima_list_find_shared_ptr_custom_(
+    aptima_list_t *self, const void *ptr,
     bool (*equal_to)(const void *, const void *));
 
-#define axis_list_find_shared_ptr_custom_2(self, ptr_1, ptr_2, equal_to) \
-  axis_list_find_shared_ptr_custom_2_(                                   \
+#define aptima_list_find_shared_ptr_custom_2(self, ptr_1, ptr_2, equal_to) \
+  aptima_list_find_shared_ptr_custom_2_(                                   \
       self, ptr_1, ptr_2,                                               \
       (bool (*)(const void *, const void *, const void *))(equal_to))
 
-axis_UTILS_API axis_listnode_t *axis_list_find_shared_ptr_custom_2_(
-    axis_list_t *self, const void *ptr_1, const void *ptr_2,
+aptima_UTILS_API aptima_listnode_t *aptima_list_find_shared_ptr_custom_2_(
+    aptima_list_t *self, const void *ptr_1, const void *ptr_2,
     bool (*equal_to)(const void *, const void *, const void *));
 
-#define axis_list_find_shared_ptr_custom_3(self, ptr_1, ptr_2, ptr_3, equal_to) \
-  axis_list_find_shared_ptr_custom_3_(                                          \
+#define aptima_list_find_shared_ptr_custom_3(self, ptr_1, ptr_2, ptr_3, equal_to) \
+  aptima_list_find_shared_ptr_custom_3_(                                          \
       self, ptr_1, ptr_2, ptr_3,                                               \
       (bool (*)(const void *, const void *, const void *, const void *))(      \
           equal_to))
 
-axis_UTILS_API axis_listnode_t *axis_list_find_shared_ptr_custom_3_(
-    axis_list_t *self, const void *ptr_1, const void *ptr_2, const void *ptr_3,
+aptima_UTILS_API aptima_listnode_t *aptima_list_find_shared_ptr_custom_3_(
+    aptima_list_t *self, const void *ptr_1, const void *ptr_2, const void *ptr_3,
     bool (*equal_to)(const void *, const void *, const void *, const void *));
 
-#define axis_list_find_shared_ptr_custom_4(self, ptr_1, ptr_2, ptr_3, ptr_4, \
+#define aptima_list_find_shared_ptr_custom_4(self, ptr_1, ptr_2, ptr_3, ptr_4, \
                                           equal_to)                         \
-  axis_list_find_shared_ptr_custom_4_(                                       \
+  aptima_list_find_shared_ptr_custom_4_(                                       \
       self, ptr_1, ptr_2, ptr_3, ptr_4,                                     \
       (bool (*)(const void *, const void *, const void *, const void *,     \
                 const void *))(equal_to))
 
-axis_UTILS_API axis_listnode_t *axis_list_find_shared_ptr_custom_4_(
-    axis_list_t *self, const void *ptr_1, const void *ptr_2, const void *ptr_3,
+aptima_UTILS_API aptima_listnode_t *aptima_list_find_shared_ptr_custom_4_(
+    aptima_list_t *self, const void *ptr_1, const void *ptr_2, const void *ptr_3,
     const void *ptr_4,
     bool (*equal_to)(const void *, const void *, const void *, const void *,
                      const void *));

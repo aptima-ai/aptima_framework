@@ -6,28 +6,28 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-#include "axis_runtime/common/status_code.h"
-#include "axis_utils/lib/error.h"
-#include "axis_utils/lib/smart_ptr.h"
+#include "aptima_runtime/common/status_code.h"
+#include "aptima_utils/lib/error.h"
+#include "aptima_utils/lib/smart_ptr.h"
 
-typedef struct axis_cmd_result_t axis_cmd_result_t;
+typedef struct aptima_cmd_result_t aptima_cmd_result_t;
 
-axis_RUNTIME_API axis_shared_ptr_t *axis_cmd_result_create(
-    axis_STATUS_CODE status_code);
+aptima_RUNTIME_API aptima_shared_ptr_t *aptima_cmd_result_create(
+    aptima_STATUS_CODE status_code);
 
-axis_RUNTIME_API axis_shared_ptr_t *axis_cmd_result_create_from_cmd(
-    axis_STATUS_CODE status_code, axis_shared_ptr_t *original_cmd);
+aptima_RUNTIME_API aptima_shared_ptr_t *aptima_cmd_result_create_from_cmd(
+    aptima_STATUS_CODE status_code, aptima_shared_ptr_t *original_cmd);
 
-axis_RUNTIME_API axis_STATUS_CODE
-axis_cmd_result_get_status_code(axis_shared_ptr_t *self);
+aptima_RUNTIME_API aptima_STATUS_CODE
+aptima_cmd_result_get_status_code(aptima_shared_ptr_t *self);
 
-axis_RUNTIME_API bool axis_cmd_result_is_final(axis_shared_ptr_t *self,
-                                             axis_error_t *err);
+aptima_RUNTIME_API bool aptima_cmd_result_is_final(aptima_shared_ptr_t *self,
+                                             aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_cmd_result_is_completed(axis_shared_ptr_t *self,
-                                                 axis_error_t *err);
+aptima_RUNTIME_API bool aptima_cmd_result_is_completed(aptima_shared_ptr_t *self,
+                                                 aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_cmd_result_set_final(axis_shared_ptr_t *self,
-                                              bool is_final, axis_error_t *err);
+aptima_RUNTIME_API bool aptima_cmd_result_set_final(aptima_shared_ptr_t *self,
+                                              bool is_final, aptima_error_t *err);

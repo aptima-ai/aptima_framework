@@ -8,11 +8,11 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_runtime/common/status_code.h"
-#include "axis_utils/lib/thread.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/common/status_code.h"
+#include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 // This is a simple example, used to demonstrate that the flow between
 // extensions is _not_ specified by a graph, but is explicitly defined by the
@@ -42,24 +42,24 @@ class business_extension : public ten::extension_t {
  public:
   explicit business_extension(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Check whether the initial request has been received and start processing
     // it.
     if (cmd->get_name() == "initial_request") {
       // Start the handling process of "initial_request".
-      handle_initial_request(axis_env, std::move(cmd));
+      handle_initial_request(aptima_env, std::move(cmd));
     }
   }
 
  private:
-  void handle_initial_request(ten::axis_env_t &axis_env,
+  void handle_initial_request(ten::aptima_env_t &aptima_env,
                               std::unique_ptr<ten::cmd_t> cmd) {
     // The 1st step is to interact with "plugin_1".
-    send_cmd_to_plugin_1(axis_env, std::move(cmd));
+    send_cmd_to_plugin_1(aptima_env, std::move(cmd));
   }
 
-  void send_cmd_to_plugin_1(ten::axis_env_t &axis_env,
+  void send_cmd_to_plugin_1(ten::aptima_env_t &aptima_env,
                             std::unique_ptr<ten::cmd_t> cmd) {
     // Construct a command for plugin_1.
     auto cmd_to_plugin_1 = ten::cmd_t::create("plugin_1_cmd");
@@ -74,9 +74,9 @@ class business_extension : public ten::extension_t {
     auto cmd_shared =
         std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 
-    axis_env.send_cmd(
+    aptima_env.send_cmd(
         std::move(cmd_to_plugin_1),
-        [this, cmd_shared](ten::axis_env_t &axis_env,
+        [this, cmd_shared](ten::aptima_env_t &aptima_env,
                            std::unique_ptr<ten::cmd_result_t> cmd_result,
                            ten::error_t *err) {
           // Receive the result from plugin_1, and decide the next step based
@@ -86,12 +86,12 @@ class business_extension : public ten::extension_t {
           if (json["detail"] == "plugin_1_result") {
             // Successfully completed the interaction with plugin_1, the next
             // step is to interact with plugin_2.
-            send_cmd_to_plugin_2(axis_env, std::move(*cmd_shared));
+            send_cmd_to_plugin_2(aptima_env, std::move(*cmd_shared));
           }
         });
   }
 
-  void send_cmd_to_plugin_2(ten::axis_env_t &axis_env,
+  void send_cmd_to_plugin_2(ten::aptima_env_t &aptima_env,
                             std::unique_ptr<ten::cmd_t> cmd) {
     // Construct a command for plugin_2.
     auto cmd_to_plugin_2 = ten::cmd_t::create("plugin_2_cmd");
@@ -106,9 +106,9 @@ class business_extension : public ten::extension_t {
     auto cmd_shared =
         std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
 
-    axis_env.send_cmd(
+    aptima_env.send_cmd(
         std::move(cmd_to_plugin_2),
-        [cmd_shared](ten::axis_env_t &axis_env,
+        [cmd_shared](ten::aptima_env_t &aptima_env,
                      std::unique_ptr<ten::cmd_result_t> cmd_result,
                      ten::error_t *err) {
           // Receive result from plugin_2.
@@ -118,9 +118,9 @@ class business_extension : public ten::extension_t {
             // Successfully completed the interaction with plugin_2,
             // the next step is to return a result to the request
             // submitter (i.e., the client).
-            auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+            auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
             cmd_result->set_property("detail", "success");
-            axis_env.return_result(std::move(cmd_result),
+            aptima_env.return_result(std::move(cmd_result),
                                   std::move(*cmd_shared));
           }
         });
@@ -131,13 +131,13 @@ class plugin_extension_1 : public ten::extension_t {
  public:
   explicit plugin_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Simulate the action of receiving a command, and return a result.
     if (cmd->get_name() == "plugin_1_cmd") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "plugin_1_result");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
@@ -146,20 +146,20 @@ class plugin_extension_2 : public ten::extension_t {
  public:
   explicit plugin_extension_2(const char *name) : ten::extension_t(name) {}
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     // Simulate the action of receiving a command, and return a result.
     if (cmd->get_name() == "plugin_2_cmd") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "plugin_2_result");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
 class business_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
+  void on_configure(ten::aptima_env_t &aptima_env) override {
     // Note that the graph is very simple. It does _not_ contain any workflows,
     // just what the extensions contained in the graph.
     //
@@ -172,8 +172,8 @@ class business_app : public ten::app_t {
     // It does not contain any logic for interaction; all logic for interaction
     // is written in the code.
 
-    bool rc = ten::axis_env_internal_accessor_t::init_manifest_from_json(
-        axis_env,
+    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+        aptima_env,
         // clang-format off
                  R"({
                       "type": "app",
@@ -184,7 +184,7 @@ class business_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    rc = axis_env.init_property_from_json(
+    rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -217,11 +217,11 @@ class business_app : public ten::app_t {
     );
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *business_app_thread_main(axis_UNUSED void *args) {
+void *business_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new business_app();
   app->run();
   delete app;
@@ -229,18 +229,18 @@ void *business_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(specify_dest__business_extension,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(specify_dest__business_extension,
                                     business_extension);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(specify_dest__plugin_extension_1,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(specify_dest__plugin_extension_1,
                                     plugin_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(specify_dest__plugin_extension_2,
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(specify_dest__plugin_extension_2,
                                     plugin_extension_2);
 
 }  // namespace
 
 TEST(ExtensionTest, SpecifyDest) {  // NOLINT
   // Start the app.
-  auto *app_thread = axis_thread_create("business app thread",
+  auto *app_thread = aptima_thread_create("business app thread",
                                        business_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
@@ -254,10 +254,10 @@ TEST(ExtensionTest, SpecifyDest) {  // NOLINT
       client->send_cmd_and_recv_result(std::move(initial_request_cmd));
 
   // Check whether the correct result has been received.
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "success");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "success");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

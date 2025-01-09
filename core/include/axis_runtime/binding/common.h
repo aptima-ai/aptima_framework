@@ -6,12 +6,12 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
-typedef struct axis_binding_handle_t axis_binding_handle_t;
+typedef struct aptima_binding_handle_t aptima_binding_handle_t;
 
-axis_RUNTIME_API void axis_binding_handle_set_me_in_target_lang(
-    axis_binding_handle_t *self, void *me_in_target_lang);
+aptima_RUNTIME_API void aptima_binding_handle_set_me_in_target_lang(
+    aptima_binding_handle_t *self, void *me_in_target_lang);
 
-axis_RUNTIME_API void *axis_binding_handle_get_me_in_target_lang(
-    axis_binding_handle_t *self);
+aptima_RUNTIME_API void *aptima_binding_handle_get_me_in_target_lang(
+    aptima_binding_handle_t *self);

@@ -7,9 +7,9 @@
 
 #include <atomic>
 
-#include "axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lib/event.h"
-#include "axis_utils/lib/thread.h"
+#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lib/event.h"
+#include "aptima_utils/lib/thread.h"
 
 namespace ten {
 namespace ffmpeg_extension {
@@ -18,7 +18,7 @@ class demuxer_t;
 
 class demuxer_thread_t {
  public:
-  demuxer_thread_t(ten::axis_env_proxy_t *axis_env_proxy,
+  demuxer_thread_t(ten::aptima_env_proxy_t *aptima_env_proxy,
                    std::unique_ptr<ten::cmd_t> start_cmd,
                    extension_t *extension, std::string &input_stream_loc);
 
@@ -50,15 +50,15 @@ class demuxer_thread_t {
   void wait_for_demuxer();
   void notify_completed(bool success = true);
 
-  ten::axis_env_proxy_t *axis_env_proxy_;
+  ten::aptima_env_proxy_t *aptima_env_proxy_;
   ten::extension_t *extension_;
 
   std::atomic<bool> stop_;
 
   demuxer_t *demuxer_;
-  axis_thread_t *demuxer_thread;
-  axis_event_t *demuxer_thread_is_started;
-  axis_event_t *ready_for_demuxer;
+  aptima_thread_t *demuxer_thread;
+  aptima_event_t *demuxer_thread_is_started;
+  aptima_event_t *ready_for_demuxer;
 
   std::string input_stream_loc_;
   std::unique_ptr<ten::cmd_t> start_cmd_;

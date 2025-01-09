@@ -4,7 +4,7 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <assert.h>
 
@@ -13,10 +13,10 @@
 
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
-#include "axis_runtime/binding/cpp/detail/msg/cmd_result.h"
-#include "axis_runtime/common/status_code.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd_result.h"
+#include "aptima_runtime/common/status_code.h"
 
-namespace axis_test {
+namespace aptima_test {
 
 static inline void _assert_json_equals(const nlohmann::json &actual,
                                        const std::string &expected) {
@@ -38,7 +38,7 @@ static inline void _assert_json_equals(const nlohmann::json &actual,
 
 static inline void check_status_code(
     const std::unique_ptr<ten::cmd_result_t> &cmd_result,
-    const axis_STATUS_CODE status_code) {
+    const aptima_STATUS_CODE status_code) {
   EXPECT_EQ(cmd_result->get_status_code(), status_code);
 }
 
@@ -56,4 +56,4 @@ static inline void check_detail_with_string(
   EXPECT_EQ(cmd_result->get_property_string("detail"), detail);
 }
 
-}  // namespace axis_test
+}  // namespace aptima_test

@@ -13,7 +13,7 @@ import {
   Data,
   CmdResult,
   StatusCode,
-} from "axis-runtime-nodejs";
+} from "aptima-runtime-nodejs";
 
 function assert(condition: boolean, message: string) {
   if (!condition) {

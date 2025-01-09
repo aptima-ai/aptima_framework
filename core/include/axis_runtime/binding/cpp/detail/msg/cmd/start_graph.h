@@ -6,12 +6,12 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <memory>
 
-#include "axis_runtime/binding/cpp/detail/msg/cmd/cmd.h"
-#include "axis_runtime/msg/cmd/start_graph/cmd.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/cmd.h"
+#include "aptima_runtime/msg/cmd/start_graph/cmd.h"
 
 namespace ten {
 
@@ -29,7 +29,7 @@ class cmd_start_graph_t : public cmd_t {
     explicit ctor_passkey_t() = default;
   };
 
-  explicit cmd_start_graph_t(axis_shared_ptr_t *cmd) : cmd_t(cmd) {}
+  explicit cmd_start_graph_t(aptima_shared_ptr_t *cmd) : cmd_t(cmd) {}
 
  public:
   static std::unique_ptr<cmd_start_graph_t> create(error_t *err = nullptr) {
@@ -37,23 +37,23 @@ class cmd_start_graph_t : public cmd_t {
   }
 
   explicit cmd_start_graph_t(ctor_passkey_t /*unused*/)
-      : cmd_t(axis_cmd_start_graph_create()) {};
+      : cmd_t(aptima_cmd_start_graph_create()) {};
   ~cmd_start_graph_t() override = default;
 
   bool set_predefined_graph_name(const char *predefined_graph_name,
                                  error_t *err = nullptr) {
-    return axis_cmd_start_graph_set_predefined_graph_name(
+    return aptima_cmd_start_graph_set_predefined_graph_name(
         c_msg, predefined_graph_name,
         err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool set_graph_from_json(const char *json_str, error_t *err = nullptr) {
-    return axis_cmd_start_graph_set_graph_from_json_str(
+    return aptima_cmd_start_graph_set_graph_from_json_str(
         c_msg, json_str, err != nullptr ? err->get_c_error() : nullptr);
   }
 
   bool set_long_running_mode(bool long_running_mode, error_t *err = nullptr) {
-    return axis_cmd_start_graph_set_long_running_mode(
+    return aptima_cmd_start_graph_set_long_running_mode(
         c_msg, long_running_mode,
         err != nullptr ? err->get_c_error() : nullptr);
   }

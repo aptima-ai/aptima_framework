@@ -3,12 +3,12 @@
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-import("//build/feature/axis_package.gni")
-import("//build/axis_runtime/feature/publish.gni")
-import("//build/axis_runtime/glob.gni")
-import("//build/axis_runtime/options.gni")
+import("//build/feature/aptima_package.gni")
+import("//build/aptima_runtime/feature/publish.gni")
+import("//build/aptima_runtime/glob.gni")
+import("//build/aptima_runtime/options.gni")
 
-axis_package("aio_http_server_python") {
+aptima_package("aio_http_server_python") {
   package_kind = "extension"
 
   resources = [
@@ -19,13 +19,13 @@ axis_package("aio_http_server_python") {
     "requirements.txt",
   ]
 
-  deps = [ "//core/src/axis_runtime" ]
+  deps = [ "//core/src/aptima_runtime" ]
 }
 
-if (axis_enable_axis_manager) {
-  axis_package_publish("upload_aio_http_server_python_to_server") {
+if (aptima_enable_aptima_manager) {
+  aptima_package_publish("upload_aio_http_server_python_to_server") {
     base_dir = rebase_path(
-            "${root_out_dir}/axis_packages/extension/aio_http_server_python")
+            "${root_out_dir}/aptima_packages/extension/aio_http_server_python")
     deps = [ ":aio_http_server_python" ]
   }
 }

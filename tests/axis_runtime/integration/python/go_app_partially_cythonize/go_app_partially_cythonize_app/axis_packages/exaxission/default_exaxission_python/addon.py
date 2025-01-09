@@ -11,6 +11,6 @@ from .extension import DefaultExtension
 
 @register_addon_as_extension("default_extension_python", __file__)
 class DefaultExtensionAddon(Addon):
-    def on_create_instance(self, axis_env: TenEnv, name: str, context) -> None:
-        axis_env.log_info("on_create_instance")
-        axis_env.on_create_instance_done(DefaultExtension(name), context)
+    def on_create_instance(self, aptima_env: TenEnv, name: str, context) -> None:
+        aptima_env.log_info("on_create_instance")
+        aptima_env.on_create_instance_done(DefaultExtension(name), context)

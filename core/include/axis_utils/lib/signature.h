@@ -6,14 +6,14 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdint.h>
 
-typedef uint64_t axis_signature_t;
+typedef uint64_t aptima_signature_t;
 
-axis_UTILS_API void axis_signature_set(axis_signature_t *signature,
-                                     axis_signature_t value);
+aptima_UTILS_API void aptima_signature_set(aptima_signature_t *signature,
+                                     aptima_signature_t value);
 
-axis_UTILS_API axis_signature_t
-axis_signature_get(const axis_signature_t *signature);
+aptima_UTILS_API aptima_signature_t
+aptima_signature_get(const aptima_signature_t *signature);

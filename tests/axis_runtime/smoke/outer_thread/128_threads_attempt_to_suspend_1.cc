@@ -12,14 +12,14 @@
 #include <thread>
 
 #include "gtest/gtest.h"
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
-#include "axis_utils/lang/cpp/lib/value.h"
-#include "axis_utils/lib/alloc.h"
-#include "axis_utils/lib/thread.h"
-#include "axis_utils/lib/time.h"
-#include "axis_utils/macro/check.h"
+#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "aptima_utils/lang/cpp/lib/value.h"
+#include "aptima_utils/lib/alloc.h"
+#include "aptima_utils/lib/thread.h"
+#include "aptima_utils/lib/time.h"
+#include "aptima_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
-#include "tests/axis_runtime/smoke/util/binding/cpp/check.h"
+#include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 #if defined(__i386__) || defined(__arm__)
 #define OUTER_THREAD_FOR_LOOP_CNT 100
@@ -36,7 +36,7 @@ namespace {
 class Holder {  // NOLINT
  public:
   explicit Holder(void *ptr) : ptr_(ptr) {}
-  ~Holder() { axis_FREE(ptr_); }
+  ~Holder() { aptima_FREE(ptr_); }
 
  private:
   void *ptr_{nullptr};
@@ -46,7 +46,7 @@ class test_extension_1 : public ten::extension_t {
  public:
   explicit test_extension_1(const char *name) : ten::extension_t(name) {}
 
-  void on_configure(ten::axis_env_t &axis_env) override {
+  void on_configure(ten::aptima_env_t &aptima_env) override {
     // We have increased the path timeout to 20 minutes because, under limited
     // computing resources, it is easy to exceed the path timeout without
     // completing the data transmission. This can lead to the path being
@@ -54,7 +54,7 @@ class test_extension_1 : public ten::extension_t {
     // extended the path timeout to avoid this situation.
 
     // clang-format off
-    bool rc = axis_env.init_property_from_json( R"({
+    bool rc = aptima_env.init_property_from_json( R"({
       "_ten": {
         "path_timeout": 1200000000
       }
@@ -62,14 +62,14 @@ class test_extension_1 : public ten::extension_t {
     // clang-format on
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 
 #define OUTER_THREAD_MAIN(X)                                                 \
   void outer_thread##X##_main(                                               \
-      ten::axis_env_proxy_t *axis_env_proxy) { /* NOLINT */                    \
-    auto *test_data = static_cast<int64_t *>(axis_malloc(sizeof(int64_t)));   \
-    axis_ASSERT(test_data, "Failed to allocate memory.");                     \
+      ten::aptima_env_proxy_t *aptima_env_proxy) { /* NOLINT */                    \
+    auto *test_data = static_cast<int64_t *>(aptima_malloc(sizeof(int64_t)));   \
+    aptima_ASSERT(test_data, "Failed to allocate memory.");                     \
                                                                              \
     Holder _(test_data);                                                     \
                                                                              \
@@ -81,22 +81,22 @@ class test_extension_1 : public ten::extension_t {
       if (!outer_thread_##X##_towards_to_close) {                            \
         (*test_data)++;                                                      \
                                                                              \
-        axis_random_sleep(6);                                                 \
+        aptima_random_sleep(6);                                                 \
                                                                              \
-        bool rc = axis_env_proxy->acquire_lock_mode();                        \
-        axis_ASSERT(rc, "Failed to acquire lock mode.");                      \
+        bool rc = aptima_env_proxy->acquire_lock_mode();                        \
+        aptima_ASSERT(rc, "Failed to acquire lock mode.");                      \
                                                                              \
-        axis_random_sleep(8);                                                 \
+        aptima_random_sleep(8);                                                 \
                                                                              \
-        axis_env_proxy->notify(send_data_from_outer_thread, test_data, true); \
+        aptima_env_proxy->notify(send_data_from_outer_thread, test_data, true); \
                                                                              \
-        axis_random_sleep(3);                                                 \
+        aptima_random_sleep(3);                                                 \
                                                                              \
-        rc = axis_env_proxy->release_lock_mode();                             \
-        axis_ASSERT(rc, "Failed to release lock mode.");                      \
+        rc = aptima_env_proxy->release_lock_mode();                             \
+        aptima_ASSERT(rc, "Failed to release lock mode.");                      \
       }                                                                      \
     }                                                                        \
-    delete axis_env_proxy;                                                    \
+    delete aptima_env_proxy;                                                    \
     while (!outer_thread_##X##_towards_to_close) {                           \
       outer_thread_##X##_cv.wait(lock);                                      \
     }                                                                        \
@@ -234,21 +234,21 @@ class test_extension_1 : public ten::extension_t {
   OUTER_THREAD_MAIN(128)
 #endif
 
-  void on_start(ten::axis_env_t &axis_env) override {
+  void on_start(ten::aptima_env_t &aptima_env) override {
     auto start_to_send_cmd = ten::cmd_t::create("start_to_send");
-    axis_env.send_cmd(std::move(start_to_send_cmd),
-                     [this](ten::axis_env_t &axis_env,
+    aptima_env.send_cmd(std::move(start_to_send_cmd),
+                     [this](ten::aptima_env_t &aptima_env,
                             std::unique_ptr<ten::cmd_result_t> cmd_result,
                             ten::error_t *err) {
-                       axis_ASSERT(
-                           cmd_result->get_status_code() == axis_STATUS_CODE_OK,
+                       aptima_ASSERT(
+                           cmd_result->get_status_code() == aptima_STATUS_CODE_OK,
                            "Failed to send 'start_to_send' command.");
 
 #define CREATE_OUTER_THREAD(X)                                           \
   do {                                                                   \
-    auto *axis_env_proxy = ten::axis_env_proxy_t::create(axis_env);         \
+    auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);         \
     outer_thread##X = new std::thread(                                   \
-        &test_extension_1::outer_thread##X##_main, this, axis_env_proxy); \
+        &test_extension_1::outer_thread##X##_main, this, aptima_env_proxy); \
   } while (0)
 
                        CREATE_OUTER_THREAD(1);
@@ -384,10 +384,10 @@ class test_extension_1 : public ten::extension_t {
 #endif
                      });
 
-    axis_env.on_start_done();
+    aptima_env.on_start_done();
   }
 
-  void on_stop(ten::axis_env_t &axis_env) override {
+  void on_stop(ten::aptima_env_t &aptima_env) override {
 #define NOTIFY_OUTER_THREAD_TO_STOP(X)                               \
   do {                                                               \
     {                                                                \
@@ -667,17 +667,17 @@ class test_extension_1 : public ten::extension_t {
     RECLAIM_OUTER_THREAD(128);
 #endif
 
-    axis_env.on_stop_done();
+    aptima_env.on_stop_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     const std::string command = cmd->get_name();
 
     if (command == "from_extension_2") {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "success");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 
@@ -820,12 +820,12 @@ class test_extension_1 : public ten::extension_t {
   OTHER_THREAD_CB_PACK(128)
 #endif
 
-  static void send_data_from_outer_thread(ten::axis_env_t &axis_env,
+  static void send_data_from_outer_thread(ten::aptima_env_t &aptima_env,
                                           void *user_data) {
     // Create a 'ten::data_t' with the same important data.
-    auto axis_data = ten::data_t::create("data");
-    axis_data->set_property("test_data", user_data);
-    axis_env.send_data(std::move(axis_data));
+    auto aptima_data = ten::data_t::create("data");
+    aptima_data->set_property("test_data", user_data);
+    aptima_env.send_data(std::move(aptima_data));
   }
 };
 
@@ -837,7 +837,7 @@ class test_extension_2 : public ten::extension_t {
         expected_data_received_count(OUTER_THREAD_CNT,
                                      OUTER_THREAD_FOR_LOOP_CNT + 1) {}
 
-  void on_configure(ten::axis_env_t &axis_env) override {
+  void on_configure(ten::aptima_env_t &aptima_env) override {
     // We have increased the path timeout to 20 minutes because, under limited
     // computing resources, it is easy to exceed the path timeout without
     // completing the data transmission. This can lead to the path being
@@ -845,7 +845,7 @@ class test_extension_2 : public ten::extension_t {
     // extended the path timeout to avoid this situation.
 
     // clang-format off
-    bool rc = axis_env.init_property_from_json( R"({
+    bool rc = aptima_env.init_property_from_json( R"({
       "_ten": {
         "path_timeout": 1200000000
       }
@@ -853,15 +853,15 @@ class test_extension_2 : public ten::extension_t {
     // clang-format on
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
+  void on_cmd(ten::aptima_env_t &aptima_env,
               std::unique_ptr<ten::cmd_t> cmd) override {
     if (cmd->get_name() == std::string("start_to_send")) {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "ok");
-      axis_env.return_result(std::move(cmd_result), std::move(cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(cmd));
 
       auto timer_cmd = ten::cmd_timer_t::create();
       timer_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
@@ -869,38 +869,38 @@ class test_extension_2 : public ten::extension_t {
       timer_cmd->set_timeout_in_us(1000);
       timer_cmd->set_times(1);
 
-      axis_env.send_cmd(std::move(timer_cmd));
+      aptima_env.send_cmd(std::move(timer_cmd));
     } else if (ten::msg_internal_accessor_t::get_type(cmd.get()) ==
-                   axis_MSG_TYPE_CMD_TIMEOUT &&
+                   aptima_MSG_TYPE_CMD_TIMEOUT &&
                static_cast<ten::cmd_timeout_t *>(cmd.get())->get_timer_id() ==
                    55) {
-      axis_ASSERT(timeout_thread == nullptr, "Should not happen.");
+      aptima_ASSERT(timeout_thread == nullptr, "Should not happen.");
 
-      auto *axis_env_proxy = ten::axis_env_proxy_t::create(axis_env);
+      auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
 
       timeout_thread = new std::thread(
-          [this](ten::axis_env_proxy_t *axis_env_proxy) {
+          [this](ten::aptima_env_proxy_t *aptima_env_proxy) {
             for (int i = 0; i < FROM_EXTENSION_2_CMD_CNT; ++i) {
-              axis_random_sleep(2);
+              aptima_random_sleep(2);
 
-              axis_env_proxy->notify([this](ten::axis_env_t &axis_env) {
+              aptima_env_proxy->notify([this](ten::aptima_env_t &aptima_env) {
                 auto from_extension_2_cmd =
                     ten::cmd_t::create("from_extension_2");
 
-                axis_random_sleep(9);
+                aptima_random_sleep(9);
 
-                axis_env.send_cmd(
+                aptima_env.send_cmd(
                     std::move(from_extension_2_cmd),
-                    [this](ten::axis_env_t &axis_env,
+                    [this](ten::aptima_env_t &aptima_env,
                            std::unique_ptr<ten::cmd_result_t> cmd_result,
                            ten::error_t *err) {
-                      axis_ASSERT(
-                          cmd_result->get_status_code() == axis_STATUS_CODE_OK,
+                      aptima_ASSERT(
+                          cmd_result->get_status_code() == aptima_STATUS_CODE_OK,
                           "Failed to send 'from_extension_2' command.");
 
                       received_from_extension_2_cmd_result++;
-                      axis_ENV_LOG_INFO(
-                          axis_env,
+                      aptima_ENV_LOG_INFO(
+                          aptima_env,
                           (std::string("extension_2 got a result for "
                                        "from_extension_2 cmd: ") +
                            std::to_string(received_from_extension_2_cmd_result))
@@ -910,66 +910,66 @@ class test_extension_2 : public ten::extension_t {
                           (received_from_extension_2_cmd_result ==
                            expected_received_from_extension_2_cmd_result)) {
                         auto cmd_result =
-                            ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+                            ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
                         cmd_result->set_property("detail", "ok");
-                        axis_env.return_result(std::move(cmd_result),
+                        aptima_env.return_result(std::move(cmd_result),
                                               std::move(hello_cmd));
                       }
                     });
               });
             }
 
-            axis_random_sleep(5);
+            aptima_random_sleep(5);
 
-            delete axis_env_proxy;
+            delete aptima_env_proxy;
           },
-          axis_env_proxy);
+          aptima_env_proxy);
     } else if (cmd->get_name() == std::string("hello_world")) {
       if (is_received_all_data() &&
           (received_from_extension_2_cmd_result ==
            expected_received_from_extension_2_cmd_result)) {
-        auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "ok");
-        axis_env.return_result(std::move(cmd_result), std::move(cmd));
+        aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
         hello_cmd = std::move(cmd);
       }
     }
   }
 
-  void on_data(axis_UNUSED ten::axis_env_t &axis_env,
+  void on_data(aptima_UNUSED ten::aptima_env_t &aptima_env,
                std::unique_ptr<ten::data_t> data) override {
     auto *test_data =
         static_cast<int64_t *>(data->get_property_ptr("test_data"));
 
     int outer_thread_num = ((*test_data) >> 16) - 1;
     int received_value = (*test_data) & 0xFFFF;
-    axis_ASSERT(data_received_count[outer_thread_num] == received_value,
+    aptima_ASSERT(data_received_count[outer_thread_num] == received_value,
                "should be %d, but get %d",
                data_received_count[outer_thread_num], received_value);
     data_received_count[outer_thread_num]++;
 
     if (data_received_count[outer_thread_num] % 50 == 0) {
-      axis_LOGD("extension_2 received %d data from outer thread %d",
+      aptima_LOGD("extension_2 received %d data from outer thread %d",
                data_received_count[outer_thread_num], outer_thread_num);
     }
 
     if ((hello_cmd != nullptr) && is_received_all_data() &&
         (received_from_extension_2_cmd_result ==
          expected_received_from_extension_2_cmd_result)) {
-      auto cmd_result = ten::cmd_result_t::create(axis_STATUS_CODE_OK);
+      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "ok");
-      axis_env.return_result(std::move(cmd_result), std::move(hello_cmd));
+      aptima_env.return_result(std::move(cmd_result), std::move(hello_cmd));
     }
   }
 
-  void on_stop(ten::axis_env_t &axis_env) override {
-    axis_ASSERT(timeout_thread, "Should not happen.");
+  void on_stop(ten::aptima_env_t &aptima_env) override {
+    aptima_ASSERT(timeout_thread, "Should not happen.");
 
     timeout_thread->join();
     delete timeout_thread;
 
-    axis_env.on_stop_done();
+    aptima_env.on_stop_done();
   }
 
  private:
@@ -994,8 +994,8 @@ class test_extension_2 : public ten::extension_t {
 
 class test_app : public ten::app_t {
  public:
-  void on_configure(ten::axis_env_t &axis_env) override {
-    bool rc = axis_env.init_property_from_json(
+  void on_configure(ten::aptima_env_t &aptima_env) override {
+    bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
                       "_ten": {
@@ -1008,11 +1008,11 @@ class test_app : public ten::app_t {
         nullptr);
     ASSERT_EQ(rc, true);
 
-    axis_env.on_configure_done();
+    aptima_env.on_configure_done();
   }
 };
 
-void *test_app_thread_main(axis_UNUSED void *args) {
+void *test_app_thread_main(aptima_UNUSED void *args) {
   auto *app = new test_app();
   app->run();
   delete app;
@@ -1020,10 +1020,10 @@ void *test_app_thread_main(axis_UNUSED void *args) {
   return nullptr;
 }
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     one_hundred_and_twenty_eight_threads_attempt_to_suspend_1__test_extension_1,
     test_extension_1);
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(
     one_hundred_and_twenty_eight_threads_attempt_to_suspend_1__test_extension_2,
     test_extension_2);
 
@@ -1033,7 +1033,7 @@ TEST(ExtensionTest,
      OneHundredAndTwentyEightThreadsAttemptToSuspend1) {  // NOLINT
   // Start app.
   auto *app_thread =
-      axis_thread_create("app thread", test_app_thread_main, nullptr);
+      aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
   auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
@@ -1085,17 +1085,17 @@ TEST(ExtensionTest,
            })");
   auto cmd_result =
       client->send_cmd_and_recv_result(std::move(start_graph_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
   auto hello_world_cmd = ten::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extension_group", "test_extension_2");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));
-  axis_test::check_status_code(cmd_result, axis_STATUS_CODE_OK);
-  axis_test::check_detail_with_string(cmd_result, "ok");
+  aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
+  aptima_test::check_detail_with_string(cmd_result, "ok");
 
   delete client;
 
-  axis_thread_join(app_thread, -1);
+  aptima_thread_join(app_thread, -1);
 }

@@ -9,14 +9,14 @@
 
 #include "common/test_utils.h"
 #include "gtest/gtest.h"
-#include "axis_utils/container/list.h"
-#include "axis_utils/container/list_node.h"
+#include "aptima_utils/container/list.h"
+#include "aptima_utils/container/list_node.h"
 
 namespace {
 
-int compare_int32(axis_listnode_t *x, axis_listnode_t *y) {
-  axis_int32_listnode_t *ix = axis_listnode_to_int32_listnode(x);
-  axis_int32_listnode_t *iy = axis_listnode_to_int32_listnode(y);
+int compare_int32(aptima_listnode_t *x, aptima_listnode_t *y) {
+  aptima_int32_listnode_t *ix = aptima_listnode_to_int32_listnode(x);
+  aptima_int32_listnode_t *iy = aptima_listnode_to_int32_listnode(y);
 
   return iy->int32 - ix->int32;
 }
@@ -25,99 +25,99 @@ int compare_int32(axis_listnode_t *x, axis_listnode_t *y) {
 
 TEST(TenListTest, OrderedInsert) {  // NOLINT
   // Insert into an empty list
-  axis_list_t list = axis_LIST_INIT_VAL;
+  aptima_list_t list = aptima_LIST_INIT_VAL;
 
-  axis_listnode_t *one = axis_int32_listnode_create(1);
-  axis_list_push_back_in_order(&list, one, compare_int32, false);
+  aptima_listnode_t *one = aptima_int32_listnode_create(1);
+  aptima_list_push_back_in_order(&list, one, compare_int32, false);
 
-  EXPECT_EQ(axis_list_size(&list), 1);
+  EXPECT_EQ(aptima_list_size(&list), 1);
 
-  axis_int32_listnode_t *front =
-      axis_listnode_to_int32_listnode(axis_list_front(&list));
+  aptima_int32_listnode_t *front =
+      aptima_listnode_to_int32_listnode(aptima_list_front(&list));
   EXPECT_EQ(front->int32, 1);
 
-  axis_int32_listnode_t *back =
-      axis_listnode_to_int32_listnode(axis_list_back(&list));
+  aptima_int32_listnode_t *back =
+      aptima_listnode_to_int32_listnode(aptima_list_back(&list));
   EXPECT_EQ(back->int32, 1);
 
   // Insert front
-  axis_listnode_t *zero = axis_int32_listnode_create(0);
-  axis_list_push_back_in_order(&list, zero, compare_int32, false);
+  aptima_listnode_t *zero = aptima_int32_listnode_create(0);
+  aptima_list_push_back_in_order(&list, zero, compare_int32, false);
 
-  EXPECT_EQ(axis_list_size(&list), 2);
+  EXPECT_EQ(aptima_list_size(&list), 2);
 
-  front = axis_listnode_to_int32_listnode(axis_list_front(&list));
+  front = aptima_listnode_to_int32_listnode(aptima_list_front(&list));
   EXPECT_EQ(front->int32, 0);
 
-  back = axis_listnode_to_int32_listnode(axis_list_back(&list));
+  back = aptima_listnode_to_int32_listnode(aptima_list_back(&list));
   EXPECT_EQ(back->int32, 1);
 
   // Insert back
-  axis_listnode_t *three = axis_int32_listnode_create(3);
-  axis_list_push_back_in_order(&list, three, compare_int32, false);
+  aptima_listnode_t *three = aptima_int32_listnode_create(3);
+  aptima_list_push_back_in_order(&list, three, compare_int32, false);
 
-  EXPECT_EQ(axis_list_size(&list), 3);
+  EXPECT_EQ(aptima_list_size(&list), 3);
 
-  front = axis_listnode_to_int32_listnode(axis_list_front(&list));
+  front = aptima_listnode_to_int32_listnode(aptima_list_front(&list));
   EXPECT_EQ(front->int32, 0);
 
-  back = axis_listnode_to_int32_listnode(axis_list_back(&list));
+  back = aptima_listnode_to_int32_listnode(aptima_list_back(&list));
   EXPECT_EQ(back->int32, 3);
 
   // Insert middle
-  axis_listnode_t *two = axis_int32_listnode_create(2);
-  axis_list_push_back_in_order(&list, two, compare_int32, false);
+  aptima_listnode_t *two = aptima_int32_listnode_create(2);
+  aptima_list_push_back_in_order(&list, two, compare_int32, false);
 
-  EXPECT_EQ(axis_list_size(&list), 4);
+  EXPECT_EQ(aptima_list_size(&list), 4);
 
-  axis_int32_listnode_t *node_two =
-      axis_listnode_to_int32_listnode(axis_list_back(&list)->prev);
+  aptima_int32_listnode_t *node_two =
+      aptima_listnode_to_int32_listnode(aptima_list_back(&list)->prev);
   EXPECT_EQ(node_two->int32, 2);
 
   // Insert existed value
-  axis_listnode_t *another_one = axis_int32_listnode_create(1);
-  axis_listnode_t *another_three = axis_int32_listnode_create(3);
-  axis_list_push_back_in_order(&list, another_one, compare_int32, false);
-  axis_list_push_back_in_order(&list, another_three, compare_int32, false);
+  aptima_listnode_t *another_one = aptima_int32_listnode_create(1);
+  aptima_listnode_t *another_three = aptima_int32_listnode_create(3);
+  aptima_list_push_back_in_order(&list, another_one, compare_int32, false);
+  aptima_list_push_back_in_order(&list, another_three, compare_int32, false);
 
-  EXPECT_EQ(axis_list_size(&list), 6);
-  EXPECT_EQ(axis_listnode_to_int32_listnode(axis_list_front(&list)->next)->int32,
+  EXPECT_EQ(aptima_list_size(&list), 6);
+  EXPECT_EQ(aptima_listnode_to_int32_listnode(aptima_list_front(&list)->next)->int32,
             1);
-  EXPECT_EQ(axis_listnode_to_int32_listnode(axis_list_back(&list)->prev)->int32,
+  EXPECT_EQ(aptima_listnode_to_int32_listnode(aptima_list_back(&list)->prev)->int32,
             3);
 
   // Debug log. [0,1,1,2,3,3]
-  // axis_list_foreach (&list, iter) {
-  //   std::cout << axis_listnode_to_int32_listnode(iter.node)->int32 << " ";
+  // aptima_list_foreach (&list, iter) {
+  //   std::cout << aptima_listnode_to_int32_listnode(iter.node)->int32 << " ";
   // }
   // std::cout << std::endl;
 
-  axis_list_clear(&list);
+  aptima_list_clear(&list);
 }
 
 TEST(TenListTest, IteratorNext) {  // NOLINT
-  axis_list_t list = axis_LIST_INIT_VAL;
+  aptima_list_t list = aptima_LIST_INIT_VAL;
 
-  axis_listnode_t *one = axis_int32_listnode_create(1);
-  axis_list_push_back(&list, one);
+  aptima_listnode_t *one = aptima_int32_listnode_create(1);
+  aptima_list_push_back(&list, one);
 
-  axis_listnode_t *two = axis_int32_listnode_create(2);
-  axis_list_push_back(&list, two);
+  aptima_listnode_t *two = aptima_int32_listnode_create(2);
+  aptima_list_push_back(&list, two);
 
-  axis_listnode_t *three = axis_int32_listnode_create(3);
-  axis_list_push_back(&list, three);
+  aptima_listnode_t *three = aptima_int32_listnode_create(3);
+  aptima_list_push_back(&list, three);
 
-  axis_list_iterator_t iter = axis_list_begin(&list);
-  EXPECT_EQ(1, axis_listnode_to_int32_listnode(iter.node)->int32);
+  aptima_list_iterator_t iter = aptima_list_begin(&list);
+  EXPECT_EQ(1, aptima_listnode_to_int32_listnode(iter.node)->int32);
 
-  iter = axis_list_iterator_next(iter);
-  EXPECT_EQ(2, axis_listnode_to_int32_listnode(iter.node)->int32);
+  iter = aptima_list_iterator_next(iter);
+  EXPECT_EQ(2, aptima_listnode_to_int32_listnode(iter.node)->int32);
 
-  iter = axis_list_iterator_next(iter);
-  EXPECT_EQ(3, axis_listnode_to_int32_listnode(iter.node)->int32);
+  iter = aptima_list_iterator_next(iter);
+  EXPECT_EQ(3, aptima_listnode_to_int32_listnode(iter.node)->int32);
 
-  iter = axis_list_iterator_next(iter);
+  iter = aptima_list_iterator_next(iter);
   EXPECT_EQ(NULL, iter.node);
 
-  axis_list_clear(&list);
+  aptima_list_clear(&list);
 }

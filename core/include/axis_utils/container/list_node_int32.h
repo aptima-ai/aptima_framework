@@ -6,28 +6,28 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "axis_utils/container/list_node.h"
-#include "axis_utils/lib/signature.h"
+#include "aptima_utils/container/list_node.h"
+#include "aptima_utils/lib/signature.h"
 
-#define axis_INT32_LISTNODE_SIGNATURE 0x2A576F8836859FB5U
+#define aptima_INT32_LISTNODE_SIGNATURE 0x2A576F8836859FB5U
 
-typedef struct axis_int32_listnode_t {
-  axis_listnode_t hdr;
-  axis_signature_t signature;
+typedef struct aptima_int32_listnode_t {
+  aptima_listnode_t hdr;
+  aptima_signature_t signature;
   int32_t int32;
-} axis_int32_listnode_t;
+} aptima_int32_listnode_t;
 
-axis_UTILS_API axis_listnode_t *axis_int32_listnode_create(int32_t int32);
+aptima_UTILS_API aptima_listnode_t *aptima_int32_listnode_create(int32_t int32);
 
-axis_UTILS_API axis_int32_listnode_t *axis_listnode_to_int32_listnode(
-    axis_listnode_t *self);
+aptima_UTILS_API aptima_int32_listnode_t *aptima_listnode_to_int32_listnode(
+    aptima_listnode_t *self);
 
-axis_UTILS_API axis_listnode_t *axis_listnode_from_int32_listnode(
-    axis_int32_listnode_t *self);
+aptima_UTILS_API aptima_listnode_t *aptima_listnode_from_int32_listnode(
+    aptima_int32_listnode_t *self);
 
-axis_UTILS_API int32_t axis_int32_listnode_get(axis_listnode_t *self);
+aptima_UTILS_API int32_t aptima_int32_listnode_get(aptima_listnode_t *self);

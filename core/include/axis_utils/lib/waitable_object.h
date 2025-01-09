@@ -6,28 +6,28 @@
 //
 #pragma once
 
-#include "axis_utils/axis_config.h"
+#include "aptima_utils/aptima_config.h"
 
-typedef struct axis_waitable_object_t axis_waitable_object_t;
+typedef struct aptima_waitable_object_t aptima_waitable_object_t;
 
-axis_UTILS_API axis_waitable_object_t *axis_waitable_object_create(
+aptima_UTILS_API aptima_waitable_object_t *aptima_waitable_object_create(
     void *init_value);
 
-axis_UTILS_API void axis_waitable_object_destroy(axis_waitable_object_t *obj);
+aptima_UTILS_API void aptima_waitable_object_destroy(aptima_waitable_object_t *obj);
 
-axis_UTILS_API void axis_waitable_object_set(axis_waitable_object_t *obj,
+aptima_UTILS_API void aptima_waitable_object_set(aptima_waitable_object_t *obj,
                                            void *value);
 
-axis_UTILS_API void *axis_waitable_object_get(axis_waitable_object_t *obj);
+aptima_UTILS_API void *aptima_waitable_object_get(aptima_waitable_object_t *obj);
 
-axis_UTILS_API void axis_waitable_object_update(axis_waitable_object_t *obj);
+aptima_UTILS_API void aptima_waitable_object_update(aptima_waitable_object_t *obj);
 
-axis_UTILS_API int axis_waitable_object_wait_until(axis_waitable_object_t *obj,
+aptima_UTILS_API int aptima_waitable_object_wait_until(aptima_waitable_object_t *obj,
                                                  int (*compare)(const void *l,
                                                                 const void *r),
                                                  int timeout);
 
-axis_UTILS_API int axis_waitable_object_wait_while(axis_waitable_object_t *obj,
+aptima_UTILS_API int aptima_waitable_object_wait_while(aptima_waitable_object_t *obj,
                                                  int (*compare)(const void *l,
                                                                 const void *r),
                                                  int timeout);

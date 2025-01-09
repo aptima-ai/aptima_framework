@@ -6,7 +6,7 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #define MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES 3
 

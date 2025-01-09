@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/ten.gni")
 
-axis_package_test_prepare_app("cpp_app_python_app") {
+aptima_package_test_prepare_app("cpp_app_python_app") {
   src_app = "default_app_cpp"
   src_app_language = "cpp"
   generated_app_src_root_dir_name = "cpp_app_python_app_source"
@@ -18,14 +18,14 @@ axis_package_test_prepare_app("cpp_app_python_app") {
   ]
 
   replace_files_after_install_all = [
-    "cpp_app_python_app_source/axis_packages/extension/default_extension_python/extension.py",
+    "cpp_app_python_app_source/aptima_packages/extension/default_extension_python/extension.py",
     "cpp_app_python_app_source/BUILD.gn",
     "cpp_app_python_app_source/bin",
   ]
 
-  if (axis_enable_axis_manager) {
+  if (aptima_enable_aptima_manager) {
     deps = [
-      "//core/src/axis_manager",
+      "//core/src/aptima_manager",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
       "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
       "//packages/core_addon_loaders/python_addon_loader:upload_python_addon_loader_to_server",
@@ -36,9 +36,9 @@ axis_package_test_prepare_app("cpp_app_python_app") {
   }
 }
 
-axis_package_test_prepare_auxiliary_resources("cpp_app_python_test_files") {
+aptima_package_test_prepare_auxiliary_resources("cpp_app_python_test_files") {
   resources = [
-    "//tests/axis_runtime/integration/common=>common",
+    "//tests/aptima_runtime/integration/common=>common",
     "__init__.py",
     "test_case.py",
   ]

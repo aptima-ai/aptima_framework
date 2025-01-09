@@ -2,14 +2,14 @@
 // Copyright © 2025 Agora
 // This file is part of TEN Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
-// Refer to https://github.com/axis-talk/axis_framework/LICENSE for more
+// Refer to https://github.com/aptima-ai/aptima_framework/LICENSE for more
 // information.
 //
 
 package default_extension_go
 
 import (
-	"axis_framework/ten"
+	"aptima_framework/ten"
 )
 
 type defaultExtension struct {

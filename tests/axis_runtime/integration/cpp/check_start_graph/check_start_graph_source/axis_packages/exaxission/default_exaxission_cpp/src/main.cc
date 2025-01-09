@@ -8,10 +8,10 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "axis_runtime/binding/cpp/detail/msg/cmd/close_app.h"
-#include "axis_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
-#include "axis_runtime/binding/cpp/detail/axis_env.h"
-#include "axis_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/close_app.h"
+#include "aptima_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
+#include "aptima_runtime/binding/cpp/detail/aptima_env.h"
+#include "aptima_runtime/binding/cpp/ten.h"
 
 bool started = false;
 
@@ -19,10 +19,10 @@ class test_extension : public ten::extension_t {
  public:
   explicit test_extension(const char *name) : ten::extension_t(name) {}
 
-  void on_init(ten::axis_env_t &axis_env) override { axis_env.on_init_done(); }
+  void on_init(ten::aptima_env_t &aptima_env) override { aptima_env.on_init_done(); }
 
   // NOLINTNEXTLINE
-  void send_invalid_graph(ten::axis_env_t &axis_env) {
+  void send_invalid_graph(ten::aptima_env_t &aptima_env) {
     ten::error_t err;
 
     auto start_graph_cmd = ten::cmd_start_graph_t::create();
@@ -62,13 +62,13 @@ class test_extension : public ten::extension_t {
     assert(!result && "The graph should be invalid.");
   }
 
-  void on_start(ten::axis_env_t &axis_env) override {
-    axis_env.on_start_done();
+  void on_start(ten::aptima_env_t &aptima_env) override {
+    aptima_env.on_start_done();
 
     if (!started) {
       started = true;
 
-      send_invalid_graph(axis_env);
+      send_invalid_graph(aptima_env);
 
       auto start_graph_cmd = ten::cmd_start_graph_t::create();
       start_graph_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
@@ -83,12 +83,12 @@ class test_extension : public ten::extension_t {
             ]
         })");
 
-      axis_env.send_cmd(
+      aptima_env.send_cmd(
           std::move(start_graph_cmd),
-          [](ten::axis_env_t &env, std::unique_ptr<ten::cmd_result_t> result,
+          [](ten::aptima_env_t &env, std::unique_ptr<ten::cmd_result_t> result,
              ten::error_t * /*error*/) {
             // The graph check should be passed.
-            if (result->get_status_code() == axis_STATUS_CODE_OK) {
+            if (result->get_status_code() == aptima_STATUS_CODE_OK) {
               auto close_app = ten::cmd_close_app_t::create();
               close_app->set_dest("localhost", nullptr, nullptr, nullptr);
               env.send_cmd(std::move(close_app));
@@ -104,4 +104,4 @@ class test_extension : public ten::extension_t {
   }
 };
 
-axis_CPP_REGISTER_ADDON_AS_EXTENSION(default_extension_cpp, test_extension);
+aptima_CPP_REGISTER_ADDON_AS_EXTENSION(default_extension_cpp, test_extension);

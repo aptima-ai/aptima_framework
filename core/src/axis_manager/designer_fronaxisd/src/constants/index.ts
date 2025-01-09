@@ -4,5 +4,5 @@
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-export const axis_framework_URL = "https://www.theten.ai/";
-export const axis_framework_GITHUB_URL = "https://github.com/axis-talk/";
+export const aptima_framework_URL = "https://www.theten.ai/";
+export const aptima_framework_GITHUB_URL = "https://github.com/aptima-ai/";

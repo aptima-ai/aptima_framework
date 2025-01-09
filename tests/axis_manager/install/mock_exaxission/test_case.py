@@ -13,7 +13,7 @@ from .common import cmd_exec
 
 def analyze_resolve_result(ext_root_folder: str) -> None:
     deps_folder = os.path.join(
-        ext_root_folder, ".ten", "app", "axis_packages", "extension"
+        ext_root_folder, ".ten", "app", "aptima_packages", "extension"
     )
 
     with open(
@@ -57,11 +57,11 @@ def test_tman_install():
     my_env = os.environ.copy()
     if sys.platform == "win32":
         my_env["PATH"] = (
-            os.path.join(root_dir, "axis_manager/lib") + ";" + my_env["PATH"]
+            os.path.join(root_dir, "aptima_manager/lib") + ";" + my_env["PATH"]
         )
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman.exe")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:
-        tman_bin = os.path.join(root_dir, "axis_manager/bin/tman")
+        tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman")
 
     mock_extension_path = os.path.join(base_path, "mock_extension")
     os.chdir(mock_extension_path)

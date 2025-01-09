@@ -17,9 +17,9 @@
 
 #if defined(_WIN32) && !defined(__clang__)
 
-#if !defined(axis_UNUSED)
-#define axis_UNUSED
-#endif  // !defined(axis_UNUSED)
+#if !defined(aptima_UNUSED)
+#define aptima_UNUSED
+#endif  // !defined(aptima_UNUSED)
 
 #if !defined(PURE)
 #define PURE
@@ -35,9 +35,9 @@
 
 #else  //  !defined(_WIN32)
 
-#if !defined(axis_UNUSED)
-#define axis_UNUSED __attribute__((unused))
-#endif  // !defined(axis_UNUSED)
+#if !defined(aptima_UNUSED)
+#define aptima_UNUSED __attribute__((unused))
+#endif  // !defined(aptima_UNUSED)
 
 #if !defined(PURE)
 #define PURE __attribute__((const))
@@ -52,9 +52,9 @@
 #endif  // !UNLIKELY
 
 #if defined(__has_warning)
-#define axis_HAS_WARNING(x) __has_warning(x)
+#define aptima_HAS_WARNING(x) __has_warning(x)
 #else
-#define axis_HAS_WARNING(x) 0
+#define aptima_HAS_WARNING(x) 0
 #endif
 
 #endif  // defined(_WIN32)

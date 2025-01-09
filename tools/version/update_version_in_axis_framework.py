@@ -65,7 +65,7 @@ def __collect_manifest_tent_files(directory) -> list[str]:
     return manifest_templates
 
 
-def update_c_preserved_metadata_version_of_axis_runtime_binary(
+def update_c_preserved_metadata_version_of_aptima_runtime_binary(
     log_level, year, year_month, git_version
 ):
     # Update the version in the C preserved metadata files.
@@ -73,7 +73,7 @@ def update_c_preserved_metadata_version_of_axis_runtime_binary(
         repo_base_dir,
         "core",
         "src",
-        "axis_runtime",
+        "aptima_runtime",
         "build_template",
         "preserved_metadata.c",
     )
@@ -82,7 +82,7 @@ def update_c_preserved_metadata_version_of_axis_runtime_binary(
         repo_base_dir,
         "core",
         "src",
-        "axis_runtime",
+        "aptima_runtime",
         "build_template",
         "preserved_metadata.c.jinja2",
     )
@@ -108,7 +108,7 @@ def update_version_of_tman(
         repo_base_dir,
         "core",
         "src",
-        "axis_manager",
+        "aptima_manager",
         "src",
         "version.rs",
     )
@@ -117,7 +117,7 @@ def update_version_of_tman(
         repo_base_dir,
         "core",
         "src",
-        "axis_manager",
+        "aptima_manager",
         "src",
         "version.rs.jinja2",
     )
@@ -135,43 +135,43 @@ def update_version_of_tman(
 def collect_and_update_version_of_system_packages(
     log_level, repo_base_dir, git_version
 ) -> list[PkgInfo]:
-    # Collect manifest files for axis_runtime and all corresponding system
+    # Collect manifest files for aptima_runtime and all corresponding system
     # packages (python & go bindings).
     manifest_files = [
-        # axis_runtime
+        # aptima_runtime
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             MANIFEST_JSON_FILE,
         ),
-        # axis_runtime_go
+        # aptima_runtime_go
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "binding",
             "go",
             MANIFEST_JSON_FILE,
         ),
-        # axis_runtime_python
+        # aptima_runtime_python
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "binding",
             "python",
             MANIFEST_JSON_FILE,
         ),
-        # axis_runtime_nodejs
+        # aptima_runtime_nodejs
         os.path.join(
             repo_base_dir,
             "core",
             "src",
-            "axis_runtime",
+            "aptima_runtime",
             "binding",
             "nodejs",
             MANIFEST_JSON_FILE,
@@ -256,7 +256,7 @@ def update_dependencies_version(
 ):
     # Collect manifest files for system packages.
     system_package_dir_path = os.path.join(
-        repo_base_dir, "core", "src", "axis_runtime", "binding"
+        repo_base_dir, "core", "src", "aptima_runtime", "binding"
     )
 
     # Collect manifest files for all packages.
@@ -286,7 +286,7 @@ def update_dependencies_version(
     blacklist = [
         os.path.join(
             test_dir_path,
-            "axis_manager",
+            "aptima_manager",
             "error_context",
             "package_version_not_found",
             "test_app",
@@ -335,7 +335,7 @@ if __name__ == "__main__":
 
     log_level = 1
 
-    update_c_preserved_metadata_version_of_axis_runtime_binary(
+    update_c_preserved_metadata_version_of_aptima_runtime_binary(
         log_level, year, year_month, git_version
     )
 

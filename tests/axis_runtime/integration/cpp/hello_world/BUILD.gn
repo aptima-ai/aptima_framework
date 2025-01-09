@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/ten.gni")
 
-axis_package_test_prepare_app("hello_world_app") {
+aptima_package_test_prepare_app("hello_world_app") {
   src_app = "default_app_cpp"
   src_app_language = "cpp"
   generated_app_src_root_dir_name = "hello_world_app_source"
@@ -18,11 +18,11 @@ axis_package_test_prepare_app("hello_world_app") {
   ]
 
   replace_files_after_install_all = [
-    "hello_world_app_source/axis_packages/extension/default_extension_cpp/manifest.json",
-    "hello_world_app_source/axis_packages/extension/default_extension_cpp/property.json",
-    "hello_world_app_source/axis_packages/extension/default_extension_cpp/src/main.cc",
+    "hello_world_app_source/aptima_packages/extension/default_extension_cpp/manifest.json",
+    "hello_world_app_source/aptima_packages/extension/default_extension_cpp/property.json",
+    "hello_world_app_source/aptima_packages/extension/default_extension_cpp/src/main.cc",
 
-    "hello_world_app_source/axis_packages/extension/default_extension_cpp/a.json",
+    "hello_world_app_source/aptima_packages/extension/default_extension_cpp/a.json",
 
     # The above `a.json` will be copied to the source folder, but can not be
     # copied to the build target directory with the default `BUILD.gn`. The
@@ -30,13 +30,13 @@ axis_package_test_prepare_app("hello_world_app") {
     # of the extension.
     #
     # TODO(Liu): Provide a better way to enable users to extend the `BUILD.gn`.
-    "hello_world_app_source/axis_packages/extension/default_extension_cpp/BUILD.gn",
+    "hello_world_app_source/aptima_packages/extension/default_extension_cpp/BUILD.gn",
   ]
 
-  if (axis_enable_axis_manager) {
+  if (aptima_enable_aptima_manager) {
     deps = [
-      "//core/src/axis_manager",
-      "//core/src/axis_runtime:upload_axis_runtime_system_package_to_server",
+      "//core/src/aptima_manager",
+      "//core/src/aptima_runtime:upload_aptima_runtime_system_package_to_server",
       "//packages/core_apps/default_app_cpp:upload_default_app_cpp_to_server",
       "//packages/core_extensions/default_extension_cpp:upload_default_extension_cpp_to_server",
       "//packages/core_protocols/msgpack:upload_protocol_msgpack_to_server",
@@ -44,7 +44,7 @@ axis_package_test_prepare_app("hello_world_app") {
   }
 }
 
-axis_package_test_prepare_client("hello_world_app_client") {
+aptima_package_test_prepare_client("hello_world_app_client") {
   sources = [ "client/client.cc" ]
   include_dirs = [
     "//core/src",
@@ -53,7 +53,7 @@ axis_package_test_prepare_client("hello_world_app_client") {
     "//tests",
   ]
   deps = [
-    "//core/src/axis_runtime",
+    "//core/src/aptima_runtime",
     "//packages/core_protocols/msgpack:msgpack_files",
     "//tests/common/client:msgpack_client",
     "//third_party/msgpack:msgpackc",
@@ -61,9 +61,9 @@ axis_package_test_prepare_client("hello_world_app_client") {
   ]
 }
 
-axis_package_test_prepare_auxiliary_resources("hello_world_app_test_files") {
+aptima_package_test_prepare_auxiliary_resources("hello_world_app_test_files") {
   resources = [
-    "//tests/axis_runtime/integration/common=>common",
+    "//tests/aptima_runtime/integration/common=>common",
     "__init__.py",
     "test_case.py",
   ]

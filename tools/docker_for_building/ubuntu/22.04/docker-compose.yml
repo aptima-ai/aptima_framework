@@ -8,4 +8,4 @@ services:
     volumes:
       - /tmp/ten:/tmp/ten
     environment:
-      - PATH=/tmp/ten/axis_gn:$PATH
+      - PATH=/tmp/ten/aptima_gn:$PATH

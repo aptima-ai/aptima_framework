@@ -10,5 +10,5 @@ from .extension import SimpleEchoExtension
 
 @register_addon_as_extension("simple_echo_python")
 class SimpleEchoExtensionAddon(Addon):
-    def on_create_instance(self, axis_env: TenEnv, name: str, context) -> None:
-        axis_env.on_create_instance_done(SimpleEchoExtension(name), context)
+    def on_create_instance(self, aptima_env: TenEnv, name: str, context) -> None:
+        aptima_env.on_create_instance_done(SimpleEchoExtension(name), context)

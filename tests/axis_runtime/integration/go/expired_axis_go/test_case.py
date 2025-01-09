@@ -1,5 +1,5 @@
 """
-Test expired_axis_go.
+Test expired_aptima_go.
 """
 
 import os
@@ -10,14 +10,14 @@ from sys import stdout
 from .common import build_config, build_pkg, msgpack
 
 
-def test_expired_axis_go():
+def test_expired_aptima_go():
     """Test client and app server."""
     base_path = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.join(base_path, "../../../../../")
 
     my_env = os.environ.copy()
 
-    source_pkg_name = "expired_axis_go_app"
+    source_pkg_name = "expired_aptima_go_app"
     app_root_path = os.path.join(base_path, source_pkg_name)
     app_language = "go"
 
@@ -25,7 +25,7 @@ def test_expired_axis_go():
         os.path.join(root_dir, "tgn_args.txt"),
     )
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         print('Assembling and building package "{}".'.format(source_pkg_name))
 
         rc = build_pkg.prepare_and_build_app(
@@ -40,7 +40,7 @@ def test_expired_axis_go():
             assert False, "Failed to build package."
 
     tman_install_cmd = [
-        os.path.join(root_dir, "axis_manager/bin/tman"),
+        os.path.join(root_dir, "aptima_manager/bin/tman"),
         "--config-file",
         os.path.join(root_dir, "tests/local_registry/config.json"),
         "install",
@@ -59,17 +59,17 @@ def test_expired_axis_go():
         assert False, "Failed to install package."
 
     if sys.platform == "win32":
-        print("test_expired_axis_go doesn't support win32")
+        print("test_expired_aptima_go doesn't support win32")
         assert False
     elif sys.platform == "darwin":
         # client depends on some libraries in the TEN app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
-            base_path, "expired_axis_go_app/axis_packages/system/axis_runtime/lib"
+            base_path, "expired_aptima_go_app/aptima_packages/system/aptima_runtime/lib"
         )
     else:
         # client depends on some libraries in the TEN app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
-            base_path, "expired_axis_go_app/axis_packages/system/axis_runtime/lib"
+            base_path, "expired_aptima_go_app/aptima_packages/system/aptima_runtime/lib"
         )
 
         if (
@@ -78,14 +78,14 @@ def test_expired_axis_go():
         ):
             libasan_path = os.path.join(
                 base_path,
-                "expired_axis_go_app/axis_packages/system/axis_runtime/lib/libasan.so",
+                "expired_aptima_go_app/aptima_packages/system/aptima_runtime/lib/libasan.so",
             )
             if os.path.exists(libasan_path):
                 print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
-    server_cmd = os.path.join(base_path, "expired_axis_go_app/bin/start")
-    client_cmd = os.path.join(base_path, "expired_axis_go_app_client")
+    server_cmd = os.path.join(base_path, "expired_aptima_go_app/bin/start")
+    client_cmd = os.path.join(base_path, "expired_aptima_go_app_client")
 
     if not os.path.isfile(server_cmd):
         print(f"Server command '{server_cmd}' does not exist.")
@@ -105,11 +105,11 @@ def test_expired_axis_go():
 
     is_started, sock = msgpack.is_app_started("127.0.0.1", 8007, 10)
     if not is_started:
-        print("The expired_axis_go is not started after 10 seconds.")
+        print("The expired_aptima_go is not started after 10 seconds.")
 
         server.kill()
         exit_code = server.wait()
-        print("The exit code of expired_axis_go: ", exit_code)
+        print("The exit code of expired_aptima_go: ", exit_code)
 
         assert exit_code == 0
         assert False
@@ -132,7 +132,7 @@ def test_expired_axis_go():
     assert server_rc == 0
     assert client_rc == 0
 
-    if build_config_args.axis_enable_integration_tests_prebuilt is False:
+    if build_config_args.aptima_enable_integration_tests_prebuilt is False:
         source_root_path = os.path.join(base_path, source_pkg_name)
 
         # Testing complete. If builds are only created during the testing phase,

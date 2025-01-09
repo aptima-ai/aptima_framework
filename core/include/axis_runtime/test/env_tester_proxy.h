@@ -6,24 +6,24 @@
 //
 #pragma once
 
-#include "axis_runtime/axis_config.h"
+#include "aptima_runtime/aptima_config.h"
 
 #include <stdbool.h>
 
-typedef struct axis_env_tester_t axis_env_tester_t;
-typedef struct axis_env_tester_proxy_t axis_env_tester_proxy_t;
-typedef struct axis_error_t axis_error_t;
+typedef struct aptima_env_tester_t aptima_env_tester_t;
+typedef struct aptima_env_tester_proxy_t aptima_env_tester_proxy_t;
+typedef struct aptima_error_t aptima_error_t;
 
-typedef void (*axis_env_tester_proxy_notify_func_t)(
-    axis_env_tester_t *axis_env_tester, void *user_data);
+typedef void (*aptima_env_tester_proxy_notify_func_t)(
+    aptima_env_tester_t *aptima_env_tester, void *user_data);
 
-axis_RUNTIME_API axis_env_tester_proxy_t *axis_env_tester_proxy_create(
-    axis_env_tester_t *axis_env_tester, axis_error_t *err);
+aptima_RUNTIME_API aptima_env_tester_proxy_t *aptima_env_tester_proxy_create(
+    aptima_env_tester_t *aptima_env_tester, aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_tester_proxy_release(axis_env_tester_proxy_t *self,
-                                                  axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_tester_proxy_release(aptima_env_tester_proxy_t *self,
+                                                  aptima_error_t *err);
 
-axis_RUNTIME_API bool axis_env_tester_proxy_notify(
-    axis_env_tester_proxy_t *self,
-    axis_env_tester_proxy_notify_func_t notify_func, void *user_data,
-    axis_error_t *err);
+aptima_RUNTIME_API bool aptima_env_tester_proxy_notify(
+    aptima_env_tester_proxy_t *self,
+    aptima_env_tester_proxy_notify_func_t notify_func, void *user_data,
+    aptima_error_t *err);

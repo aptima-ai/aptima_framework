@@ -4,10 +4,10 @@
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-import("//build/axis_runtime/feature/test.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/aptima_runtime/feature/test.gni")
+import("//build/aptima_runtime/ten.gni")
 
-axis_package_test_prepare_app("unused_addon_python_app") {
+aptima_package_test_prepare_app("unused_addon_python_app") {
   src_app = "default_app_go"
   src_app_language = "go"
   generated_app_src_root_dir_name = "unused_addon_python_app"
@@ -18,14 +18,14 @@ axis_package_test_prepare_app("unused_addon_python_app") {
   ]
 
   replace_files_after_install_all = [
-    "unused_addon_python_app/axis_packages/extension/default_extension_python/addon.py",
-    "unused_addon_python_app/axis_packages/extension/default_extension_python/extension.py",
+    "unused_addon_python_app/aptima_packages/extension/default_extension_python/addon.py",
+    "unused_addon_python_app/aptima_packages/extension/default_extension_python/extension.py",
     "unused_addon_python_app/bin/bootstrap",
   ]
 
-  if (axis_enable_axis_manager) {
+  if (aptima_enable_aptima_manager) {
     deps = [
-      "//core/src/axis_manager",
+      "//core/src/aptima_manager",
       "//packages/core_apps/default_app_go:upload_default_app_go_to_server",
       "//packages/core_extensions/default_extension_go:upload_default_extension_go_to_server",
       "//packages/core_extensions/default_extension_python:upload_default_extension_python_to_server",
@@ -37,9 +37,9 @@ axis_package_test_prepare_app("unused_addon_python_app") {
   }
 }
 
-axis_package_test_prepare_auxiliary_resources("unused_addon_python_test_files") {
+aptima_package_test_prepare_auxiliary_resources("unused_addon_python_test_files") {
   resources = [
-    "//tests/axis_runtime/integration/common=>common",
+    "//tests/aptima_runtime/integration/common=>common",
     "__init__.py",
     "test_case.py",
   ]

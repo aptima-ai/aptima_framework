@@ -93,7 +93,7 @@ impl Actor for WsProcessor {
         ctx.text("    | |    | |____  | |\\  |\r\n");
         ctx.text("    |_|    |______| |_| \\_|\r\n");
         ctx.text("\r\n");
-        ctx.text("Website: https://github.com/axis-talk/\r\n");
+        ctx.text("Website: https://github.com/aptima-ai/\r\n");
         ctx.text("Documentation: https://doc.theten.ai/\r\n");
         ctx.text("Enjoy your journey!\r\n");
 
