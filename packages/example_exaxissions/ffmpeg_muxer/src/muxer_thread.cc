@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -9,14 +9,14 @@
 #include <utility>
 
 #include "muxer.h"
-#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lib/event.h"
 #include "aptima_utils/lib/mutex.h"
 #include "aptima_utils/lib/thread.h"
 #include "aptima_utils/lib/time.h"
 #include "aptima_utils/log/log.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 enum {
@@ -28,7 +28,7 @@ enum {
   VIDEO_FRAME_FIFO_SIZE = 10000,
 };
 
-muxer_thread_t::muxer_thread_t(ten::aptima_env_proxy_t *aptima_env_proxy,
+muxer_thread_t::muxer_thread_t(aptima::aptima_env_proxy_t *aptima_env_proxy,
                                demuxer_settings_t &settings,
                                std::string output_stream)
     : muxer_thread_(nullptr),
@@ -107,8 +107,8 @@ void *muxer_thread_main_(void *self_) {
   int64_t sleep_overhead = 0;
   bool status = true;
 
-  std::list<std::unique_ptr<ten::audio_frame_t>> out_audios;
-  std::list<std::unique_ptr<ten::video_frame_t>> out_images;
+  std::list<std::unique_ptr<aptima::audio_frame_t>> out_audios;
+  std::list<std::unique_ptr<aptima::video_frame_t>> out_images;
 
   while ((aptima_atomic_load(&self->stop_) == 0 || !self->out_audios_.empty() ||
           !self->out_images_.empty()) &&
@@ -196,14 +196,14 @@ void muxer_thread_t::stop() {
 }
 
 void muxer_thread_t::notify_completed(bool success) {
-  auto cmd = ten::cmd_t::create("complete");
+  auto cmd = aptima::cmd_t::create("complete");
   cmd->set_property("input_stream", output_stream_);
   cmd->set_property("success", success);
 
   auto cmd_shared =
-      std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
+      std::make_shared<std::unique_ptr<aptima::cmd_t>>(std::move(cmd));
 
-  aptima_env_proxy_->notify([cmd_shared](ten::aptima_env_t &aptima_env) {
+  aptima_env_proxy_->notify([cmd_shared](aptima::aptima_env_t &aptima_env) {
     aptima_env.send_cmd(std::move(*cmd_shared));
   });
 }
@@ -233,9 +233,9 @@ void muxer_thread_t::create_muxer_() {
   muxer_->open(output_stream_, false);
 }
 
-// Put received audio frame from TEN world to FFmpeg.
+// Put received audio frame from APTIMA world to FFmpeg.
 void muxer_thread_t::on_aptima_audio_frame(
-    std::unique_ptr<ten::audio_frame_t> frame) {
+    std::unique_ptr<aptima::audio_frame_t> frame) {
   int rc = aptima_mutex_lock(out_lock_);
   aptima_ASSERT(!rc, "Should not happen.");
 
@@ -253,9 +253,9 @@ void muxer_thread_t::on_aptima_audio_frame(
   aptima_event_set(out_available_);
 }
 
-// Put received video frame from TEN world to FFmpeg.
+// Put received video frame from APTIMA world to FFmpeg.
 void muxer_thread_t::on_aptima_video_frame(
-    std::unique_ptr<ten::video_frame_t> frame) {
+    std::unique_ptr<aptima::video_frame_t> frame) {
   int rc = aptima_mutex_lock(out_lock_);
   aptima_ASSERT(!rc, "Should not happen.");
 
@@ -274,4 +274,4 @@ void muxer_thread_t::on_aptima_video_frame(
 }
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

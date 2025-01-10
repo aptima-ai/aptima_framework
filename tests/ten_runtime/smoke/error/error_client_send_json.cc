@@ -1,13 +1,13 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
 #include "ten_runtime/msg/cmd/start_graph/cmd.h"
 #include "ten_runtime/ten_env/internal/metadata.h"
@@ -18,7 +18,7 @@
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
   explicit test_extension_1(const char *name) : extension_t(name) {}
 };
@@ -26,9 +26,9 @@ class test_extension_1 : public ten::extension_t {
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(error_client_send_json__extension_1,
                                     test_extension_1);
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 };
 
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(error_client_send_json__extension_2,
@@ -99,8 +99,8 @@ TEST(ExtensionTest, ErrorClientSendJson) {  // NOLINT
   ten_error_destroy(err);
   ten_shared_ptr_destroy(invalid_graph_cmd);
 
-  // Strange connection would _not_ cause the TEN app to be closed, so we have
-  // to close the TEN app explicitly.
+  // Strange connection would _not_ cause the APTIMA app to be closed, so we have
+  // to close the APTIMA app explicitly.
   ten_test_msgpack_tcp_client_close_app(client);
 
   ten_test_msgpack_tcp_client_destroy(client);

@@ -62,12 +62,12 @@ def test_handle_error_go():
         print("test_handle_error_go doesn't support win32")
         assert False
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path, "handle_error_go_app/ten_packages/system/ten_runtime/lib"
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path, "handle_error_go_app/ten_packages/system/ten_runtime/lib"
         )

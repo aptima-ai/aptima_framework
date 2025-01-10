@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -28,7 +28,7 @@ ten_string_t *ten_find_app_base_dir(void) {
     // directory of `libten_runtime.so`.
     //
     // Note that we can not use `ten_path_get_executable_path()` here, as the
-    // actually executable in some language is not the TEN app. Ex: the
+    // actually executable in some language is not the APTIMA app. Ex: the
     // `ten_path_get_executable_path()` returns `/usr/bin` if we start a python
     // APP with `python3 bin/main.py`. In this case, the `/usr/bin` is the
     // location of `python3`.

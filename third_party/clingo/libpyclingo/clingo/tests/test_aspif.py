@@ -1,6 +1,7 @@
 """
 Tests for aspif parsing.
 """
+
 from textwrap import dedent
 from unittest import TestCase
 

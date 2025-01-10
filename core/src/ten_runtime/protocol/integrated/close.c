@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -61,7 +61,7 @@ void ten_protocol_integrated_on_close(ten_protocol_integrated_t *self) {
   TEN_ASSERT(protocol->role != TEN_PROTOCOL_ROLE_INVALID, "Should not happen.");
   TEN_ASSERT(
       ten_protocol_is_closing(protocol),
-      "As a principle, the protocol could only be closed from the ten world.");
+      "As a principle, the protocol could only be closed from the aptima world.");
 
   if (!ten_protocol_integrated_could_be_close(self)) {
     TEN_LOGD("Could not close alive integrated protocol.");
@@ -110,13 +110,13 @@ void ten_protocol_integrated_on_transport_closed(
 //
 // - Stage 1 : 'Need to close' notification stage
 //
-//   TEN world -> (notify) -> base protocol -> (notify) -> integrated protocol
+//   APTIMA world -> (notify) -> base protocol -> (notify) -> integrated protocol
 //
 // - Stage 2 : 'I cam closed' notification stage
 //
 //                                 <- (I am closed) <- integrated protocol
 //        <- (I am closed) <- base protocol
-//   TEN world
+//   APTIMA world
 //
 // The following function is for the stage 1, and the above
 // 'ten_protocol_integrated_on_xxx_closed' functions are for the stage 2.

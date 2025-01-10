@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -15,9 +15,9 @@
 #include "include_internal/ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/addon/extension/extension.h"
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten_env.h"
-#include "ten_runtime/ten.h"
+#include "ten_runtime/binding/go/interface/aptima/common.h"
+#include "ten_runtime/binding/go/interface/aptima/ten_env.h"
+#include "ten_runtime/aptima.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/smart_ptr.h"
@@ -59,7 +59,7 @@ static void ten_go_ten_env_destroy_c_part(void *ten_env_bridge_) {
   ten_env_bridge->c_ten_env = NULL;
   ten_go_bridge_destroy_c_part(&ten_env_bridge->bridge);
 
-  // Remove the Go ten object from the global map.
+  // Remove the Go aptima object from the global map.
   tenGoDestroyTenEnv(ten_env_bridge->bridge.go_instance);
 }
 
@@ -90,7 +90,7 @@ ten_go_ten_env_t *ten_go_ten_env_wrap(ten_env_t *c_ten_env) {
 
   ten_env_bridge->bridge.go_instance = tenGoCreateTenEnv(bridge_addr);
 
-  // C ten hold one reference of ten bridge.
+  // C aptima hold one reference of aptima bridge.
   ten_env_bridge->bridge.sp_ref_by_c =
       ten_shared_ptr_create(ten_env_bridge, ten_go_ten_env_destroy);
   ten_env_bridge->bridge.sp_ref_by_go =
@@ -130,7 +130,7 @@ const char *ten_go_ten_env_debug_info(uintptr_t bridge_addr) {
              "Should not happen.");
 
   ten_string_t debug_info;
-  ten_string_init_formatted(&debug_info, "ten attach_to type: %d",
+  ten_string_init_formatted(&debug_info, "aptima attach_to type: %d",
                             self->c_ten_env->attach_to);
   const char *res = ten_go_str_dup(ten_string_get_raw_str(&debug_info));
 

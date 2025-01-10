@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,7 +12,7 @@
 #include <thread>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/lib/thread.h"
@@ -42,11 +42,11 @@ class Holder {  // NOLINT
   void *ptr_{nullptr};
 };
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     // We have increased the path timeout to 20 minutes because, under limited
     // computing resources, it is easy to exceed the path timeout without
     // completing the data transmission. This can lead to the path being
@@ -67,7 +67,7 @@ class test_extension_1 : public ten::extension_t {
 
 #define OUTER_THREAD_MAIN(X)                                                 \
   void outer_thread##X##_main(                                               \
-      ten::ten_env_proxy_t *ten_env_proxy) { /* NOLINT */                    \
+      aptima::ten_env_proxy_t *ten_env_proxy) { /* NOLINT */                    \
     auto *test_data = static_cast<int64_t *>(ten_malloc(sizeof(int64_t)));   \
     TEN_ASSERT(test_data, "Failed to allocate memory.");                     \
                                                                              \
@@ -234,19 +234,19 @@ class test_extension_1 : public ten::extension_t {
   OUTER_THREAD_MAIN(128)
 #endif
 
-  void on_start(ten::ten_env_t &ten_env) override {
-    auto start_to_send_cmd = ten::cmd_t::create("start_to_send");
+  void on_start(aptima::ten_env_t &ten_env) override {
+    auto start_to_send_cmd = aptima::cmd_t::create("start_to_send");
     ten_env.send_cmd(std::move(start_to_send_cmd),
-                     [this](ten::ten_env_t &ten_env,
-                            std::unique_ptr<ten::cmd_result_t> cmd_result,
-                            ten::error_t *err) {
+                     [this](aptima::ten_env_t &ten_env,
+                            std::unique_ptr<aptima::cmd_result_t> cmd_result,
+                            aptima::error_t *err) {
                        TEN_ASSERT(
                            cmd_result->get_status_code() == TEN_STATUS_CODE_OK,
                            "Failed to send 'start_to_send' command.");
 
 #define CREATE_OUTER_THREAD(X)                                           \
   do {                                                                   \
-    auto *ten_env_proxy = ten::ten_env_proxy_t::create(ten_env);         \
+    auto *ten_env_proxy = aptima::ten_env_proxy_t::create(ten_env);         \
     outer_thread##X = new std::thread(                                   \
         &test_extension_1::outer_thread##X##_main, this, ten_env_proxy); \
   } while (0)
@@ -387,7 +387,7 @@ class test_extension_1 : public ten::extension_t {
     ten_env.on_start_done();
   }
 
-  void on_stop(ten::ten_env_t &ten_env) override {
+  void on_stop(aptima::ten_env_t &ten_env) override {
 #define NOTIFY_OUTER_THREAD_TO_STOP(X)                               \
   do {                                                               \
     {                                                                \
@@ -670,12 +670,12 @@ class test_extension_1 : public ten::extension_t {
     ten_env.on_stop_done();
   }
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     const std::string command = cmd->get_name();
 
     if (command == "from_extension_2") {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "success");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     }
@@ -820,24 +820,24 @@ class test_extension_1 : public ten::extension_t {
   OTHER_THREAD_CB_PACK(128)
 #endif
 
-  static void send_data_from_outer_thread(ten::ten_env_t &ten_env,
+  static void send_data_from_outer_thread(aptima::ten_env_t &ten_env,
                                           void *user_data) {
-    // Create a 'ten::data_t' with the same important data.
-    auto ten_data = ten::data_t::create("data");
+    // Create a 'aptima::data_t' with the same important data.
+    auto ten_data = aptima::data_t::create("data");
     ten_data->set_property("test_data", user_data);
     ten_env.send_data(std::move(ten_data));
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
   explicit test_extension_2(const char *name)
-      : ten::extension_t(name),
+      : aptima::extension_t(name),
         data_received_count(OUTER_THREAD_CNT, 1),
         expected_data_received_count(OUTER_THREAD_CNT,
                                      OUTER_THREAD_FOR_LOOP_CNT + 1) {}
 
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     // We have increased the path timeout to 20 minutes because, under limited
     // computing resources, it is easy to exceed the path timeout without
     // completing the data transmission. This can lead to the path being
@@ -856,44 +856,44 @@ class test_extension_2 : public ten::extension_t {
     ten_env.on_configure_done();
   }
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == std::string("start_to_send")) {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "ok");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
 
-      auto timer_cmd = ten::cmd_timer_t::create();
+      auto timer_cmd = aptima::cmd_timer_t::create();
       timer_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
       timer_cmd->set_timer_id(55);
       timer_cmd->set_timeout_in_us(1000);
       timer_cmd->set_times(1);
 
       ten_env.send_cmd(std::move(timer_cmd));
-    } else if (ten::msg_internal_accessor_t::get_type(cmd.get()) ==
+    } else if (aptima::msg_internal_accessor_t::get_type(cmd.get()) ==
                    TEN_MSG_TYPE_CMD_TIMEOUT &&
-               static_cast<ten::cmd_timeout_t *>(cmd.get())->get_timer_id() ==
+               static_cast<aptima::cmd_timeout_t *>(cmd.get())->get_timer_id() ==
                    55) {
       TEN_ASSERT(timeout_thread == nullptr, "Should not happen.");
 
-      auto *ten_env_proxy = ten::ten_env_proxy_t::create(ten_env);
+      auto *ten_env_proxy = aptima::ten_env_proxy_t::create(ten_env);
 
       timeout_thread = new std::thread(
-          [this](ten::ten_env_proxy_t *ten_env_proxy) {
+          [this](aptima::ten_env_proxy_t *ten_env_proxy) {
             for (int i = 0; i < FROM_EXTENSION_2_CMD_CNT; ++i) {
               ten_random_sleep(2);
 
-              ten_env_proxy->notify([this](ten::ten_env_t &ten_env) {
+              ten_env_proxy->notify([this](aptima::ten_env_t &ten_env) {
                 auto from_extension_2_cmd =
-                    ten::cmd_t::create("from_extension_2");
+                    aptima::cmd_t::create("from_extension_2");
 
                 ten_random_sleep(9);
 
                 ten_env.send_cmd(
                     std::move(from_extension_2_cmd),
-                    [this](ten::ten_env_t &ten_env,
-                           std::unique_ptr<ten::cmd_result_t> cmd_result,
-                           ten::error_t *err) {
+                    [this](aptima::ten_env_t &ten_env,
+                           std::unique_ptr<aptima::cmd_result_t> cmd_result,
+                           aptima::error_t *err) {
                       TEN_ASSERT(
                           cmd_result->get_status_code() == TEN_STATUS_CODE_OK,
                           "Failed to send 'from_extension_2' command.");
@@ -910,7 +910,7 @@ class test_extension_2 : public ten::extension_t {
                           (received_from_extension_2_cmd_result ==
                            expected_received_from_extension_2_cmd_result)) {
                         auto cmd_result =
-                            ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+                            aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
                         cmd_result->set_property("detail", "ok");
                         ten_env.return_result(std::move(cmd_result),
                                               std::move(hello_cmd));
@@ -928,7 +928,7 @@ class test_extension_2 : public ten::extension_t {
       if (is_received_all_data() &&
           (received_from_extension_2_cmd_result ==
            expected_received_from_extension_2_cmd_result)) {
-        auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
         cmd_result->set_property("detail", "ok");
         ten_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
@@ -937,8 +937,8 @@ class test_extension_2 : public ten::extension_t {
     }
   }
 
-  void on_data(TEN_UNUSED ten::ten_env_t &ten_env,
-               std::unique_ptr<ten::data_t> data) override {
+  void on_data(TEN_UNUSED aptima::ten_env_t &ten_env,
+               std::unique_ptr<aptima::data_t> data) override {
     auto *test_data =
         static_cast<int64_t *>(data->get_property_ptr("test_data"));
 
@@ -957,13 +957,13 @@ class test_extension_2 : public ten::extension_t {
     if ((hello_cmd != nullptr) && is_received_all_data() &&
         (received_from_extension_2_cmd_result ==
          expected_received_from_extension_2_cmd_result)) {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "ok");
       ten_env.return_result(std::move(cmd_result), std::move(hello_cmd));
     }
   }
 
-  void on_stop(ten::ten_env_t &ten_env) override {
+  void on_stop(aptima::ten_env_t &ten_env) override {
     TEN_ASSERT(timeout_thread, "Should not happen.");
 
     timeout_thread->join();
@@ -973,7 +973,7 @@ class test_extension_2 : public ten::extension_t {
   }
 
  private:
-  std::unique_ptr<ten::cmd_t> hello_cmd{nullptr};
+  std::unique_ptr<aptima::cmd_t> hello_cmd{nullptr};
   std::thread *timeout_thread{nullptr};
 
   std::vector<int> data_received_count;
@@ -992,9 +992,9 @@ class test_extension_2 : public ten::extension_t {
   }
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -1036,10 +1036,10 @@ TEST(ExtensionTest,
       ten_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
@@ -1088,7 +1088,7 @@ TEST(ExtensionTest,
   ten_test::check_status_code(cmd_result, TEN_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  auto hello_world_cmd = aptima::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extension_group", "test_extension_2");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));

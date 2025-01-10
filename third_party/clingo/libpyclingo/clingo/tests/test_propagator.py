@@ -5,9 +5,18 @@ Tests for the propagator.
 from typing import cast
 from unittest import TestCase
 
-from clingo import (Assignment, Control, Function, PropagateControl,
-                    PropagateInit, Propagator, PropagatorCheckMode,
-                    PropagatorUndoMode, SolveResult, SymbolicAtom)
+from clingo import (
+    Assignment,
+    Control,
+    Function,
+    PropagateControl,
+    PropagateInit,
+    Propagator,
+    PropagatorCheckMode,
+    PropagatorUndoMode,
+    SolveResult,
+    SymbolicAtom,
+)
 
 from .util import _MCB, _check_sat, _p
 
@@ -58,6 +67,7 @@ class TestPropagatorMode(Propagator):
     """
     Test check/undo mode.
     """
+
     def __init__(self, case: TestCase):
         self._case = case
         self.num_check = 0

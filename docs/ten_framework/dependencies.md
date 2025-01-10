@@ -1,6 +1,6 @@
 # Dependencies
 
-The TEN framework utilizes several third-party libraries. Some are used specifically for testing, while others are integrated into the TEN runtime. Below is a description of these libraries, along with any necessary modifications required for their use within the TEN framework.
+The APTIMA framework utilizes several third-party libraries. Some are used specifically for testing, while others are integrated into the APTIMA runtime. Below is a description of these libraries, along with any necessary modifications required for their use within the APTIMA framework.
 
 ## Google gn
 
@@ -20,7 +20,7 @@ Version: 2.14
 
 [MIT license](https://github.com/akheron/jansson/blob/master/LICENSE)
 
-This is used in the TEN framework core to parse and generate JSON data. Please refer to `third_party/jansson` for details.
+This is used in the APTIMA framework core to parse and generate JSON data. Please refer to `third_party/jansson` for details.
 
 ## libuv
 
@@ -28,7 +28,7 @@ Version: 1.49.2
 
 [MIT license](https://github.com/libuv/libuv#licensing)
 
-This is one of the event loop libraries used in the TEN runtime. Please refer to `third_party/libuv` for details.
+This is one of the event loop libraries used in the APTIMA runtime. Please refer to `third_party/libuv` for details.
 
 ## msgpack-c
 
@@ -208,7 +208,7 @@ Version: 1.0
 A C library that may be linked into a C/C++ program to produce symbolic backtraces.
 
 > ⚠️ **Note:**
-> We have significantly modified `libbacktrace` to conform to the naming conventions and folder structure of the TEN framework. Please refer to `core/src/ten_utils/backtrace` for details.
+> We have significantly modified `libbacktrace` to conform to the naming conventions and folder structure of the APTIMA framework. Please refer to `core/src/ten_utils/backtrace` for details.
 
 ## uthash
 
@@ -219,7 +219,7 @@ Version: 2.3.0
 C macros for hash tables and more.
 
 > ⚠️ **Note:**
-> We have significantly modified `uthash` to conform to the naming conventions and folder structure of the TEN framework. Please refer to the files under `core/include/ten_utils/container` that have `uthash` mentioned in the file headers.
+> We have significantly modified `uthash` to conform to the naming conventions and folder structure of the APTIMA framework. Please refer to the files under `core/include/ten_utils/container` that have `uthash` mentioned in the file headers.
 
 ## uuid4
 
@@ -229,7 +229,7 @@ C macros for hash tables and more.
 UUID v4 generation in C.
 
 > ⚠️ **Note:**
-> We have significantly modified `uuid4` to conform to the naming conventions and folder structure of the TEN framework. Please refer to `core/src/ten_utils/lib/sys/general/uuid.c` for details.
+> We have significantly modified `uuid4` to conform to the naming conventions and folder structure of the APTIMA framework. Please refer to `core/src/ten_utils/lib/sys/general/uuid.c` for details.
 
 ## zf_log
 
@@ -238,4 +238,4 @@ UUID v4 generation in C.
 Core logging library for C/ObjC/C++.
 
 > ⚠️ **Note:**
-> We have significantly modified `zf_log` to conform to the naming conventions and folder structure of the TEN framework. Please refer to `core/src/ten_utils/log` for details.
+> We have significantly modified `zf_log` to conform to the naming conventions and folder structure of the APTIMA framework. Please refer to `core/src/ten_utils/log` for details.

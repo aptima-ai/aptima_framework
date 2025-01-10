@@ -1,12 +1,12 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
 #include "muxer_thread.h"
-#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/aptima.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 static demuxer_settings_t read_settings(cmd_t &cmd) {
@@ -63,7 +63,7 @@ class muxer_extension_t : public extension_t {
     aptima_env.on_start_done();
   }
 
-  void on_cmd(aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima_env_t &aptima_env, std::unique_ptr<aptima::cmd_t> cmd) override {
     const auto cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "start_muxer") {
@@ -76,14 +76,14 @@ class muxer_extension_t : public extension_t {
         output = "aptima_packages/extension/ffmpeg_muxer/test.mp4";
       }
 
-      auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
+      auto *aptima_env_proxy = aptima::aptima_env_proxy_t::create(aptima_env);
 
       // Start the muxer thread. ffmpeg is living in its own thread.
       muxer_thread_ = new muxer_thread_t(aptima_env_proxy, settings, output);
       muxer_thread_->start();
       muxer_thread_->wait_for_start();
 
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "I am ready");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
@@ -113,7 +113,7 @@ class muxer_extension_t : public extension_t {
 };
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima
 
 aptima_CPP_REGISTER_ADDON_AS_EXTENSION(ffmpeg_muxer,
-                                    ten::ffmpeg_extension::muxer_extension_t);
+                                    aptima::ffmpeg_extension::muxer_extension_t);

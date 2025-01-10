@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -572,7 +572,7 @@ static bool axis_raw_msg_get_one_field_from_json_internal(
     axis_json_t *item = NULL;
     axis_json_object_foreach(json, key, item) {
       if (axis_c_string_is_equal(key, axis_STR_UNDERLINE_TEN)) {
-        // The "ten" section is reserved for internal usage.
+        // The "aptima" section is reserved for internal usage.
         continue;
       }
 
@@ -922,7 +922,7 @@ void axis_msg_correct_dest(axis_shared_ptr_t *msg, axis_engine_t *engine) {
     } else if (axis_string_is_equal_c_str(&dest_loc->app_uri,
                                          axis_STR_LOCALHOST)) {
       // Extension could use 'localhost' to indicate that the destination of the
-      // message is to the local app, therefore, the TEN runtime needs to
+      // message is to the local app, therefore, the APTIMA runtime needs to
       // 'correct' the real destination location from 'localhost' to the real
       // URI of the app.
 
@@ -932,9 +932,9 @@ void axis_msg_correct_dest(axis_shared_ptr_t *msg, axis_engine_t *engine) {
 
     if (is_local_app) {
       // If the destination location is the local app, extension could omit the
-      // engine graph ID in the message, therefore, TEN runtime needs to 'add'
-      // this information back to the message, so that the TEN runtime could
-      // know how to transit it after the TEN runtime receives that message.
+      // engine graph ID in the message, therefore, APTIMA runtime needs to 'add'
+      // this information back to the message, so that the APTIMA runtime could
+      // know how to transit it after the APTIMA runtime receives that message.
       //
       // However, some command, for example, the 'start_graph' command, is a
       // special case, because this kind of command will be handled by the app,
@@ -951,7 +951,7 @@ void axis_msg_correct_dest(axis_shared_ptr_t *msg, axis_engine_t *engine) {
 
   // In 'start_graph' command, the uri of an extension could be 'localhost',
   // which indicates that the extension will be located in the local app.
-  // Therefore, the TEN runtime needs to 'correct' the real app uri from
+  // Therefore, the APTIMA runtime needs to 'correct' the real app uri from
   // 'localhost' to the real uri of the app.
   if (axis_msg_get_type(msg) == axis_MSG_TYPE_CMD_START_GRAPH) {
     axis_list_t *extensions_info = axis_cmd_start_graph_get_extensions_info(msg);

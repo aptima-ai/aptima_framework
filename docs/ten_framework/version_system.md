@@ -1,10 +1,10 @@
 # Version System
 
-The TEN framework follows the semver specification.
+The APTIMA framework follows the semver specification.
 
-## Version Information of TEN Package
+## Version Information of APTIMA Package
 
-The version information of a TEN package is recorded in the `version` field of its own `manifest.json` file. For every TEN package, this `version` field is mandatory.
+The version information of a APTIMA package is recorded in the `version` field of its own `manifest.json` file. For every APTIMA package, this `version` field is mandatory.
 
 ```json
 {
@@ -33,7 +33,7 @@ These packages are distinguished by the value of the `type` field in their `mani
 }
 ```
 
-In a TEN package, the version requirements for the dependent TEN packages are specified as follows.
+In a APTIMA package, the version requirements for the dependent APTIMA packages are specified as follows.
 
 ```json
 {
@@ -78,7 +78,7 @@ A version requirements string can contain multiple version requirement strings, 
 
   The `^` operator can be omitted, meaning that if a version requirement string does not include any operator, it defaults to `^`. For example, the string `0.1.12` represents `^0.1.12`. Although `0.1.12` looks like a specific version, it actually specifies a version requirement that allows SemVer-compatible updates.
 
-  Updates are allowed as long as they do not modify the leftmost non-zero number in the major, minor, or patch combination. In this case, if you upgrade the TEN package, it will update to version `0.1.13` (if it's the latest `0.1.z` version), but not to `0.2.0`. If the version string specified is `1.0`, it will update to `1.1` (if it's the latest `1.y` version), but not to `2.0`.
+  Updates are allowed as long as they do not modify the leftmost non-zero number in the major, minor, or patch combination. In this case, if you upgrade the APTIMA package, it will update to version `0.1.13` (if it's the latest `0.1.z` version), but not to `0.2.0`. If the version string specified is `1.0`, it will update to `1.1` (if it's the latest `1.y` version), but not to `2.0`.
 
   > ⚠️ **Note:**
   > Versions `0.0.x` are considered incompatible with any other versions.

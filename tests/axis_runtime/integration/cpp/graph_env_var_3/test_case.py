@@ -73,7 +73,7 @@ def test_graph_env_var_3_app():
         )
         client_cmd = os.path.join(base_path, "graph_env_var_3_app_client.exe")
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "graph_env_var_3_app/aptima_packages/system/aptima_runtime/lib",
@@ -84,7 +84,7 @@ def test_graph_env_var_3_app():
         )
         client_cmd = os.path.join(base_path, "graph_env_var_3_app_client")
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "graph_env_var_3_app/aptima_packages/system/aptima_runtime/lib",

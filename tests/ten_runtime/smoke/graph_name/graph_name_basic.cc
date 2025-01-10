@@ -1,13 +1,13 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include <nlohmann/json.hpp>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -16,13 +16,13 @@
 
 namespace {
 
-class test_extension : public ten::extension_t {
+class test_extension : public aptima::extension_t {
  public:
   explicit test_extension(const char *name)
-      : ten::extension_t(name), name_(name) {}
+      : aptima::extension_t(name), name_(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     nlohmann::json data = nlohmann::json::parse(cmd->get_property_to_json());
 
     data["send_from"] = name_;
@@ -35,15 +35,15 @@ class test_extension : public ten::extension_t {
     if (name_ == "extension2") {
       const nlohmann::json detail = {{"id", 1}, {"name", "aa"}};
 
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property_from_json("detail", detail.dump().c_str());
 
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     } else {
       ten_env.send_cmd(
           std::move(cmd),
-          [](ten::ten_env_t &ten_env, std::unique_ptr<ten::cmd_result_t> result,
-             ten::error_t *err) {
+          [](aptima::ten_env_t &ten_env, std::unique_ptr<aptima::cmd_result_t> result,
+             aptima::error_t *err) {
             ten_env.return_result_directly(std::move(result));
           });
     }
@@ -53,9 +53,9 @@ class test_extension : public ten::extension_t {
   std::string name_;
 };
 
-class test_app_1 : public ten::app_t {
+class test_app_1 : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -73,9 +73,9 @@ class test_app_1 : public ten::app_t {
   }
 };
 
-class test_app_2 : public ten::app_t {
+class test_app_2 : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -93,8 +93,8 @@ class test_app_2 : public ten::app_t {
   }
 };
 
-ten::app_t *app1 = nullptr;
-ten::app_t *app2 = nullptr;
+aptima::app_t *app1 = nullptr;
+aptima::app_t *app2 = nullptr;
 
 void *app_thread_1_main(TEN_UNUSED void *args) {
   app1 = new test_app_1();
@@ -129,14 +129,14 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   // extension1(app1) --> extension3(app2) --> extension2(app1) --> return
-  ten::msgpack_tcp_client_t *client = nullptr;
+  aptima::msgpack_tcp_client_t *client = nullptr;
   std::string graph_id;
 
   for (size_t i = 0; i < MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES;
        ++i) {
-    client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+    client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
-    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    auto start_graph_cmd = aptima::cmd_start_graph_t::create();
     start_graph_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr, nullptr,
                               nullptr);
     start_graph_cmd->set_graph_from_json(R"({
@@ -201,11 +201,11 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
     }
   }
 
-  TEN_ASSERT(client, "Failed to connect to the TEN app.");
+  TEN_ASSERT(client, "Failed to connect to the APTIMA app.");
 
   // Send data to extension_1, it will return from extension_2 with json
   // result.
-  auto send_message_cmd = ten::cmd_t::create("send_message");
+  auto send_message_cmd = aptima::cmd_t::create("send_message");
   send_message_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                              "graph_id_basic__extension_group_1", "extension1");
 
@@ -216,9 +216,9 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
 
   // Send data to extension_3, it will return from extension_2 with json
   // result.
-  auto *client2 = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8002/");
+  auto *client2 = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8002/");
 
-  send_message_cmd = ten::cmd_t::create("send_message");
+  send_message_cmd = aptima::cmd_t::create("send_message");
   send_message_cmd->set_dest("msgpack://127.0.0.1:8002/", graph_id.c_str(),
                              "graph_id_basic__extension_group_2", "extension3");
 
@@ -227,7 +227,7 @@ TEST(ExtensionTest, GraphNameBasic) {  // NOLINT
 
   ten_test::check_detail_with_json(cmd_result, R"({"id": 1, "name": "aa"})");
 
-  send_message_cmd = ten::cmd_t::create("send_message");
+  send_message_cmd = aptima::cmd_t::create("send_message");
   send_message_cmd->set_dest("msgpack://127.0.0.1:8001/", graph_id.c_str(),
                              "graph_id_basic__extension_group_1", "extension2");
 

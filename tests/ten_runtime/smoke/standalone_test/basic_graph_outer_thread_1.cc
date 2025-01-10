@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_runtime/binding/cpp/detail/extension.h"
 #include "ten_runtime/binding/cpp/detail/ten_env_proxy.h"
 #include "ten_runtime/binding/cpp/detail/test/env_tester.h"
@@ -25,12 +25,12 @@ namespace {
 // This part is the extension codes written by the developer, maintained in its
 // final release form, and will not change due to testing requirements.
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "process") {
       auto data = cmd->get_property_int64("data");
       cmd->set_property("data", data * 2);
@@ -42,27 +42,27 @@ class test_extension_1 : public ten::extension_t {
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "process") {
       auto data = cmd->get_property_int64("data");
 
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("data", data * data);
 
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
 
       // Send another command after 1 second.
-      auto *ten_env_proxy = ten::ten_env_proxy_t::create(ten_env);
+      auto *ten_env_proxy = aptima::ten_env_proxy_t::create(ten_env);
       greeting_thread_ = std::thread([ten_env_proxy]() {
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        ten_env_proxy->notify([](ten::ten_env_t &ten_env) {
-          auto new_cmd = ten::cmd_t::create("hello_world");
+        ten_env_proxy->notify([](aptima::ten_env_t &ten_env) {
+          auto new_cmd = aptima::cmd_t::create("hello_world");
           ten_env.send_cmd(std::move(new_cmd));
         });
 
@@ -73,7 +73,7 @@ class test_extension_2 : public ten::extension_t {
     }
   }
 
-  void on_stop(ten::ten_env_t &ten_env) override {
+  void on_stop(aptima::ten_env_t &ten_env) override {
     if (greeting_thread_.joinable()) {
       greeting_thread_.join();
     }
@@ -96,7 +96,7 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
 
 namespace {
 
-class extension_tester_1 : public ten::extension_tester_t {
+class extension_tester_1 : public aptima::extension_tester_t {
  public:
   void join_outer_thread() {
     if (outer_thread.joinable()) {
@@ -107,21 +107,21 @@ class extension_tester_1 : public ten::extension_tester_t {
   int64_t get_calculated_result() const { return calculated_result; }
 
  protected:
-  void on_start(ten::ten_env_tester_t &ten_env) override {
-    auto *ten_env_tester_proxy = ten::ten_env_tester_proxy_t::create(ten_env);
+  void on_start(aptima::ten_env_tester_t &ten_env) override {
+    auto *ten_env_tester_proxy = aptima::ten_env_tester_proxy_t::create(ten_env);
 
     outer_thread = std::thread([this, ten_env_tester_proxy]() {
       ten_sleep(1000);
 
       ten_env_tester_proxy->notify(
-          [this](ten::ten_env_tester_t &ten_env) {
-            auto process_cmd = ten::cmd_t::create("process");
+          [this](aptima::ten_env_tester_t &ten_env) {
+            auto process_cmd = aptima::cmd_t::create("process");
             process_cmd->set_property("data", 3);
 
             ten_env.send_cmd(std::move(process_cmd),
-                             [this](ten::ten_env_tester_t & /*ten_env*/,
-                                    std::unique_ptr<ten::cmd_result_t> result,
-                                    ten::error_t *err) {
+                             [this](aptima::ten_env_tester_t & /*ten_env*/,
+                                    std::unique_ptr<aptima::cmd_result_t> result,
+                                    aptima::error_t *err) {
                                calculated_result =
                                    result->get_property_int64("data");
                              });
@@ -134,8 +134,8 @@ class extension_tester_1 : public ten::extension_tester_t {
     ten_env.on_start_done();
   }
 
-  void on_cmd(ten::ten_env_tester_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_tester_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       ten_env.stop_test();
     }
@@ -153,7 +153,7 @@ TEST(StandaloneTest, BasicGraphOuterThread1) {  // NOLINT
 
   // The graph is like:
   //
-  // ten:test_extension -> test_extension_1 -> test_extension_2
+  // aptima:test_extension -> test_extension_1 -> test_extension_2
   //        ^                                        |
   //        |                                        v
   //         ----------------------------------------
@@ -173,12 +173,12 @@ TEST(StandaloneTest, BasicGraphOuterThread1) {  // NOLINT
 		},
 		{
 			"type": "extension",
-			"name": "ten:test_extension",
-			"addon": "ten:test_extension",
+			"name": "aptima:test_extension",
+			"addon": "aptima:test_extension",
 			"extension_group": "test_extension_group"
 		}],
 		"connections": [{
-			"extension": "ten:test_extension",
+			"extension": "aptima:test_extension",
 			"cmd": [{
 				"name": "process",
 				"dest": [{
@@ -200,7 +200,7 @@ TEST(StandaloneTest, BasicGraphOuterThread1) {  // NOLINT
 			"cmd": [{
 				"name": "hello_world",
 				"dest": [{
-					"extension": "ten:test_extension"
+					"extension": "aptima:test_extension"
 				}]
 			}]
 		}]})");

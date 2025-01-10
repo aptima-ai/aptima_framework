@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -14,7 +14,7 @@ pub const DEFAULT_REGISTRY: &str =
 // pub const ADMIN_TOKEN: &str =
 //     "cnRlX3N0b3JlOjNjYzc2ODgxYjExNjQ0NTM4ZDQ5YmNmNmNlYjQ2Yjk0";
 
-pub const DOT_axis_DIR: &str = ".ten";
+pub const DOT_axis_DIR: &str = ".aptima";
 pub const APP_DIR_IN_DOT_axis_DIR: &str = "app";
 pub const INSTALLED_PATHS_JSON_FILENAME: &str = "installed_paths.json";
 pub const PACKAGE_INFO_DIR_IN_DOT_axis_DIR: &str = "package_info";

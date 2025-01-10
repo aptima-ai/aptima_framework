@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -11,9 +11,9 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten_env.h"
-#include "ten_runtime/binding/go/interface/ten/value.h"
+#include "ten_runtime/binding/go/interface/aptima/common.h"
+#include "ten_runtime/binding/go/interface/aptima/ten_env.h"
+#include "ten_runtime/binding/go/interface/aptima/value.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
@@ -75,7 +75,7 @@ static void ten_env_proxy_notify_set_property(ten_env_t *ten_env,
   bool res = ten_env_set_property(ten_env, ten_string_get_raw_str(&ctx->path),
                                   ctx->c_value, &err);
   if (res) {
-    // The ownership of the C value has been successfully transferred to the TEN
+    // The ownership of the C value has been successfully transferred to the APTIMA
     // runtime.
     ctx->c_value = NULL;
   } else {

@@ -1,10 +1,10 @@
 # Golang Binding
 
-Let's build a Go application using the TEN framework.
+Let's build a Go application using the APTIMA framework.
 
-## Creating the TEN App
+## Creating the APTIMA App
 
-First, we'll create a basic TEN Go app by integrating several pre-built TEN packages. Follow these steps:
+First, we'll create a basic APTIMA Go app by integrating several pre-built APTIMA packages. Follow these steps:
 
 {% code title=">_ Terminal" %}
 
@@ -18,9 +18,9 @@ tman install extension_group default_extension_group
 
 {% endcode %}
 
-### Installing a Default TEN Extension
+### Installing a Default APTIMA Extension
 
-Next, install a default TEN extension written in Go:
+Next, install a default APTIMA extension written in Go:
 
 {% code title=">_ Terminal" %}
 
@@ -32,7 +32,7 @@ tman install extension default_extension_go
 
 ### Declaring the Prebuilt Graph for Auto-Start
 
-Now, we'll modify the `property.json` file of the TEN app to include a graph declaration. This will ensure the default extension starts automatically when the TEN app is launched.
+Now, we'll modify the `property.json` file of the APTIMA app to include a graph declaration. This will ensure the default extension starts automatically when the APTIMA app is launched.
 
 {% code title=".json" %}
 
@@ -62,7 +62,7 @@ Now, we'll modify the `property.json` file of the TEN app to include a graph dec
 
 ## Building the App
 
-Unlike standard Go projects, the TEN Go app uses CGo, so you need to set up certain environment variables before building. A build script is already provided in the TEN runtime Go binding system package, so you can build the app with a single command:
+Unlike standard Go projects, the APTIMA Go app uses CGo, so you need to set up certain environment variables before building. A build script is already provided in the APTIMA runtime Go binding system package, so you can build the app with a single command:
 
 {% code title=">_ Terminal" %}
 
@@ -223,7 +223,7 @@ The generated files include:
 {% code title=".go" %}
 
   ```go
-  package ten
+  package aptima
 
   type _Ctype_ten_go_status_t = _Ctype_struct_ten_go_status_t
 
@@ -244,7 +244,7 @@ The generated files include:
   {% code title=".go" %}
 
   ```go
-  package ten
+  package aptima
 
   func NewCmd(cmdName string) (Cmd, error) {
       // ...

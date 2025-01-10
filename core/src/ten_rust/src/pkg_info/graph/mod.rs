@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -465,9 +465,9 @@ mod tests {
         let property_str =
             include_str!("test_data_embed/predefined_graph_no_extensions.json");
         let property: Property = Property::from_str(property_str).unwrap();
-        let ten = property._ten.as_ref().unwrap();
+        let aptima = property._ten.as_ref().unwrap();
         let predefined_graph =
-            ten.predefined_graphs.as_ref().unwrap().first().unwrap();
+            aptima.predefined_graphs.as_ref().unwrap().first().unwrap();
         let graph = &predefined_graph.graph;
         let result = graph.check_if_nodes_duplicated();
         assert!(result.is_err());
@@ -480,9 +480,9 @@ mod tests {
             "test_data_embed/predefined_graph_has_duplicated_extension.json"
         );
         let property: Property = Property::from_str(property_str).unwrap();
-        let ten = property._ten.as_ref().unwrap();
+        let aptima = property._ten.as_ref().unwrap();
         let predefined_graph =
-            ten.predefined_graphs.as_ref().unwrap().first().unwrap();
+            aptima.predefined_graphs.as_ref().unwrap().first().unwrap();
         let graph = &predefined_graph.graph;
         let result = graph.check_if_nodes_duplicated();
         assert!(result.is_err());
@@ -507,9 +507,9 @@ mod tests {
             "test_data_embed/predefined_graph_connection_src_not_found.json"
         );
         let property: Property = Property::from_str(property_str).unwrap();
-        let ten = property._ten.as_ref().unwrap();
+        let aptima = property._ten.as_ref().unwrap();
         let predefined_graph =
-            ten.predefined_graphs.as_ref().unwrap().first().unwrap();
+            aptima.predefined_graphs.as_ref().unwrap().first().unwrap();
 
         let graph = &predefined_graph.graph;
         let result = graph
@@ -524,9 +524,9 @@ mod tests {
             "test_data_embed/predefined_graph_connection_dest_not_found.json"
         );
         let property: Property = Property::from_str(property_str).unwrap();
-        let ten = property._ten.as_ref().unwrap();
+        let aptima = property._ten.as_ref().unwrap();
         let predefined_graph =
-            ten.predefined_graphs.as_ref().unwrap().first().unwrap();
+            aptima.predefined_graphs.as_ref().unwrap().first().unwrap();
 
         let graph = &predefined_graph.graph;
         let result = graph

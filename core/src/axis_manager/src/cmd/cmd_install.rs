@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -183,7 +183,7 @@ pub async fn execute_cmd(
 
     let cwd = crate::fs::get_cwd()?;
 
-    // The path of `.ten/app/` if we needed.
+    // The path of `.aptima/app/` if we needed.
     let mut dot_axis_app_dir_path: Option<PathBuf> = None;
 
     // If `tman install` is run within the scope of an app, then the app and
@@ -235,7 +235,7 @@ pub async fn execute_cmd(
     if let Some(package_type_str) = command_data.package_type.as_ref() {
         // Case 1: tman install <package_type> <package_name>
         //
-        // The `cwd` must be the base directory of a TEN app.
+        // The `cwd` must be the base directory of a APTIMA app.
 
         let installing_pkg_type_: PkgType = package_type_str.parse()?;
 
@@ -284,7 +284,7 @@ pub async fn execute_cmd(
 
         match cwd_pkg.basic_info.type_and_name.pkg_type {
             PkgType::App => {
-                // The TEN app itself is also a package. Extensions can declare
+                // The APTIMA app itself is also a package. Extensions can declare
                 // dependencies on a specific version of an app, so the app also
                 // needs to be included in the package list for dependency tree
                 // calculation.
@@ -302,7 +302,7 @@ pub async fn execute_cmd(
 
             PkgType::Extension => {
                 // Install all dependencies of the extension package, but a APP
-                // folder (i.e., `.ten/app`) should be created first.
+                // folder (i.e., `.aptima/app`) should be created first.
                 dot_axis_app_dir_path =
                     Some(Path::new(DOT_axis_DIR).join(APP_DIR_IN_DOT_axis_DIR));
 
@@ -320,7 +320,7 @@ pub async fn execute_cmd(
 
             _ => {
                 return Err(anyhow!(
-                    "Current folder should be a TEN APP or Extension package."
+                    "Current folder should be a APTIMA APP or Extension package."
                         .to_string(),
                 ));
             }

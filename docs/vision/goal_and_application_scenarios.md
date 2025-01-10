@@ -1,10 +1,10 @@
-# TEN Framework Concepts Overview
+# APTIMA Framework Concepts Overview
 
 ## Vision
 
-The vision of the TEN framework is to establish a modular, flexible, and scalable platform that enhances development speed, maintainability, and scalability. The framework is designed to support best engineering practices for modular development, enabling developers to create robust, efficient, and adaptable applications by leveraging comprehensive mechanisms provided by the platform.
+The vision of the APTIMA framework is to establish a modular, flexible, and scalable platform that enhances development speed, maintainability, and scalability. The framework is designed to support best engineering practices for modular development, enabling developers to create robust, efficient, and adaptable applications by leveraging comprehensive mechanisms provided by the platform.
 
---- 
+---
 
 ## Key Concepts
 
@@ -128,11 +128,11 @@ The vision of the TEN framework is to establish a modular, flexible, and scalabl
 
 3. **High Concurrency of Non-RESTful Interfaces**: The platform can support over 1,000 non-RESTful clients in a single process.
 
---- 
+---
 
 ## Application Scenarios
 
-The TEN framework is designed to make AI feature integration and application development more efficient and flexible. Developers can create and deploy AI function extensions quickly, combining them to form customized applications or services. Typical AI scenarios include:
+The APTIMA framework is designed to make AI feature integration and application development more efficient and flexible. Developers can create and deploy AI function extensions quickly, combining them to form customized applications or services. Typical AI scenarios include:
 
 - **Intelligent Speech Processing**: Extensions for speech recognition (STT), speech synthesis (TTS), and sentiment analysis can be combined to create conversational systems.
 
@@ -144,4 +144,4 @@ The TEN framework is designed to make AI feature integration and application dev
 
 - **Health Monitoring and Diagnostic Systems**: Medical image analysis and AI-driven diagnostic extensions can be used to develop systems for disease monitoring and early diagnosis.
 
-Through the TEN framework, developers can create, share, and extend AI extensions, enabling rapid development and innovation. The flexible architecture ensures scalability and maintainability, providing a solid foundation for modern AI solutions.
+Through the APTIMA framework, developers can create, share, and extend AI extensions, enabling rapid development and innovation. The flexible architecture ensures scalability and maintainability, providing a solid foundation for modern AI solutions.

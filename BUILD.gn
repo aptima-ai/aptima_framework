@@ -1,12 +1,12 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/options.gni")
 import("//build/aptima_runtime/options.gni")
-import("//build/aptima_runtime/ten.gni")
+import("//build/aptima_runtime/aptima.gni")
 import("//build/aptima_utils/options.gni")
 
 # When you want to get the output of the console in real time, you can use this

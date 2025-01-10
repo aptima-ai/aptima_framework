@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -99,7 +99,7 @@ static bool ten_extension_info_is_specified_extension(
 static void ten_extension_info_destroy(ten_extension_info_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: In TEN, the destroy operation should only be allowed to be
+  // thread-check: In APTIMA, the destroy operation should only be allowed to be
   // invoked when there are no thread safety issues present.
   TEN_ASSERT(ten_extension_info_check_integrity(self, false),
              "Invalid use of extension_info %p.", self);

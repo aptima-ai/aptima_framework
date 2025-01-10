@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -14,18 +14,18 @@
 
 #include "demuxer.h"
 #include "libavutil/rational.h"
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lang/cpp/lib/value.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
-demuxer_thread_t::demuxer_thread_t(ten::ten_env_proxy_t *ten_env_proxy,
-                                   std::unique_ptr<ten::cmd_t> start_cmd,
+demuxer_thread_t::demuxer_thread_t(aptima::ten_env_proxy_t *ten_env_proxy,
+                                   std::unique_ptr<aptima::cmd_t> start_cmd,
                                    extension_t *extension,
                                    std::string &input_stream_loc)
     : ten_env_proxy_(ten_env_proxy),
@@ -108,8 +108,8 @@ void *demuxer_thread_main(void *self_) {
 }
 
 void demuxer_thread_t::notify_completed(bool success) {
-  ten_env_proxy_->notify([this, success](ten::ten_env_t &ten_env) {
-    auto cmd = ten::cmd_t::create("complete");
+  ten_env_proxy_->notify([this, success](aptima::ten_env_t &ten_env) {
+    auto cmd = aptima::cmd_t::create("complete");
     cmd->set_property("input_stream", input_stream_loc_);
     cmd->set_property("success", success);
     ten_env.send_cmd(std::move(cmd));
@@ -147,26 +147,26 @@ bool demuxer_thread_t::create_demuxer() {
 
 // Called from the demuxer thread.
 void demuxer_thread_t::send_image_eof() {
-  auto frame = ten::video_frame_t::create("video_frame");
+  auto frame = aptima::video_frame_t::create("video_frame");
   frame->set_eof(true);
 
   auto frame_shared =
-      std::make_shared<std::unique_ptr<ten::video_frame_t>>(std::move(frame));
+      std::make_shared<std::unique_ptr<aptima::video_frame_t>>(std::move(frame));
 
-  ten_env_proxy_->notify([frame_shared](ten::ten_env_t &ten_env) {
+  ten_env_proxy_->notify([frame_shared](aptima::ten_env_t &ten_env) {
     ten_env.send_video_frame(std::move(*frame_shared));
   });
 }
 
 // Called from the demuxer thread.
 void demuxer_thread_t::send_audio_eof() {
-  auto frame = ten::audio_frame_t::create("audio_frame");
+  auto frame = aptima::audio_frame_t::create("audio_frame");
   frame->set_eof(true);
 
   auto frame_shared =
-      std::make_shared<std::unique_ptr<ten::audio_frame_t>>(std::move(frame));
+      std::make_shared<std::unique_ptr<aptima::audio_frame_t>>(std::move(frame));
 
-  ten_env_proxy_->notify([frame_shared](ten::ten_env_t &ten_env) {
+  ten_env_proxy_->notify([frame_shared](aptima::ten_env_t &ten_env) {
     ten_env.send_audio_frame(std::move(*frame_shared));
   });
 }
@@ -177,15 +177,15 @@ static inline double rational_to_double(AVRational &&r) {
 
 void demuxer_thread_t::reply_to_start_cmd(bool success) {
   if (!success || demuxer_ == nullptr) {
-    ten_env_proxy_->notify([this](ten::ten_env_t &ten_env) {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_ERROR);
+    ten_env_proxy_->notify([this](aptima::ten_env_t &ten_env) {
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_ERROR);
       cmd_result->set_property("detail", "fail to prepare demuxer.");
       ten_env.return_result(std::move(cmd_result), std::move(start_cmd_));
     });
     return;
   }
 
-  auto resp = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+  auto resp = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
   resp->set_property("detail", "The demuxer has been started.");
 
   // video settings
@@ -214,11 +214,11 @@ void demuxer_thread_t::reply_to_start_cmd(bool success) {
                      rational_to_double(demuxer_->audio_time_base()));
 
   auto resp_shared =
-      std::make_shared<std::unique_ptr<ten::cmd_result_t>>(std::move(resp));
-  ten_env_proxy_->notify([resp_shared, this](ten::ten_env_t &ten_env) {
+      std::make_shared<std::unique_ptr<aptima::cmd_result_t>>(std::move(resp));
+  ten_env_proxy_->notify([resp_shared, this](aptima::ten_env_t &ten_env) {
     ten_env.return_result(std::move(*resp_shared), std::move(start_cmd_));
   });
 }
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

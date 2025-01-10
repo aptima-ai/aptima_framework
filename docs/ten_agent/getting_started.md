@@ -14,7 +14,7 @@ layout:
 
 # Quickstart
 
-In this chapter, let's build the TEN Agent playground together.
+In this chapter, let's build the APTIMA Agent playground together.
 
 ## Prerequisites
 
@@ -49,19 +49,19 @@ For Apple Silicon Macs, uncheck "Use Rosetta for x86/amd64 emulation" in Docker 
 
 ## Next step
 
-**1. Clone down the TEN Agent repository**
+**1. Clone down the APTIMA Agent repository**
 
 {% code title=">_ Terminal" %}
 
 ```sh
-git clone https://github.com/TEN-framework/TEN-Agent.git
+git clone https://github.com/APTIMA-framework/APTIMA-Agent.git
 ```
 
 {% endcode %}
 
 **2. Prepare config files**
 
-Open TEN Agent in your code editor. In the root of the project, use `cd` command to create \`.env\` file from example.
+Open APTIMA Agent in your code editor. In the root of the project, use `cd` command to create \`.env\` file from example.
 
 {% code title=">_ Terminal" %}
 
@@ -140,4 +140,4 @@ Open the playground at [localhost:3000](http://localhost:3000) to configure your
  2. Choose a corresponding module
  3. Select an extension and configure its API key settings
 
-![Module Example](https://github.com/TEN-framework/docs/blob/main/assets/gif/module-example.gif?raw=true)
+![Module Example](https://github.com/APTIMA-framework/docs/blob/main/assets/gif/module-example.gif?raw=true)

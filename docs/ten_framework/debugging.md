@@ -1,12 +1,12 @@
 # Debugging
 
-## For Developers of the TEN Framework
+## For Developers of the APTIMA Framework
 
-If you're using VS Code to develop the TEN framework, there is a `launch.json` file in the TEN framework source tree that provides default debug targets.
+If you're using VS Code to develop the APTIMA framework, there is a `launch.json` file in the APTIMA framework source tree that provides default debug targets.
 
-## For Users of the TEN Framework
+## For Users of the APTIMA Framework
 
-If you're using VS Code to develop your own application based on the TEN framework, you can add configurations to your `.vscode/launch.json` file so that you can debug your application with breakpoints and variable inspection whichever programming language (C++/Golang/Python) you are using.
+If you're using VS Code to develop your own application based on the APTIMA framework, you can add configurations to your `.vscode/launch.json` file so that you can debug your application with breakpoints and variable inspection whichever programming language (C++/Golang/Python) you are using.
 
 ### Debugging in C++ Applications
 

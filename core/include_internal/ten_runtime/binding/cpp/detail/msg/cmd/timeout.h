@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -13,7 +13,7 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/timeout/cmd.h"
 #include "ten_runtime/binding/cpp/detail/msg/cmd/cmd.h"
 
-namespace ten {
+namespace aptima {
 
 class extension_t;
 
@@ -54,4 +54,4 @@ class cmd_timeout_t : public cmd_t {
   // @}
 };
 
-}  // namespace ten
+}  // namespace aptima

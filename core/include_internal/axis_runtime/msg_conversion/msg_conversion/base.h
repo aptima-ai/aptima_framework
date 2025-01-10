@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -18,7 +18,7 @@ typedef axis_shared_ptr_t *(*axis_msg_conversion_func_t)(
     axis_msg_conversion_t *operation, axis_shared_ptr_t *msg, axis_error_t *err);
 
 /**
- * If the desired message conversion is beyond the capabilities of the TEN
+ * If the desired message conversion is beyond the capabilities of the APTIMA
  * runtime, an extension can be used to handle the conversion. To avoid having
  * message conversion logic intrude into other extensions, a dedicated extension
  * specifically for message conversion can be implemented. This standalone

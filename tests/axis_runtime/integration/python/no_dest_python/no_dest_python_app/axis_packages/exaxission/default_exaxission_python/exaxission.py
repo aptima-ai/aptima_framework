@@ -1,13 +1,22 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 from typing import Optional
 
-from ten import (AudioFrame, Cmd, CmdResult, Data, Extension, StatusCode,
-                 TenEnv, TenError, VideoFrame)
+from aptima import (
+    AudioFrame,
+    Cmd,
+    CmdResult,
+    Data,
+    Extension,
+    StatusCode,
+    TenEnv,
+    TenError,
+    VideoFrame,
+)
 
 
 class DefaultExtension(Extension):
@@ -22,9 +31,13 @@ class DefaultExtension(Extension):
         aptima_env.init_property_from_json('{"testKey": "testValue"}')
         aptima_env.on_configure_done()
 
-    def handle_error(self, aptima_env: TenEnv, error: Optional[TenError]) -> None:
+    def handle_error(
+        self, aptima_env: TenEnv, error: Optional[TenError]
+    ) -> None:
         assert error is not None
-        aptima_env.log_error("DefaultExtension handle_error: " + error.err_msg())
+        aptima_env.log_error(
+            "DefaultExtension handle_error: " + error.err_msg()
+        )
 
         self.no_dest_error_recv_count += 1
         if self.no_dest_error_recv_count == 4:
@@ -44,7 +57,9 @@ class DefaultExtension(Extension):
         cmd = Cmd.create("unconnected_cmd")
         aptima_env.send_cmd(
             cmd,
-            lambda aptima_env, result, error: self.handle_error(aptima_env, error),
+            lambda aptima_env, result, error: self.handle_error(
+                aptima_env, error
+            ),
         )
 
         # Send an unconnected data

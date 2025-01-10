@@ -1,11 +1,19 @@
 """
 Tests for solving.
 """
+
 from typing import cast
 from unittest import TestCase
 
-from clingo import (Control, Function, Model, ModelType, SolveHandle,
-                    SolveResult, SymbolicAtom)
+from clingo import (
+    Control,
+    Function,
+    Model,
+    ModelType,
+    SolveHandle,
+    SolveResult,
+    SymbolicAtom,
+)
 
 from .util import _MCB, _check_sat, _p
 

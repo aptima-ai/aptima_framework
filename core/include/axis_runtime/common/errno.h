@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -30,7 +30,7 @@ typedef enum aptima_ERRNO {
   // Invalid graph.
   aptima_ERRNO_INVALID_GRAPH = 5,
 
-  // The TEN world is closed.
+  // The APTIMA world is closed.
   aptima_ERRNO_aptima_IS_CLOSED = 6,
 
   // The msg is not connected in the graph.

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -28,8 +28,8 @@
 #include "axis_utils/value/value_is.h"
 #include "axis_utils/value/value_kv.h"
 
-// Retrieve those property fields that are reserved for the TEN runtime
-// under the 'ten' namespace.
+// Retrieve those property fields that are reserved for the APTIMA runtime
+// under the 'aptima' namespace.
 axis_value_t *axis_app_get_axis_namespace_properties(axis_app_t *self) {
   axis_ASSERT(self && axis_app_check_integrity(self, true), "Should not happen.");
 
@@ -183,7 +183,7 @@ bool axis_app_handle_axis_namespace_properties(axis_app_t *self) {
   self->long_running_mode = false;
 
   // First, set the log-related configuration to default values. This way, if
-  // there are no log-related properties under the `ten` namespace, the default
+  // there are no log-related properties under the `aptima` namespace, the default
   // values will be used.
   axis_log_global_set_output_to_stderr();
   axis_log_global_set_output_level(DEFAULT_LOG_OUTPUT_LEVEL);
@@ -201,6 +201,6 @@ void axis_app_handle_metadata(axis_app_t *self) {
   axis_ASSERT(axis_app_check_integrity(self, true), "Invalid use of app %p.",
              self);
 
-  // Load custom TEN app metadata.
+  // Load custom APTIMA app metadata.
   axis_metadata_load(axis_app_on_configure, self->axis_env);
 }

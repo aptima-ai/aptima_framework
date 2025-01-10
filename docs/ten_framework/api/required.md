@@ -1,6 +1,6 @@
 # Required
 
-In the TEN framework, only message schemas are allowed to have `required` fields, and the properties of extensions are currently not permitted to include `required` fields.
+In the APTIMA framework, only message schemas are allowed to have `required` fields, and the properties of extensions are currently not permitted to include `required` fields.
 
 This means that the schemas for `cmd_in`, `cmd_out`, `data_in`, `data_out`, `audio_frame_in`, `audio_frame_out`, `video_frame_in`, and `video_frame_out` are allowed to have `required` fields.
 
@@ -78,7 +78,7 @@ When extension calls `send_<foo>(msg_X)` or `return_result(result_Y)`, the frame
 
 The handling of these three scenarios is identical, though they are discussed separately:
 
-1. If `send_<foo>` is sending a TEN command and the schema check fails:
+1. If `send_<foo>` is sending a APTIMA command and the schema check fails:
 
    `send_<foo>` will return false immediately, and if an error parameter is provided, it will include the schema check failure error message.
 
@@ -86,7 +86,7 @@ The handling of these three scenarios is identical, though they are discussed se
 
    `return_result` will return false, and if an error parameter is provided, it can include the schema check failure error message.
 
-3. If `send_<foo>` is sending a general data-like TEN message (such as data, audio frame, or video frame):
+3. If `send_<foo>` is sending a general data-like APTIMA message (such as data, audio frame, or video frame):
 
    `send_<foo>` will return false, and if an error parameter is provided, it can include the schema check failure error message.
 
@@ -94,21 +94,21 @@ The handling of these three scenarios is identical, though they are discussed se
 
 Before ten_runtime passes `msg_X` or `result_Y` to an extension's `on_<foo>()` or result handler, it checks whether all `required` fields defined in the schema of `msg_X` or `result_Y` are present. If any `required` field is missing, the schema check fails.
 
-1. If the incoming message is a TEN command:
+1. If the incoming message is a APTIMA command:
 
    ten_runtime will return an error `status_code` result to the previous extension.
 
-2. If the incoming message is a TEN command result:
+2. If the incoming message is a APTIMA command result:
 
    ten_runtime will change the `status_code` of the result to error, add the missing `required` fields, and set the values of these fields to their default values based on their type.
 
-3. If the incoming message is a TEN data-like message:
+3. If the incoming message is a APTIMA data-like message:
 
    ten_runtime will simply drop the data-like message.
 
 ## Behavior of Graph Check
 
-TEN Manager has a function called Graph Check, which is used to verify the semantic correctness of a graph. The checks related to required fields are as follows:
+APTIMA Manager has a function called Graph Check, which is used to verify the semantic correctness of a graph. The checks related to required fields are as follows:
 
 1. For a connection, the `required` fields of the source must be a superset of the `required` fields of the destination.
 2. If the same field name appears in both the source and destination `required` fields, their types must be compatible.

@@ -1,5 +1,5 @@
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/aptima-ai/aptima_framework/LICENSE for more
 // information.
@@ -13,20 +13,20 @@ import (
 	"fmt"
 
 	"go_common_dep/types"
-	"aptima_framework/ten"
+	"aptima_framework/aptima"
 )
 
 type extensionB struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func newExtensionB(name string) ten.Extension {
+func newExtensionB(name string) aptima.Extension {
 	return &extensionB{}
 }
 
 func (p *extensionB) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	go func() {
 		fmt.Println("extensionB OnCmd")
@@ -41,7 +41,7 @@ func (p *extensionB) OnCmd(
 
 			if len(strArray) != 3 || strArray[0] != "hello" ||
 				strArray[1] != "world" ||
-				strArray[2] != "ten" {
+				strArray[2] != "aptima" {
 				panic("should not happen")
 			}
 
@@ -68,8 +68,8 @@ func (p *extensionB) OnCmd(
 				panic("should not happen")
 			}
 
-			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
-			cmdResult.SetPropertyString("detail", "ten")
+			cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
+			cmdResult.SetPropertyString("detail", "aptima")
 			tenEnv.ReturnResult(cmdResult, cmd, nil)
 		}
 	}()
@@ -77,9 +77,9 @@ func (p *extensionB) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"extension_b",
-		ten.NewDefaultExtensionAddon(newExtensionB),
+		aptima.NewDefaultExtensionAddon(newExtensionB),
 	)
 	if err != nil {
 		fmt.Println("register addon failed", err)

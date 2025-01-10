@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 
 type baseTenObject[T any] struct {
 	// The object is short-lived, it becomes invalid after sending or returning
-	// to TEN runtime. Ex: there's nothing can do on a cmd after someone calls
+	// to APTIMA runtime. Ex: there's nothing can do on a cmd after someone calls
 	// SendCmd(). It's the user's responsibility to make sure the calling
 	// sequences on one baseTenObject are correct. And we will do some check in
 	// the "dev" mode (i.e., build with flags: -tags "dev"), this lock is only
@@ -51,7 +51,7 @@ type baseTenObject[T any] struct {
 	// interfaces to the users. So we do not need to add such `copyCheck` now.
 	sync.RWMutex
 
-	// The pointer of the C bridge object used to communicate with the TEN
+	// The pointer of the C bridge object used to communicate with the APTIMA
 	// runtime.
 	cPtr T
 

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -218,9 +218,9 @@ void axis_app_on_orphan_connection_closed(axis_connection_t *connection,
     axis_app_proceed_to_close(self);
   } else {
     // If 'connection' is an orphan connection, it means the connection is not
-    // attached to an engine, and the TEN app should _not_ be closed due to an
-    // strange connection like this, otherwise, the TEN app will be very
-    // fragile, anyone could simply connect to the TEN app, and close the app
+    // attached to an engine, and the APTIMA app should _not_ be closed due to an
+    // strange connection like this, otherwise, the APTIMA app will be very
+    // fragile, anyone could simply connect to the APTIMA app, and close the app
     // through disconnection.
   }
 }

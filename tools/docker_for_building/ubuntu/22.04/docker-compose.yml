@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  ten-building-ubuntu-2204:
+  aptima-building-ubuntu-2204:
     build: .
-    image: ten/building/ubuntu/22.04
+    image: aptima/building/ubuntu/22.04
     tty: true
     volumes:
-      - /tmp/ten:/tmp/ten
+      - /tmp/aptima:/tmp/aptima
     environment:
-      - PATH=/tmp/ten/aptima_gn:$PATH
+      - PATH=/tmp/aptima/aptima_gn:$PATH

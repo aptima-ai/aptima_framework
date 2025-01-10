@@ -49,18 +49,22 @@ class GenDep(TestCase):
         dependency list.
         :return:
         """
-        dependencies = ['DEP1', 'DEP2']
+        dependencies = ["DEP1", "DEP2"]
         dep_start, dep_end = gen_dependencies(dependencies)
         preprocessor1, preprocessor2 = dep_start.splitlines()
         endif1, endif2 = dep_end.splitlines()
-        self.assertEqual(preprocessor1, '#if defined(DEP1)',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(preprocessor2, '#if defined(DEP2)',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(endif1, '#endif /* DEP2 */',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(endif2, '#endif /* DEP1 */',
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            preprocessor1, "#if defined(DEP1)", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            preprocessor2, "#if defined(DEP2)", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            endif1, "#endif /* DEP2 */", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            endif2, "#endif /* DEP1 */", "Preprocessor generated incorrectly"
+        )
 
     def test_disabled_dependencies_list(self):
         """
@@ -68,18 +72,22 @@ class GenDep(TestCase):
         dependency list.
         :return:
         """
-        dependencies = ['!DEP1', '!DEP2']
+        dependencies = ["!DEP1", "!DEP2"]
         dep_start, dep_end = gen_dependencies(dependencies)
         preprocessor1, preprocessor2 = dep_start.splitlines()
         endif1, endif2 = dep_end.splitlines()
-        self.assertEqual(preprocessor1, '#if !defined(DEP1)',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(preprocessor2, '#if !defined(DEP2)',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(endif1, '#endif /* !DEP2 */',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(endif2, '#endif /* !DEP1 */',
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            preprocessor1, "#if !defined(DEP1)", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            preprocessor2, "#if !defined(DEP2)", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            endif1, "#endif /* !DEP2 */", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            endif2, "#endif /* !DEP1 */", "Preprocessor generated incorrectly"
+        )
 
     def test_mixed_dependencies_list(self):
         """
@@ -87,18 +95,22 @@ class GenDep(TestCase):
         dependency list.
         :return:
         """
-        dependencies = ['!DEP1', 'DEP2']
+        dependencies = ["!DEP1", "DEP2"]
         dep_start, dep_end = gen_dependencies(dependencies)
         preprocessor1, preprocessor2 = dep_start.splitlines()
         endif1, endif2 = dep_end.splitlines()
-        self.assertEqual(preprocessor1, '#if !defined(DEP1)',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(preprocessor2, '#if defined(DEP2)',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(endif1, '#endif /* DEP2 */',
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(endif2, '#endif /* !DEP1 */',
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            preprocessor1, "#if !defined(DEP1)", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            preprocessor2, "#if defined(DEP2)", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            endif1, "#endif /* DEP2 */", "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            endif2, "#endif /* !DEP1 */", "Preprocessor generated incorrectly"
+        )
 
     def test_empty_dependencies_list(self):
         """
@@ -108,8 +120,8 @@ class GenDep(TestCase):
         """
         dependencies = []
         dep_start, dep_end = gen_dependencies(dependencies)
-        self.assertEqual(dep_start, '', 'Preprocessor generated incorrectly')
-        self.assertEqual(dep_end, '', 'Preprocessor generated incorrectly')
+        self.assertEqual(dep_start, "", "Preprocessor generated incorrectly")
+        self.assertEqual(dep_end, "", "Preprocessor generated incorrectly")
 
     def test_large_dependencies_list(self):
         """
@@ -120,12 +132,14 @@ class GenDep(TestCase):
         dependencies = []
         count = 10
         for i in range(count):
-            dependencies.append('DEP%d' % i)
+            dependencies.append("DEP%d" % i)
         dep_start, dep_end = gen_dependencies(dependencies)
-        self.assertEqual(len(dep_start.splitlines()), count,
-                         'Preprocessor generated incorrectly')
-        self.assertEqual(len(dep_end.splitlines()), count,
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            len(dep_start.splitlines()), count, "Preprocessor generated incorrectly"
+        )
+        self.assertEqual(
+            len(dep_end.splitlines()), count, "Preprocessor generated incorrectly"
+        )
 
 
 class GenDepOneLine(TestCase):
@@ -139,10 +153,13 @@ class GenDepOneLine(TestCase):
         dependency list.
         :return:
         """
-        dependencies = ['DEP1', 'DEP2']
+        dependencies = ["DEP1", "DEP2"]
         dep_str = gen_dependencies_one_line(dependencies)
-        self.assertEqual(dep_str, '#if defined(DEP1) && defined(DEP2)',
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            dep_str,
+            "#if defined(DEP1) && defined(DEP2)",
+            "Preprocessor generated incorrectly",
+        )
 
     def test_disabled_dependencies_list(self):
         """
@@ -150,10 +167,13 @@ class GenDepOneLine(TestCase):
         dependency list.
         :return:
         """
-        dependencies = ['!DEP1', '!DEP2']
+        dependencies = ["!DEP1", "!DEP2"]
         dep_str = gen_dependencies_one_line(dependencies)
-        self.assertEqual(dep_str, '#if !defined(DEP1) && !defined(DEP2)',
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            dep_str,
+            "#if !defined(DEP1) && !defined(DEP2)",
+            "Preprocessor generated incorrectly",
+        )
 
     def test_mixed_dependencies_list(self):
         """
@@ -161,10 +181,13 @@ class GenDepOneLine(TestCase):
         dependency list.
         :return:
         """
-        dependencies = ['!DEP1', 'DEP2']
+        dependencies = ["!DEP1", "DEP2"]
         dep_str = gen_dependencies_one_line(dependencies)
-        self.assertEqual(dep_str, '#if !defined(DEP1) && defined(DEP2)',
-                         'Preprocessor generated incorrectly')
+        self.assertEqual(
+            dep_str,
+            "#if !defined(DEP1) && defined(DEP2)",
+            "Preprocessor generated incorrectly",
+        )
 
     def test_empty_dependencies_list(self):
         """
@@ -174,7 +197,7 @@ class GenDepOneLine(TestCase):
         """
         dependencies = []
         dep_str = gen_dependencies_one_line(dependencies)
-        self.assertEqual(dep_str, '', 'Preprocessor generated incorrectly')
+        self.assertEqual(dep_str, "", "Preprocessor generated incorrectly")
 
     def test_large_dependencies_list(self):
         """
@@ -185,12 +208,10 @@ class GenDepOneLine(TestCase):
         dependencies = []
         count = 10
         for i in range(count):
-            dependencies.append('DEP%d' % i)
+            dependencies.append("DEP%d" % i)
         dep_str = gen_dependencies_one_line(dependencies)
-        expected = '#if ' + ' && '.join(['defined(%s)' %
-                                         x for x in dependencies])
-        self.assertEqual(dep_str, expected,
-                         'Preprocessor generated incorrectly')
+        expected = "#if " + " && ".join(["defined(%s)" % x for x in dependencies])
+        self.assertEqual(dep_str, expected, "Preprocessor generated incorrectly")
 
 
 class GenFunctionWrapper(TestCase):
@@ -204,14 +225,14 @@ class GenFunctionWrapper(TestCase):
 
         :return:
         """
-        code = gen_function_wrapper('test_a', '', ('a', 'b', 'c', 'd'))
-        expected = '''
+        code = gen_function_wrapper("test_a", "", ("a", "b", "c", "d"))
+        expected = """
 void test_a_wrapper( void ** params )
 {
 
     test_a( a, b, c, d );
 }
-'''
+"""
         self.assertEqual(code, expected)
 
     def test_local(self):
@@ -220,15 +241,14 @@ void test_a_wrapper( void ** params )
 
         :return:
         """
-        code = gen_function_wrapper('test_a',
-                                    'int x = 1;', ('x', 'b', 'c', 'd'))
-        expected = '''
+        code = gen_function_wrapper("test_a", "int x = 1;", ("x", "b", "c", "d"))
+        expected = """
 void test_a_wrapper( void ** params )
 {
 int x = 1;
     test_a( x, b, c, d );
 }
-'''
+"""
         self.assertEqual(code, expected)
 
     def test_empty_params(self):
@@ -237,15 +257,15 @@ int x = 1;
 
         :return:
         """
-        code = gen_function_wrapper('test_a', '', ())
-        expected = '''
+        code = gen_function_wrapper("test_a", "", ())
+        expected = """
 void test_a_wrapper( void ** params )
 {
     (void)params;
 
     test_a(  );
 }
-'''
+"""
         self.assertEqual(code, expected)
 
 
@@ -259,14 +279,14 @@ class GenDispatch(TestCase):
         Test that dispatch table entry is generated correctly.
         :return:
         """
-        code = gen_dispatch('test_a', ['DEP1', 'DEP2'])
-        expected = '''
+        code = gen_dispatch("test_a", ["DEP1", "DEP2"])
+        expected = """
 #if defined(DEP1) && defined(DEP2)
     test_a_wrapper,
 #else
     NULL,
 #endif
-'''
+"""
         self.assertEqual(code, expected)
 
     def test_empty_dependencies(self):
@@ -274,10 +294,10 @@ class GenDispatch(TestCase):
         Test empty dependency list.
         :return:
         """
-        code = gen_dispatch('test_a', [])
-        expected = '''
+        code = gen_dispatch("test_a", [])
+        expected = """
     test_a_wrapper,
-'''
+"""
         self.assertEqual(code, expected)
 
 
@@ -285,6 +305,7 @@ class StringIOWrapper(StringIO):
     """
     file like class to mock file object in tests.
     """
+
     def __init__(self, file_name, data, line_no=0):
         """
         Init file handle.
@@ -333,17 +354,17 @@ class ParseUntilPattern(TestCase):
 
         :return:
         """
-        data = '''#include "mbedtls/ecp.h"
+        data = """#include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
 /* END_HEADER */
-'''
-        expected = '''#line 1 "test_suite_ut.function"
+"""
+        expected = """#line 1 "test_suite_ut.function"
 #include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data, line_no=0)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data, line_no=0)
         headers = parse_until_pattern(stream, END_HEADER_REGEX)
         self.assertEqual(headers, expected)
 
@@ -353,19 +374,20 @@ class ParseUntilPattern(TestCase):
 
         :return:
         """
-        data = '''#include "mbedtls/ecp.h"
+        data = """#include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
 /* END_HEADER */
-'''
+"""
         offset_line_no = 5
-        expected = '''#line %d "test_suite_ut.function"
+        expected = """#line %d "test_suite_ut.function"
 #include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
-''' % (offset_line_no + 1)
-        stream = StringIOWrapper('test_suite_ut.function', data,
-                                 offset_line_no)
+""" % (
+            offset_line_no + 1
+        )
+        stream = StringIOWrapper("test_suite_ut.function", data, offset_line_no)
         headers = parse_until_pattern(stream, END_HEADER_REGEX)
         self.assertEqual(headers, expected)
 
@@ -375,14 +397,15 @@ class ParseUntilPattern(TestCase):
         missing.
         :return:
         """
-        data = '''#include "mbedtls/ecp.h"
+        data = """#include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
 
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        self.assertRaises(GeneratorInputError, parse_until_pattern, stream,
-                          END_HEADER_REGEX)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        self.assertRaises(
+            GeneratorInputError, parse_until_pattern, stream, END_HEADER_REGEX
+        )
 
 
 class ParseSuiteDependencies(TestCase):
@@ -395,13 +418,13 @@ class ParseSuiteDependencies(TestCase):
 
         :return:
         """
-        data = '''
+        data = """
  * depends_on:MBEDTLS_ECP_C
  * END_DEPENDENCIES
  */
-'''
-        expected = ['MBEDTLS_ECP_C']
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        expected = ["MBEDTLS_ECP_C"]
+        stream = StringIOWrapper("test_suite_ut.function", data)
         dependencies = parse_suite_dependencies(stream)
         self.assertEqual(dependencies, expected)
 
@@ -410,25 +433,24 @@ class ParseSuiteDependencies(TestCase):
         Test that InvalidFileFormat is raised when end dep comment is missing.
         :return:
         """
-        data = '''
+        data = """
 * depends_on:MBEDTLS_ECP_C
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        self.assertRaises(GeneratorInputError, parse_suite_dependencies,
-                          stream)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        self.assertRaises(GeneratorInputError, parse_suite_dependencies, stream)
 
     def test_dependencies_split(self):
         """
         Test that InvalidFileFormat is raised when end dep comment is missing.
         :return:
         """
-        data = '''
+        data = """
  * depends_on:MBEDTLS_ECP_C:A:B:   C  : D :F : G: !H
  * END_DEPENDENCIES
  */
-'''
-        expected = ['MBEDTLS_ECP_C', 'A', 'B', 'C', 'D', 'F', 'G', '!H']
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        expected = ["MBEDTLS_ECP_C", "A", "B", "C", "D", "F", "G", "!H"]
+        stream = StringIOWrapper("test_suite_ut.function", data)
         dependencies = parse_suite_dependencies(stream)
         self.assertEqual(dependencies, expected)
 
@@ -444,9 +466,8 @@ class ParseFuncDependencies(TestCase):
         dependencies.
         :return:
         """
-        line = '/* BEGIN_CASE ' \
-               'depends_on:MBEDTLS_ENTROPY_NV_SEED:MBEDTLS_FS_IO */'
-        expected = ['MBEDTLS_ENTROPY_NV_SEED', 'MBEDTLS_FS_IO']
+        line = "/* BEGIN_CASE " "depends_on:MBEDTLS_ENTROPY_NV_SEED:MBEDTLS_FS_IO */"
+        expected = ["MBEDTLS_ENTROPY_NV_SEED", "MBEDTLS_FS_IO"]
         dependencies = parse_function_dependencies(line)
         self.assertEqual(dependencies, expected)
 
@@ -456,7 +477,7 @@ class ParseFuncDependencies(TestCase):
         dependencies.
         :return:
         """
-        line = '/* BEGIN_CASE */'
+        line = "/* BEGIN_CASE */"
         dependencies = parse_function_dependencies(line)
         self.assertEqual(dependencies, [])
 
@@ -466,9 +487,9 @@ class ParseFuncDependencies(TestCase):
         dependencies.
         :return:
         """
-        line = '/* BEGIN_CASE depends_on:MBEDTLS_FS_IO: A : !B:C : F*/'
+        line = "/* BEGIN_CASE depends_on:MBEDTLS_FS_IO: A : !B:C : F*/"
         dependencies = parse_function_dependencies(line)
-        self.assertEqual(dependencies, ['MBEDTLS_FS_IO', 'A', '!B', 'C', 'F'])
+        self.assertEqual(dependencies, ["MBEDTLS_FS_IO", "A", "!B", "C", "F"])
 
 
 class ParseFuncSignature(TestCase):
@@ -481,35 +502,38 @@ class ParseFuncSignature(TestCase):
         Test int and char parameters parsing
         :return:
         """
-        line = 'void entropy_threshold( char * a, int b, int result )'
+        line = "void entropy_threshold( char * a, int b, int result )"
         args, local, arg_dispatch = parse_function_arguments(line)
-        self.assertEqual(args, ['char*', 'int', 'int'])
-        self.assertEqual(local, '')
-        self.assertEqual(arg_dispatch, ['(char *) params[0]',
-                                        '*( (int *) params[1] )',
-                                        '*( (int *) params[2] )'])
+        self.assertEqual(args, ["char*", "int", "int"])
+        self.assertEqual(local, "")
+        self.assertEqual(
+            arg_dispatch,
+            ["(char *) params[0]", "*( (int *) params[1] )", "*( (int *) params[2] )"],
+        )
 
     def test_hex_params(self):
         """
         Test hex parameters parsing
         :return:
         """
-        line = 'void entropy_threshold( char * a, data_t * h, int result )'
+        line = "void entropy_threshold( char * a, data_t * h, int result )"
         args, local, arg_dispatch = parse_function_arguments(line)
-        self.assertEqual(args, ['char*', 'hex', 'int'])
-        self.assertEqual(local,
-                         '    data_t data1 = {(uint8_t *) params[1], '
-                         '*( (uint32_t *) params[2] )};\n')
-        self.assertEqual(arg_dispatch, ['(char *) params[0]',
-                                        '&data1',
-                                        '*( (int *) params[3] )'])
+        self.assertEqual(args, ["char*", "hex", "int"])
+        self.assertEqual(
+            local,
+            "    data_t data1 = {(uint8_t *) params[1], "
+            "*( (uint32_t *) params[2] )};\n",
+        )
+        self.assertEqual(
+            arg_dispatch, ["(char *) params[0]", "&data1", "*( (int *) params[3] )"]
+        )
 
     def test_unsupported_arg(self):
         """
         Test unsupported arguments (not among int, char * and data_t)
         :return:
         """
-        line = 'void entropy_threshold( char * a, data_t * h, char result )'
+        line = "void entropy_threshold( char * a, data_t * h, char result )"
         self.assertRaises(ValueError, parse_function_arguments, line)
 
     def test_no_params(self):
@@ -517,10 +541,10 @@ class ParseFuncSignature(TestCase):
         Test no parameters.
         :return:
         """
-        line = 'void entropy_threshold()'
+        line = "void entropy_threshold()"
         args, local, arg_dispatch = parse_function_arguments(line)
         self.assertEqual(args, [])
-        self.assertEqual(local, '')
+        self.assertEqual(local, "")
         self.assertEqual(arg_dispatch, [])
 
 
@@ -534,84 +558,86 @@ class ParseFunctionCode(TestCase):
         Test no test function found.
         :return:
         """
-        data = '''
+        data = """
 No
 test
 function
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        err_msg = 'file: test_suite_ut.function - Test functions not found!'
-        self.assertRaisesRegex(GeneratorInputError, err_msg,
-                               parse_function_code, stream, [], [])
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        err_msg = "file: test_suite_ut.function - Test functions not found!"
+        self.assertRaisesRegex(
+            GeneratorInputError, err_msg, parse_function_code, stream, [], []
+        )
 
     def test_no_end_case_comment(self):
         """
         Test missing end case.
         :return:
         """
-        data = '''
+        data = """
 void test_func()
 {
 }
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        err_msg = r'file: test_suite_ut.function - '\
-                  'end case pattern .*? not found!'
-        self.assertRaisesRegex(GeneratorInputError, err_msg,
-                               parse_function_code, stream, [], [])
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        err_msg = r"file: test_suite_ut.function - " "end case pattern .*? not found!"
+        self.assertRaisesRegex(
+            GeneratorInputError, err_msg, parse_function_code, stream, [], []
+        )
 
     @patch("generate_test_code.parse_function_arguments")
-    def test_function_called(self,
-                             parse_function_arguments_mock):
+    def test_function_called(self, parse_function_arguments_mock):
         """
         Test parse_function_code()
         :return:
         """
-        parse_function_arguments_mock.return_value = ([], '', [])
-        data = '''
+        parse_function_arguments_mock.return_value = ([], "", [])
+        data = """
 void test_func()
 {
 }
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        self.assertRaises(GeneratorInputError, parse_function_code,
-                          stream, [], [])
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        self.assertRaises(GeneratorInputError, parse_function_code, stream, [], [])
         self.assertTrue(parse_function_arguments_mock.called)
-        parse_function_arguments_mock.assert_called_with('void test_func()\n')
+        parse_function_arguments_mock.assert_called_with("void test_func()\n")
 
     @patch("generate_test_code.gen_dispatch")
     @patch("generate_test_code.gen_dependencies")
     @patch("generate_test_code.gen_function_wrapper")
     @patch("generate_test_code.parse_function_arguments")
-    def test_return(self, parse_function_arguments_mock,
-                    gen_function_wrapper_mock,
-                    gen_dependencies_mock,
-                    gen_dispatch_mock):
+    def test_return(
+        self,
+        parse_function_arguments_mock,
+        gen_function_wrapper_mock,
+        gen_dependencies_mock,
+        gen_dispatch_mock,
+    ):
         """
         Test generated code.
         :return:
         """
-        parse_function_arguments_mock.return_value = ([], '', [])
-        gen_function_wrapper_mock.return_value = ''
+        parse_function_arguments_mock.return_value = ([], "", [])
+        gen_function_wrapper_mock.return_value = ""
         gen_dependencies_mock.side_effect = gen_dependencies
         gen_dispatch_mock.side_effect = gen_dispatch
-        data = '''
+        data = """
 void func()
 {
     ba ba black sheep
     have you any wool
 }
 /* END_CASE */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         name, arg, code, dispatch_code = parse_function_code(stream, [], [])
 
         self.assertTrue(parse_function_arguments_mock.called)
-        parse_function_arguments_mock.assert_called_with('void func()\n')
-        gen_function_wrapper_mock.assert_called_with('test_func', '', [])
-        self.assertEqual(name, 'test_func')
+        parse_function_arguments_mock.assert_called_with("void func()\n")
+        gen_function_wrapper_mock.assert_called_with("test_func", "", [])
+        self.assertEqual(name, "test_func")
         self.assertEqual(arg, [])
-        expected = '''#line 1 "test_suite_ut.function"
+        expected = """#line 1 "test_suite_ut.function"
 
 void test_func()
 {
@@ -620,7 +646,7 @@ void test_func()
 exit:
     ;
 }
-'''
+"""
         self.assertEqual(code, expected)
         self.assertEqual(dispatch_code, "\n    test_func_wrapper,\n")
 
@@ -628,19 +654,22 @@ exit:
     @patch("generate_test_code.gen_dependencies")
     @patch("generate_test_code.gen_function_wrapper")
     @patch("generate_test_code.parse_function_arguments")
-    def test_with_exit_label(self, parse_function_arguments_mock,
-                             gen_function_wrapper_mock,
-                             gen_dependencies_mock,
-                             gen_dispatch_mock):
+    def test_with_exit_label(
+        self,
+        parse_function_arguments_mock,
+        gen_function_wrapper_mock,
+        gen_dependencies_mock,
+        gen_dispatch_mock,
+    ):
         """
         Test when exit label is present.
         :return:
         """
-        parse_function_arguments_mock.return_value = ([], '', [])
-        gen_function_wrapper_mock.return_value = ''
+        parse_function_arguments_mock.return_value = ([], "", [])
+        gen_function_wrapper_mock.return_value = ""
         gen_dependencies_mock.side_effect = gen_dependencies
         gen_dispatch_mock.side_effect = gen_dispatch
-        data = '''
+        data = """
 void func()
 {
     ba ba black sheep
@@ -650,11 +679,11 @@ exit:
     3 bags full
 }
 /* END_CASE */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         _, _, code, _ = parse_function_code(stream, [], [])
 
-        expected = '''#line 1 "test_suite_ut.function"
+        expected = """#line 1 "test_suite_ut.function"
 
 void test_func()
 {
@@ -664,7 +693,7 @@ exit:
     yes sir yes sir
     3 bags full
 }
-'''
+"""
         self.assertEqual(code, expected)
 
     def test_non_void_function(self):
@@ -672,29 +701,33 @@ exit:
         Test invalid signature (non void).
         :return:
         """
-        data = 'int entropy_threshold( char * a, data_t * h, int result )'
-        err_msg = 'file: test_suite_ut.function - Test functions not found!'
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        self.assertRaisesRegex(GeneratorInputError, err_msg,
-                               parse_function_code, stream, [], [])
+        data = "int entropy_threshold( char * a, data_t * h, int result )"
+        err_msg = "file: test_suite_ut.function - Test functions not found!"
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        self.assertRaisesRegex(
+            GeneratorInputError, err_msg, parse_function_code, stream, [], []
+        )
 
     @patch("generate_test_code.gen_dispatch")
     @patch("generate_test_code.gen_dependencies")
     @patch("generate_test_code.gen_function_wrapper")
     @patch("generate_test_code.parse_function_arguments")
-    def test_functio_name_on_newline(self, parse_function_arguments_mock,
-                                     gen_function_wrapper_mock,
-                                     gen_dependencies_mock,
-                                     gen_dispatch_mock):
+    def test_functio_name_on_newline(
+        self,
+        parse_function_arguments_mock,
+        gen_function_wrapper_mock,
+        gen_dependencies_mock,
+        gen_dispatch_mock,
+    ):
         """
         Test when exit label is present.
         :return:
         """
-        parse_function_arguments_mock.return_value = ([], '', [])
-        gen_function_wrapper_mock.return_value = ''
+        parse_function_arguments_mock.return_value = ([], "", [])
+        gen_function_wrapper_mock.return_value = ""
         gen_dependencies_mock.side_effect = gen_dependencies
         gen_dispatch_mock.side_effect = gen_dispatch
-        data = '''
+        data = """
 void
 
 
@@ -707,11 +740,11 @@ exit:
     3 bags full
 }
 /* END_CASE */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         _, _, code, _ = parse_function_code(stream, [], [])
 
-        expected = '''#line 1 "test_suite_ut.function"
+        expected = """#line 1 "test_suite_ut.function"
 
 void
 
@@ -724,7 +757,7 @@ exit:
     yes sir yes sir
     3 bags full
 }
-'''
+"""
         self.assertEqual(code, expected)
 
 
@@ -739,17 +772,19 @@ class ParseFunction(TestCase):
         Test that begin header is checked and parse_until_pattern() is called.
         :return:
         """
+
         def stop(*_unused):
             """Stop when parse_until_pattern is called."""
             raise Exception
+
         parse_until_pattern_mock.side_effect = stop
-        data = '''/* BEGIN_HEADER */
+        data = """/* BEGIN_HEADER */
 #include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
 /* END_HEADER */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         self.assertRaises(Exception, parse_functions, stream)
         parse_until_pattern_mock.assert_called_with(stream, END_HEADER_REGEX)
         self.assertEqual(stream.line_no, 1)
@@ -760,21 +795,22 @@ class ParseFunction(TestCase):
         Test that begin helper is checked and parse_until_pattern() is called.
         :return:
         """
+
         def stop(*_unused):
             """Stop when parse_until_pattern is called."""
             raise Exception
+
         parse_until_pattern_mock.side_effect = stop
-        data = '''/* BEGIN_SUITE_HELPERS */
+        data = """/* BEGIN_SUITE_HELPERS */
 void print_hello_world()
 {
     printf("Hello World!\n");
 }
 /* END_SUITE_HELPERS */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         self.assertRaises(Exception, parse_functions, stream)
-        parse_until_pattern_mock.assert_called_with(stream,
-                                                    END_SUITE_HELPERS_REGEX)
+        parse_until_pattern_mock.assert_called_with(stream, END_SUITE_HELPERS_REGEX)
         self.assertEqual(stream.line_no, 1)
 
     @patch("generate_test_code.parse_suite_dependencies")
@@ -784,16 +820,18 @@ void print_hello_world()
         called.
         :return:
         """
+
         def stop(*_unused):
             """Stop when parse_until_pattern is called."""
             raise Exception
+
         parse_suite_dependencies_mock.side_effect = stop
-        data = '''/* BEGIN_DEPENDENCIES
+        data = """/* BEGIN_DEPENDENCIES
  * depends_on:MBEDTLS_ECP_C
  * END_DEPENDENCIES
  */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         self.assertRaises(Exception, parse_functions, stream)
         parse_suite_dependencies_mock.assert_called_with(stream)
         self.assertEqual(stream.line_no, 1)
@@ -805,18 +843,24 @@ void print_hello_world()
         called.
         :return:
         """
+
         def stop(*_unused):
             """Stop when parse_until_pattern is called."""
             raise Exception
+
         func_mock.side_effect = stop
 
-        dependencies_str = '/* BEGIN_CASE ' \
-            'depends_on:MBEDTLS_ENTROPY_NV_SEED:MBEDTLS_FS_IO */\n'
-        data = '''%svoid test_func()
+        dependencies_str = (
+            "/* BEGIN_CASE " "depends_on:MBEDTLS_ENTROPY_NV_SEED:MBEDTLS_FS_IO */\n"
+        )
+        data = (
+            """%svoid test_func()
 {
 }
-''' % dependencies_str
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+            % dependencies_str
+        )
+        stream = StringIOWrapper("test_suite_ut.function", data)
         self.assertRaises(Exception, parse_functions, stream)
         func_mock.assert_called_with(dependencies_str)
         self.assertEqual(stream.line_no, 1)
@@ -829,42 +873,46 @@ void print_hello_world()
         :return:
         """
         func_mock1.return_value = []
-        in_func_code = '''void test_func()
+        in_func_code = """void test_func()
 {
 }
-'''
-        func_dispatch = '''
+"""
+        func_dispatch = """
     test_func_wrapper,
-'''
-        func_mock2.return_value = 'test_func', [],\
-            in_func_code, func_dispatch
-        dependencies_str = '/* BEGIN_CASE ' \
-            'depends_on:MBEDTLS_ENTROPY_NV_SEED:MBEDTLS_FS_IO */\n'
-        data = '''%svoid test_func()
+"""
+        func_mock2.return_value = "test_func", [], in_func_code, func_dispatch
+        dependencies_str = (
+            "/* BEGIN_CASE " "depends_on:MBEDTLS_ENTROPY_NV_SEED:MBEDTLS_FS_IO */\n"
+        )
+        data = (
+            """%svoid test_func()
 {
 }
-''' % dependencies_str
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        suite_dependencies, dispatch_code, func_code, func_info = \
-            parse_functions(stream)
+"""
+            % dependencies_str
+        )
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        suite_dependencies, dispatch_code, func_code, func_info = parse_functions(
+            stream
+        )
         func_mock1.assert_called_with(dependencies_str)
         func_mock2.assert_called_with(stream, [], [])
         self.assertEqual(stream.line_no, 5)
         self.assertEqual(suite_dependencies, [])
-        expected_dispatch_code = '''/* Function Id: 0 */
+        expected_dispatch_code = """/* Function Id: 0 */
 
     test_func_wrapper,
-'''
+"""
         self.assertEqual(dispatch_code, expected_dispatch_code)
         self.assertEqual(func_code, in_func_code)
-        self.assertEqual(func_info, {'test_func': (0, [])})
+        self.assertEqual(func_info, {"test_func": (0, [])})
 
     def test_parsing(self):
         """
         Test case parsing.
         :return:
         """
-        data = '''/* BEGIN_HEADER */
+        data = """/* BEGIN_HEADER */
 #include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
@@ -886,14 +934,15 @@ void func2()
 {
 }
 /* END_CASE */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
-        suite_dependencies, dispatch_code, func_code, func_info = \
-            parse_functions(stream)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
+        suite_dependencies, dispatch_code, func_code, func_info = parse_functions(
+            stream
+        )
         self.assertEqual(stream.line_no, 23)
-        self.assertEqual(suite_dependencies, ['MBEDTLS_ECP_C'])
+        self.assertEqual(suite_dependencies, ["MBEDTLS_ECP_C"])
 
-        expected_dispatch_code = '''/* Function Id: 0 */
+        expected_dispatch_code = """/* Function Id: 0 */
 
 #if defined(MBEDTLS_ECP_C) && defined(MBEDTLS_ENTROPY_NV_SEED) && defined(MBEDTLS_FS_IO)
     test_func1_wrapper,
@@ -907,9 +956,9 @@ void func2()
 #else
     NULL,
 #endif
-'''
+"""
         self.assertEqual(dispatch_code, expected_dispatch_code)
-        expected_func_code = '''#if defined(MBEDTLS_ECP_C)
+        expected_func_code = """#if defined(MBEDTLS_ECP_C)
 #line 2 "test_suite_ut.function"
 #include "mbedtls/ecp.h"
 
@@ -949,17 +998,16 @@ void test_func2_wrapper( void ** params )
 #endif /* MBEDTLS_FS_IO */
 #endif /* MBEDTLS_ENTROPY_NV_SEED */
 #endif /* MBEDTLS_ECP_C */
-'''
+"""
         self.assertEqual(func_code, expected_func_code)
-        self.assertEqual(func_info, {'test_func1': (0, []),
-                                     'test_func2': (1, [])})
+        self.assertEqual(func_info, {"test_func1": (0, []), "test_func2": (1, [])})
 
     def test_same_function_name(self):
         """
         Test name conflict.
         :return:
         """
-        data = '''/* BEGIN_HEADER */
+        data = """/* BEGIN_HEADER */
 #include "mbedtls/ecp.h"
 
 #define ECP_PF_UNKNOWN     -1
@@ -981,8 +1029,8 @@ void func()
 {
 }
 /* END_CASE */
-'''
-        stream = StringIOWrapper('test_suite_ut.function', data)
+"""
+        stream = StringIOWrapper("test_suite_ut.function", data)
         self.assertRaises(GeneratorInputError, parse_functions, stream)
 
 
@@ -999,14 +1047,14 @@ class EscapedSplit(TestCase):
         Test when input split character is not a character.
         :return:
         """
-        self.assertRaises(ValueError, escaped_split, '', 'string')
+        self.assertRaises(ValueError, escaped_split, "", "string")
 
     def test_empty_string(self):
         """
         Test empty string input.
         :return:
         """
-        splits = escaped_split('', ':')
+        splits = escaped_split("", ":")
         self.assertEqual(splits, [])
 
     def test_no_escape(self):
@@ -1015,38 +1063,39 @@ class EscapedSplit(TestCase):
         str.split()
         :return:
         """
-        test_str = 'yahoo:google'
-        splits = escaped_split(test_str, ':')
-        self.assertEqual(splits, test_str.split(':'))
+        test_str = "yahoo:google"
+        splits = escaped_split(test_str, ":")
+        self.assertEqual(splits, test_str.split(":"))
 
     def test_escaped_input(self):
         """
         Test input that has escaped delimiter.
         :return:
         """
-        test_str = r'yahoo\:google:facebook'
-        splits = escaped_split(test_str, ':')
-        self.assertEqual(splits, [r'yahoo\:google', 'facebook'])
+        test_str = r"yahoo\:google:facebook"
+        splits = escaped_split(test_str, ":")
+        self.assertEqual(splits, [r"yahoo\:google", "facebook"])
 
     def test_escaped_escape(self):
         """
         Test input that has escaped delimiter.
         :return:
         """
-        test_str = r'yahoo\\:google:facebook'
-        splits = escaped_split(test_str, ':')
-        self.assertEqual(splits, [r'yahoo\\', 'google', 'facebook'])
+        test_str = r"yahoo\\:google:facebook"
+        splits = escaped_split(test_str, ":")
+        self.assertEqual(splits, [r"yahoo\\", "google", "facebook"])
 
     def test_all_at_once(self):
         """
         Test input that has escaped delimiter.
         :return:
         """
-        test_str = r'yahoo\\:google:facebook\:instagram\\:bbc\\:wikipedia'
-        splits = escaped_split(test_str, ':')
-        self.assertEqual(splits, [r'yahoo\\', r'google',
-                                  r'facebook\:instagram\\',
-                                  r'bbc\\', r'wikipedia'])
+        test_str = r"yahoo\\:google:facebook\:instagram\\:bbc\\:wikipedia"
+        splits = escaped_split(test_str, ":")
+        self.assertEqual(
+            splits,
+            [r"yahoo\\", r"google", r"facebook\:instagram\\", r"bbc\\", r"wikipedia"],
+        )
 
 
 class ParseTestData(TestCase):
@@ -1072,31 +1121,43 @@ dhm_do_dhm:10:"9345098382739712938719287391879381271":10:"9345098792137312973297
 Diffie-Hellman selftest
 dhm_selftest:
 """
-        stream = StringIOWrapper('test_suite_ut.function', data)
+        stream = StringIOWrapper("test_suite_ut.function", data)
         # List of (name, function_name, dependencies, args)
         tests = list(parse_test_data(stream))
         test1, test2, test3, test4 = tests
-        self.assertEqual(test1[0], 'Diffie-Hellman full exchange #1')
-        self.assertEqual(test1[1], 'dhm_do_dhm')
+        self.assertEqual(test1[0], "Diffie-Hellman full exchange #1")
+        self.assertEqual(test1[1], "dhm_do_dhm")
         self.assertEqual(test1[2], [])
-        self.assertEqual(test1[3], ['10', '"23"', '10', '"5"'])
+        self.assertEqual(test1[3], ["10", '"23"', "10", '"5"'])
 
-        self.assertEqual(test2[0], 'Diffie-Hellman full exchange #2')
-        self.assertEqual(test2[1], 'dhm_do_dhm')
+        self.assertEqual(test2[0], "Diffie-Hellman full exchange #2")
+        self.assertEqual(test2[1], "dhm_do_dhm")
         self.assertEqual(test2[2], [])
-        self.assertEqual(test2[3], ['10', '"93450983094850938450983409623"',
-                                    '10', '"9345098304850938450983409622"'])
+        self.assertEqual(
+            test2[3],
+            [
+                "10",
+                '"93450983094850938450983409623"',
+                "10",
+                '"9345098304850938450983409622"',
+            ],
+        )
 
-        self.assertEqual(test3[0], 'Diffie-Hellman full exchange #3')
-        self.assertEqual(test3[1], 'dhm_do_dhm')
+        self.assertEqual(test3[0], "Diffie-Hellman full exchange #3")
+        self.assertEqual(test3[1], "dhm_do_dhm")
         self.assertEqual(test3[2], [])
-        self.assertEqual(test3[3], ['10',
-                                    '"9345098382739712938719287391879381271"',
-                                    '10',
-                                    '"9345098792137312973297123912791271"'])
+        self.assertEqual(
+            test3[3],
+            [
+                "10",
+                '"9345098382739712938719287391879381271"',
+                "10",
+                '"9345098792137312973297123912791271"',
+            ],
+        )
 
-        self.assertEqual(test4[0], 'Diffie-Hellman selftest')
-        self.assertEqual(test4[1], 'dhm_selftest')
+        self.assertEqual(test4[0], "Diffie-Hellman selftest")
+        self.assertEqual(test4[1], "dhm_selftest")
         self.assertEqual(test4[2], [])
         self.assertEqual(test4[3], [])
 
@@ -1114,20 +1175,27 @@ Diffie-Hellman full exchange #2
 dhm_do_dhm:10:"93450983094850938450983409623":10:"9345098304850938450983409622"
 
 """
-        stream = StringIOWrapper('test_suite_ut.function', data)
+        stream = StringIOWrapper("test_suite_ut.function", data)
         # List of (name, function_name, dependencies, args)
         tests = list(parse_test_data(stream))
         test1, test2 = tests
-        self.assertEqual(test1[0], 'Diffie-Hellman full exchange #1')
-        self.assertEqual(test1[1], 'dhm_do_dhm')
-        self.assertEqual(test1[2], ['YAHOO'])
-        self.assertEqual(test1[3], ['10', '"23"', '10', '"5"'])
+        self.assertEqual(test1[0], "Diffie-Hellman full exchange #1")
+        self.assertEqual(test1[1], "dhm_do_dhm")
+        self.assertEqual(test1[2], ["YAHOO"])
+        self.assertEqual(test1[3], ["10", '"23"', "10", '"5"'])
 
-        self.assertEqual(test2[0], 'Diffie-Hellman full exchange #2')
-        self.assertEqual(test2[1], 'dhm_do_dhm')
+        self.assertEqual(test2[0], "Diffie-Hellman full exchange #2")
+        self.assertEqual(test2[1], "dhm_do_dhm")
         self.assertEqual(test2[2], [])
-        self.assertEqual(test2[3], ['10', '"93450983094850938450983409623"',
-                                    '10', '"9345098304850938450983409622"'])
+        self.assertEqual(
+            test2[3],
+            [
+                "10",
+                '"93450983094850938450983409623"',
+                "10",
+                '"9345098304850938450983409622"',
+            ],
+        )
 
     def test_no_args(self):
         """
@@ -1144,7 +1212,7 @@ Diffie-Hellman full exchange #2
 dhm_do_dhm:10:"93450983094850938450983409623":10:"9345098304850938450983409622"
 
 """
-        stream = StringIOWrapper('test_suite_ut.function', data)
+        stream = StringIOWrapper("test_suite_ut.function", data)
         err = None
         try:
             for _, _, _, _ in parse_test_data(stream):
@@ -1162,7 +1230,7 @@ dhm_do_dhm:10:"93450983094850938450983409623":10:"9345098304850938450983409622"
 Diffie-Hellman full exchange #1
 depends_on:YAHOO
 """
-        stream = StringIOWrapper('test_suite_ut.function', data)
+        stream = StringIOWrapper("test_suite_ut.function", data)
         err = None
         try:
             for _, _, _, _ in parse_test_data(stream):
@@ -1192,7 +1260,7 @@ class GenDepCheck(TestCase):
 #endif
             }
             break;"""
-        out = gen_dep_check(5, 'YAHOO')
+        out = gen_dep_check(5, "YAHOO")
         self.assertEqual(out, expected)
 
     def test_not_defined_dependency(self):
@@ -1210,7 +1278,7 @@ class GenDepCheck(TestCase):
 #endif
             }
             break;"""
-        out = gen_dep_check(5, '!YAHOO')
+        out = gen_dep_check(5, "!YAHOO")
         self.assertEqual(out, expected)
 
     def test_empty_dependency(self):
@@ -1218,14 +1286,14 @@ class GenDepCheck(TestCase):
         Test invalid dependency input.
         :return:
         """
-        self.assertRaises(GeneratorInputError, gen_dep_check, 5, '!')
+        self.assertRaises(GeneratorInputError, gen_dep_check, 5, "!")
 
     def test_negative_dep_id(self):
         """
         Test invalid dependency input.
         :return:
         """
-        self.assertRaises(GeneratorInputError, gen_dep_check, -1, 'YAHOO')
+        self.assertRaises(GeneratorInputError, gen_dep_check, -1, "YAHOO")
 
 
 class GenExpCheck(TestCase):
@@ -1245,7 +1313,7 @@ class GenExpCheck(TestCase):
                 *out_value = YAHOO;
             }
             break;"""
-        out = gen_expression_check(5, 'YAHOO')
+        out = gen_expression_check(5, "YAHOO")
         self.assertEqual(out, expected)
 
     def test_invalid_expression(self):
@@ -1253,15 +1321,14 @@ class GenExpCheck(TestCase):
         Test invalid expression input.
         :return:
         """
-        self.assertRaises(GeneratorInputError, gen_expression_check, 5, '')
+        self.assertRaises(GeneratorInputError, gen_expression_check, 5, "")
 
     def test_negative_exp_id(self):
         """
         Test invalid expression id.
         :return:
         """
-        self.assertRaises(GeneratorInputError, gen_expression_check,
-                          -1, 'YAHOO')
+        self.assertRaises(GeneratorInputError, gen_expression_check, -1, "YAHOO")
 
 
 class WriteDependencies(TestCase):
@@ -1274,23 +1341,24 @@ class WriteDependencies(TestCase):
         Test when test dependencies input is empty.
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_dependencies = []
         dep_check_code = write_dependencies(stream, [], unique_dependencies)
-        self.assertEqual(dep_check_code, '')
+        self.assertEqual(dep_check_code, "")
         self.assertEqual(len(unique_dependencies), 0)
-        self.assertEqual(stream.getvalue(), '')
+        self.assertEqual(stream.getvalue(), "")
 
     def test_unique_dep_ids(self):
         """
 
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_dependencies = []
-        dep_check_code = write_dependencies(stream, ['DEP3', 'DEP2', 'DEP1'],
-                                            unique_dependencies)
-        expect_dep_check_code = '''
+        dep_check_code = write_dependencies(
+            stream, ["DEP3", "DEP2", "DEP1"], unique_dependencies
+        )
+        expect_dep_check_code = """
         case 0:
             {
 #if defined(DEP3)
@@ -1317,26 +1385,29 @@ class WriteDependencies(TestCase):
                 ret = DEPENDENCY_NOT_SUPPORTED;
 #endif
             }
-            break;'''
+            break;"""
         self.assertEqual(dep_check_code, expect_dep_check_code)
         self.assertEqual(len(unique_dependencies), 3)
-        self.assertEqual(stream.getvalue(), 'depends_on:0:1:2\n')
+        self.assertEqual(stream.getvalue(), "depends_on:0:1:2\n")
 
     def test_dep_id_repeat(self):
         """
 
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_dependencies = []
-        dep_check_code = ''
-        dep_check_code += write_dependencies(stream, ['DEP3', 'DEP2'],
-                                             unique_dependencies)
-        dep_check_code += write_dependencies(stream, ['DEP2', 'DEP1'],
-                                             unique_dependencies)
-        dep_check_code += write_dependencies(stream, ['DEP1', 'DEP3'],
-                                             unique_dependencies)
-        expect_dep_check_code = '''
+        dep_check_code = ""
+        dep_check_code += write_dependencies(
+            stream, ["DEP3", "DEP2"], unique_dependencies
+        )
+        dep_check_code += write_dependencies(
+            stream, ["DEP2", "DEP1"], unique_dependencies
+        )
+        dep_check_code += write_dependencies(
+            stream, ["DEP1", "DEP3"], unique_dependencies
+        )
+        expect_dep_check_code = """
         case 0:
             {
 #if defined(DEP3)
@@ -1363,11 +1434,12 @@ class WriteDependencies(TestCase):
                 ret = DEPENDENCY_NOT_SUPPORTED;
 #endif
             }
-            break;'''
+            break;"""
         self.assertEqual(dep_check_code, expect_dep_check_code)
         self.assertEqual(len(unique_dependencies), 3)
-        self.assertEqual(stream.getvalue(),
-                         'depends_on:0:1\ndepends_on:1:2\ndepends_on:2:0\n')
+        self.assertEqual(
+            stream.getvalue(), "depends_on:0:1\ndepends_on:1:2\ndepends_on:2:0\n"
+        )
 
 
 class WriteParams(TestCase):
@@ -1380,61 +1452,63 @@ class WriteParams(TestCase):
         Test with empty test_args
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_expressions = []
         expression_code = write_parameters(stream, [], [], unique_expressions)
         self.assertEqual(len(unique_expressions), 0)
-        self.assertEqual(expression_code, '')
-        self.assertEqual(stream.getvalue(), '\n')
+        self.assertEqual(expression_code, "")
+        self.assertEqual(stream.getvalue(), "\n")
 
     def test_no_exp_param(self):
         """
         Test when there is no macro or expression in the params.
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_expressions = []
-        expression_code = write_parameters(stream, ['"Yahoo"', '"abcdef00"',
-                                                    '0'],
-                                           ['char*', 'hex', 'int'],
-                                           unique_expressions)
+        expression_code = write_parameters(
+            stream,
+            ['"Yahoo"', '"abcdef00"', "0"],
+            ["char*", "hex", "int"],
+            unique_expressions,
+        )
         self.assertEqual(len(unique_expressions), 0)
-        self.assertEqual(expression_code, '')
-        self.assertEqual(stream.getvalue(),
-                         ':char*:"Yahoo":hex:"abcdef00":int:0\n')
+        self.assertEqual(expression_code, "")
+        self.assertEqual(stream.getvalue(), ':char*:"Yahoo":hex:"abcdef00":int:0\n')
 
     def test_hex_format_int_param(self):
         """
         Test int parameter in hex format.
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_expressions = []
-        expression_code = write_parameters(stream,
-                                           ['"Yahoo"', '"abcdef00"', '0xAA'],
-                                           ['char*', 'hex', 'int'],
-                                           unique_expressions)
+        expression_code = write_parameters(
+            stream,
+            ['"Yahoo"', '"abcdef00"', "0xAA"],
+            ["char*", "hex", "int"],
+            unique_expressions,
+        )
         self.assertEqual(len(unique_expressions), 0)
-        self.assertEqual(expression_code, '')
-        self.assertEqual(stream.getvalue(),
-                         ':char*:"Yahoo":hex:"abcdef00":int:0xAA\n')
+        self.assertEqual(expression_code, "")
+        self.assertEqual(stream.getvalue(), ':char*:"Yahoo":hex:"abcdef00":int:0xAA\n')
 
     def test_with_exp_param(self):
         """
         Test when there is macro or expression in the params.
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_expressions = []
-        expression_code = write_parameters(stream,
-                                           ['"Yahoo"', '"abcdef00"', '0',
-                                            'MACRO1', 'MACRO2', 'MACRO3'],
-                                           ['char*', 'hex', 'int',
-                                            'int', 'int', 'int'],
-                                           unique_expressions)
+        expression_code = write_parameters(
+            stream,
+            ['"Yahoo"', '"abcdef00"', "0", "MACRO1", "MACRO2", "MACRO3"],
+            ["char*", "hex", "int", "int", "int", "int"],
+            unique_expressions,
+        )
         self.assertEqual(len(unique_expressions), 3)
-        self.assertEqual(unique_expressions, ['MACRO1', 'MACRO2', 'MACRO3'])
-        expected_expression_code = '''
+        self.assertEqual(unique_expressions, ["MACRO1", "MACRO2", "MACRO3"])
+        expected_expression_code = """
         case 0:
             {
                 *out_value = MACRO1;
@@ -1449,35 +1523,39 @@ class WriteParams(TestCase):
             {
                 *out_value = MACRO3;
             }
-            break;'''
+            break;"""
         self.assertEqual(expression_code, expected_expression_code)
-        self.assertEqual(stream.getvalue(),
-                         ':char*:"Yahoo":hex:"abcdef00":int:0:exp:0:exp:1'
-                         ':exp:2\n')
+        self.assertEqual(
+            stream.getvalue(),
+            ':char*:"Yahoo":hex:"abcdef00":int:0:exp:0:exp:1' ":exp:2\n",
+        )
 
     def test_with_repeat_calls(self):
         """
         Test when write_parameter() is called with same macro or expression.
         :return:
         """
-        stream = StringIOWrapper('test_suite_ut.data', '')
+        stream = StringIOWrapper("test_suite_ut.data", "")
         unique_expressions = []
-        expression_code = ''
-        expression_code += write_parameters(stream,
-                                            ['"Yahoo"', 'MACRO1', 'MACRO2'],
-                                            ['char*', 'int', 'int'],
-                                            unique_expressions)
-        expression_code += write_parameters(stream,
-                                            ['"abcdef00"', 'MACRO2', 'MACRO3'],
-                                            ['hex', 'int', 'int'],
-                                            unique_expressions)
-        expression_code += write_parameters(stream,
-                                            ['0', 'MACRO3', 'MACRO1'],
-                                            ['int', 'int', 'int'],
-                                            unique_expressions)
+        expression_code = ""
+        expression_code += write_parameters(
+            stream,
+            ['"Yahoo"', "MACRO1", "MACRO2"],
+            ["char*", "int", "int"],
+            unique_expressions,
+        )
+        expression_code += write_parameters(
+            stream,
+            ['"abcdef00"', "MACRO2", "MACRO3"],
+            ["hex", "int", "int"],
+            unique_expressions,
+        )
+        expression_code += write_parameters(
+            stream, ["0", "MACRO3", "MACRO1"], ["int", "int", "int"], unique_expressions
+        )
         self.assertEqual(len(unique_expressions), 3)
-        self.assertEqual(unique_expressions, ['MACRO1', 'MACRO2', 'MACRO3'])
-        expected_expression_code = '''
+        self.assertEqual(unique_expressions, ["MACRO1", "MACRO2", "MACRO3"])
+        expected_expression_code = """
         case 0:
             {
                 *out_value = MACRO1;
@@ -1492,12 +1570,12 @@ class WriteParams(TestCase):
             {
                 *out_value = MACRO3;
             }
-            break;'''
+            break;"""
         self.assertEqual(expression_code, expected_expression_code)
-        expected_data_file = ''':char*:"Yahoo":exp:0:exp:1
+        expected_data_file = """:char*:"Yahoo":exp:0:exp:1
 :hex:"abcdef00":exp:1:exp:2
 :int:0:exp:2:exp:0
-'''
+"""
         self.assertEqual(stream.getvalue(), expected_data_file)
 
 
@@ -1505,16 +1583,18 @@ class GenTestSuiteDependenciesChecks(TestCase):
     """
     Test suite for testing gen_suite_dep_checks()
     """
+
     def test_empty_suite_dependencies(self):
         """
         Test with empty suite_dependencies list.
 
         :return:
         """
-        dep_check_code, expression_code = \
-            gen_suite_dep_checks([], 'DEP_CHECK_CODE', 'EXPRESSION_CODE')
-        self.assertEqual(dep_check_code, 'DEP_CHECK_CODE')
-        self.assertEqual(expression_code, 'EXPRESSION_CODE')
+        dep_check_code, expression_code = gen_suite_dep_checks(
+            [], "DEP_CHECK_CODE", "EXPRESSION_CODE"
+        )
+        self.assertEqual(dep_check_code, "DEP_CHECK_CODE")
+        self.assertEqual(expression_code, "EXPRESSION_CODE")
 
     def test_suite_dependencies(self):
         """
@@ -1522,19 +1602,19 @@ class GenTestSuiteDependenciesChecks(TestCase):
 
         :return:
         """
-        dep_check_code, expression_code = \
-            gen_suite_dep_checks(['SUITE_DEP'], 'DEP_CHECK_CODE',
-                                 'EXPRESSION_CODE')
-        expected_dep_check_code = '''
+        dep_check_code, expression_code = gen_suite_dep_checks(
+            ["SUITE_DEP"], "DEP_CHECK_CODE", "EXPRESSION_CODE"
+        )
+        expected_dep_check_code = """
 #if defined(SUITE_DEP)
 DEP_CHECK_CODE
 #endif
-'''
-        expected_expression_code = '''
+"""
+        expected_expression_code = """
 #if defined(SUITE_DEP)
 EXPRESSION_CODE
 #endif
-'''
+"""
         self.assertEqual(dep_check_code, expected_dep_check_code)
         self.assertEqual(expression_code, expected_expression_code)
 
@@ -1543,9 +1623,9 @@ EXPRESSION_CODE
         Test when there are no dependency and expression code.
         :return:
         """
-        dep_check_code, expression_code = gen_suite_dep_checks([], '', '')
-        self.assertEqual(dep_check_code, '')
-        self.assertEqual(expression_code, '')
+        dep_check_code, expression_code = gen_suite_dep_checks([], "", "")
+        self.assertEqual(dep_check_code, "")
+        self.assertEqual(expression_code, "")
 
 
 class GenFromTestData(TestCase):
@@ -1557,31 +1637,29 @@ class GenFromTestData(TestCase):
     @patch("generate_test_code.write_dependencies")
     @patch("generate_test_code.write_parameters")
     @patch("generate_test_code.gen_suite_dep_checks")
-    def test_intermediate_data_file(func_mock1,
-                                    write_parameters_mock,
-                                    write_dependencies_mock):
+    def test_intermediate_data_file(
+        func_mock1, write_parameters_mock, write_dependencies_mock
+    ):
         """
         Test that intermediate data file is written with expected data.
         :return:
         """
-        data = '''
+        data = """
 My test
 depends_on:DEP1
 func1:0
-'''
-        data_f = StringIOWrapper('test_suite_ut.data', data)
-        out_data_f = StringIOWrapper('test_suite_ut.datax', '')
-        func_info = {'test_func1': (1, ('int',))}
+"""
+        data_f = StringIOWrapper("test_suite_ut.data", data)
+        out_data_f = StringIOWrapper("test_suite_ut.datax", "")
+        func_info = {"test_func1": (1, ("int",))}
         suite_dependencies = []
         write_parameters_mock.side_effect = write_parameters
         write_dependencies_mock.side_effect = write_dependencies
         func_mock1.side_effect = gen_suite_dep_checks
         gen_from_test_data(data_f, out_data_f, func_info, suite_dependencies)
-        write_dependencies_mock.assert_called_with(out_data_f,
-                                                   ['DEP1'], ['DEP1'])
-        write_parameters_mock.assert_called_with(out_data_f, ['0'],
-                                                 ('int',), [])
-        expected_dep_check_code = '''
+        write_dependencies_mock.assert_called_with(out_data_f, ["DEP1"], ["DEP1"])
+        write_parameters_mock.assert_called_with(out_data_f, ["0"], ("int",), [])
+        expected_dep_check_code = """
         case 0:
             {
 #if defined(DEP1)
@@ -1590,26 +1668,31 @@ func1:0
                 ret = DEPENDENCY_NOT_SUPPORTED;
 #endif
             }
-            break;'''
-        func_mock1.assert_called_with(
-            suite_dependencies, expected_dep_check_code, '')
+            break;"""
+        func_mock1.assert_called_with(suite_dependencies, expected_dep_check_code, "")
 
     def test_function_not_found(self):
         """
         Test that AssertError is raised when function info in not found.
         :return:
         """
-        data = '''
+        data = """
 My test
 depends_on:DEP1
 func1:0
-'''
-        data_f = StringIOWrapper('test_suite_ut.data', data)
-        out_data_f = StringIOWrapper('test_suite_ut.datax', '')
-        func_info = {'test_func2': (1, ('int',))}
+"""
+        data_f = StringIOWrapper("test_suite_ut.data", data)
+        out_data_f = StringIOWrapper("test_suite_ut.datax", "")
+        func_info = {"test_func2": (1, ("int",))}
         suite_dependencies = []
-        self.assertRaises(GeneratorInputError, gen_from_test_data,
-                          data_f, out_data_f, func_info, suite_dependencies)
+        self.assertRaises(
+            GeneratorInputError,
+            gen_from_test_data,
+            data_f,
+            out_data_f,
+            func_info,
+            suite_dependencies,
+        )
 
     def test_different_func_args(self):
         """
@@ -1617,24 +1700,30 @@ func1:0
         function args differ.
         :return:
         """
-        data = '''
+        data = """
 My test
 depends_on:DEP1
 func1:0
-'''
-        data_f = StringIOWrapper('test_suite_ut.data', data)
-        out_data_f = StringIOWrapper('test_suite_ut.datax', '')
-        func_info = {'test_func2': (1, ('int', 'hex'))}
+"""
+        data_f = StringIOWrapper("test_suite_ut.data", data)
+        out_data_f = StringIOWrapper("test_suite_ut.datax", "")
+        func_info = {"test_func2": (1, ("int", "hex"))}
         suite_dependencies = []
-        self.assertRaises(GeneratorInputError, gen_from_test_data, data_f,
-                          out_data_f, func_info, suite_dependencies)
+        self.assertRaises(
+            GeneratorInputError,
+            gen_from_test_data,
+            data_f,
+            out_data_f,
+            func_info,
+            suite_dependencies,
+        )
 
     def test_output(self):
         """
         Test that intermediate data file is written with expected data.
         :return:
         """
-        data = '''
+        data = """
 My test 1
 depends_on:DEP1
 func1:0:0xfa:MACRO1:MACRO2
@@ -1642,16 +1731,18 @@ func1:0:0xfa:MACRO1:MACRO2
 My test 2
 depends_on:DEP1:DEP2
 func2:"yahoo":88:MACRO1
-'''
-        data_f = StringIOWrapper('test_suite_ut.data', data)
-        out_data_f = StringIOWrapper('test_suite_ut.datax', '')
-        func_info = {'test_func1': (0, ('int', 'int', 'int', 'int')),
-                     'test_func2': (1, ('char*', 'int', 'int'))}
+"""
+        data_f = StringIOWrapper("test_suite_ut.data", data)
+        out_data_f = StringIOWrapper("test_suite_ut.datax", "")
+        func_info = {
+            "test_func1": (0, ("int", "int", "int", "int")),
+            "test_func2": (1, ("char*", "int", "int")),
+        }
         suite_dependencies = []
-        dep_check_code, expression_code = \
-            gen_from_test_data(data_f, out_data_f, func_info,
-                               suite_dependencies)
-        expected_dep_check_code = '''
+        dep_check_code, expression_code = gen_from_test_data(
+            data_f, out_data_f, func_info, suite_dependencies
+        )
+        expected_dep_check_code = """
         case 0:
             {
 #if defined(DEP1)
@@ -1669,8 +1760,8 @@ func2:"yahoo":88:MACRO1
                 ret = DEPENDENCY_NOT_SUPPORTED;
 #endif
             }
-            break;'''
-        expected_data = '''My test 1
+            break;"""
+        expected_data = """My test 1
 depends_on:0
 0:int:0:int:0xfa:exp:0:exp:1
 
@@ -1678,8 +1769,8 @@ My test 2
 depends_on:0:1
 1:char*:"yahoo":int:88:exp:0
 
-'''
-        expected_expression_code = '''
+"""
+        expected_expression_code = """
         case 0:
             {
                 *out_value = MACRO1;
@@ -1689,11 +1780,11 @@ depends_on:0:1
             {
                 *out_value = MACRO2;
             }
-            break;'''
+            break;"""
         self.assertEqual(dep_check_code, expected_dep_check_code)
         self.assertEqual(out_data_f.getvalue(), expected_data)
         self.assertEqual(expression_code, expected_expression_code)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest_main()

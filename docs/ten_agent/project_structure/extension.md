@@ -6,7 +6,7 @@ The extension folder name is often the same as the extension module name, while 
 
 Below is a sample structure of the extension folder:
 
-![Extension Folder Structure](https://github.com/TEN-framework/docs/blob/main/assets/png/extension_folder_struct.png?raw=true)
+![Extension Folder Structure](https://github.com/APTIMA-framework/docs/blob/main/assets/png/extension_folder_struct.png?raw=true)
 
 ## Extension Common Files
 

@@ -1,6 +1,6 @@
 # Profiling
 
-## TEN Framework GO Project
+## APTIMA Framework GO Project
 
 Use `gperftools` to profile your program's CPU usage and heap memory usage. The following steps describe how to prepare the environment, use `gperftools` to profile your program, and analyze the performance data.
 
@@ -108,7 +108,7 @@ python3 tools/profiler/gperftools/draw_line_chart.py -excel_file=/.../heap.xlsx 
 
 ### Profiling with `pprof`
 
-We recommend using `pprof` to profile programs written in Go. The easiest way to profile a Go program is by using `pprof_app_go` as your TEN application. When activated, the application reads environment variables to decide whether to activate the `pprof` server and heap profiler.
+We recommend using `pprof` to profile programs written in Go. The easiest way to profile a Go program is by using `pprof_app_go` as your APTIMA application. When activated, the application reads environment variables to decide whether to activate the `pprof` server and heap profiler.
 
 ```shell
 export TEN_HEAP_DUMP_DIR=/data/prof

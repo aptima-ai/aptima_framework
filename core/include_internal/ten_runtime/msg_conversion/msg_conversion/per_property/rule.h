@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -13,7 +13,7 @@
 #include "ten_utils/lib/error.h"
 
 /**
- * TEN runtime only provides basic message conversion methods, with plans
+ * APTIMA runtime only provides basic message conversion methods, with plans
  * for moderate expansion in the future. If you need more flexible message
  * conversion, you can develop your own extension for message conversion. In
  * this extension's on_cmd/data/... APIs, you can perform any kind of message

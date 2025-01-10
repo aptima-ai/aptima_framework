@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -15,9 +15,9 @@
 #include "include_internal/axis_runtime/axis_env/axis_env.h"
 #include "axis_runtime/addon/extension/extension.h"
 #include "axis_runtime/binding/common.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
-#include "axis_runtime/ten.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
+#include "axis_runtime/aptima.h"
 #include "axis_runtime/axis_env/axis_env.h"
 #include "axis_utils/lib/alloc.h"
 #include "axis_utils/lib/smart_ptr.h"
@@ -59,7 +59,7 @@ static void axis_go_axis_env_destroy_c_part(void *axis_env_bridge_) {
   axis_env_bridge->c_axis_env = NULL;
   axis_go_bridge_destroy_c_part(&axis_env_bridge->bridge);
 
-  // Remove the Go ten object from the global map.
+  // Remove the Go aptima object from the global map.
   tenGoDestroyTenEnv(axis_env_bridge->bridge.go_instance);
 }
 
@@ -90,7 +90,7 @@ axis_go_axis_env_t *axis_go_axis_env_wrap(axis_env_t *c_axis_env) {
 
   axis_env_bridge->bridge.go_instance = tenGoCreateTenEnv(bridge_addr);
 
-  // C ten hold one reference of ten bridge.
+  // C aptima hold one reference of aptima bridge.
   axis_env_bridge->bridge.sp_ref_by_c =
       axis_shared_ptr_create(axis_env_bridge, axis_go_axis_env_destroy);
   axis_env_bridge->bridge.sp_ref_by_go =
@@ -130,7 +130,7 @@ const char *axis_go_axis_env_debug_info(uintptr_t bridge_addr) {
              "Should not happen.");
 
   axis_string_t debug_info;
-  axis_string_init_formatted(&debug_info, "ten attach_to type: %d",
+  axis_string_init_formatted(&debug_info, "aptima attach_to type: %d",
                             self->c_axis_env->attach_to);
   const char *res = axis_go_str_dup(axis_string_get_raw_str(&debug_info));
 

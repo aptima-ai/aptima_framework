@@ -1,13 +1,21 @@
 #
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
 import asyncio
 
 from aiohttp import WSMsgType, web, web_request
-from ten import (Addon, AsyncExtension, AsyncTenEnv, Cmd, CmdResult,
-                 StatusCode, TenEnv, register_addon_as_extension)
+from aptima import (
+    Addon,
+    AsyncExtension,
+    AsyncTenEnv,
+    Cmd,
+    CmdResult,
+    StatusCode,
+    TenEnv,
+    register_addon_as_extension,
+)
 
 
 class HttpServerExtension(AsyncExtension):
@@ -29,17 +37,17 @@ class HttpServerExtension(AsyncExtension):
         else:
             # If the command is a 'close_app' command, send it to the app.
             if "type" in data["_ten"] and data["_ten"]["type"] == "close_app":
-                close_app_cmd = Cmd.create("ten:close_app")
+                close_app_cmd = Cmd.create("aptima:close_app")
                 close_app_cmd.set_dest("localhost", None, None, None)
                 asyncio.create_task(self.ten_env.send_cmd(close_app_cmd))
                 return web.Response(status=200, text="OK")
             elif "name" in data["_ten"]:
-                # Send the command to the TEN runtime.
+                # Send the command to the APTIMA runtime.
                 cmd = Cmd.create(data["_ten"]["name"])
                 cmd.set_property_string("method", method)
                 cmd.set_property_string("url", url)
 
-                # Send the command to the TEN runtime and wait for the result.
+                # Send the command to the APTIMA runtime and wait for the result.
                 if cmd is None:
                     return web.Response(status=400, text="Bad request")
 

@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -44,6 +44,6 @@ config("config_for_axis_packages") {
 config("config_for_standalone_axis_packages") {
   configs = [ ":axis_runtime_go_common_libs" ]
 
-  include_dirs = [ "//.ten/app/axis_packages/system/axis_runtime_go/include" ]
-  lib_dirs = [ "//.ten/app/axis_packages/system/axis_runtime_go/lib" ]
+  include_dirs = [ "//.aptima/app/axis_packages/system/axis_runtime_go/include" ]
+  lib_dirs = [ "//.aptima/app/axis_packages/system/axis_runtime_go/lib" ]
 }

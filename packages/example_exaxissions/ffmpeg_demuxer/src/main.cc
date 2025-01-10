@@ -1,12 +1,12 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
 #include "demuxer_thread.h"
-#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/aptima.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 class demuxer_extension_t : public extension_t {
@@ -15,7 +15,7 @@ class demuxer_extension_t : public extension_t {
 
   void on_start(aptima_env_t &aptima_env) override { aptima_env.on_start_done(); }
 
-  void on_cmd(aptima_env_t &aptima_env, std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima_env_t &aptima_env, std::unique_ptr<aptima::cmd_t> cmd) override {
     const auto cmd_name = cmd->get_name();
 
     if (std::string(cmd_name) == "prepare_demuxer") {
@@ -25,7 +25,7 @@ class demuxer_extension_t : public extension_t {
             "aptima_packages/extension/ffmpeg_demuxer/res/test.mp4";
       }
 
-      auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
+      auto *aptima_env_proxy = aptima::aptima_env_proxy_t::create(aptima_env);
 
       // Start the demuxer thread. ffmpeg is living in its own thread.
       demuxer_thread_ = new demuxer_thread_t(aptima_env_proxy, std::move(cmd),
@@ -36,12 +36,12 @@ class demuxer_extension_t : public extension_t {
 
     if (std::string(cmd_name) == "start_demuxer") {
       if (demuxer_thread_ == nullptr) {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
         cmd_result->set_property("detail", "You should prepare first.");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
         demuxer_thread_->start_demuxing();
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "The demuxer has been started.");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
@@ -63,7 +63,7 @@ class demuxer_extension_t : public extension_t {
 };
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima
 
 aptima_CPP_REGISTER_ADDON_AS_EXTENSION(ffmpeg_demuxer,
-                                    ten::ffmpeg_extension::demuxer_extension_t);
+                                    aptima::ffmpeg_extension::demuxer_extension_t);

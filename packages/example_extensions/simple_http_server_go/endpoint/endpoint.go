@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -12,15 +12,15 @@ import (
 	"net/http"
 	"time"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type Endpoint struct {
 	server *http.Server
-	tenEnv ten.TenEnv // The communication bridge of this extension.
+	tenEnv aptima.TenEnv // The communication bridge of this extension.
 }
 
-func NewEndpoint(tenEnv ten.TenEnv) *Endpoint {
+func NewEndpoint(tenEnv aptima.TenEnv) *Endpoint {
 	return &Endpoint{
 		tenEnv: tenEnv,
 	}
@@ -34,12 +34,12 @@ func (s *Endpoint) defaultHandler(
 	case "/health":
 		writer.WriteHeader(http.StatusOK)
 	default:
-		cmdResultChan := make(chan ten.CmdResult, 1)
-		cmd, _ := ten.NewCmd("demo")
+		cmdResultChan := make(chan aptima.CmdResult, 1)
+		cmd, _ := aptima.NewCmd("demo")
 
 		s.tenEnv.SendCmd(
 			cmd,
-			func(tenEnv ten.TenEnv, cmdResult ten.CmdResult, e error) {
+			func(tenEnv aptima.TenEnv, cmdResult aptima.CmdResult, e error) {
 				cmdResultChan <- cmdResult
 			},
 		)

@@ -73,6 +73,7 @@ void PREFIX_assignment_get_value(PREFIX_theory_t *theory, uint32_t thread_id, si
 bool PREFIX_configure(PREFIX_theory_t *theory, char const *key, char const *value)
 ```
 """
+
 from typing import Any, Callable, Iterator, Optional, Tuple, Union
 
 from ._internal import _ffi, _handle_error, _lib

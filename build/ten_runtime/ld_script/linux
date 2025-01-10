@@ -1,6 +1,6 @@
 {
   global:
-    ten_*;
+    aptima_*;
   local:
     *;
 };

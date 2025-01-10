@@ -35,8 +35,7 @@ def dump_heap_files_to_text(heap_infos):
     rc = subprocess.run(convert_to_text_cmd, shell=True)
     if rc.returncode != 0:
         raise Exception(
-            "convert_to_text_cmd failed, convert_to_text_cmd:"
-            f" {convert_to_text_cmd}"
+            "convert_to_text_cmd failed, convert_to_text_cmd:" f" {convert_to_text_cmd}"
         )
 
 
@@ -64,9 +63,7 @@ if __name__ == "__main__":
             if file.endswith(".out"):
                 heap_file_path = os.path.join(root, file)
                 heap_infos.append(
-                    HeapInfo(
-                        heap_file_path, args.text_dir + "/" + file + ".txt"
-                    )
+                    HeapInfo(heap_file_path, args.text_dir + "/" + file + ".txt")
                 )
 
     print(f"dump heap files heap_files size: {len(heap_infos)}")

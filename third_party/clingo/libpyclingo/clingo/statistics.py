@@ -32,9 +32,21 @@ statistics in json format:
         "unsat": 0.0
     }
 """
+
 from collections import abc
-from typing import (Any, ItemsView, Iterable, KeysView, MutableMapping,
-                    MutableSequence, Sequence, Tuple, Union, ValuesView, cast)
+from typing import (
+    Any,
+    ItemsView,
+    Iterable,
+    KeysView,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+    Tuple,
+    Union,
+    ValuesView,
+    cast,
+)
 
 from ._internal import _c_call, _handle_error, _lib, _to_str
 

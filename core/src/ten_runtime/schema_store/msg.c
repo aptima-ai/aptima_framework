@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -88,7 +88,7 @@ bool ten_msg_schema_adjust_properties(ten_msg_schema_t *self,
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
 
   if (!self->property) {
-    // No `property` schema is defined, which is permitted in TEN runtime.
+    // No `property` schema is defined, which is permitted in APTIMA runtime.
     return true;
   }
 
@@ -104,7 +104,7 @@ bool ten_msg_schema_validate_properties(ten_msg_schema_t *self,
   TEN_ASSERT(err && ten_error_check_integrity(err), "Invalid argument.");
 
   if (!self->property) {
-    // No `property` schema is defined, which is permitted in TEN runtime.
+    // No `property` schema is defined, which is permitted in APTIMA runtime.
     return true;
   }
 

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -249,7 +249,7 @@ bool axis_remote_on_input(axis_remote_t *self, axis_shared_ptr_t *msg,
   if (self->on_msg) {
     // The source of all the messages coming from this remote will be
     // 'remote->uri'. Remote URI is used to identify the identity of the other
-    // side, ex: the other side is a TEN app or a TEN client.
+    // side, ex: the other side is a APTIMA app or a APTIMA client.
     axis_msg_set_src_uri(msg, axis_string_get_raw_str(&self->uri));
 
     return self->on_msg(self, msg, self->on_msg_data);

@@ -21,23 +21,25 @@ exists, and path to where the output files should be stored.
 """
 
 if len(sys.argv) != 3:
-    print('Wrong number of arguments: {}'.format(len(sys.argv)))
-    print('Usage: {} catch2-top-level-dir base-build-output-dir'.format(sys.argv[0]))
+    print("Wrong number of arguments: {}".format(len(sys.argv)))
+    print("Usage: {} catch2-top-level-dir base-build-output-dir".format(sys.argv[0]))
     exit(1)
 
 catch2_source_path = os.path.abspath(sys.argv[1])
-build_dir_path = os.path.join(os.path.abspath(sys.argv[2]), 'CMakeConfigTests', 'DisableStringification')
+build_dir_path = os.path.join(
+    os.path.abspath(sys.argv[2]), "CMakeConfigTests", "DisableStringification"
+)
 
-configure_and_build(catch2_source_path,
-                    build_dir_path,
-                    [("CATCH_CONFIG_DISABLE_STRINGIFICATION", "ON")])
+configure_and_build(
+    catch2_source_path, build_dir_path, [("CATCH_CONFIG_DISABLE_STRINGIFICATION", "ON")]
+)
 
-stdout, _ = run_and_return_output(os.path.join(build_dir_path, 'tests'),
-                                  'SelfTest',
-                                  ['-s', '[approx][custom]'])
+stdout, _ = run_and_return_output(
+    os.path.join(build_dir_path, "tests"), "SelfTest", ["-s", "[approx][custom]"]
+)
 
 
-required_output = 'Disabled by CATCH_CONFIG_DISABLE_STRINGIFICATION'
+required_output = "Disabled by CATCH_CONFIG_DISABLE_STRINGIFICATION"
 if not required_output in stdout:
     print("Could not find '{}' in the stdout".format(required_output))
     print('stdout: "{}"'.format(stdout))

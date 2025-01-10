@@ -17,7 +17,7 @@ outputs match what we expect.
 import subprocess
 import sys
 
-expected_section_output = '''\
+expected_section_output = """\
 TestCaseStarting: section
 TestCaseStartingPartial: section#0
 TestCasePartialEnded: section#0
@@ -28,9 +28,9 @@ TestCasePartialEnded: section#2
 TestCaseStartingPartial: section#3
 TestCasePartialEnded: section#3
 TestCaseEnded: section
-'''
+"""
 
-expected_generator_output = '''\
+expected_generator_output = """\
 TestCaseStarting: generator
 TestCaseStartingPartial: generator#0
 TestCasePartialEnded: generator#0
@@ -41,40 +41,48 @@ TestCasePartialEnded: generator#2
 TestCaseStartingPartial: generator#3
 TestCasePartialEnded: generator#3
 TestCaseEnded: generator
-'''
+"""
 
 
 from typing import List
 
 
 def get_test_output(test_exe: str, sections: bool) -> List[str]:
-    cmd = [test_exe, '--reporter', 'partial']
+    cmd = [test_exe, "--reporter", "partial"]
     if sections:
-        cmd.append('section')
+        cmd.append("section")
     else:
-        cmd.append('generator')
+        cmd.append("generator")
 
-    ret = subprocess.run(cmd,
-                         stdout = subprocess.PIPE,
-                         stderr = subprocess.PIPE,
-                         timeout = 10,
-                         check = True,
-                         universal_newlines = True)
+    ret = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=10,
+        check=True,
+        universal_newlines=True,
+    )
 
     return ret.stdout
 
+
 def main():
-    test_exe, = sys.argv[1:]
-    actual_section_output = get_test_output(test_exe, sections = True)
+    (test_exe,) = sys.argv[1:]
+    actual_section_output = get_test_output(test_exe, sections=True)
 
-    assert actual_section_output == expected_section_output, (
-    'Sections\nActual:\n{}\nExpected:\n{}\n'.format(actual_section_output, expected_section_output))
+    assert (
+        actual_section_output == expected_section_output
+    ), "Sections\nActual:\n{}\nExpected:\n{}\n".format(
+        actual_section_output, expected_section_output
+    )
 
-    actual_generator_output = get_test_output(test_exe, sections = False)
-    assert actual_generator_output == expected_generator_output, (
-    'Generators\nActual:\n{}\nExpected:\n{}\n'.format(actual_generator_output, expected_generator_output))
+    actual_generator_output = get_test_output(test_exe, sections=False)
+    assert (
+        actual_generator_output == expected_generator_output
+    ), "Generators\nActual:\n{}\nExpected:\n{}\n".format(
+        actual_generator_output, expected_generator_output
+    )
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

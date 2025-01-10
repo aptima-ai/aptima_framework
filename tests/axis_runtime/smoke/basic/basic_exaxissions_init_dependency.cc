@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -10,7 +10,7 @@
 #include <thread>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lib/thread.h"
 #include "aptima_utils/macro/macros.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -23,27 +23,27 @@ using namespace std::placeholders;
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       aptima_env.send_cmd(std::move(cmd));
     } else if (cmd->get_name() == "get_name") {
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "test_extension_1");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
                            // clang-format off
                            "{\
@@ -57,31 +57,31 @@ class test_extension_2 : public ten::extension_t {
     aptima_env.on_configure_done();
   }
 
-  void on_init(ten::aptima_env_t &aptima_env) override {
-    auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
+  void on_init(aptima::aptima_env_t &aptima_env) override {
+    auto *aptima_env_proxy = aptima::aptima_env_proxy_t::create(aptima_env);
 
     fetch_property_thread_ = std::thread(
-        [this](ten::aptima_env_proxy_t *aptima_env_proxy) {
+        [this](aptima::aptima_env_proxy_t *aptima_env_proxy) {
           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
           aptima_env_proxy->notify(
-              [this](ten::aptima_env_t &aptima_env) { this->get_property(aptima_env); });
+              [this](aptima::aptima_env_t &aptima_env) { this->get_property(aptima_env); });
 
           delete aptima_env_proxy;
         },
         aptima_env_proxy);
   }
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", greeting_);
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 
-  void on_stop(ten::aptima_env_t &aptima_env) override {
+  void on_stop(aptima::aptima_env_t &aptima_env) override {
     if (fetch_property_thread_.joinable()) {
       fetch_property_thread_.join();
     }
@@ -93,15 +93,15 @@ class test_extension_2 : public ten::extension_t {
   std::string greeting_;
   std::thread fetch_property_thread_;
 
-  void get_property(ten::aptima_env_t &aptima_env) {
+  void get_property(aptima::aptima_env_t &aptima_env) {
     greeting_ = aptima_env.get_property_string(EXTENSION_PROP_NAME_GREETING);
 
-    auto cmd = ten::cmd_t::create("get_name");
+    auto cmd = aptima::cmd_t::create("get_name");
     aptima_env.send_cmd(
         std::move(cmd),
-        [this](ten::aptima_env_t &aptima_env,
-               std::unique_ptr<ten::cmd_result_t> cmd_result,
-               ten::error_t *err) {
+        [this](aptima::aptima_env_t &aptima_env,
+               std::unique_ptr<aptima::cmd_result_t> cmd_result,
+               aptima::error_t *err) {
           auto name = cmd_result->get_property_string("detail");
           greeting_ += name;
 
@@ -112,9 +112,9 @@ class test_extension_2 : public ten::extension_t {
   }
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -153,10 +153,10 @@ TEST(BasicTest, ExtensionsInitDependency) {  // NOLINT
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
@@ -198,7 +198,7 @@ TEST(BasicTest, ExtensionsInitDependency) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  auto hello_world_cmd = aptima::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extensions_init_dependency",
                             "test_extension_1");

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,7 +8,7 @@
 
 #include "ten_runtime/binding/cpp/detail/msg/cmd_result.h"
 
-namespace ten {
+namespace aptima {
 
 class cmd_result_internal_accessor_t {
  public:
@@ -27,8 +27,8 @@ class cmd_result_internal_accessor_t {
 
   static std::unique_ptr<cmd_result_t> create(ten_shared_ptr_t *cmd,
                                               error_t *err = nullptr) {
-    return ten::cmd_result_t::create(cmd, err);
+    return aptima::cmd_result_t::create(cmd, err);
   }
 };
 
-}  // namespace ten
+}  // namespace aptima

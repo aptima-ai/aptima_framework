@@ -22,35 +22,52 @@ import argparse
 import os
 from convert_from_tensorflow import *
 
+
 def get_arguments():
-    parser = argparse.ArgumentParser(description='generate native mode model with weights from deep learning model')
-    parser.add_argument('--outdir', type=str, default='./', help='where to put generated files')
-    parser.add_argument('--infmt', type=str, default='tensorflow', help='format of the deep learning model')
-    parser.add_argument('infile', help='path to the deep learning model with weights')
-    parser.add_argument('--dump4tb', type=str, default='no', help='dump file for visualization in tensorboard')
+    parser = argparse.ArgumentParser(
+        description="generate native mode model with weights from deep learning model"
+    )
+    parser.add_argument(
+        "--outdir", type=str, default="./", help="where to put generated files"
+    )
+    parser.add_argument(
+        "--infmt",
+        type=str,
+        default="tensorflow",
+        help="format of the deep learning model",
+    )
+    parser.add_argument("infile", help="path to the deep learning model with weights")
+    parser.add_argument(
+        "--dump4tb",
+        type=str,
+        default="no",
+        help="dump file for visualization in tensorboard",
+    )
 
     return parser.parse_args()
+
 
 def main():
     args = get_arguments()
 
     if not os.path.isfile(args.infile):
-        print('the specified input file %s does not exist' % args.infile)
+        print("the specified input file %s does not exist" % args.infile)
         exit(1)
 
     if not os.path.exists(args.outdir):
-        print('create output directory %s' % args.outdir)
+        print("create output directory %s" % args.outdir)
         os.mkdir(args.outdir)
 
     basefile = os.path.split(args.infile)[1]
     basefile = os.path.splitext(basefile)[0]
-    outfile = os.path.join(args.outdir, basefile) + '.model'
+    outfile = os.path.join(args.outdir, basefile) + ".model"
     dump4tb = False
-    if args.dump4tb.lower() in ('yes', 'true', 't', 'y', '1'):
+    if args.dump4tb.lower() in ("yes", "true", "t", "y", "1"):
         dump4tb = True
 
-    if args.infmt == 'tensorflow':
+    if args.infmt == "tensorflow":
         convert_from_tensorflow(args.infile, outfile, dump4tb)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

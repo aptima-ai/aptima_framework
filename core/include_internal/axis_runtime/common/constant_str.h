@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -50,22 +50,22 @@
 #define axis_STR_AUDIO_FRAME_IN "audio_frame_in"
 #define axis_STR_AUDIO_FRAME_OUT "audio_frame_out"
 
-#define axis_STR_MSG_NAME_axis_NAMESPACE_PREFIX "ten:"
+#define axis_STR_MSG_NAME_axis_NAMESPACE_PREFIX "aptima:"
 
 // The message name might be empty, however, the property schema will be stored
 // in a hashtable which key is the name of the msg. Using a special name to
 // store the schema if the msg name is not provided.
 //
-// Because ':' is not a legal character in the TEN schema specification for
+// Because ':' is not a legal character in the APTIMA schema specification for
 // message names, ':' is used in special message names for purely internal use.
-#define axis_STR_MSG_NAME_axis_EMPTY "ten:empty"
+#define axis_STR_MSG_NAME_axis_EMPTY "aptima:empty"
 
-#define axis_STR_MSG_NAME_axis_CLOSE_APP "ten:close_app"
-#define axis_STR_MSG_NAME_axis_STOP_GRAPH "ten:stop_graph"
-#define axis_STR_MSG_NAME_axis_START_GRAPH "ten:start_graph"
-#define axis_STR_MSG_NAME_axis_RESULT "ten:result"
-#define axis_STR_MSG_NAME_axis_TIMEOUT "ten:timeout"
-#define axis_STR_MSG_NAME_axis_TIMER "ten:timer"
+#define axis_STR_MSG_NAME_axis_CLOSE_APP "aptima:close_app"
+#define axis_STR_MSG_NAME_axis_STOP_GRAPH "aptima:stop_graph"
+#define axis_STR_MSG_NAME_axis_START_GRAPH "aptima:start_graph"
+#define axis_STR_MSG_NAME_axis_RESULT "aptima:result"
+#define axis_STR_MSG_NAME_axis_TIMEOUT "aptima:timeout"
+#define axis_STR_MSG_NAME_axis_TIMER "aptima:timer"
 
 // Special command.
 #define axis_STR_STOP_GRAPH "stop_graph"
@@ -159,6 +159,6 @@
 #define axis_STR_STAR "*"
 
 #define axis_STR_DEFAULT_EXTENSION_GROUP "default_extension_group"
-#define axis_STR_axis_TEST_EXTENSION "ten:test_extension"
+#define axis_STR_axis_TEST_EXTENSION "aptima:test_extension"
 
 #define axis_STR_MANIFEST_JSON "manifest.json"

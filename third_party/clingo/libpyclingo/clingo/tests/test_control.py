@@ -1,6 +1,7 @@
 """
 Tests control.
 """
+
 from typing import cast
 from unittest import TestCase
 

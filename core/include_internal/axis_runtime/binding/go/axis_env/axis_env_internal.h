@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -13,9 +13,9 @@
 #include "include_internal/axis_runtime/axis_env/axis_env.h"
 #include "include_internal/axis_runtime/axis_env_proxy/axis_env_proxy.h"
 #include "axis_runtime/addon/extension/extension.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
-#include "axis_runtime/ten.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
+#include "axis_runtime/aptima.h"
 #include "axis_runtime/axis_env/axis_env.h"
 #include "axis_utils/lib/rwlock.h"
 
@@ -44,7 +44,7 @@ typedef struct axis_go_axis_env_t {
 
   axis_go_bridge_t bridge;
 
-  // Point to the corresponding C ten.
+  // Point to the corresponding C aptima.
   axis_env_t *c_axis_env;
 
   // Point to the corresponding C axis_env_proxy if any.

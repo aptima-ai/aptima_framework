@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -25,7 +25,7 @@ void ten_go_value_finalize(ten_go_value_t *self);
 void ten_go_value_destroy(uintptr_t value_addr);
 
 // These functions are used in getting property from ten_env_t. Refer to the
-// comments in ten.h. Please keep in mind that the input ten_vale_t* is cloned
+// comments in aptima.h. Please keep in mind that the input ten_vale_t* is cloned
 // in the previous stage (refer to ten_go_ten_property_get_type_and_size), so it
 // must be destroyed in these functions.
 

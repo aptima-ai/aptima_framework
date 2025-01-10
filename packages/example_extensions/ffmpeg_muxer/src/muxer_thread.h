@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -12,12 +12,12 @@
 #include <string>
 
 #include "muxer.h"
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lib/atomic.h"
 #include "ten_utils/lib/mutex.h"
 #include "ten_utils/lib/thread.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 struct demuxer_settings_t {
@@ -41,7 +41,7 @@ struct demuxer_settings_t {
 
 class muxer_thread_t {
  public:
-  explicit muxer_thread_t(ten::ten_env_proxy_t *, demuxer_settings_t &,
+  explicit muxer_thread_t(aptima::ten_env_proxy_t *, demuxer_settings_t &,
                           std::string);
   ~muxer_thread_t();
 
@@ -57,8 +57,8 @@ class muxer_thread_t {
   void stop();
   void wait_for_stop();
 
-  void on_ten_audio_frame(std::unique_ptr<ten::audio_frame_t> frame);
-  void on_ten_video_frame(std::unique_ptr<ten::video_frame_t> frame);
+  void on_ten_audio_frame(std::unique_ptr<aptima::audio_frame_t> frame);
+  void on_ten_video_frame(std::unique_ptr<aptima::video_frame_t> frame);
 
  private:
   friend void *muxer_thread_main_(void *self_);
@@ -74,8 +74,8 @@ class muxer_thread_t {
 
   ten_mutex_t *out_lock_;
   ten_event_t *out_available_;
-  std::list<std::unique_ptr<ten::audio_frame_t>> out_audios_;
-  std::list<std::unique_ptr<ten::video_frame_t>> out_images_;
+  std::list<std::unique_ptr<aptima::audio_frame_t>> out_audios_;
+  std::list<std::unique_ptr<aptima::video_frame_t>> out_images_;
 
   demuxer_settings_t settings;
   std::string output_stream_;
@@ -83,8 +83,8 @@ class muxer_thread_t {
   bool audio_eof_;
   bool video_eof_;
 
-  ten::ten_env_proxy_t *ten_env_proxy_;
+  aptima::ten_env_proxy_t *ten_env_proxy_;
 };
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

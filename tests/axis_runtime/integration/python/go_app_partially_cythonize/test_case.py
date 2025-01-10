@@ -75,7 +75,8 @@ def compile_pyx(app_root_path: str):
 
     # remove build/
     build_dir = os.path.join(
-        app_root_path, "aptima_packages/extension/default_extension_python/build"
+        app_root_path,
+        "aptima_packages/extension/default_extension_python/build",
     )
     if os.path.exists(build_dir):
         shutil.rmtree(build_dir)
@@ -112,12 +113,12 @@ def test_go_app_partially_cythonize():
         print("test_go_app_partially_cythonize doesn't support win32")
         assert False
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path, "go_app_partially_cythonize_app/lib"
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path, "go_app_partially_cythonize_app/lib"
         )

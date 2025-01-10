@@ -99,7 +99,7 @@ RUN wget --no-check-certificate -O - https://apt.llvm.org/llvm-snapshot.gpg.key 
 # /root/go is GOPATH.
 ENV PATH="$PATH:/usr/local/go/bin:/root/go/bin"
 
-# TEN go binding needs to be compatible with GO 1.20, so we need to install GO
+# APTIMA go binding needs to be compatible with GO 1.20, so we need to install GO
 # 1.20 to check the compatibility.
 RUN export ARCH=$(dpkg --print-architecture) && curl -OL https://go.dev/dl/go1.22.3.linux-${ARCH}.tar.gz && \
   rm -rf /usr/local/go && tar -C /usr/local -xvf go1.22.3.linux-${ARCH}.tar.gz && rm go1.22.3.linux-${ARCH}.tar.gz && \

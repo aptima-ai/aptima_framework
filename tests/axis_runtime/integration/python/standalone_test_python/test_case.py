@@ -58,7 +58,7 @@ def test_standalone_test_python():
             libasan_path = os.path.join(
                 base_path,
                 (
-                    "default_extension_python/.ten/app/aptima_packages/"
+                    "default_extension_python/.aptima/app/aptima_packages/"
                     "system/aptima_runtime/lib/libasan.so"
                 ),
             )

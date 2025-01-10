@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,14 +12,14 @@
 #include <nlohmann/json.hpp>
 
 #include "include_internal/aptima_runtime/binding/cpp/detail/msg/cmd/cmd_result_internal_accessor.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "include_internal/aptima_utils/log/log.h"
 #include "aptima_runtime/binding/cpp/detail/msg/cmd_result.h"
 #include "aptima_utils/lib/smart_ptr.h"
 #include "aptima_utils/lib/string.h"
 #include "tests/common/client/msgpack_tcp.h"
 
-namespace ten {
+namespace aptima {
 
 class msgpack_tcp_client_t {
  public:
@@ -38,35 +38,35 @@ class msgpack_tcp_client_t {
   msgpack_tcp_client_t(msgpack_tcp_client_t &&) = delete;
   msgpack_tcp_client_t &operator=(msgpack_tcp_client_t &&) = delete;
 
-  bool send_cmd(std::unique_ptr<ten::cmd_t> &&cmd) {
+  bool send_cmd(std::unique_ptr<aptima::cmd_t> &&cmd) {
     bool success = aptima_test_msgpack_tcp_client_send_msg(
         c_client, cmd->get_underlying_msg());
     if (success) {
       // Only when the cmd has been sent successfully, we should give back the
-      // ownership of the cmd to the TEN runtime.
+      // ownership of the cmd to the APTIMA runtime.
       auto *cpp_cmd_ptr = cmd.release();
       delete cpp_cmd_ptr;
     }
     return success;
   }
 
-  std::unique_ptr<ten::cmd_result_t> send_cmd_and_recv_result(
-      std::unique_ptr<ten::cmd_t> &&cmd) {
+  std::unique_ptr<aptima::cmd_result_t> send_cmd_and_recv_result(
+      std::unique_ptr<aptima::cmd_t> &&cmd) {
     send_cmd(std::move(cmd));
 
     aptima_shared_ptr_t *c_resp = aptima_test_msgpack_tcp_client_recv_msg(c_client);
     if (c_resp != nullptr) {
-      return ten::cmd_result_internal_accessor_t::create(c_resp);
+      return aptima::cmd_result_internal_accessor_t::create(c_resp);
     } else {
       return {};
     }
   }
 
-  std::vector<std::unique_ptr<ten::cmd_result_t>> batch_recv_cmd_results() {
+  std::vector<std::unique_ptr<aptima::cmd_result_t>> batch_recv_cmd_results() {
     aptima_list_t msgs = aptima_LIST_INIT_VAL;
     aptima_test_msgpack_tcp_client_recv_msgs_batch(c_client, &msgs);
 
-    std::vector<std::unique_ptr<ten::cmd_result_t>> results;
+    std::vector<std::unique_ptr<aptima::cmd_result_t>> results;
 
     aptima_list_foreach (&msgs, iter) {
       aptima_shared_ptr_t *c_cmd_result =
@@ -74,7 +74,7 @@ class msgpack_tcp_client_t {
       aptima_ASSERT(c_cmd_result, "Should not happen.");
 
       auto cmd_result =
-          ten::cmd_result_internal_accessor_t::create(c_cmd_result);
+          aptima::cmd_result_internal_accessor_t::create(c_cmd_result);
       results.push_back(std::move(cmd_result));
     }
 
@@ -121,4 +121,4 @@ class msgpack_tcp_client_t {
   aptima_test_msgpack_tcp_client_t *c_client;
 };
 
-}  // namespace ten
+}  // namespace aptima

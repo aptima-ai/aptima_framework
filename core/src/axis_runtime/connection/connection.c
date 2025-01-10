@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -152,7 +152,7 @@ void axis_connection_on_protocol_closed(axis_UNUSED axis_protocol_t *protocol,
 
   if (axis_connection_is_closing(self)) {
     // The connection is closing, which means that the closure of the connection
-    // is triggered by TEN runtime, e.g.: the closure of app => engine => remote
+    // is triggered by APTIMA runtime, e.g.: the closure of app => engine => remote
     // => connection => protocol. So when the protocol has closed, we continue
     // to close the related connection.
     axis_connection_on_close(self);
@@ -292,14 +292,14 @@ static void axis_connection_handle_command_from_external_client(
 
   axis_ASSERT(cmd && axis_cmd_base_check_integrity(cmd), "Invalid argument.");
 
-  // The command is coming from the outside of the TEN world, generate a
+  // The command is coming from the outside of the APTIMA world, generate a
   // command ID for it.
   const char *cmd_id = axis_cmd_base_gen_new_cmd_id_forcibly(cmd);
 
   const char *src_uri = axis_msg_get_src_app_uri(cmd);
   axis_ASSERT(src_uri, "Should not happen.");
 
-  // If this message is coming from the outside of the TEN world (i.e.,
+  // If this message is coming from the outside of the APTIMA world (i.e.,
   // a client), regardless of whether the src_uri of the command is set or
   // not, we forcibly use the command ID as the identity of that client.
   //
@@ -349,7 +349,7 @@ void axis_connection_on_msgs(axis_connection_t *self, axis_list_t *msgs) {
       // from.
       axis_cmd_base_set_original_connection(msg, self);
 
-      // If this command is coming from outside of the TEN world (i.e.,
+      // If this command is coming from outside of the APTIMA world (i.e.,
       // clients), the command ID would be empty, so we generate a new one for
       // it in this case now.
       const char *cmd_id = axis_cmd_base_get_cmd_id(msg);
@@ -367,7 +367,7 @@ void axis_connection_on_msgs(axis_connection_t *self, axis_list_t *msgs) {
       }
     }
 
-    // Send into the TEN runtime to be processed.
+    // Send into the APTIMA runtime to be processed.
     axis_connection_on_input(self, msg, &err);
   }
 
@@ -451,7 +451,7 @@ axis_runloop_t *axis_connection_get_attached_runloop(axis_connection_t *self) {
 
   // This function will be called from the implementation protocol thread (ex:
   // 'axis_protocol_asynced_on_input_async()'), and the
-  // 'axis_connection_t::migration_state' must be only accessed from the TEN
+  // 'axis_connection_t::migration_state' must be only accessed from the APTIMA
   // world, so do _not_ check 'axis_connection_t::migration_state' here.
   //
   // The caller side must be responsible for calling this function at the right

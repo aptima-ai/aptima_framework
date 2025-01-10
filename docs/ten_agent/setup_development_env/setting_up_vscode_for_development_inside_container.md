@@ -1,6 +1,6 @@
 # Setting Up VSCode for Development Inside Container
 
-When developing with TEN, it's generally recommended to perform compilation and development within a container. However, if you're using VSCode outside the container, you may encounter issues where symbols cannot be resolved. This is because some environment dependencies are installed within the container, and VSCode can't recognize the container's environment, leading to unresolved header files.
+When developing with APTIMA, it's generally recommended to perform compilation and development within a container. However, if you're using VSCode outside the container, you may encounter issues where symbols cannot be resolved. This is because some environment dependencies are installed within the container, and VSCode can't recognize the container's environment, leading to unresolved header files.
 
 To solve this, you can mount VSCode within the container so that it recognizes the container’s environment and resolves the header files accordingly. This guide will walk you through using VSCode's Dev Containers and Docker extensions to achieve this.
 
@@ -14,7 +14,7 @@ Next, install the [Dev Containers extension](https://marketplace.visualstudio.co
 
 ## Step 3: Start the Development Environment Using Docker Compose
 
-This step is similar to the process outlined in the [Quick Start](https://doc.theten.ai/ten-agent/getting_started) guide. However, instead of running:
+This step is similar to the process outlined in the [Quick Start](https://doc.theten.ai/aptima-agent/getting_started) guide. However, instead of running:
 
 {% code title=">_ Terminal" %}
 ```shell
@@ -44,19 +44,19 @@ In the Dev Container environment connected to the container, your local extensio
 
 Setting breakpoints in the code is a common practice when debugging. To set a breakpoint in the code, click on the left margin of the line number where you want to set the breakpoint. A red dot will appear, indicating that a breakpoint has been set.
 
-![Setting Breakpoint](https://raw.githubusercontent.com/TEN-framework/docs/refs/heads/main/assets/png/setting_breakpoint.png)
+![Setting Breakpoint](https://raw.githubusercontent.com/APTIMA-framework/docs/refs/heads/main/assets/png/setting_breakpoint.png)
 
 if you cannot set the breakpoint, it usually means you have not installed the language extension in the container. You can install the language extension by clicking on the `Extensions` icon in the left sidebar, searching for the required extension, and following the prompts to install it.
 
 Once you have set the breakpoint, you can start debugging by clicking on the `Run and Debug` icon in the left sidebar, selecting the `debug python` configuration, and clicking on the green play button to start debugging.
 
-![Debug Configuration](https://github.com/TEN-framework/docs/blob/main/assets/png/debug_config.png?raw=true)
+![Debug Configuration](https://github.com/APTIMA-framework/docs/blob/main/assets/png/debug_config.png?raw=true)
 
 In this way, VSCode is directly starting the agent application, which means Golang web server is not paticipating in the run. Therefore, you will need to pay attention to below points:
 
 ### Which graph is being used in this mode?
 
-Web server will help you manipulate `property.json` when starting agent to help you select the graph you want to use. However, in this mode, you will need to manually modify `property.json` to select the graph you want to use. Ten will by default select **the first graph with `auto_start` property set to true** to start.
+Web server will help you manipulate `property.json` when starting agent to help you select the graph you want to use. However, in this mode, you will need to manually modify `property.json` to select the graph you want to use. Aptima will by default select **the first graph with `auto_start` property set to true** to start.
 
 ### RTC properties
 

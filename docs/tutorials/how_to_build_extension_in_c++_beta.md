@@ -17,17 +17,17 @@ layout:
 
 ## Overview
 
-This tutorial introduces how to develop an TEN extension using C++, as well as how to debug and deploy it to run in an TEN app. This tutorial covers the following topics:
+This tutorial introduces how to develop an APTIMA extension using C++, as well as how to debug and deploy it to run in an APTIMA app. This tutorial covers the following topics:
 
 * How to create a C++ extension development project using tman.
-* How to use TEN API to implement the functionality of the extension, such as sending and receiving messages.
+* How to use APTIMA API to implement the functionality of the extension, such as sending and receiving messages.
 * How to write unit test cases and debug the code.
 * How to deploy the extension locally to an app and perform integration testing within the app.
 * How to debug the extension code within the app.
 
 Note
 
-Unless otherwise specified, the commands and code in this tutorial are executed in a Linux environment. Since TEN has a consistent development approach and logic across all platforms (e.g., Windows, Mac), this tutorial is also suitable for other platforms.
+Unless otherwise specified, the commands and code in this tutorial are executed in a Linux environment. Since APTIMA has a consistent development approach and logic across all platforms (e.g., Windows, Mac), this tutorial is also suitable for other platforms.
 
 ### Preparation
 
@@ -40,7 +40,7 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
     If the configuration is successful, it will display the help information for tman as follows:
 
     ```
-    TEN manager
+    APTIMA manager
 
     Usage: tman [OPTIONS] <COMMAND>
 
@@ -60,11 +60,11 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
       -V, --version                    Print version
     ```
 
-* Download the latest ten\_gn and configure the PATH. For example:
+* Download the latest aptima\_gn and configure the PATH. For example:
 
     Note
 
-    ten\_gn is the C++ build system for the TEN platform. To facilitate developers, TEN provides a ten\_gn toolchain for building C++ extension projects.
+    aptima\_gn is the C++ build system for the APTIMA platform. To facilitate developers, APTIMA provides a aptima\_gn toolchain for building C++ extension projects.
 
     ```
     $ export PATH=/path/to/ten_gn:$PATH
@@ -107,7 +107,7 @@ Unless otherwise specified, the commands and code in this tutorial are executed 
   * gn depends on python3, please make sure that Python 3.10 or above is installed.
 * Install a C/C++ compiler, either clang/clang++ or gcc/g++.
 
-In addition, we provide a base compilation image where all of the above dependencies are already installed and configured. You can refer to the [TEN-Agent](https://github.com/ten-framework/TEN-Agent) project on GitHub.
+In addition, we provide a base compilation image where all of the above dependencies are already installed and configured. You can refer to the [APTIMA-Agent](https://github.com/aptima-framework/APTIMA-Agent) project on GitHub.
 
 ### Creating C++ extension project
 
@@ -121,11 +121,11 @@ $ tman install extension default_extension_cpp --template-mode --template-data p
 
 Note
 
-The above command indicates that we are installing an TEN package using the default\_extension\_cpp template to create an extension project named first\_cxx\_extension.
+The above command indicates that we are installing an APTIMA package using the default\_extension\_cpp template to create an extension project named first\_cxx\_extension.
 
-* \--template-mode indicates installing the TEN package as a template. The template rendering parameters can be specified using --template-data.
-* extension is the type of TEN package to install. Currently, TEN provides app/extension\_group/extension/system packages. In the following sections on testing extensions in an app, we will use several other types of packages.
-* default\_extension\_cpp is the default C++ extension provided by TEN. Developers can also specify other C++ extensions available in the store as templates.
+* \--template-mode indicates installing the APTIMA package as a template. The template rendering parameters can be specified using --template-data.
+* extension is the type of APTIMA package to install. Currently, APTIMA provides app/extension\_group/extension/system packages. In the following sections on testing extensions in an app, we will use several other types of packages.
+* default\_extension\_cpp is the default C++ extension provided by APTIMA. Developers can also specify other C++ extensions available in the store as templates.
 
 After the command is executed, a directory named first\_cxx\_extension will be generated in the current directory, which is our C++ extension project. The directory structure is as follows:
 
@@ -140,9 +140,9 @@ After the command is executed, a directory named first\_cxx\_extension will be g
 
 Where:
 
-* src/main.cc contains a simple implementation of the extension, including calls to the C++ API provided by TEN. We will discuss how to use the TEN API in the next section.
-* manifest.json and property.json are the standard configuration files for TEN extensions. In manifest.json, metadata information such as the version, dependencies, and schema definition of the extension are typically declared. property.json is used to declare the business configuration of the extension.
-* BUILD.gn is the configuration file for ten\_gn, used to compile the C++ extension project.
+* src/main.cc contains a simple implementation of the extension, including calls to the C++ API provided by APTIMA. We will discuss how to use the APTIMA API in the next section.
+* manifest.json and property.json are the standard configuration files for APTIMA extensions. In manifest.json, metadata information such as the version, dependencies, and schema definition of the extension are typically declared. property.json is used to declare the business configuration of the extension.
+* BUILD.gn is the configuration file for aptima\_gn, used to compile the C++ extension project.
 
 The property.json file is initially an empty JSON file, like this:
 
@@ -150,7 +150,7 @@ The property.json file is initially an empty JSON file, like this:
 {}
 ```
 
-The manifest.json file will include the ten\_runtime dependency by default, like this:
+The manifest.json file will include the aptima\_runtime dependency by default, like this:
 
 ```
 {
@@ -170,13 +170,13 @@ The manifest.json file will include the ten\_runtime dependency by default, like
 
 Note
 
-* Please note that according to TEN's naming convention, the name should be alphanumeric. This is because when integrating the extension into an app, a directory will be created based on the extension name. TEN also provides the functionality to automatically load the manifest.json and property.json files from the extension directory.
-* Dependencies are used to declare the dependencies of the extension. When installing TEN packages, tman will automatically download the dependencies based on the declarations in the dependencies section.
-* The api section is used to declare the schema of the extension. Refer to `usage of ten schema <usage_of_ten_schema_cn>`.
+* Please note that according to APTIMA's naming convention, the name should be alphanumeric. This is because when integrating the extension into an app, a directory will be created based on the extension name. APTIMA also provides the functionality to automatically load the manifest.json and property.json files from the extension directory.
+* Dependencies are used to declare the dependencies of the extension. When installing APTIMA packages, tman will automatically download the dependencies based on the declarations in the dependencies section.
+* The api section is used to declare the schema of the extension. Refer to `usage of aptima schema <usage_of_ten_schema_cn>`.
 
 #### Manual Creation
 
-Developers can also manually create a C++ extension project or transform an existing project into an TEN extension project.
+Developers can also manually create a C++ extension project or transform an existing project into an APTIMA extension project.
 
 First, ensure that the project's output target is a shared library. Then, refer to the example above to create `property.json` and `manifest.json` in the project's root directory. The `manifest.json` should include information such as `type`, `name`, `version`, `language`, and `dependencies`. Specifically:
 
@@ -184,7 +184,7 @@ First, ensure that the project's output target is a shared library. Then, refer 
 * `language` must be `cpp`.
 * `dependencies` should include `ten_runtime`.
 
-Finally, configure the build settings. The `default_extension_cpp` provided by TEN uses `ten_gn` as the build toolchain. If developers are using a different build toolchain, they can refer to the configuration in `BUILD.gn` to set the compilation parameters. Since `BUILD.gn` contains the directory structure of the TEN package, we will discuss it in the next section (Downloading Dependencies).
+Finally, configure the build settings. The `default_extension_cpp` provided by APTIMA uses `ten_gn` as the build toolchain. If developers are using a different build toolchain, they can refer to the configuration in `BUILD.gn` to set the compilation parameters. Since `BUILD.gn` contains the directory structure of the APTIMA package, we will discuss it in the next section (Downloading Dependencies).
 
 ### Download Dependencies
 
@@ -194,11 +194,11 @@ To download dependencies, execute the following command in the extension project
 $ tman install
 ```
 
-After the command is executed successfully, a `.ten` directory will be generated in the current directory, which contains all the dependencies of the current extension.
+After the command is executed successfully, a `.aptima` directory will be generated in the current directory, which contains all the dependencies of the current extension.
 
 Note
 
-* There are two modes for extensions: development mode and runtime mode. In development mode, the root directory is the source code directory of the extension. In runtime mode, the root directory is the app directory. Therefore, the placement path of dependencies is different in these two modes. The `.ten` directory mentioned here is the root directory of dependencies in development mode.
+* There are two modes for extensions: development mode and runtime mode. In development mode, the root directory is the source code directory of the extension. In runtime mode, the root directory is the app directory. Therefore, the placement path of dependencies is different in these two modes. The `.aptima` directory mentioned here is the root directory of dependencies in development mode.
 
 The directory structure is as follows:
 
@@ -207,7 +207,7 @@ The directory structure is as follows:
 ├── BUILD.gn
 ├── manifest.json
 ├── property.json
-├── .ten
+├── .aptima
 │   └── app
 │       ├── addon
 │       ├── include
@@ -218,8 +218,8 @@ The directory structure is as follows:
 
 Where:
 
-* `.ten/app/include` is the root directory for header files.
-* `.ten/app/lib` is the root directory for precompiled dynamic libraries of TEN runtime.
+* `.aptima/app/include` is the root directory for header files.
+* `.aptima/app/lib` is the root directory for precompiled dynamic libraries of APTIMA runtime.
 
 If it is in runtime mode, the extension will be placed in the `addon/extension` directory of the app, and the dynamic libraries will be placed in the `lib` directory of the app. The structure is as follows:
 
@@ -235,15 +235,15 @@ If it is in runtime mode, the extension will be placed in the `addon/extension` 
 └── lib
 ```
 
-So far, an TEN C++ extension project has been created.
+So far, an APTIMA C++ extension project has been created.
 
 ### BUILD.gn
 
 The content of `BUILD.gn` for `default_extension_cpp` is as follows:
 
 ```
-import("//exts/ten/base_options.gni")
-import("//exts/ten/ten_package.gni")
+import("//exts/aptima/base_options.gni")
+import("//exts/aptima/ten_package.gni")
 
 config("common_config") {
   defines = common_defines
@@ -264,19 +264,19 @@ config("build_config") {
   # 1. The `include` refers to the `include` directory in current extension.
   # 2. The `//include` refers to the `include` directory in the base directory
   #    of running `tgn gen`.
-  # 3. The `.ten/app/include` is used in extension standalone building.
+  # 3. The `.aptima/app/include` is used in extension standalone building.
   include_dirs = [
   "include",
   "//core/include",
   "//include/nlohmann_json",
-  ".ten/app/include",
-  ".ten/app/include/nlohmann_json",
+  ".aptima/app/include",
+  ".aptima/app/include/nlohmann_json",
   ]
 
   lib_dirs = [
   "lib",
   "//lib",
-  ".ten/app/lib",
+  ".aptima/app/lib",
   ]
 
   if (is_win) {
@@ -310,7 +310,7 @@ ten_package("first_cxx_extension") {
 }
 ```
 
-Let's first take a look at the `ten_package` target, which declares a build target for an TEN package.
+Let's first take a look at the `ten_package` target, which declares a build target for an APTIMA package.
 
 * The `package_kind` is set to `extension`, and the `build_type` is set to `shared_library`. This means that the expected output of the compilation is a shared library.
 * The `sources` field specifies the source file(s) to be compiled. If there are multiple source files, they need to be added to the `sources` field.
@@ -320,56 +320,56 @@ Next, let's look at the content of `build_config`.
 
 * The `include_dirs` field defines the search paths for header files.
   * The difference between `include` and `//include` is that `include` refers to the `include` directory in the current extension directory, while `//include` is based on the working directory of the `tgn gen` command. So, if the compilation is executed in the extension directory, it will be the same as `include`. But if it is executed in the app directory, it will be the `include` directory in the app.
-  * `.ten/app/include` is used for standalone development and compilation of the extension, which is the scenario being discussed in this tutorial. In other words, the default `build_config` is compatible with both development mode and runtime mode compilation.
+  * `.aptima/app/include` is used for standalone development and compilation of the extension, which is the scenario being discussed in this tutorial. In other words, the default `build_config` is compatible with both development mode and runtime mode compilation.
 * The `lib_dirs` field defines the search paths for dependency libraries. The difference between `lib` and `//lib` is similar to `include`.
-* The `libs` field defines the dependent libraries. `ten_runtime` and `utils` are libraries provided by TEN.
+* The `libs` field defines the dependent libraries. `ten_runtime` and `utils` are libraries provided by APTIMA.
 
 Therefore, if developers are using a different build toolchain, they can refer to the above configuration and set the compilation parameters in their own build toolchain. For example, if using g++ to compile:
 
 ```
-$ g++ -shared -fPIC -I.ten/app/include/ -L.ten/app/lib -lten_runtime -lutils -Wl,-rpath=\$ORIGIN -Wl,-rpath=\$ORIGIN/../../../lib src/main.cc
+$ g++ -shared -fPIC -I.aptima/app/include/ -L.aptima/app/lib -lten_runtime -lutils -Wl,-rpath=\$ORIGIN -Wl,-rpath=\$ORIGIN/../../../lib src/main.cc
 ```
 
-The setting of `rpath` is also considered for the runtime mode, where the ten\_runtime dependency of the extension is placed in the `app/lib` directory.
+The setting of `rpath` is also considered for the runtime mode, where the aptima\_runtime dependency of the extension is placed in the `app/lib` directory.
 
 ### Implementation of Extension Functionality
 
 For developers, there are two things to do:
 
-* Create an extension as a channel for interacting with TEN runtime.
-* Register the extension as an addon in TEN, allowing it to be used in the graph through a declarative approach.
+* Create an extension as a channel for interacting with APTIMA runtime.
+* Register the extension as an addon in APTIMA, allowing it to be used in the graph through a declarative approach.
 
 #### Creating the Extension Class
 
-The extension created by developers needs to inherit the `ten::extension_t` class. The main definition of this class is as follows:
+The extension created by developers needs to inherit the `aptima::extension_t` class. The main definition of this class is as follows:
 
 ```
 class extension_t {
 protected:
   explicit extension_t(const char *name) {...}
 
-  virtual void on_init(ten_t &ten, metadata_info_t &manifest,
+  virtual void on_init(ten_t &aptima, metadata_info_t &manifest,
                      metadata_info_t &property) {
-    ten.on_init_done(manifest, property);
+    aptima.on_init_done(manifest, property);
   }
 
-  virtual void on_start(ten_t &ten) { ten.on_start_done(); }
+  virtual void on_start(ten_t &aptima) { aptima.on_start_done(); }
 
-  virtual void on_stop(ten_t &ten) { ten.on_stop_done(); }
+  virtual void on_stop(ten_t &aptima) { aptima.on_stop_done(); }
 
-  virtual void on_deinit(ten_t &ten) { ten.on_deinit_done(); }
+  virtual void on_deinit(ten_t &aptima) { aptima.on_deinit_done(); }
 
-  virtual void on_cmd(ten_t &ten, std::unique_ptr<cmd_t> cmd) {
-    auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+  virtual void on_cmd(ten_t &aptima, std::unique_ptr<cmd_t> cmd) {
+    auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
     cmd_result->set_property("detail", "default");
-    ten.return_result(std::move(cmd_result), std::move(cmd));
+    aptima.return_result(std::move(cmd_result), std::move(cmd));
   }
 
-  virtual void on_data(ten_t &ten, std::unique_ptr<data_t> data) {}
+  virtual void on_data(ten_t &aptima, std::unique_ptr<data_t> data) {}
 
-  virtual void on_pcm_frame(ten_t &ten, std::unique_ptr<pcm_frame_t> frame) {}
+  virtual void on_pcm_frame(ten_t &aptima, std::unique_ptr<pcm_frame_t> frame) {}
 
-  virtual void on_image_frame(ten_t &ten,
+  virtual void on_image_frame(ten_t &aptima,
                               std::unique_ptr<image_frame_t> frame) {}
 }
 ```
@@ -379,27 +379,27 @@ In the markdown content you provided, there are descriptions of the lifecycle fu
 Lifecycle Functions:
 
 * on\_init: Used to initialize the extension instance, such as setting the extension's configuration.
-* on\_start: Used to start the extension instance, such as establishing connections to external services. The extension will not receive messages until on\_start is completed. In on\_start, you can use the ten.get\_property API to retrieve the extension's configuration.
+* on\_start: Used to start the extension instance, such as establishing connections to external services. The extension will not receive messages until on\_start is completed. In on\_start, you can use the aptima.get\_property API to retrieve the extension's configuration.
 * on\_stop: Used to stop the extension instance, such as closing connections to external services.
 * on\_deinit: Used to destroy the extension instance, such as releasing memory resources.
 
 Message Handling Functions:
 
-* on\_cmd/on\_data/on\_pcm\_frame/on\_image\_frame: These are callback methods used to receive messages of four different types. For more information on TEN message types, you can refer to the [message-system](https://github.com/TEN-framework/ten_framework/blob/main/docs/ten_framework/message_system.md)
+* on\_cmd/on\_data/on\_pcm\_frame/on\_image\_frame: These are callback methods used to receive messages of four different types. For more information on APTIMA message types, you can refer to the [message-system](https://github.com/APTIMA-framework/ten_framework/blob/main/docs/ten_framework/message_system.md)
 
-The ten::extension\_t class provides default implementations for these functions, and developers can override them according to their needs.
+The aptima::extension\_t class provides default implementations for these functions, and developers can override them according to their needs.
 
 #### Registering the Extension
 
-After defining the extension, it needs to be registered as an addon in the TEN runtime. For example, in the `first_cxx_extension/src/main.cc` file, the registration code is as follows:
+After defining the extension, it needs to be registered as an addon in the APTIMA runtime. For example, in the `first_cxx_extension/src/main.cc` file, the registration code is as follows:
 
 ```
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(first_cxx_extension, first_cxx_extension_extension_t);
 ```
 
-* TEN\_CPP\_REGISTER\_ADDON\_AS\_EXTENSION is a macro provided by the TEN runtime for registering extension addons.
+* APTIMA\_CPP\_REGISTER\_ADDON\_AS\_EXTENSION is a macro provided by the APTIMA runtime for registering extension addons.
   * The first parameter is the name of the addon, which serves as a unique identifier for the addon. It will be used to define the extension in the graph using a declarative approach.
-  * The second parameter is the implementation class of the extension, which is the class that inherits from ten::extension\_t.
+  * The second parameter is the implementation class of the extension, which is the class that inherits from aptima::extension\_t.
 
 Please note that the addon name must be unique because it is used as a unique index to find the implementation in the graph.
 
@@ -408,33 +408,33 @@ Please note that the addon name must be unique because it is used as a unique in
 Developers can set the extension's configuration in the on\_init() function, as shown in the example:
 
 ```
-void on_init(ten::ten_t& ten, ten::metadata_info_t& manifest,
-             ten::metadata_info_t& property) override {
+void on_init(aptima::ten_t& aptima, aptima::metadata_info_t& manifest,
+             aptima::metadata_info_t& property) override {
   property.set(TEN_METADATA_JSON_FILENAME, "customized_property.json");
-  ten.on_init_done(manifest, property);
+  aptima.on_init_done(manifest, property);
 }
 ```
 
-Both the property and manifest can be customized using the set() method. In the example, the first parameter TEN\_METADATA\_JSON\_FILENAME indicates that the custom property is stored as a local file, and the second parameter is the file path relative to the extension directory. So in this example, when the app loads the extension, it will load `<app>/addon/extension/first_cxx_extension/customized_property.json`.
+Both the property and manifest can be customized using the set() method. In the example, the first parameter APTIMA\_METADATA\_JSON\_FILENAME indicates that the custom property is stored as a local file, and the second parameter is the file path relative to the extension directory. So in this example, when the app loads the extension, it will load `<app>/addon/extension/first_cxx_extension/customized_property.json`.
 
-TEN's on\_init provides default logic for loading default configurations. If developers do not call property.set(), the property.json file in the extension directory will be loaded by default. Similarly, if manifest.set() is not called, the manifest.json file in the extension directory will be loaded by default. In the example, since property.set() is called, the property.json file will not be loaded by default.
+APTIMA's on\_init provides default logic for loading default configurations. If developers do not call property.set(), the property.json file in the extension directory will be loaded by default. Similarly, if manifest.set() is not called, the manifest.json file in the extension directory will be loaded by default. In the example, since property.set() is called, the property.json file will not be loaded by default.
 
-Please note that on\_init is an asynchronous method, and developers need to call ten.on\_init\_done() to inform the TEN runtime that on\_init has completed as expected.
+Please note that on\_init is an asynchronous method, and developers need to call aptima.on\_init\_done() to inform the APTIMA runtime that on\_init has completed as expected.
 
 #### on\_start
 
 When on\_start is called, it means that on\_init\_done() has been executed and the extension's property has been loaded. From this point on, the extension can access the configuration. For example:
 
 ```
-void on_start(ten::ten_t& ten) override {
-  auto prop = ten.get_property_string("some_string");
+void on_start(aptima::ten_t& aptima) override {
+  auto prop = aptima.get_property_string("some_string");
   // do something
 
-  ten.on_start_done();
+  aptima.on_start_done();
 }
 ```
 
-ten.get\_property\_string() is used to retrieve a property of type string with the name "some\_string". If the property does not exist or the type does not match, an error will be returned. If the extension's configuration contains the following content:
+aptima.get\_property\_string() is used to retrieve a property of type string with the name "some\_string". If the property does not exist or the type does not match, an error will be returned. If the extension's configuration contains the following content:
 
 ```
 {
@@ -444,31 +444,31 @@ ten.get\_property\_string() is used to retrieve a property of type string with t
 
 Then the value of prop will be "hello world".
 
-Similar to on\_init, on\_start is also an asynchronous method, and developers need to call ten.on\_start\_done() to inform the TEN runtime that on\_start has completed as expected.
+Similar to on\_init, on\_start is also an asynchronous method, and developers need to call aptima.on\_start\_done() to inform the APTIMA runtime that on\_start has completed as expected.
 
-For more information, you can refer to the API documentation: ten api doc.
+For more information, you can refer to the API documentation: aptima api doc.
 
 #### Error Handling
 
-As shown in the previous example, if "some\_string" does not exist or is not of type string, ten.get\_property\_string() will return an error. You can handle the error as follows:
+As shown in the previous example, if "some\_string" does not exist or is not of type string, aptima.get\_property\_string() will return an error. You can handle the error as follows:
 
 ```C++
-void on_start(ten::ten_t& ten) override {
-  ten::error_t err;
-  auto prop = ten.get_property_string("some_string", &err);
+void on_start(aptima::ten_t& aptima) override {
+  aptima::error_t err;
+  auto prop = aptima.get_property_string("some_string", &err);
 
   // error handling
   if (!err.is_success()) {
     TEN_LOGE("Failed to get property: %s", err.errmsg());
   }
 
-  ten.on_start_done();
+  aptima.on_start_done();
 }
 ```
 
 #### Message Handling
 
-TEN provides four types of messages: `cmd`, `data`, `image_frame`, and `pcm_frame`. Developers can handle these four types of messages by implementing the `on_cmd`, `on_data`, `on_image_frame`, and `on_pcm_frame` callback methods.
+APTIMA provides four types of messages: `cmd`, `data`, `image_frame`, and `pcm_frame`. Developers can handle these four types of messages by implementing the `on_cmd`, `on_data`, `on_image_frame`, and `on_pcm_frame` callback methods.
 
 Taking `cmd` as an example, let's see how to receive and send messages.
 
@@ -505,19 +505,19 @@ Based on the above description, the behavior of `first_cxx_extension` is as foll
 * It receives a response from a downstream extension, which includes error information.
 * It returns a response to an upstream extension, which includes error information.
 
-For a TEN extension, you can describe the above behavior in the `manifest.json` file of the extension, including:
+For a APTIMA extension, you can describe the above behavior in the `manifest.json` file of the extension, including:
 
 * What messages the extension receives, their names, and the structure definition of their properties (schema definition).
 * What messages the extension generates/sends, their names, and the structure definition of their properties.
-* Additionally, for `cmd` type messages, a response definition is required (referred to as a result in TEN).
+* Additionally, for `cmd` type messages, a response definition is required (referred to as a result in APTIMA).
 
-With these definitions, TEN runtime will perform validity checks based on the schema definition before delivering messages to the extension or when the extension sends messages through TEN runtime. It also helps the users of the extension to see the protocol definition.
+With these definitions, APTIMA runtime will perform validity checks based on the schema definition before delivering messages to the extension or when the extension sends messages through APTIMA runtime. It also helps the users of the extension to see the protocol definition.
 
 The schema is defined in the `api` field of the `manifest.json` file. `cmd_in` defines the cmds that the extension will receive, and `cmd_out` defines the cmds that the extension will send.
 
 Note
 
-For the usage of schema, refer to: [TEN Framework Schema System](https://github.com/TEN-framework/ten_framework/blob/main/docs/ten_framework/schema_system.md)
+For the usage of schema, refer to: [APTIMA Framework Schema System](https://github.com/APTIMA-framework/ten_framework/blob/main/docs/ten_framework/schema_system.md)
 
 Based on the above description, the content of `manifest.json` for `first_cxx_extension` is as follows:
 
@@ -681,21 +681,21 @@ void from_json(const nlohmann::json &j, request_t &request) {
 } // namespace first_cxx_extension_extension
 ```
 
-To parse the request data, you can use the `get_property` API provided by TEN. Here is an example of how to implement it:
+To parse the request data, you can use the `get_property` API provided by APTIMA. Here is an example of how to implement it:
 
 ```
 // model.h
 
 class request_t {
 public:
-  void from_cmd(ten::cmd_t &cmd);
+  void from_cmd(aptima::cmd_t &cmd);
 
   // ...
 }
 
 // model.cc
 
-void request_t::from_cmd(ten::cmd_t &cmd) {
+void request_t::from_cmd(aptima::cmd_t &cmd) {
   app_id = cmd.get_property_string("app_id");
   client_type = cmd.get_property_int8("client_type");
 
@@ -707,7 +707,7 @@ void request_t::from_cmd(ten::cmd_t &cmd) {
 }
 ```
 
-To return a response, you need to create a `cmd_result_t` object and set the properties accordingly. Then, pass the `cmd_result_t` object to TEN runtime to return it to the requester. Here is an example:
+To return a response, you need to create a `cmd_result_t` object and set the properties accordingly. Then, pass the `cmd_result_t` object to APTIMA runtime to return it to the requester. Here is an example:
 
 ```
 // model.h
@@ -726,29 +726,29 @@ public:
 
 // main.cc
 
-void on_cmd(ten::ten_t &ten, std::unique_ptr<ten::cmd_t> cmd) override {
+void on_cmd(aptima::ten_t &aptima, std::unique_ptr<aptima::cmd_t> cmd) override {
   request_t request;
   request.from_cmd(*cmd);
 
   std::string err_msg;
   if (!request.validate(&err_msg)) {
-    auto result = ten::cmd_result_t::create(TEN_STATUS_CODE_ERROR);
+    auto result = aptima::cmd_result_t::create(TEN_STATUS_CODE_ERROR);
     result->set_property("err_no", 1);
     result->set_property("err_msg", err_msg.c_str());
 
-    ten.return_result(std::move(result), std::move(cmd));
+    aptima.return_result(std::move(result), std::move(cmd));
   }
 }
 ```
 
-In the example above, `ten::cmd_result_t::create` is used to create a `cmd_result_t` object with an error code. `result.set_property` is used to set the properties of the `cmd_result_t` object. Finally, `ten.return_result` is called to return the `cmd_result_t` object to the requester.
+In the example above, `aptima::cmd_result_t::create` is used to create a `cmd_result_t` object with an error code. `result.set_property` is used to set the properties of the `cmd_result_t` object. Finally, `aptima.return_result` is called to return the `cmd_result_t` object to the requester.
 
 **Passing Requests to Downstream Extensions**
 
 If an extension needs to send a message to another extension, it can call the `send_cmd()` API. Here is an example:
 
 ```
-void on_cmd(ten::ten_t &ten, std::unique_ptr<ten::cmd_t> cmd) override {
+void on_cmd(aptima::ten_t &aptima, std::unique_ptr<aptima::cmd_t> cmd) override {
   request_t request;
   request.from_cmd(*cmd);
 
@@ -756,7 +756,7 @@ void on_cmd(ten::ten_t &ten, std::unique_ptr<ten::cmd_t> cmd) override {
   if (!request.validate(&err_msg)) {
     // ...
   } else {
-    ten.send_cmd(std::move(cmd));
+    aptima.send_cmd(std::move(cmd));
   }
 }
 ```
@@ -766,21 +766,21 @@ The first parameter in `send_cmd()` is the command of the request, and the secon
 Developers can also pass a response handler, like this:
 
 ```
-ten.send_cmd(
+aptima.send_cmd(
     std::move(cmd),
-    [](ten::ten_t &ten, std::unique_ptr<ten::cmd_result_t> result) {
-      ten.return_result_directly(std::move(result));
+    [](aptima::ten_t &aptima, std::unique_ptr<aptima::cmd_result_t> result) {
+      aptima.return_result_directly(std::move(result));
     });
 ```
 
 In the example above, the `return_result_directly()` method is used in the response handler. You can see that this method differs from `return_result()` in that it does not pass the original command object. This is mainly because:
 
-* For TEN message objects (cmd/data/pcm\_frame/image\_frame), ownership is transferred to the extension in the message callback method, such as `on_cmd()`. This means that once the extension receives the command, the TEN runtime will not perform any read/write operations on it. When the extension calls the `send_cmd()` or `return_result()` API, it means that the extension is returning the ownership of the command back to the TEN runtime for further processing, such as message delivery. After that, the extension should not perform any read/write operations on the command.
+* For APTIMA message objects (cmd/data/pcm\_frame/image\_frame), ownership is transferred to the extension in the message callback method, such as `on_cmd()`. This means that once the extension receives the command, the APTIMA runtime will not perform any read/write operations on it. When the extension calls the `send_cmd()` or `return_result()` API, it means that the extension is returning the ownership of the command back to the APTIMA runtime for further processing, such as message delivery. After that, the extension should not perform any read/write operations on the command.
 * The `result` in the response handler (i.e., the second parameter of `send_cmd()`) is returned by the downstream extension, and at this point, the result is already bound to the command, meaning that the runtime has the return path information for the result. Therefore, there is no need to pass the command object again.
 
 Of course, developers can also process the result in the response handler.
 
-So far, an example of a simple command processing logic is complete. For other message types such as data, you can refer to the TEN API documentation.
+So far, an example of a simple command processing logic is complete. For other message types such as data, you can refer to the APTIMA API documentation.
 
 ### Deploying Locally to an App for Integration Testing
 
@@ -870,7 +870,7 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 > The main functionality of the http server is:
 >
 > * Start a thread running the http server in the extension's on\_start().
-> * Convert incoming requests into TEN cmds named hello and send them using send\_cmd().
+> * Convert incoming requests into APTIMA cmds named hello and send them using send\_cmd().
 > * Expect to receive a cmd\_result\_t response and write its content to the http response.
 >
 > Here, we use cpp-httplib ([https://github.com/yhirose/cpp-httplib](https://github.com/yhirose/cpp-httplib)) as the implementation of the http server.
@@ -880,17 +880,17 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 > ```
 > #include "httplib.h"
 > #include "nlohmann/json.hpp"
-> #include "ten_runtime/binding/cpp/ten.h"
+> #include "ten_runtime/binding/cpp/aptima.h"
 >
 > namespace http_server_extension {
 >
-> class http_server_extension_t : public ten::extension_t {
+> class http_server_extension_t : public aptima::extension_t {
 > public:
 >   explicit http_server_extension_t(const char *name)
 >       : extension_t(name) {}
 >
->   void on_start(ten::ten_t &ten) override {
->     ten_proxy = ten::ten_proxy_t::create(ten);
+>   void on_start(aptima::ten_t &aptima) override {
+>     ten_proxy = aptima::ten_proxy_t::create(aptima);
 >     srv_thread = std::thread([this] {
 >       server.Get("/health",
 >                 [](const httplib::Request &req, httplib::Response &res) {
@@ -902,21 +902,21 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 >                                   httplib::Response &res) {
 >         // Receive json body.
 >         auto body = nlohmann::json::parse(req.body);
->         body["ten"]["name"] = "hello";
+>         body["aptima"]["name"] = "hello";
 >
->         auto cmd = ten::cmd_t::create_from_json(body.dump().c_str());
+>         auto cmd = aptima::cmd_t::create_from_json(body.dump().c_str());
 >         auto cmd_shared =
->             std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
+>             std::make_shared<std::unique_ptr<aptima::cmd_t>>(std::move(cmd));
 >
 >         std::condition_variable *cv = new std::condition_variable();
 >
 >         auto response_body = std::make_shared<std::string>();
 >
->         ten_proxy->notify([cmd_shared, response_body, cv](ten::ten_t &ten) {
->           ten.send_cmd(
+>         ten_proxy->notify([cmd_shared, response_body, cv](aptima::ten_t &aptima) {
+>           aptima.send_cmd(
 >               std::move(*cmd_shared),
->               [response_body, cv](ten::ten_t &ten,
->                                   std::unique_ptr<ten::cmd_result_t> result) {
+>               [response_body, cv](aptima::ten_t &aptima,
+>                                   std::unique_ptr<aptima::cmd_result_t> result) {
 >                 auto err_no = result->get_property_uint8("err_no");
 >                 if (err_no > 0) {
 >                   auto err_msg = result->get_property_string("err_msg");
@@ -939,23 +939,23 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 >       server.listen("0.0.0.0", 8001);
 >     });
 >
->     ten.on_start_done();
+>     aptima.on_start_done();
 >   }
 >
->   void on_stop(ten::ten_t &ten) override {
+>   void on_stop(aptima::ten_t &aptima) override {
 >     // Extension stop.
 >
 >     server.stop();
 >     srv_thread.join();
 >     delete ten_proxy;
 >
->     ten.on_stop_done();
+>     aptima.on_stop_done();
 >   }
 >
 > private:
 >   httplib::Server server;
 >   std::thread srv_thread;
->   ten::ten_proxy_t *ten_proxy{nullptr};
+>   aptima::ten_proxy_t *ten_proxy{nullptr};
 >   std::mutex mtx;
 > };
 >
@@ -964,7 +964,7 @@ After the command completes, the uploaded extension can be found in the /tmp/cod
 > } // namespace http_server_extension
 > ```
 
-Here, a new thread is created in `on_start()` to run the http server because we don't want to block the extension thread. This way, the convetend cmd requests are generated and sent from `srv_thread`. In the TEN runtime, to ensure thread safety, we use `ten_proxy_t` to pass calls like `send_cmd()` from threads outside the extension thread.
+Here, a new thread is created in `on_start()` to run the http server because we don't want to block the extension thread. This way, the convetend cmd requests are generated and sent from `srv_thread`. In the APTIMA runtime, to ensure thread safety, we use `ten_proxy_t` to pass calls like `send_cmd()` from threads outside the extension thread.
 
 This code also demonstrates how to clean up external resources in `on_stop()`. For an extension, you should release the `ten_proxy_t` before `on_stop_done()`, which stops the external thread.
 

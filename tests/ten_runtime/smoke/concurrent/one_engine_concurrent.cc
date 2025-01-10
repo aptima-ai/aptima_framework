@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "nlohmann/json_fwd.hpp"
 #include "ten_utils/lib/thread.h"
 #include "ten_utils/lib/time.h"
@@ -20,32 +20,32 @@
 
 namespace {
 
-class test_extension_A : public ten::extension_t {
+class test_extension_A : public aptima::extension_t {
  public:
-  explicit test_extension_A(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_A(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     ten_env.send_cmd(std::move(cmd));
   }
 };
 
-class test_extension_B : public ten::extension_t {
+class test_extension_B : public aptima::extension_t {
  public:
-  explicit test_extension_B(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_B(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     auto detail = nlohmann::json({{"a", "b"}});
-    auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+    auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
     cmd_result->set_property_from_json("detail", detail.dump().c_str());
     ten_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 };
 
-class test_app_a : public ten::app_t {
+class test_app_a : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -63,9 +63,9 @@ class test_app_a : public ten::app_t {
   }
 };
 
-class test_app_b : public ten::app_t {
+class test_app_b : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     bool rc = ten_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -109,7 +109,7 @@ void *client_thread_main(TEN_UNUSED void *args) {
   auto seq_id_str = std::to_string(seq_id);
 
   // Connect again, send request with graph_id directly.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   std::string client_ip;
   uint16_t client_port = 0;
@@ -118,7 +118,7 @@ void *client_thread_main(TEN_UNUSED void *args) {
            client_port);
 
   // Send a user-defined 'hello world' command.
-  auto test_cmd = ten::cmd_t::create("test");
+  auto test_cmd = aptima::cmd_t::create("test");
   test_cmd->set_dest("msgpack://127.0.0.1:8001/", graph_id.c_str(),
                      "extension_group_A", "A");
 
@@ -149,14 +149,14 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
       ten_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   // Create a client and connect to the app.
-  ten::msgpack_tcp_client_t *client = nullptr;
+  aptima::msgpack_tcp_client_t *client = nullptr;
 
   for (size_t i = 0; i < MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES;
        ++i) {
-    client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+    client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
     // Send graph.
-    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+    auto start_graph_cmd = aptima::cmd_start_graph_t::create();
     start_graph_cmd->set_long_running_mode(true);
     start_graph_cmd->set_graph_from_json(
         R"({
@@ -203,7 +203,7 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
     }
   }
 
-  TEN_ASSERT(client, "Failed to connect to the TEN app.");
+  TEN_ASSERT(client, "Failed to connect to the APTIMA app.");
 
   // Now close connection. The engine will be alive due to 'long_running_mode'.
   delete client;
@@ -221,8 +221,8 @@ TEST(ExtensionTest, OneEngineConcurrent) {  // NOLINT
     ten_thread_join(client_thread, -1);
   }
 
-  ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8001/");
-  ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8002/");
+  aptima::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8001/");
+  aptima::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8002/");
 
   ten_thread_join(app_thread_1, -1);
   ten_thread_join(app_thread_2, -1);

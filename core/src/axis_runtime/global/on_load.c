@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -16,7 +16,7 @@
 // LeakSanitizer checks for memory leaks when `main` ends, but functions with
 // the __attribute__((destructor)) attribute are called after LeakSanitizer
 // runs. Therefore, if the result of axis_MALLOC is placed into a global
-// allocated memory queue used by ten to check for memory leaks within a
+// allocated memory queue used by aptima to check for memory leaks within a
 // constructor function, LeakSanitizer will mistakenly report those memory
 // buffers in the global allocated memory queue as memory leaks. This happens
 // because these memory buffers are freed in the destructor function, but

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,25 +8,25 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "send_data") {
-      auto data = ten::data_t::create("aaa");
+      auto data = aptima::data_t::create("aaa");
       data->set_property("prop_bool", true);
       aptima_env.send_data(std::move(data));
 
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "data sent");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       return;
@@ -34,27 +34,27 @@ class test_extension_1 : public ten::extension_t {
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "data_received_check") {
       if (data_received) {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "data received");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
         cmd_result->set_property("detail", "data not received");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
     }
   }
 
-  void on_data(ten::aptima_env_t &aptima_env,
-               std::unique_ptr<ten::data_t> data) override {
+  void on_data(aptima::aptima_env_t &aptima_env,
+               std::unique_ptr<aptima::data_t> data) override {
     std::string name = data->get_name();
 
     auto test_prop = data->get_property_string("test_prop_string");
@@ -72,10 +72,10 @@ class test_extension_2 : public ten::extension_t {
   bool data_received = false;
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
-    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
+    bool rc = aptima::aptima_env_internal_accessor_t::init_manifest_from_json(
         aptima_env,
         // clang-format off
                  R"###({
@@ -174,10 +174,10 @@ TEST(CmdConversionTest, CmdConversionData) {  // NOLINT
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send a user-defined 'send_data' command.
-  auto send_data_cmd = ten::cmd_t::create("send_data");
+  auto send_data_cmd = aptima::cmd_t::create("send_data");
   send_data_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                           "cmd_mapping_data_extension_group",
                           "test_extension_1");
@@ -186,7 +186,7 @@ TEST(CmdConversionTest, CmdConversionData) {  // NOLINT
   aptima_test::check_detail_with_string(cmd_result, "data sent");
 
   // Send 'data_received_check' command.
-  auto data_received_check_cmd = ten::cmd_t::create("data_received_check");
+  auto data_received_check_cmd = aptima::cmd_t::create("data_received_check");
   data_received_check_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                                     "cmd_mapping_data_extension_group",
                                     "test_extension_2");

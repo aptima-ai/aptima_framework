@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -11,7 +11,7 @@
 
 #include "libavcodec/packet.h"
 #include "libavutil/channel_layout.h"
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lang/cpp/lib/buf.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
@@ -49,7 +49,7 @@
 #define OUTPUT_AUDIO_CHANNEL_LAYOUT AV_CH_LAYOUT_STEREO
 // @}
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 void get_ffmpeg_error_message_(char *buf, size_t buf_length, int errnum) {
@@ -628,7 +628,7 @@ bool muxer_t::open_audio_encoder_() {
   return true;
 }
 
-bool muxer_t::create_video_converter_(ten::video_frame_t &video_frame) {
+bool muxer_t::create_video_converter_(aptima::video_frame_t &video_frame) {
   if (video_converter_ctx_ == nullptr) {
     int width = video_frame.get_width();
     int height = video_frame.get_height();
@@ -647,7 +647,7 @@ bool muxer_t::create_video_converter_(ten::video_frame_t &video_frame) {
   return true;
 }
 
-AVFrame *muxer_t::convert_video_frame_(ten::video_frame_t &video_frame) {
+AVFrame *muxer_t::convert_video_frame_(aptima::video_frame_t &video_frame) {
   // This is an EOF frame.
   if (video_frame.is_eof()) {
     return nullptr;
@@ -657,7 +657,7 @@ AVFrame *muxer_t::convert_video_frame_(ten::video_frame_t &video_frame) {
     auto frame_width = video_frame.get_width();
     auto frame_height = video_frame.get_height();
 
-    ten::buf_t locked_buf = video_frame.lock_buf();
+    aptima::buf_t locked_buf = video_frame.lock_buf();
 
     auto *y_data = locked_buf.data();
     auto *u_data = y_data + frame_width * frame_height;
@@ -685,7 +685,7 @@ AVFrame *muxer_t::convert_video_frame_(ten::video_frame_t &video_frame) {
       return nullptr;
     }
 
-    ten::buf_t locked_buf = video_frame.lock_buf();
+    aptima::buf_t locked_buf = video_frame.lock_buf();
 
     const uint8_t *rgb_data[1] = {locked_buf.data()};     // NOLINT
     int rgb_linesize[1] = {video_frame.get_width() * 3};  // NOLINT
@@ -743,7 +743,7 @@ TEN_UNUSED static void save_avframe(const AVFrame *avFrame) {
 
 // Debug purpose only.
 TEN_UNUSED static void save_img_frame(
-    const std::shared_ptr<ten::video_frame_t> &pFrame, int index) {
+    const std::shared_ptr<aptima::video_frame_t> &pFrame, int index) {
   FILE *pFile = nullptr;
   char szFilename[32];
   int y = 0;
@@ -765,7 +765,7 @@ TEN_UNUSED static void save_img_frame(
   (void)fprintf(pFile, "P6\n%d %d\n255\n", width, height);
 
   // Write pixel data
-  ten::buf_t locked_buf = pFrame->lock_buf();
+  aptima::buf_t locked_buf = pFrame->lock_buf();
   for (y = 0; y < height; y++) {
     (void)fwrite(locked_buf.data() + y * width * 3, 1, width * 3, pFile);
   }
@@ -819,7 +819,7 @@ void muxer_t::flush_remaining_video_frames() {
 }
 
 ENCODE_STATUS muxer_t::encode_video_frame(
-    std::unique_ptr<ten::video_frame_t> video_frame) {
+    std::unique_ptr<aptima::video_frame_t> video_frame) {
   if (video_encoder_ == nullptr) {
     TEN_LOGE("Must open video stream first");
     return ENCODE_STATUS_ERROR;
@@ -939,7 +939,7 @@ bool muxer_t::allocate_audio_frame_(AVCodecParameters *encoded_stream_params) {
 
 // Initialize audio resampler.
 bool muxer_t::create_audio_converter_(AVCodecParameters *encoded_stream_params,
-                                      ten::audio_frame_t &ten_audio_frame) {
+                                      aptima::audio_frame_t &ten_audio_frame) {
   if (audio_converter_ctx_ == nullptr) {
     audio_converter_ctx_ = swr_alloc();
     if (audio_converter_ctx_ == nullptr) {
@@ -998,7 +998,7 @@ bool muxer_t::create_audio_converter_(AVCodecParameters *encoded_stream_params,
 }
 
 bool muxer_t::convert_audio_frame_(AVCodecParameters *encoded_stream_params,
-                                   ten::audio_frame_t &ten_audio_frame) {
+                                   aptima::audio_frame_t &ten_audio_frame) {
   uint8_t **dst_channels = nullptr;
   int32_t dst_nb_samples = ten_audio_frame.get_samples_per_channel();
 
@@ -1018,7 +1018,7 @@ bool muxer_t::convert_audio_frame_(AVCodecParameters *encoded_stream_params,
   }
 
   uint8_t *in[8] = {nullptr};
-  ten::buf_t locked_in_buf = ten_audio_frame.lock_buf();
+  aptima::buf_t locked_in_buf = ten_audio_frame.lock_buf();
   in[0] = locked_in_buf.data();
 
   ffmpeg_rc = swr_convert(audio_converter_ctx_, dst_channels, dst_nb_samples,
@@ -1059,7 +1059,7 @@ bool muxer_t::convert_audio_frame_(AVCodecParameters *encoded_stream_params,
 }
 
 ENCODE_STATUS muxer_t::encode_audio_frame(
-    std::unique_ptr<ten::audio_frame_t> ten_audio_frame) {
+    std::unique_ptr<aptima::audio_frame_t> ten_audio_frame) {
   if (audio_encoder_ == nullptr) {
     TEN_LOGD("Must open audio stream first");
     return ENCODE_STATUS_ERROR;
@@ -1108,7 +1108,7 @@ ENCODE_STATUS muxer_t::encode_audio_frame(
   }
 
   uint8_t *in[8] = {nullptr};
-  ten::buf_t locked_in_buf = ten_audio_frame->lock_buf();
+  aptima::buf_t locked_in_buf = ten_audio_frame->lock_buf();
   in[0] = locked_in_buf.data();
 
   ffmpeg_rc = swr_convert(audio_converter_ctx_, dst_channels, dst_nb_samples,
@@ -1171,4 +1171,4 @@ int64_t muxer_t::next_video_timing() {
 }
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

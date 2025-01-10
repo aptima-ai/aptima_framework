@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -80,7 +80,7 @@ static void ten_engine_handle_in_msgs_sync(ten_engine_t *self) {
       ten_connection_t *connection = ten_cmd_base_get_original_connection(msg);
       if (connection) {
         // If 'connection' is non-NULL, it means the command is from externally
-        // (another external TEN app or client), so we need to check if the
+        // (another external APTIMA app or client), so we need to check if the
         // 'connection' is duplicated.
         //
         // - If it is duplicated, remove it, and do not handle this command.
@@ -97,14 +97,14 @@ static void ten_engine_handle_in_msgs_sync(ten_engine_t *self) {
             "handling the cmd.");
 
         // The 'start_graph' command should only result in a unique channel
-        // between any two TEN apps in the graph.
+        // between any two APTIMA apps in the graph.
         if ((ten_msg_get_type(msg) == TEN_MSG_TYPE_CMD_START_GRAPH) &&
             // Check if there is already a 'remote' for the other side.
             ten_engine_check_remote_is_duplicated(
                 self, ten_msg_get_src_app_uri(msg))) {
           // Do not handle this 'start_graph' command, return a special
-          // 'duplicate' result to the remote TEN app, so that it can close this
-          // connection, and this TEN app could know that the closing of that
+          // 'duplicate' result to the remote APTIMA app, so that it can close this
+          // connection, and this APTIMA app could know that the closing of that
           // connection is normal (through the 'connect->duplicate' variable),
           // not an error condition, so does _not_ trigger the closing of the
           // whole engine.
@@ -262,21 +262,21 @@ void ten_engine_dispatch_msg(ten_engine_t *self, ten_shared_ptr_t *msg) {
     TEN_ASSERT(!ten_string_is_empty(&dest_loc->app_uri),
                "The uri of the app should not be empty.");
 
-    // The message is _not_ for the current TEN app, so route the message to the
-    // correct TEN app through the correct remote.
+    // The message is _not_ for the current APTIMA app, so route the message to the
+    // correct APTIMA app through the correct remote.
     ten_engine_route_msg_to_remote(self, msg);
   } else {
-    // The destination of the message is the current TEN app.
+    // The destination of the message is the current APTIMA app.
 
     if (
-        // It means asking the current TEN app to do something.
+        // It means asking the current APTIMA app to do something.
         ten_string_is_empty(&dest_loc->graph_id) ||
         // It means asking another engine in the same app to do something.
         !ten_string_is_equal(&dest_loc->graph_id, &self->graph_id)) {
-      // Both of these 2 cases will need the current TEN app to dispatch the
-      // message, and the threads of the TEN app and the current TEN engine
+      // Both of these 2 cases will need the current APTIMA app to dispatch the
+      // message, and the threads of the APTIMA app and the current APTIMA engine
       // might be different, so push the message to the command queue of the
-      // current TEN app.
+      // current APTIMA app.
       ten_app_push_to_in_msgs_queue(app, msg);
     } else {
       if (ten_string_is_empty(&dest_loc->extension_group_name)) {

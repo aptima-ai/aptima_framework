@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -48,14 +48,14 @@ void aptima_test_http_client_get(const char *url, aptima_string_t *result) {
 
   // There maybe a timeout issue (ex: operation timed out after 3000
   // milliseconds with 0 bytes received). When the curl client does not receive
-  // the response until timeout, it will try to send the request again. But ten
+  // the response until timeout, it will try to send the request again. But aptima
   // runtime can not handle the same request in some cases. Ex: sends a
   // 'connect_to' cmd with the same uri twice. We increase the timeout for now.
   //
   // TODO(Liu): the curl connection (#0) will be closed before retry, then the
-  // libws client is being closed, and try to close the TEN protocol and remote.
+  // libws client is being closed, and try to close the APTIMA protocol and remote.
   // Then a new connection (#1) is established, and sends the same request.
-  // There will be a timing issue, the TEN engine may receive the second request
+  // There will be a timing issue, the APTIMA engine may receive the second request
   // before the connection closing event.
   curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 30L);
   curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT, 10L);

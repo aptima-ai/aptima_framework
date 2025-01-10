@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -37,13 +37,13 @@ static inline void _assert_json_equals(const nlohmann::json &actual,
 }
 
 static inline void check_status_code(
-    const std::unique_ptr<ten::cmd_result_t> &cmd_result,
+    const std::unique_ptr<aptima::cmd_result_t> &cmd_result,
     const TEN_STATUS_CODE status_code) {
   EXPECT_EQ(cmd_result->get_status_code(), status_code);
 }
 
 static inline void check_detail_with_json(
-    const std::unique_ptr<ten::cmd_result_t> &cmd_result,
+    const std::unique_ptr<aptima::cmd_result_t> &cmd_result,
     const nlohmann::json &expected) {
   _assert_json_equals(
       nlohmann::json::parse(cmd_result->get_property_to_json("detail")),
@@ -51,7 +51,7 @@ static inline void check_detail_with_json(
 }
 
 static inline void check_detail_with_string(
-    const std::unique_ptr<ten::cmd_result_t> &cmd_result,
+    const std::unique_ptr<aptima::cmd_result_t> &cmd_result,
     const std::string &detail) {
   EXPECT_EQ(cmd_result->get_property_string("detail"), detail);
 }

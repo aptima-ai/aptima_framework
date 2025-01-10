@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
-export PYTHONPATH=.ten/app/axis_packages/system/axis_runtime_python/lib:.ten/app/axis_packages/system/axis_runtime_python/interface
+export PYTHONPATH=.aptima/app/axis_packages/system/axis_runtime_python/lib:.aptima/app/axis_packages/system/axis_runtime_python/interface
 
 # If the Python app imports some modules that are compiled with a different
 # version of libstdc++ (ex: PyTorch), the Python app may encounter confusing

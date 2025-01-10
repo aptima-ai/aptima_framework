@@ -1,13 +1,13 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "ten_runtime/ten_config.h"
 
 #include "include_internal/ten_runtime/extension/extension.h"
-#include "src/ten_runtime/binding/go/interface/ten/common.h"
+#include "src/ten_runtime/binding/go/interface/aptima/common.h"
 #include "ten_utils/lib/signature.h"
 
 #define TEN_GO_EXTENSION_SIGNATURE 0x1FE0849BF9788807U

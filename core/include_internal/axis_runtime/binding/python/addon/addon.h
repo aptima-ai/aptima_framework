@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -24,7 +24,7 @@ typedef struct axis_py_addon_t {
   axis_ADDON_TYPE type;
 
   // Note that this field is _not_ a pointer, but an actual axis_addon_t entity,
-  // used as the addon entity registered to the ten runtime.
+  // used as the addon entity registered to the aptima runtime.
   axis_addon_t c_addon;
 
   axis_addon_host_t *c_addon_host;

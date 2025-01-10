@@ -4,17 +4,17 @@
 
 ### C++
 
-The TEN framework uses the `ten_gn` build system to compile C++ apps and C++ extensions. `ten_gn` is a build system based on Google's GN.
+The APTIMA framework uses the `ten_gn` build system to compile C++ apps and C++ extensions. `ten_gn` is a build system based on Google's GN.
 
 ### Golang
 
-The TEN framework uses the standard go command to build TEN framework Golang projects.
+The APTIMA framework uses the standard go command to build APTIMA framework Golang projects.
 
 ## Building
 
 ### C++ App
 
-To build a TEN framework C++ app, run the following commands in the root directory of the TEN framework C++ app.
+To build a APTIMA framework C++ app, run the following commands in the root directory of the APTIMA framework C++ app.
 
 `<os>` can be one of the following:
 
@@ -47,11 +47,11 @@ The term `addon` here includes the following:
 - extension group
 - protocol
 
-The method to build TEN framework C++ addons is the same as for building TEN framework C++ apps.
+The method to build APTIMA framework C++ addons is the same as for building APTIMA framework C++ apps.
 
 ### Golang App
 
-To build a TEN Golang project, run the following command in the root directory of the TEN Golang project:
+To build a APTIMA Golang project, run the following command in the root directory of the APTIMA Golang project:
 
 ```shell
 go run ten_packages/system/ten_runtime_go/tools/build/main.go

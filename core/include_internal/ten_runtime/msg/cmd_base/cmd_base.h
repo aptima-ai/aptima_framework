@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -26,8 +26,8 @@ typedef struct ten_cmd_base_t {
   // the relationship between these 2 commands.
   ten_string_t parent_cmd_id;
 
-  ten_value_t cmd_id;  // string. This is used in TEN runtime internally.
-  ten_value_t seq_id;  // string. This is used in TEN client.
+  ten_value_t cmd_id;  // string. This is used in APTIMA runtime internally.
+  ten_value_t seq_id;  // string. This is used in APTIMA client.
 
   // The origin where the command is originated.
   //
@@ -122,7 +122,7 @@ TEN_RUNTIME_PRIVATE_API void ten_cmd_base_set_result_handler(
     void *result_handler_data);
 
 /**
- * @brief Whether this cmd comes from the client outside of TEN world, e.g.:
+ * @brief Whether this cmd comes from the client outside of APTIMA world, e.g.:
  * browsers.
  */
 TEN_RUNTIME_PRIVATE_API bool ten_cmd_base_comes_from_client_outside(

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -11,9 +11,9 @@
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env.h"
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env_internal.h"
 #include "include_internal/axis_runtime/binding/go/value/value.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
-#include "axis_runtime/binding/go/interface/ten/value.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
+#include "axis_runtime/binding/go/interface/aptima/value.h"
 #include "axis_runtime/common/errno.h"
 #include "axis_runtime/axis_env_proxy/axis_env_proxy.h"
 #include "axis_utils/lib/alloc.h"
@@ -75,7 +75,7 @@ static void axis_env_proxy_notify_set_property(axis_env_t *axis_env,
   bool res = axis_env_set_property(axis_env, axis_string_get_raw_str(&ctx->path),
                                   ctx->c_value, &err);
   if (res) {
-    // The ownership of the C value has been successfully transferred to the TEN
+    // The ownership of the C value has been successfully transferred to the APTIMA
     // runtime.
     ctx->c_value = NULL;
   } else {

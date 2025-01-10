@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,7 +12,7 @@
 
 #include "ten_runtime/app/app.h"
 
-// The convention of the closing flow in the TEN runtime is as follows. There
+// The convention of the closing flow in the APTIMA runtime is as follows. There
 // are 3 stages in the overall closing flow.
 //
 // - Stage 1 : Notification stage

@@ -1,14 +1,21 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import time
 
 from PIL import Image
-from ten import (Cmd, CmdResult, Extension, PixelFmt, StatusCode, TenEnv,
-                 VideoFrame)
+from aptima import (
+    Cmd,
+    CmdResult,
+    Extension,
+    PixelFmt,
+    StatusCode,
+    TenEnv,
+    VideoFrame,
+)
 
 
 class DefaultExtension(Extension):
@@ -60,7 +67,9 @@ class DefaultExtension(Extension):
 
         aptima_env.send_video_frame(new_image)
 
-    def on_video_frame(self, aptima_env: TenEnv, video_frame: VideoFrame) -> None:
+    def on_video_frame(
+        self, aptima_env: TenEnv, video_frame: VideoFrame
+    ) -> None:
         aptima_env.log_debug("on_video_frame")
 
         assert hasattr(self, "request_cmd") is True

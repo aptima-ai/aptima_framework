@@ -1,7 +1,7 @@
 
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -15,7 +15,7 @@
 using ten_env_tester_t = struct ten_env_tester_t;
 using ten_env_tester_proxy_t = struct ten_env_tester_proxy_t;
 
-namespace ten {
+namespace aptima {
 
 namespace {
 
@@ -116,4 +116,4 @@ class ten_env_tester_proxy_t {
  private:
   ::ten_env_tester_proxy_t *c_ten_env_tester_proxy;
 };
-}  // namespace ten
+}  // namespace aptima

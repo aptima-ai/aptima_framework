@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -10,10 +10,10 @@
 #include "aptima_runtime/binding/cpp/detail/test/extension_tester.h"
 #include "aptima_utils/log/log.h"
 
-namespace ten {
+namespace aptima {
 
 using aptima_client_proxy_send_cmd_result_handler_func_t =
-    std::function<void(std::unique_ptr<ten::cmd_result_t>, error_t *err)>;
+    std::function<void(std::unique_ptr<aptima::cmd_result_t>, error_t *err)>;
 
 class aptima_client_proxy_event_handler_t {
  public:
@@ -42,11 +42,11 @@ class aptima_client_proxy_event_handler_t {
 
 namespace {
 
-class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
+class aptima_client_proxy_internal_impl_t : public aptima::extension_tester_t {
  protected:
-  void on_start(ten::aptima_env_tester_t &aptima_env_tester) override {
-    aptima_env_tester_proxy_ = std::unique_ptr<ten::aptima_env_tester_proxy_t>(
-        ten::aptima_env_tester_proxy_t::create(aptima_env_tester));
+  void on_start(aptima::aptima_env_tester_t &aptima_env_tester) override {
+    aptima_env_tester_proxy_ = std::unique_ptr<aptima::aptima_env_tester_proxy_t>(
+        aptima::aptima_env_tester_proxy_t::create(aptima_env_tester));
     aptima_ASSERT(aptima_env_tester_proxy_, "Should not happen.");
 
     if (event_handler_ != nullptr) {
@@ -56,39 +56,39 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
     aptima_env_tester.on_start_done();
   }
 
-  void on_cmd(ten::aptima_env_tester_t & /*aptima_env_tester*/,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_tester_t & /*aptima_env_tester*/,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (event_handler_ != nullptr) {
       event_handler_->on_cmd(std::move(cmd));
     }
   }
 
-  void on_data(ten::aptima_env_tester_t & /*aptima_env_tester*/,
-               std::unique_ptr<ten::data_t> data) override {
+  void on_data(aptima::aptima_env_tester_t & /*aptima_env_tester*/,
+               std::unique_ptr<aptima::data_t> data) override {
     if (event_handler_ != nullptr) {
       event_handler_->on_data(std::move(data));
     }
   }
 
   void on_audio_frame(
-      ten::aptima_env_tester_t & /*aptima_env_tester*/,
-      std::unique_ptr<ten::audio_frame_t> audio_frame) override {
+      aptima::aptima_env_tester_t & /*aptima_env_tester*/,
+      std::unique_ptr<aptima::audio_frame_t> audio_frame) override {
     if (event_handler_ != nullptr) {
       event_handler_->on_audio_frame(std::move(audio_frame));
     }
   }
 
   void on_video_frame(
-      ten::aptima_env_tester_t & /*aptima_env_tester*/,
-      std::unique_ptr<ten::video_frame_t> video_frame) override {
+      aptima::aptima_env_tester_t & /*aptima_env_tester*/,
+      std::unique_ptr<aptima::video_frame_t> video_frame) override {
     if (event_handler_ != nullptr) {
       event_handler_->on_video_frame(std::move(video_frame));
     }
   }
 
   static void proxy_on_cmd_result(
-      std::unique_ptr<ten::cmd_result_t> cmd_result,
-      const ten::aptima_client_proxy_send_cmd_result_handler_func_t
+      std::unique_ptr<aptima::cmd_result_t> cmd_result,
+      const aptima::aptima_client_proxy_send_cmd_result_handler_func_t
           &result_handler,
       error_t *err) {
     if (result_handler) {
@@ -97,13 +97,13 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
   }
 
  public:
-  void register_callback(ten::aptima_client_proxy_event_handler_t *event_handler) {
+  void register_callback(aptima::aptima_client_proxy_event_handler_t *event_handler) {
     event_handler_ = event_handler;
   }
 
   bool send_cmd(
-      std::unique_ptr<ten::cmd_t> cmd,
-      ten::aptima_client_proxy_send_cmd_result_handler_func_t &&result_handler) {
+      std::unique_ptr<aptima::cmd_t> cmd,
+      aptima::aptima_client_proxy_send_cmd_result_handler_func_t &&result_handler) {
     aptima_ASSERT(aptima_env_tester_proxy_, "Invalid state.");
 
     if (aptima_env_tester_proxy_ == nullptr) {
@@ -113,14 +113,14 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
     }
 
     auto cmd_shared =
-        std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
+        std::make_shared<std::unique_ptr<aptima::cmd_t>>(std::move(cmd));
 
     return aptima_env_tester_proxy_->notify(
-        [cmd_shared, result_handler](ten::aptima_env_tester_t &aptima_env_tester) {
+        [cmd_shared, result_handler](aptima::aptima_env_tester_t &aptima_env_tester) {
           aptima_env_tester.send_cmd(
               std::move(*cmd_shared),
-              [result_handler](ten::aptima_env_tester_t & /*aptima_env_tester*/,
-                               std::unique_ptr<ten::cmd_result_t> cmd_result,
+              [result_handler](aptima::aptima_env_tester_t & /*aptima_env_tester*/,
+                               std::unique_ptr<aptima::cmd_result_t> cmd_result,
                                error_t *err) {
                 proxy_on_cmd_result(std::move(cmd_result), result_handler, err);
               });
@@ -128,7 +128,7 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
         nullptr);
   }
 
-  bool send_data(std::unique_ptr<ten::data_t> data) {
+  bool send_data(std::unique_ptr<aptima::data_t> data) {
     aptima_ASSERT(aptima_env_tester_proxy_, "Invalid state.");
 
     if (aptima_env_tester_proxy_ == nullptr) {
@@ -137,16 +137,16 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
     }
 
     auto data_shared =
-        std::make_shared<std::unique_ptr<ten::data_t>>(std::move(data));
+        std::make_shared<std::unique_ptr<aptima::data_t>>(std::move(data));
 
     return aptima_env_tester_proxy_->notify(
-        [data_shared](ten::aptima_env_tester_t &env_tester) {
+        [data_shared](aptima::aptima_env_tester_t &env_tester) {
           env_tester.send_data(std::move(*data_shared));
         },
         nullptr);
   }
 
-  bool send_audio_frame(std::unique_ptr<ten::audio_frame_t> audio_frame) {
+  bool send_audio_frame(std::unique_ptr<aptima::audio_frame_t> audio_frame) {
     aptima_ASSERT(aptima_env_tester_proxy_, "Invalid state.");
 
     if (aptima_env_tester_proxy_ == nullptr) {
@@ -155,17 +155,17 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
     }
 
     auto audio_frame_shared =
-        std::make_shared<std::unique_ptr<ten::audio_frame_t>>(
+        std::make_shared<std::unique_ptr<aptima::audio_frame_t>>(
             std::move(audio_frame));
 
     return aptima_env_tester_proxy_->notify(
-        [audio_frame_shared](ten::aptima_env_tester_t &env_tester) {
+        [audio_frame_shared](aptima::aptima_env_tester_t &env_tester) {
           env_tester.send_audio_frame(std::move(*audio_frame_shared));
         },
         nullptr);
   }
 
-  bool send_video_frame(std::unique_ptr<ten::video_frame_t> video_frame) {
+  bool send_video_frame(std::unique_ptr<aptima::video_frame_t> video_frame) {
     aptima_ASSERT(aptima_env_tester_proxy_, "Invalid state.");
 
     if (aptima_env_tester_proxy_ == nullptr) {
@@ -174,11 +174,11 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
     }
 
     auto video_frame_shared =
-        std::make_shared<std::unique_ptr<ten::video_frame_t>>(
+        std::make_shared<std::unique_ptr<aptima::video_frame_t>>(
             std::move(video_frame));
 
     return aptima_env_tester_proxy_->notify(
-        [video_frame_shared](ten::aptima_env_tester_t &env_tester) {
+        [video_frame_shared](aptima::aptima_env_tester_t &env_tester) {
           env_tester.send_video_frame(std::move(*video_frame_shared));
         },
         nullptr);
@@ -191,7 +191,7 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
     }
 
     return aptima_env_tester_proxy_->notify(
-        [this](ten::aptima_env_tester_t &env_tester) {
+        [this](aptima::aptima_env_tester_t &env_tester) {
           env_tester.stop_test();
           aptima_env_tester_proxy_ = nullptr;
         },
@@ -199,10 +199,10 @@ class aptima_client_proxy_internal_impl_t : public ten::extension_tester_t {
   }
 
  private:
-  ten::aptima_client_proxy_event_handler_t *event_handler_;
+  aptima::aptima_client_proxy_event_handler_t *event_handler_;
 
   // The thread-safety should be guaranteed by the caller.
-  std::unique_ptr<ten::aptima_env_tester_proxy_t> aptima_env_tester_proxy_;
+  std::unique_ptr<aptima::aptima_env_tester_proxy_t> aptima_env_tester_proxy_;
 };
 
 }  // namespace
@@ -258,4 +258,4 @@ class aptima_client_proxy_t {
   aptima_client_proxy_internal_impl_t impl_;
 };
 
-}  // namespace ten
+}  // namespace aptima

@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include "msg.h"
 import "C"
@@ -448,7 +448,7 @@ func (p *msg) SetPropertyString(path string, value string) error {
 }
 
 func (p *msg) setPropertyBytes(path string, value []byte) error {
-	// TEN runtime can not malloc memory with size 0.
+	// APTIMA runtime can not malloc memory with size 0.
 	if len(value) == 0 {
 		return newTenError(
 			ErrnoInvalidArgument,
@@ -693,7 +693,7 @@ func (p *msg) setPropertyFromJSONBytes(path string, value []byte) error {
 
 // SetPropertyFromJSONBytes sets a json data as a property in the msg. The
 // `value` must be a valid json data. The json data will be treated as an object
-// or array in TEN runtime, but not a slice. The usual practice is to use
+// or array in APTIMA runtime, but not a slice. The usual practice is to use
 // GetPropertyToJSONBytes to extract everything at once. However, if the
 // structure is already known beforehand through certain methods, GetProperty
 // can be used to retrieve individual fields.

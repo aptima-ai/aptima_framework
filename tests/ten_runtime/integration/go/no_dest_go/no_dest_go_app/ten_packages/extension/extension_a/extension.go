@@ -1,26 +1,26 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
-// Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
+// Refer to https://github.com/APTIMA-framework/ten_framework/LICENSE for more
 // information.
 //
 
 package default_extension_go
 
 import (
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type baseExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func (ext *aExtension) OnStart(tenEnv ten.TenEnv) {
+func (ext *aExtension) OnStart(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStart")
 
-	noDestCmd, _ := ten.NewCmd("unknownCmd")
-	tenEnv.SendCmd(noDestCmd, func(te ten.TenEnv, cr ten.CmdResult, err error) {
+	noDestCmd, _ := aptima.NewCmd("unknownCmd")
+	tenEnv.SendCmd(noDestCmd, func(te aptima.TenEnv, cr aptima.CmdResult, err error) {
 		if err == nil {
 			panic("SendCmd should fail if no destination is found.")
 		}
@@ -34,8 +34,8 @@ func (ext *aExtension) OnStart(tenEnv ten.TenEnv) {
 		}
 	})
 
-	noDestData, _ := ten.NewData("unknownData")
-	tenEnv.SendData(noDestData, func(te ten.TenEnv, err error) {
+	noDestData, _ := aptima.NewData("unknownData")
+	tenEnv.SendData(noDestData, func(te aptima.TenEnv, err error) {
 		if err == nil {
 			panic("SendData should fail if no destination is found.")
 		}
@@ -49,8 +49,8 @@ func (ext *aExtension) OnStart(tenEnv ten.TenEnv) {
 		}
 	})
 
-	noDestVideoFrame, _ := ten.NewVideoFrame("unknownVideoFrame")
-	tenEnv.SendVideoFrame(noDestVideoFrame, func(te ten.TenEnv, err error) {
+	noDestVideoFrame, _ := aptima.NewVideoFrame("unknownVideoFrame")
+	tenEnv.SendVideoFrame(noDestVideoFrame, func(te aptima.TenEnv, err error) {
 		if err == nil {
 			panic("SendVideoFrame should fail if no destination is found.")
 		}
@@ -64,8 +64,8 @@ func (ext *aExtension) OnStart(tenEnv ten.TenEnv) {
 		}
 	})
 
-	noDestAudioFrame, _ := ten.NewAudioFrame("unknownAudioFrame")
-	tenEnv.SendAudioFrame(noDestAudioFrame, func(te ten.TenEnv, err error) {
+	noDestAudioFrame, _ := aptima.NewAudioFrame("unknownAudioFrame")
+	tenEnv.SendAudioFrame(noDestAudioFrame, func(te aptima.TenEnv, err error) {
 		if err == nil {
 			panic("SendAudioFrame should fail if no destination is found.")
 		}
@@ -80,7 +80,7 @@ func (ext *aExtension) OnStart(tenEnv ten.TenEnv) {
 	})
 }
 
-func (ext *aExtension) OnStop(tenEnv ten.TenEnv) {
+func (ext *aExtension) OnStop(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
@@ -92,15 +92,15 @@ type aExtension struct {
 	counter int
 }
 
-func newAExtension(name string) ten.Extension {
+func newAExtension(name string) aptima.Extension {
 	return &aExtension{counter: 0}
 }
 
 func (p *aExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
-	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 	cmdResult.SetPropertyString("detail", "okok")
 	err := tenEnv.ReturnResult(cmdResult, cmd, nil)
 	if err != nil {
@@ -110,9 +110,9 @@ func (p *aExtension) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"extension_a",
-		ten.NewDefaultExtensionAddon(newAExtension),
+		aptima.NewDefaultExtensionAddon(newAExtension),
 	)
 	if err != nil {
 		panic("Failed to register addon.")

@@ -48,7 +48,7 @@ RUN apt-get clean && \
 # =======================================
 # Installing cmake
 #
-# The default version of cmake of Ubuntu 18.04 is 3.10, but TEN needs cmake version greater than 3.14, so we need to install it from cmake official site.
+# The default version of cmake of Ubuntu 18.04 is 3.10, but APTIMA needs cmake version greater than 3.14, so we need to install it from cmake official site.
 
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null \
   && apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" \
@@ -76,7 +76,7 @@ RUN apt-get purge -y gcc gcc-7 g++-7 && \
 
 ENV PATH="$PATH:/usr/local/go/bin:/root/go/bin"
 
-# TEN go binding needs to be compatible with GO 1.20, so we need to install GO
+# APTIMA go binding needs to be compatible with GO 1.20, so we need to install GO
 # 1.20 to check the compatibility.
 RUN curl -OL https://go.dev/dl/go1.22.3.linux-amd64.tar.gz && \
   rm -rf /usr/local/go && tar -C /usr/local -xvf go1.22.3.linux-amd64.tar.gz && rm go1.22.3.linux-amd64.tar.gz && \

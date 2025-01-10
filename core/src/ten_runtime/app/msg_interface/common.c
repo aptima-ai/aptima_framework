@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -411,7 +411,7 @@ static void ten_app_handle_in_msgs_async(ten_app_t *self) {
   TEN_ASSERT(self &&
                  // TEN_NOLINTNEXTLINE(thread-check)
                  // thread-check: This function is intended to be called outside
-                 // of the TEN app thread.
+                 // of the APTIMA app thread.
                  ten_app_check_integrity(self, false),
              "Should not happen.");
 

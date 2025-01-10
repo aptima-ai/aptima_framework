@@ -71,8 +71,7 @@ This example shows how to solve both iteratively and asynchronously:
     None
 """
 
-from typing import (ContextManager, Iterator, List, Optional, Sequence, Tuple,
-                    Union)
+from typing import ContextManager, Iterator, List, Optional, Sequence, Tuple, Union
 
 from ._internal import _c_call, _c_call2, _ffi, _handle_error, _lib
 from .core import OrderedEnum

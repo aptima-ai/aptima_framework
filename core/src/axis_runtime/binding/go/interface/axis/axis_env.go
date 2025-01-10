@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include "axis_env.h"
 import "C"
@@ -26,7 +26,7 @@ type (
 	ErrorHandler func(TenEnv, error)
 )
 
-// TenEnv represents the interface for the TEN (Run Time Environment) component.
+// TenEnv represents the interface for the APTIMA (Run Time Environment) component.
 type TenEnv interface {
 	SendCmd(cmd Cmd, handler ResultHandler) error
 	SendData(data Data, handler ErrorHandler) error
@@ -59,16 +59,16 @@ type TenEnv interface {
 	logInternal(level LogLevel, msg string, skip int)
 }
 
-// Making a compile-time assertion which indicates that if 'ten' type doesn't
-// implement all the methods of the 'Ten' interface, the code will fail to
+// Making a compile-time assertion which indicates that if 'aptima' type doesn't
+// implement all the methods of the 'Aptima' interface, the code will fail to
 // compile, and you'll get an error. This is a way to ensure at compile time
 // that a certain type satisfies an interface, even if you don't use that type
 // to call the interface's methods in your code.
 //
-// In simpler terms, it's a way to say: "Make sure that the 'ten' type
-// implements the 'Ten' interface. I don't need to use this check anywhere else
-// in my code; I just want to make sure it's true." If 'ten' doesn't implement
-// Ten, you'll know as soon as you try to compile.
+// In simpler terms, it's a way to say: "Make sure that the 'aptima' type
+// implements the 'Aptima' interface. I don't need to use this check anywhere else
+// in my code; I just want to make sure it's true." If 'aptima' doesn't implement
+// Aptima, you'll know as soon as you try to compile.
 var (
 	_ TenEnv = new(tenEnv)
 )
@@ -92,7 +92,7 @@ type tenEnv struct {
 
 func (p *tenEnv) attachToExtension(ext *extension) {
 	if p.attachToType != tenAttachToInvalid {
-		panic("The ten object can only be attached once.")
+		panic("The aptima object can only be attached once.")
 	}
 
 	p.attachToType = tenAttachToExtension
@@ -101,7 +101,7 @@ func (p *tenEnv) attachToExtension(ext *extension) {
 
 func (p *tenEnv) attachToApp(app *app) {
 	if p.attachToType != tenAttachToInvalid {
-		panic("The ten object can only be attached once.")
+		panic("The aptima object can only be attached once.")
 	}
 
 	p.attachToType = tenAttachToApp
@@ -110,8 +110,8 @@ func (p *tenEnv) attachToApp(app *app) {
 
 func (p *tenEnv) postSyncJob(payload job) any {
 	// To prevent deadlock, we refuse to post jobs to the pool. So it's
-	// recommended for developers to call async ten apis in goroutines other
-	// than the ten goroutine.
+	// recommended for developers to call async aptima apis in goroutines other
+	// than the aptima goroutine.
 	return payload()
 }
 

@@ -320,11 +320,31 @@ The next example shows how to transform ASTs using the `Transformer` class:
 from collections import abc
 from enum import IntEnum
 from functools import total_ordering
-from typing import (Any, Callable, ContextManager, Dict, List, MutableSequence,
-                    NamedTuple, Optional, Sequence, Tuple, Union)
+from typing import (
+    Any,
+    Callable,
+    ContextManager,
+    Dict,
+    List,
+    MutableSequence,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
-from ._internal import (_c_call, _cb_error_handler, _CBData, _Error, _ffi,
-                        _handle_error, _lib, _str, _to_str)
+from ._internal import (
+    _c_call,
+    _cb_error_handler,
+    _CBData,
+    _Error,
+    _ffi,
+    _handle_error,
+    _lib,
+    _str,
+    _to_str,
+)
 from .control import Control
 from .core import Logger, OrderedEnum
 from .symbol import Symbol

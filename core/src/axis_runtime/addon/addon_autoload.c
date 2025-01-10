@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -264,7 +264,7 @@ bool axis_addon_load_all_from_app_base_dir(const char *app_base_dir,
         break;
       }
 
-      // The modules (e.g., extensions/protocols) do not exist if only the TEN
+      // The modules (e.g., extensions/protocols) do not exist if only the APTIMA
       // app has been installed.
       if (axis_path_exists(axis_string_get_raw_str(&module_path))) {
         load_all_dynamic_libraries(axis_string_get_raw_str(&module_path));

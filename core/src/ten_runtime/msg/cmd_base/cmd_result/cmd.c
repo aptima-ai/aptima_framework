@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -126,7 +126,7 @@ static ten_cmd_result_t *ten_raw_cmd_result_create_from_raw_cmd(
     // 'original_cmd':
     // - 0
     //   The original_cmd is sent to a extension, and the cmd result is
-    //   generated from that extension. Because TEN runtime would clear the
+    //   generated from that extension. Because APTIMA runtime would clear the
     //   destination locations of the original_cmd, the destination count
     //   would therefore be 0.
     // - 1

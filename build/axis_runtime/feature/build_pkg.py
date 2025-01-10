@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -119,10 +119,12 @@ def is_mac_arm64() -> bool:
 def build_go_app(args: ArgumentInfo) -> int:
     # Determine the path to the main.go script. Some cases require a customized
     # Go build script, but in most situations, the build script provided by the
-    # TEN runtime Go binding can be used directly.
+    # APTIMA runtime Go binding can be used directly.
     main_go_path = "scripts/build/main.go"
     if not os.path.exists(main_go_path):
-        main_go_path = "axis_packages/system/axis_runtime_go/tools/build/main.go"
+        main_go_path = (
+            "axis_packages/system/axis_runtime_go/tools/build/main.go"
+        )
 
     cmd = ["go", "run", main_go_path]
     if args.log_level > 0:

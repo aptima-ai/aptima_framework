@@ -6,4 +6,4 @@ v = releaseCommon.Version()
 v.incrementMinorVersion()
 releaseCommon.performUpdates(v)
 
-print( "Updated files to v{0}".format( v.getVersionString() ) )
+print("Updated files to v{0}".format(v.getVersionString()))

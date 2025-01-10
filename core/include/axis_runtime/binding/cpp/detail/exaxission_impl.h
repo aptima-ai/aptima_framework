@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -17,7 +17,7 @@
 #include "aptima_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
 #include "aptima_runtime/msg/msg.h"
 
-namespace ten {
+namespace aptima {
 
 inline void extension_t::proxy_on_cmd_internal(
     aptima_extension_t *extension, ::aptima_env_t *aptima_env, aptima_shared_ptr_t *cmd,
@@ -63,4 +63,4 @@ inline void extension_t::proxy_on_cmd_internal(
       *cpp_aptima_env, std::move(cpp_cmd_unique_ptr), on_cmd_func);
 }
 
-}  // namespace ten
+}  // namespace aptima

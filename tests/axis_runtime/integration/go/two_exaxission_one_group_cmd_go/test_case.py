@@ -62,13 +62,13 @@ def test_two_extension_on_group_cmd_go():
         print("test_two_extension_on_group_cmd_go doesn't support win32")
         assert False
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "two_extension_one_group_cmd_go_app/aptima_packages/system/aptima_runtime/lib",
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "two_extension_one_group_cmd_go_app/aptima_packages/system/aptima_runtime/lib",

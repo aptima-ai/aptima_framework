@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -44,12 +44,12 @@ bool axis_env_proxy_release_lock_mode(axis_env_proxy_t *self, axis_error_t *err)
   // axis_NOLINTNEXTLINE(thread-check)
   // thread-check: This function is intended to be called in any threads other
   // then the belonging extension thread, and within this function, we only
-  // utilize the immutable fields of ten or ten fields protected by locks.
+  // utilize the immutable fields of aptima or aptima fields protected by locks.
   axis_ASSERT(axis_env_check_integrity(axis_env, false), "Should not happen.");
   axis_ASSERT(axis_env->attach_to == axis_ENV_ATTACH_TO_EXTENSION,
              "Invalid argument.");
 
-  // If any axis_env_proxy instance exists, then the TEN world will not
+  // If any axis_env_proxy instance exists, then the APTIMA world will not
   // disappear, and therefore things related to the extension world, such as
   // extension and extension thread, will still exist and will not change.
   // Therefore, it is safe to access extension and extension_thread below.
@@ -59,7 +59,7 @@ bool axis_env_proxy_release_lock_mode(axis_env_proxy_t *self, axis_error_t *err)
   // axis_NOLINTNEXTLINE(thread-check)
   // thread-check: This function is intended to be called in any threads other
   // then the belonging extension thread, and within this function, we only
-  // utilize the immutable fields of ten or ten fields protected by locks.
+  // utilize the immutable fields of aptima or aptima fields protected by locks.
   axis_ASSERT(axis_extension_thread_check_integrity(extension_thread, false),
              "Should not happen.");
 

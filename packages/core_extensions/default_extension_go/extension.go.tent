@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -13,36 +13,36 @@ package {{package_name}}
 import (
 	"fmt"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type {{class_name_prefix}}Extension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func newExtension(name string) ten.Extension {
+func newExtension(name string) aptima.Extension {
 	return &{{class_name_prefix}}Extension{}
 }
 
-func (e *{{class_name_prefix}}Extension) OnStart(tenEnv ten.TenEnv) {
+func (e *{{class_name_prefix}}Extension) OnStart(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStart")
 
 	tenEnv.OnStartDone()
 }
 
-func (e *{{class_name_prefix}}Extension) OnStop(tenEnv ten.TenEnv) {
+func (e *{{class_name_prefix}}Extension) OnStop(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
 }
 
 func (e *{{class_name_prefix}}Extension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	tenEnv.LogDebug("OnCmd")
 
-	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 	tenEnv.ReturnResult(cmdResult, cmd, nil)
 }
 
@@ -50,8 +50,8 @@ func init() {
 	fmt.Println("{{package_name}} extension init")
 
 	// Register addon
-	ten.RegisterAddonAsExtension(
+	aptima.RegisterAddonAsExtension(
 		"{{package_name}}",
-		ten.NewDefaultExtensionAddon(newExtension),
+		aptima.NewDefaultExtensionAddon(newExtension),
 	)
 }

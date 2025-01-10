@@ -16,7 +16,7 @@ go install github.com/google/pprof@latest
 
 ### Profiling with pprof
 
-The simplest way to profile a go program is to use the pprof_app_go as your TEN app. When the app starts, it will read environment variables to determine whether to start the pprof server and the heap profiler.
+The simplest way to profile a go program is to use the pprof_app_go as your APTIMA app. When the app starts, it will read environment variables to determine whether to start the pprof server and the heap profiler.
 
 ```bash
 # Heap profiles will be stored in /data/prof

@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include "axis_env.h"
 import "C"
@@ -42,7 +42,7 @@ func tenGoDestroyTenEnv(tenEnvObjID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)
@@ -62,7 +62,7 @@ func tenGoOnCmdResult(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)
@@ -96,7 +96,7 @@ func tenGoOnError(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)
@@ -123,7 +123,7 @@ func tenGoSetPropertyCallback(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)
@@ -159,7 +159,7 @@ func tenGoGetPropertyCallback(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)
@@ -198,7 +198,7 @@ func tenGoOnAddonCreateExtensionDone(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)
@@ -236,7 +236,7 @@ func tenGoOnAddonDestroyExtensionDone(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvObjID),
 			),
 		)

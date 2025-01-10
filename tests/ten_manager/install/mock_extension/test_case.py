@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -13,7 +13,7 @@ from .common import cmd_exec
 
 def analyze_resolve_result(ext_root_folder: str) -> None:
     deps_folder = os.path.join(
-        ext_root_folder, ".ten", "app", "ten_packages", "extension"
+        ext_root_folder, ".aptima", "app", "ten_packages", "extension"
     )
 
     with open(

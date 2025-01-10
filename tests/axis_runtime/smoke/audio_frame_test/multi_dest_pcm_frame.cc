@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lib/thread.h"
 #include "aptima_utils/macro/check.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -20,17 +20,17 @@
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  static std::unique_ptr<ten::audio_frame_t> createEmptyAudioFrame(
+  static std::unique_ptr<aptima::audio_frame_t> createEmptyAudioFrame(
       int sample_rate, int num_channels) {
     int sampleSize = sizeof(int16_t) * num_channels;
     int samplesPer10ms = sample_rate / 100;
     int sendBytes = sampleSize * samplesPer10ms;
 
-    auto audio_frame = ten::audio_frame_t::create("audio_frame");
+    auto audio_frame = aptima::audio_frame_t::create("audio_frame");
     audio_frame->alloc_buf(sendBytes);
     audio_frame->set_data_fmt(aptima_AUDIO_FRAME_DATA_FMT_INTERLEAVE);
     audio_frame->set_bytes_per_sample(2);
@@ -41,28 +41,28 @@ class test_extension_1 : public ten::extension_t {
     return audio_frame;
   }
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "dispatch_data") {
       auto audio_frame = createEmptyAudioFrame(SAMPLE_RATE, NUM_OF_CHANNELS);
       audio_frame->set_property("test_prop", "test_prop_value");
 
       aptima_env.send_audio_frame(std::move(audio_frame));
 
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "done");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
   void on_audio_frame(
-      aptima_UNUSED ten::aptima_env_t &aptima_env,
-      std::unique_ptr<ten::audio_frame_t> audio_frame) override {
+      aptima_UNUSED aptima::aptima_env_t &aptima_env,
+      std::unique_ptr<aptima::audio_frame_t> audio_frame) override {
     auto test_value = audio_frame->get_property_string("test_prop");
     aptima_ASSERT(test_value == "test_prop_value", "test_prop_value not match");
 
@@ -72,15 +72,15 @@ class test_extension_2 : public ten::extension_t {
     }
   }
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "check_received") {
       if (received) {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
         cmd_result->set_property("detail", "received failed");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
@@ -91,13 +91,13 @@ class test_extension_2 : public ten::extension_t {
   bool received{false};
 };
 
-class test_extension_3 : public ten::extension_t {
+class test_extension_3 : public aptima::extension_t {
  public:
-  explicit test_extension_3(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_3(const char *name) : aptima::extension_t(name) {}
 
   void on_audio_frame(
-      aptima_UNUSED ten::aptima_env_t &aptima_env,
-      std::unique_ptr<ten::audio_frame_t> audio_frame) override {
+      aptima_UNUSED aptima::aptima_env_t &aptima_env,
+      std::unique_ptr<aptima::audio_frame_t> audio_frame) override {
     auto test_value = audio_frame->get_property_string("test_prop");
     aptima_ASSERT(test_value == "test_prop_value", "test_prop_value not match");
 
@@ -107,15 +107,15 @@ class test_extension_3 : public ten::extension_t {
     }
   }
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "check_received") {
       if (received) {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "received confirmed");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_ERROR);
         cmd_result->set_property("detail", "received failed");
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       }
@@ -126,9 +126,9 @@ class test_extension_3 : public ten::extension_t {
   bool received{false};
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -169,10 +169,10 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
@@ -213,7 +213,7 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'dispatch_data' command.
-  auto dispatch_data_cmd = ten::cmd_t::create("dispatch_data");
+  auto dispatch_data_cmd = aptima::cmd_t::create("dispatch_data");
   dispatch_data_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                               "test_extension_group", "extension 1");
 
@@ -222,7 +222,7 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
   aptima_test::check_detail_with_string(cmd_result, "done");
 
-  auto check_received_cmd = ten::cmd_t::create("check_received");
+  auto check_received_cmd = aptima::cmd_t::create("check_received");
   check_received_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                                "test_extension_group", "extension 2");
 
@@ -231,7 +231,7 @@ TEST(AudioFrameTest, MultiDestAudioFrame) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
   aptima_test::check_detail_with_string(cmd_result, "received confirmed");
 
-  check_received_cmd = ten::cmd_t::create("check_received");
+  check_received_cmd = aptima::cmd_t::create("check_received");
   check_received_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                                "test_extension_group", "extension 3");
 

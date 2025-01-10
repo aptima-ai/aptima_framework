@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -365,27 +365,27 @@ bool ten_cmd_base_comes_from_client_outside(ten_shared_ptr_t *self) {
   const char *src_uri = ten_msg_get_src_app_uri(self);
   const char *cmd_id = ten_cmd_base_get_cmd_id(self);
 
-  // The 'command ID' plays a critical role in the TEN world, so when TEN world
-  // receives a command, no matter from where it receives, TEN runtime will
+  // The 'command ID' plays a critical role in the APTIMA world, so when APTIMA world
+  // receives a command, no matter from where it receives, APTIMA runtime will
   // check if it contains a command ID, and assign a new command ID to it if
   // there is none in it.
   //
   // And that will give us a simple rule to determine if a command is coming
-  // from the outside of the TEN world if the following assumption is true.
+  // from the outside of the APTIMA world if the following assumption is true.
   //
-  //    "When clients send a command to the TEN world, it can _not_
+  //    "When clients send a command to the APTIMA world, it can _not_
   //     specify the command ID of that command."
   //
   // Note: This is one of the few important assumptions and restrictions of the
-  // TEN world.
+  // APTIMA world.
   //
-  // If the command is coming from outside of the TEN world, when that command
-  // is coming to the TEN runtime, TEN runtime will assign a new command ID to
+  // If the command is coming from outside of the APTIMA world, when that command
+  // is coming to the APTIMA runtime, APTIMA runtime will assign a new command ID to
   // it, and set the source URI of that command to this command ID, in other
-  // words, TEN runtime will use that command ID as the identity of the client.
+  // words, APTIMA runtime will use that command ID as the identity of the client.
   //
   // Therefore, it is a reliable way to determine if the command is coming
-  // from the outside of the TEN world through checking if the src_uri and the
+  // from the outside of the APTIMA world through checking if the src_uri and the
   // command ID of the command are equal.
   return ten_c_string_is_equal(src_uri, cmd_id);
 }

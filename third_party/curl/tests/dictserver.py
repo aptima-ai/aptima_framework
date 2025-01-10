@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#***************************************************************************
+# ***************************************************************************
 #                                  _   _ ____  _
 #  Project                     ___| | | |  _ \| |
 #                             / __| | | | |_) | |
@@ -26,8 +26,7 @@
 #
 """ DICT server """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import argparse
 import logging
@@ -74,9 +73,8 @@ def dictserver(options):
 
 
 class DictHandler(socketserver.BaseRequestHandler):
-    """Handler class for DICT connections.
+    """Handler class for DICT connections."""
 
-    """
     def handle(self):
         """
         Simple function which responds to all queries with a 552.
@@ -91,8 +89,7 @@ class DictHandler(socketserver.BaseRequestHandler):
             log.debug("[DICT] Incoming data: %r", data)
 
             if VERIFIED_REQ in data:
-                log.debug("[DICT] Received verification request from test "
-                          "framework")
+                log.debug("[DICT] Received verification request from test " "framework")
                 pid = os.getpid()
                 # see tests/server/util.c function write_pidfile
                 if os.name == "nt":
@@ -114,20 +111,20 @@ class DictHandler(socketserver.BaseRequestHandler):
 def get_options():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--port", action="store", default=9016,
-                        type=int, help="port to listen on")
-    parser.add_argument("--host", action="store", default=HOST,
-                        help="host to listen on")
-    parser.add_argument("--verbose", action="store", type=int, default=0,
-                        help="verbose output")
-    parser.add_argument("--pidfile", action="store",
-                        help="file name for the PID")
-    parser.add_argument("--logfile", action="store",
-                        help="file name for the log")
+    parser.add_argument(
+        "--port", action="store", default=9016, type=int, help="port to listen on"
+    )
+    parser.add_argument(
+        "--host", action="store", default=HOST, help="host to listen on"
+    )
+    parser.add_argument(
+        "--verbose", action="store", type=int, default=0, help="verbose output"
+    )
+    parser.add_argument("--pidfile", action="store", help="file name for the PID")
+    parser.add_argument("--logfile", action="store", help="file name for the log")
     parser.add_argument("--srcdir", action="store", help="test directory")
     parser.add_argument("--id", action="store", help="server ID")
-    parser.add_argument("--ipv4", action="store_true", default=0,
-                        help="IPv4 flag")
+    parser.add_argument("--ipv4", action="store_true", default=0, help="IPv4 flag")
 
     return parser.parse_args()
 
@@ -167,6 +164,7 @@ def setup_logging(options):
 
 class ScriptRC(object):
     """Enum for script return codes"""
+
     SUCCESS = 0
     FAILURE = 1
     EXCEPTION = 2
@@ -176,7 +174,7 @@ class ScriptException(Exception):
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Get the options from the user.
     options = get_options()
 

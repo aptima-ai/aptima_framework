@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -113,13 +113,13 @@ void axis_path_set_result(axis_path_t *path, axis_shared_ptr_t *cmd_result) {
     // This situation happened at the time below.
     //
     // 1. The cmd result is sent to the extension, and that cmd result
-    //    corresponds to a command which came from the previous node, so TEN
+    //    corresponds to a command which came from the previous node, so APTIMA
     //    runtime will cache the cmd result to the IN path, too.
     //
     //      <-- IN path <-- extension <-- OUT path
     //
     // 2. The extension handles that cmd result, and explicitly call
-    //    return_xxx() for that cmd result in the extension's on_cmd(). TEN
+    //    return_xxx() for that cmd result in the extension's on_cmd(). APTIMA
     //    runtime will cache the cmd result to the IN path in this case. The
     //    extension might modify the cmd result (ex: add more properties),
     //    so we must replace the original cached cmd result here.

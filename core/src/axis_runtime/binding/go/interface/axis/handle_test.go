@@ -1,4 +1,4 @@
-package ten
+package aptima
 
 import (
 	"testing"

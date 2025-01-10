@@ -28,14 +28,16 @@ if len(sys.argv) != 3:
 
 bin_path = os.path.abspath(sys.argv[1])
 output_dir = os.path.abspath(sys.argv[2])
-info_file_path = os.path.join(output_dir, '{}.shard-support'.format(os.path.basename(bin_path)))
+info_file_path = os.path.join(
+    output_dir, "{}.shard-support".format(os.path.basename(bin_path))
+)
 
 # Ensure no file exists from previous test runs
 if os.path.isfile(info_file_path):
     os.remove(info_file_path)
 
-print('bin path:', bin_path)
-print('shard confirmation path:', info_file_path)
+print("bin path:", bin_path)
+print("shard confirmation path:", info_file_path)
 
 env = os.environ.copy()
 # We will run only one shard, and it should have the passing test.
@@ -54,7 +56,7 @@ try:
         stderr=subprocess.PIPE,
         check=True,
         universal_newlines=True,
-        env=env
+        env=env,
     )
     stdout = ret.stdout
 except subprocess.SubprocessError as ex:

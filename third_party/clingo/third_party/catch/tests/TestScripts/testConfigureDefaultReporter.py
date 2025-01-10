@@ -21,20 +21,24 @@ exists, and path to where the output files should be stored.
 """
 
 if len(sys.argv) != 3:
-    print('Wrong number of arguments: {}'.format(len(sys.argv)))
-    print('Usage: {} catch2-top-level-dir base-build-output-dir'.format(sys.argv[0]))
+    print("Wrong number of arguments: {}".format(len(sys.argv)))
+    print("Usage: {} catch2-top-level-dir base-build-output-dir".format(sys.argv[0]))
     exit(1)
 
 catch2_source_path = os.path.abspath(sys.argv[1])
-build_dir_path = os.path.join(os.path.abspath(sys.argv[2]), 'CMakeConfigTests', 'DefaultReporter')
+build_dir_path = os.path.join(
+    os.path.abspath(sys.argv[2]), "CMakeConfigTests", "DefaultReporter"
+)
 
-configure_and_build(catch2_source_path,
-                    build_dir_path,
-                    [("CATCH_CONFIG_DEFAULT_REPORTER", "xml")])
+configure_and_build(
+    catch2_source_path, build_dir_path, [("CATCH_CONFIG_DEFAULT_REPORTER", "xml")]
+)
 
-stdout, _ = run_and_return_output(os.path.join(build_dir_path, 'tests'), 'SelfTest', ['[approx][custom]'])
+stdout, _ = run_and_return_output(
+    os.path.join(build_dir_path, "tests"), "SelfTest", ["[approx][custom]"]
+)
 
-xml_tag = '</Catch2TestRun>'
+xml_tag = "</Catch2TestRun>"
 if xml_tag not in stdout:
     print("Could not find '{}' in the stdout".format(xml_tag))
     print('stdout: "{}"'.format(stdout))

@@ -50,7 +50,7 @@ graph TD;
 Used to set the initial values of the extension's properties. This allows the `get_property` API from `ten_env` to be used in other lifecycle stages to retrieve properties set during the `on_configure()` stage. The `on_configure_done()` function is called to mark the end of the `on_configure` stage.
 
 ```c++
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     // Set the initial values of the extension's properties.
     ten_env.init_property_from_json(
       R"({
@@ -65,14 +65,14 @@ Used to set the initial values of the extension's properties. This allows the `g
 
 ### on_init
 
-Used to initialize the extension. Since the extension is not yet ready before `on_init_done()`, the TEN runtime will queue all messages sent to the extension until it's ready. Once ready, the queued messages are delivered to the extension. It's important to note that if the result is from a command sent by the extension itself, it is *not* subject to this restriction; the TEN runtime will directly pass the command's result back to the extension. This is because sending a command is a self-initiated action by the extension, so it must be prepared to receive and handle the result of its own commands.
+Used to initialize the extension. Since the extension is not yet ready before `on_init_done()`, the APTIMA runtime will queue all messages sent to the extension until it's ready. Once ready, the queued messages are delivered to the extension. It's important to note that if the result is from a command sent by the extension itself, it is *not* subject to this restriction; the APTIMA runtime will directly pass the command's result back to the extension. This is because sending a command is a self-initiated action by the extension, so it must be prepared to receive and handle the result of its own commands.
 
 ### on_start
 
-This stage marks the runtime starting to send messages into the extension. The `on_start_done` function doesn't have a special purpose, but for consistency with other life cycle stages and to reduce learning complexity, the TEN framework includes it. Typically, `on_start_done` is invoked at the end of the `on_start` callback function. The TEN runtime will start delivering messages from other extensions to this extension after receiving its `on_start_done()`.
+This stage marks the runtime starting to send messages into the extension. The `on_start_done` function doesn't have a special purpose, but for consistency with other life cycle stages and to reduce learning complexity, the APTIMA framework includes it. Typically, `on_start_done` is invoked at the end of the `on_start` callback function. The APTIMA runtime will start delivering messages from other extensions to this extension after receiving its `on_start_done()`.
 
 ```c++
-  void on_start(ten::ten_env_t &ten_env) override {
+  void on_start(aptima::ten_env_t &ten_env) override {
     // Some operations.
     ten_env.on_start_done();
   }
@@ -80,15 +80,15 @@ This stage marks the runtime starting to send messages into the extension. The `
 
 ### on_stop
 
-There are many situations where the extension needs to stop, such as when the app or engine containing the extension is terminating. When the extension is about to stop, the TEN runtime uses this `on_stop` callback to notify the extension that it has entered the `on_stop` life cycle stage. The extension can then perform any necessary actions for termination.
+There are many situations where the extension needs to stop, such as when the app or engine containing the extension is terminating. When the extension is about to stop, the APTIMA runtime uses this `on_stop` callback to notify the extension that it has entered the `on_stop` life cycle stage. The extension can then perform any necessary actions for termination.
 
 ### on_deinit
 
-After the extension calls `on_stop_done()`, it enters the `on_deinit` stage. During this stage, because the resources within the extension may no longer be fully available, the TEN runtime will not pass any messages from other extensions to this one.
+After the extension calls `on_stop_done()`, it enters the `on_deinit` stage. During this stage, because the resources within the extension may no longer be fully available, the APTIMA runtime will not pass any messages from other extensions to this one.
 
 ## Relationship Between Extensions at Different Life Cycle Stages
 
-Basically, there is no inherent relationship. Each extension operates independently, switching between its own life cycle stages. Extensions are independent of one another, and any dependencies between them must be explicitly implemented by the extensions themselves. The TEN runtime does not make any assumptions or guarantees. For example, if extension A needs to wait for extension B to complete its initialization before finishing its own, extension A can send a command to extension B during its `on_init`. Once extension B completes initialization and receives the command, it can reply with a result, and when extension A receives the result, it can call `on_init_done`.
+Basically, there is no inherent relationship. Each extension operates independently, switching between its own life cycle stages. Extensions are independent of one another, and any dependencies between them must be explicitly implemented by the extensions themselves. The APTIMA runtime does not make any assumptions or guarantees. For example, if extension A needs to wait for extension B to complete its initialization before finishing its own, extension A can send a command to extension B during its `on_init`. Once extension B completes initialization and receives the command, it can reply with a result, and when extension A receives the result, it can call `on_init_done`.
 
 ```mermaid
 sequenceDiagram
@@ -115,9 +115,9 @@ sequenceDiagram
 
 Basically, in all other life cycle stages, if you want to implement the order of different extensions, you can achieve it using the same method.
 
-## Interface with TEN Runtime
+## Interface with APTIMA Runtime
 
-Extensions interact with the TEN runtime primarily through three interfaces:
+Extensions interact with the APTIMA runtime primarily through three interfaces:
 
 1. **Lifecycle Callbacks**
    - These include callbacks like `on_init`, `on_deinit`, `on_start`, and `on_stop`.
@@ -142,12 +142,12 @@ The different stages of the extension's lifecycle and their connection to messag
 
 ## Implementing Extensions in Different Languages
 
-Within the TEN framework, extensions can be implemented in various languages such as C++, Go, and Python. Developers can use the same conceptual approach to implement extensions in different languages. Learning how to develop an extension in one language makes it relatively easy to do so in other languages as well.
+Within the APTIMA framework, extensions can be implemented in various languages such as C++, Go, and Python. Developers can use the same conceptual approach to implement extensions in different languages. Learning how to develop an extension in one language makes it relatively easy to do so in other languages as well.
 
 ## Asynchronous Message Processing in Extensions
 
 <figure><img src="../../assets/png/asynchronous_message_processing.png" alt=""><figcaption><p>Asynchronous Message Processing</p></figcaption></figure>
 
-Extensions process messages asynchronously. When the TEN runtime delivers a message to an extension through callbacks like `on_cmd`, `on_data`, `on_audio_frame`, or `on_video_frame`, the extension is not required to process the message immediately within the callback. Instead, the extension can delegate the message to other threads, processes, or even machines for processing. This allows for full utilization of multi-core and distributed computing resources.
+Extensions process messages asynchronously. When the APTIMA runtime delivers a message to an extension through callbacks like `on_cmd`, `on_data`, `on_audio_frame`, or `on_video_frame`, the extension is not required to process the message immediately within the callback. Instead, the extension can delegate the message to other threads, processes, or even machines for processing. This allows for full utilization of multi-core and distributed computing resources.
 
-After processing is complete, the results can be sent back to the TEN runtime through callbacks such as `send_cmd`, `send_data`, `send_audio_frame`, or `send_video_frame`. The entire process is asynchronous, meaning the extension doesn't need to send the processed results back before the `on_cmd`, `on_data`, `on_audio_frame`, or `on_video_frame` callbacks return. The results can be transmitted only when they are actually ready, using the appropriate send functions.
+After processing is complete, the results can be sent back to the APTIMA runtime through callbacks such as `send_cmd`, `send_data`, `send_audio_frame`, or `send_video_frame`. The entire process is asynchronous, meaning the extension doesn't need to send the processed results back before the `on_cmd`, `on_data`, `on_audio_frame`, or `on_video_frame` callbacks return. The results can be transmitted only when they are actually ready, using the appropriate send functions.

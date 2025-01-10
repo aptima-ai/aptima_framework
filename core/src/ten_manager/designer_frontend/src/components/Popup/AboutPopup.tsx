@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -26,7 +26,7 @@ const AboutPopup: React.FC<AboutPopupProps> = ({ onClose }) => {
             "font-['Segoe_UI',Tahoma,Geneva,Verdana,sans-serif]"
           )}
         >
-          Powered by TEN Framework.
+          Powered by APTIMA Framework.
         </p>
         <p className="my-1">
           {t("Official site")}:{" "}
@@ -42,12 +42,12 @@ const AboutPopup: React.FC<AboutPopupProps> = ({ onClose }) => {
         <p className="my-1">
           Github:{" "}
           <a
-            href="https://github.com/TEN-framework/"
+            href="https://github.com/APTIMA-framework/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline"
           >
-            https://github.com/TEN-framework/
+            https://github.com/APTIMA-framework/
           </a>
         </p>
       </div>

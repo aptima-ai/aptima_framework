@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -120,7 +120,7 @@ def check_various_versions(repo_base_dir: str, git_version: str) -> bool:
         return False
 
     if not check_version_of_system_packages(repo_base_dir, git_version):
-        print("ten system package versions do not match.")
+        print("aptima system package versions do not match.")
         return False
 
     return True

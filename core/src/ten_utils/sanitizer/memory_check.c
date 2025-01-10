@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -24,9 +24,9 @@
 #include "ten_utils/macro/check.h"
 #include "ten_utils/macro/mark.h"
 
-// Note: Since TEN LOG also involves memory operations, to avoid circular
+// Note: Since APTIMA LOG also involves memory operations, to avoid circular
 // dependencies in the memory checker system, use the basic printf family
-// functions instead of TEN LOG.
+// functions instead of APTIMA LOG.
 
 // Note: The `ten_sanitizer_memory_record_t` items stored in
 // `ten_sanitizer_memory_records_t` not only contain the actual allocated memory

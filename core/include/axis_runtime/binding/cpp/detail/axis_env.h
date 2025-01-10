@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -18,7 +18,7 @@
 #include "aptima_runtime/binding/cpp/detail/msg/video_frame.h"
 #include "aptima_runtime/common/errno.h"
 #include "aptima_runtime/msg/cmd_result/cmd_result.h"
-#include "aptima_runtime/ten.h"
+#include "aptima_runtime/aptima.h"
 #include "aptima_runtime/aptima_env/internal/metadata.h"
 #include "aptima_runtime/aptima_env/internal/on_xxx_done.h"
 #include "aptima_runtime/aptima_env/internal/return.h"
@@ -34,7 +34,7 @@
 
 using aptima_env_t = struct aptima_env_t;
 
-namespace ten {
+namespace aptima {
 
 class app_t;
 class extension_t;
@@ -110,7 +110,7 @@ class aptima_env_t {
 
     if (rc) {
       // Only when the data has been sent successfully, we should give back
-      // the ownership of the data message to the TEN runtime.
+      // the ownership of the data message to the APTIMA runtime.
       auto *cpp_data_ptr = data.release();
       delete cpp_data_ptr;
     }
@@ -148,7 +148,7 @@ class aptima_env_t {
 
     if (rc) {
       // Only when the message has been sent successfully, we should give back
-      // the ownership of the message to the TEN runtime.
+      // the ownership of the message to the APTIMA runtime.
       auto *cpp_frame_ptr = frame.release();
       delete cpp_frame_ptr;
     }
@@ -186,7 +186,7 @@ class aptima_env_t {
 
     if (rc) {
       // Only when the message has been sent successfully, we should give back
-      // the ownership of the message to the TEN runtime.
+      // the ownership of the message to the APTIMA runtime.
       auto *cpp_frame_ptr = frame.release();
       delete cpp_frame_ptr;
     }
@@ -653,7 +653,7 @@ class aptima_env_t {
     return set_property_impl(path, aptima_value_create_string(value.c_str()), err);
   }
 
-  bool set_property(const char *path, const ten::buf_t &value,
+  bool set_property(const char *path, const aptima::buf_t &value,
                     error_t *err = nullptr) {
     aptima_buf_t buf =
         aptima_BUF_STATIC_INIT_WITH_DATA_OWNED(value.data(), value.size());
@@ -839,7 +839,7 @@ class aptima_env_t {
 
     if (rc) {
       // Only when the cmd has been sent successfully, we should give back the
-      // ownership of the cmd to the TEN runtime.
+      // ownership of the cmd to the APTIMA runtime.
       auto *cpp_cmd_ptr = cmd.release();
       delete cpp_cmd_ptr;
     }
@@ -931,4 +931,4 @@ class aptima_env_t {
   };
 };
 
-}  // namespace ten
+}  // namespace aptima

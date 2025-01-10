@@ -14,7 +14,7 @@ layout:
 
 # How to Run a Local AI Model in Python Extensions
 
-In the TEN framework, extensions can utilize third-party AI services or run AI models locally to improve performance and reduce costs. This tutorial explains how to run a local AI model in a Python extension and how to interact with it within the extension.
+In the APTIMA framework, extensions can utilize third-party AI services or run AI models locally to improve performance and reduce costs. This tutorial explains how to run a local AI model in a Python extension and how to interact with it within the extension.
 
 ## Step 1: Check Hardware Requirements
 
@@ -30,7 +30,7 @@ Verify that your system can support the model’s demands to ensure smooth opera
 Once your hardware is ready, install the required software and dependencies. Follow these steps:
 
 1. **Operating System**: Ensure compatibility with your model. Most AI frameworks support Windows, macOS, and Linux, though specific versions may be required.
-2. **Python Version**: Ensure compatibility with the TEN Python runtime and the model.
+2. **Python Version**: Ensure compatibility with the APTIMA Python runtime and the model.
 3. **Required Libraries**: Install necessary libraries such as:
 
    - TensorFlow
@@ -49,7 +49,7 @@ Below is an example of how to implement a basic text generation feature using th
 First, initialize the local model within the extension:
 
 ```python
-from ten import (
+from aptima import (
     Extension,
     TenEnv,
     Cmd,
@@ -105,4 +105,4 @@ This ensures efficient memory management, especially when working with GPU resou
 
 ## Summary
 
-Running a local model in a TEN Python extension is similar to native Python development. By loading and unloading the model in the appropriate extension lifecycle methods, you can easily integrate local AI models and interact with them effectively.
+Running a local model in a APTIMA Python extension is similar to native Python development. By loading and unloading the model in the appropriate extension lifecycle methods, you can easily integrate local AI models and interact with them effectively.

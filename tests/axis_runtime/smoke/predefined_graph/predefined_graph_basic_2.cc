@@ -1,37 +1,37 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_runtime/binding/cpp/detail/msg/cmd/stop_graph.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
-class test_normal_extension : public ten::extension_t {
+class test_normal_extension : public aptima::extension_t {
  public:
-  explicit test_normal_extension(const char *name) : ten::extension_t(name) {}
+  explicit test_normal_extension(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class test_predefined_graph : public ten::extension_t {
+class test_predefined_graph : public aptima::extension_t {
  public:
-  explicit test_predefined_graph(const char *name) : ten::extension_t(name) {}
+  explicit test_predefined_graph(const char *name) : aptima::extension_t(name) {}
 
-  void on_start(ten::aptima_env_t &aptima_env) override {
-    auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  void on_start(aptima::aptima_env_t &aptima_env) override {
+    auto start_graph_cmd = aptima::cmd_start_graph_t::create();
     start_graph_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr, nullptr,
                               nullptr);
     start_graph_cmd->set_graph_from_json(R"({
@@ -47,45 +47,45 @@ class test_predefined_graph : public ten::extension_t {
 
     aptima_env.send_cmd(
         std::move(start_graph_cmd),
-        [&](ten::aptima_env_t &aptima_env,
-            std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
+        [&](aptima::aptima_env_t &aptima_env,
+            std::unique_ptr<aptima::cmd_result_t> cmd_result, aptima::error_t *err) {
           nlohmann::json json =
               nlohmann::json::parse(cmd_result->get_property_to_json());
           if (cmd_result->get_status_code() == aptima_STATUS_CODE_OK) {
             auto graph_id = cmd_result->get_property_string("detail");
 
-            auto hello_world_cmd = ten::cmd_t::create("hello_world");
+            auto hello_world_cmd = aptima::cmd_t::create("hello_world");
             hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/",
                                       json["detail"].get<std::string>().c_str(),
                                       "normal_extension_group",
                                       "normal_extension");
             aptima_env.send_cmd(
                 std::move(hello_world_cmd),
-                [&, graph_id](ten::aptima_env_t &aptima_env,
-                              std::unique_ptr<ten::cmd_result_t> cmd_result,
-                              ten::error_t *err) {
+                [&, graph_id](aptima::aptima_env_t &aptima_env,
+                              std::unique_ptr<aptima::cmd_result_t> cmd_result,
+                              aptima::error_t *err) {
                   nlohmann::json json =
                       nlohmann::json::parse(cmd_result->get_property_to_json());
                   if (cmd_result->get_status_code() == aptima_STATUS_CODE_OK) {
                     // Shut down the graph; otherwise, the app won't be able to
                     // close because there is still a running engine/graph.
-                    auto stop_graph_cmd = ten::cmd_stop_graph_t::create();
+                    auto stop_graph_cmd = aptima::cmd_stop_graph_t::create();
                     stop_graph_cmd->set_dest("localhost", nullptr, nullptr,
                                              nullptr);
                     stop_graph_cmd->set_graph_id(graph_id.c_str());
 
                     aptima_env.send_cmd(
                         std::move(stop_graph_cmd),
-                        [&](ten::aptima_env_t &aptima_env,
-                            std::unique_ptr<ten::cmd_result_t> cmd_result,
-                            ten::error_t *err) {
+                        [&](aptima::aptima_env_t &aptima_env,
+                            std::unique_ptr<aptima::cmd_result_t> cmd_result,
+                            aptima::error_t *err) {
                           normal_extension_is_ready = true;
 
                           if (command_1 != nullptr) {
                             nlohmann::json const detail =
                                 R"({"id": 1, "name": "a"})"_json;
                             auto cmd_result =
-                                ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+                                aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
                             cmd_result->set_property_from_json(
                                 "detail", detail.dump().c_str());
                             aptima_env.return_result(std::move(cmd_result),
@@ -100,12 +100,12 @@ class test_predefined_graph : public ten::extension_t {
     aptima_env.on_start_done();
   }
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "command_1") {
       if (normal_extension_is_ready) {
         auto detail = R"({"id": 1, "name": "a"})"_json;
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property_from_json("detail", detail.dump().c_str());
         aptima_env.return_result(std::move(cmd_result), std::move(cmd));
       } else {
@@ -117,13 +117,13 @@ class test_predefined_graph : public ten::extension_t {
 
  private:
   bool normal_extension_is_ready{};
-  std::unique_ptr<ten::cmd_t> command_1;
+  std::unique_ptr<aptima::cmd_t> command_1;
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
-    bool rc = ten::aptima_env_internal_accessor_t::init_manifest_from_json(
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
+    bool rc = aptima::aptima_env_internal_accessor_t::init_manifest_from_json(
         aptima_env,
         // clang-format off
                  R"({
@@ -181,12 +181,12 @@ TEST(ExtensionTest, PredefinedGraphBasic2) {  // NOLINT
   auto *app_thread = aptima_thread_create("app thread", app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Do not need to send 'start_graph' command first.
   // The 'graph_id' MUST be "default" (a special string) if we want to send the
   // request to predefined graph.
-  auto command_1_cmd = ten::cmd_t::create("command_1");
+  auto command_1_cmd = aptima::cmd_t::create("command_1");
   command_1_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                           "predefined_graph_group", "predefined_graph");
   auto cmd_result = client->send_cmd_and_recv_result(std::move(command_1_cmd));

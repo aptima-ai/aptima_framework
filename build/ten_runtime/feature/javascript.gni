@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -43,7 +43,7 @@ template("npm_install") {
   }
 }
 
-# Build the TEN library based on Node.js. It first ensures the necessary NPM
+# Build the APTIMA library based on Node.js. It first ensures the necessary NPM
 # dependencies are installed, then syncs the source code, modifies the
 # `tsconfig.json`, runs the build scripts, and generates the required
 # `path.json` file.

@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -8,7 +8,7 @@ import os
 import queue
 import threading
 
-from ten import Cmd, CmdResult, Extension, StatusCode, TenEnv
+from aptima import Cmd, CmdResult, Extension, StatusCode, TenEnv
 
 
 class DefaultExtension(Extension):
@@ -67,7 +67,7 @@ class DefaultExtension(Extension):
         print("DefaultExtension on_stop")
 
         # Start a new thread to join the previous thread to avoid blocking the
-        # TEN extension thread.
+        # APTIMA extension thread.
         threading.Thread(target=self.__join_thread, args=(ten_env,)).start()
 
     def on_deinit(self, ten_env: TenEnv) -> None:

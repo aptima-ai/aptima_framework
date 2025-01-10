@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -78,7 +78,7 @@ static bool ten_schema_keyword_type_validate_value(
   return true;
 }
 
-// Automatically perform TEN-supported value conversion based on the type. This
+// Automatically perform APTIMA-supported value conversion based on the type. This
 // conversion is generally safe, meaning the value will not change as a result.
 static bool ten_schema_keyword_type_adjust_value(
     ten_schema_keyword_t *self_, ten_value_t *value,
@@ -193,7 +193,7 @@ ten_schema_keyword_t *ten_schema_keyword_type_create_from_value(
 
   TEN_TYPE type = ten_type_from_string(ten_value_peek_raw_str(value, NULL));
   if (type == TEN_TYPE_INVALID) {
-    TEN_ASSERT(0, "Invalid TEN type.");
+    TEN_ASSERT(0, "Invalid APTIMA type.");
     return NULL;
   }
 

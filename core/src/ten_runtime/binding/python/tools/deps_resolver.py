@@ -163,14 +163,10 @@ class DepsManager:
 
 if __name__ == "__main__":
     file_dir = os.path.dirname(os.path.abspath(__file__))
-    app_root_dir = os.path.abspath(
-        os.path.join(file_dir, "..", "..", "..", "..")
-    )
+    app_root_dir = os.path.abspath(os.path.join(file_dir, "..", "..", "..", ".."))
 
     parser = argparse.ArgumentParser(description="Resolve Python dependencies.")
-    parser.add_argument(
-        "-r", "--root", type=str, required=False, default=app_root_dir
-    )
+    parser.add_argument("-r", "--root", type=str, required=False, default=app_root_dir)
     parser.add_argument(
         "-o",
         "--output",

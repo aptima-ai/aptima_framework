@@ -1,6 +1,6 @@
 # Python Async Extension
 
-A **Python async extension** is a modular component that using Python's `asyncio` framework. If you want to wrap existing Python codes that use `asyncio` into a TEN extension, using the Python async extension is the simplest and most convenient option.
+A **Python async extension** is a modular component that using Python's `asyncio` framework. If you want to wrap existing Python codes that use `asyncio` into a APTIMA extension, using the Python async extension is the simplest and most convenient option.
 
 ## Example: The Default Python Async Extension
 
@@ -8,7 +8,7 @@ Here’s how a Python async extension is structured:
 
 ```python
 import asyncio
-from ten import AsyncExtension, AsyncTenEnv
+from aptima import AsyncExtension, AsyncTenEnv
 
 class DefaultAsyncExtension(AsyncExtension):
     async def on_configure(self, ten_env: AsyncTenEnv) -> None:
@@ -54,7 +54,7 @@ Here is the sample code:
 
 ```python
 import asyncio
-from ten import AsyncExtension, AsyncTenEnv
+from aptima import AsyncExtension, AsyncTenEnv
 
 class DefaultAsyncExtension(AsyncExtension):
     queue = asyncio.Queue()
@@ -84,4 +84,4 @@ class DefaultAsyncExtension(AsyncExtension):
 
 ## Conclusion
 
-TEN's Python async extension provide a powerful way to handle long-running tasks asynchronously. By integrating Python’s `asyncio` framework, the extensions ensure that operations such as network calls or file handling are efficient and non-blocking. This makes TEN a great choice for building scalable, modular applications with asynchronous capabilities.
+APTIMA's Python async extension provide a powerful way to handle long-running tasks asynchronously. By integrating Python’s `asyncio` framework, the extensions ensure that operations such as network calls or file handling are efficient and non-blocking. This makes APTIMA a great choice for building scalable, modular applications with asynchronous capabilities.

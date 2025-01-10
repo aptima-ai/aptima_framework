@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -15,14 +15,14 @@
 #include "axis_runtime/binding/cpp/detail/addon.h"  // IWYU pragma: keep
 
 #define axis_CPP_REGISTER_ADDON_AS_ADDON_LOADER(NAME, CLASS)                      \
-  class NAME##_default_addon_loader_addon_t : public ten::addon_t {              \
+  class NAME##_default_addon_loader_addon_t : public aptima::addon_t {              \
    public:                                                                       \
-    void on_create_instance(ten::axis_env_t &axis_env, const char *name,           \
+    void on_create_instance(aptima::axis_env_t &axis_env, const char *name,           \
                             void *context) override {                            \
       auto *instance = new CLASS(name);                                          \
       axis_env.on_create_instance_done(instance, context);                        \
     }                                                                            \
-    void on_destroy_instance(ten::axis_env_t &axis_env, void *instance,            \
+    void on_destroy_instance(aptima::axis_env_t &axis_env, void *instance,            \
                              void *context) override {                           \
       delete static_cast<CLASS *>(instance);                                     \
       axis_env.on_destroy_instance_done(context);                                 \

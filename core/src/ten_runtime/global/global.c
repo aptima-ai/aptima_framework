@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -32,7 +32,7 @@ void ten_global_deinit(void) {
   if (ten_list_size(&g_apps)) {
     ten_mutex_unlock(g_apps_mutex);
 
-    // There are still TEN apps, so do nothing, just return.
+    // There are still APTIMA apps, so do nothing, just return.
     return;
   }
   ten_mutex_unlock(g_apps_mutex);

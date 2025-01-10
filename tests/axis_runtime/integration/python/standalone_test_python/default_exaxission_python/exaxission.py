@@ -1,11 +1,19 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
-from ten import (AudioFrame, Cmd, CmdResult, Data, Extension, StatusCode,
-                 TenEnv, VideoFrame)
+from aptima import (
+    AudioFrame,
+    Cmd,
+    CmdResult,
+    Data,
+    Extension,
+    StatusCode,
+    TenEnv,
+    VideoFrame,
+)
 
 
 class DefaultExtension(Extension):
@@ -30,7 +38,9 @@ class DefaultExtension(Extension):
             self.recv_data_count += 1
             self.return_if_all_data_received(aptima_env)
 
-    def on_audio_frame(self, aptima_env: TenEnv, audio_frame: AudioFrame) -> None:
+    def on_audio_frame(
+        self, aptima_env: TenEnv, audio_frame: AudioFrame
+    ) -> None:
         if audio_frame.get_name() == "test":
             aptima_env.log_info(
                 "DefaultExtension on_audio_frame: "
@@ -39,7 +49,9 @@ class DefaultExtension(Extension):
             self.recv_data_count += 1
             self.return_if_all_data_received(aptima_env)
 
-    def on_video_frame(self, aptima_env: TenEnv, video_frame: VideoFrame) -> None:
+    def on_video_frame(
+        self, aptima_env: TenEnv, video_frame: VideoFrame
+    ) -> None:
         if video_frame.get_name() == "test":
             aptima_env.log_info(
                 "DefaultExtension on_video_frame: "

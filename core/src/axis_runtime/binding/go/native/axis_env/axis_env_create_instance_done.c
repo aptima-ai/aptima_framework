@@ -1,15 +1,15 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/axis_runtime/binding/go/extension/extension.h"
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env.h"
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env_internal.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
 #include "axis_runtime/extension/extension.h"
-#include "axis_runtime/ten.h"
+#include "axis_runtime/aptima.h"
 #include "axis_utils/macro/check.h"
 
 void axis_go_axis_env_on_create_instance_done(uintptr_t bridge_addr,

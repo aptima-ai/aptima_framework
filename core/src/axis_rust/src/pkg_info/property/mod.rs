@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -307,8 +307,8 @@ mod tests {
         let json_data = include_str!("test_data_embed/property.json");
         let property: Property = json_data.parse().unwrap();
         assert!(property._ten.is_some());
-        let ten = property._ten.as_ref().unwrap();
-        let predefined_graphs = ten.predefined_graphs.as_ref().unwrap();
+        let aptima = property._ten.as_ref().unwrap();
+        let predefined_graphs = aptima.predefined_graphs.as_ref().unwrap();
         let nodes = &predefined_graphs.first().as_ref().unwrap().graph.nodes;
         let node = nodes.first().unwrap();
         assert_eq!(node.get_app_uri(), localhost());
@@ -330,8 +330,8 @@ mod tests {
         let property: Property = prop_str.parse().unwrap();
         assert!(property._ten.is_some());
 
-        let ten = property._ten.as_ref().unwrap();
-        let predefined_graphs = ten.predefined_graphs.as_ref().unwrap();
+        let aptima = property._ten.as_ref().unwrap();
+        let predefined_graphs = aptima.predefined_graphs.as_ref().unwrap();
         let connections = &predefined_graphs
             .first()
             .as_ref()

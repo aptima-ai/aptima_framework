@@ -35,8 +35,7 @@ def dump_raw_files_to_text(heap_infos):
     rc = subprocess.run(convert_to_text_cmd, shell=True)
     if rc.returncode != 0:
         raise Exception(
-            "convert_to_text_cmd failed, convert_to_text_cmd:"
-            f" {convert_to_text_cmd}"
+            "convert_to_text_cmd failed, convert_to_text_cmd:" f" {convert_to_text_cmd}"
         )
 
 

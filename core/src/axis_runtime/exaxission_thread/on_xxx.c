@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -144,7 +144,7 @@ void axis_extension_thread_on_extension_group_on_deinit_done(
                  axis_extension_group_check_integrity(extension_group, true),
              "Should not happen.");
 
-  // Notify the 'ten' object of this extension group that we are closing.
+  // Notify the 'aptima' object of this extension group that we are closing.
   axis_env_t *extension_group_axis_env = extension_group->axis_env;
   axis_ASSERT(extension_group_axis_env &&
                  axis_env_check_integrity(extension_group_axis_env, true),

@@ -1,17 +1,17 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 import "sync"
 
 // We want to provide a recycle pool for bytes to reduce memory allocation, as
 // the []byte (the requests are always structured data, which will be marshalled
-// into []byte as the property of a ten msg) will be used frequently in the
+// into []byte as the property of a aptima msg) will be used frequently in the
 // backend services.
 //
 // However, the size of each request is not fixed, so we provide more than one

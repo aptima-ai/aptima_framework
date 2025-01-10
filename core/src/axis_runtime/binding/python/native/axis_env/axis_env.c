@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -40,7 +40,7 @@ static void axis_py_axis_env_c_part_destroyed(void *axis_env_bridge_) {
 static PyObject *create_actual_py_axis_env_instance(
     axis_py_axis_env_t *py_axis_env) {
   // Import the Python module where TenEnv is defined.
-  PyObject *module_name = PyUnicode_FromString("ten.axis_env");
+  PyObject *module_name = PyUnicode_FromString("aptima.axis_env");
   PyObject *module = PyImport_Import(module_name);
   Py_DECREF(module_name);
 

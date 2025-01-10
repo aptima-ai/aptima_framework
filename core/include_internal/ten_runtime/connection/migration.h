@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -162,7 +162,7 @@ TEN_RUNTIME_PRIVATE_API void ten_connection_migrate(ten_connection_t *self,
 
 /**
  * @brief Check if the connection needs to be migrated first before handling
- * TEN messages.
+ * APTIMA messages.
  */
 TEN_RUNTIME_PRIVATE_API bool ten_connection_needs_to_migrate(
     ten_connection_t *self, ten_engine_t *engine);

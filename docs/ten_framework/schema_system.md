@@ -1,10 +1,10 @@
-# TEN Framework Schema System
+# APTIMA Framework Schema System
 
 ## Overview
 
-The TEN framework uses a schema system to define and validate data structures, known as TEN Values, within the TEN runtime. These schemas are used to describe the properties of extensions, as well as the messages exchanged between them. The schemas ensure data consistency, type safety, and proper data handling across different components of the TEN framework.
+The APTIMA framework uses a schema system to define and validate data structures, known as APTIMA Values, within the APTIMA runtime. These schemas are used to describe the properties of extensions, as well as the messages exchanged between them. The schemas ensure data consistency, type safety, and proper data handling across different components of the APTIMA framework.
 
-### Example of a TEN Framework Schema
+### Example of a APTIMA Framework Schema
 
 ```json
 {
@@ -51,10 +51,10 @@ The TEN framework uses a schema system to define and validate data structures, k
 }
 ```
 
-## Design Principles of the TEN Framework Schema System
+## Design Principles of the APTIMA Framework Schema System
 
 1. **Object Principle**
-   Every field’s schema in the TEN framework must be defined as an object. This ensures a structured and consistent format across all schema definitions.
+   Every field’s schema in the APTIMA framework must be defined as an object. This ensures a structured and consistent format across all schema definitions.
 
    ```json
    {
@@ -76,7 +76,7 @@ The TEN framework uses a schema system to define and validate data structures, k
    The schema defines only metadata, not actual data values. This separation ensures that the schema remains a template for validation and does not mix with data content.
 
 3. **Conflict Prevention Principle**
-   In any JSON level containing a TEN schema, all fields must be user-defined, except for reserved fields like `_ten`. This prevents conflicts between user-defined fields and system-defined fields.
+   In any JSON level containing a APTIMA schema, all fields must be user-defined, except for reserved fields like `_ten`. This prevents conflicts between user-defined fields and system-defined fields.
 
    Example with user-defined fields:
 
@@ -99,11 +99,11 @@ The TEN framework uses a schema system to define and validate data structures, k
    }
    ```
 
-## Defining Types in a TEN Schema
+## Defining Types in a APTIMA Schema
 
 ### Primitive Types
 
-The TEN framework supports the following primitive types:
+The APTIMA framework supports the following primitive types:
 
 - int8, int16, int32, int64
 - uint8, uint16, uint32, uint64
@@ -164,7 +164,7 @@ Example type definitions:
   }
   ```
 
-## Defining the TEN Schema for Properties
+## Defining the APTIMA Schema for Properties
 
 ### Example Property Schema
 
@@ -180,7 +180,7 @@ Example type definitions:
 }
 ```
 
-### Corresponding TEN Schema
+### Corresponding APTIMA Schema
 
 ```json
 {
@@ -214,7 +214,7 @@ Example type definitions:
 }
 ```
 
-## Defining the TEN Schema for Commands
+## Defining the APTIMA Schema for Commands
 
 ### Input Command Example
 
@@ -235,7 +235,7 @@ Example type definitions:
 }
 ```
 
-### Corresponding TEN Schema
+### Corresponding APTIMA Schema
 
 ```json
 {
@@ -285,7 +285,7 @@ Example type definitions:
 }
 ```
 
-To avoid redundancy, the TEN framework allows you to exclude the `_ten` field from your schema definition, as it is reserved and defined by the runtime.
+To avoid redundancy, the APTIMA framework allows you to exclude the `_ten` field from your schema definition, as it is reserved and defined by the runtime.
 
 ### Defining Command Results
 
@@ -321,7 +321,7 @@ Command results are defined similarly to commands, but are used to describe the 
 }
 ```
 
-## Defining the TEN Schema for Data, Video Frames, and Audio Frames
+## Defining the APTIMA Schema for Data, Video Frames, and Audio Frames
 
 The process for defining schemas for data, video frames, and audio frames is similar to that for commands but without the result field.
 
@@ -374,4 +374,4 @@ The `manifest.json` file contains the schema definitions for an extension’s pr
 
 ### Conclusion
 
-The TEN framework schema system provides a robust and structured way to define and validate data structures, ensuring consistency and safety across extensions and their interactions within the TEN runtime. By adhering to the principles of object structure, metadata focus, and conflict prevention, the system facilitates clear and effective communication between components.
+The APTIMA framework schema system provides a robust and structured way to define and validate data structures, ensuring consistency and safety across extensions and their interactions within the APTIMA runtime. By adhering to the principles of object structure, metadata focus, and conflict prevention, the system facilitates clear and effective communication between components.

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,9 +12,9 @@
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env.h"
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env_internal.h"
 #include "include_internal/axis_runtime/binding/go/value/value.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
-#include "axis_runtime/binding/go/interface/ten/value.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
+#include "axis_runtime/binding/go/interface/aptima/value.h"
 #include "axis_runtime/common/errno.h"
 #include "axis_runtime/axis_env_proxy/axis_env_proxy.h"
 #include "axis_utils/lib/alloc.h"
@@ -75,8 +75,8 @@ static void axis_env_proxy_notify_get_property(axis_env_t *axis_env,
   // Imagine the following scenario:
   //
   // 1. There are two goroutine in one extension. Goroutine A wants to get the
-  //    property "p" from the ten instance bound to the extension, and goroutine
-  //    B wants to update the property "p" in the same ten instance. Goroutine A
+  //    property "p" from the aptima instance bound to the extension, and goroutine
+  //    B wants to update the property "p" in the same aptima instance. Goroutine A
   //    and B run in parallel, that A runs on thread M1 and B runs on thread M2
   //    in GO world.
   //
@@ -92,7 +92,7 @@ static void axis_env_proxy_notify_get_property(axis_env_t *axis_env,
   axis_value_t *c_value =
       axis_env_peek_property(axis_env, axis_string_get_raw_str(&ctx->path), &err);
 
-  // Because this value will be passed out of the TEN world and back into the
+  // Because this value will be passed out of the APTIMA world and back into the
   // GO world, and these two worlds are in different threads, copy semantics are
   // used to avoid thread safety issues.
   ctx->c_value = c_value ? axis_value_clone(c_value) : NULL;
@@ -173,7 +173,7 @@ axis_go_error_t axis_go_axis_env_get_property_type_and_size(
   if (c_value != NULL) {
     axis_go_axis_value_get_type_and_size(c_value, type, size);
 
-    // The c_value is cloned from TEN runtime, refer to the comments in
+    // The c_value is cloned from APTIMA runtime, refer to the comments in
     // axis_notify_get_property.
     //
     // A property will be retrieved according to the following two steps.
@@ -228,7 +228,7 @@ axis_go_error_t axis_go_axis_env_get_property_int8(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -264,7 +264,7 @@ axis_go_error_t axis_go_axis_env_get_property_int16(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -300,7 +300,7 @@ axis_go_error_t axis_go_axis_env_get_property_int32(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -336,7 +336,7 @@ axis_go_error_t axis_go_axis_env_get_property_int64(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -372,7 +372,7 @@ axis_go_error_t axis_go_axis_env_get_property_uint8(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -409,7 +409,7 @@ axis_go_error_t axis_go_axis_env_get_property_uint16(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -446,7 +446,7 @@ axis_go_error_t axis_go_axis_env_get_property_uint32(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -483,7 +483,7 @@ axis_go_error_t axis_go_axis_env_get_property_uint64(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -519,7 +519,7 @@ axis_go_error_t axis_go_axis_env_get_property_float32(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -556,7 +556,7 @@ axis_go_error_t axis_go_axis_env_get_property_float64(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -592,7 +592,7 @@ axis_go_error_t axis_go_axis_env_get_property_bool(uintptr_t bridge_addr,
     axis_go_error_from_error(&cgo_error, &err);
     axis_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -622,7 +622,7 @@ axis_go_error_t axis_go_axis_env_get_property_ptr(uintptr_t bridge_addr,
   if (c_value != NULL) {
     axis_go_axis_value_get_ptr(c_value, value, &cgo_error);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(c_value);
   }
 
@@ -652,7 +652,7 @@ axis_go_error_t axis_go_axis_env_get_property_json_and_size(
   if (value != NULL) {
     axis_go_axis_value_to_json(value, json_str_len, json_str, &cgo_error);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     axis_value_destroy(value);
   }
 

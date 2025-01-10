@@ -1,15 +1,15 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "include_internal/ten_runtime/binding/go/extension/extension.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
-#include "ten_runtime/binding/go/interface/ten/ten_env.h"
+#include "ten_runtime/binding/go/interface/aptima/ten_env.h"
 #include "ten_runtime/extension/extension.h"
-#include "ten_runtime/ten.h"
+#include "ten_runtime/aptima.h"
 #include "ten_utils/macro/check.h"
 
 void ten_go_ten_env_on_create_instance_done(uintptr_t bridge_addr,

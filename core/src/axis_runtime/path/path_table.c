@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -187,7 +187,7 @@ static uint64_t axis_path_table_get_path_timeout_duration(
  * --> Extension
  *  ^
  *
- * TEN records this kind of path to determine where the messages (ex: the status
+ * APTIMA records this kind of path to determine where the messages (ex: the status
  * commands) should go when they follow the backward path.
  */
 axis_path_in_t *axis_path_table_add_in_path(
@@ -260,7 +260,7 @@ axis_path_in_t *axis_path_table_add_in_path(
  * Extension -->
  *       ^
  *
- * TEN records this kind of path to enable the cmd result to get some
+ * APTIMA records this kind of path to enable the cmd result to get some
  * original information, ex: the result handler.
  */
 axis_path_out_t *axis_path_table_add_out_path(axis_path_table_t *self,
@@ -347,7 +347,7 @@ static axis_path_out_t *axis_path_table_find_out_path(axis_path_table_t *self,
 }
 
 /**
- * @brief TEN finds this kind of path to determine where the messages (ex: the
+ * @brief APTIMA finds this kind of path to determine where the messages (ex: the
  * cmd results) should go when they are returning.
  */
 static axis_path_in_t *axis_path_table_find_in_path(axis_path_table_t *self,
@@ -461,7 +461,7 @@ static axis_path_t *axis_path_table_find_path(axis_path_table_t *self,
 //    path instead.
 //
 // b. If the path does _not_ belong to a path group:
-//    (1) transmit the cmd result to the TEN runtime.
+//    (1) transmit the cmd result to the APTIMA runtime.
 //    (2) transmit the cmd result to the extension.
 //
 // c. Otherwise, if the path _does_ belong to a path group, check if the

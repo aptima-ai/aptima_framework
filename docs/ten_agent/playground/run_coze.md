@@ -1,10 +1,10 @@
 # How to make Coze Chat Bot Speak
 
-In this tutorial, we will show you how to make Coze Bot speak in TEN-Agent playground.
+In this tutorial, we will show you how to make Coze Bot speak in APTIMA-Agent playground.
 
 ## Prerequisites
 
-- Make sure you have the TEN-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/ten-agent/quickstart) guide to start the playground.
+- Make sure you have the APTIMA-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/aptima-agent/quickstart) guide to start the playground.
 - You will need following information prepared:
   - Coze info:
     - Coze Bot ID

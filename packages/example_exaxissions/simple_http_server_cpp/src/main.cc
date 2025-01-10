@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -12,7 +12,7 @@
 #include <nlohmann/json.hpp>
 #include <thread>
 
-#include "include_internal/axis_runtime/binding/cpp/ten.h"
+#include "include_internal/axis_runtime/binding/cpp/aptima.h"
 #include "include_internal/axis_utils/lib/buf.h"
 #include "axis_utils/lib/buf.h"
 
@@ -83,7 +83,7 @@ enum react_axis_stopping_state_t {
 // Represents a http server.
 struct http_server_t {
   struct lws_context *lws_context{nullptr};
-  ten::axis_env_proxy_t *axis_env_proxy{nullptr};
+  aptima::axis_env_proxy_t *axis_env_proxy{nullptr};
 
   std::atomic<react_axis_stopping_state_t> react_axis_stopping_state{
       REACT_axis_STOPPING_NOT_START};
@@ -195,9 +195,9 @@ bool trigger_lws_write_out_timing(http_server_t *http_server) {
   for (auto &&http_session_data : http_server->all_http_session_data) {
     if (axis_buf_get_content_size(http_session_data->resp_buf) == 0 &&
         http_server->react_axis_stopping_state == REACT_axis_STOPPING) {
-      // TEN is stopping, for all HTTP requests that have not yet received an
-      // official TEN response, uniformly respond with a default close message.
-      prepare_response_data(http_session_data, "TEN is closed.");
+      // APTIMA is stopping, for all HTTP requests that have not yet received an
+      // official APTIMA response, uniformly respond with a default close message.
+      prepare_response_data(http_session_data, "APTIMA is closed.");
     }
 
     if (axis_buf_get_content_size(http_session_data->resp_buf) > 0) {
@@ -209,8 +209,8 @@ bool trigger_lws_write_out_timing(http_server_t *http_server) {
   return has_pending_resp;
 }
 
-// This function would be executed in the TEN world.
-void proceed_to_stop_http_extension(ten::axis_env_t &axis_env,
+// This function would be executed in the APTIMA world.
+void proceed_to_stop_http_extension(aptima::axis_env_t &axis_env,
                                     http_server_t *http_server) {
   assert(http_server && "Invalid argument.");
 
@@ -219,7 +219,7 @@ void proceed_to_stop_http_extension(ten::axis_env_t &axis_env,
     http_server->http_server_thread.join();
   }
 
-  // Reclaim ten proxy so that the TEN world can continue to stop.
+  // Reclaim aptima proxy so that the APTIMA world can continue to stop.
   delete http_server->axis_env_proxy;
 
   // The http server thread is stopped completely, and we can now release
@@ -417,33 +417,33 @@ int event_callback(struct lws *wsi, enum lws_callback_reasons reason,
         *http_session_data = nullptr;
       }
 
-      // Check if we have handled all the requests and the TEN is stopping.
+      // Check if we have handled all the requests and the APTIMA is stopping.
       if (http_server->all_http_session_data.empty() &&
           http_server->react_axis_stopping_state == REACT_axis_STOPPING) {
         http_server->react_axis_stopping_state.store(
             REACT_axis_STOPPING_COMPLETED);
 
-        // Notify the TEN world that it can proceed to stop the extension.
+        // Notify the APTIMA world that it can proceed to stop the extension.
         http_server->axis_env_proxy->notify(
-            [http_server](ten::axis_env_t &axis_env) {
+            [http_server](aptima::axis_env_t &axis_env) {
               proceed_to_stop_http_extension(axis_env, http_server);
             });
       }
       break;
 
     case LWS_CALLBACK_EVENT_WAIT_CANCELLED: {
-      // Triggered from the TEN world.
+      // Triggered from the APTIMA world.
 
       bool has_more_resp = trigger_lws_write_out_timing(http_server);
 
-      // Check if we have handled all the requests and the TEN is stopping.
+      // Check if we have handled all the requests and the APTIMA is stopping.
       if (!has_more_resp &&
           http_server->react_axis_stopping_state == REACT_axis_STOPPING) {
         http_server->react_axis_stopping_state.store(
             REACT_axis_STOPPING_COMPLETED);
 
         http_server->axis_env_proxy->notify(
-            [http_server](ten::axis_env_t &axis_env) {
+            [http_server](aptima::axis_env_t &axis_env) {
               proceed_to_stop_http_extension(axis_env, http_server);
             });
       }
@@ -520,11 +520,11 @@ std::thread create_http_server_thread(http_server_t *http_server) {
   return http_server_thread;
 }
 
-class http_server_extension_t : public ten::extension_t {
+class http_server_extension_t : public aptima::extension_t {
  public:
   explicit http_server_extension_t(const char *name) : extension_t(name) {}
 
-  void on_start(ten::axis_env_t &axis_env) override {
+  void on_start(aptima::axis_env_t &axis_env) override {
     int server_port = DEFAULT_SERVER_PORT;
 
     auto port = axis_env.get_property_int64("server_port");
@@ -534,35 +534,35 @@ class http_server_extension_t : public ten::extension_t {
 
     http_server = create_http_server(DEFAULT_SERVER_URL, server_port);
 
-    // Create a TEN proxy to be used by the http server.
-    http_server->axis_env_proxy = ten::axis_env_proxy_t::create(axis_env);
+    // Create a APTIMA proxy to be used by the http server.
+    http_server->axis_env_proxy = aptima::axis_env_proxy_t::create(axis_env);
 
     http_server->http_server_thread = create_http_server_thread(http_server);
 
     axis_env.on_start_done();
   }
 
-  void on_cmd(ten::axis_env_t &axis_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
-    // Receive cmd from ten graph.
+  void on_cmd(aptima::axis_env_t &axis_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
+    // Receive cmd from aptima graph.
   }
 
-  void on_data(ten::axis_env_t &axis_env,
-               std::unique_ptr<ten::data_t> data) override {
-    // Receive data from ten graph.
+  void on_data(aptima::axis_env_t &axis_env,
+               std::unique_ptr<aptima::data_t> data) override {
+    // Receive data from aptima graph.
   }
 
-  void on_audio_frame(ten::axis_env_t &axis_env,
-                      std::unique_ptr<ten::audio_frame_t> frame) override {
-    // Receive audio frame from ten graph.
+  void on_audio_frame(aptima::axis_env_t &axis_env,
+                      std::unique_ptr<aptima::audio_frame_t> frame) override {
+    // Receive audio frame from aptima graph.
   }
 
-  void on_video_frame(ten::axis_env_t &axis_env,
-                      std::unique_ptr<ten::video_frame_t> frame) override {
-    // Receive video frame from ten graph.
+  void on_video_frame(aptima::axis_env_t &axis_env,
+                      std::unique_ptr<aptima::video_frame_t> frame) override {
+    // Receive video frame from aptima graph.
   }
 
-  void on_stop(ten::axis_env_t & /*ten*/) override {
+  void on_stop(aptima::axis_env_t & /*aptima*/) override {
     // Extension stop.
 
     is_stopping = true;
@@ -583,10 +583,10 @@ class http_server_extension_t : public ten::extension_t {
 
 void send_axis_msg_with_req_body(
     const std::shared_ptr<http_transaction_data_t> &http_session_data) {
-  // We are _not_ in the TEN threads, so we need to use axis_env_proxy.
+  // We are _not_ in the APTIMA threads, so we need to use axis_env_proxy.
   http_session_data->http_server->axis_env_proxy->notify(
-      [http_session_data](ten::axis_env_t &axis_env) {
-        // Create a TEN command from the request.
+      [http_session_data](aptima::axis_env_t &axis_env) {
+        // Create a APTIMA command from the request.
 
         // Parse the received request data and create a command from it
         // according to the request content.
@@ -598,14 +598,14 @@ void send_axis_msg_with_req_body(
 
         std::string method = get_http_method_string(http_session_data->method);
 
-        std::unique_ptr<ten::cmd_t> cmd = nullptr;
+        std::unique_ptr<aptima::cmd_t> cmd = nullptr;
 
         if (cmd_json.contains("_ten")) {
           if (cmd_json["_ten"].contains("type")) {
-            // Should be a TEN internal command.
+            // Should be a APTIMA internal command.
 
             if (cmd_json["_ten"]["type"] == "close_app") {
-              cmd = ten::cmd_close_app_t::create();
+              cmd = aptima::cmd_close_app_t::create();
 
               // Set the destination of the command to the localhost.
               cmd->set_dest("localhost", nullptr, nullptr, nullptr);
@@ -615,14 +615,14 @@ void send_axis_msg_with_req_body(
           } else if (cmd_json["_ten"].contains("name")) {
             // Should be a custom command.
 
-            cmd = ten::cmd_t::create(
+            cmd = aptima::cmd_t::create(
                 cmd_json["_ten"]["name"].get<std::string>().c_str());
           }
         }
 
         if (cmd == nullptr) {
           // Use the method as the command name by default.
-          cmd = ten::cmd_t::create(method.c_str());
+          cmd = aptima::cmd_t::create(method.c_str());
         }
 
         cmd_json["method"] =
@@ -633,12 +633,12 @@ void send_axis_msg_with_req_body(
         // command.
         cmd->set_property_from_json(nullptr, cmd_json.dump().c_str());
 
-        // Send out the command to the TEN runtime.
+        // Send out the command to the APTIMA runtime.
         axis_env.send_cmd(
             std::move(cmd),
-            [http_session_data](ten::axis_env_t &axis_env,
-                                std::unique_ptr<ten::cmd_result_t> cmd,
-                                ten::error_t *error) {
+            [http_session_data](aptima::axis_env_t &axis_env,
+                                std::unique_ptr<aptima::cmd_result_t> cmd,
+                                aptima::error_t *error) {
               if (error != nullptr) {
                 prepare_response_data_from_axis_world(
                     http_session_data, "The command is not supported. err:" +
@@ -647,7 +647,7 @@ void send_axis_msg_with_req_body(
               }
 
               auto *ext = static_cast<http_server_extension_t *>(
-                  ten::axis_env_internal_accessor_t::get_attached_target(
+                  aptima::axis_env_internal_accessor_t::get_attached_target(
                       axis_env));
               assert(ext && "Failed to get the attached extension.");
 
@@ -663,22 +663,22 @@ void send_axis_msg_with_req_body(
 
 void send_axis_msg_without_req_body(
     const std::shared_ptr<http_transaction_data_t> &http_session_data) {
-  // We are _not_ in the TEN threads, so we need to use axis_env_proxy.
+  // We are _not_ in the APTIMA threads, so we need to use axis_env_proxy.
   http_session_data->http_server->axis_env_proxy->notify(
-      [http_session_data](ten::axis_env_t &axis_env) {
-        // Create a TEN command from the request.
+      [http_session_data](aptima::axis_env_t &axis_env) {
+        // Create a APTIMA command from the request.
 
         std::string method = get_http_method_string(http_session_data->method);
-        auto cmd = ten::cmd_t::create(method.c_str());
+        auto cmd = aptima::cmd_t::create(method.c_str());
         cmd->set_property("method", method);
         cmd->set_property("url", http_session_data->url);
 
-        // Send out the command to the TEN runtime.
+        // Send out the command to the APTIMA runtime.
         axis_env.send_cmd(
             std::move(cmd),
-            [http_session_data](ten::axis_env_t &axis_env,
-                                std::unique_ptr<ten::cmd_result_t> cmd,
-                                ten::error_t *error) {
+            [http_session_data](aptima::axis_env_t &axis_env,
+                                std::unique_ptr<aptima::cmd_result_t> cmd,
+                                aptima::error_t *error) {
               if (error != nullptr) {
                 prepare_response_data_from_axis_world(
                     http_session_data, "The command is not supported. err:" +
@@ -687,7 +687,7 @@ void send_axis_msg_without_req_body(
               }
 
               auto *ext = static_cast<http_server_extension_t *>(
-                  ten::axis_env_internal_accessor_t::get_attached_target(
+                  aptima::axis_env_internal_accessor_t::get_attached_target(
                       axis_env));
               assert(ext && "Failed to get the attached extension.");
 

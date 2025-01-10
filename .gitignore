@@ -47,8 +47,8 @@ out/
 # Do not ignore core/axis_gn/.gnfiles/.gn file
 !core/axis_gn/.gnfiles/.gn
 
-# Ignore all .ten/ directories
-.ten/
+# Ignore all .aptima/ directories
+.aptima/
 
 # cmake generated files
 **/compile_commands.json

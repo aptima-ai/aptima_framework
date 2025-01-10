@@ -62,13 +62,13 @@ def test_start_app_sync_go():
         print("test_start_app_sync_go doesn't support win32")
         assert False
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "start_app_sync_go_app/aptima_packages/system/aptima_runtime/lib",
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "start_app_sync_go_app/aptima_packages/system/aptima_runtime/lib",

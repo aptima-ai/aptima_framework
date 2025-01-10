@@ -1,6 +1,6 @@
-'''
+"""
 Exmaple to show branch and bound based optimization using multi-shot solving.
-'''
+"""
 
 import sys
 from typing import Optional, Sequence, cast
@@ -12,9 +12,10 @@ from clingo.symbol import Number, SymbolType
 
 
 class OptApp(Application):
-    '''
+    """
     Example application.
-    '''
+    """
+
     program_name: str = "opt-example"
     version: str = "1.0"
     _bound: Optional[int]
@@ -25,20 +26,21 @@ class OptApp(Application):
     def _on_model(self, model: Model):
         self._bound = 0
         for atom in model.symbols(atoms=True):
-            if (atom.match("_minimize", 2) and
-                    atom.arguments[0].type is SymbolType.Number):
+            if (
+                atom.match("_minimize", 2)
+                and atom.arguments[0].type is SymbolType.Number
+            ):
                 self._bound += atom.arguments[0].number
 
     def main(self, ctl: Control, files: Sequence[str]):
-        '''
+        """
         Main function implementing branch and bound optimization.
-        '''
+        """
         if not files:
             files = ["-"]
         for file_ in files:
             ctl.load(file_)
-        ctl.add("bound", ["b"],
-                ":- #sum { V,I: _minimize(V,I) } >= b.")
+        ctl.add("bound", ["b"], ":- #sum { V,I: _minimize(V,I) } >= b.")
 
         ctl.ground([("base", [])])
         while cast(SolveResult, ctl.solve(on_model=self._on_model)).satisfiable:

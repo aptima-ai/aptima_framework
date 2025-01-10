@@ -1,9 +1,9 @@
-# How does interrupt work in TEN-Agent
+# How does interrupt work in APTIMA-Agent
 
 ## Overview
 
 The interrupt mechanism in
-[TEN-Agent](https://github.com/TEN-framework/TEN-Agent) consists of two main
+[APTIMA-Agent](https://github.com/APTIMA-framework/APTIMA-Agent) consists of two main
 parts: **Interrupt Detection** and **Interrupt Response**. This document details
 both parts and explains how the interrupt command propagates through the AI
 agent graph.
@@ -13,17 +13,17 @@ agent graph.
 ### 1. Current Interrupt Detection Implementation
 
 The current
-([interrupt_detector_python](https://github.com/TEN-framework/TEN-Agent/tree/main/agents/ten_packages/extension/interrupt_detector_python))
+([interrupt_detector_python](https://github.com/APTIMA-framework/APTIMA-Agent/tree/main/agents/ten_packages/extension/interrupt_detector_python))
 extension implements a text-based interrupt detection mechanism:
 
 ```python
-def on_data(self, ten: TenEnv, data: Data) -> None:
+def on_data(self, aptima: TenEnv, data: Data) -> None:
     text = data.get_property_string(TEXT_DATA_TEXT_FIELD)
     final = data.get_property_bool(TEXT_DATA_FINAL_FIELD)
 
     # Trigger interrupt when text is final or reaches threshold length
     if final or len(text) >= 2:
-        self.send_flush_cmd(ten)
+        self.send_flush_cmd(aptima)
 ```
 
 The interrupt detector triggers in the following cases:
@@ -35,7 +35,7 @@ The interrupt detector triggers in the following cases:
 
 To implement your own interrupt detection logic, you can refer to the
 implementation of
-[interrupt_detector_python](https://github.com/TEN-framework/TEN-Agent/tree/main/agents/ten_packages/extension/interrupt_detector_python)
+[interrupt_detector_python](https://github.com/APTIMA-framework/APTIMA-Agent/tree/main/agents/ten_packages/extension/interrupt_detector_python)
 as an example and customize the interrupt conditions based on your specific
 needs.
 
@@ -70,7 +70,7 @@ This ensures that:
 
 ## Conclusion
 
-[TEN-Agent](https://github.com/TEN-framework/TEN-Agent)'s interrupt mechanism
+[APTIMA-Agent](https://github.com/APTIMA-framework/APTIMA-Agent)'s interrupt mechanism
 uses a chain processing pattern to ensure orderly cleanup of all extensions in
 the AI agent graph. When an interrupt occurs, each extension first cleans up its
 own state and then forwards the `flush` command to downstream extensions,

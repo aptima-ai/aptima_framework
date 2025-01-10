@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -18,7 +18,7 @@ typedef int64_t aptima_errno_t;
 
 #define aptima_ERROR_SIGNATURE 0xCA49E5F63FC43623U
 
-// 0 is a special TEN errno value, representing success/ok.
+// 0 is a special APTIMA errno value, representing success/ok.
 #define aptima_ERRNO_OK 0
 
 typedef struct aptima_error_t {

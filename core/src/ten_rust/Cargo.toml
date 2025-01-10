@@ -15,7 +15,7 @@ name = "ten_rust"
 # into a `rlib`, which is a Rust static library, and can be interpreted by rustc
 # in the linkage.
 #
-# 2. Used as a native library in other languages, ex: ten runtime. In this case,
+# 2. Used as a native library in other languages, ex: aptima runtime. In this case,
 # the crate type should be a native static or dynamic library. That's what the
 # `staticlib` crate type is for.
 crate-type = ["staticlib", "rlib"]

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -23,7 +23,7 @@
 //
 // - Relevant to the _OUT_ path table:
 //   When 1 command maps to N commands when that command _leaves_ an extension.
-//   That is the normal 1-to-N command mapping in TEN graphs. The OUT paths of
+//   That is the normal 1-to-N command mapping in APTIMA graphs. The OUT paths of
 //   those N commands form a path group in the OUT path table.
 //
 //   Ex: The following is a 1-to-2 command mapping.
@@ -50,7 +50,7 @@
 //
 // - Relevant to the _IN_ path table:
 //   When 1 command maps to N commands when that command _enters_ an extension.
-//   That is the 1-to-N command mapping in the msg_conversions of TEN graphs.
+//   That is the 1-to-N command mapping in the msg_conversions of APTIMA graphs.
 //   The IN paths of those N commands form a path group in the IN path table.
 //
 //   Ex: The following is a 1-to-2 command mapping.

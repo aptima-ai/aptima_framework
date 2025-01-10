@@ -1,10 +1,10 @@
 # Interface
 
-The TEN framework’s message system provides a mechanism for interaction at the granularity of a single message. However, in practice, a complete feature typically involves multiple messages, such as several commands, data exchanges, etc. For example, a Speech-to-Text (STT) functionality may require several commands and data messages. These fixed combinations of messages form what is known as an **interface**. If an extension supports all the messages defined by an interface, it can be used in any context that requires that interface.
+The APTIMA framework’s message system provides a mechanism for interaction at the granularity of a single message. However, in practice, a complete feature typically involves multiple messages, such as several commands, data exchanges, etc. For example, a Speech-to-Text (STT) functionality may require several commands and data messages. These fixed combinations of messages form what is known as an **interface**. If an extension supports all the messages defined by an interface, it can be used in any context that requires that interface.
 
-Instead of requiring extensions to explicitly declare support for every message in an interface in their manifest, which would be cumbersome, the TEN framework introduces a concept of **aggregating** these messages. This allows extensions to declare that they either provide or utilize a specific interface, simplifying the process.
+Instead of requiring extensions to explicitly declare support for every message in an interface in their manifest, which would be cumbersome, the APTIMA framework introduces a concept of **aggregating** these messages. This allows extensions to declare that they either provide or utilize a specific interface, simplifying the process.
 
-The following APIs provided by the TEN framework are primitive:
+The following APIs provided by the APTIMA framework are primitive:
 
 - `cmd_in`
 - `cmd_out`
@@ -143,7 +143,7 @@ When an extension declares an interface in its manifest, it implicitly declares 
 
 In this sense, the interface mechanism serves as **syntactic sugar**, allowing a predefined set of messages to be bundled and reused across multiple extensions.
 
-If an extension defines an interface in its manifest, it does not need to separately define the messages included in that interface. When the extension sends or receives a command like `foo`, the TEN runtime will look through the extension’s manifest for the relevant interface definition and use the command accordingly.
+If an extension defines an interface in its manifest, it does not need to separately define the messages included in that interface. When the extension sends or receives a command like `foo`, the APTIMA runtime will look through the extension’s manifest for the relevant interface definition and use the command accordingly.
 
 For example, if an interface defines three commands and one data message, an extension that declares this interface in `interface_in` implicitly includes these three commands in `cmd_in` and the data message in `data_in`. Similarly, if the interface is declared in `interface_out`, the commands are included in `cmd_out`, and the data message in `data_out`.
 
@@ -274,7 +274,7 @@ The definition of an `interface` is similar to the `api` field in a manifest. Be
 
   {% endcode %}
 
-The TEN framework processes this interface by integrating its definitions into the extension’s manifest under the `api` field. For instance, commands defined in `interface_in` are integrated into `cmd_in`, and those in `interface_out` are integrated into `cmd_out`.
+The APTIMA framework processes this interface by integrating its definitions into the extension’s manifest under the `api` field. For instance, commands defined in `interface_in` are integrated into `cmd_in`, and those in `interface_out` are integrated into `cmd_out`.
 
 ## Specifying Interface Content
 
@@ -329,7 +329,7 @@ Use a reference to specify the interface definition, similar to the `$ref` synta
 
 ## Determining Interface Compatibility
 
-Since an interface is essentially syntactic sugar, whether two interfaces can be connected depends on the compatibility of the underlying messages. When the source extension specifies an output interface `foo`, and the destination extension specifies an input interface `bar`, the TEN runtime checks whether the `foo` interface of the source can connect to the `bar` interface of the destination.
+Since an interface is essentially syntactic sugar, whether two interfaces can be connected depends on the compatibility of the underlying messages. When the source extension specifies an output interface `foo`, and the destination extension specifies an input interface `bar`, the APTIMA runtime checks whether the `foo` interface of the source can connect to the `bar` interface of the destination.
 
 {% code title=".json" %}
 
@@ -391,4 +391,4 @@ Since an interface is essentially syntactic sugar, whether two interfaces can be
 
   {% endcode %}
 
-The TEN framework will look for the definition of `foo` in the `interface_out` section of the source extension's manifest. It then checks each message defined in this interface against the destination extension’s manifest, both in its message definitions and in any interfaces it declares in `interface_in`. If any message cannot be matched according to the TEN framework’s schema-checking rules, the graph configuration will be considered invalid.
+The APTIMA framework will look for the definition of `foo` in the `interface_out` section of the source extension's manifest. It then checks each message defined in this interface against the destination extension’s manifest, both in its message definitions and in any interfaces it declares in `interface_in`. If any message cannot be matched according to the APTIMA framework’s schema-checking rules, the graph configuration will be considered invalid.

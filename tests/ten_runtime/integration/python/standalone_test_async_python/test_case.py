@@ -60,7 +60,7 @@ def test_standalone_test_async_python():
             libasan_path = os.path.join(
                 base_path,
                 (
-                    "default_async_extension_python/.ten/app/ten_packages/"
+                    "default_async_extension_python/.aptima/app/ten_packages/"
                     "system/ten_runtime/lib/libasan.so"
                 ),
             )

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -97,7 +97,7 @@ void axis_extension_handle_in_msg(axis_extension_t *self, axis_shared_ptr_t *msg
     goto done;
   }
 
-  // Because 'commands' has 'results', TEN will perform some bookkeeping for
+  // Because 'commands' has 'results', APTIMA will perform some bookkeeping for
   // 'commands' before sending it to the extension.
 
   if (msg_is_cmd_result) {
@@ -115,15 +115,15 @@ void axis_extension_handle_in_msg(axis_extension_t *self, axis_shared_ptr_t *msg
       bool is_final_result = axis_cmd_result_is_final(msg, &err);
 
       // If a non-final result is received, it indicates the use of streaming
-      // result mode. Currently, the TEN runtime does not support using
+      // result mode. Currently, the APTIMA runtime does not support using
       // streaming result mode together with multiple destination mode. This
-      // is because the TEN runtime tries to summarize all the received results
+      // is because the APTIMA runtime tries to summarize all the received results
       // and return one to the extension, whereas streaming result mode sends
       // all results directly to the extension. Therefore, the two modes are
       // inherently inconsistent in their approach. To accommodate streaming
-      // result mode, the TEN runtime would need to send all received results
+      // result mode, the APTIMA runtime would need to send all received results
       // to the extension even in multiple destination mode. In this mode, the
-      // TEN runtime does not process any of the results itself but leaves all
+      // APTIMA runtime does not process any of the results itself but leaves all
       // result handling to the extension, which may not be very practical.
       // Therefore, unless there is a clear need, the simultaneous use of
       // these modes is currently blocked.
@@ -253,8 +253,8 @@ void axis_extension_handle_in_msg(axis_extension_t *self, axis_shared_ptr_t *msg
                  "Should not happen.");
 
       // Clear destination before sending to Extension, so that when Extension
-      // sends msg back to the TEN core, we can check if the destination is not
-      // empty to determine if TEN core needs to determine the destinations
+      // sends msg back to the APTIMA core, we can check if the destination is not
+      // empty to determine if APTIMA core needs to determine the destinations
       // according to the graph.
       axis_msg_clear_dest(actual_msg);
 
@@ -268,7 +268,7 @@ void axis_extension_handle_in_msg(axis_extension_t *self, axis_shared_ptr_t *msg
               NULL);
         } else {
           // If the cmd result does not have an associated result handler,
-          // TEN runtime will return the cmd result to the upstream extension
+          // APTIMA runtime will return the cmd result to the upstream extension
           // (if existed) automatically. For example:
           //
           //              cmdA                 cmdA
@@ -280,7 +280,7 @@ void axis_extension_handle_in_msg(axis_extension_t *self, axis_shared_ptr_t *msg
           //       cmdA's result         cmdA's result
           //
           // ExtensionB only needs to send the received cmdA to ExtensionC and
-          // does not need to handle the result of cmdA. The TEN runtime will
+          // does not need to handle the result of cmdA. The APTIMA runtime will
           // help ExtensionB to return the result of cmdA to ExtensionA.
           axis_env_return_result_directly(self->axis_env, actual_msg, NULL, NULL,
                                          NULL);

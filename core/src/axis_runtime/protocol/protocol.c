@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -267,7 +267,7 @@ void axis_protocol_on_input(axis_protocol_t *self, axis_shared_ptr_t *msg) {
   }
 
   axis_ASSERT(axis_protocol_role_is_communication(self),
-             "Only the protocols of the communication type should receive TEN "
+             "Only the protocols of the communication type should receive APTIMA "
              "messages.");
   axis_ASSERT(self->attach_to == axis_PROTOCOL_ATTACH_TO_CONNECTION,
              "The protocol should have already been attached to a connection.");
@@ -307,7 +307,7 @@ void axis_protocol_on_inputs(axis_protocol_t *self, axis_list_t *msgs) {
   }
 
   axis_ASSERT(axis_protocol_role_is_communication(self),
-             "Only the protocols of the communication type should receive TEN "
+             "Only the protocols of the communication type should receive APTIMA "
              "messages.");
   axis_ASSERT(self->attach_to == axis_PROTOCOL_ATTACH_TO_CONNECTION,
              "The protocol should have already been attached to a connection.");

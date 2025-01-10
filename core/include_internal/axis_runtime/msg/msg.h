@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -31,11 +31,11 @@ static_assert(sizeof(axis_MSG_TYPE) == sizeof(uint32_t),
 
 // - Only msg types have `to_json`/`from_json` functions.
 //
-//   - If the json contains the fields `ten::type` and `ten::name`, these fields
+//   - If the json contains the fields `aptima::type` and `aptima::name`, these fields
 //     must uniquely map to one actual type of the msg instance; otherwise, an
 //     error will be thrown.
 //
-//   - If the json contains the fields `ten::type` and `ten::name`, these fields
+//   - If the json contains the fields `aptima::type` and `aptima::name`, these fields
 //     must uniquely map to the actual type of the msg instance; otherwise, an
 //     error will be thrown.
 

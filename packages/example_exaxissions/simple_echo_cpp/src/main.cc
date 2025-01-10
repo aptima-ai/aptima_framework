@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -8,33 +8,33 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/aptima.h"
 
 namespace {
 
-class simple_echo_extension_t : public ten::extension_t {
+class simple_echo_extension_t : public aptima::extension_t {
  public:
-  explicit simple_echo_extension_t(const char *name) : ten::extension_t(name) {}
+  explicit simple_echo_extension_t(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     // Parse the command and return a new command with the same name but with a
     // suffix ", too" added to it.
 
     std::string cmd_name = cmd->get_name();
 
-    auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+    auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
     cmd_result->set_property("detail", cmd_name + ", too");
 
     aptima_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 
-  void on_data(ten::aptima_env_t &aptima_env,
-               std::unique_ptr<ten::data_t> data) override {
-    // Receive data from ten graph.
+  void on_data(aptima::aptima_env_t &aptima_env,
+               std::unique_ptr<aptima::data_t> data) override {
+    // Receive data from aptima graph.
     auto buf = data->get_buf();
 
-    auto new_data = ten::data_t::create(data->get_name().c_str());
+    auto new_data = aptima::data_t::create(data->get_name().c_str());
     new_data->alloc_buf(buf.size());
     auto new_buf = new_data->lock_buf();
     memcpy(new_buf.data(), buf.data(), buf.size());
@@ -44,13 +44,13 @@ class simple_echo_extension_t : public ten::extension_t {
   }
 
   void on_video_frame(
-      ten::aptima_env_t &aptima_env,
-      std::unique_ptr<ten::video_frame_t> video_frame) override {
-    // Receive video frame from ten graph.
+      aptima::aptima_env_t &aptima_env,
+      std::unique_ptr<aptima::video_frame_t> video_frame) override {
+    // Receive video frame from aptima graph.
     auto buf = video_frame->lock_buf();
 
     auto new_video_frame =
-        ten::video_frame_t::create(video_frame->get_name().c_str());
+        aptima::video_frame_t::create(video_frame->get_name().c_str());
     new_video_frame->alloc_buf(buf.size());
     auto new_buf = new_video_frame->lock_buf();
     memcpy(new_buf.data(), buf.data(), buf.size());
@@ -68,13 +68,13 @@ class simple_echo_extension_t : public ten::extension_t {
   }
 
   void on_audio_frame(
-      ten::aptima_env_t &aptima_env,
-      std::unique_ptr<ten::audio_frame_t> audio_frame) override {
-    // Receive audio frame from ten graph.
+      aptima::aptima_env_t &aptima_env,
+      std::unique_ptr<aptima::audio_frame_t> audio_frame) override {
+    // Receive audio frame from aptima graph.
     auto buf = audio_frame->lock_buf();
 
     auto new_audio_frame =
-        ten::audio_frame_t::create(audio_frame->get_name().c_str());
+        aptima::audio_frame_t::create(audio_frame->get_name().c_str());
     new_audio_frame->alloc_buf(buf.size());
     auto new_buf = new_audio_frame->lock_buf();
     memcpy(new_buf.data(), buf.data(), buf.size());

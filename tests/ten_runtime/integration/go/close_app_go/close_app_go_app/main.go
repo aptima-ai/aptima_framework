@@ -1,7 +1,7 @@
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
-// Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
+// Refer to https://github.com/APTIMA-framework/ten_framework/LICENSE for more
 // information.
 package main
 
@@ -9,32 +9,32 @@ import (
 	"fmt"
 	"time"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type defaultApp struct {
-	ten.DefaultApp
+	aptima.DefaultApp
 }
 
-func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
+func (p *defaultApp) OnDeinit(tenEnv aptima.TenEnv) {
 	fmt.Println("DefaultApp onDeinit")
 
 	tenEnv.OnDeinitDone()
 }
 
-func appRoutine(app ten.App, stopped chan<- struct{}) {
+func appRoutine(app aptima.App, stopped chan<- struct{}) {
 	app.Run(false)
 	stopped <- struct{}{}
 }
 
-func appTimeout(app ten.App, timeout time.Duration) {
+func appTimeout(app aptima.App, timeout time.Duration) {
 	time.Sleep(timeout)
 	app.Close()
 }
 
 func main() {
 	// test app
-	app, err := ten.NewApp(&defaultApp{})
+	app, err := aptima.NewApp(&defaultApp{})
 	if err != nil {
 		fmt.Println("failed to create app.")
 	}
@@ -44,5 +44,5 @@ func main() {
 	go appTimeout(app, time.Duration(5*time.Second))
 	<-stopped
 
-	fmt.Println("ten leak obj Size:", ten.LeakObjSize())
+	fmt.Println("aptima leak obj Size:", aptima.LeakObjSize())
 }

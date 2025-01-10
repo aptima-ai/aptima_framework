@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -104,7 +104,7 @@ axis_shared_ptr_t *axis_result_conversion_per_property_rules_convert(
   // The command ID of the cloned cmd result should be equal to the original
   // cmd result.
   //
-  // Note: In the TEN runtime, if a command A is cloned from a command B, then
+  // Note: In the APTIMA runtime, if a command A is cloned from a command B, then
   // the command ID of A & B must be different. However, here is the _ONLY_
   // location where the command ID of the cloned command will be equal to the
   // original command.

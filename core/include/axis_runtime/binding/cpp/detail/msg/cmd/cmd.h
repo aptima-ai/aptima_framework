@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -15,7 +15,7 @@
 #include "aptima_runtime/msg/msg.h"
 #include "aptima_utils/lib/smart_ptr.h"
 
-namespace ten {
+namespace aptima {
 
 class extension_t;
 class extension_tester_t;
@@ -72,4 +72,4 @@ class cmd_t : public msg_t {
   }
 };
 
-}  // namespace ten
+}  // namespace aptima

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -14,9 +14,9 @@
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "include_internal/ten_runtime/test/env_tester.h"
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/msg.h"
-#include "ten_runtime/binding/go/interface/ten/ten_env.h"
+#include "ten_runtime/binding/go/interface/aptima/common.h"
+#include "ten_runtime/binding/go/interface/aptima/msg.h"
+#include "ten_runtime/binding/go/interface/aptima/ten_env.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/macro/check.h"
 
@@ -78,7 +78,7 @@ static void ten_go_extension_tester_bridge_destroy(
   ten_extension_tester_t *c_extension_tester = self->c_extension_tester;
   TEN_ASSERT(c_extension_tester, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: In TEN world, the destroy operation should be performed in
+  // thread-check: In APTIMA world, the destroy operation should be performed in
   // any threads.
   TEN_ASSERT(ten_extension_tester_check_integrity(c_extension_tester, false),
              "Invalid use of extension_tester %p.", c_extension_tester);

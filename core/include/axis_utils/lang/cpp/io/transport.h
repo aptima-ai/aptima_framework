@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -15,7 +15,7 @@
 #include "aptima_utils/lang/cpp/io/runloop.h"
 #include "aptima_utils/lang/cpp/lib/string.h"
 
-namespace ten {
+namespace aptima {
 
 class Transport;
 class Stream;
@@ -324,4 +324,4 @@ class Transport : public std::enable_shared_from_this<Transport> {
   ::aptima_transport_t *tp_ = nullptr;
 };
 
-}  // namespace ten
+}  // namespace aptima

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -39,7 +39,7 @@ static void axis_py_axis_env_tester_c_part_destroyed(
 static PyObject *create_actual_py_axis_env_tester_instance(
     axis_py_axis_env_tester_t *py_axis_env_tester) {
   // Import the Python module where TenEnvTester is defined.
-  PyObject *module_name = PyUnicode_FromString("ten.test");
+  PyObject *module_name = PyUnicode_FromString("aptima.test");
   PyObject *module = PyImport_Import(module_name);
   Py_DECREF(module_name);
 

@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -8,7 +8,7 @@ import("//.gnfiles/build/feature/base_options.gni")
 import("//build/options.gni")
 
 declare_args() {
-  # If set, build TEN runtime as shared library, otherwise static library
+  # If set, build APTIMA runtime as shared library, otherwise static library
   axis_build_shared = true
 
   # If set, enable libwebsockets dependency, it will be used in http/websocket
@@ -35,7 +35,7 @@ declare_args() {
   #
   # ffmpeg has continuously made modifications, and those modifications might
   # not be backward compatible. In order to simplified the coding and the CI
-  # environments, we embed a ffmpeg source codes in the TEN framework source
+  # environments, we embed a ffmpeg source codes in the APTIMA framework source
   # tree, and build it by ourselves. This embedded ffmpeg can be built on clang
   # and gcc, debug or release. To minimize the CI resource comsuption, and
   # increase the CI efficiency, we just enable the building of the ffmpeg

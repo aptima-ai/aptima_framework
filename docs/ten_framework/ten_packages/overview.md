@@ -1,6 +1,6 @@
 # Overview
 
-The directory structure of a basic TEN framework software package is shown below.
+The directory structure of a basic APTIMA framework software package is shown below.
 
 ```text
 .
@@ -24,17 +24,17 @@ The directory structure of a basic TEN framework software package is shown below
 
 Depending on the programming language, there may be additional required files. For example, in a C++ project, since the build system is `ten_gn`, a `BUILD.gn` file would be present. In a Go project, there would be files such as `go.mod` and `go.sum`. In a Python project, you might find a `requirements.txt` file.
 
-## TEN Framework Software Package Types
+## APTIMA Framework Software Package Types
 
 | Type            | Description                     |
 |-----------------|---------------------------------|
-| App             | Contains a TEN app.             |
-| Extension group | Contains a TEN extension group. |
-| Extension       | Contains a TEN extension.       |
-| Protocol        | Contains a TEN protocol.        |
-| System          | Contains a TEN system package.  |
+| App             | Contains a APTIMA app.             |
+| Extension group | Contains a APTIMA extension group. |
+| Extension       | Contains a APTIMA extension.       |
+| Protocol        | Contains a APTIMA protocol.        |
+| System          | Contains a APTIMA system package.  |
 
-## TEN Framework Software Package Kinds
+## APTIMA Framework Software Package Kinds
 
 There are two types of software packages:
 
@@ -51,7 +51,7 @@ In short, the directory structures of development and release packages are very 
 
 ### Development package
 
-The primary purpose of a development package is to develop TEN software packages. For instance, if you want to create a new TEN extension, you can modify an existing development package to achieve this. This is because the development package contains all the source-related content, enabling the creation of new TEN software packages from it.
+The primary purpose of a development package is to develop APTIMA software packages. For instance, if you want to create a new APTIMA extension, you can modify an existing development package to achieve this. This is because the development package contains all the source-related content, enabling the creation of new APTIMA software packages from it.
 
 ### Release package
 

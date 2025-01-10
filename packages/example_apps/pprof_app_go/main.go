@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -14,11 +14,11 @@ import (
 
 	"runtime/pprof"
 
-	"axis_framework/ten"
+	"axis_framework/aptima"
 )
 
 type defaultApp struct {
-	ten.DefaultApp
+	aptima.DefaultApp
 
 	stop chan struct{}
 }
@@ -30,7 +30,7 @@ func new() *defaultApp {
 }
 
 func (p *defaultApp) OnInit(
-	tenEnv ten.TenEnv,
+	tenEnv aptima.TenEnv,
 ) {
 	fmt.Println("Pprof app onInit")
 
@@ -100,7 +100,7 @@ func dumpHeap(heapDumpDir string) error {
 	return err
 }
 
-func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
+func (p *defaultApp) OnDeinit(tenEnv aptima.TenEnv) {
 	fmt.Println("DefaultApp onDeinit")
 
 	p.stop <- struct{}{}
@@ -110,7 +110,7 @@ func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
 
 func main() {
 	// test app
-	appInstance, err := ten.NewApp(new())
+	appInstance, err := aptima.NewApp(new())
 	if err != nil {
 		fmt.Println("failed to create app.")
 	}
@@ -118,5 +118,5 @@ func main() {
 	appInstance.Run(true)
 	appInstance.Wait()
 
-	fmt.Println("ten leak obj Size:", ten.LeakObjSize())
+	fmt.Println("aptima leak obj Size:", aptima.LeakObjSize())
 }

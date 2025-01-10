@@ -35,7 +35,8 @@ import sys
 EXPECTED_FAILURES = {
     # psa_hash_suspend() and psa_hash_resume() are not supported.
     # - Tracked in issue #3274
-    262, 263
+    262,
+    263,
 }
 
 # We currently use a fork of ARM-software/psa-arch-tests, with a couple of downstream patches
@@ -46,27 +47,28 @@ EXPECTED_FAILURES = {
 # - Tracked in issue #5145
 #
 # Web URL: https://github.com/bensze01/psa-arch-tests/tree/fixes-for-mbedtls-3
-PSA_ARCH_TESTS_REPO = 'https://github.com/bensze01/psa-arch-tests.git'
-PSA_ARCH_TESTS_REF = 'fix-pr-5736'
+PSA_ARCH_TESTS_REPO = "https://github.com/bensze01/psa-arch-tests.git"
+PSA_ARCH_TESTS_REF = "fix-pr-5736"
 
-#pylint: disable=too-many-branches,too-many-statements
+
+# pylint: disable=too-many-branches,too-many-statements
 def main():
     mbedtls_dir = os.getcwd()
 
-    if not os.path.exists('library/libmbedcrypto.a'):
-        subprocess.check_call(['make', '-C', 'library', 'libmbedcrypto.a'])
+    if not os.path.exists("library/libmbedcrypto.a"):
+        subprocess.check_call(["make", "-C", "library", "libmbedcrypto.a"])
 
-    psa_arch_tests_dir = 'psa-arch-tests'
+    psa_arch_tests_dir = "psa-arch-tests"
     os.makedirs(psa_arch_tests_dir, exist_ok=True)
     try:
         os.chdir(psa_arch_tests_dir)
 
         # Reuse existing local clone
-        subprocess.check_call(['git', 'init'])
-        subprocess.check_call(['git', 'fetch', PSA_ARCH_TESTS_REPO, PSA_ARCH_TESTS_REF])
-        subprocess.check_call(['git', 'checkout', 'FETCH_HEAD'])
+        subprocess.check_call(["git", "init"])
+        subprocess.check_call(["git", "fetch", PSA_ARCH_TESTS_REPO, PSA_ARCH_TESTS_REF])
+        subprocess.check_call(["git", "checkout", "FETCH_HEAD"])
 
-        build_dir = 'api-tests/build'
+        build_dir = "api-tests/build"
         try:
             shutil.rmtree(build_dir)
         except FileNotFoundError:
@@ -74,69 +76,84 @@ def main():
         os.mkdir(build_dir)
         os.chdir(build_dir)
 
-        #pylint: disable=bad-continuation
-        subprocess.check_call([
-            'cmake', '..',
-                     '-GUnix Makefiles',
-                     '-DTARGET=tgt_dev_apis_stdc',
-                     '-DTOOLCHAIN=HOST_GCC',
-                     '-DSUITE=CRYPTO',
-                     '-DPSA_CRYPTO_LIB_FILENAME={}/library/libmbedcrypto.a'.format(mbedtls_dir),
-                     '-DPSA_INCLUDE_PATHS={}/include'.format(mbedtls_dir)
-        ])
-        subprocess.check_call(['cmake', '--build', '.'])
+        # pylint: disable=bad-continuation
+        subprocess.check_call(
+            [
+                "cmake",
+                "..",
+                "-GUnix Makefiles",
+                "-DTARGET=tgt_dev_apis_stdc",
+                "-DTOOLCHAIN=HOST_GCC",
+                "-DSUITE=CRYPTO",
+                "-DPSA_CRYPTO_LIB_FILENAME={}/library/libmbedcrypto.a".format(
+                    mbedtls_dir
+                ),
+                "-DPSA_INCLUDE_PATHS={}/include".format(mbedtls_dir),
+            ]
+        )
+        subprocess.check_call(["cmake", "--build", "."])
 
-        proc = subprocess.Popen(['./psa-arch-tests-crypto'],
-                                bufsize=1, stdout=subprocess.PIPE, universal_newlines=True)
+        proc = subprocess.Popen(
+            ["./psa-arch-tests-crypto"],
+            bufsize=1,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
 
         test_re = re.compile(
-            '^TEST: (?P<test_num>[0-9]*)|'
-            '^TEST RESULT: (?P<test_result>FAILED|PASSED)'
+            "^TEST: (?P<test_num>[0-9]*)|"
+            "^TEST RESULT: (?P<test_result>FAILED|PASSED)"
         )
         test = -1
         unexpected_successes = set(EXPECTED_FAILURES)
         expected_failures = []
         unexpected_failures = []
         for line in proc.stdout:
-            print(line, end='')
+            print(line, end="")
             match = test_re.match(line)
             if match is not None:
                 groupdict = match.groupdict()
-                test_num = groupdict['test_num']
+                test_num = groupdict["test_num"]
                 if test_num is not None:
                     test = int(test_num)
-                elif groupdict['test_result'] == 'FAILED':
+                elif groupdict["test_result"] == "FAILED":
                     try:
                         unexpected_successes.remove(test)
                         expected_failures.append(test)
-                        print('Expected failure, ignoring')
+                        print("Expected failure, ignoring")
                     except KeyError:
                         unexpected_failures.append(test)
-                        print('ERROR: Unexpected failure')
+                        print("ERROR: Unexpected failure")
                 elif test in unexpected_successes:
-                    print('ERROR: Unexpected success')
+                    print("ERROR: Unexpected success")
         proc.wait()
 
         print()
-        print('***** test_psa_compliance.py report ******')
+        print("***** test_psa_compliance.py report ******")
         print()
-        print('Expected failures:', ', '.join(str(i) for i in expected_failures))
-        print('Unexpected failures:', ', '.join(str(i) for i in unexpected_failures))
-        print('Unexpected successes:', ', '.join(str(i) for i in sorted(unexpected_successes)))
+        print("Expected failures:", ", ".join(str(i) for i in expected_failures))
+        print("Unexpected failures:", ", ".join(str(i) for i in unexpected_failures))
+        print(
+            "Unexpected successes:",
+            ", ".join(str(i) for i in sorted(unexpected_successes)),
+        )
         print()
         if unexpected_successes or unexpected_failures:
             if unexpected_successes:
-                print('Unexpected successes encountered.')
-                print('Please remove the corresponding tests from '
-                      'EXPECTED_FAILURES in tests/scripts/compliance_test.py')
+                print("Unexpected successes encountered.")
+                print(
+                    "Please remove the corresponding tests from "
+                    "EXPECTED_FAILURES in tests/scripts/compliance_test.py"
+                )
                 print()
-            print('FAILED')
+            print("FAILED")
             return 1
         else:
-            print('SUCCESS')
+            print("SUCCESS")
             return 0
     finally:
         os.chdir(mbedtls_dir)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

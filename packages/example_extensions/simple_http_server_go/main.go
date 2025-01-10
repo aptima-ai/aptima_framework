@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -14,24 +14,24 @@ import (
 	"fmt"
 	"ten_packages/extension/simple_http_server_go/endpoint"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type httpExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 	server *endpoint.Endpoint
 }
 
-func newHttpExtension(name string) ten.Extension {
+func newHttpExtension(name string) aptima.Extension {
 	return &httpExtension{}
 }
 
-func (p *httpExtension) OnStart(tenEnv ten.TenEnv) {
+func (p *httpExtension) OnStart(tenEnv aptima.TenEnv) {
 	p.server = endpoint.NewEndpoint(tenEnv)
 	p.server.Start()
 }
 
-func (p *httpExtension) OnStop(tenEnv ten.TenEnv) {
+func (p *httpExtension) OnStop(tenEnv aptima.TenEnv) {
 	if p.server != nil {
 		p.server.Stop()
 	}
@@ -40,12 +40,12 @@ func (p *httpExtension) OnStop(tenEnv ten.TenEnv) {
 }
 
 func (p *httpExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	fmt.Println("httpExtension OnCmd")
 
-	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 	cmdResult.SetPropertyString("detail", "This is default go extension.")
 	tenEnv.ReturnResult(cmdResult, cmd, nil)
 }
@@ -54,8 +54,8 @@ func init() {
 	fmt.Println("httpExtension init")
 
 	// Register addon
-	ten.RegisterAddonAsExtension(
+	aptima.RegisterAddonAsExtension(
 		"simple_http_server_go",
-		ten.NewDefaultExtensionAddon(newHttpExtension),
+		aptima.NewDefaultExtensionAddon(newHttpExtension),
 	)
 }

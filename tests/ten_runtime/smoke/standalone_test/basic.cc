@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_runtime/binding/cpp/detail/extension.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lang/cpp/lib/value.h"
@@ -16,14 +16,14 @@ namespace {
 // This part is the extension codes written by the developer, maintained in its
 // final release form, and will not change due to testing requirements.
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       bool rc = ten_env.return_result(std::move(cmd_result), std::move(cmd));
       EXPECT_EQ(rc, true);
@@ -38,16 +38,16 @@ TEN_CPP_REGISTER_ADDON_AS_EXTENSION(standalone_test_basic__test_extension_1,
 
 namespace {
 
-class extension_tester_1 : public ten::extension_tester_t {
+class extension_tester_1 : public aptima::extension_tester_t {
  public:
-  void on_start(ten::ten_env_tester_t &ten_env) override {
+  void on_start(aptima::ten_env_tester_t &ten_env) override {
     // Send the first command to the extension.
-    auto new_cmd = ten::cmd_t::create("hello_world");
+    auto new_cmd = aptima::cmd_t::create("hello_world");
 
     ten_env.send_cmd(
         std::move(new_cmd),
-        [](ten::ten_env_tester_t &ten_env,
-           std::unique_ptr<ten::cmd_result_t> result, ten::error_t *err) {
+        [](aptima::ten_env_tester_t &ten_env,
+           std::unique_ptr<aptima::cmd_result_t> result, aptima::error_t *err) {
           if (result->get_status_code() == TEN_STATUS_CODE_OK) {
             ten_env.stop_test();
           }

@@ -1,10 +1,10 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_runtime/binding/go/interface/ten/msg.h"
+#include "axis_runtime/binding/go/interface/aptima/msg.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -16,8 +16,8 @@
 #include "include_internal/axis_runtime/binding/go/value/value.h"
 #include "include_internal/axis_runtime/msg/field/properties.h"
 #include "include_internal/axis_runtime/msg/msg.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/value.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/value.h"
 #include "axis_runtime/common/errno.h"
 #include "axis_runtime/msg/msg.h"
 #include "axis_utils/lib/alloc.h"

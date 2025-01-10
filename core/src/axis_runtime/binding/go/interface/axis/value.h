@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -25,7 +25,7 @@ void axis_go_value_finalize(axis_go_value_t *self);
 void axis_go_value_destroy(uintptr_t value_addr);
 
 // These functions are used in getting property from axis_env_t. Refer to the
-// comments in ten.h. Please keep in mind that the input axis_vale_t* is cloned
+// comments in aptima.h. Please keep in mind that the input axis_vale_t* is cloned
 // in the previous stage (refer to axis_go_axis_property_get_type_and_size), so it
 // must be destroyed in these functions.
 

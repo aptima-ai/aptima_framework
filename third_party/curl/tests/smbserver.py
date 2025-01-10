@@ -23,8 +23,7 @@
 #
 """Server for testing SMB"""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import argparse
 import logging
@@ -46,13 +45,12 @@ else:
 try:
     import impacket
 except ImportError:
-    sys.stderr.write('Python package impacket needs to be installed!\n')
-    sys.stderr.write('Use pip or your package manager to install it.\n')
+    sys.stderr.write("Python package impacket needs to be installed!\n")
+    sys.stderr.write("Use pip or your package manager to install it.\n")
     sys.exit(1)
 from impacket import smb as imp_smb
 from impacket import smbserver as imp_smbserver
-from impacket.nt_errors import (STATUS_ACCESS_DENIED, STATUS_NO_SUCH_FILE,
-                                STATUS_SUCCESS)
+from impacket.nt_errors import STATUS_ACCESS_DENIED, STATUS_NO_SUCH_FILE, STATUS_SUCCESS
 
 log = logging.getLogger(__name__)
 SERVER_MAGIC = "SERVER_MAGIC"
@@ -105,9 +103,7 @@ class ShutdownHandler(threading.Thread):
 
 
 def smbserver(options):
-    """Start up a TCP SMB server that serves forever
-
-    """
+    """Start up a TCP SMB server that serves forever"""
     if options.pidfile:
         pid = os.getpid()
         # see tests/server/util.c function write_pidfile
@@ -145,9 +141,11 @@ def smbserver(options):
 
     test_data_dir = os.path.join(options.srcdir, "data")
 
-    smb_server = TestSmbServer((options.host, options.port),
-                               config_parser=smb_config,
-                               test_data_directory=test_data_dir)
+    smb_server = TestSmbServer(
+        (options.host, options.port),
+        config_parser=smb_config,
+        test_data_directory=test_data_dir,
+    )
     log.info("[SMB] setting up SMB server on port %s", options.port)
     smb_server.processConfigFile()
 
@@ -165,13 +163,8 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
     test functionality.
     """
 
-    def __init__(self,
-                 address,
-                 config_parser=None,
-                 test_data_directory=None):
-        imp_smbserver.SMBSERVER.__init__(self,
-                                         address,
-                                         config_parser=config_parser)
+    def __init__(self, address, config_parser=None, test_data_directory=None):
+        imp_smbserver.SMBSERVER.__init__(self, address, config_parser=config_parser)
         self.tmpfiles = []
 
         # Set up a test data object so we can get test data later.
@@ -179,8 +172,7 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
 
         # Override smbComNtCreateAndX so we can pretend to have files which
         # don't exist.
-        self.hookSmbCommand(imp_smb.SMB.SMB_COM_NT_CREATE_ANDX,
-                            self.create_and_x)
+        self.hookSmbCommand(imp_smb.SMB.SMB_COM_NT_CREATE_ANDX, self.create_and_x)
 
     def create_and_x(self, conn_id, smb_server, smb_command, recv_packet):
         """
@@ -193,12 +185,11 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
         # Wrap processing in a try block which allows us to throw SmbException
         # to control the flow.
         try:
-            ncax_parms = imp_smb.SMBNtCreateAndX_Parameters(
-                smb_command["Parameters"])
+            ncax_parms = imp_smb.SMBNtCreateAndX_Parameters(smb_command["Parameters"])
 
-            path = self.get_share_path(conn_data,
-                                       ncax_parms["RootFid"],
-                                       recv_packet["Tid"])
+            path = self.get_share_path(
+                conn_data, ncax_parms["RootFid"], recv_packet["Tid"]
+            )
             log.info("[SMB] Requested share path: %s", path)
 
             disposition = ncax_parms["Disposition"]
@@ -206,31 +197,29 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
 
             # Currently we only support reading files.
             if disposition != imp_smb.FILE_OPEN:
-                raise SmbException(STATUS_ACCESS_DENIED,
-                                   "Only support reading files")
+                raise SmbException(STATUS_ACCESS_DENIED, "Only support reading files")
 
             # Check to see if the path we were given is actually a
             # magic path which needs generating on the fly.
             if path not in [SERVER_MAGIC, TESTS_MAGIC]:
                 # Pass the command onto the original handler.
-                return imp_smbserver.SMBCommands.smbComNtCreateAndX(conn_id,
-                                                                    smb_server,
-                                                                    smb_command,
-                                                                    recv_packet)
+                return imp_smbserver.SMBCommands.smbComNtCreateAndX(
+                    conn_id, smb_server, smb_command, recv_packet
+                )
 
             flags2 = recv_packet["Flags2"]
-            ncax_data = imp_smb.SMBNtCreateAndX_Data(flags=flags2,
-                                                     data=smb_command[
-                                                         "Data"])
+            ncax_data = imp_smb.SMBNtCreateAndX_Data(
+                flags=flags2, data=smb_command["Data"]
+            )
             requested_file = imp_smbserver.decodeSMBString(
-                flags2,
-                ncax_data["FileName"])
+                flags2, ncax_data["FileName"]
+            )
             log.debug("[SMB] User requested file '%s'", requested_file)
 
             if path == SERVER_MAGIC:
                 fid, full_path = self.get_server_path(requested_file)
             else:
-                assert (path == TESTS_MAGIC)
+                assert path == TESTS_MAGIC
                 fid, full_path = self.get_test_path(requested_file)
 
             self.tmpfiles.append(full_path)
@@ -247,8 +236,7 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
             resp_parms["CreateAction"] = disposition
 
             if os.path.isdir(path):
-                resp_parms[
-                    "FileAttributes"] = imp_smb.SMB_FILE_ATTRIBUTE_DIRECTORY
+                resp_parms["FileAttributes"] = imp_smb.SMB_FILE_ATTRIBUTE_DIRECTORY
                 resp_parms["IsDirectory"] = 1
             else:
                 resp_parms["IsDirectory"] = 0
@@ -256,22 +244,20 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
 
             # Get this file's information
             resp_info, error_code = imp_smbserver.queryPathInformation(
-                os.path.dirname(full_path), os.path.basename(full_path),
-                level=imp_smb.SMB_QUERY_FILE_ALL_INFO)
+                os.path.dirname(full_path),
+                os.path.basename(full_path),
+                level=imp_smb.SMB_QUERY_FILE_ALL_INFO,
+            )
 
             if error_code != STATUS_SUCCESS:
                 raise SmbException(error_code, "Failed to query path info")
 
             resp_parms["CreateTime"] = resp_info["CreationTime"]
-            resp_parms["LastAccessTime"] = resp_info[
-                "LastAccessTime"]
+            resp_parms["LastAccessTime"] = resp_info["LastAccessTime"]
             resp_parms["LastWriteTime"] = resp_info["LastWriteTime"]
-            resp_parms["LastChangeTime"] = resp_info[
-                "LastChangeTime"]
-            resp_parms["FileAttributes"] = resp_info[
-                "ExtFileAttributes"]
-            resp_parms["AllocationSize"] = resp_info[
-                "AllocationSize"]
+            resp_parms["LastChangeTime"] = resp_info["LastChangeTime"]
+            resp_parms["FileAttributes"] = resp_info["ExtFileAttributes"]
+            resp_parms["AllocationSize"] = resp_info["AllocationSize"]
             resp_parms["EndOfFile"] = resp_info["EndOfFile"]
 
             # Let's store the fid for the connection
@@ -306,11 +292,11 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
                 if "path" in conn_shares[tid]:
                     path = conn_shares[tid]["path"]
                 else:
-                    raise SmbException(STATUS_ACCESS_DENIED,
-                                       "Connection share had no path")
+                    raise SmbException(
+                        STATUS_ACCESS_DENIED, "Connection share had no path"
+                    )
         else:
-            raise SmbException(imp_smbserver.STATUS_SMB_BAD_TID,
-                               "TID was invalid")
+            raise SmbException(imp_smbserver.STATUS_SMB_BAD_TID, "TID was invalid")
 
         return path
 
@@ -321,8 +307,9 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
             raise SmbException(STATUS_NO_SUCH_FILE, "Couldn't find the file")
 
         fid, filename = tempfile.mkstemp()
-        log.debug("[SMB] Created %s (%d) for storing '%s'",
-                  filename, fid, requested_filename)
+        log.debug(
+            "[SMB] Created %s (%d) for storing '%s'", filename, fid, requested_filename
+        )
 
         contents = ""
 
@@ -332,7 +319,7 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
             # see tests/server/util.c function write_pidfile
             if os.name == "nt":
                 pid += 65536
-            contents = VERIFIED_RSP.format(pid=pid).encode('utf-8')
+            contents = VERIFIED_RSP.format(pid=pid).encode("utf-8")
 
         self.write_to_fid(fid, contents)
         return fid, filename
@@ -349,11 +336,15 @@ class TestSmbServer(imp_smbserver.SMBSERVER):
         log.info("[SMB] Get reply data from 'test%s'", requested_filename)
 
         fid, filename = tempfile.mkstemp()
-        log.debug("[SMB] Created %s (%d) for storing test '%s'",
-                  filename, fid, requested_filename)
+        log.debug(
+            "[SMB] Created %s (%d) for storing test '%s'",
+            filename,
+            fid,
+            requested_filename,
+        )
 
         try:
-            contents = self.ctd.get_test_data(requested_filename).encode('utf-8')
+            contents = self.ctd.get_test_data(requested_filename).encode("utf-8")
             self.write_to_fid(fid, contents)
             return fid, filename
 
@@ -370,6 +361,7 @@ class SmbException(Exception):
 
 class ScriptRC(object):
     """Enum for script return codes"""
+
     SUCCESS = 0
     FAILURE = 1
     EXCEPTION = 2
@@ -382,20 +374,20 @@ class ScriptException(Exception):
 def get_options():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--port", action="store", default=9017,
-                      type=int, help="port to listen on")
-    parser.add_argument("--host", action="store", default="127.0.0.1",
-                      help="host to listen on")
-    parser.add_argument("--verbose", action="store", type=int, default=0,
-                        help="verbose output")
-    parser.add_argument("--pidfile", action="store",
-                        help="file name for the PID")
-    parser.add_argument("--logfile", action="store",
-                        help="file name for the log")
+    parser.add_argument(
+        "--port", action="store", default=9017, type=int, help="port to listen on"
+    )
+    parser.add_argument(
+        "--host", action="store", default="127.0.0.1", help="host to listen on"
+    )
+    parser.add_argument(
+        "--verbose", action="store", type=int, default=0, help="verbose output"
+    )
+    parser.add_argument("--pidfile", action="store", help="file name for the PID")
+    parser.add_argument("--logfile", action="store", help="file name for the log")
     parser.add_argument("--srcdir", action="store", help="test directory")
     parser.add_argument("--id", action="store", help="server ID")
-    parser.add_argument("--ipv4", action="store_true", default=0,
-                        help="IPv4 flag")
+    parser.add_argument("--ipv4", action="store_true", default=0, help="IPv4 flag")
 
     return parser.parse_args()
 
@@ -433,7 +425,7 @@ def setup_logging(options):
         root_logger.addHandler(stdout_handler)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Get the options from the user.
     options = get_options()
 

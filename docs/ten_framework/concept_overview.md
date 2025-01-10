@@ -1,14 +1,14 @@
-# TEN Framework Concepts Overview
+# APTIMA Framework Concepts Overview
 
-<figure><img src="../assets/png/ten_framework.png" alt=""><figcaption><p>TEN Framework</p></figcaption></figure>
+<figure><img src="../assets/png/ten_framework.png" alt=""><figcaption><p>APTIMA Framework</p></figcaption></figure>
 
-## TEN Runtime
+## APTIMA Runtime
 
-The TEN runtime is an execution environment designed for running applications within the TEN framework. It provides a flexible architecture that supports extensions developed in multiple programming languages and handles various types of data streams. By managing the lifecycle of extensions, data flows, and threads, the TEN runtime offers developers a powerful tool for building a wide range of applications and services.
+The APTIMA runtime is an execution environment designed for running applications within the APTIMA framework. It provides a flexible architecture that supports extensions developed in multiple programming languages and handles various types of data streams. By managing the lifecycle of extensions, data flows, and threads, the APTIMA runtime offers developers a powerful tool for building a wide range of applications and services.
 
 ## App
 
-An App in the TEN framework can operate as a standalone process or as a thread within an existing process. This flexibility allows for versatile deployment options depending on the needs of the application.
+An App in the APTIMA framework can operate as a standalone process or as a thread within an existing process. This flexibility allows for versatile deployment options depending on the needs of the application.
 
 ## Extension Group
 
@@ -16,15 +16,15 @@ An Extension Group is a mechanism that designates a specific thread for executio
 
 ## Extension
 
-An extension is the fundamental building block of the TEN framework. Developers can create extensions in various programming languages and combine them to build different applications and scenarios. The framework's design supports cross-language collaboration, enabling extensions written in different languages to work together seamlessly within the same application or service.
+An extension is the fundamental building block of the APTIMA framework. Developers can create extensions in various programming languages and combine them to build different applications and scenarios. The framework's design supports cross-language collaboration, enabling extensions written in different languages to work together seamlessly within the same application or service.
 
 For example, a developer might use C++ to create an extension for real-time communication (RTC) due to its performance benefits in handling audio and video data, while developing an AI extension in Python to take advantage of its robust libraries for data analysis and machine learning. These extensions can then be integrated into a single application, leveraging the strengths of each language.
 
 ## Graph
 
-A Graph in the TEN framework describes the data flow between extensions. It orchestrates how data moves from one extension to another, defining the participants and the flow of data between them. For example, you can route the output of a Speech-to-Text (STT) extension to a Large Language Model (LLM) extension for further processing.
+A Graph in the APTIMA framework describes the data flow between extensions. It orchestrates how data moves from one extension to another, defining the participants and the flow of data between them. For example, you can route the output of a Speech-to-Text (STT) extension to a Large Language Model (LLM) extension for further processing.
 
-The TEN framework supports four main types of data flows between extensions:
+The APTIMA framework supports four main types of data flows between extensions:
 
 - Command
 - Data
@@ -53,12 +53,12 @@ By defining these data flows within a graph, developers can create inter-extensi
 
 <figure><img src="../assets/png/hierarchical_relationship_of_concepts.png" alt=""><figcaption><p>Hierarchical Relationship of Concepts</p></figcaption></figure>
 
-## TEN Cloud Store
+## APTIMA Cloud Store
 
-<figure><img src="../assets/png/ten_cloud_store.png" alt=""><figcaption><p>TEN Cloud Store</p></figcaption></figure>
+<figure><img src="../assets/png/ten_cloud_store.png" alt=""><figcaption><p>APTIMA Cloud Store</p></figcaption></figure>
 
-The TEN Cloud Store functions similarly to Google Play Store or Apple’s App Store, providing a marketplace for extensions. Developers can share their extensions or download those created by others. These extensions can be integrated into TEN apps, facilitating development and expanding functionality.
+The APTIMA Cloud Store functions similarly to Google Play Store or Apple’s App Store, providing a marketplace for extensions. Developers can share their extensions or download those created by others. These extensions can be integrated into APTIMA apps, facilitating development and expanding functionality.
 
-## TEN Manager
+## APTIMA Manager
 
-The TEN Manager is a tool that simplifies the management of extensions. It handles tasks such as uploading, sharing, and installing extensions, automatically managing dependencies between them and their environment. This makes the installation and publication of extensions convenient and efficient, streamlining the development process within the TEN framework.
+The APTIMA Manager is a tool that simplifies the management of extensions. It handles tasks such as uploading, sharing, and installing extensions, automatically managing dependencies between them and their environment. This makes the installation and publication of extensions convenient and efficient, streamlining the development process within the APTIMA framework.

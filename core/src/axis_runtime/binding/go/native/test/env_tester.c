@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,8 +12,8 @@
 #include "include_internal/axis_runtime/binding/go/msg/msg.h"
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env_internal.h"
 #include "axis_runtime/binding/common.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env_tester.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env_tester.h"
 #include "axis_utils/lib/alloc.h"
 #include "axis_utils/lib/smart_ptr.h"
 #include "axis_utils/macro/check.h"
@@ -56,7 +56,7 @@ static void axis_go_axis_env_tester_destroy_c_part(void *axis_env_tester_bridge_
   axis_env_tester_bridge->c_axis_env_tester = NULL;
   axis_go_bridge_destroy_c_part(&axis_env_tester_bridge->bridge);
 
-  // Remove the Go ten object from the global map.
+  // Remove the Go aptima object from the global map.
   tenGoDestroyTenEnv(axis_env_tester_bridge->bridge.go_instance);
 }
 
@@ -92,7 +92,7 @@ axis_go_axis_env_tester_t *axis_go_axis_env_tester_wrap(
   axis_env_tester_bridge->bridge.go_instance =
       tenGoCreateTenEnvTester(bridge_addr);
 
-  // C ten hold one reference of ten bridge.
+  // C aptima hold one reference of aptima bridge.
   axis_env_tester_bridge->bridge.sp_ref_by_c = axis_shared_ptr_create(
       axis_env_tester_bridge, axis_go_axis_env_tester_destroy);
   axis_env_tester_bridge->bridge.sp_ref_by_go =

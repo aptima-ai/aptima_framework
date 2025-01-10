@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 // #include "extension_tester.h"
 import "C"
@@ -121,7 +121,7 @@ func tenGoExtensionTesterOnStart(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env tester from handle map, id: %d.",
+				"Failed to get aptima env tester from handle map, id: %d.",
 				uintptr(tenEnvTesterID),
 			),
 		)
@@ -150,7 +150,7 @@ func tenGoExtensionTesterOnCmd(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env tester from handle map, id: %d.",
+				"Failed to get aptima env tester from handle map, id: %d.",
 				uintptr(tenEnvTesterID),
 			),
 		)
@@ -181,7 +181,7 @@ func tenGoExtensionTesterOnData(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env tester from handle map, id: %d.",
+				"Failed to get aptima env tester from handle map, id: %d.",
 				uintptr(tenEnvTesterID),
 			),
 		)
@@ -213,7 +213,7 @@ func tenGoExtensionTesterOnAudioFrame(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env tester from handle map, id: %d.",
+				"Failed to get aptima env tester from handle map, id: %d.",
 				uintptr(tenEnvTesterID),
 			),
 		)
@@ -245,7 +245,7 @@ func tenGoExtensionTesterOnVideoFrame(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env tester from handle map, id: %d.",
+				"Failed to get aptima env tester from handle map, id: %d.",
 				uintptr(tenEnvTesterID),
 			),
 		)

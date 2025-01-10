@@ -1,6 +1,7 @@
 """
 Module providing the clingo-like pyclingo application.
 """
+
 from clingo import Application, clingo_main
 
 

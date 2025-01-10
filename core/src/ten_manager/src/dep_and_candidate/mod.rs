@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -178,7 +178,7 @@ async fn process_non_local_dependency_to_get_candidate(
     // Find packages from the all_candidates that meet the specified
     // criteria and add them to the candidate_pkg_infos.
     //
-    // Since `all_candidates` includes the ten packages installed
+    // Since `all_candidates` includes the aptima packages installed
     // locally, searching through `all_candidates` allows
     // those locally installed packages to be added to
     // `new_pkgs_to_be_searched`, ensuring that the

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -216,7 +216,7 @@ void ten_engine_return_error_for_cmd_start_graph(
   // be sent out successfully.
   //
   // TODO(Wei): Need to have a mechanism to prevent the engine from being
-  // constructed repeatedly in a scenario contains multiple TEN app.
+  // constructed repeatedly in a scenario contains multiple APTIMA app.
 
   // Close the engine.
   ten_engine_close_async(self);

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -64,7 +64,7 @@ static void proxy_on_init(ten_addon_t *addon, ten_env_t *ten_env) {
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
-    TEN_ASSERT(0, "Failed to wrap ten.");
+    TEN_ASSERT(0, "Failed to wrap aptima.");
     goto done;
   }
 
@@ -97,7 +97,7 @@ done:
 static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
   TEN_ASSERT(addon, "Invalid argument.");
   // TODO(Wei): In the context of Python standalone tests, the Python addon is
-  // registered into the TEN world within the extension tester thread (i.e., the
+  // registered into the APTIMA world within the extension tester thread (i.e., the
   // Python thread) but is unregistered in the test app thread. It should be
   // modified to also perform the Python addon registration within the test
   // app's `on_configure_done`. This change will allow the underlying thread
@@ -111,7 +111,7 @@ static void proxy_on_deinit(ten_addon_t *addon, ten_env_t *ten_env) {
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
-    TEN_ASSERT(0, "Failed to wrap ten.");
+    TEN_ASSERT(0, "Failed to wrap aptima.");
     goto done;
   }
 
@@ -167,7 +167,7 @@ static void proxy_on_create_instance_async(ten_addon_t *addon,
 
   ten_py_ten_env_t *py_ten_env = ten_py_ten_env_wrap(ten_env);
   if (!py_ten_env) {
-    TEN_ASSERT(0, "Failed to wrap ten.");
+    TEN_ASSERT(0, "Failed to wrap aptima.");
     goto done;
   }
 
@@ -222,7 +222,7 @@ static void proxy_on_destroy_instance_async(ten_addon_t *addon,
   TEN_ASSERT(py_instance, "Failed to get Python instance.");
 
   // Decrement the reference count of the Python extension and its associated
-  // ten object, so that Python GC can reclaim them.
+  // aptima object, so that Python GC can reclaim them.
   Py_DECREF(py_instance);
 
   ten_py_gil_state_release_internal(prev_state);

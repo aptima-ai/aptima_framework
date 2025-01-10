@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -17,7 +17,7 @@
 
 using ten_addon_loader_t = struct ten_addon_loader_t;
 
-namespace ten {
+namespace aptima {
 
 class addon_loader_t : public binding_handle_t {
  public:
@@ -124,4 +124,4 @@ class addon_loader_t : public binding_handle_t {
   }
 };
 
-}  // namespace ten
+}  // namespace aptima

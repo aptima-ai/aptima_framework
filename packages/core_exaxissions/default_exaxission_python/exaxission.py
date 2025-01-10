@@ -1,10 +1,18 @@
 #
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
-from ten import (AudioFrame, Cmd, CmdResult, Data, Extension, StatusCode,
-                 TenEnv, VideoFrame)
+from aptima import (
+    AudioFrame,
+    Cmd,
+    CmdResult,
+    Data,
+    Extension,
+    StatusCode,
+    TenEnv,
+    VideoFrame,
+)
 
 
 class DefaultExtension(Extension):

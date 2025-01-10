@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -40,7 +40,7 @@ static void ten_py_ten_env_c_part_destroyed(void *ten_env_bridge_) {
 static PyObject *create_actual_py_ten_env_instance(
     ten_py_ten_env_t *py_ten_env) {
   // Import the Python module where TenEnv is defined.
-  PyObject *module_name = PyUnicode_FromString("ten.ten_env");
+  PyObject *module_name = PyUnicode_FromString("aptima.ten_env");
   PyObject *module = PyImport_Import(module_name);
   Py_DECREF(module_name);
 

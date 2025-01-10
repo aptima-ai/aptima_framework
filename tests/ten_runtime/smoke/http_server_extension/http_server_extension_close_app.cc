@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,21 +12,21 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lib/string.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/http.h"
 
 namespace {
 
-class test_extension : public ten::extension_t {
+class test_extension : public aptima::extension_t {
  public:
-  explicit test_extension(const char *name) : ten::extension_t(name) {}
+  explicit test_extension(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     }
@@ -36,10 +36,10 @@ class test_extension : public ten::extension_t {
 TEN_CPP_REGISTER_ADDON_AS_EXTENSION(
     http_server_extension_close_app__test_extension, test_extension);
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) final {
-    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+  void on_configure(aptima::ten_env_t &ten_env) final {
+    bool rc = aptima::ten_env_internal_accessor_t::init_manifest_from_json(
         ten_env,
         // clang-format off
                  R"({
@@ -90,7 +90,7 @@ class test_app : public ten::app_t {
   }
 };
 
-ten::app_t *test_app_ = nullptr;
+aptima::app_t *test_app_ = nullptr;
 
 void *test_app_thread_main(TEN_UNUSED void *args) {
   test_app_ = new test_app();
@@ -119,7 +119,7 @@ TEST(ExtensionTest, HttpServerExtensionCloseApp) {  // NOLINT
   ten_string_clear(&resp);
   ten_test_http_client_post("http://127.0.0.1:8001/",
                             R"({"_ten": {"type": "close_app"}})", &resp);
-  EXPECT_EQ(std::string(ten_string_get_raw_str(&resp)), "TEN is closed.");
+  EXPECT_EQ(std::string(ten_string_get_raw_str(&resp)), "APTIMA is closed.");
 
   ten_string_deinit(&resp);
   ten_test_http_client_deinit();

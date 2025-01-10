@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -399,7 +399,7 @@ static void ten_py_extension_destroy(PyObject *self) {
   ten_py_extension_t *py_extension = (ten_py_extension_t *)self;
 
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: In TEN world, the destroy operations need to be performed in
+  // thread-check: In APTIMA world, the destroy operations need to be performed in
   // any threads.
   TEN_ASSERT(
       py_extension && ten_py_extension_check_integrity(py_extension, false),

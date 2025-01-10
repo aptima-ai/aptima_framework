@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -162,24 +162,24 @@ void ten_env_close(ten_env_t *self) {
 
   switch (self->attach_to) {
     case TEN_ENV_ATTACH_TO_APP:
-      TEN_LOGD("[%s] Close ten of app.",
+      TEN_LOGD("[%s] Close aptima of app.",
                ten_app_get_uri(self->attached_target.app));
       break;
     case TEN_ENV_ATTACH_TO_ENGINE:
-      TEN_LOGD("[%s] Close ten of engine.",
+      TEN_LOGD("[%s] Close aptima of engine.",
                ten_engine_get_id(self->attached_target.engine, true));
       break;
     case TEN_ENV_ATTACH_TO_EXTENSION_GROUP:
       TEN_LOGD(
-          "[%s] Close ten of extension group.",
+          "[%s] Close aptima of extension group.",
           ten_string_get_raw_str(&self->attached_target.extension_group->name));
       break;
     case TEN_ENV_ATTACH_TO_EXTENSION:
-      TEN_LOGD("[%s] Close ten of extension.",
+      TEN_LOGD("[%s] Close aptima of extension.",
                ten_string_get_raw_str(&self->attached_target.extension->name));
       break;
     case TEN_ENV_ATTACH_TO_ADDON:
-      TEN_LOGD("[%s] Close ten of addon.",
+      TEN_LOGD("[%s] Close aptima of addon.",
                ten_string_get_raw_str(&self->attached_target.addon_host->name));
       break;
     default:

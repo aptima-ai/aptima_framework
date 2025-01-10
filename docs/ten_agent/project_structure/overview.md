@@ -1,10 +1,10 @@
-# TEN Agent Project Overview
+# APTIMA Agent Project Overview
 
-The TEN Agent project is built on top of the TEN Framework. For basic concepts of a TEN Framework project, please refer to the [TEN Framework Project Overview](https://doc.theten.ai/ten-framework/concept_overview).
+The APTIMA Agent project is built on top of the APTIMA Framework. For basic concepts of a APTIMA Framework project, please refer to the [APTIMA Framework Project Overview](https://doc.theten.ai/aptima-framework/concept_overview).
 
-Below is the folder structure of TEN Agent project,
+Below is the folder structure of APTIMA Agent project,
 
-![Project structure](https://raw.githubusercontent.com/TEN-framework/docs/refs/heads/main/assets/png/folder_structure.png)
+![Project structure](https://raw.githubusercontent.com/APTIMA-framework/docs/refs/heads/main/assets/png/folder_structure.png)
 
 It contains the following important folders and files:
 

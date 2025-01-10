@@ -1,22 +1,22 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
-// Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
+// Refer to https://github.com/APTIMA-framework/ten_framework/LICENSE for more
 // information.
 //
 
 package default_extension_go
 
 import (
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type baseExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func (ext *baseExtension) OnStart(tenEnv ten.TenEnv) {
+func (ext *baseExtension) OnStart(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStart")
 
 	if prop, err := tenEnv.GetPropertyString("env_not_set_has_default"); err != nil &&
@@ -27,7 +27,7 @@ func (ext *baseExtension) OnStart(tenEnv ten.TenEnv) {
 	tenEnv.OnStartDone()
 }
 
-func (ext *baseExtension) OnStop(tenEnv ten.TenEnv) {
+func (ext *baseExtension) OnStop(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
@@ -47,13 +47,13 @@ type aExtension struct {
 	baseExtension
 }
 
-func newAExtension(name string) ten.Extension {
+func newAExtension(name string) aptima.Extension {
 	return &aExtension{}
 }
 
 func (p *aExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	if err := tenEnv.SetProperty("testBool", false); err != nil {
 		panic("Should not happen.")
@@ -201,7 +201,7 @@ func (p *aExtension) OnCmd(
 		panic("Should not happen.")
 	}
 
-	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 	cmdResult.SetPropertyString("detail", "okok")
 	err = tenEnv.ReturnResult(cmdResult, cmd, nil)
 	if err != nil {
@@ -211,9 +211,9 @@ func (p *aExtension) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"extension_a",
-		ten.NewDefaultExtensionAddon(newAExtension),
+		aptima.NewDefaultExtensionAddon(newAExtension),
 	)
 	if err != nil {
 		panic("Failed to register addon.")

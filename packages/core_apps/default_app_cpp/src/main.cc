@@ -1,18 +1,18 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
-#include "axis_runtime/binding/cpp/ten.h"
+#include "axis_runtime/binding/cpp/aptima.h"
 
-namespace ten {
+namespace aptima {
 
-class default_app_t : public ten::app_t {};
+class default_app_t : public aptima::app_t {};
 
-}  // namespace ten
+}  // namespace aptima
 
 int main() {
-  auto *app = new ten::default_app_t();
+  auto *app = new aptima::default_app_t();
   app->run();
   delete app;
   return 0;

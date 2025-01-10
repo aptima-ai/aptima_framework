@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -327,7 +327,7 @@ static void axis_extension_thread_on_extension_on_deinit_done(
       "Should not happen.");
   axis_ASSERT(deinit_extension->extension_thread == self, "Should not happen.");
 
-  // Notify the 'ten' object of this extension that we are closing.
+  // Notify the 'aptima' object of this extension that we are closing.
   axis_ASSERT(deinit_extension->axis_env &&
                  axis_env_check_integrity(deinit_extension->axis_env, true),
              "Should not happen.");

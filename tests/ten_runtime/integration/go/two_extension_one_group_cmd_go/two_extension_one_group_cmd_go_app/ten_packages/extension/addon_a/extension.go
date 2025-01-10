@@ -1,7 +1,7 @@
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
-// Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
+// Refer to https://github.com/APTIMA-framework/ten_framework/LICENSE for more
 // information.
 //
 // Note that this is just an example extension written in the GO programming
@@ -12,22 +12,22 @@ package default_extension_go
 import (
 	"fmt"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type baseExtension struct {
 	baseName  string
 	baseCount int
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func (p *baseExtension) OnStart(tenEnv ten.TenEnv) {
+func (p *baseExtension) OnStart(tenEnv aptima.TenEnv) {
 	fmt.Println("baseExtension onStart, name:", p.baseName)
 
 	tenEnv.OnStartDone()
 }
 
-func (p *baseExtension) OnStop(tenEnv ten.TenEnv) {
+func (p *baseExtension) OnStop(tenEnv aptima.TenEnv) {
 	fmt.Println("baseExtension OnStop name:", p.baseName)
 
 	tenEnv.OnStopDone()
@@ -39,7 +39,7 @@ type aExtension struct {
 	aName  string
 }
 
-func NewAExtension(name string) ten.Extension {
+func NewAExtension(name string) aptima.Extension {
 	return &aExtension{
 		baseExtension: baseExtension{baseCount: 5, baseName: "aBase"},
 		aCount:        4,
@@ -47,7 +47,7 @@ func NewAExtension(name string) ten.Extension {
 }
 
 func (p *aExtension) OnInit(
-	tenEnv ten.TenEnv,
+	tenEnv aptima.TenEnv,
 ) {
 	p.aCount = p.aCount + 6
 	p.aName = "after start"
@@ -57,8 +57,8 @@ func (p *aExtension) OnInit(
 }
 
 func (p *aExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	go func() {
 		fmt.Println(
@@ -77,7 +77,7 @@ func (p *aExtension) OnCmd(
 			cmdName,
 		)
 
-		data, _ := ten.NewData("data")
+		data, _ := aptima.NewData("data")
 
 		if err := data.SetPropertyString("empty_string", ""); err != nil {
 			panic("the empty string is allowed")
@@ -97,7 +97,7 @@ func (p *aExtension) OnCmd(
 			panic("aExtension SendData failed")
 		}
 
-		cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+		cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 		cmdResult.SetPropertyString("detail", "world")
 		err = tenEnv.ReturnResult(cmdResult, cmd, nil)
 		if err != nil {
@@ -108,9 +108,9 @@ func (p *aExtension) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"addon_a",
-		ten.NewDefaultExtensionAddon(NewAExtension),
+		aptima.NewDefaultExtensionAddon(NewAExtension),
 	)
 	if err != nil {
 		fmt.Println("register addon failed", err)

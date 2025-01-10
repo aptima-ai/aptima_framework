@@ -62,12 +62,12 @@ def test_expired_ten_go():
         print("test_expired_ten_go doesn't support win32")
         assert False
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path, "expired_ten_go_app/ten_packages/system/ten_runtime/lib"
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path, "expired_ten_go_app/ten_packages/system/ten_runtime/lib"
         )

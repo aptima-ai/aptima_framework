@@ -26,14 +26,16 @@ from typing import Any
 # with, typing_extensions), and if not define substitutes that lack the
 # static type information but are good enough at runtime.
 try:
-    from typing_extensions import Protocol #pylint: disable=import-error
+    from typing_extensions import Protocol  # pylint: disable=import-error
 except ImportError:
-    class Protocol: #type: ignore
-        #pylint: disable=too-few-public-methods
+
+    class Protocol:  # type: ignore
+        # pylint: disable=too-few-public-methods
         pass
+
 
 class Writable(Protocol):
     """Abstract class for typing hints."""
+
     # pylint: disable=no-self-use,too-few-public-methods,unused-argument
-    def write(self, text: str) -> Any:
-        ...
+    def write(self, text: str) -> Any: ...

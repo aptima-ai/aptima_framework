@@ -83,7 +83,7 @@ def start_app(app_name: str, port: int) -> subprocess.Popen:
             base_path, f"{app_name}/bin/{app_name}_source"
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path, f"{app_name}/ten_packages/system/ten_runtime/lib"
         )
@@ -148,13 +148,13 @@ def start_client(app_name: str) -> subprocess.Popen:
         )
         client_cmd = os.path.join(base_path, "multi_apps_client.exe")
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path, f"{app_name}/ten_packages/system/ten_runtime/lib"
         )
         client_cmd = os.path.join(base_path, "multi_apps_client")
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path, f"{app_name}/ten_packages/system/ten_runtime/lib"
         )

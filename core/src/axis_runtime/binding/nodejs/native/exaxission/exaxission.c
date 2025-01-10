@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -70,7 +70,7 @@ static void axis_nodejs_extension_detach_callbacks(
 
 static void axis_nodejs_extension_finalize(napi_env env, void *data,
                                           void *hint) {
-  axis_LOGI("TEN JS extension is finalized.");
+  axis_LOGI("APTIMA JS extension is finalized.");
 
   axis_nodejs_extension_t *extension_bridge = data;
   axis_ASSERT(extension_bridge, "Should not happen.");
@@ -120,9 +120,9 @@ static void axis_nodejs_invoke_extension_js_on_configure(napi_env env,
   napi_status status = napi_ok;
 
   {
-    // Call on_configure() of the TEN JS extension.
+    // Call on_configure() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -165,9 +165,9 @@ static void axis_nodejs_invoke_extension_js_on_init(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_init() of the TEN JS extension.
+    // Call on_init() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, extension_bridge->bridge.js_instance_ref, &js_extension);
@@ -215,9 +215,9 @@ static void axis_nodejs_invoke_extension_js_on_start(napi_env env, napi_value fn
   napi_status status = napi_ok;
 
   {
-    // Call on_start() of the TEN JS extension.
+    // Call on_start() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -266,9 +266,9 @@ static void axis_nodejs_invoke_extension_js_on_stop(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_stop() of the TEN JS extension.
+    // Call on_stop() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -319,9 +319,9 @@ static void axis_nodejs_invoke_extension_js_on_deinit(napi_env env,
   napi_status status = napi_ok;
 
   {
-    // Call on_deinit() of the TEN JS extension.
+    // Call on_deinit() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -361,9 +361,9 @@ static void axis_nodejs_invoke_extension_js_on_cmd(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_cmd() of the TEN JS extension.
+    // Call on_cmd() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -371,7 +371,7 @@ static void axis_nodejs_invoke_extension_js_on_cmd(napi_env env, napi_value fn,
     GOTO_LABEL_IF_NAPI_FAIL(error, status == napi_ok && js_extension != NULL,
                             "Failed to get JS extension: %d", status);
 
-    // Get the TEN JS axis_env.
+    // Get the APTIMA JS axis_env.
     napi_value js_axis_env = NULL;
     status = napi_get_reference_value(
         env, call_info->axis_env_bridge->bridge.js_instance_ref, &js_axis_env);
@@ -407,9 +407,9 @@ static void axis_nodejs_invoke_extension_js_on_data(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_data() of the TEN JS extension.
+    // Call on_data() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -417,7 +417,7 @@ static void axis_nodejs_invoke_extension_js_on_data(napi_env env, napi_value fn,
     GOTO_LABEL_IF_NAPI_FAIL(error, status == napi_ok && js_extension != NULL,
                             "Failed to get JS extension: %d", status);
 
-    // Get the TEN JS axis_env.
+    // Get the APTIMA JS axis_env.
     napi_value js_axis_env = NULL;
     status = napi_get_reference_value(
         env, call_info->axis_env_bridge->bridge.js_instance_ref, &js_axis_env);
@@ -456,9 +456,9 @@ static void axis_nodejs_invoke_extension_js_on_audio_frame(napi_env env,
   napi_status status = napi_ok;
 
   {
-    // Call on_audio_frame() of the TEN JS extension.
+    // Call on_audio_frame() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -466,7 +466,7 @@ static void axis_nodejs_invoke_extension_js_on_audio_frame(napi_env env,
     GOTO_LABEL_IF_NAPI_FAIL(error, status == napi_ok && js_extension != NULL,
                             "Failed to get JS extension: %d", status);
 
-    // Get the TEN JS axis_env.
+    // Get the APTIMA JS axis_env.
     napi_value js_axis_env = NULL;
     status = napi_get_reference_value(
         env, call_info->axis_env_bridge->bridge.js_instance_ref, &js_axis_env);
@@ -507,9 +507,9 @@ static void axis_nodejs_invoke_extension_js_on_video_frame(napi_env env,
   napi_status status = napi_ok;
 
   {
-    // Call on_video_frame() of the TEN JS extension.
+    // Call on_video_frame() of the APTIMA JS extension.
 
-    // Get the TEN JS extension.
+    // Get the APTIMA JS extension.
     napi_value js_extension = NULL;
     status = napi_get_reference_value(
         env, call_info->extension_bridge->bridge.js_instance_ref,
@@ -517,7 +517,7 @@ static void axis_nodejs_invoke_extension_js_on_video_frame(napi_env env,
     GOTO_LABEL_IF_NAPI_FAIL(error, status == napi_ok && js_extension != NULL,
                             "Failed to get JS extension: %d", status);
 
-    // Get the TEN JS axis_env.
+    // Get the APTIMA JS axis_env.
     napi_value js_axis_env = NULL;
     status = napi_get_reference_value(
         env, call_info->axis_env_bridge->bridge.js_instance_ref, &js_axis_env);
@@ -662,7 +662,7 @@ static void proxy_on_configure(axis_extension_t *self, axis_env_t *axis_env) {
     axis_FREE(call_info);
 
     // Failed to call JS on_configure(), so that we need to call
-    // on_configure_done() here to let TEN runtime proceed.
+    // on_configure_done() here to let APTIMA runtime proceed.
     axis_env_on_configure_done(axis_env, NULL);
   }
 }
@@ -702,7 +702,7 @@ static void proxy_on_init(axis_extension_t *self, axis_env_t *axis_env) {
     axis_FREE(call_info);
 
     // Failed to call JS on_init(), so that we need to call on_init_done() here
-    // to let TEN runtime proceed.
+    // to let APTIMA runtime proceed.
     axis_env_on_init_done(axis_env, NULL);
   }
 }
@@ -742,7 +742,7 @@ static void proxy_on_start(axis_extension_t *self, axis_env_t *axis_env) {
     axis_FREE(call_info);
 
     // Failed to call JS on_start(), so that we need to call on_start_done()
-    // here to let TEN runtime proceed.
+    // here to let APTIMA runtime proceed.
     axis_env_on_start_done(axis_env, NULL);
   }
 }
@@ -782,7 +782,7 @@ static void proxy_on_stop(axis_extension_t *self, axis_env_t *axis_env) {
     axis_FREE(call_info);
 
     // Failed to call JS on_stop(), so that we need to call on_stop_done() here
-    // to let TEN runtime proceed.
+    // to let APTIMA runtime proceed.
     axis_env_on_stop_done(axis_env, NULL);
   }
 }
@@ -822,7 +822,7 @@ static void proxy_on_deinit(axis_extension_t *self, axis_env_t *axis_env) {
     axis_FREE(call_info);
 
     // Failed to call JS on_deinit(), so that we need to call on_deinit_done()
-    // here to let TEN runtime proceed.
+    // here to let APTIMA runtime proceed.
     axis_env_on_deinit_done(axis_env, NULL);
   }
 }
@@ -1007,7 +1007,7 @@ static napi_value axis_nodejs_extension_create(napi_env env,
   axis_signature_set(&extension_bridge->signature,
                     axis_NODEJS_EXTENSION_SIGNATURE);
 
-  // The ownership of the TEN extension_bridge is the JS main thread.
+  // The ownership of the APTIMA extension_bridge is the JS main thread.
   axis_sanitizer_thread_check_init_with_current_thread(
       &extension_bridge->thread_check);
 
@@ -1031,7 +1031,7 @@ static napi_value axis_nodejs_extension_create(napi_env env,
       "%d",
       status);
 
-  // Create the underlying TEN C extension.
+  // Create the underlying APTIMA C extension.
   extension_bridge->c_extension = axis_extension_create(
       axis_string_get_raw_str(&name), proxy_on_configure, proxy_on_init,
       proxy_on_start, proxy_on_stop, proxy_on_deinit, proxy_on_cmd,

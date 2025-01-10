@@ -1,6 +1,6 @@
 {
   global:
-    ten_*;
+    aptima_*;
     PyInit_libten_runtime_python;
   local:
     *;

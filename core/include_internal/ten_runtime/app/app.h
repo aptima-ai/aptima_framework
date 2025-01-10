@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -51,10 +51,10 @@ typedef struct ten_app_t {
 
   bool run_in_background;
 
-  // In some situations (for example, in the TEN nodejs environment, in order
+  // In some situations (for example, in the APTIMA nodejs environment, in order
   // not to blocking the JS main thread), we need to create a new thread to run
-  // TEN app (run_in_background == true). And in the original thread, we need to
-  // wait until we get the information of the actual thread of the TEN app, so
+  // APTIMA app (run_in_background == true). And in the original thread, we need to
+  // wait until we get the information of the actual thread of the APTIMA app, so
   // that if we call app_wait() in the original thread, the behavior would be
   // correct.
   //

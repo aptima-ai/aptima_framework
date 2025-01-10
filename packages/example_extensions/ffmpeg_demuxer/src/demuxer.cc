@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -17,7 +17,7 @@
 #include "libavcodec/packet.h"
 #include "libavutil/channel_layout.h"
 #include "libswresample/swresample.h"
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 #include "ten_runtime/msg/video_frame/video_frame.h"
 #include "ten_utils/macro/check.h"
 
@@ -46,7 +46,7 @@ extern "C" {
 #endif
 
 #include "demuxer_thread.h"
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lib/alloc.h"
 #include "ten_utils/log/log.h"
 #include "ten_utils/macro/check.h"
@@ -61,7 +61,7 @@ extern "C" {
 #define TEN_AUDIO_FRAME_SAMPLE_FMT AV_SAMPLE_FMT_S16
 #define TEN_VIDEO_FRAME_PIXEL_FMT AV_PIX_FMT_RGB24
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 void get_ffmpeg_error_message_(char *buf, size_t buf_length, int errnum) {
@@ -75,7 +75,7 @@ void get_ffmpeg_error_message_(char *buf, size_t buf_length, int errnum) {
   }
 }
 
-demuxer_t::demuxer_t(ten::ten_env_proxy_t *ten_env_proxy,
+demuxer_t::demuxer_t(aptima::ten_env_proxy_t *ten_env_proxy,
                      demuxer_thread_t *demuxer_thread)
     : demuxer_thread_(demuxer_thread),
       ten_env_proxy_(ten_env_proxy),
@@ -341,7 +341,7 @@ bool demuxer_t::create_audio_converter_(const AVFrame *frame) {
   return true;
 }
 
-std::unique_ptr<ten::audio_frame_t> demuxer_t::to_ten_audio_frame_(
+std::unique_ptr<aptima::audio_frame_t> demuxer_t::to_ten_audio_frame_(
     const AVFrame *frame) {
   TEN_ASSERT(frame, "Invalid argument.");
 
@@ -350,7 +350,7 @@ std::unique_ptr<ten::audio_frame_t> demuxer_t::to_ten_audio_frame_(
   }
 
   int ffmpeg_rc = 0;
-  auto audio_frame = ten::audio_frame_t::create("audio_frame");
+  auto audio_frame = aptima::audio_frame_t::create("audio_frame");
 
   // Allocate memory for each audio channel.
   int dst_channels = frame->ch_layout.nb_channels;
@@ -361,7 +361,7 @@ std::unique_ptr<ten::audio_frame_t> demuxer_t::to_ten_audio_frame_(
 
   // Convert this audio frame to the desired audio format.
   uint8_t *out[8] = {nullptr};
-  ten::buf_t locked_out_buf = audio_frame->lock_buf();
+  aptima::buf_t locked_out_buf = audio_frame->lock_buf();
   out[0] = locked_out_buf.data();
 
   ffmpeg_rc = swr_convert(audio_converter_ctx_, out, frame->nb_samples,
@@ -452,7 +452,7 @@ TEN_UNUSED static void save_avframe(const AVFrame *avFrame) {
 }
 
 // Debug purpose only.
-void save_img_frame(ten::video_frame_t &pFrame, int index) {
+void save_img_frame(aptima::video_frame_t &pFrame, int index) {
   FILE *pFile = nullptr;
   char szFilename[32];
   int y = 0;
@@ -474,7 +474,7 @@ void save_img_frame(ten::video_frame_t &pFrame, int index) {
   (void)fprintf(pFile, "P6\n%d %d\n255\n", width, height);
 
   // Write pixel data
-  ten::buf_t locked_buf = pFrame.lock_buf();
+  aptima::buf_t locked_buf = pFrame.lock_buf();
   for (y = 0; y < height; y++) {
     (void)fwrite(locked_buf.data() + y * width * 3, 1, width * 3, pFile);
   }
@@ -484,7 +484,7 @@ void save_img_frame(ten::video_frame_t &pFrame, int index) {
   (void)fclose(pFile);
 }
 
-std::unique_ptr<ten::video_frame_t> demuxer_t::to_ten_video_frame_(
+std::unique_ptr<aptima::video_frame_t> demuxer_t::to_ten_video_frame_(
     const AVFrame *frame) {
   TEN_ASSERT(frame, "Invalid argument.");
 
@@ -500,7 +500,7 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_ten_video_frame_(
              frame->best_effort_timestamp, video_start_time);
   }
 
-  auto ten_video_frame = ten::video_frame_t::create("video_frame");
+  auto ten_video_frame = aptima::video_frame_t::create("video_frame");
 
   if (frame->format == AV_PIX_FMT_YUV420P ||
       frame->format == AV_PIX_FMT_YUVJ420P) {
@@ -515,7 +515,7 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_ten_video_frame_(
         static_cast<int64_t>(video_time_base.num) * 1000, video_time_base.den));
 
     ten_video_frame->alloc_buf(size + 32);
-    ten::buf_t locked_buf = ten_video_frame->lock_buf();
+    aptima::buf_t locked_buf = ten_video_frame->lock_buf();
 
     auto *y_data = locked_buf.data();
     auto *u_data = y_data + frame_width * frame_height;
@@ -533,7 +533,7 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_ten_video_frame_(
     // convert YUV to RGB first.
 
     // if (!create_video_converter_(frame_width, frame_height)) {
-    //   return ten::video_frame_t();
+    //   return aptima::video_frame_t();
     // }
     // // sws_scale require 16 bytes aligned.
     // int dst_linesize = ((frame_width * 3 + 15) / 16) * 16;
@@ -595,7 +595,7 @@ std::unique_ptr<ten::video_frame_t> demuxer_t::to_ten_video_frame_(
 
     ten_video_frame->alloc_buf(
         static_cast<int64_t>(frame_width) * frame_height * 3 + 32);
-    ten::buf_t locked_buf = ten_video_frame->lock_buf();
+    aptima::buf_t locked_buf = ten_video_frame->lock_buf();
 
     av_image_copy_plane(locked_buf.data(), frame_width * 3, frame->data[0],
                         frame->linesize[0], frame_width * 3, frame_height);
@@ -637,10 +637,10 @@ bool demuxer_t::decode_next_video_packet_(DECODE_STATUS &decode_status) {
       // DEBUG
       // save_img_frame(video_frame, frame_->pts);
       auto video_frame_shared =
-          std::make_shared<std::unique_ptr<ten::video_frame_t>>(
+          std::make_shared<std::unique_ptr<aptima::video_frame_t>>(
               std::move(video_frame));
 
-      ten_env_proxy_->notify([video_frame_shared](ten::ten_env_t &ten_env) {
+      ten_env_proxy_->notify([video_frame_shared](aptima::ten_env_t &ten_env) {
         ten_env.send_video_frame(std::move(*video_frame_shared));
       });
     }
@@ -686,10 +686,10 @@ bool demuxer_t::decode_next_audio_packet_(DECODE_STATUS &decode_status) {
       auto audio_frame = to_ten_audio_frame_(frame_);
       if (audio_frame != nullptr) {
         auto audio_frame_shared =
-            std::make_shared<std::unique_ptr<ten::audio_frame_t>>(
+            std::make_shared<std::unique_ptr<aptima::audio_frame_t>>(
                 std::move(audio_frame));
 
-        ten_env_proxy_->notify([audio_frame_shared](ten::ten_env_t &ten_env) {
+        ten_env_proxy_->notify([audio_frame_shared](aptima::ten_env_t &ten_env) {
           ten_env.send_audio_frame(std::move(*audio_frame_shared));
         });
       }
@@ -771,10 +771,10 @@ void demuxer_t::flush_remaining_audio_frames() {
       auto audio_frame = to_ten_audio_frame_(frame_);
       if (audio_frame != nullptr) {
         auto audio_frame_shared =
-            std::make_shared<std::unique_ptr<ten::audio_frame_t>>(
+            std::make_shared<std::unique_ptr<aptima::audio_frame_t>>(
                 std::move(audio_frame));
 
-        ten_env_proxy_->notify([audio_frame_shared](ten::ten_env_t &ten_env) {
+        ten_env_proxy_->notify([audio_frame_shared](aptima::ten_env_t &ten_env) {
           ten_env.send_audio_frame(std::move(*audio_frame_shared));
         });
       }
@@ -806,10 +806,10 @@ void demuxer_t::flush_remaining_video_frames() {
       auto video_frame = to_ten_video_frame_(frame_);
       if (video_frame != nullptr) {
         auto video_frame_shared =
-            std::make_shared<std::unique_ptr<ten::video_frame_t>>(
+            std::make_shared<std::unique_ptr<aptima::video_frame_t>>(
                 std::move(video_frame));
 
-        ten_env_proxy_->notify([video_frame_shared](ten::ten_env_t &ten_env) {
+        ten_env_proxy_->notify([video_frame_shared](aptima::ten_env_t &ten_env) {
           ten_env.send_video_frame(std::move(*video_frame_shared));
         });
       }
@@ -1019,4 +1019,4 @@ void demuxer_t::open_audio_decoder_() {
 }
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

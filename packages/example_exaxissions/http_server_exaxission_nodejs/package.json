@@ -1,5 +1,5 @@
 {
-  "name": "ten-http-server-extension",
+  "name": "aptima-http-server-extension",
   "version": "1.0.0",
   "main": "./build/index.js",
   "devDependencies": {

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -17,7 +17,7 @@ typedef struct ten_extension_t ten_extension_t;
 typedef struct ten_error_t ten_error_t;
 typedef struct ten_msg_t ten_msg_t;
 
-// TEN runtime supports 2 kinds of message mapping.
+// APTIMA runtime supports 2 kinds of message mapping.
 //
 // > 1-to-1
 //   Apply for : all messages.
@@ -60,14 +60,14 @@ TEN_RUNTIME_API bool ten_msg_is_property_exist(ten_shared_ptr_t *self,
 
 /**
  * @brief Note that the ownership of @a value_kv would be transferred into
- * the TEN runtime, so the caller of this function could _not_ consider the
+ * the APTIMA runtime, so the caller of this function could _not_ consider the
  * value_kv instance is still valid.
  */
 TEN_RUNTIME_API bool ten_msg_set_property(ten_shared_ptr_t *self,
                                           const char *path, ten_value_t *value,
                                           ten_error_t *err);
 
-// Because each TEN extension has its own messages (in almost all cases, except
+// Because each APTIMA extension has its own messages (in almost all cases, except
 // for the data-type messages), so the returned value_kv of this function is
 // from the message directly, not a cloned one.
 TEN_RUNTIME_API ten_value_t *ten_msg_peek_property(ten_shared_ptr_t *self,

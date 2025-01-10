@@ -28,11 +28,18 @@ class CatchConan(ConanFile):
     def build(self):
         # We need this workaround until the toolchains feature
         # to inject stuff like MD/MT
-        line_to_replace = 'list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")'
-        tools.replace_in_file("CMakeLists.txt", line_to_replace,
-                              '''{}
+        line_to_replace = (
+            'list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")'
+        )
+        tools.replace_in_file(
+            "CMakeLists.txt",
+            line_to_replace,
+            """{}
 include("{}/conanbuildinfo.cmake")
-conan_basic_setup()'''.format(line_to_replace, self.install_folder.replace("\\", "/")))
+conan_basic_setup()""".format(
+                line_to_replace, self.install_folder.replace("\\", "/")
+            ),
+        )
 
         cmake = self._configure_cmake()
         cmake.build()
@@ -49,13 +56,19 @@ conan_basic_setup()'''.format(line_to_replace, self.install_folder.replace("\\",
         self.cpp_info.names["cmake_find_package_multi"] = "Catch2"
         # Catch2
         self.cpp_info.components["catch2base"].names["cmake_find_package"] = "Catch2"
-        self.cpp_info.components["catch2base"].names["cmake_find_package_multi"] = "Catch2"
+        self.cpp_info.components["catch2base"].names[
+            "cmake_find_package_multi"
+        ] = "Catch2"
         self.cpp_info.components["catch2base"].names["pkg_config"] = "Catch2"
         self.cpp_info.components["catch2base"].libs = ["Catch2" + lib_suffix]
         self.cpp_info.components["catch2base"].builddirs.append("lib/cmake/Catch2")
         # Catch2WithMain
-        self.cpp_info.components["catch2main"].names["cmake_find_package"] = "Catch2WithMain"
-        self.cpp_info.components["catch2main"].names["cmake_find_package_multi"] = "Catch2WithMain"
+        self.cpp_info.components["catch2main"].names[
+            "cmake_find_package"
+        ] = "Catch2WithMain"
+        self.cpp_info.components["catch2main"].names[
+            "cmake_find_package_multi"
+        ] = "Catch2WithMain"
         self.cpp_info.components["catch2main"].names["pkg_config"] = "Catch2WithMain"
         self.cpp_info.components["catch2main"].libs = ["Catch2Main" + lib_suffix]
         self.cpp_info.components["catch2main"].requires = ["catch2base"]

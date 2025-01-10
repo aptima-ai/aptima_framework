@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -161,7 +161,7 @@ bool ten_extension_check_integrity(ten_extension_t *self, bool check_thread) {
 void ten_extension_destroy(ten_extension_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: In TEN world, the destroy operations need to be performed in
+  // thread-check: In APTIMA world, the destroy operations need to be performed in
   // any threads.
   TEN_ASSERT(ten_extension_check_integrity(self, false),
              "Invalid use of extension %p.", self);
@@ -384,7 +384,7 @@ static bool need_to_clone_msg_when_sending(ten_shared_ptr_t *msg,
 
   // Because when a message is sent to other extensions, these extensions
   // might be located in different extension groups. Therefore, after the
-  // message is sent, if it is addressed to more than two extensions, the TEN
+  // message is sent, if it is addressed to more than two extensions, the APTIMA
   // runtime needs to clone a copy of the message for extensions beyond the
   // first one, to avoid creating a thread safety issue. This principle applies
   // to all message types.

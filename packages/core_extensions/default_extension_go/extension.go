@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -9,36 +9,36 @@ package default_extension_go
 import (
 	"fmt"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 type defaultExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func newExtension(name string) ten.Extension {
+func newExtension(name string) aptima.Extension {
 	return &defaultExtension{}
 }
 
-func (e *defaultExtension) OnStart(tenEnv ten.TenEnv) {
+func (e *defaultExtension) OnStart(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStart")
 
 	tenEnv.OnStartDone()
 }
 
-func (e *defaultExtension) OnStop(tenEnv ten.TenEnv) {
+func (e *defaultExtension) OnStop(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnStop")
 
 	tenEnv.OnStopDone()
 }
 
 func (e *defaultExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	tenEnv.LogDebug("OnCmd")
 
-	cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 	tenEnv.ReturnResult(cmdResult, cmd, nil)
 }
 
@@ -46,8 +46,8 @@ func init() {
 	fmt.Println("defaultExtension init")
 
 	// Register addon
-	ten.RegisterAddonAsExtension(
+	aptima.RegisterAddonAsExtension(
 		"default_extension_go",
-		ten.NewDefaultExtensionAddon(newExtension),
+		aptima.NewDefaultExtensionAddon(newExtension),
 	)
 }

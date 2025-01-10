@@ -136,15 +136,16 @@ class AbiChecker:
         self._setup_logger()
         self.report_dir = os.path.abspath(configuration.report_dir)
         self.keep_all_reports = configuration.keep_all_reports
-        self.can_remove_report_dir = not (os.path.exists(self.report_dir) or
-                                          self.keep_all_reports)
+        self.can_remove_report_dir = not (
+            os.path.exists(self.report_dir) or self.keep_all_reports
+        )
         self.old_version = old_version
         self.new_version = new_version
         self.skip_file = configuration.skip_file
         self.check_abi = configuration.check_abi
         self.check_api = configuration.check_api
         if self.check_abi != self.check_api:
-            raise Exception('Checking API without ABI or vice versa is not supported')
+            raise Exception("Checking API without ABI or vice versa is not supported")
         self.check_storage_tests = configuration.check_storage
         self.brief = configuration.brief
         self.git_command = "git"
@@ -180,30 +181,39 @@ class AbiChecker:
                 )
             )
             fetch_output = subprocess.check_output(
-                [self.git_command, "fetch",
-                 version.repository, version.revision],
+                [self.git_command, "fetch", version.repository, version.revision],
                 cwd=self.repo_path,
-                stderr=subprocess.STDOUT
+                stderr=subprocess.STDOUT,
             )
             self.log.debug(fetch_output.decode("utf-8"))
             worktree_rev = "FETCH_HEAD"
         else:
-            self.log.debug("Checking out git worktree for revision {}".format(
-                version.revision
-            ))
+            self.log.debug(
+                "Checking out git worktree for revision {}".format(version.revision)
+            )
             worktree_rev = version.revision
         worktree_output = subprocess.check_output(
-            [self.git_command, "worktree", "add", "--detach",
-             git_worktree_path, worktree_rev],
+            [
+                self.git_command,
+                "worktree",
+                "add",
+                "--detach",
+                git_worktree_path,
+                worktree_rev,
+            ],
             cwd=self.repo_path,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
         )
         self.log.debug(worktree_output.decode("utf-8"))
-        version.commit = subprocess.check_output(
-            [self.git_command, "rev-parse", "HEAD"],
-            cwd=git_worktree_path,
-            stderr=subprocess.STDOUT
-        ).decode("ascii").rstrip()
+        version.commit = (
+            subprocess.check_output(
+                [self.git_command, "rev-parse", "HEAD"],
+                cwd=git_worktree_path,
+                stderr=subprocess.STDOUT,
+            )
+            .decode("ascii")
+            .rstrip()
+        )
         self.log.debug("Commit is {}".format(version.commit))
         return git_worktree_path
 
@@ -212,21 +222,27 @@ class AbiChecker:
         if version.crypto_revision exists, update it to that revision,
         otherwise update it to the default revision"""
         update_output = subprocess.check_output(
-            [self.git_command, "submodule", "update", "--init", '--recursive'],
+            [self.git_command, "submodule", "update", "--init", "--recursive"],
             cwd=git_worktree_path,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
         )
         self.log.debug(update_output.decode("utf-8"))
-        if not (os.path.exists(os.path.join(git_worktree_path, "crypto"))
-                and version.crypto_revision):
+        if not (
+            os.path.exists(os.path.join(git_worktree_path, "crypto"))
+            and version.crypto_revision
+        ):
             return
 
         if version.crypto_repository:
             fetch_output = subprocess.check_output(
-                [self.git_command, "fetch", version.crypto_repository,
-                 version.crypto_revision],
+                [
+                    self.git_command,
+                    "fetch",
+                    version.crypto_repository,
+                    version.crypto_revision,
+                ],
                 cwd=os.path.join(git_worktree_path, "crypto"),
-                stderr=subprocess.STDOUT
+                stderr=subprocess.STDOUT,
             )
             self.log.debug(fetch_output.decode("utf-8"))
             crypto_rev = "FETCH_HEAD"
@@ -236,7 +252,7 @@ class AbiChecker:
         checkout_output = subprocess.check_output(
             [self.git_command, "checkout", crypto_rev],
             cwd=os.path.join(git_worktree_path, "crypto"),
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
         )
         self.log.debug(checkout_output.decode("utf-8"))
 
@@ -251,14 +267,12 @@ class AbiChecker:
             [self.make_command, "lib"],
             env=my_environment,
             cwd=git_worktree_path,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
         )
         self.log.debug(make_output.decode("utf-8"))
         for root, _dirs, files in os.walk(git_worktree_path):
             for file in fnmatch.filter(files, "*.so"):
-                version.modules[os.path.splitext(file)[0]] = (
-                    os.path.join(root, file)
-                )
+                version.modules[os.path.splitext(file)[0]] = os.path.join(root, file)
 
     @staticmethod
     def _pretty_revision(version):
@@ -273,19 +287,19 @@ class AbiChecker:
         present in version.modules."""
         for mbed_module, module_path in version.modules.items():
             output_path = os.path.join(
-                self.report_dir, "{}-{}-{}.dump".format(
-                    mbed_module, version.revision, version.version
-                )
+                self.report_dir,
+                "{}-{}-{}.dump".format(mbed_module, version.revision, version.version),
             )
             abi_dump_command = [
                 "abi-dumper",
                 module_path,
-                "-o", output_path,
-                "-lver", self._pretty_revision(version),
+                "-o",
+                output_path,
+                "-lver",
+                self._pretty_revision(version),
             ]
             abi_dump_output = subprocess.check_output(
-                abi_dump_command,
-                stderr=subprocess.STDOUT
+                abi_dump_command, stderr=subprocess.STDOUT
             )
             self.log.debug(abi_dump_output.decode("utf-8"))
             version.abi_dumps[mbed_module] = output_path
@@ -293,14 +307,10 @@ class AbiChecker:
     @staticmethod
     def _normalize_storage_test_case_data(line):
         """Eliminate cosmetic or irrelevant details in storage format test cases."""
-        line = re.sub(r'\s+', r'', line)
+        line = re.sub(r"\s+", r"", line)
         return line
 
-    def _read_storage_tests(self,
-                            directory,
-                            filename,
-                            is_generated,
-                            storage_tests):
+    def _read_storage_tests(self, directory, filename, is_generated, storage_tests):
         """Record storage tests from the given file.
 
         Populate the storage_tests dictionary with test cases read from
@@ -315,25 +325,23 @@ class AbiChecker:
                 if not line:
                     at_paragraph_start = True
                     continue
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
                 if at_paragraph_start:
                     description = line.strip()
                     at_paragraph_start = False
                     continue
-                if line.startswith('depends_on:'):
+                if line.startswith("depends_on:"):
                     continue
                 # We've reached a test case data line
                 test_case_data = self._normalize_storage_test_case_data(line)
                 if not is_generated:
                     # In manual test data, only look at read tests.
-                    function_name = test_case_data.split(':', 1)[0]
-                    if 'read' not in function_name.split('_'):
+                    function_name = test_case_data.split(":", 1)[0]
+                    if "read" not in function_name.split("_"):
                         continue
                 metadata = SimpleNamespace(
-                    filename=filename,
-                    line_number=line_number,
-                    description=description
+                    filename=filename, line_number=line_number, description=description
                 )
                 storage_tests[test_case_data] = metadata
 
@@ -341,10 +349,10 @@ class AbiChecker:
     def _list_generated_test_data_files(git_worktree_path):
         """List the generated test data files."""
         output = subprocess.check_output(
-            ['tests/scripts/generate_psa_tests.py', '--list'],
+            ["tests/scripts/generate_psa_tests.py", "--list"],
             cwd=git_worktree_path,
-        ).decode('ascii')
-        return [line for line in output.split('\n') if line]
+        ).decode("ascii")
+        return [line for line in output.split("\n") if line]
 
     def _get_storage_format_tests(self, version, git_worktree_path):
         """Record the storage format tests for the specified git version.
@@ -358,24 +366,26 @@ class AbiChecker:
         """
         # Existing test data files. This may be missing some automatically
         # generated files if they haven't been generated yet.
-        storage_data_files = set(glob.glob(
-            'tests/suites/test_suite_*storage_format*.data'
-        ))
+        storage_data_files = set(
+            glob.glob("tests/suites/test_suite_*storage_format*.data")
+        )
         # Discover and (re)generate automatically generated data files.
         to_be_generated = set()
         for filename in self._list_generated_test_data_files(git_worktree_path):
-            if 'storage_format' in filename:
+            if "storage_format" in filename:
                 storage_data_files.add(filename)
                 to_be_generated.add(filename)
         subprocess.check_call(
-            ['tests/scripts/generate_psa_tests.py'] + sorted(to_be_generated),
+            ["tests/scripts/generate_psa_tests.py"] + sorted(to_be_generated),
             cwd=git_worktree_path,
         )
         for test_file in sorted(storage_data_files):
-            self._read_storage_tests(git_worktree_path,
-                                     test_file,
-                                     test_file in to_be_generated,
-                                     version.storage_tests)
+            self._read_storage_tests(
+                git_worktree_path,
+                test_file,
+                test_file in to_be_generated,
+                version.storage_tests,
+            )
 
     def _cleanup_worktree(self, git_worktree_path):
         """Remove the specified git worktree."""
@@ -383,7 +393,7 @@ class AbiChecker:
         worktree_output = subprocess.check_output(
             [self.git_command, "worktree", "prune"],
             cwd=self.repo_path,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
         )
         self.log.debug(worktree_output.decode("utf-8"))
 
@@ -407,8 +417,13 @@ class AbiChecker:
                 self._remove_children_with_tag(child, tag)
 
     def _remove_extra_detail_from_report(self, report_root):
-        for tag in ['test_info', 'test_results', 'problem_summary',
-                    'added_symbols', 'affected']:
+        for tag in [
+            "test_info",
+            "test_results",
+            "problem_summary",
+            "added_symbols",
+            "affected",
+        ]:
             self._remove_children_with_tag(report_root, tag)
 
         for report in report_root:
@@ -421,41 +436,46 @@ class AbiChecker:
         The report will be placed in output_path."""
         abi_compliance_command = [
             "abi-compliance-checker",
-            "-l", mbed_module,
-            "-old", self.old_version.abi_dumps[mbed_module],
-            "-new", self.new_version.abi_dumps[mbed_module],
+            "-l",
+            mbed_module,
+            "-old",
+            self.old_version.abi_dumps[mbed_module],
+            "-new",
+            self.new_version.abi_dumps[mbed_module],
             "-strict",
-            "-report-path", output_path,
+            "-report-path",
+            output_path,
         ]
         if self.skip_file:
-            abi_compliance_command += ["-skip-symbols", self.skip_file,
-                                       "-skip-types", self.skip_file]
+            abi_compliance_command += [
+                "-skip-symbols",
+                self.skip_file,
+                "-skip-types",
+                self.skip_file,
+            ]
         if self.brief:
-            abi_compliance_command += ["-report-format", "xml",
-                                       "-stdout"]
+            abi_compliance_command += ["-report-format", "xml", "-stdout"]
         return abi_compliance_command
 
     def _is_library_compatible(self, mbed_module, compatibility_report):
         """Test if the library mbed_module has remained compatible.
         Append a message regarding compatibility to compatibility_report."""
         output_path = os.path.join(
-            self.report_dir, "{}-{}-{}.html".format(
-                mbed_module, self.old_version.revision,
-                self.new_version.revision
-            )
+            self.report_dir,
+            "{}-{}-{}.html".format(
+                mbed_module, self.old_version.revision, self.new_version.revision
+            ),
         )
         try:
             subprocess.check_output(
                 self._abi_compliance_command(mbed_module, output_path),
-                stderr=subprocess.STDOUT
+                stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError as err:
             if err.returncode != 1:
                 raise err
             if self.brief:
-                self.log.info(
-                    "Compatibility issues found for {}".format(mbed_module)
-                )
+                self.log.info("Compatibility issues found for {}".format(mbed_module))
                 report_root = ET.fromstring(err.output.decode("utf-8"))
                 self._remove_extra_detail_from_report(report_root)
                 self.log.info(ET.tostring(report_root).decode("utf-8"))
@@ -474,8 +494,7 @@ class AbiChecker:
         return True
 
     @staticmethod
-    def _is_storage_format_compatible(old_tests, new_tests,
-                                      compatibility_report):
+    def _is_storage_format_compatible(old_tests, new_tests, compatibility_report):
         """Check whether all tests present in old_tests are also in new_tests.
 
         Append a message regarding compatibility to compatibility_report.
@@ -485,20 +504,23 @@ class AbiChecker:
             metadata = old_tests[test_data]
             compatibility_report.append(
                 'Test case from {} line {} "{}" has disappeared: {}'.format(
-                    metadata.filename, metadata.line_number,
-                    metadata.description, test_data
+                    metadata.filename,
+                    metadata.line_number,
+                    metadata.description,
+                    test_data,
                 )
             )
         compatibility_report.append(
-            'FAIL: {}/{} storage format test cases have changed or disappeared.'.format(
+            "FAIL: {}/{} storage format test cases have changed or disappeared.".format(
                 len(missing), len(old_tests)
-            ) if missing else
-            'PASS: All {} storage format test cases are preserved.'.format(
+            )
+            if missing
+            else "PASS: All {} storage format test cases are preserved.".format(
                 len(old_tests)
             )
         )
         compatibility_report.append(
-            'Info: number of storage format tests cases: {} -> {}.'.format(
+            "Info: number of storage format tests cases: {} -> {}.".format(
                 len(old_tests), len(new_tests)
             )
         )
@@ -508,25 +530,29 @@ class AbiChecker:
         """Generate a report of the differences between the reference ABI
         and the new ABI. ABI dumps from self.old_version and self.new_version
         must be available."""
-        compatibility_report = ["Checking evolution from {} to {}".format(
-            self._pretty_revision(self.old_version),
-            self._pretty_revision(self.new_version)
-        )]
+        compatibility_report = [
+            "Checking evolution from {} to {}".format(
+                self._pretty_revision(self.old_version),
+                self._pretty_revision(self.new_version),
+            )
+        ]
         compliance_return_code = 0
 
         if self.check_abi:
-            shared_modules = list(set(self.old_version.modules.keys()) &
-                                  set(self.new_version.modules.keys()))
+            shared_modules = list(
+                set(self.old_version.modules.keys())
+                & set(self.new_version.modules.keys())
+            )
             for mbed_module in shared_modules:
-                if not self._is_library_compatible(mbed_module,
-                                                   compatibility_report):
+                if not self._is_library_compatible(mbed_module, compatibility_report):
                     compliance_return_code = 1
 
         if self.check_storage_tests:
             if not self._is_storage_format_compatible(
-                    self.old_version.storage_tests,
-                    self.new_version.storage_tests,
-                    compatibility_report):
+                self.old_version.storage_tests,
+                self.new_version.storage_tests,
+                compatibility_report,
+            ):
                 compliance_return_code = 1
 
         for version in [self.old_version, self.new_version]:
@@ -550,77 +576,104 @@ class AbiChecker:
 
 def run_main():
     try:
-        parser = argparse.ArgumentParser(
-            description=__doc__
-        )
+        parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument(
-            "-v", "--verbose", action="store_true",
+            "-v",
+            "--verbose",
+            action="store_true",
             help="set verbosity level",
         )
         parser.add_argument(
-            "-r", "--report-dir", type=str, default="reports",
+            "-r",
+            "--report-dir",
+            type=str,
+            default="reports",
             help="directory where reports are stored, default is reports",
         )
         parser.add_argument(
-            "-k", "--keep-all-reports", action="store_true",
+            "-k",
+            "--keep-all-reports",
+            action="store_true",
             help="keep all reports, even if there are no compatibility issues",
         )
         parser.add_argument(
-            "-o", "--old-rev", type=str, help="revision for old version.",
+            "-o",
+            "--old-rev",
+            type=str,
+            help="revision for old version.",
             required=True,
         )
         parser.add_argument(
             "-or", "--old-repo", type=str, help="repository for old version."
         )
         parser.add_argument(
-            "-oc", "--old-crypto-rev", type=str,
-            help="revision for old crypto submodule."
+            "-oc",
+            "--old-crypto-rev",
+            type=str,
+            help="revision for old crypto submodule.",
         )
         parser.add_argument(
-            "-ocr", "--old-crypto-repo", type=str,
-            help="repository for old crypto submodule."
+            "-ocr",
+            "--old-crypto-repo",
+            type=str,
+            help="repository for old crypto submodule.",
         )
         parser.add_argument(
-            "-n", "--new-rev", type=str, help="revision for new version",
+            "-n",
+            "--new-rev",
+            type=str,
+            help="revision for new version",
             required=True,
         )
         parser.add_argument(
             "-nr", "--new-repo", type=str, help="repository for new version."
         )
         parser.add_argument(
-            "-nc", "--new-crypto-rev", type=str,
-            help="revision for new crypto version"
+            "-nc", "--new-crypto-rev", type=str, help="revision for new crypto version"
         )
         parser.add_argument(
-            "-ncr", "--new-crypto-repo", type=str,
-            help="repository for new crypto submodule."
+            "-ncr",
+            "--new-crypto-repo",
+            type=str,
+            help="repository for new crypto submodule.",
         )
         parser.add_argument(
-            "-s", "--skip-file", type=str,
-            help=("path to file containing symbols and types to skip "
-                  "(typically \"-s identifiers\" after running "
-                  "\"tests/scripts/list-identifiers.sh --internal\")")
+            "-s",
+            "--skip-file",
+            type=str,
+            help=(
+                "path to file containing symbols and types to skip "
+                '(typically "-s identifiers" after running '
+                '"tests/scripts/list-identifiers.sh --internal")'
+            ),
         )
         parser.add_argument(
             "--check-abi",
-            action='store_true', default=True,
-            help="Perform ABI comparison (default: yes)"
+            action="store_true",
+            default=True,
+            help="Perform ABI comparison (default: yes)",
         )
-        parser.add_argument("--no-check-abi", action='store_false', dest='check_abi')
+        parser.add_argument("--no-check-abi", action="store_false", dest="check_abi")
         parser.add_argument(
             "--check-api",
-            action='store_true', default=True,
-            help="Perform API comparison (default: yes)"
+            action="store_true",
+            default=True,
+            help="Perform API comparison (default: yes)",
         )
-        parser.add_argument("--no-check-api", action='store_false', dest='check_api')
+        parser.add_argument("--no-check-api", action="store_false", dest="check_api")
         parser.add_argument(
             "--check-storage",
-            action='store_true', default=True,
-            help="Perform storage tests comparison (default: yes)"
+            action="store_true",
+            default=True,
+            help="Perform storage tests comparison (default: yes)",
         )
-        parser.add_argument("--no-check-storage", action='store_false', dest='check_storage')
         parser.add_argument(
-            "-b", "--brief", action="store_true",
+            "--no-check-storage", action="store_false", dest="check_storage"
+        )
+        parser.add_argument(
+            "-b",
+            "--brief",
+            action="store_true",
             help="output only the list of issues to stdout, instead of a full report",
         )
         abi_args = parser.parse_args()
@@ -636,7 +689,7 @@ def run_main():
             crypto_revision=abi_args.old_crypto_rev,
             abi_dumps={},
             storage_tests={},
-            modules={}
+            modules={},
         )
         new_version = SimpleNamespace(
             version="new",
@@ -647,7 +700,7 @@ def run_main():
             crypto_revision=abi_args.new_crypto_rev,
             abi_dumps={},
             storage_tests={},
-            modules={}
+            modules={},
         )
         configuration = SimpleNamespace(
             verbose=abi_args.verbose,
@@ -657,12 +710,12 @@ def run_main():
             check_abi=abi_args.check_abi,
             check_api=abi_args.check_api,
             check_storage=abi_args.check_storage,
-            skip_file=abi_args.skip_file
+            skip_file=abi_args.skip_file,
         )
         abi_check = AbiChecker(old_version, new_version, configuration)
         return_code = abi_check.check_for_abi_changes()
         sys.exit(return_code)
-    except Exception: # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         # Print the backtrace and exit explicitly so as to exit with
         # status 2, not 1.
         traceback.print_exc()

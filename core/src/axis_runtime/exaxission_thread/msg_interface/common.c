@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -170,7 +170,7 @@ void axis_extension_thread_process_acquire_lock_mode_task(void *self_,
   axis_ASSERT(acquire_result, "Invalid argument.");
 
   // Because the extension thread is about to acquire the lock mode lock to
-  // prevent the outer thread from directly using the TEN world, a task to
+  // prevent the outer thread from directly using the APTIMA world, a task to
   // release the lock mode is inserted, allowing the extension thread to exit
   // this mode and giving the outer thread a chance to acquire the lock mode
   // lock.

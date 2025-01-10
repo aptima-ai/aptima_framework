@@ -17,7 +17,7 @@ layout:
 
 ## Using Playground
 
-<figure><img src="https://github.com/TEN-framework/docs/blob/main/assets/gif/module-example.gif?raw=true" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://github.com/APTIMA-framework/docs/blob/main/assets/gif/module-example.gif?raw=true" alt=""><figcaption></figcaption></figure>
 
 Once you have the playground running at [ localhost:3000 ](http://localhost:3000), you can customize your agent through three simple steps:
 

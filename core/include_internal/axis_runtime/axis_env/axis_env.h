@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -107,7 +107,7 @@ axis_RUNTIME_PRIVATE_API axis_app_t *axis_env_get_belonging_app(axis_env_t *self
 inline axis_extension_t *axis_env_get_attached_extension(axis_env_t *self) {
   axis_ASSERT(self, "Invalid argument.");
   // axis_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   axis_ASSERT(axis_env_check_integrity(self, false), "Invalid use of axis_env %p.",
              self);
 
@@ -121,7 +121,7 @@ inline axis_extension_group_t *axis_env_get_attached_extension_group(
     axis_env_t *self) {
   axis_ASSERT(self, "Invalid argument.");
   // axis_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   axis_ASSERT(axis_env_check_integrity(self, false), "Invalid use of axis_env %p.",
              self);
 
@@ -134,7 +134,7 @@ inline axis_extension_group_t *axis_env_get_attached_extension_group(
 inline axis_app_t *axis_env_get_attached_app(axis_env_t *self) {
   axis_ASSERT(self, "Invalid argument.");
   // axis_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   axis_ASSERT(axis_env_check_integrity(self, false), "Invalid use of axis_env %p.",
              self);
 
@@ -146,7 +146,7 @@ inline axis_app_t *axis_env_get_attached_app(axis_env_t *self) {
 inline axis_addon_host_t *axis_env_get_attached_addon(axis_env_t *self) {
   axis_ASSERT(self, "Invalid argument.");
   // axis_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   axis_ASSERT(axis_env_check_integrity(self, false), "Invalid use of axis_env %p.",
              self);
 
@@ -158,7 +158,7 @@ inline axis_addon_host_t *axis_env_get_attached_addon(axis_env_t *self) {
 inline axis_engine_t *axis_env_get_attached_engine(axis_env_t *self) {
   axis_ASSERT(self, "Invalid argument.");
   // axis_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   axis_ASSERT(axis_env_check_integrity(self, false), "Invalid use of axis_env %p.",
              self);
 

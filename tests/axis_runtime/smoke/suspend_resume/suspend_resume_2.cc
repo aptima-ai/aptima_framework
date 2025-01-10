@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -11,7 +11,7 @@
 #include <thread>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lang/cpp/lib/value.h"
 #include "aptima_utils/lib/alloc.h"
 #include "aptima_utils/lib/thread.h"
@@ -24,21 +24,21 @@
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_start(ten::aptima_env_t &aptima_env) override {
-    auto *aptima_env_proxy = ten::aptima_env_proxy_t::create(aptima_env);
+  void on_start(aptima::aptima_env_t &aptima_env) override {
+    auto *aptima_env_proxy = aptima::aptima_env_proxy_t::create(aptima_env);
 
-    // Create a C++ thread to call ten.xxx in it.
+    // Create a C++ thread to call aptima.xxx in it.
     outer_thread = new std::thread(&test_extension_1::outer_thread_main, this,
                                    aptima_env_proxy);
 
     aptima_env.on_start_done();
   }
 
-  void on_stop(ten::aptima_env_t &aptima_env) override {
+  void on_stop(aptima::aptima_env_t &aptima_env) override {
     // Reclaim the C++ thread.
     outer_thread->join();
     delete outer_thread;
@@ -46,16 +46,16 @@ class test_extension_1 : public ten::extension_t {
     aptima_env.on_stop_done();
   }
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      // Trigger the C++ thread to call ten.xxx function.
+      // Trigger the C++ thread to call aptima.xxx function.
       trigger = true;
 
       aptima_env.send_cmd(
           std::move(cmd),
-          [](ten::aptima_env_t &aptima_env,
-             std::unique_ptr<ten::cmd_result_t> cmd_result, ten::error_t *err) {
+          [](aptima::aptima_env_t &aptima_env,
+             std::unique_ptr<aptima::cmd_result_t> cmd_result, aptima::error_t *err) {
             if (cmd_result->get_property_string("detail") ==
                 "hello world, too") {
               cmd_result->set_property("detail", "hello world 1, too");
@@ -70,7 +70,7 @@ class test_extension_1 : public ten::extension_t {
   std::atomic<bool> trigger{false};
   std::int64_t sent_data{0};
 
-  void outer_thread_main(ten::aptima_env_proxy_t *aptima_env_proxy) {
+  void outer_thread_main(aptima::aptima_env_proxy_t *aptima_env_proxy) {
     while (true) {
       if (trigger) {
         // Create a memory buffer to contain some important data.
@@ -92,24 +92,24 @@ class test_extension_1 : public ten::extension_t {
     delete aptima_env_proxy;
   }
 
-  static void send_data_from_outer_thread(ten::aptima_env_t &aptima_env,
+  static void send_data_from_outer_thread(aptima::aptima_env_t &aptima_env,
                                           void *user_data) {
-    // Create a 'ten::data_t' with the same important data.
-    auto aptima_data = ten::data_t::create("data");
+    // Create a 'aptima::data_t' with the same important data.
+    auto aptima_data = aptima::data_t::create("data");
     aptima_data->set_property("test_data", user_data);
     aptima_env.send_data(std::move(aptima_data));
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       if (received_all) {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "hello world, too");
         aptima_env.return_result(std::move(cmd_result),
                               std::move(hello_world_cmd));
@@ -120,8 +120,8 @@ class test_extension_2 : public ten::extension_t {
     }
   }
 
-  void on_data(aptima_UNUSED ten::aptima_env_t &aptima_env,
-               std::unique_ptr<ten::data_t> data) override {
+  void on_data(aptima_UNUSED aptima::aptima_env_t &aptima_env,
+               std::unique_ptr<aptima::data_t> data) override {
     auto *test_data =
         static_cast<int64_t *>(data->get_property_ptr("test_data"));
     aptima_ASSERT(*test_data == next_receive_data,
@@ -135,7 +135,7 @@ class test_extension_2 : public ten::extension_t {
     if (next_receive_data == SENT_DATA_CNT) {
       received_all = true;
       if (hello_world_cmd != nullptr) {
-        auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+        auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
         cmd_result->set_property("detail", "hello world, too");
         aptima_env.return_result(std::move(cmd_result),
                               std::move(hello_world_cmd));
@@ -144,14 +144,14 @@ class test_extension_2 : public ten::extension_t {
   }
 
  private:
-  std::unique_ptr<ten::cmd_t> hello_world_cmd;
+  std::unique_ptr<aptima::cmd_t> hello_world_cmd;
   bool received_all{false};
   std::int64_t next_receive_data{0};
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -190,10 +190,10 @@ TEST(ExtensionTest, SuspendResume2) {  // NOLINT
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
@@ -232,7 +232,7 @@ TEST(ExtensionTest, SuspendResume2) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  auto hello_world_cmd = aptima::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extension_group", "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));

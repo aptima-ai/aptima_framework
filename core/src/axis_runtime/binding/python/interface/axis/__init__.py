@@ -1,12 +1,15 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 from .addon import Addon
-from .addon_manager import (_AddonManager, register_addon_as_extension,
-                            unregister_all_addons_and_cleanup)
+from .addon_manager import (
+    _AddonManager,
+    register_addon_as_extension,
+    unregister_all_addons_and_cleanup,
+)
 from .app import App
 from .async_axis_env import AsyncTenEnv
 from .async_extension import AsyncExtension

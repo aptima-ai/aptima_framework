@@ -1,5 +1,5 @@
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/aptima-ai/aptima_framework/LICENSE for more
 // information.
@@ -12,21 +12,21 @@ package default_extension_go
 import (
 	"fmt"
 
-	"aptima_framework/ten"
+	"aptima_framework/aptima"
 )
 
 type aExtension struct {
 	name string
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func NewExtensionA(name string) ten.Extension {
+func NewExtensionA(name string) aptima.Extension {
 	return &aExtension{name: name}
 }
 
 func (p *aExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	go func() {
 		cmdName, _ := cmd.GetName()
@@ -35,14 +35,14 @@ func (p *aExtension) OnCmd(
 		)
 
 		if cmdName == "A" {
-			cmdB, _ := ten.NewCmd("B")
+			cmdB, _ := aptima.NewCmd("B")
 			err := cmdB.SetProperty("data", 2)
 			if err != nil {
 				panic("Should not happen.")
 			}
 			err = tenEnv.SendCmd(
 				cmdB,
-				func(tenEnv ten.TenEnv, cmdResult ten.CmdResult, e error) {
+				func(tenEnv aptima.TenEnv, cmdResult aptima.CmdResult, e error) {
 					detail, err := cmdResult.GetPropertyString("detail")
 					if err != nil {
 						panic("Should not happen.")
@@ -55,7 +55,7 @@ func (p *aExtension) OnCmd(
 						) + " detail: " + detail,
 					)
 
-					cmdResult2, _ := ten.NewCmdResult(ten.StatusCodeOk)
+					cmdResult2, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 					cmdResult2.SetPropertyString("detail", detail)
 					err = tenEnv.ReturnResult(cmdResult2, cmd, nil)
 					if err != nil {
@@ -72,8 +72,8 @@ func (p *aExtension) OnCmd(
 }
 
 func (p *aExtension) OnData(
-	tenEnv ten.TenEnv,
-	data ten.Data,
+	tenEnv aptima.TenEnv,
+	data aptima.Data,
 ) {
 	fmt.Println("aExtension onData")
 }
@@ -82,9 +82,9 @@ func init() {
 	fmt.Println("call init")
 
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"extension_a",
-		ten.NewDefaultExtensionAddon(NewExtensionA),
+		aptima.NewDefaultExtensionAddon(NewExtensionA),
 	)
 	if err != nil {
 		fmt.Println("register addon failed", err)

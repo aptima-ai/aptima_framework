@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <string>
 
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,7 @@ extern "C" {
 }
 #endif
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 class demuxer_thread_t;
@@ -48,7 +48,7 @@ struct interrupt_cb_param_t {
 
 class demuxer_t {
  public:
-  demuxer_t(ten::ten_env_proxy_t *ten_env_proxy,
+  demuxer_t(aptima::ten_env_proxy_t *ten_env_proxy,
             demuxer_thread_t *demuxer_thread);
   ~demuxer_t();
 
@@ -97,15 +97,15 @@ class demuxer_t {
   bool create_audio_converter_(const AVFrame *frame);
   bool create_video_converter_(int width, int height);
 
-  std::unique_ptr<ten::audio_frame_t> to_ten_audio_frame_(const AVFrame *frame);
-  std::unique_ptr<ten::video_frame_t> to_ten_video_frame_(const AVFrame *frame);
+  std::unique_ptr<aptima::audio_frame_t> to_ten_audio_frame_(const AVFrame *frame);
+  std::unique_ptr<aptima::video_frame_t> to_ten_video_frame_(const AVFrame *frame);
 
   bool decode_next_video_packet_(DECODE_STATUS &decode_status);
   bool decode_next_audio_packet_(DECODE_STATUS &decode_status);
 
   std::string input_stream_loc_;
   demuxer_thread_t *demuxer_thread_;
-  ten::ten_env_proxy_t *ten_env_proxy_;
+  aptima::ten_env_proxy_t *ten_env_proxy_;
 
   // This structure describes the basic information of a media file or media
   // streaming. This is the most basic structure in FFmpeg, which is the root of
@@ -137,4 +137,4 @@ class demuxer_t {
 };
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

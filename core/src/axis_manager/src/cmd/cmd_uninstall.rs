@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -104,7 +104,7 @@ async fn remove_installed_paths(
     // Remove the installed_paths.json file.
     fs::remove_file(&installed_paths_path)?;
 
-    // Remove the .ten/ directory.
+    // Remove the .aptima/ directory.
     let axis_path = installed_paths_path.parent().unwrap().parent().unwrap();
     fs::remove_dir_all(axis_path)?;
 

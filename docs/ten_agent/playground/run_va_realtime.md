@@ -1,10 +1,10 @@
 # Run Voice Assistant with Voice to Voice Realtime API
 
-This guide will help you to run the Voice Assistant with Voice to Voice Realtime API in the TEN-Agent Playground.
+This guide will help you to run the Voice Assistant with Voice to Voice Realtime API in the APTIMA-Agent Playground.
 
 ## Prerequisites
 
-- Make sure you have the TEN-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/ten-agent/quickstart) guide to start the playground.
+- Make sure you have the APTIMA-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/aptima-agent/quickstart) guide to start the playground.
 - You will need following information prepared:
   - Realtime API Key
 - RTC info, currently only Agora RTC is supported. You can register your account at [Agora](https://www.agora.io/). We assume you have your App ID and App Certificate ready when you configure your `.env` file.
@@ -24,7 +24,7 @@ This guide will help you to run the Voice Assistant with Voice to Voice Realtime
 
 ## Bind Weather Tool to your V2V
 
-You can bind weather tool to your V2V module in the TEN-Agent Playground.
+You can bind weather tool to your V2V module in the APTIMA-Agent Playground.
 
 1. When you have your agent running. Open Module Picker.
 2. Click on the button to the right of the V2V module to open the tool selection.

@@ -14,9 +14,7 @@ class ArgumentInfo(argparse.Namespace):
 
 
 def compare_heaps(base_file, target_file, output_type, output_file):
-    cmd = pprof_cmd.compare_heaps_cmd(
-        base_file, target_file, output_type, output_file
-    )
+    cmd = pprof_cmd.compare_heaps_cmd(base_file, target_file, output_type, output_file)
     print(f"compare_heaps_cmd: {cmd}")
 
     # run cmd
@@ -42,6 +40,4 @@ if __name__ == "__main__":
         f" {args.output_file}"
     )
 
-    compare_heaps(
-        args.base_file, args.target_file, args.output_type, args.output_file
-    )
+    compare_heaps(args.base_file, args.target_file, args.output_type, args.output_file)

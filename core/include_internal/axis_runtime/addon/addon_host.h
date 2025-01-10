@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -70,7 +70,7 @@ axis_RUNTIME_PRIVATE_API bool axis_addon_host_destroy_instance(
 
 /**
  * @brief The base directory of the loaded addon. This function can be
- * called before any TEN app starts. Note that the returned string must be
+ * called before any APTIMA app starts. Note that the returned string must be
  * destroyed by users.
  */
 axis_RUNTIME_PRIVATE_API const char *axis_addon_host_get_base_dir(

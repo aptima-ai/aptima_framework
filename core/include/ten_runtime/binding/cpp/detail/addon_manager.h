@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -13,14 +13,14 @@
 #include "ten_runtime/addon/addon_manager.h"  // IWYU pragma: export
 
 #define TEN_CPP_REGISTER_ADDON_AS_EXTENSION(NAME, CLASS)                         \
-  class NAME##_default_extension_addon_t : public ten::addon_t {                 \
+  class NAME##_default_extension_addon_t : public aptima::addon_t {                 \
    public:                                                                       \
-    void on_create_instance(ten::ten_env_t &ten_env, const char *name,           \
+    void on_create_instance(aptima::ten_env_t &ten_env, const char *name,           \
                             void *context) override {                            \
       auto *instance = new CLASS(name);                                          \
       ten_env.on_create_instance_done(instance, context);                        \
     }                                                                            \
-    void on_destroy_instance(ten::ten_env_t &ten_env, void *instance,            \
+    void on_destroy_instance(aptima::ten_env_t &ten_env, void *instance,            \
                              void *context) override {                           \
       delete static_cast<CLASS *>(instance);                                     \
       ten_env.on_destroy_instance_done(context);                                 \

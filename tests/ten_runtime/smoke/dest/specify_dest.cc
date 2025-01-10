@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "ten_runtime/common/status_code.h"
 #include "ten_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -38,12 +38,12 @@
 
 namespace {
 
-class business_extension : public ten::extension_t {
+class business_extension : public aptima::extension_t {
  public:
-  explicit business_extension(const char *name) : ten::extension_t(name) {}
+  explicit business_extension(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     // Check whether the initial request has been received and start processing
     // it.
     if (cmd->get_name() == "initial_request") {
@@ -53,16 +53,16 @@ class business_extension : public ten::extension_t {
   }
 
  private:
-  void handle_initial_request(ten::ten_env_t &ten_env,
-                              std::unique_ptr<ten::cmd_t> cmd) {
+  void handle_initial_request(aptima::ten_env_t &ten_env,
+                              std::unique_ptr<aptima::cmd_t> cmd) {
     // The 1st step is to interact with "plugin_1".
     send_cmd_to_plugin_1(ten_env, std::move(cmd));
   }
 
-  void send_cmd_to_plugin_1(ten::ten_env_t &ten_env,
-                            std::unique_ptr<ten::cmd_t> cmd) {
+  void send_cmd_to_plugin_1(aptima::ten_env_t &ten_env,
+                            std::unique_ptr<aptima::cmd_t> cmd) {
     // Construct a command for plugin_1.
-    auto cmd_to_plugin_1 = ten::cmd_t::create("plugin_1_cmd");
+    auto cmd_to_plugin_1 = aptima::cmd_t::create("plugin_1_cmd");
 
     // Explicitly specify to interact with plugin_1.
     cmd_to_plugin_1->set_dest("localhost", "default", "specify_dest_group",
@@ -72,13 +72,13 @@ class business_extension : public ten::extension_t {
     // C++11. If you can use C++14 or even C++17, the syntax can be simpler, but
     // the meaning remains the same.
     auto cmd_shared =
-        std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
+        std::make_shared<std::unique_ptr<aptima::cmd_t>>(std::move(cmd));
 
     ten_env.send_cmd(
         std::move(cmd_to_plugin_1),
-        [this, cmd_shared](ten::ten_env_t &ten_env,
-                           std::unique_ptr<ten::cmd_result_t> cmd_result,
-                           ten::error_t *err) {
+        [this, cmd_shared](aptima::ten_env_t &ten_env,
+                           std::unique_ptr<aptima::cmd_result_t> cmd_result,
+                           aptima::error_t *err) {
           // Receive the result from plugin_1, and decide the next step based
           // on the content of the result.
           nlohmann::json json =
@@ -91,10 +91,10 @@ class business_extension : public ten::extension_t {
         });
   }
 
-  void send_cmd_to_plugin_2(ten::ten_env_t &ten_env,
-                            std::unique_ptr<ten::cmd_t> cmd) {
+  void send_cmd_to_plugin_2(aptima::ten_env_t &ten_env,
+                            std::unique_ptr<aptima::cmd_t> cmd) {
     // Construct a command for plugin_2.
-    auto cmd_to_plugin_2 = ten::cmd_t::create("plugin_2_cmd");
+    auto cmd_to_plugin_2 = aptima::cmd_t::create("plugin_2_cmd");
 
     // Explicitly specify to interact with plugin_2.
     cmd_to_plugin_2->set_dest("localhost", "default", "specify_dest_group",
@@ -104,13 +104,13 @@ class business_extension : public ten::extension_t {
     // C++11. If you can use C++14 or even C++17, the syntax can be simpler, but
     // the meaning remains the same.
     auto cmd_shared =
-        std::make_shared<std::unique_ptr<ten::cmd_t>>(std::move(cmd));
+        std::make_shared<std::unique_ptr<aptima::cmd_t>>(std::move(cmd));
 
     ten_env.send_cmd(
         std::move(cmd_to_plugin_2),
-        [cmd_shared](ten::ten_env_t &ten_env,
-                     std::unique_ptr<ten::cmd_result_t> cmd_result,
-                     ten::error_t *err) {
+        [cmd_shared](aptima::ten_env_t &ten_env,
+                     std::unique_ptr<aptima::cmd_result_t> cmd_result,
+                     aptima::error_t *err) {
           // Receive result from plugin_2.
           nlohmann::json json =
               nlohmann::json::parse(cmd_result->get_property_to_json());
@@ -118,7 +118,7 @@ class business_extension : public ten::extension_t {
             // Successfully completed the interaction with plugin_2,
             // the next step is to return a result to the request
             // submitter (i.e., the client).
-            auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+            auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
             cmd_result->set_property("detail", "success");
             ten_env.return_result(std::move(cmd_result),
                                   std::move(*cmd_shared));
@@ -127,39 +127,39 @@ class business_extension : public ten::extension_t {
   }
 };
 
-class plugin_extension_1 : public ten::extension_t {
+class plugin_extension_1 : public aptima::extension_t {
  public:
-  explicit plugin_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit plugin_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     // Simulate the action of receiving a command, and return a result.
     if (cmd->get_name() == "plugin_1_cmd") {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "plugin_1_result");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class plugin_extension_2 : public ten::extension_t {
+class plugin_extension_2 : public aptima::extension_t {
  public:
-  explicit plugin_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit plugin_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     // Simulate the action of receiving a command, and return a result.
     if (cmd->get_name() == "plugin_2_cmd") {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "plugin_2_result");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class business_app : public ten::app_t {
+class business_app : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
+  void on_configure(aptima::ten_env_t &ten_env) override {
     // Note that the graph is very simple. It does _not_ contain any workflows,
     // just what the extensions contained in the graph.
     //
@@ -172,7 +172,7 @@ class business_app : public ten::app_t {
     // It does not contain any logic for interaction; all logic for interaction
     // is written in the code.
 
-    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+    bool rc = aptima::ten_env_internal_accessor_t::init_manifest_from_json(
         ten_env,
         // clang-format off
                  R"({
@@ -244,10 +244,10 @@ TEST(ExtensionTest, SpecifyDest) {  // NOLINT
                                        business_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send the "initial_request" to the "business extension".
-  auto initial_request_cmd = ten::cmd_t::create("initial_request");
+  auto initial_request_cmd = aptima::cmd_t::create("initial_request");
   initial_request_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                                 "specify_dest_group", "business_extension");
   auto cmd_result =

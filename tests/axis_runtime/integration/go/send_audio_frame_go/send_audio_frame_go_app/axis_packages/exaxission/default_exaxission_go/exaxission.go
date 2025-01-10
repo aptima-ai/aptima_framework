@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/aptima-ai/aptima_framework/LICENSE for more
 // information.
@@ -9,24 +9,24 @@
 package default_extension_go
 
 import (
-	"aptima_framework/ten"
+	"aptima_framework/aptima"
 	"time"
 )
 
 type defaultExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 
-	cachedCmd ten.Cmd
+	cachedCmd aptima.Cmd
 }
 
-func (ext *defaultExtension) OnConfigure(tenEnv ten.TenEnv) {
+func (ext *defaultExtension) OnConfigure(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnConfigure")
 	tenEnv.OnConfigureDone()
 }
 
 func (ext *defaultExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	cmdName, error := cmd.GetName()
 	if error != nil {
@@ -37,12 +37,12 @@ func (ext *defaultExtension) OnCmd(
 
 	ext.cachedCmd = cmd
 
-	audioFrame, error := ten.NewAudioFrame("audio_frame")
+	audioFrame, error := aptima.NewAudioFrame("audio_frame")
 	if error != nil {
 		panic("Failed to create audio frame.")
 	}
 
-	audioFrame.SetDataFmt(ten.AudioFrameDataFmtInterleave)
+	audioFrame.SetDataFmt(aptima.AudioFrameDataFmtInterleave)
 	audioFrame.SetBytesPerSample(2)
 	audioFrame.SetSampleRate(16000)
 	audioFrame.SetNumberOfChannels(1)
@@ -78,8 +78,8 @@ func (ext *defaultExtension) OnCmd(
 }
 
 func (ext *defaultExtension) OnAudioFrame(
-	tenEnv ten.TenEnv,
-	frame ten.AudioFrame,
+	tenEnv aptima.TenEnv,
+	frame aptima.AudioFrame,
 ) {
 	frameName, error := frame.GetName()
 	if error != nil {
@@ -89,7 +89,7 @@ func (ext *defaultExtension) OnAudioFrame(
 	tenEnv.LogDebug("OnAudioFrame" + frameName)
 
 	dataFmt, err := frame.GetDataFmt()
-	if err != nil || dataFmt != ten.AudioFrameDataFmtInterleave {
+	if err != nil || dataFmt != aptima.AudioFrameDataFmtInterleave {
 		panic("Failed to get data fmt.")
 	}
 
@@ -161,7 +161,7 @@ func (ext *defaultExtension) OnAudioFrame(
 		panic("Cached cmd is nil.")
 	}
 
-	cmdResult, err := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, err := aptima.NewCmdResult(aptima.StatusCodeOk)
 	if err != nil {
 		panic("Failed to create cmd result.")
 	}
@@ -172,15 +172,15 @@ func (ext *defaultExtension) OnAudioFrame(
 	}
 }
 
-func newAExtension(name string) ten.Extension {
+func newAExtension(name string) aptima.Extension {
 	return &defaultExtension{}
 }
 
 func init() {
 	// Register addon.
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"default_extension_go",
-		ten.NewDefaultExtensionAddon(newAExtension),
+		aptima.NewDefaultExtensionAddon(newAExtension),
 	)
 	if err != nil {
 		panic("Failed to register addon.")

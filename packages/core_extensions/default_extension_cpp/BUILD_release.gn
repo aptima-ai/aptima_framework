@@ -1,5 +1,5 @@
 #
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
@@ -34,14 +34,14 @@ if (ten_enable_standalone_test) {
     package_kind = "extension"
 
     sources = [
-      ".ten/app/ten_packages/system/googletest/src/gtest-all.cc",
-      ".ten/app/ten_packages/system/googletest/src/gtest_main.cc",
+      ".aptima/app/ten_packages/system/googletest/src/gtest-all.cc",
+      ".aptima/app/ten_packages/system/googletest/src/gtest_main.cc",
       "tests/basic.cc",
     ]
 
     include_dirs = [
-      ".ten/app/ten_packages/system/googletest",
-      ".ten/app/ten_packages/system/googletest/include",
+      ".aptima/app/ten_packages/system/googletest",
+      ".aptima/app/ten_packages/system/googletest/include",
     ]
   }
 }

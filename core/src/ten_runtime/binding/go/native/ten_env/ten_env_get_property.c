@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,9 +12,9 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env.h"
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/binding/go/value/value.h"
-#include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/ten_env.h"
-#include "ten_runtime/binding/go/interface/ten/value.h"
+#include "ten_runtime/binding/go/interface/aptima/common.h"
+#include "ten_runtime/binding/go/interface/aptima/ten_env.h"
+#include "ten_runtime/binding/go/interface/aptima/value.h"
 #include "ten_runtime/common/errno.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
 #include "ten_utils/lib/alloc.h"
@@ -75,8 +75,8 @@ static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
   // Imagine the following scenario:
   //
   // 1. There are two goroutine in one extension. Goroutine A wants to get the
-  //    property "p" from the ten instance bound to the extension, and goroutine
-  //    B wants to update the property "p" in the same ten instance. Goroutine A
+  //    property "p" from the aptima instance bound to the extension, and goroutine
+  //    B wants to update the property "p" in the same aptima instance. Goroutine A
   //    and B run in parallel, that A runs on thread M1 and B runs on thread M2
   //    in GO world.
   //
@@ -92,7 +92,7 @@ static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
   ten_value_t *c_value =
       ten_env_peek_property(ten_env, ten_string_get_raw_str(&ctx->path), &err);
 
-  // Because this value will be passed out of the TEN world and back into the
+  // Because this value will be passed out of the APTIMA world and back into the
   // GO world, and these two worlds are in different threads, copy semantics are
   // used to avoid thread safety issues.
   ctx->c_value = c_value ? ten_value_clone(c_value) : NULL;
@@ -173,7 +173,7 @@ ten_go_error_t ten_go_ten_env_get_property_type_and_size(
   if (c_value != NULL) {
     ten_go_ten_value_get_type_and_size(c_value, type, size);
 
-    // The c_value is cloned from TEN runtime, refer to the comments in
+    // The c_value is cloned from APTIMA runtime, refer to the comments in
     // ten_notify_get_property.
     //
     // A property will be retrieved according to the following two steps.
@@ -228,7 +228,7 @@ ten_go_error_t ten_go_ten_env_get_property_int8(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -264,7 +264,7 @@ ten_go_error_t ten_go_ten_env_get_property_int16(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -300,7 +300,7 @@ ten_go_error_t ten_go_ten_env_get_property_int32(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -336,7 +336,7 @@ ten_go_error_t ten_go_ten_env_get_property_int64(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -372,7 +372,7 @@ ten_go_error_t ten_go_ten_env_get_property_uint8(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -409,7 +409,7 @@ ten_go_error_t ten_go_ten_env_get_property_uint16(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -446,7 +446,7 @@ ten_go_error_t ten_go_ten_env_get_property_uint32(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -483,7 +483,7 @@ ten_go_error_t ten_go_ten_env_get_property_uint64(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -519,7 +519,7 @@ ten_go_error_t ten_go_ten_env_get_property_float32(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -556,7 +556,7 @@ ten_go_error_t ten_go_ten_env_get_property_float64(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -592,7 +592,7 @@ ten_go_error_t ten_go_ten_env_get_property_bool(uintptr_t bridge_addr,
     ten_go_error_from_error(&cgo_error, &err);
     ten_error_deinit(&err);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -622,7 +622,7 @@ ten_go_error_t ten_go_ten_env_get_property_ptr(uintptr_t bridge_addr,
   if (c_value != NULL) {
     ten_go_ten_value_get_ptr(c_value, value, &cgo_error);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(c_value);
   }
 
@@ -652,7 +652,7 @@ ten_go_error_t ten_go_ten_env_get_property_json_and_size(
   if (value != NULL) {
     ten_go_ten_value_to_json(value, json_str_len, json_str, &cgo_error);
 
-    // The c_value is cloned from TEN runtime, so we have to destroy it.
+    // The c_value is cloned from APTIMA runtime, so we have to destroy it.
     ten_value_destroy(value);
   }
 

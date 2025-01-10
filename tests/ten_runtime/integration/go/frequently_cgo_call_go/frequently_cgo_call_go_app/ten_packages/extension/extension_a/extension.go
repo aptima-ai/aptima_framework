@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,20 +12,20 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 const concurrency = 100000
 
 type extensionA struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func newExtensionA(name string) ten.Extension {
+func newExtensionA(name string) aptima.Extension {
 	return &extensionA{}
 }
 
-func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
+func (p *extensionA) OnStart(tenEnv aptima.TenEnv) {
 	go func() {
 		var wg sync.WaitGroup
 		var counter int32
@@ -67,15 +67,15 @@ func (p *extensionA) OnStart(tenEnv ten.TenEnv) {
 }
 
 func (p *extensionA) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	go func() {
 		fmt.Println("extensionA OnCmd")
 
 		var propLock sync.Mutex
 
-		cmdB, _ := ten.NewCmd("B")
+		cmdB, _ := aptima.NewCmd("B")
 		var count uint32 = 0
 
 		done := make(chan struct{}, 1)
@@ -120,17 +120,17 @@ func (p *extensionA) OnCmd(
 			panic("Should not happen.")
 		}
 
-		tenEnv.SendCmd(cmdB, func(r ten.TenEnv, cs ten.CmdResult, e error) {
+		tenEnv.SendCmd(cmdB, func(r aptima.TenEnv, cs aptima.CmdResult, e error) {
 			detail, err := cs.GetPropertyString("detail")
 			if err != nil {
-				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
 				r.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
 			if detail != "this is extensionB." {
-				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeError)
 				cmdResult.SetPropertyString("detail", "wrong detail")
 				r.ReturnResult(cmdResult, cmd, nil)
 				return
@@ -138,13 +138,13 @@ func (p *extensionA) OnCmd(
 
 			password, err := cs.GetPropertyString("password")
 			if err != nil {
-				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
 				r.ReturnResult(cmdResult, cmd, nil)
 				return
 			}
 
-			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeOk)
+			cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeOk)
 			cmdResult.SetPropertyString("detail", password)
 			r.ReturnResult(cmdResult, cmd, nil)
 		})
@@ -153,9 +153,9 @@ func (p *extensionA) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"extension_a",
-		ten.NewDefaultExtensionAddon(newExtensionA),
+		aptima.NewDefaultExtensionAddon(newExtensionA),
 	)
 	if err != nil {
 		fmt.Println("register addon failed", err)

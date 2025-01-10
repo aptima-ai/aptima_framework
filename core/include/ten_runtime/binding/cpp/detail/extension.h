@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -34,7 +34,7 @@ using ten_json_t = ::ten_json_t;
 using ten_env_t = struct ten_env_t;
 using ten_extension_t = struct ten_extension_t;
 
-namespace ten {
+namespace aptima {
 
 class ten_env_t;
 class extension_group_t;
@@ -58,8 +58,8 @@ class extension_t : public binding_handle_t {
 
  protected:
   explicit extension_t(const char *name)
-      :  // In order to keep type safety in C++, the type of the 'ten'
-         // parameters of these 4 functions are indeed 'ten::ten_env_t'.
+      :  // In order to keep type safety in C++, the type of the 'aptima'
+         // parameters of these 4 functions are indeed 'aptima::ten_env_t'.
          // However, these callback functions are called from the C language
          // world, and in order to keep type safety in the C language world, it
          // better uses reinterpret_cast<> here, rather than change the type of
@@ -106,7 +106,7 @@ class extension_t : public binding_handle_t {
   // the C++ extension "might" take a copy and share ownership of the cmd.
 
   virtual void on_cmd(ten_env_t &ten_env, std::unique_ptr<cmd_t> cmd) {
-    auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+    auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
     cmd_result->set_property("detail", "default");
     ten_env.return_result(std::move(cmd_result), std::move(cmd));
   }
@@ -275,9 +275,9 @@ class extension_t : public binding_handle_t {
   }
 
   void invoke_cpp_extension_on_configure(ten_env_t &ten_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -303,9 +303,9 @@ class extension_t : public binding_handle_t {
   }
 
   void invoke_cpp_extension_on_init(ten_env_t &ten_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -330,9 +330,9 @@ class extension_t : public binding_handle_t {
   }
 
   void invoke_cpp_extension_on_start(ten_env_t &ten_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -357,9 +357,9 @@ class extension_t : public binding_handle_t {
   }
 
   void invoke_cpp_extension_on_stop(ten_env_t &ten_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -384,9 +384,9 @@ class extension_t : public binding_handle_t {
   }
 
   void invoke_cpp_extension_on_deinit(ten_env_t &ten_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -413,9 +413,9 @@ class extension_t : public binding_handle_t {
   void invoke_cpp_extension_on_cmd(ten_env_t &ten_env,
                                    std::unique_ptr<cmd_t> cmd,
                                    cpp_extension_on_cmd_func_t on_cmd_func) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -441,9 +441,9 @@ class extension_t : public binding_handle_t {
 
   void invoke_cpp_extension_on_data(ten_env_t &ten_env,
                                     std::unique_ptr<data_t> data) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -469,9 +469,9 @@ class extension_t : public binding_handle_t {
 
   void invoke_cpp_extension_on_audio_frame(
       ten_env_t &ten_env, std::unique_ptr<audio_frame_t> frame) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -498,9 +498,9 @@ class extension_t : public binding_handle_t {
 
   void invoke_cpp_extension_on_video_frame(
       ten_env_t &ten_env, std::unique_ptr<video_frame_t> frame) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -528,4 +528,4 @@ class extension_t : public binding_handle_t {
   ten_env_t *cpp_ten_env;
 };
 
-}  // namespace ten
+}  // namespace aptima

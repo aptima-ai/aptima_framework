@@ -26,42 +26,57 @@ import argparse
 import jinja2
 from mbedtls_dev import build_tree
 
+
 def render(template_path: str) -> str:
     """
     Render template from the input file.
     """
     environment = jinja2.Environment(
         loader=jinja2.FileSystemLoader(os.path.dirname(template_path)),
-        keep_trailing_newline=True)
+        keep_trailing_newline=True,
+    )
     template = environment.get_template(os.path.basename(template_path))
 
     return template.render()
+
 
 def generate_driver_wrapper_file(mbedtls_root: str, output_dir: str) -> None:
     """
     Generate the file psa_crypto_driver_wrapper.c.
     """
-    driver_wrapper_template_filename = \
-        os.path.join(mbedtls_root, \
-        "scripts/data_files/driver_templates/psa_crypto_driver_wrappers.c.jinja")
+    driver_wrapper_template_filename = os.path.join(
+        mbedtls_root,
+        "scripts/data_files/driver_templates/psa_crypto_driver_wrappers.c.jinja",
+    )
 
     result = render(driver_wrapper_template_filename)
 
-    with open(os.path.join(output_dir, "psa_crypto_driver_wrappers.c"), 'w') as out_file:
+    with open(
+        os.path.join(output_dir, "psa_crypto_driver_wrappers.c"), "w"
+    ) as out_file:
         out_file.write(result)
+
 
 def main() -> int:
     """
     Main with command line arguments.
     """
     def_arg_mbedtls_root = build_tree.guess_mbedtls_root()
-    def_arg_output_dir = os.path.join(def_arg_mbedtls_root, 'library')
+    def_arg_output_dir = os.path.join(def_arg_mbedtls_root, "library")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mbedtls-root', nargs='?', default=def_arg_mbedtls_root,
-                        help='root directory of mbedtls source code')
-    parser.add_argument('output_directory', nargs='?',
-                        default=def_arg_output_dir, help='output file\'s location')
+    parser.add_argument(
+        "--mbedtls-root",
+        nargs="?",
+        default=def_arg_mbedtls_root,
+        help="root directory of mbedtls source code",
+    )
+    parser.add_argument(
+        "output_directory",
+        nargs="?",
+        default=def_arg_output_dir,
+        help="output file's location",
+    )
     args = parser.parse_args()
 
     mbedtls_root = os.path.abspath(args.mbedtls_root)
@@ -71,5 +86,6 @@ def main() -> int:
 
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

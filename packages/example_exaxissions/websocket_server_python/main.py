@@ -1,11 +1,19 @@
 #
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0.
 # See the LICENSE file for more information.
 #
 import websockets
-from ten import (Addon, AsyncExtension, AsyncTenEnv, Cmd, CmdResult,
-                 StatusCode, TenEnv, register_addon_as_extension)
+from aptima import (
+    Addon,
+    AsyncExtension,
+    AsyncTenEnv,
+    Cmd,
+    CmdResult,
+    StatusCode,
+    TenEnv,
+    register_addon_as_extension,
+)
 
 
 class WebsocketServerExtension(AsyncExtension):
@@ -57,6 +65,10 @@ class WebsocketServerExtension(AsyncExtension):
 
 @register_addon_as_extension("websocket_server_python")
 class DefaultExtensionAddon(Addon):
-    def on_create_instance(self, aptima_env: TenEnv, name: str, context) -> None:
+    def on_create_instance(
+        self, aptima_env: TenEnv, name: str, context
+    ) -> None:
         print("on_create_instance")
-        aptima_env.on_create_instance_done(WebsocketServerExtension(name), context)
+        aptima_env.on_create_instance_done(
+            WebsocketServerExtension(name), context
+        )

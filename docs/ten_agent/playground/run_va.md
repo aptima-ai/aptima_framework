@@ -1,10 +1,10 @@
 # Run Voice Assistant with Large Language Model
 
-This guide will help you to run the Voice Assistant with Large Language Model in the TEN-Agent Playground.
+This guide will help you to run the Voice Assistant with Large Language Model in the APTIMA-Agent Playground.
 
 ## Prerequisites
 
-- Make sure you have the TEN-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/ten-agent/quickstart) guide to start the playground.
+- Make sure you have the APTIMA-Agent playground running. If not, follow the [Run Playground](https://doc.theten.ai/aptima-agent/quickstart) guide to start the playground.
 - You will need following information prepared:
   - STT info, any supported STT can be used. [Deepgram](https://deepgram.com/) is relatively easy to register and get started with.
   - TTS info, any supported TTS can be used. [Fish.Audio](https://fish.audio/) is relatively easy to register and get started with.
@@ -31,7 +31,7 @@ Azure STT is integrated within RTC extension module. That's why if you want to u
 
 ## Bind Weather Tool to your LLM
 
-You can bind weather tool to your LLM module in the TEN-Agent Playground.
+You can bind weather tool to your LLM module in the APTIMA-Agent Playground.
 It's recommended to use OpenAI LLM below.
 
 1. When you have your agent running. Open Module Picker.

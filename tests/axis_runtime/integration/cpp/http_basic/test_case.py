@@ -39,13 +39,9 @@ def test_restful_http_app():
             base_path, "restful_http_app/bin/restful_app_source.exe"
         )
     elif sys.platform == "darwin":
-        server_cmd = os.path.join(
-            base_path, "restful_http_app/bin/restful_app_source"
-        )
+        server_cmd = os.path.join(base_path, "restful_http_app/bin/restful_app_source")
     else:
-        server_cmd = os.path.join(
-            base_path, "restful_http_app/bin/restful_app_source"
-        )
+        server_cmd = os.path.join(base_path, "restful_http_app/bin/restful_app_source")
 
     app_root_path = os.path.join(base_path, "restful_http_app")
     source_pkg_name = "restful_app_source"

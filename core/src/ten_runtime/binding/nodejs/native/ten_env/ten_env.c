@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -54,7 +54,7 @@ static void ten_nodejs_ten_env_finalize(napi_env env, void *data, void *hint) {
                  ten_nodejs_ten_env_check_integrity(ten_env_bridge, true),
              "Should not happen.");
 
-  TEN_LOGD("TEN JS rte object is finalized.");
+  TEN_LOGD("APTIMA JS rte object is finalized.");
 
   // According to NAPI doc:
   // ====

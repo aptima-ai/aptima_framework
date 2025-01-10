@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -31,9 +31,9 @@
 // it is also recommended to disable the leak detection when using Python.
 //
 // Therefore, we can only enable LSan in some simple test cases. Beyond that, we
-// largely need to rely on the TEN's own memory tracking feature to ensure that
-// the TEN itself has no memory leaks. This feature in the TEN can be seen in
-// the TEN Memory Sanitizer.
+// largely need to rely on the APTIMA's own memory tracking feature to ensure that
+// the APTIMA itself has no memory leaks. This feature in the APTIMA can be seen in
+// the APTIMA Memory Sanitizer.
 
 static PyModuleDef *axis_py_runtime_module(void) {
   static struct PyMethodDef module_methods[] = {

@@ -61,7 +61,8 @@ def test_hello_world_app():
     if sys.platform == "win32":
         my_env["PATH"] = (
             os.path.join(
-                base_path, "hello_world_app/aptima_packages/system/aptima_runtime/lib"
+                base_path,
+                "hello_world_app/aptima_packages/system/aptima_runtime/lib",
             )
             + ";"
             + my_env["PATH"]
@@ -71,18 +72,20 @@ def test_hello_world_app():
         )
         client_cmd = os.path.join(base_path, "hello_world_app_client.exe")
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
-            base_path, "hello_world_app/aptima_packages/system/aptima_runtime/lib"
+            base_path,
+            "hello_world_app/aptima_packages/system/aptima_runtime/lib",
         )
         server_cmd = os.path.join(
             base_path, "hello_world_app/bin/hello_world_app_source"
         )
         client_cmd = os.path.join(base_path, "hello_world_app_client")
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
-            base_path, "hello_world_app/aptima_packages/system/aptima_runtime/lib"
+            base_path,
+            "hello_world_app/aptima_packages/system/aptima_runtime/lib",
         )
         server_cmd = os.path.join(
             base_path, "hello_world_app/bin/hello_world_app_source"

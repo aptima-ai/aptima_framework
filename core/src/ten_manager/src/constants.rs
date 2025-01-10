@@ -1,20 +1,20 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-// Go to https://ten-console.theten.ai/ to get user token.
+// Go to https://aptima-console.theten.ai/ to get user token.
 pub const DEFAULT_REGISTRY: &str =
-    "https://ten-store.theten.ai/api/ten-cloud-store/v1/packages";
+    "https://aptima-store.theten.ai/api/aptima-cloud-store/v1/packages";
 
 // This comment is just for reference.
 //
 // pub const ADMIN_TOKEN: &str =
 //     "cnRlX3N0b3JlOjNjYzc2ODgxYjExNjQ0NTM4ZDQ5YmNmNmNlYjQ2Yjk0";
 
-pub const DOT_TEN_DIR: &str = ".ten";
+pub const DOT_TEN_DIR: &str = ".aptima";
 pub const APP_DIR_IN_DOT_TEN_DIR: &str = "app";
 pub const INSTALLED_PATHS_JSON_FILENAME: &str = "installed_paths.json";
 pub const PACKAGE_INFO_DIR_IN_DOT_TEN_DIR: &str = "package_info";

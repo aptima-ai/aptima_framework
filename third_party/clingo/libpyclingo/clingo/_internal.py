@@ -16,12 +16,14 @@ try:
         sys.setdlopenflags(os.RTLD_LAZY | os.RTLD_GLOBAL)
     try:
         # Note: imported first to correctly handle the embedded case
-        from _clingo import \
-            ffi as _ffi  # type: ignore # pylint: disable=no-name-in-module
+        from _clingo import (
+            ffi as _ffi,
+        )  # type: ignore # pylint: disable=no-name-in-module
         from _clingo import lib as _lib
     except ImportError:
-        from ._clingo import \
-            ffi as _ffi  # type: ignore # pylint: disable=no-name-in-module
+        from ._clingo import (
+            ffi as _ffi,
+        )  # type: ignore # pylint: disable=no-name-in-module
         from ._clingo import lib as _lib
 finally:
     if _FLAGS is not None:

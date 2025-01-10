@@ -1,12 +1,12 @@
-# For Developers of the TEN Framework
+# For Developers of the APTIMA Framework
 
-The TEN framework includes three types of test suites:
+The APTIMA framework includes three types of test suites:
 
 * Unit Tests
 * Smoke Tests
 * Integration Tests
 
-The TEN framework uses `gtest` as the testing framework for unit tests and smoke tests, and `pytest` as the testing framework for integration tests.
+The APTIMA framework uses `gtest` as the testing framework for unit tests and smoke tests, and `pytest` as the testing framework for integration tests.
 
 ## Unit Tests
 
@@ -52,7 +52,7 @@ failed=0; for i in {1..100}; do if [ ${failed} != 0 ]; then echo "error occurred
 
 ## Integration Tests
 
-Integration tests are black-box tests for the TEN framework. The source directory for integration tests is `tests/ten_runtime/integration`. These tests are used to validate real-world execution scenarios.
+Integration tests are black-box tests for the APTIMA framework. The source directory for integration tests is `tests/ten_runtime/integration`. These tests are used to validate real-world execution scenarios.
 
 The file structure for integration tests is as follows:
 
@@ -78,7 +78,7 @@ pytest tests/ten_runtime/integration/
 
 ### Linux
 
-On Linux, you can use the following technique to slow down the execution of TEN, which can help in triggering timing-related bugs.
+On Linux, you can use the following technique to slow down the execution of APTIMA, which can help in triggering timing-related bugs.
 
 ```shell
 sudo apt install util-linux

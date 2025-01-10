@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -76,13 +76,13 @@ def test_ffmpeg_bypass_app():
         )
         server_cmd = "bin/ffmpeg_bypass_app_source.exe"
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path, "ffmpeg_bypass_app/ten_packages/system/ten_runtime/lib"
         )
         server_cmd = "bin/ffmpeg_bypass_app_source"
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path, "ffmpeg_bypass_app/ten_packages/system/ten_runtime/lib"
         )
@@ -123,9 +123,9 @@ def test_ffmpeg_bypass_app():
     )
     assert cmp_rc
     # python cv2 would set LD_LIBRARY_PATH to 'cwd', and this will cause the
-    # TEN app of the subsequent integration test cases to use the 'libten_runtime.so'
+    # APTIMA app of the subsequent integration test cases to use the 'libten_runtime.so'
     # under 'out/<OS>/<CPU>/, rather than the one under '<TEN_app>/lib/'. This
-    # is not what TEN runtime expects, so we unset 'LD_LIBRARY_PATH' to prevent
+    # is not what APTIMA runtime expects, so we unset 'LD_LIBRARY_PATH' to prevent
     # from this happening.
     #
     # Refer to ~/.local/lib/python3.10/site-packages/cv2/__init__.py after

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -50,22 +50,22 @@
 #define TEN_STR_AUDIO_FRAME_IN "audio_frame_in"
 #define TEN_STR_AUDIO_FRAME_OUT "audio_frame_out"
 
-#define TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX "ten:"
+#define TEN_STR_MSG_NAME_TEN_NAMESPACE_PREFIX "aptima:"
 
 // The message name might be empty, however, the property schema will be stored
 // in a hashtable which key is the name of the msg. Using a special name to
 // store the schema if the msg name is not provided.
 //
-// Because ':' is not a legal character in the TEN schema specification for
+// Because ':' is not a legal character in the APTIMA schema specification for
 // message names, ':' is used in special message names for purely internal use.
-#define TEN_STR_MSG_NAME_TEN_EMPTY "ten:empty"
+#define TEN_STR_MSG_NAME_TEN_EMPTY "aptima:empty"
 
-#define TEN_STR_MSG_NAME_TEN_CLOSE_APP "ten:close_app"
-#define TEN_STR_MSG_NAME_TEN_STOP_GRAPH "ten:stop_graph"
-#define TEN_STR_MSG_NAME_TEN_START_GRAPH "ten:start_graph"
-#define TEN_STR_MSG_NAME_TEN_RESULT "ten:result"
-#define TEN_STR_MSG_NAME_TEN_TIMEOUT "ten:timeout"
-#define TEN_STR_MSG_NAME_TEN_TIMER "ten:timer"
+#define TEN_STR_MSG_NAME_TEN_CLOSE_APP "aptima:close_app"
+#define TEN_STR_MSG_NAME_TEN_STOP_GRAPH "aptima:stop_graph"
+#define TEN_STR_MSG_NAME_TEN_START_GRAPH "aptima:start_graph"
+#define TEN_STR_MSG_NAME_TEN_RESULT "aptima:result"
+#define TEN_STR_MSG_NAME_TEN_TIMEOUT "aptima:timeout"
+#define TEN_STR_MSG_NAME_TEN_TIMER "aptima:timer"
 
 // Special command.
 #define TEN_STR_STOP_GRAPH "stop_graph"
@@ -159,6 +159,6 @@
 #define TEN_STR_STAR "*"
 
 #define TEN_STR_DEFAULT_EXTENSION_GROUP "default_extension_group"
-#define TEN_STR_TEN_TEST_EXTENSION "ten:test_extension"
+#define TEN_STR_TEN_TEST_EXTENSION "aptima:test_extension"
 
 #define TEN_STR_MANIFEST_JSON "manifest.json"

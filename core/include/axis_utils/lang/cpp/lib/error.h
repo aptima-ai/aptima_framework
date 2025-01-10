@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,7 +8,7 @@
 
 #include "aptima_utils/lib/error.h"
 
-namespace ten {
+namespace aptima {
 
 class error_t {
  public:
@@ -40,4 +40,4 @@ class error_t {
   bool own_;
 };
 
-}  // namespace ten
+}  // namespace aptima

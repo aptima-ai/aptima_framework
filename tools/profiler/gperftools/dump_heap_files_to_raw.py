@@ -36,8 +36,7 @@ def dump_heap_files_to_raw(bin, heap_infos):
     rc = subprocess.run(convert_to_raw_cmd, shell=True)
     if rc.returncode != 0:
         raise Exception(
-            "convert_to_raw_cmd failed, convert_to_raw_cmd:"
-            f" {convert_to_raw_cmd}"
+            "convert_to_raw_cmd failed, convert_to_raw_cmd:" f" {convert_to_raw_cmd}"
         )
 
 

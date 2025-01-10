@@ -1,10 +1,10 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_runtime/binding/go/interface/ten/value.h"
+#include "axis_runtime/binding/go/interface/aptima/value.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #include "include_internal/axis_runtime/binding/go/internal/common.h"
 #include "include_internal/axis_runtime/binding/go/value/value.h"
 #include "include_internal/axis_utils/value/value_smart_ptr.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
 #include "axis_runtime/common/errno.h"
 #include "axis_utils/lib/alloc.h"
 #include "axis_utils/lib/buf.h"
@@ -37,10 +37,10 @@ void tenGoUnrefObj(axis_go_handle_t);
 // The definition of tenUnpinGoPointer is in GO world, and tenUnpinGoPointer is
 // exported to C. So we need to declare it, then it can be called from C to GO.
 //
-// Before a GO pointer is set as a property of a msg or ten instance, it will be
+// Before a GO pointer is set as a property of a msg or aptima instance, it will be
 // pinned into the handle map in GO world. And the handle id pointing to the GO
 // pointer will be set as the property value, not the GO pointer itself. When
-// the msg or ten instance has been reclaimed by TEN runtime, the GO pointer
+// the msg or aptima instance has been reclaimed by APTIMA runtime, the GO pointer
 // must be unpinned from the handle map to avoid memory leak. This function is
 // used to unpinned the GO pointer.
 void tenUnpinGoPointer(axis_go_handle_t);
@@ -261,10 +261,10 @@ axis_value_t *axis_go_axis_value_create_ptr(axis_go_handle_t value) {
   //                        value = msg.GetProperty(key)
   //
   // So the GO pointer in the handle map _must_ be pinned until extension B has
-  // handed the msg over to TEN runtime. Thus, the GO pointer can only be
+  // handed the msg over to APTIMA runtime. Thus, the GO pointer can only be
   // unpinned from C to GO, but not be unpinned once the msg is sent out from
   // extension A. And if A has more than one consumer, the GO pointer must be
-  // pinned until all the consumers have handed the msgs over to TEN runtime.
+  // pinned until all the consumers have handed the msgs over to APTIMA runtime.
   // That's what `axis_go_handle_unpin_from_go` will do.
   axis_shared_ptr_t *handle_ptr =
       axis_shared_ptr_create(handle, axis_go_handle_unpin_from_go);

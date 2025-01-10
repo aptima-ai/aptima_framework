@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -56,7 +56,7 @@ TEN_RUNTIME_PRIVATE_API bool ten_raw_cmd_result_validate_schema(
  * name. When we want to validate the cmd result, we must get the original cmd
  * name from the path first, and the original cmd name has to be stored in the
  * cmd result for using later. As the msg name of the cmd result is always a
- * fixed value (i.e., ten::result), we can borrow the storage of the msg name to
+ * fixed value (i.e., aptima::result), we can borrow the storage of the msg name to
  * store the original cmd name, and then resume the msg name after the schema
  * validation.
  */

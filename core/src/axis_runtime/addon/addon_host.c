@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -146,19 +146,19 @@ void axis_addon_context_destroy(axis_addon_context_t *self) {
 }
 
 /**
- * @param ten Might be the ten of the 'engine', or the ten of an extension
+ * @param aptima Might be the aptima of the 'engine', or the aptima of an extension
  * thread (group).
  * @param cb The callback when the creation is completed. Because there might be
  * more than one extension threads to create extensions from the corresponding
  * extension addons simultaneously. So we can _not_ save the function pointer
- * of @a cb into @a ten, instead we need to pass the function pointer of @a cb
+ * of @a cb into @a aptima, instead we need to pass the function pointer of @a cb
  * through a parameter.
  * @param cb_data The user data of @a cb. Refer the comments of @a cb for the
  * reason why we pass the pointer of @a cb_data through a parameter rather than
- * saving it into @a ten.
+ * saving it into @a aptima.
  *
- * @note We will save the pointers of @a cb and @a cb_data into a 'ten' object
- * later in the call flow when the 'ten' object at that time belongs to a more
+ * @note We will save the pointers of @a cb and @a cb_data into a 'aptima' object
+ * later in the call flow when the 'aptima' object at that time belongs to a more
  * specific scope, so that we can minimize the parameters count then.
  */
 void axis_addon_host_create_instance_async(
@@ -187,19 +187,19 @@ void axis_addon_host_create_instance_async(
 }
 
 /**
- * @param ten Might be the ten of the 'engine', or the ten of an extension
+ * @param aptima Might be the aptima of the 'engine', or the aptima of an extension
  * thread(group).
  * @param cb The callback when the creation is completed. Because there might be
  * more than one extension threads to create extensions from the corresponding
  * extension addons simultaneously. So we can _not_ save the function pointer
- * of @a cb into @a ten, instead we need to pass the function pointer of @a cb
+ * of @a cb into @a aptima, instead we need to pass the function pointer of @a cb
  * through a parameter.
  * @param cb_data The user data of @a cb. Refer the comments of @a cb for the
  * reason why we pass the pointer of @a cb_data through a parameter rather than
- * saving it into @a ten.
+ * saving it into @a aptima.
  *
- * @note We will save the pointers of @a cb and @a cb_data into a 'ten' object
- * later in the call flow when the 'ten' object at that time belongs to a more
+ * @note We will save the pointers of @a cb and @a cb_data into a 'aptima' object
+ * later in the call flow when the 'aptima' object at that time belongs to a more
  * specific scope, so that we can minimize the parameters count then.
  */
 bool axis_addon_host_destroy_instance_async(

@@ -1,10 +1,10 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_runtime/binding/go/interface/ten/video_frame.h"
+#include "axis_runtime/binding/go/interface/aptima/video_frame.h"
 
 #include <stdint.h>
 
@@ -12,7 +12,7 @@
 #include "include_internal/axis_runtime/binding/go/msg/msg.h"
 #include "include_internal/axis_runtime/msg/msg.h"
 #include "include_internal/axis_runtime/msg/video_frame/video_frame.h"
-#include "axis_runtime/binding/go/interface/ten/msg.h"
+#include "axis_runtime/binding/go/interface/aptima/msg.h"
 #include "axis_runtime/common/errno.h"
 #include "axis_runtime/msg/msg.h"
 #include "axis_runtime/msg/video_frame/video_frame.h"

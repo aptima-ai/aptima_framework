@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 // #include "addon.h"
 import "C"
@@ -94,7 +94,7 @@ func tenGoAddonOnInit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -119,7 +119,7 @@ func tenGoAddonOnDeinit(addonID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -149,7 +149,7 @@ func tenGoAddonCreateInstance(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)

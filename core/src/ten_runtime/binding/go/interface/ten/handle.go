@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include <stdint.h>
 import "C"
@@ -81,10 +81,10 @@ func LeakObjSize() int {
 // application will panic. Using goHandle to pass those objects between GO and C
 // is a safe way, without breaking the cgo check rules.
 //
-// In TEN world, a goHandle may be one of the following.
+// In APTIMA world, a goHandle may be one of the following.
 //
-//   - ten, extension.
-//   - a GO pointer which is set into a msg or ten as a property.
+//   - aptima, extension.
+//   - a GO pointer which is set into a msg or aptima as a property.
 //   - a callback function, ex: the result handler of SendCmd.
 //
 // A goHandle can _NOT_ be one of the following.
@@ -160,7 +160,7 @@ func (m *concurrentMap) loadAndDelete(k goHandle) (any, bool) {
 }
 
 // immutableHandles store those objects which are immutable once they are
-// created, ex: ten, extension. And the number of those objects should be very
+// created, ex: aptima, extension. And the number of those objects should be very
 // small.
 //
 // For each item in the map, the key type is goHandleType, and the value type is

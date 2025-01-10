@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -7,19 +7,19 @@
 
 #include <atomic>
 
-#include "ten_runtime/binding/cpp/ten.h"
+#include "ten_runtime/binding/cpp/aptima.h"
 #include "ten_utils/lib/event.h"
 #include "ten_utils/lib/thread.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 class demuxer_t;
 
 class demuxer_thread_t {
  public:
-  demuxer_thread_t(ten::ten_env_proxy_t *ten_env_proxy,
-                   std::unique_ptr<ten::cmd_t> start_cmd,
+  demuxer_thread_t(aptima::ten_env_proxy_t *ten_env_proxy,
+                   std::unique_ptr<aptima::cmd_t> start_cmd,
                    extension_t *extension, std::string &input_stream_loc);
 
   ~demuxer_thread_t();
@@ -50,8 +50,8 @@ class demuxer_thread_t {
   void wait_for_demuxer();
   void notify_completed(bool success = true);
 
-  ten::ten_env_proxy_t *ten_env_proxy_;
-  ten::extension_t *extension_;
+  aptima::ten_env_proxy_t *ten_env_proxy_;
+  aptima::extension_t *extension_;
 
   std::atomic<bool> stop_;
 
@@ -61,8 +61,8 @@ class demuxer_thread_t {
   ten_event_t *ready_for_demuxer;
 
   std::string input_stream_loc_;
-  std::unique_ptr<ten::cmd_t> start_cmd_;
+  std::unique_ptr<aptima::cmd_t> start_cmd_;
 };
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

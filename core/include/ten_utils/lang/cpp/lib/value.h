@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -29,7 +29,7 @@
 
 using ten_value_t = struct ::ten_value_t;
 
-namespace ten {
+namespace aptima {
 
 class ten_env_t;
 class msg_t;
@@ -74,7 +74,7 @@ class value_t {
   explicit value_t(double value) : c_value_(ten_value_create_float64(value)) {}
 
   // @{
-  // Create a TEN value of 'ptr' type for all types of C++ pointers.
+  // Create a APTIMA value of 'ptr' type for all types of C++ pointers.
   template <typename V>
   explicit value_t(V *value) {
     if (value == nullptr) {
@@ -106,7 +106,7 @@ class value_t {
    */
   template <
       typename V,
-      // Have specific constructors to handle ten::value_t.
+      // Have specific constructors to handle aptima::value_t.
       typename std::enable_if<
           !std::is_same<typename std::remove_reference<V>::type,
                         value_t>::value,
@@ -130,7 +130,7 @@ class value_t {
           void>::type * = nullptr>
   value_t(V &&value) {  // NOLINT
     static_assert(always_false<V>::value,
-                  "This type is not supported by TEN C++ Binding.");
+                  "This type is not supported by APTIMA C++ Binding.");
   }
 
   // @{
@@ -162,7 +162,7 @@ class value_t {
     c_value_ = ten_value_create_buf_with_move(buf);
   }
 
-  // Create a TEN value of 'object' type.
+  // Create a APTIMA value of 'object' type.
   template <typename V>
   explicit value_t(const std::map<std::string, V> &map) {
     ten_list_t m = TEN_LIST_INIT_VAL;
@@ -181,7 +181,7 @@ class value_t {
     ten_list_clear(&m);
   }
 
-  // Create a TEN value of 'array' type.
+  // Create a APTIMA value of 'array' type.
   template <typename V>
   explicit value_t(const std::vector<V> &list) {
     ten_list_t m = TEN_LIST_INIT_VAL;
@@ -196,7 +196,7 @@ class value_t {
     ten_list_clear(&m);
   }
 
-  // Create a TEN value of 'array' type.
+  // Create a APTIMA value of 'array' type.
   template <typename V>
   explicit value_t(const std::unordered_set<V> &list) {
     ten_list_t m = TEN_LIST_INIT_VAL;
@@ -459,7 +459,7 @@ class value_t {
   T get_real_value_impl(ten_error_t *err) {
     (void)err;
     static_assert(always_false<T>::value,
-                  "This type is not supported by TEN C++ Binding.");
+                  "This type is not supported by APTIMA C++ Binding.");
   }
 
   template <typename T, typename std::enable_if<std::is_pointer<T>::value>::type
@@ -477,12 +477,12 @@ class value_t {
   }
 
   // @{
-  // These functions are used internally in TEN runtime.
+  // These functions are used internally in APTIMA runtime.
 
   // One C++ value_t instance is by default corresponding one-to-one with one C
   // ten_value_t instance, meaning the C++ value_t instance will by default own
   // the C ten_value_t instance, unless for performance considerations,
-  // disowning is used in the internal implementation of the TEN runtime. In
+  // disowning is used in the internal implementation of the APTIMA runtime. In
   // interactions with extensions, the state is always owned, which means, when
   // one C++ value_t instance is destructed, the associated C ten_value_t
   // instance will be destroyed along with it.
@@ -566,4 +566,4 @@ inline buf_t value_t::get_real_value_impl<buf_t>(ten_error_t *err) {
 }
 // @}
 
-}  // namespace ten
+}  // namespace aptima

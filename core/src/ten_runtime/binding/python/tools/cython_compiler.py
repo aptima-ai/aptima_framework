@@ -35,9 +35,7 @@ def install_cython_if_needed():
         import subprocess
         import sys
 
-        rc = subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "Cython"]
-        )
+        rc = subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
         return rc == 0
 
 

@@ -22,8 +22,10 @@ import inspect
 
 def looks_like_mbedtls_root(path: str) -> bool:
     """Whether the given directory looks like the root of the Mbed TLS source tree."""
-    return all(os.path.isdir(os.path.join(path, subdir))
-               for subdir in ['include', 'library', 'programs', 'tests'])
+    return all(
+        os.path.isdir(os.path.join(path, subdir))
+        for subdir in ["include", "library", "programs", "tests"]
+    )
 
 
 def chdir_to_root() -> None:
@@ -32,13 +34,15 @@ def chdir_to_root() -> None:
     The current directory must be up to two levels deep inside an Mbed TLS
     source tree.
     """
-    for d in [os.path.curdir,
-              os.path.pardir,
-              os.path.join(os.path.pardir, os.path.pardir)]:
+    for d in [
+        os.path.curdir,
+        os.path.pardir,
+        os.path.join(os.path.pardir, os.path.pardir),
+    ]:
         if looks_like_mbedtls_root(d):
             os.chdir(d)
             return
-    raise Exception('Mbed TLS source tree not found')
+    raise Exception("Mbed TLS source tree not found")
 
 
 def guess_mbedtls_root():
@@ -49,12 +53,13 @@ def guess_mbedtls_root():
     dirs = set({})
     for frame in inspect.stack():
         path = os.path.dirname(frame.filename)
-        for d in ['.', os.path.pardir] \
-                 + [os.path.join(*([os.path.pardir]*i)) for i in range(2, 10)]:
+        for d in [".", os.path.pardir] + [
+            os.path.join(*([os.path.pardir] * i)) for i in range(2, 10)
+        ]:
             d = os.path.abspath(os.path.join(path, d))
             if d in dirs:
                 continue
             dirs.add(d)
             if looks_like_mbedtls_root(d):
                 return d
-    raise Exception('Mbed TLS source tree not found')
+    raise Exception("Mbed TLS source tree not found")

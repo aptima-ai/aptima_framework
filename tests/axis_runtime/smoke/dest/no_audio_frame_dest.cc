@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_runtime/binding/cpp/detail/msg/cmd/start_graph.h"
 #include "aptima_runtime/binding/cpp/detail/aptima_env.h"
 #include "aptima_utils/lang/cpp/lib/error.h"
@@ -19,19 +19,19 @@
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       hello_world_cmd = std::move(cmd);
 
-      ten::error_t err;
+      aptima::error_t err;
 
       auto audio_frame_no_dest =
-          ten::audio_frame_t::create("audio_frame_no_dest");
+          aptima::audio_frame_t::create("audio_frame_no_dest");
       bool rc = aptima_env.send_audio_frame(std::move(audio_frame_no_dest),
                                          nullptr, &err);
       ASSERT_EQ(rc, false);
@@ -39,11 +39,11 @@ class test_extension_1 : public ten::extension_t {
 
       aptima_ENV_LOG_ERROR(aptima_env, err.err_msg());
 
-      auto audio_frame = ten::audio_frame_t::create("audio_frame");
+      auto audio_frame = aptima::audio_frame_t::create("audio_frame");
       rc = aptima_env.send_audio_frame(std::move(audio_frame));
       ASSERT_EQ(rc, true);
     } else if (cmd->get_name() == "audio_frame_ack") {
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       bool rc = aptima_env.return_result(std::move(cmd_result),
                                       std::move(hello_world_cmd));
@@ -52,24 +52,24 @@ class test_extension_1 : public ten::extension_t {
   }
 
  private:
-  std::unique_ptr<ten::cmd_t> hello_world_cmd;
+  std::unique_ptr<aptima::cmd_t> hello_world_cmd;
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
   void on_audio_frame(
-      ten::aptima_env_t &aptima_env,
-      std::unique_ptr<ten::audio_frame_t> audio_frame) override {
-    auto cmd = ten::cmd_t::create("audio_frame_ack");
+      aptima::aptima_env_t &aptima_env,
+      std::unique_ptr<aptima::audio_frame_t> audio_frame) override {
+    auto cmd = aptima::cmd_t::create("audio_frame_ack");
     aptima_env.send_cmd(std::move(cmd));
   }
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -108,10 +108,10 @@ TEST(ExtensionTest, NoAudioFrameDest) {  // NOLINT
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(
       R"({
              "nodes": [{
@@ -154,7 +154,7 @@ TEST(ExtensionTest, NoAudioFrameDest) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  auto hello_world_cmd = aptima::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "basic_extension_group", "test_extension_1");
   cmd_result = client->send_cmd_and_recv_result(std::move(hello_world_cmd));

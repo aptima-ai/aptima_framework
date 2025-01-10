@@ -1,10 +1,10 @@
 # Cloud Store
 
-The TEN Cloud Store, similar to Google Play on Android and the App Store on iOS, offers a variety of TEN packages. These packages can be downloaded into a TEN app to aid and enhance development.
+The APTIMA Cloud Store, similar to Google Play on Android and the App Store on iOS, offers a variety of APTIMA packages. These packages can be downloaded into a APTIMA app to aid and enhance development.
 
-<figure><img src="../assets/png/ten_cloud_store.png" alt=""><figcaption><p>TEN Cloud Store</p></figcaption></figure>
+<figure><img src="../assets/png/ten_cloud_store.png" alt=""><figcaption><p>APTIMA Cloud Store</p></figcaption></figure>
 
-## Information Stored in the Database for TEN Packages
+## Information Stored in the Database for APTIMA Packages
 
 1. **Package Type**
 

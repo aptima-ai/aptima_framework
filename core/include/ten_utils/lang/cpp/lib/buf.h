@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -12,7 +12,7 @@
 
 #include "ten_utils/lib/buf.h"
 
-namespace ten {
+namespace aptima {
 
 class value_t;
 class data_t;
@@ -72,4 +72,4 @@ class buf_t {
   ten_buf_t buf{};
 };
 
-}  // namespace ten
+}  // namespace aptima

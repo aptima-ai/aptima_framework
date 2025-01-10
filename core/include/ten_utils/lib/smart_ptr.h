@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -66,7 +66,7 @@ TEN_UTILS_PRIVATE_API void ten_smart_ptr_destroy(ten_smart_ptr_t *self);
 
 /**
  * @brief This function must be used with caution. Essentially, this function
- * can only be used within the TEN runtime and should not be accessed
+ * can only be used within the APTIMA runtime and should not be accessed
  * externally. This is because if the parameter is actually a weak_ptr, the
  * function expects the weak_ptr to remain valid after the completion of the
  * function, meaning the object pointed to by the weak_ptr remains valid after

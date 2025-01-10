@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -22,7 +22,7 @@
 //
 // - Stage 1 : 'Need to close' notification stage
 //
-//   TEN world -> (notify) ->
+//   APTIMA world -> (notify) ->
 //                         base protocol -> (notify) ->
 //                                                   implementation protocol
 //
@@ -30,7 +30,7 @@
 //
 //                               <- (I am closed) <- implementation protocol
 //        <- (I am closed) <- base protocol
-//   TEN world
+//   APTIMA world
 //
 //   The time that a protocol (no matter it is a base protocol or an
 //   implementation protocol) can be closed is that when all resources held in

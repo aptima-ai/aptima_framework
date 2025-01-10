@@ -24,7 +24,7 @@ jobs:
       matrix:
         build_type: [release]
     container:
-      image: ghcr.io/ten-framework/ten_building_ubuntu1804
+      image: ghcr.io/aptima-framework/ten_building_ubuntu1804
     steps:
       - name: Configure Git
         run: |

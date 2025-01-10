@@ -1,11 +1,11 @@
 # Table of contents
 
-* [🌟 Welcome to TEN](README.md)
+* [🌟 Welcome to APTIMA](README.md)
 * [Goal](vision/goal.md)
 * [Key Concepts](vision/key_concepts.md)
 * [Scenarios](vision/application_scenarios.md)
 
-## TEN Agent
+## APTIMA Agent
 
 * [Overview](ten_agent/overview.md)
 * [Getting Started](ten_agent/getting_started.md)
@@ -26,15 +26,15 @@
   * [Run Dify Chat Bot](ten_agent/playground/run_dify.md)
   * [Run Coze Chat Bot](ten_agent/playground/run_coze.md)
   * [Change Language](ten_agent/playground/change_language.md)
-* [Customize TEN Agent](ten_agent/customize_your_agent.md)
+* [Customize APTIMA Agent](ten_agent/customize_your_agent.md)
 * [Create a Hello World Extension](ten_agent/create_a_hello_world_extension.md)
-* [How does interrupt work in TEN-Agent](ten_agent/how_does_interrupt_work.md)
+* [How does interrupt work in APTIMA-Agent](ten_agent/how_does_interrupt_work.md)
 * [Create an Extension with Predefined Type](ten_agent/create_an_extension_with_predefined_type/overview.md)
   * [LLM Extension](ten_agent/create_an_extension_with_predefined_type/type_llm_extension.md)
   * [LLM Tool Extension](ten_agent/create_an_extension_with_predefined_type/type_llm_tool_extension.md)
 * [FAQs](ten_agent/faqs.md)
 
-## TEN framework
+## APTIMA framework
 
 * [Overview](ten_framework/concept_overview.md)
 * [Development Process](ten_framework/development_process.md)
@@ -52,10 +52,10 @@
 * [Profiling](ten_framework/profiling.md)
 * [Dependencies](ten_framework/dependencies.md)
 
-### TEN Testing System
+### APTIMA Testing System
 
-* [For Users of TEN framework](ten_framework/ten_testing/for_users_of_ten_framework.md)
-* [For Developers of TEN framework](ten_framework/ten_testing/for_developers_of_ten_framework.md)
+* [For Users of APTIMA framework](ten_framework/ten_testing/for_users_of_ten_framework.md)
+* [For Developers of APTIMA framework](ten_framework/ten_testing/for_developers_of_ten_framework.md)
 
 ### Binding
 
@@ -67,14 +67,14 @@
 * [Interface](ten_framework/api/interface.md)
 * [Log](ten_framework/api/log.md)
 
-### TEN Packages
+### APTIMA Packages
 
 * [Overview](ten_framework/ten_packages/overview.md)
 * [App](ten_framework/ten_packages/app.md)
 * [Extension](ten_framework/ten_packages/extension.md)
 * [Python Async Extension](ten_framework/ten_packages/python_async_extension.md)
 
-### TEN Manager
+### APTIMA Manager
 
 * [Overview](ten_framework/ten_manager/overview.md)
 * [Designer](ten_framework/ten_manager/designer.md)

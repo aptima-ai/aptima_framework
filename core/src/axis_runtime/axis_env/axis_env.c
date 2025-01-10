@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -162,24 +162,24 @@ void axis_env_close(axis_env_t *self) {
 
   switch (self->attach_to) {
     case axis_ENV_ATTACH_TO_APP:
-      axis_LOGD("[%s] Close ten of app.",
+      axis_LOGD("[%s] Close aptima of app.",
                axis_app_get_uri(self->attached_target.app));
       break;
     case axis_ENV_ATTACH_TO_ENGINE:
-      axis_LOGD("[%s] Close ten of engine.",
+      axis_LOGD("[%s] Close aptima of engine.",
                axis_engine_get_id(self->attached_target.engine, true));
       break;
     case axis_ENV_ATTACH_TO_EXTENSION_GROUP:
       axis_LOGD(
-          "[%s] Close ten of extension group.",
+          "[%s] Close aptima of extension group.",
           axis_string_get_raw_str(&self->attached_target.extension_group->name));
       break;
     case axis_ENV_ATTACH_TO_EXTENSION:
-      axis_LOGD("[%s] Close ten of extension.",
+      axis_LOGD("[%s] Close aptima of extension.",
                axis_string_get_raw_str(&self->attached_target.extension->name));
       break;
     case axis_ENV_ATTACH_TO_ADDON:
-      axis_LOGD("[%s] Close ten of addon.",
+      axis_LOGD("[%s] Close aptima of addon.",
                axis_string_get_raw_str(&self->attached_target.addon_host->name));
       break;
     default:

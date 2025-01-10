@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 // #include "addon.h"
 import "C"
@@ -75,7 +75,7 @@ func (am *AddonManager) RegisterAddonAsExtension(
 			unsafe.Pointer(unsafe.StringData(absBaseDir)),
 			C.int(len(absBaseDir)),
 			cHandle(addonID),
-			// In the current use of the TEN framework's GO environment, there
+			// In the current use of the APTIMA framework's GO environment, there
 			// is no need to pass any `register_ctx` object into the register
 			// handler of the GO addon. Therefore, for now, simply passing `nil`
 			// is sufficient. If needed in the future, we can consider what

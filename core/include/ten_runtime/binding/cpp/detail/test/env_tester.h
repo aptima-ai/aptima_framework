@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -20,7 +20,7 @@
 using ten_extension_tester_t = struct ten_extension_tester_t;
 using ten_env_tester_t = struct ten_env_tester_t;
 
-namespace ten {
+namespace aptima {
 
 class ten_env_tester_t;
 class extension_tester_t;
@@ -75,7 +75,7 @@ class ten_env_tester_t {
 
     if (rc) {
       // Only when the cmd has been sent successfully, we should give back the
-      // ownership of the cmd to the TEN runtime.
+      // ownership of the cmd to the APTIMA runtime.
       auto *cpp_cmd_ptr = cmd.release();
       delete cpp_cmd_ptr;
     }
@@ -99,7 +99,7 @@ class ten_env_tester_t {
 
     if (rc) {
       // Only when the data has been sent successfully, we should give back the
-      // ownership of the data to the TEN runtime.
+      // ownership of the data to the APTIMA runtime.
       auto *cpp_data_ptr = data.release();
       delete cpp_data_ptr;
     }
@@ -124,7 +124,7 @@ class ten_env_tester_t {
 
     if (rc) {
       // Only when the audio_frame has been sent successfully, we should give
-      // back the ownership of the audio_frame to the TEN runtime.
+      // back the ownership of the audio_frame to the APTIMA runtime.
       auto *cpp_audio_frame_ptr = audio_frame.release();
       delete cpp_audio_frame_ptr;
     }
@@ -149,7 +149,7 @@ class ten_env_tester_t {
 
     if (rc) {
       // Only when the video_frame has been sent successfully, we should give
-      // back the ownership of the video_frame to the TEN runtime.
+      // back the ownership of the video_frame to the APTIMA runtime.
       auto *cpp_video_frame_ptr = video_frame.release();
       delete cpp_video_frame_ptr;
     }
@@ -248,4 +248,4 @@ class ten_env_tester_t {
   }
 };
 
-}  // namespace ten
+}  // namespace aptima

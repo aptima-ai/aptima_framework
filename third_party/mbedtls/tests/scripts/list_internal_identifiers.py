@@ -32,26 +32,29 @@ import argparse
 import logging
 from check_names import CodeParser
 
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=(
             "This script writes a list of parsed identifiers in internal "
-            "headers to \"identifiers\". This is useful for generating a list "
-            "of names to exclude from API/ABI compatibility checking. "))
+            'headers to "identifiers". This is useful for generating a list '
+            "of names to exclude from API/ABI compatibility checking. "
+        ),
+    )
 
     parser.parse_args()
 
     name_check = CodeParser(logging.getLogger())
-    result = name_check.parse_identifiers([
-        "include/mbedtls/*_internal.h",
-        "library/*.h"
-    ])
+    result = name_check.parse_identifiers(
+        ["include/mbedtls/*_internal.h", "library/*.h"]
+    )
     result.sort(key=lambda x: x.name)
 
     identifiers = ["{}\n".format(match.name) for match in result]
     with open("identifiers", "w", encoding="utf-8") as f:
         f.writelines(identifiers)
+
 
 if __name__ == "__main__":
     main()

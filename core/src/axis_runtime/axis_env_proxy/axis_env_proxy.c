@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -61,7 +61,7 @@ axis_env_proxy_t *axis_env_proxy_create(axis_env_t *axis_env,
       break;
 
     default: {
-      const char *err_msg = "Create axis_env_proxy from unsupported ten.";
+      const char *err_msg = "Create axis_env_proxy from unsupported aptima.";
       axis_ASSERT(0, "%s", err_msg);
       if (err) {
         axis_error_set(err, axis_ERRNO_INVALID_ARGUMENT, err_msg);

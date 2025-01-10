@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_runtime/msg/msg.h"
 #include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -18,17 +18,17 @@
 
 namespace {
 
-class test_extension : public ten::extension_t {
+class test_extension : public aptima::extension_t {
  public:
-  explicit test_extension(const char *name) : ten::extension_t(name) {}
+  explicit test_extension(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       hello_world_cmd = std::move(cmd);
 
       // Start a timer.
-      auto timer_cmd = ten::cmd_timer_t::create();
+      auto timer_cmd = aptima::cmd_timer_t::create();
       timer_cmd->set_dest("localhost", nullptr, nullptr, nullptr);
       timer_cmd->set_timer_id(55);
       timer_cmd->set_timeout_in_us(100);
@@ -36,24 +36,24 @@ class test_extension : public ten::extension_t {
 
       aptima_env.send_cmd(std::move(timer_cmd));
       return;
-    } else if (ten::msg_internal_accessor_t::get_type(cmd.get()) ==
+    } else if (aptima::msg_internal_accessor_t::get_type(cmd.get()) ==
                    aptima_MSG_TYPE_CMD_TIMEOUT &&
-               std::unique_ptr<ten::cmd_timeout_t>(
-                   static_cast<ten::cmd_timeout_t *>(cmd.release()))
+               std::unique_ptr<aptima::cmd_timeout_t>(
+                   static_cast<aptima::cmd_timeout_t *>(cmd.release()))
                        ->get_timer_id() == 55) {
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       aptima_env.return_result(std::move(cmd_result), std::move(hello_world_cmd));
     }
   }
 
  private:
-  std::unique_ptr<ten::cmd_t> hello_world_cmd;
+  std::unique_ptr<aptima::cmd_t> hello_world_cmd;
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -88,10 +88,10 @@ TEST(ExtensionTest, TimerOneShot) {
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
@@ -106,7 +106,7 @@ TEST(ExtensionTest, TimerOneShot) {
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  auto hello_world_cmd = aptima::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "timer_one_shot__extension_group",
                             "test_extension");

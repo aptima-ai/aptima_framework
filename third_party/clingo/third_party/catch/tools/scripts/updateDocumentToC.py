@@ -23,28 +23,30 @@ from scriptCommon import catchPath
 
 minTocEntries = 4
 
-headingExcludeDefault = [1,3,4,5]  # use level 2 headers for at default
-headingExcludeRelease = [1,3,4,5]  # use level 1 headers for release-notes.md
+headingExcludeDefault = [1, 3, 4, 5]  # use level 2 headers for at default
+headingExcludeRelease = [1, 3, 4, 5]  # use level 1 headers for release-notes.md
 
-documentsDefault = os.path.join(os.path.relpath(catchPath), 'docs/*.md')
-releaseNotesName = 'release-notes.md'
+documentsDefault = os.path.join(os.path.relpath(catchPath), "docs/*.md")
+releaseNotesName = "release-notes.md"
 
-contentTitle = '**Contents**'
+contentTitle = "**Contents**"
 contentLineNo = 4
 contentLineNdx = contentLineNo - 1
 
 # End configuration
 
-VALIDS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-&'
+VALIDS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-&"
+
 
 def readLines(in_file):
     """Returns a list of lines from a input markdown file."""
 
-    with open(in_file, 'r') as inf:
-        in_contents = inf.read().split('\n')
+    with open(in_file, "r") as inf:
+        in_contents = inf.read().split("\n")
     return in_contents
 
-def removeLines(lines, remove=('[[back to top]', '<a class="mk-toclify"')):
+
+def removeLines(lines, remove=("[[back to top]", '<a class="mk-toclify"')):
     """Removes existing [back to top] links and <a id> tags."""
 
     if not remove:
@@ -57,20 +59,22 @@ def removeLines(lines, remove=('[[back to top]', '<a class="mk-toclify"')):
         out.append(l)
     return out
 
+
 def removeToC(lines):
     """Removes existing table of contents starting at index contentLineNdx."""
-    if not lines[contentLineNdx ].startswith(contentTitle):
+    if not lines[contentLineNdx].startswith(contentTitle):
         return lines[:]
 
     result_top = lines[:contentLineNdx]
 
     pos = contentLineNdx + 1
-    while lines[pos].startswith('['):
+    while lines[pos].startswith("["):
         pos = pos + 1
 
-    result_bottom = lines[pos + 1:]
+    result_bottom = lines[pos + 1 :]
 
     return result_top + result_bottom
+
 
 def dashifyHeadline(line):
     """
@@ -84,8 +88,8 @@ def dashifyHeadline(line):
     ('Some header lvl3', 'some-header-lvl3', 3)
 
     """
-    stripped_right = line.rstrip('#')
-    stripped_both = stripped_right.lstrip('#')
+    stripped_right = line.rstrip("#")
+    stripped_both = stripped_right.lstrip("#")
     level = len(stripped_right) - len(stripped_both)
     stripped_wspace = stripped_both.strip()
 
@@ -94,17 +98,18 @@ def dashifyHeadline(line):
     # 2) spaces are converted into '-' directly
     # 3) multiple -- are not collapsed
 
-    dashified = ''
+    dashified = ""
     for c in stripped_wspace:
         if c in VALIDS:
             dashified += c.lower()
         elif c.isspace():
-            dashified += '-'
+            dashified += "-"
         else:
             # Unknown symbols are just removed
             continue
 
     return [stripped_wspace, dashified, level]
+
 
 def tagAndCollect(lines, id_tag=True, back_links=False, exclude_h=None):
     """
@@ -141,22 +146,22 @@ def tagAndCollect(lines, id_tag=True, back_links=False, exclude_h=None):
         orig_len = len(l)
         l_stripped = l.lstrip()
 
-        if l_stripped.startswith(('# ', '## ', '### ', '#### ', '##### ', '###### ')):
+        if l_stripped.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
 
             # comply with new markdown standards
 
             # not a headline if '#' not followed by whitespace '##no-header':
-            if not l.lstrip('#').startswith(' '):
+            if not l.lstrip("#").startswith(" "):
                 continue
             # not a headline if more than 6 '#':
-            if len(l) - len(l.lstrip('#')) > 6:
+            if len(l) - len(l.lstrip("#")) > 6:
                 continue
             # headers can be indented by at most 3 spaces:
             if orig_len - len(l_stripped) > 3:
                 continue
 
             # ignore empty headers
-            if not set(l) - {'#', ' '}:
+            if not set(l) - {"#", " "}:
                 continue
 
             saw_headline = True
@@ -164,15 +169,15 @@ def tagAndCollect(lines, id_tag=True, back_links=False, exclude_h=None):
 
             if not exclude_h or not dashified[-1] in exclude_h:
                 if id_tag:
-                    id_tag = '<a class="mk-toclify" id="%s"></a>'\
-                              % (dashified[1])
+                    id_tag = '<a class="mk-toclify" id="%s"></a>' % (dashified[1])
                     out_contents.append(id_tag)
                 headlines.append(dashified)
 
         out_contents.append(l)
         if back_links and saw_headline:
-            out_contents.append('[[back to top](#table-of-contents)]')
+            out_contents.append("[[back to top](#table-of-contents)]")
     return out_contents, headlines
+
 
 def positioningHeadlines(headlines):
     """
@@ -187,6 +192,7 @@ def positioningHeadlines(headlines):
         for row in headlines:
             row[-1] -= 1
     return headlines
+
 
 def createToc(headlines, hyperlink=True, top_link=False, no_toc_header=False):
     """
@@ -211,16 +217,17 @@ def createToc(headlines, hyperlink=True, top_link=False, no_toc_header=False):
     if not no_toc_header:
         if top_link:
             processed.append('<a class="mk-toclify" id="table-of-contents"></a>\n')
-        processed.append(contentTitle + '<br>')
+        processed.append(contentTitle + "<br>")
 
     for line in headlines:
         if hyperlink:
-            item = '[%s](#%s)' % (line[0], line[1])
+            item = "[%s](#%s)" % (line[0], line[1])
         else:
-            item = '%s- %s' % ((line[2]-1)*'    ', line[0])
-        processed.append(item + '<br>')
-    processed.append('\n')
+            item = "%s- %s" % ((line[2] - 1) * "    ", line[0])
+        processed.append(item + "<br>")
+    processed.append("\n")
     return processed
+
 
 def buildMarkdown(toc_headlines, body, spacer=0, placeholder=None):
     """
@@ -250,11 +257,12 @@ def buildMarkdown(toc_headlines, body, spacer=0, placeholder=None):
         body_markdown = "\n".join(body)
         markdown = body_markdown.replace(placeholder, toc_markdown)
     else:
-        body_markdown_p1 = "\n".join(body[:contentLineNdx ]) + '\n'
-        body_markdown_p2 = "\n".join(body[ contentLineNdx:])
+        body_markdown_p1 = "\n".join(body[:contentLineNdx]) + "\n"
+        body_markdown_p2 = "\n".join(body[contentLineNdx:])
         markdown = body_markdown_p1 + toc_markdown + body_markdown_p2
 
     return markdown
+
 
 def outputMarkdown(markdown_cont, output_file):
     """
@@ -262,8 +270,9 @@ def outputMarkdown(markdown_cont, output_file):
 
     """
     if output_file:
-        with open(output_file, 'w') as out:
+        with open(output_file, "w") as out:
             out.write(markdown_cont)
+
 
 def markdownToclify(
     input_file,
@@ -275,8 +284,9 @@ def markdownToclify(
     no_toc_header=False,
     spacer=0,
     placeholder=None,
-    exclude_h=None):
-    """ Function to add table of contents to markdown files.
+    exclude_h=None,
+):
+    """Function to add table of contents to markdown files.
 
     Parameters
     -----------
@@ -320,13 +330,12 @@ def markdownToclify(
     """
     cleaned_contents = removeLines(
         removeToC(readLines(input_file)),
-        remove=('[[back to top]', '<a class="mk-toclify"'))
+        remove=("[[back to top]", '<a class="mk-toclify"'),
+    )
 
     processed_contents, raw_headlines = tagAndCollect(
-        cleaned_contents,
-        id_tag=not github,
-        back_links=back_to_top,
-        exclude_h=exclude_h)
+        cleaned_contents, id_tag=not github, back_links=back_to_top, exclude_h=exclude_h
+    )
 
     # add table of contents?
     if len(raw_headlines) < min_toc_len:
@@ -338,7 +347,8 @@ def markdownToclify(
             leftjustified_headlines,
             hyperlink=not nolink,
             top_link=not nolink and not github,
-            no_toc_header=no_toc_header)
+            no_toc_header=no_toc_header,
+        )
 
     if nolink:
         processed_contents = cleaned_contents
@@ -347,23 +357,27 @@ def markdownToclify(
         toc_headlines=processed_headlines,
         body=processed_contents,
         spacer=spacer,
-        placeholder=placeholder)
+        placeholder=placeholder,
+    )
 
     if output_file:
         outputMarkdown(cont, output_file)
 
+
 def isReleaseNotes(f):
     return os.path.basename(f) == releaseNotesName
+
 
 def excludeHeadingsFor(f):
     return headingExcludeRelease if isReleaseNotes(f) else headingExcludeDefault
 
+
 def updateSingleDocumentToC(input_file, min_toc_len, verbose=False):
     """Add or update table of contents in specified file. Return 1 if file changed, 0 otherwise."""
-    if verbose :
-        print( 'file: {}'.format(input_file))
+    if verbose:
+        print("file: {}".format(input_file))
 
-    output_file = input_file + '.tmp'
+    output_file = input_file + ".tmp"
 
     markdownToclify(
         input_file=input_file,
@@ -375,7 +389,8 @@ def updateSingleDocumentToC(input_file, min_toc_len, verbose=False):
         no_toc_header=False,
         spacer=False,
         placeholder=False,
-        exclude_h=excludeHeadingsFor(input_file))
+        exclude_h=excludeHeadingsFor(input_file),
+    )
 
     # prevent race-condition (Python 3.3):
     if sys.version_info >= (3, 3):
@@ -386,62 +401,77 @@ def updateSingleDocumentToC(input_file, min_toc_len, verbose=False):
 
     return 1
 
+
 def updateDocumentToC(paths, min_toc_len, verbose):
     """Add or update table of contents to specified paths. Return number of changed files"""
     n = 0
     for g in paths:
         for f in glob.glob(g):
             if os.path.isfile(f):
-                n = n + updateSingleDocumentToC(input_file=f, min_toc_len=min_toc_len, verbose=verbose)
+                n = n + updateSingleDocumentToC(
+                    input_file=f, min_toc_len=min_toc_len, verbose=verbose
+                )
     return n
+
 
 def updateDocumentToCMain():
     """Add or update table of contents to specified paths."""
 
     parser = argparse.ArgumentParser(
-        description='Add or update table of contents in markdown documents.',
+        description="Add or update table of contents in markdown documents.",
         epilog="""""",
-        formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
 
     parser.add_argument(
-        'Input',
-        metavar='file',
+        "Input",
+        metavar="file",
         type=str,
         nargs=argparse.REMAINDER,
-        help='files to process, at default: docs/*.md')
+        help="files to process, at default: docs/*.md",
+    )
 
     parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='report the name of the file being processed')
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="report the name of the file being processed",
+    )
 
     parser.add_argument(
-        '--min-toc-entries',
-        dest='minTocEntries',
+        "--min-toc-entries",
+        dest="minTocEntries",
         default=minTocEntries,
         type=int,
-        metavar='N',
-        help='the minimum number of entries to create a table of contents for [{default}]'.format(default=minTocEntries))
+        metavar="N",
+        help="the minimum number of entries to create a table of contents for [{default}]".format(
+            default=minTocEntries
+        ),
+    )
 
     parser.add_argument(
-        '--remove-toc',
-        action='store_const',
-        dest='minTocEntries',
+        "--remove-toc",
+        action="store_const",
+        dest="minTocEntries",
         const=99,
-        help='remove all tables of contents')
+        help="remove all tables of contents",
+    )
 
     args = parser.parse_args()
 
     paths = args.Input if args.Input else [documentsDefault]
 
-    changedFiles = updateDocumentToC(paths=paths, min_toc_len=args.minTocEntries, verbose=args.verbose)
+    changedFiles = updateDocumentToC(
+        paths=paths, min_toc_len=args.minTocEntries, verbose=args.verbose
+    )
 
     if changedFiles > 0:
-        print( "Processed table of contents in " + str(changedFiles) + " file(s)" )
+        print("Processed table of contents in " + str(changedFiles) + " file(s)")
     else:
-        print( "No table of contents added or updated" )
+        print("No table of contents added or updated")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     updateDocumentToCMain()
 
 # end of file

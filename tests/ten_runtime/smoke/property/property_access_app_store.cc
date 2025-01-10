@@ -1,49 +1,49 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 #include "gtest/gtest.h"
-#include "include_internal/ten_runtime/binding/cpp/ten.h"
+#include "include_internal/ten_runtime/binding/cpp/aptima.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/ten_runtime/smoke/util/binding/cpp/check.h"
 
 namespace {
 
-class test_property_access_app_store_1 : public ten::extension_t {
+class test_property_access_app_store_1 : public aptima::extension_t {
  public:
   explicit test_property_access_app_store_1(const char *name)
-      : ten::extension_t(name) {}
+      : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
-    auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
+    auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
     cmd_result->set_property("detail", "success");
     ten_env.return_result(std::move(cmd_result), std::move(cmd));
   }
 };
 
-class test_property_access_app_store_2 : public ten::extension_t {
+class test_property_access_app_store_2 : public aptima::extension_t {
  public:
   explicit test_property_access_app_store_2(const char *name)
-      : ten::extension_t(name) {}
+      : aptima::extension_t(name) {}
 
-  void on_cmd(ten::ten_env_t &ten_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::ten_env_t &ten_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     auto result = ten_env.get_property_int32("app:aaa");
     if (result == 3) {
-      auto cmd_result = ten::cmd_result_t::create(TEN_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(TEN_STATUS_CODE_OK);
       cmd_result->set_property("detail", "success");
       ten_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::ten_env_t &ten_env) override {
-    bool rc = ten::ten_env_internal_accessor_t::init_manifest_from_json(
+  void on_configure(aptima::ten_env_t &ten_env) override {
+    bool rc = aptima::ten_env_internal_accessor_t::init_manifest_from_json(
         ten_env,
         // clang-format off
                  R"({
@@ -107,11 +107,11 @@ TEST(PropertyTest, AccessAppStore) {  // NOLINT
   auto *app_thread = ten_thread_create("app thread", app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send a request to test_property_access_app_store_1 to make sure
   // it has been initted.
-  auto test_cmd = ten::cmd_t::create("test");
+  auto test_cmd = aptima::cmd_t::create("test");
   test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                      "default_extension_group_1",
                      "test_property_access_app_store_1");
@@ -122,7 +122,7 @@ TEST(PropertyTest, AccessAppStore) {  // NOLINT
   // Do not need to send 'start_graph' command first.
   // The 'graph_id' MUST be "default" (a special string) if we want to send the
   // request to predefined graph.
-  test_cmd = ten::cmd_t::create("test");
+  test_cmd = aptima::cmd_t::create("test");
   test_cmd->set_dest("msgpack://127.0.0.1:8001/", "default",
                      "default_extension_group_2",
                      "test_property_access_app_store_2");

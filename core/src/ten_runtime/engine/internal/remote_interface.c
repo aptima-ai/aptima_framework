@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -407,12 +407,12 @@ static void ten_engine_connect_to_remote_after_remote_is_created(
     return;
   }
 
-  // This channel might be duplicated with other channels between this TEN app
-  // and the remote TEN app. This situation may appear in a graph which
+  // This channel might be duplicated with other channels between this APTIMA app
+  // and the remote APTIMA app. This situation may appear in a graph which
   // contains loops.
   //
   //                   ------->
-  //  ----> TEN app 1            TEN app 2 <-----
+  //  ----> APTIMA app 1            APTIMA app 2 <-----
   //                   <-------
   //
   // If it's this case, this 'channel' would be destroyed later, so we put
@@ -513,12 +513,12 @@ ten_remote_t *ten_engine_check_remote_is_existed(ten_engine_t *self,
 }
 
 // This function is used to solve the connection duplication problem. If there
-// are two physical connections between two TEN apps, the connection which
-// connects a TEN app with a smaller URI to a TEN app with a larger URI would be
+// are two physical connections between two APTIMA apps, the connection which
+// connects a APTIMA app with a smaller URI to a APTIMA app with a larger URI would be
 // kept, and the other connection would be dropped.
 //
 //                   ------->
-//  ----> TEN app 1            TEN app 2 <----
+//  ----> APTIMA app 1            APTIMA app 2 <----
 //                   <-------
 bool ten_engine_check_remote_is_duplicated(ten_engine_t *self,
                                            const char *uri) {
@@ -577,7 +577,7 @@ bool ten_engine_receive_msg_from_remote(ten_remote_t *remote,
   ten_msg_set_src_engine_if_unspecified(msg, engine);
 
   if (!ten_loc_is_empty(&remote->explicit_dest_loc)) {
-    // If TEN runtime has explicitly setup the destination location where all
+    // If APTIMA runtime has explicitly setup the destination location where all
     // the messages coming from this remote should go, adjust the destination of
     // the message according to this.
 

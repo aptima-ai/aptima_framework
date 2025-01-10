@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/aptima-ai/aptima_framework/LICENSE for more
 // information.
@@ -14,22 +14,22 @@ import (
 	"io"
 	"os"
 
-	"aptima_framework/ten"
+	"aptima_framework/aptima"
 )
 
 type defaultExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
 type data struct {
 	Extension string `json:"extension"`
 }
 
-func newDefaultExtension(name string) ten.Extension {
+func newDefaultExtension(name string) aptima.Extension {
 	return &defaultExtension{}
 }
 
-func (p *defaultExtension) OnDeinit(tenEnv ten.TenEnv) {
+func (p *defaultExtension) OnDeinit(tenEnv aptima.TenEnv) {
 	fmt.Println("defaultExtension OnStop")
 
 	// Write something to file, so the test case can check if this function is
@@ -64,8 +64,8 @@ func init() {
 	fmt.Println("defaultExtension init")
 
 	// Register addon
-	ten.RegisterAddonAsExtension(
+	aptima.RegisterAddonAsExtension(
 		"default_extension_go",
-		ten.NewDefaultExtensionAddon(newDefaultExtension),
+		aptima.NewDefaultExtensionAddon(newDefaultExtension),
 	)
 }

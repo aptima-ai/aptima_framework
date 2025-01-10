@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -28,8 +28,8 @@
 #include "ten_utils/value/value_is.h"
 #include "ten_utils/value/value_kv.h"
 
-// Retrieve those property fields that are reserved for the TEN runtime
-// under the 'ten' namespace.
+// Retrieve those property fields that are reserved for the APTIMA runtime
+// under the 'aptima' namespace.
 ten_value_t *ten_app_get_ten_namespace_properties(ten_app_t *self) {
   TEN_ASSERT(self && ten_app_check_integrity(self, true), "Should not happen.");
 
@@ -183,7 +183,7 @@ bool ten_app_handle_ten_namespace_properties(ten_app_t *self) {
   self->long_running_mode = false;
 
   // First, set the log-related configuration to default values. This way, if
-  // there are no log-related properties under the `ten` namespace, the default
+  // there are no log-related properties under the `aptima` namespace, the default
   // values will be used.
   ten_log_global_set_output_to_stderr();
   ten_log_global_set_output_level(DEFAULT_LOG_OUTPUT_LEVEL);
@@ -201,6 +201,6 @@ void ten_app_handle_metadata(ten_app_t *self) {
   TEN_ASSERT(ten_app_check_integrity(self, true), "Invalid use of app %p.",
              self);
 
-  // Load custom TEN app metadata.
+  // Load custom APTIMA app metadata.
   ten_metadata_load(ten_app_on_configure, self->ten_env);
 }

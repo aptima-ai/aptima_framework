@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -11,7 +11,7 @@
 
 #include "ten_utils/io/runloop.h"
 
-namespace ten {
+namespace aptima {
 
 class Runloop;
 using TenRunloop = std::unique_ptr<Runloop>;
@@ -54,4 +54,4 @@ class Runloop {
   ::ten_runloop_t *loop_;
 };
 
-}  // namespace ten
+}  // namespace aptima

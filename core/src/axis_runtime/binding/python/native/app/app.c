@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -168,10 +168,10 @@ static PyObject *axis_py_app_create(PyTypeObject *type, PyObject *args,
   py_app->c_app =
       axis_app_create(proxy_on_configure, proxy_on_init, proxy_on_deinit, NULL);
   if (!py_app->c_app) {
-    axis_ASSERT(0, "Failed to create TEN app.");
+    axis_ASSERT(0, "Failed to create APTIMA app.");
 
     Py_DECREF(py_app);
-    return axis_py_raise_py_system_error_exception("Failed to create TEN app.");
+    return axis_py_raise_py_system_error_exception("Failed to create APTIMA app.");
   }
 
   axis_binding_handle_set_me_in_target_lang(
@@ -229,7 +229,7 @@ static PyObject *axis_py_app_close(PyObject *self, PyObject *args) {
 
   bool rc = axis_app_close(py_app->c_app, NULL);
   if (!rc) {
-    return axis_py_raise_py_runtime_error_exception("Failed to close TEN app.");
+    return axis_py_raise_py_runtime_error_exception("Failed to close APTIMA app.");
   }
 
   Py_RETURN_NONE;
@@ -256,7 +256,7 @@ static PyObject *axis_py_app_wait(PyObject *self, PyObject *args) {
 
   if (!rc) {
     return axis_py_raise_py_runtime_error_exception(
-        "Failed to wait for TEN app.");
+        "Failed to wait for APTIMA app.");
   }
 
   axis_LOGI("axis_py_app_wait done");

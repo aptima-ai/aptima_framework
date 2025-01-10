@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -13,12 +13,12 @@
 #include "aptima_runtime/binding/common.h"
 #include "aptima_runtime/binding/cpp/detail/common.h"
 #include "aptima_runtime/binding/cpp/detail/aptima_env.h"
-#include "aptima_runtime/ten.h"
+#include "aptima_runtime/aptima.h"
 #include "aptima_utils/macro/check.h"
 
 using aptima_app_t = struct aptima_app_t;
 
-namespace ten {
+namespace aptima {
 
 class app_t {
  public:
@@ -90,9 +90,9 @@ class app_t {
   }
 
   void on_configure_helper_for_cpp(aptima_env_t &aptima_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -124,9 +124,9 @@ class app_t {
   }
 
   void on_init_helper_for_cpp(aptima_env_t &aptima_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -159,9 +159,9 @@ class app_t {
   }
 
   void on_deinit_helper_for_cpp(aptima_env_t &aptima_env) {
-    // The TEN runtime does not use C++ exceptions. The use of try/catch here is
+    // The APTIMA runtime does not use C++ exceptions. The use of try/catch here is
     // merely to intercept any exceptions that might be thrown by the user's app
-    // code. If exceptions are disabled during the compilation of the TEN
+    // code. If exceptions are disabled during the compilation of the APTIMA
     // runtime (i.e., with -fno-exceptions), it implies that the extensions used
     // will also not employ exceptions (otherwise it would be unreasonable). In
     // this case, the try/catch blocks become no-ops. Conversely, if exceptions
@@ -180,4 +180,4 @@ class app_t {
   aptima_env_t *cpp_aptima_env;
 };
 
-}  // namespace ten
+}  // namespace aptima

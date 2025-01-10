@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -8,7 +8,7 @@ import os
 import sys
 
 import pytest
-from ten import unregister_all_addons_and_cleanup
+from aptima import unregister_all_addons_and_cleanup
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -19,7 +19,8 @@ def global_setup_and_teardown():
     # Verify the environment variable is correctly set.
     if (
         "aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE" not in os.environ
-        or os.environ["aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE"] != "true"
+        or os.environ["aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE"]
+        != "true"
     ):
         print(
             "Failed to set aptima_DISABLE_ADDON_UNREGISTER_AFTER_APP_CLOSE",

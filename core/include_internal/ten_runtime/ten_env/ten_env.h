@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -107,7 +107,7 @@ TEN_RUNTIME_PRIVATE_API ten_app_t *ten_env_get_belonging_app(ten_env_t *self);
 inline ten_extension_t *ten_env_get_attached_extension(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
@@ -121,7 +121,7 @@ inline ten_extension_group_t *ten_env_get_attached_extension_group(
     ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
@@ -134,7 +134,7 @@ inline ten_extension_group_t *ten_env_get_attached_extension_group(
 inline ten_app_t *ten_env_get_attached_app(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
@@ -146,7 +146,7 @@ inline ten_app_t *ten_env_get_attached_app(ten_env_t *self) {
 inline ten_addon_host_t *ten_env_get_attached_addon(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 
@@ -158,7 +158,7 @@ inline ten_addon_host_t *ten_env_get_attached_addon(ten_env_t *self) {
 inline ten_engine_t *ten_env_get_attached_engine(ten_env_t *self) {
   TEN_ASSERT(self, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: self->attach_to is not changed after ten is created.
+  // thread-check: self->attach_to is not changed after aptima is created.
   TEN_ASSERT(ten_env_check_integrity(self, false), "Invalid use of ten_env %p.",
              self);
 

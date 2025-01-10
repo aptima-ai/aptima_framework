@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -27,10 +27,10 @@ typedef struct axis_protocol_t axis_protocol_t;
 typedef enum axis_PROTOCOL_ATTACH_TO {
   axis_PROTOCOL_ATTACH_TO_INVALID,
 
-  // The listening protocol will be attached to a TEN app.
+  // The listening protocol will be attached to a APTIMA app.
   axis_PROTOCOL_ATTACH_TO_APP,
 
-  // All protocols except the listening one will be attached to a TEN
+  // All protocols except the listening one will be attached to a APTIMA
   // connection.
   axis_PROTOCOL_ATTACH_TO_CONNECTION,
 } axis_PROTOCOL_ATTACH_TO;
@@ -51,7 +51,7 @@ typedef enum axis_PROTOCOL_ROLE {
 
   // The protocol whose role is 'axis_PROTOCOL_ROLE_IN_*' means that it is
   // created when the listening endpoint accepts a client. And the client might
-  // be another ten app or the external world such as the browser, so we use the
+  // be another aptima app or the external world such as the browser, so we use the
   // 'INTERNAL' and 'EXTERNAL' to distinguish them.
   //
   // The reason why we need to distinguish the 'INTERNAL' and 'EXTERNAL' is that
@@ -68,8 +68,8 @@ typedef enum axis_PROTOCOL_ROLE {
   // protocol will only process the input data. Not only the
   // 'axis_protocol_t::on_input()' function will be called in the whole life
   // cycle of the protocol whose role is 'axis_PROTOCOL_ROLE_IN_*'. Ex: if a
-  // client outside of the ten world wants to send a message to the extension in
-  // the ten app, the 'axis_protocol_t::on_input()' function will be called to
+  // client outside of the aptima world wants to send a message to the extension in
+  // the aptima app, the 'axis_protocol_t::on_input()' function will be called to
   // receive the client message, but the 'axis_protocol_t::on_output()'
   // function will also be called when the extension wants to return a message
   // to the client side. A simple diagram is as follows:
@@ -88,10 +88,10 @@ typedef enum axis_PROTOCOL_ROLE {
 
   // The protocol whose role is 'axis_PROTOCOL_ROLE_OUT_*' means that it is
   // created when connecting to the remote server. And the remote server might
-  // be another ten app or the external server such as a nginx, so we use the
+  // be another aptima app or the external server such as a nginx, so we use the
   // 'INTERNAL' and 'EXTERNAL' to distinguish them. The 'EXTERNAL' protocols are
   // always created when the engine handles the 'connect_to' cmds. So even if
-  // the extension wants to connect to another ten app through the 'connect_to'
+  // the extension wants to connect to another aptima app through the 'connect_to'
   // cmd, the created protocol will be treated as 'EXTERNAL'.
   //
   // Please keep in mind that the _OUT_ in the name does _not_ mean that this
@@ -156,7 +156,7 @@ typedef void (*axis_protocol_on_cleaned_for_internal_func_t)(
  * @brief This function will be called to notify the implementation protocol in
  * the following two scenarios:
  *
- * - The migration in the TEN world has been completed, all the resources bound
+ * - The migration in the APTIMA world has been completed, all the resources bound
  *   to the base protocol has been cleaned during the migration.
  *
  * - The migration has not been started as the expected engine was not found.
@@ -181,7 +181,7 @@ typedef void (*axis_protocol_on_cleaned_for_external_func_t)(
  * might not have its own runloop, we provide the following two standard layers:
  *
  * - axis_protocol_integrated_t
- *   It uses the runloop of the ten app or engine.
+ *   It uses the runloop of the aptima app or engine.
  *
  * - axis_protocol_asynced_t
  *   It supposes that the implementation protocol has its own runloop and runs
@@ -273,7 +273,7 @@ typedef struct axis_protocol_t {
 
   // TODO(Wei): Have an 'on_input' field here.
 
-  // Used to handle the output TEN messages to the remote.
+  // Used to handle the output APTIMA messages to the remote.
   axis_protocol_on_output_func_t on_output;
 
   // This is the callback function when this protocol is migrated to the new

@@ -1,4 +1,4 @@
-# TEN Manager - Check Graph
+# APTIMA Manager - Check Graph
 
 `tman` provides the `check graph` command to validate predefined graphs or a `start_graph` command for correctness. To see the usage details, use the following command:
 
@@ -26,13 +26,13 @@ The `check graph` command is designed to handle graphs that may span multiple ap
 - **Check all predefined graphs in `property.json`**:
 
   ```shell
-  tman check graph --app /home/TEN-Agent/agents
+  tman check graph --app /home/APTIMA-Agent/agents
   ```
 
 - **Check a specific predefined graph**:
 
   ```shell
-  tman check graph --predefined-graph-name va.openai.azure --app /home/TEN-Agent/agents
+  tman check graph --predefined-graph-name va.openai.azure --app /home/APTIMA-Agent/agents
   ```
 
 - **Check a `start_graph` command**:
@@ -57,7 +57,7 @@ The `check graph` command is designed to handle graphs that may span multiple ap
         "app": "msgpack://127.0.0.1:8001/"
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
 ## Prerequisites
@@ -81,7 +81,7 @@ The `nodes` array is required in any graph definition. If absent, an error will 
     "type": "start_graph",
     "seq_id": "55",
     "nodes": []
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -120,7 +120,7 @@ Each node in the `nodes` array represents a specific extension instance within a
         "app": "msgpack://127.0.0.1:8001/"
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -139,7 +139,7 @@ All extension instances referenced in the `connections` field, whether as a sour
 
 - **Example (Source extension not defined)**:
 
-  Imagine that the content of `property.json` of a TEN app is as follows.
+  Imagine that the content of `property.json` of a APTIMA app is as follows.
 
   ```json
   {
@@ -178,7 +178,7 @@ All extension instances referenced in the `connections` field, whether as a sour
   ```
 
   ```shell
-  tman check graph --app /home/TEN-Agent/agents
+  tman check graph --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -193,7 +193,7 @@ All extension instances referenced in the `connections` field, whether as a sour
 
 - **Example (Destination extension not defined)**:
 
-  Imagine that the content of `property.json` of a TEN app is as follows.
+  Imagine that the content of `property.json` of a APTIMA app is as follows.
 
   ```json
   {
@@ -249,7 +249,7 @@ All extension instances referenced in the `connections` field, whether as a sour
   ```
 
   ```shell
-  tman check graph --app /home/TEN-Agent/agents
+  tman check graph --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -266,7 +266,7 @@ All extension instances referenced in the `connections` field, whether as a sour
 
 - **Example (The `_ten::uri` in property.json is not equal to the `app` field in nodes)**:
 
-  Imagine that the content of property.json of a TEN app is as follows.
+  Imagine that the content of property.json of a APTIMA app is as follows.
 
   ```json
   {
@@ -291,7 +291,7 @@ All extension instances referenced in the `connections` field, whether as a sour
   ```
 
   ```shell
-  tman check graph --app /home/TEN-Agent/agents
+  tman check graph --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -308,7 +308,7 @@ All extension instances referenced in the `connections` field, whether as a sour
 
 - **Example (the ten_packages does not exist as the `tman install` has not executed)**:
 
-  Imagine that the content of property.json of a TEN app is as follows.
+  Imagine that the content of property.json of a APTIMA app is as follows.
 
   ```json
   {
@@ -334,7 +334,7 @@ All extension instances referenced in the `connections` field, whether as a sour
   And the `ten_packages` directory does **\_NOT** exist.
 
   ```shell
-  tman check graph --app /home/TEN-Agent/agents
+  tman check graph --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -397,7 +397,7 @@ All extension instances referenced in the `connections` field, whether as a sour
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -455,7 +455,7 @@ All extension instances referenced in the `connections` field, whether as a sour
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -583,7 +583,7 @@ The message declared in each message flow in the connections will be checked if 
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -601,7 +601,7 @@ The message declared in each message flow in the connections will be checked if 
 
 The `app` field in each node must met the following rules.
 
-- The `app` field must be equal to the `_ten::uri` of the corresponding TEN app.
+- The `app` field must be equal to the `_ten::uri` of the corresponding APTIMA app.
 - Either all nodes should have `app` declared, or none should.
 - The `app` field can not be `localhost`.
 - The `app` field can not be an empty string.
@@ -627,7 +627,7 @@ The `app` field in each node must met the following rules.
         "app": "http://localhost:8000"
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -675,7 +675,7 @@ The `app` field in each node must met the following rules.
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -723,7 +723,7 @@ The `app` field in each node must met the following rules.
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -775,7 +775,7 @@ The `app` field in each node must met the following rules.
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:
@@ -822,7 +822,7 @@ The `app` field in each node must met the following rules.
         ]
       }
     ]
-  }' --app /home/TEN-Agent/agents
+  }' --app /home/APTIMA-Agent/agents
   ```
 
   **Output**:

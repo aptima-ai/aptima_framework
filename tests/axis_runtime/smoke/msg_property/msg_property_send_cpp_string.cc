@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -9,30 +9,30 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lib/thread.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
 #include "tests/aptima_runtime/smoke/util/binding/cpp/check.h"
 
-#define TEST_DATA "hello TEN in C++!"
+#define TEST_DATA "hello APTIMA in C++!"
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto new_cmd = ten::cmd_t::create("send_ptr");
+      auto new_cmd = aptima::cmd_t::create("send_ptr");
       new_cmd->set_property("test data", std::string(TEST_DATA));
       hello_world_cmd = std::move(cmd);
       aptima_env.send_cmd(
           std::move(new_cmd),
-          [this](ten::aptima_env_t &aptima_env,
-                 std::unique_ptr<ten::cmd_result_t> cmd, ten::error_t *err) {
-            auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+          [this](aptima::aptima_env_t &aptima_env,
+                 std::unique_ptr<aptima::cmd_result_t> cmd, aptima::error_t *err) {
+            auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
             cmd_result->set_property(
                 "detail", cmd->get_property_string("detail").c_str());
             aptima_env.return_result(std::move(cmd_result),
@@ -42,29 +42,29 @@ class test_extension_1 : public ten::extension_t {
   }
 
  private:
-  std::unique_ptr<ten::cmd_t> hello_world_cmd;
+  std::unique_ptr<aptima::cmd_t> hello_world_cmd;
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "send_ptr") {
       auto test_data = cmd->get_property_string("test data");
       aptima_ASSERT(test_data == TEST_DATA, "Invalid argument.");
 
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class test_app : public ten::app_t {
+class test_app : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -103,10 +103,10 @@ TEST(MsgPropertyTest, SendCppString) {  // NOLINT
       aptima_thread_create("app thread", test_app_thread_main, nullptr);
 
   // Create a client and connect to the app.
-  auto *client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+  auto *client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
   // Send graph.
-  auto start_graph_cmd = ten::cmd_start_graph_t::create();
+  auto start_graph_cmd = aptima::cmd_start_graph_t::create();
   start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                "type": "extension",
@@ -138,7 +138,7 @@ TEST(MsgPropertyTest, SendCppString) {  // NOLINT
   aptima_test::check_status_code(cmd_result, aptima_STATUS_CODE_OK);
 
   // Send a user-defined 'hello world' command.
-  auto hello_world_cmd = ten::cmd_t::create("hello_world");
+  auto hello_world_cmd = aptima::cmd_t::create("hello_world");
   hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                             "msg_property_send_cpp_string__extension_group_1",
                             "msg_property_send_cpp_string__extension_1");

@@ -1,6 +1,6 @@
 # Configure Properties in Playground
 
-This guide will help you to configure properties in the TEN-Agent Playground.
+This guide will help you to configure properties in the APTIMA-Agent Playground.
 
 ## Configure Properties
 

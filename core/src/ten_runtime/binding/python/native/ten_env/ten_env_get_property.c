@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -61,7 +61,7 @@ static void ten_env_proxy_notify_get_property(ten_env_t *ten_env,
   ten_value_t *c_value =
       ten_env_peek_property(ten_env, ten_string_get_raw_str(&ctx->path), &err);
 
-  // Because this value will be passed out of the TEN world and back into the
+  // Because this value will be passed out of the APTIMA world and back into the
   // Python world, and these two worlds are in different threads, copy semantics
   // are used to avoid thread safety issues.
   ctx->c_value = c_value ? ten_value_clone(c_value) : NULL;

@@ -18,6 +18,7 @@ class Transformer:
     """
     Transformer for the guess and check solver.
     """
+
     _builder: ProgramBuilder
     _state: str
     _check: List[AST]
@@ -50,6 +51,7 @@ class Checker:
     """
     Class wrapping a solver to perform the second level check.
     """
+
     _ctl: Control
     _map: List[Tuple[int, int]]
 
@@ -107,6 +109,7 @@ class CheckPropagator(Propagator):
     Simple propagator verifying that a check program holds on total
     assignments.
     """
+
     _check: List[ast.AST]
     _checkers: List[Checker]
 
@@ -146,7 +149,6 @@ class CheckPropagator(Propagator):
 
             checker.ground(self._check)
 
-
     def check(self, control: PropagateControl):
         """
         Check total assignments.
@@ -156,7 +158,7 @@ class CheckPropagator(Propagator):
 
         if not checker.check(control):
             conflict = []
-            for level in range(1, assignment.decision_level+1):
+            for level in range(1, assignment.decision_level + 1):
                 conflict.append(-assignment.decision(level))
 
             control.add_clause(conflict)
@@ -166,6 +168,7 @@ class GACApp(Application):
     """
     Application class implementing a custom solver.
     """
+
     program_name: str
     version: str
 

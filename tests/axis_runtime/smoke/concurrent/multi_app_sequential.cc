@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "include_internal/aptima_runtime/binding/cpp/ten.h"
+#include "include_internal/aptima_runtime/binding/cpp/aptima.h"
 #include "aptima_utils/lib/thread.h"
 #include "aptima_utils/lib/time.h"
 #include "tests/common/client/cpp/msgpack_tcp.h"
@@ -17,12 +17,12 @@
 
 namespace {
 
-class test_extension_1 : public ten::extension_t {
+class test_extension_1 : public aptima::extension_t {
  public:
-  explicit test_extension_1(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_1(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
       aptima_env.send_cmd(std::move(cmd));
       return;
@@ -30,34 +30,34 @@ class test_extension_1 : public ten::extension_t {
   }
 };
 
-class test_extension_2 : public ten::extension_t {
+class test_extension_2 : public aptima::extension_t {
  public:
-  explicit test_extension_2(const char *name) : ten::extension_t(name) {}
+  explicit test_extension_2(const char *name) : aptima::extension_t(name) {}
 
-  void on_cmd(ten::aptima_env_t &aptima_env,
-              std::unique_ptr<ten::cmd_t> cmd) override {
+  void on_cmd(aptima::aptima_env_t &aptima_env,
+              std::unique_ptr<aptima::cmd_t> cmd) override {
     if (cmd->get_name() == "hello_world") {
-      auto cmd_result = ten::cmd_result_t::create(aptima_STATUS_CODE_OK);
+      auto cmd_result = aptima::cmd_result_t::create(aptima_STATUS_CODE_OK);
       cmd_result->set_property("detail", "hello world, too");
       aptima_env.return_result(std::move(cmd_result), std::move(cmd));
     }
   }
 };
 
-class test_app_1 : public ten::app_t {
+class test_app_1 : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
-    // In a scenario which contains multiple TEN app, the construction of a
-    // graph might failed because not all TEN app has already been launched
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
+    // In a scenario which contains multiple APTIMA app, the construction of a
+    // graph might failed because not all APTIMA app has already been launched
     // successfully.
     //
-    //     client -> (connect cmd) -> TEN app 1 ... TEN app 2
+    //     client -> (connect cmd) -> APTIMA app 1 ... APTIMA app 2
     //                                    o             x
     //
     // In this case, the newly constructed engine in the app 1 would be closed,
     // and the client would see that the connection has be dropped. After that,
     // the client could retry to send the 'start_graph' command again to inform
-    // the TEN app to build the graph again.
+    // the APTIMA app to build the graph again.
     //
     // Therefore, the closing of an engine could _not_ cause the closing of the
     // app, and that's why the following 'long_running_mode' has been set.
@@ -78,9 +78,9 @@ class test_app_1 : public ten::app_t {
   }
 };
 
-class test_app_2 : public ten::app_t {
+class test_app_2 : public aptima::app_t {
  public:
-  void on_configure(ten::aptima_env_t &aptima_env) override {
+  void on_configure(aptima::aptima_env_t &aptima_env) override {
     bool rc = aptima_env.init_property_from_json(
         // clang-format off
                  R"({
@@ -129,26 +129,26 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
       aptima_thread_create("app thread 1", app_thread_1_main, nullptr);
 
   for (size_t i = 0; i < SEQUENTIAL_CLIENT_CNT; ++i) {
-    ten::msgpack_tcp_client_t *client = nullptr;
+    aptima::msgpack_tcp_client_t *client = nullptr;
 
-    // In a scenario which contains multiple TEN app, the construction of a
-    // graph might failed because not all TEN app has already been launched
+    // In a scenario which contains multiple APTIMA app, the construction of a
+    // graph might failed because not all APTIMA app has already been launched
     // successfully.
     //
-    //     client -> (connect cmd) -> TEN app 1 ... TEN app 2
+    //     client -> (connect cmd) -> APTIMA app 1 ... APTIMA app 2
     //                                    o             x
     //
     // In this case, the newly constructed engine in the app 1 would be closed,
     // and the client would see that the connection has be dropped. After that,
     // the client could retry to send the 'start_graph' command again to inform
-    // the TEN app to build the graph again.
+    // the APTIMA app to build the graph again.
     for (size_t i = 0; i < MULTIPLE_APP_SCENARIO_GRAPH_CONSTRUCTION_RETRY_TIMES;
          ++i) {
       // Create a client and connect to the app.
-      client = new ten::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
+      client = new aptima::msgpack_tcp_client_t("msgpack://127.0.0.1:8001/");
 
       // Send graph.
-      auto start_graph_cmd = ten::cmd_start_graph_t::create();
+      auto start_graph_cmd = aptima::cmd_start_graph_t::create();
       start_graph_cmd->set_graph_from_json(R"({
            "nodes": [{
                  "type": "extension",
@@ -190,7 +190,7 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
     }
 
     // Send a user-defined 'hello world' command.
-    auto hello_world_cmd = ten::cmd_t::create("hello_world");
+    auto hello_world_cmd = aptima::cmd_t::create("hello_world");
     hello_world_cmd->set_dest("msgpack://127.0.0.1:8001/", nullptr,
                               "test_extension_group 1", "test_extension_1");
 
@@ -205,11 +205,11 @@ TEST(ExtensionTest, MultiAppSequential) {  // NOLINT
 
   // Because the closing of an engine would _not_ cause the closing of the app,
   // so we have to explicitly close the app.
-  ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8001/");
+  aptima::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8001/");
 
   // Because the closing of an engine would _not_ cause the closing of the app,
   // so we have to explicitly close the app.
-  ten::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8002/");
+  aptima::msgpack_tcp_client_t::close_app("msgpack://127.0.0.1:8002/");
 
   aptima_thread_join(app_thread_1, -1);
   aptima_thread_join(app_thread_2, -1);

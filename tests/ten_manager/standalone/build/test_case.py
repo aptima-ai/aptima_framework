@@ -19,9 +19,9 @@ def check_if_template_mode_works(base_path: str):
 
 
 def check_if_standalone_install_works(base_path: str):
-    deps_dir = os.path.join(base_path, ".ten/app")
+    deps_dir = os.path.join(base_path, ".aptima/app")
     if not os.path.exists(deps_dir):
-        assert False, "The .ten/app is not found."
+        assert False, "The .aptima/app is not found."
 
     runtime_manifest = os.path.join(
         deps_dir, "ten_packages/system/ten_runtime/manifest.json"

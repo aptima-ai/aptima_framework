@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -61,7 +61,7 @@ void ten_app_start(ten_app_t *self) {
 
   ten_runloop_run(self->loop);
 
-  TEN_LOGD("TEN app runloop ends.");
+  TEN_LOGD("APTIMA app runloop ends.");
 }
 
 void ten_app_add_orphan_connection(ten_app_t *self,

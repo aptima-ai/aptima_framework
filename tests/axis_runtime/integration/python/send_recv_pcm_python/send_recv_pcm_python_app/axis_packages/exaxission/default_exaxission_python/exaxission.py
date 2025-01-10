@@ -1,14 +1,21 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import time
 
 from pydub import AudioSegment
-from ten import (AudioFrame, AudioFrameDataFmt, Cmd, CmdResult, Extension,
-                 StatusCode, TenEnv)
+from aptima import (
+    AudioFrame,
+    AudioFrameDataFmt,
+    Cmd,
+    CmdResult,
+    Extension,
+    StatusCode,
+    TenEnv,
+)
 
 
 class DefaultExtension(Extension):
@@ -57,7 +64,9 @@ class DefaultExtension(Extension):
         audio_frame.unlock_buf(buf)
         aptima_env.send_audio_frame(audio_frame)
 
-    def on_audio_frame(self, aptima_env: TenEnv, audio_frame: AudioFrame) -> None:
+    def on_audio_frame(
+        self, aptima_env: TenEnv, audio_frame: AudioFrame
+    ) -> None:
         print("DefaultExtension on_audio_frame")
 
         assert audio_frame.get_bytes_per_sample() == 2

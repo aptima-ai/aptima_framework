@@ -73,13 +73,13 @@ def test_send_video_frame_go():
         print("test_send_video_frame_go doesn't support win32")
         assert False
     elif sys.platform == "darwin":
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["DYLD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "send_video_frame_go_app/aptima_packages/system/aptima_runtime/lib",
         )
     else:
-        # client depends on some libraries in the TEN app.
+        # client depends on some libraries in the APTIMA app.
         my_env["LD_LIBRARY_PATH"] = os.path.join(
             base_path,
             "send_video_frame_go_app/aptima_packages/system/aptima_runtime/lib",

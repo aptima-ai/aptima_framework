@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -16,7 +16,7 @@ typedef struct aptima_error_t aptima_error_t;
 
 /**
  * @brief Note that the ownership of @a value would be transferred into the
- * TEN runtime, so the caller of this function could _not_ consider the
+ * APTIMA runtime, so the caller of this function could _not_ consider the
  * value instance is still valid.
  */
 aptima_RUNTIME_API bool aptima_env_set_property(aptima_env_t *self, const char *path,

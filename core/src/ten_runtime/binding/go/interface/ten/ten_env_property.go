@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include "ten_env.h"
 //#include "value.h"
@@ -268,7 +268,7 @@ func (p *tenEnv) GetPropertyPtr(path string) (any, error) {
 	})
 }
 
-// GetPropertyString retrieves the string property stored in a ten. This
+// GetPropertyString retrieves the string property stored in a aptima. This
 // function has one less memory allocation than calling GetProperty.
 //
 // Any type conversions to or from the `any` type may lead the Go compiler to
@@ -301,7 +301,7 @@ func (p *tenEnv) GetPropertyString(path string) (string, error) {
 	}
 
 	if realPt != propTypeStr {
-		// The ten_value_t is cloned in TEN runtime, so we have to destroy it.
+		// The ten_value_t is cloned in APTIMA runtime, so we have to destroy it.
 		tenValueDestroy(cValue)
 		return "", newTenError(
 			ErrnoInvalidType,
@@ -325,7 +325,7 @@ func (p *tenEnv) GetPropertyString(path string) (string, error) {
 	)
 }
 
-// GetPropertyBytes retrieves the []byte property stored in a ten. This function
+// GetPropertyBytes retrieves the []byte property stored in a aptima. This function
 // has one less memory allocation than calling GetProperty.
 //
 // Any type conversions to or from the `any` type may lead the Go compiler to
@@ -358,7 +358,7 @@ func (p *tenEnv) GetPropertyBytes(path string) ([]byte, error) {
 	}
 
 	if realPt != propTypeBuf {
-		// The ten_value_t is cloned in TEN runtime, so we have to destroy it.
+		// The ten_value_t is cloned in APTIMA runtime, so we have to destroy it.
 		tenValueDestroy(cValue)
 		return nil, newTenError(
 			ErrnoInvalidType,
@@ -382,7 +382,7 @@ func (p *tenEnv) GetPropertyBytes(path string) ([]byte, error) {
 	)
 }
 
-// SetProperty sets the value as a property in the ten. Note that there will be
+// SetProperty sets the value as a property in the aptima. Note that there will be
 // a type conversion which causes memory allocation if the type of value is
 // string or []byte. If the performance is critical, calling the concrete method
 // SetPropertyString or SetPropertyBytes is more appropriate.
@@ -611,7 +611,7 @@ func (p *tenEnv) SetProperty(path string, value any) error {
 	})
 }
 
-// SetPropertyString sets a string as property in the ten. This function has one
+// SetPropertyString sets a string as property in the aptima. This function has one
 // less memory allocation than calling SetProperty.
 func (p *tenEnv) SetPropertyString(
 	path string,
@@ -651,7 +651,7 @@ func (p *tenEnv) SetPropertyString(
 	})
 }
 
-// SetPropertyBytes sets a []byte as property in the ten. This function has one
+// SetPropertyBytes sets a []byte as property in the aptima. This function has one
 // less memory allocation than calling SetProperty.
 func (p *tenEnv) SetPropertyBytes(
 	path string,
@@ -722,9 +722,9 @@ func (p *tenEnv) setPropertyFromJSONBytes(path string, value []byte) error {
 	return err
 }
 
-// SetPropertyFromJSONBytes sets a json data as a property in the ten. The
+// SetPropertyFromJSONBytes sets a json data as a property in the aptima. The
 // `value` must be a valid json data. The json data will be treated as an object
-// or array in TEN runtime, but not a slice. The usual practice is to use
+// or array in APTIMA runtime, but not a slice. The usual practice is to use
 // GetPropertyToJSONBytes to extract everything at once. However, if the
 // structure is already known beforehand through certain methods, GetProperty
 // can be used to retrieve individual fields.

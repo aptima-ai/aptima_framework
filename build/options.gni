@@ -1,11 +1,11 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 declare_args() {
-  # The TEN runtime has its own memory check/track mechanism, which can be used
+  # The APTIMA runtime has its own memory check/track mechanism, which can be used
   # in conjunction with ASAN (AddressSanitizer).
   axis_enable_memory_check = true
 
@@ -27,7 +27,7 @@ declare_args() {
   # Since building the integration tests also increases disk space usage, in
   # disk space-limited environments (such as CI), the variable below is used to
   # defer the integration test build until the testing phase. This prevents it
-  # from being built together with the core TEN framework components (e.g.,
+  # from being built together with the core APTIMA framework components (e.g.,
   # `axis_runtime`, `axis_manager`).
   axis_enable_integration_tests_prebuilt = false
 

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -84,9 +84,9 @@ static bool ten_send_msg_internal(
 
     // @{
     // All commands sent from an extension will eventually go to this function,
-    // and command ID plays a critical role in the TEN runtime, therefore, when
+    // and command ID plays a critical role in the APTIMA runtime, therefore, when
     // a command is sent from an extension, and doesn't contain a command ID,
-    // TEN runtime must assign it a command ID _before_ sending it to the TEN
+    // APTIMA runtime must assign it a command ID _before_ sending it to the APTIMA
     // runtime deeper.
     const char *cmd_id = ten_cmd_base_get_cmd_id(msg);
     if (!strlen(cmd_id)) {

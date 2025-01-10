@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -11,8 +11,10 @@ import sys
 from glob import glob
 from typing import Callable, Dict, Optional, Type
 
-from libaxis_runtime_python import (_register_addon_as_extension,
-                                    _unregister_all_addons_and_cleanup)
+from libaxis_runtime_python import (
+    _register_addon_as_extension,
+    _unregister_all_addons_and_cleanup,
+)
 
 from .addon import Addon
 
@@ -20,7 +22,7 @@ from .addon import Addon
 class _AddonManager:
     # Use the simple approach below, similar to a global array, to detect
     # whether a Python module provides the registration function required by the
-    # TEN runtime. This avoids using `setattr` on the module, which may not be
+    # APTIMA runtime. This avoids using `setattr` on the module, which may not be
     # supported in advanced environments like Cython. The global array method
     # is simple enough that it should work in all environments.
     _registry: Dict[str, Callable[[object], None]] = {}

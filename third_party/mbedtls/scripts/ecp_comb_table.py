@@ -39,10 +39,10 @@ If you are trying to add new curve, you can follow these steps:
 
 Replace the <curve> in the above with the name of the curve you want to add."""
 
-CC = os.getenv('CC', 'cc')
-MBEDTLS_LIBRARY_PATH = os.getenv('MBEDTLS_LIBRARY_PATH', "library")
+CC = os.getenv("CC", "cc")
+MBEDTLS_LIBRARY_PATH = os.getenv("MBEDTLS_LIBRARY_PATH", "library")
 
-SRC_DUMP_COMB_TABLE = r'''
+SRC_DUMP_COMB_TABLE = r"""
 #include <stdio.h>
 #include <stdlib.h>
 #include "mbedtls/ecp.h"
@@ -132,9 +132,9 @@ int main()
     dump_T( &grp );
     return 0;
 }
-'''
+"""
 
-SRC_DUMP_KNOWN_CURVE = r'''
+SRC_DUMP_KNOWN_CURVE = r"""
 #include <stdio.h>
 #include <stdlib.h>
 #include "mbedtls/ecp.h"
@@ -154,7 +154,7 @@ int main() {
     printf( "\n" );
     return 0;
 }
-'''
+"""
 
 
 def join_src_path(*args):
@@ -173,20 +173,23 @@ def run_c_source(src, cflags):
     srcfile = os.fdopen(fd, mode="w")
     srcfile.write(src)
     srcfile.close()
-    args = [CC,
-            *cflags,
-            '-I' + join_src_path("include"),
-            "-o", binname,
-            '-L' + MBEDTLS_LIBRARY_PATH,
-            srcname,
-            '-lmbedcrypto']
+    args = [
+        CC,
+        *cflags,
+        "-I" + join_src_path("include"),
+        "-o",
+        binname,
+        "-L" + MBEDTLS_LIBRARY_PATH,
+        srcname,
+        "-lmbedcrypto",
+    ]
 
     p = subprocess.run(args=args, check=False)
     if p.returncode != 0:
         return False
-    p = subprocess.run(args=[binname], check=False, env={
-        'LD_LIBRARY_PATH': MBEDTLS_LIBRARY_PATH
-    })
+    p = subprocess.run(
+        args=[binname], check=False, env={"LD_LIBRARY_PATH": MBEDTLS_LIBRARY_PATH}
+    )
     if p.returncode != 0:
         return False
     os.unlink(srcname)
@@ -199,44 +202,60 @@ def compute_curve(curve):
     r = run_c_source(
         SRC_DUMP_COMB_TABLE,
         [
-            '-g',
-            '-DCURVE_ID=MBEDTLS_ECP_DP_%s' % curve.upper(),
+            "-g",
+            "-DCURVE_ID=MBEDTLS_ECP_DP_%s" % curve.upper(),
             '-DCURVE_NAME="%s"' % curve.lower(),
-        ])
+        ],
+    )
     if not r:
-        print("""\
-Unable to compile and run utility.""", file=sys.stderr)
+        print(
+            """\
+Unable to compile and run utility.""",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
 
 def usage():
-    print("""
+    print(
+        """
 Usage: python %s <curve>...
 
 Arguments:
     curve       Specify one or more curve names (e.g secp256r1)
 
-All possible curves: """ % sys.argv[0])
+All possible curves: """
+        % sys.argv[0]
+    )
     run_c_source(SRC_DUMP_KNOWN_CURVE, [])
-    print("""
+    print(
+        """
 Environment Variable:
     CC          Specify which c compile to use to compile utility.
     MBEDTLS_LIBRARY_PATH
                 Specify the path to mbedcrypto library. (e.g. build/library/)
 
-How to add a new curve: %s""" % HOW_TO_ADD_NEW_CURVE)
+How to add a new curve: %s"""
+        % HOW_TO_ADD_NEW_CURVE
+    )
 
 
 def run_main():
-    shared_lib_path = os.path.normpath(os.path.join(MBEDTLS_LIBRARY_PATH, "libmbedcrypto.so"))
-    static_lib_path = os.path.normpath(os.path.join(MBEDTLS_LIBRARY_PATH, "libmbedcrypto.a"))
+    shared_lib_path = os.path.normpath(
+        os.path.join(MBEDTLS_LIBRARY_PATH, "libmbedcrypto.so")
+    )
+    static_lib_path = os.path.normpath(
+        os.path.join(MBEDTLS_LIBRARY_PATH, "libmbedcrypto.a")
+    )
     if not os.path.exists(shared_lib_path) and not os.path.exists(static_lib_path):
-        print("Warning: both '%s' and '%s' are not exists. This script will use "
-              "the library from your system instead of the library compiled by "
-              "this source directory.\n"
-              "You can specify library path using environment variable "
-              "'MBEDTLS_LIBRARY_PATH'." % (shared_lib_path, static_lib_path),
-              file=sys.stderr)
+        print(
+            "Warning: both '%s' and '%s' are not exists. This script will use "
+            "the library from your system instead of the library compiled by "
+            "this source directory.\n"
+            "You can specify library path using environment variable "
+            "'MBEDTLS_LIBRARY_PATH'." % (shared_lib_path, static_lib_path),
+            file=sys.stderr,
+        )
 
     if len(sys.argv) <= 1:
         usage()
@@ -245,5 +264,5 @@ def run_main():
             compute_curve(curve)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_main()

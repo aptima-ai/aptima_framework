@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#***************************************************************************
+# ***************************************************************************
 #                                  _   _ ____  _
 #  Project                     ___| | | |  _ \| |
 #                             / __| | | | |_) | |
@@ -44,16 +44,21 @@ log = logging.getLogger(__name__)
 
 class LocalClient:
 
-    def __init__(self, name: str, env: Env, run_dir: Optional[str] = None,
-                 timeout: Optional[float] = None):
+    def __init__(
+        self,
+        name: str,
+        env: Env,
+        run_dir: Optional[str] = None,
+        timeout: Optional[float] = None,
+    ):
         self.name = name
-        self.path = os.path.join(env.project_dir, f'tests/http/clients/{name}')
+        self.path = os.path.join(env.project_dir, f"tests/http/clients/{name}")
         self.env = env
         self._timeout = timeout if timeout else env.test_timeout
-        self._curl = os.environ['CURL'] if 'CURL' in os.environ else env.curl
+        self._curl = os.environ["CURL"] if "CURL" in os.environ else env.curl
         self._run_dir = run_dir if run_dir else os.path.join(env.gen_dir, name)
-        self._stdoutfile = f'{self._run_dir}/stdout'
-        self._stderrfile = f'{self._run_dir}/stderr'
+        self._stdoutfile = f"{self._run_dir}/stdout"
+        self._stderrfile = f"{self._run_dir}/stderr"
         self._rmrf(self._run_dir)
         self._mkpath(self._run_dir)
 
@@ -65,7 +70,7 @@ class LocalClient:
         return os.path.exists(self.path)
 
     def download_file(self, i: int) -> str:
-        return os.path.join(self._run_dir, f'download_{i}.data')
+        return os.path.join(self._run_dir, f"download_{i}.data")
 
     def _rmf(self, path):
         if os.path.exists(path):
@@ -87,19 +92,29 @@ class LocalClient:
         myargs = [self.path]
         myargs.extend(args)
         try:
-            with open(self._stdoutfile, 'w') as cout:
-                with open(self._stderrfile, 'w') as cerr:
-                    p = subprocess.run(myargs, stderr=cerr, stdout=cout,
-                                       cwd=self._run_dir, shell=False,
-                                       input=None,
-                                       timeout=self._timeout)
+            with open(self._stdoutfile, "w") as cout:
+                with open(self._stderrfile, "w") as cerr:
+                    p = subprocess.run(
+                        myargs,
+                        stderr=cerr,
+                        stdout=cout,
+                        cwd=self._run_dir,
+                        shell=False,
+                        input=None,
+                        timeout=self._timeout,
+                    )
                     exitcode = p.returncode
         except subprocess.TimeoutExpired:
-            log.warning(f'Timeout after {self._timeout}s: {args}')
+            log.warning(f"Timeout after {self._timeout}s: {args}")
             exitcode = -1
-            exception = 'TimeoutExpired'
+            exception = "TimeoutExpired"
         coutput = open(self._stdoutfile).readlines()
         cerrput = open(self._stderrfile).readlines()
-        return ExecResult(args=myargs, exit_code=exitcode, exception=exception,
-                          stdout=coutput, stderr=cerrput,
-                          duration=datetime.now() - start)
+        return ExecResult(
+            args=myargs,
+            exit_code=exitcode,
+            exception=exception,
+            stdout=coutput,
+            stderr=cerrput,
+            duration=datetime.now() - start,
+        )

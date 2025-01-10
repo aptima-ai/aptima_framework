@@ -1,16 +1,16 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include "cmd.h"
 import "C"
 
-// StatusCode is an alias of TEN_STATUS_CODE from TEN runtime.
+// StatusCode is an alias of TEN_STATUS_CODE from APTIMA runtime.
 type StatusCode int8
 
 // StatusCode values. These definitions need to be the same as the
@@ -21,10 +21,10 @@ type StatusCode int8
 const (
 	statusCodeInvalid StatusCode = -1
 
-	// StatusCodeOk is an alias of TEN_STATUS_CODE_OK from TEN runtime.
+	// StatusCodeOk is an alias of TEN_STATUS_CODE_OK from APTIMA runtime.
 	StatusCodeOk = 0
 
-	// StatusCodeError is an alias of TEN_STATUS_CODE_ERROR from TEN runtime.
+	// StatusCodeError is an alias of TEN_STATUS_CODE_ERROR from APTIMA runtime.
 	StatusCodeError = 1
 
 	statusCodeLast = 2

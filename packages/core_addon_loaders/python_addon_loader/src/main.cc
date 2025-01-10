@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -24,16 +24,16 @@
 static void foo() {}
 
 /**
- * This addon is used for those ten app whose "main" function is not written in
- * python. By putting this addon into a ten app, the python runtime can be
- * initialized and other python addons can be loaded and registered to the ten
- * world when the ten app is started.
+ * This addon is used for those aptima app whose "main" function is not written in
+ * python. By putting this addon into a aptima app, the python runtime can be
+ * initialized and other python addons can be loaded and registered to the aptima
+ * world when the aptima app is started.
  *
  * Time sequence:
  *
- * 0) The executable of the ten app (non-python) links with libaxis_runtime.
+ * 0) The executable of the aptima app (non-python) links with libaxis_runtime.
  *
- * 1) The program of the ten app (non-python) is started, with libaxis_runtime
+ * 1) The program of the aptima app (non-python) is started, with libaxis_runtime
  *    being loaded, which triggers this addon to be dlopen-ed.
  *
  * 2) libaxis_runtime will call 'axis_addon_register_extension()' synchronously,
@@ -103,7 +103,7 @@ static void foo() {}
 
 namespace {
 
-class python_addon_loader_t : public ten::addon_loader_t {
+class python_addon_loader_t : public aptima::addon_loader_t {
  public:
   explicit python_addon_loader_t(const char *name) { (void)name; };
 
@@ -130,7 +130,7 @@ class python_addon_loader_t : public ten::addon_loader_t {
 
     find_app_base_dir();
 
-    // Before loading the ten python modules (extensions), we have to complete
+    // Before loading the aptima python modules (extensions), we have to complete
     // sys.path first.
     complete_sys_path();
 
@@ -365,7 +365,7 @@ class python_addon_loader_t : public ten::addon_loader_t {
 
   static void register_all_addons() {
     axis_py_run_simple_string(
-        "from ten import _AddonManager\n"
+        "from aptima import _AddonManager\n"
         "_AddonManager.register_all_addons(None)\n");
   }
 
@@ -374,7 +374,7 @@ class python_addon_loader_t : public ten::addon_loader_t {
     (void)addon_type;
 
     std::string register_script =
-        "from ten import _AddonManager\n"
+        "from aptima import _AddonManager\n"
         "_AddonManager.register_addon('" +
         std::string(addon_name) + "', None)\n";
     axis_py_run_simple_string(register_script.c_str());

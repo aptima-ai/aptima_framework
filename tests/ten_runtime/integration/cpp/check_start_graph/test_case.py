@@ -26,9 +26,7 @@ def test_check_start_graph():
     )
 
     if build_config_args.ten_enable_integration_tests_prebuilt is False:
-        print(
-            f"Assembling and building integration test case '{source_pkg_name}'"
-        )
+        print(f"Assembling and building integration test case '{source_pkg_name}'")
 
         rc = build_pkg.prepare_and_build_app(
             build_config_args,
@@ -69,18 +67,13 @@ def test_check_start_graph():
             + ";"
             + my_env["PATH"]
         )
-        server_cmd = os.path.join(
-            app_root_path, "bin/check_start_graph_source.exe"
-        )
+        server_cmd = os.path.join(app_root_path, "bin/check_start_graph_source.exe")
     elif sys.platform == "darwin":
         server_cmd = os.path.join(app_root_path, "bin/check_start_graph_source")
     else:
         server_cmd = os.path.join(app_root_path, "bin/check_start_graph_source")
 
-        if (
-            build_config_args.enable_sanitizer
-            and not build_config_args.is_clang
-        ):
+        if build_config_args.enable_sanitizer and not build_config_args.is_clang:
             libasan_path = os.path.join(
                 app_root_path,
                 "ten_packages/system/ten_runtime/lib/libasan.so",

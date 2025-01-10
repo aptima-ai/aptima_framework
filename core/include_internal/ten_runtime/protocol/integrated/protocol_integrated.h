@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -40,7 +40,7 @@ typedef struct ten_protocol_integrated_connect_to_context_t {
 
 /**
  * @brief This is the base class of all the protocols which uses the event loop
- * inside the TEN world.
+ * inside the APTIMA world.
  */
 struct ten_protocol_integrated_t {
   // All protocols should be inherited from the ten_protocol_t base structure.
@@ -56,10 +56,10 @@ struct ten_protocol_integrated_t {
     ten_stream_t *communication_stream;
   } role_facility;
 
-  // Used to convert a buffer to TEN runtime messages.
+  // Used to convert a buffer to APTIMA runtime messages.
   ten_protocol_integrated_on_input_func_t on_input;
 
-  // Used to convert TEN runtime messages to a buffer.
+  // Used to convert APTIMA runtime messages to a buffer.
   ten_protocol_integrated_on_output_func_t on_output;
 
   // Used to configure the retry mechanism.

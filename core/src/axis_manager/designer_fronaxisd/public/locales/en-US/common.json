@@ -1,7 +1,7 @@
 {
-  "axisframework": "TEN Framework",
+  "axisframework": "APTIMA Framework",
   "header": {
-    "title": "Ten Manager",
+    "title": "Aptima Manager",
     "menu": {
       "edit": "Edit",
       "openExistingGraph": "Open Existing Graph",

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -11,22 +11,22 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"ten_framework/ten"
+	"ten_framework/aptima"
 )
 
 const concurrency = 100000
 
 type extensionB struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 }
 
-func newExtensionB(name string) ten.Extension {
+func newExtensionB(name string) aptima.Extension {
 	return &extensionB{}
 }
 
 func (p *extensionB) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	go func() {
 		fmt.Println("extensionB OnCmd")
@@ -75,11 +75,11 @@ func (p *extensionB) OnCmd(
 			}
 			<-done
 
-			statusCmd, err := ten.NewCmdResult(
-				ten.StatusCodeOk,
+			statusCmd, err := aptima.NewCmdResult(
+				aptima.StatusCodeOk,
 			)
 			if err != nil {
-				cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+				cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeError)
 				cmdResult.SetPropertyString("detail", err.Error())
 				tenEnv.ReturnResult(cmdResult, cmd, nil)
 				return
@@ -89,7 +89,7 @@ func (p *extensionB) OnCmd(
 			statusCmd.SetProperty("password", "password")
 			tenEnv.ReturnResult(statusCmd, cmd, nil)
 		} else {
-			cmdResult, _ := ten.NewCmdResult(ten.StatusCodeError)
+			cmdResult, _ := aptima.NewCmdResult(aptima.StatusCodeError)
 			cmdResult.SetPropertyString("detail", "wrong cmd name")
 			tenEnv.ReturnResult(cmdResult, cmd, nil)
 		}
@@ -98,9 +98,9 @@ func (p *extensionB) OnCmd(
 
 func init() {
 	// Register addon
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"extension_b",
-		ten.NewDefaultExtensionAddon(newExtensionB),
+		aptima.NewDefaultExtensionAddon(newExtensionB),
 	)
 	if err != nil {
 		fmt.Println("register addon failed", err)

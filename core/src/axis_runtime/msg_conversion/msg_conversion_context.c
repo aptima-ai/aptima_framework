@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -191,9 +191,9 @@ bool axis_extension_convert_msg(axis_extension_t *self, axis_shared_ptr_t *msg,
           // those converted commands are equal, we do _not_ need to consider to
           // change the command IDs of those converted commands to different
           // values. Because those converted commands will be transmitted to an
-          // extension, and just before entering that extension, TEN runtime
+          // extension, and just before entering that extension, APTIMA runtime
           // will add corresponding IN path into the IN path table, and at that
-          // time, TEN runtime will detect there has already been a IN path in
+          // time, APTIMA runtime will detect there has already been a IN path in
           // the IN path table with the same command ID, and change the command
           // ID of the currently processed command to a different value at that
           // time.

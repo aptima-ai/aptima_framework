@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -80,7 +80,7 @@ static void axis_protocol_on_inputs_based_on_migration_state(
 
   if (migration_state == axis_CONNECTION_MIGRATION_STATE_INIT) {
     {
-      // Feed the very first message to the TEN world.
+      // Feed the very first message to the APTIMA world.
 
       axis_listnode_t *first_msg_node = axis_list_pop_front(msgs);
       axis_shared_ptr_t *first_msg = axis_smart_ptr_listnode_get(first_msg_node);
@@ -330,7 +330,7 @@ static void axis_transport_on_client_accepted(axis_transport_t *transport,
   axis_ASSERT(listening_protocol, "Should not happen.");
 
   // The `on_client_accepted_data` in transport stores the `on_client_accepted`
-  // callback function set by the TEN runtime.
+  // callback function set by the APTIMA runtime.
   axis_protocol_on_client_accepted_func_t on_client_accepted =
       transport->on_client_accepted_data;
   axis_ASSERT(on_client_accepted, "Should not happen.");
@@ -388,9 +388,9 @@ static void axis_protocol_integrated_listen(
   transport->user_data = self;
   // When a client connects, it is first handled using
   // `axis_transport_on_client_accepted`, and only afterward is the
-  // `on_client_accepted` defined from TEN runtime. This way, some tasks can be
+  // `on_client_accepted` defined from APTIMA runtime. This way, some tasks can be
   // performed within the protocol at the transport/stream layer first, before
-  // switching to the TEN runtime's `on_client_accepted` callback.
+  // switching to the APTIMA runtime's `on_client_accepted` callback.
   transport->on_client_accepted = axis_transport_on_client_accepted;
   transport->on_client_accepted_data = on_client_accepted;
 

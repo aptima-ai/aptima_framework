@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -8,7 +8,7 @@
 
 #include "axis_runtime/axis_config.h"
 
-#include "src/axis_runtime/binding/go/interface/ten/msg.h"
+#include "src/axis_runtime/binding/go/interface/aptima/msg.h"
 #include "axis_utils/lib/signature.h"
 
 #define axis_GO_MSG_SIGNATURE 0xB0E144BC5D3B1AB9U

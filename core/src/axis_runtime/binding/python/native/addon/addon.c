@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -64,7 +64,7 @@ static void proxy_on_init(axis_addon_t *addon, axis_env_t *axis_env) {
 
   axis_py_axis_env_t *py_axis_env = axis_py_axis_env_wrap(axis_env);
   if (!py_axis_env) {
-    axis_ASSERT(0, "Failed to wrap ten.");
+    axis_ASSERT(0, "Failed to wrap aptima.");
     goto done;
   }
 
@@ -97,7 +97,7 @@ done:
 static void proxy_on_deinit(axis_addon_t *addon, axis_env_t *axis_env) {
   axis_ASSERT(addon, "Invalid argument.");
   // TODO(Wei): In the context of Python standalone tests, the Python addon is
-  // registered into the TEN world within the extension tester thread (i.e., the
+  // registered into the APTIMA world within the extension tester thread (i.e., the
   // Python thread) but is unregistered in the test app thread. It should be
   // modified to also perform the Python addon registration within the test
   // app's `on_configure_done`. This change will allow the underlying thread
@@ -111,7 +111,7 @@ static void proxy_on_deinit(axis_addon_t *addon, axis_env_t *axis_env) {
 
   axis_py_axis_env_t *py_axis_env = axis_py_axis_env_wrap(axis_env);
   if (!py_axis_env) {
-    axis_ASSERT(0, "Failed to wrap ten.");
+    axis_ASSERT(0, "Failed to wrap aptima.");
     goto done;
   }
 
@@ -167,7 +167,7 @@ static void proxy_on_create_instance_async(axis_addon_t *addon,
 
   axis_py_axis_env_t *py_axis_env = axis_py_axis_env_wrap(axis_env);
   if (!py_axis_env) {
-    axis_ASSERT(0, "Failed to wrap ten.");
+    axis_ASSERT(0, "Failed to wrap aptima.");
     goto done;
   }
 
@@ -222,7 +222,7 @@ static void proxy_on_destroy_instance_async(axis_addon_t *addon,
   axis_ASSERT(py_instance, "Failed to get Python instance.");
 
   // Decrement the reference count of the Python extension and its associated
-  // ten object, so that Python GC can reclaim them.
+  // aptima object, so that Python GC can reclaim them.
   Py_DECREF(py_instance);
 
   axis_py_gil_state_release_internal(prev_state);

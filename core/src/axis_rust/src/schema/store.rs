@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -171,14 +171,14 @@ fn parse_msg_schema_from_manifest(
     Ok(())
 }
 
-// The TEN schema system will assign a type to each schema type. For example,
+// The APTIMA schema system will assign a type to each schema type. For example,
 // the type for an object schema is 'object,' and the type for an array schema
 // is 'array,' and so on. If the schema is of object type, it also needs to have
 // a top-level field called 'properties' to hold the contents of the object
 // schema. However, the content of the JSON will be somewhat simplified to avoid
 // the need for manually writing redundant information. Therefore, the parsing
 // logic will need to dynamically add some appropriate fields on the fly to meet
-// the requirements of the TEN schema format.
+// the requirements of the APTIMA schema format.
 //
 // The 'property' field is of object type, so its schema definition needs to be
 // an object with a 'type' field equals to 'object'. The expected schema json of

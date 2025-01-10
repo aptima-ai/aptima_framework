@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -20,9 +20,9 @@ use super::{
     PkgInfo,
 };
 
-// Basic info refers to the information used to "uniquely" identify a TEN
+// Basic info refers to the information used to "uniquely" identify a APTIMA
 // package. It includes the fields: type, name, version, and supports, which
-// together can be thought of as a unique ID representing a specific TEN
+// together can be thought of as a unique ID representing a specific APTIMA
 // package.
 #[derive(Clone, Debug, Eq, Serialize, Deserialize)]
 pub struct PkgBasicInfo {

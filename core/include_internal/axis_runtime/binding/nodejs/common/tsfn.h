@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -43,9 +43,9 @@ typedef struct axis_nodejs_tsfn_t {
   // necessarily be normal functions existing in the JS world, they could be
   // dynamically created JS functions. The life cycle of dynamically generated
   // JS functions is bound to the thread-safe functions. Therefore, for unified
-  // handling, TEN first acquires a reference to the JS function to prevent it
+  // handling, APTIMA first acquires a reference to the JS function to prevent it
   // from being garbage collected. Then, when the thread-safe function is
-  // finalized, TEN releases that reference, allowing the JS function to be
+  // finalized, APTIMA releases that reference, allowing the JS function to be
   // garbage collected.
   napi_ref js_func_ref;
 } axis_nodejs_tsfn_t;

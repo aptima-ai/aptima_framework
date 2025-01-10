@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -40,7 +40,7 @@ export class App {
     (global as any).gc();
   }
 
-  // The ten app should be run in another native thread not the JS main thread.
+  // The aptima app should be run in another native thread not the JS main thread.
   async run(): Promise<void> {
     await axis_addon.axis_nodejs_app_run(this);
   }

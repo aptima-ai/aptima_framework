@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -19,7 +19,7 @@ pub enum ModifyCommandData {
 
 pub fn create_sub_cmd(args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("modify")
-        .about("Modify something in the TEN framework")
+        .about("Modify something in the APTIMA framework")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(crate::cmd::cmd_modify::cmd_modify_graph::create_sub_cmd(

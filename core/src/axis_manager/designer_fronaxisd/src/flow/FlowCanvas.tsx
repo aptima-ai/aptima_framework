@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -240,9 +240,9 @@ const FlowCanvas = forwardRef<FlowCanvasRef, FlowCanvasProps>(
           style={{ width: "100%", height: "100%" }}
           onNodeContextMenu={clickNodeContextMenu}
           onEdgeContextMenu={clickEdgeContextMenu}
-          // onEdgeClick={(e, edge) => {
-          //   console.log("clicked", e, edge);
-          // }}
+        // onEdgeClick={(e, edge) => {
+        //   console.log("clicked", e, edge);
+        // }}
         >
           <Controls />
           <MiniMap zoomable pannable />

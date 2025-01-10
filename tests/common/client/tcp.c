@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -10,7 +10,7 @@
 
 #include "include_internal/aptima_runtime/msg/msg.h"
 #include "aptima_runtime/msg/cmd/close_app/cmd.h"
-#include "aptima_runtime/ten.h"
+#include "aptima_runtime/aptima.h"
 #include "aptima_utils/container/list.h"
 #include "aptima_utils/container/list_node_str.h"
 #include "aptima_utils/io/network.h"

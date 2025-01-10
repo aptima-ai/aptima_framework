@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -22,7 +22,7 @@
 #include "ten_utils/value/value_get.h"
 #include "ten_utils/value/value_json.h"
 
-namespace ten {
+namespace aptima {
 
 class ten_env_t;
 class cmd_result_t;
@@ -48,7 +48,7 @@ class msg_t {
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return "";
     }
@@ -64,7 +64,7 @@ class msg_t {
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return false;
     }
@@ -81,7 +81,7 @@ class msg_t {
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return false;
     }
@@ -208,8 +208,8 @@ class msg_t {
   }
 
   // Pay attention to its copy semantics.
-  ten::buf_t get_property_buf(const char *path, error_t *err = nullptr) {
-    auto result = ten::buf_t{};
+  aptima::buf_t get_property_buf(const char *path, error_t *err = nullptr) {
+    auto result = aptima::buf_t{};
 
     ten_value_t *c_value = peek_property_value(path, err);
     if (c_value == nullptr) {
@@ -227,7 +227,7 @@ class msg_t {
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return "";
     }
@@ -242,7 +242,7 @@ class msg_t {
     if (c_json == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return result;
     }
@@ -335,7 +335,7 @@ class msg_t {
   }
 
   // Pay attention to its copy semantics.
-  bool set_property(const char *path, const ten::buf_t &value,
+  bool set_property(const char *path, const aptima::buf_t &value,
                     error_t *err = nullptr) {
     if (value.data() == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
@@ -356,7 +356,7 @@ class msg_t {
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_GENERIC,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return false;
     }
@@ -429,7 +429,7 @@ class msg_t {
     if (c_msg == nullptr) {
       if (err != nullptr && err->get_c_error() != nullptr) {
         ten_error_set(err->get_c_error(), TEN_ERRNO_INVALID_ARGUMENT,
-                      "Invalid TEN message.");
+                      "Invalid APTIMA message.");
       }
       return TEN_MSG_TYPE_INVALID;
     }
@@ -440,4 +440,4 @@ class msg_t {
 
 // NOLINTEND(cert-dcl50-cpp)
 
-}  // namespace ten
+}  // namespace aptima

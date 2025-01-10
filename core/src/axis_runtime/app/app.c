@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -199,9 +199,9 @@ bool axis_app_run(axis_app_t *self, bool run_in_background,
 
   self->run_in_background = run_in_background;
 
-  // TEN app might be closed before running.
+  // APTIMA app might be closed before running.
   if (axis_app_is_closing(self)) {
-    axis_LOGW("Failed to run TEN app, because it has been closed.");
+    axis_LOGW("Failed to run APTIMA app, because it has been closed.");
     return false;
   }
 

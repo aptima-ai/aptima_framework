@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -8,7 +8,7 @@ import("//build/feature/axis_package.gni")
 import("//build/axis_common/asan/package_asan_lib.gni")
 import("//build/axis_runtime/feature/publish.gni")
 import("//build/axis_runtime/options.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/axis_runtime/aptima.gni")
 import("//core/src/axis_runtime/output_libs.gni")
 
 config("axis_runtime_config") {

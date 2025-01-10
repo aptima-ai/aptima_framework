@@ -1,10 +1,19 @@
 """
 Test clingo's Symbol class.
 """
+
 from unittest import TestCase
 
-from clingo import (Function, Infimum, Number, String, Supremum, SymbolType,
-                    Tuple_, parse_term)
+from clingo import (
+    Function,
+    Infimum,
+    Number,
+    String,
+    Supremum,
+    SymbolType,
+    Tuple_,
+    parse_term,
+)
 
 
 class TestSymbol(TestCase):

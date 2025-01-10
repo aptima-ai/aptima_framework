@@ -1,10 +1,10 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "ten_runtime/binding/go/interface/ten/extension.h"
+#include "ten_runtime/binding/go/interface/aptima/extension.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -16,9 +16,9 @@
 #include "include_internal/ten_runtime/binding/go/ten_env/ten_env_internal.h"
 #include "include_internal/ten_runtime/msg/cmd_base/cmd/cmd.h"
 #include "ten_runtime/binding/common.h"
-#include "ten_runtime/binding/go/interface/ten/common.h"
-#include "ten_runtime/binding/go/interface/ten/msg.h"
-#include "ten_runtime/binding/go/interface/ten/ten_env.h"
+#include "ten_runtime/binding/go/interface/aptima/common.h"
+#include "ten_runtime/binding/go/interface/aptima/msg.h"
+#include "ten_runtime/binding/go/interface/aptima/ten_env.h"
 #include "ten_runtime/extension/extension.h"
 #include "ten_runtime/ten_env/ten_env.h"
 #include "ten_runtime/ten_env_proxy/ten_env_proxy.h"
@@ -90,7 +90,7 @@ static void ten_go_extension_bridge_destroy(ten_go_extension_t *self) {
   ten_extension_t *c_extension = self->c_extension;
   TEN_ASSERT(c_extension, "Invalid argument.");
   // TEN_NOLINTNEXTLINE(thread-check)
-  // thread-check: In TEN world, the destroy operation should be performed in
+  // thread-check: In APTIMA world, the destroy operation should be performed in
   // any threads.
   TEN_ASSERT(ten_extension_check_integrity(c_extension, false),
              "Invalid use of extension %p.", c_extension);

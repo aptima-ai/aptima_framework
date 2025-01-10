@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -25,7 +25,7 @@ pub struct PackageCommand {}
 pub fn create_sub_cmd(_args_cfg: &crate::cmd_line::ArgsCfg) -> Command {
     Command::new("package")
         .about("Create a package file")
-        .after_help("Switch to the base directory of the TEN package you want to package, then simply run 'tman package' directly in that directory.")
+        .after_help("Switch to the base directory of the APTIMA package you want to package, then simply run 'tman package' directly in that directory.")
 }
 
 pub fn parse_sub_cmd(

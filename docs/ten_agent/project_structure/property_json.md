@@ -3,7 +3,7 @@
 
 This file contains the orchestration of extensions. It is the main runtime configuration file.
 
-![Graph at a glance](https://github.com/TEN-framework/docs/blob/main/assets/png/graph_at_a_glance.png?raw=true)
+![Graph at a glance](https://github.com/APTIMA-framework/docs/blob/main/assets/png/graph_at_a_glance.png?raw=true)
 
 The `property.json` file contains the following orchestration info,
 
@@ -39,7 +39,7 @@ The `property` section of a node contains the configuration of the extension. It
 }
 ```
 
-![Property JSON nodes](https://github.com/TEN-framework/docs/blob/main/assets/png/property_json_connections.png?raw=true)
+![Property JSON nodes](https://github.com/APTIMA-framework/docs/blob/main/assets/png/property_json_connections.png?raw=true)
 
 #### Read environment variables
 
@@ -57,7 +57,7 @@ It's quite common that an extension will require `api_key` to work. If you don't
 
 ## Connections
 
-The `connections` section contains the list of connections between nodes. Each connection specifies the source and destination nodes respectively. Every connection has an `extension_group` and `extension` property which is used to specify the source node, and it defines a set of multimodal data protocols(audio_frame, video_frame, data, cmd) supported by TEN Framwork. For each data protocols, it has a list of destination definitions, and each destination definition has a `name` property which is the key of the property data, and `dest` property which defines a list of destination nodes. Below is an example of how to connect two nodes,
+The `connections` section contains the list of connections between nodes. Each connection specifies the source and destination nodes respectively. Every connection has an `extension_group` and `extension` property which is used to specify the source node, and it defines a set of multimodal data protocols(audio_frame, video_frame, data, cmd) supported by APTIMA Framwork. For each data protocols, it has a list of destination definitions, and each destination definition has a `name` property which is the key of the property data, and `dest` property which defines a list of destination nodes. Below is an example of how to connect two nodes,
 
 ```json
 {
@@ -75,6 +75,6 @@ The `connections` section contains the list of connections between nodes. Each c
 }
 ```
 
-![Property JSON Connections](https://github.com/TEN-framework/docs/blob/main/assets/png/property_json_nodes.png?raw=true)
+![Property JSON Connections](https://github.com/APTIMA-framework/docs/blob/main/assets/png/property_json_nodes.png?raw=true)
 
 In the above example, we are connecting `agora_rtc` extension to `deepgram_asr` extension. The `agora_rtc` extension is sending `pcm_frame` data to `deepgram_asr` extension.

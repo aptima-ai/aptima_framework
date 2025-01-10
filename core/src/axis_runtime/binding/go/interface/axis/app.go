@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 // #include "app.h"
 import "C"
@@ -125,7 +125,7 @@ func tenGoAppOnConfigure(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -134,7 +134,7 @@ func tenGoAppOnConfigure(
 	tenEnvInstance, ok := tenEnvObj.(*tenEnv)
 	if !ok {
 		// Should not happen.
-		panic("Invalid ten object type.")
+		panic("Invalid aptima object type.")
 	}
 
 	tenEnvInstance.attachToApp(appObj)
@@ -161,7 +161,7 @@ func tenGoAppOnInit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -186,7 +186,7 @@ func tenGoAppOnDeinit(appID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)

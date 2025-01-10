@@ -28,9 +28,7 @@ class HeapInfo:
 def write_to_excel(heap_infos, output_file, sample_interval):
     # Create the excel file
     workbook = openpyxl.Workbook()
-    sheet = workbook.create_sheet(
-        index=0, title="Heap profile"
-    )  # create a new sheet
+    sheet = workbook.create_sheet(index=0, title="Heap profile")  # create a new sheet
     workbook.active = sheet  # set the new sheet as the active sheet
 
     # Write the header to the excel file.

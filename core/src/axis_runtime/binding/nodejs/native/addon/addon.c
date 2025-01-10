@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -93,7 +93,7 @@ static void axis_nodejs_addon_destroy(axis_nodejs_addon_t *self) {
 }
 
 static void axis_nodejs_addon_finalize(napi_env env, void *data, void *hint) {
-  axis_LOGI("TEN JS Addon is finalized.");
+  axis_LOGI("APTIMA JS Addon is finalized.");
 
   axis_nodejs_addon_t *addon_bridge = data;
   axis_ASSERT(
@@ -134,9 +134,9 @@ void axis_nodejs_invoke_addon_js_on_init(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_init() of the TEN JS addon.
+    // Call on_init() of the APTIMA JS addon.
 
-    // Get the TEN JS addon.
+    // Get the APTIMA JS addon.
     napi_value js_addon = NULL;
     status = napi_get_reference_value(
         env, call_info->addon_bridge->bridge.js_instance_ref, &js_addon);
@@ -179,9 +179,9 @@ void axis_nodejs_invoke_addon_js_on_deinit(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_deinit() of the TEN JS addon.
+    // Call on_deinit() of the APTIMA JS addon.
 
-    // Get the TEN JS addon.
+    // Get the APTIMA JS addon.
     napi_value js_addon = NULL;
     status = napi_get_reference_value(
         env, call_info->addon_bridge->bridge.js_instance_ref, &js_addon);
@@ -230,9 +230,9 @@ void axis_nodejs_invoke_addon_js_on_create_instance(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_create_instance() of the TEN JS addon.
+    // Call on_create_instance() of the APTIMA JS addon.
 
-    // Get the TEN JS addon.
+    // Get the APTIMA JS addon.
     napi_value js_addon = NULL;
     status = napi_get_reference_value(
         env, call_info->addon_bridge->bridge.js_instance_ref, &js_addon);
@@ -424,7 +424,7 @@ static napi_value axis_nodejs_addon_create(napi_env env,
       error, status == napi_ok,
       "Failed to increase the reference count of JS addon: %d", status);
 
-  // Create the underlying TEN C addon.
+  // Create the underlying APTIMA C addon.
   axis_addon_init(&addon_bridge->c_addon, proxy_on_init, proxy_on_deinit,
                  proxy_on_create_instance, proxy_on_destroy_instance, NULL);
 

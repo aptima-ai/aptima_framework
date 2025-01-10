@@ -67,9 +67,7 @@ def test_websocket_server_nodejs():
                 print("Using AddressSanitizer library.")
                 my_env["LD_PRELOAD"] = libasan_path
 
-    server_cmd = os.path.join(
-        base_path, "websocket_server_nodejs_app/bin/start"
-    )
+    server_cmd = os.path.join(base_path, "websocket_server_nodejs_app/bin/start")
 
     if not os.path.isfile(server_cmd):
         print(f"Server command '{server_cmd}' does not exist.")

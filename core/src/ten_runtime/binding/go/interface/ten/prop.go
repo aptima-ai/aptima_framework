@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 //#include <stdbool.h>
 //#include "common.h"
@@ -17,7 +17,7 @@ import (
 	"unsafe"
 )
 
-// propType is an alias of TEN_TYPE from TEN runtime.
+// propType is an alias of TEN_TYPE from APTIMA runtime.
 type propType uint8
 
 const (
@@ -49,10 +49,10 @@ const (
 
 	propTypePtr
 
-	// Some special types which are not in TEN runtime.
+	// Some special types which are not in APTIMA runtime.
 
 	// propTypeInt represents a GO int, which is at least 32 bits in size. It
-	// will be treated as propTypeInt64 when communicating with TEN runtime. The
+	// will be treated as propTypeInt64 when communicating with APTIMA runtime. The
 	// reason we do not use propTypeInt64 directly is that types must match
 	// exactly in the interface conversion. Ex:
 	//
@@ -62,7 +62,7 @@ const (
 	propTypeInt
 
 	// propTypeUint represents a GO uint, which is at least 32 bits in size. It
-	// will be treated as propTypeUint64 when communicating with TEN runtime.
+	// will be treated as propTypeUint64 when communicating with APTIMA runtime.
 	propTypeUint
 )
 
@@ -121,7 +121,7 @@ func getPropType(pt any) propType {
 		if k == reflect.Pointer || k == reflect.Func || k == reflect.UnsafePointer {
 			// We do not need to check the generic type (using
 			// reflect.TypeOf(pt).Elem()) if the type is Pointer, as we only
-			// need to know the property stored in TEN runtime is a pointer, no
+			// need to know the property stored in APTIMA runtime is a pointer, no
 			// matter what type of the pointer it is.
 			return propTypePtr
 		}
@@ -260,7 +260,7 @@ type iProperty interface {
 	// allocates a new unsafe.Pointer.
 	GetPropertyBytes(path string) ([]byte, error)
 
-	// GetPropertyToJSONBytes gets a property which is a json data store in TEN
+	// GetPropertyToJSONBytes gets a property which is a json data store in APTIMA
 	// runtime. If the property exists, the json data will be marshalled to a
 	// json bytes.
 	GetPropertyToJSONBytes(path string) ([]byte, error)
@@ -269,7 +269,7 @@ type iProperty interface {
 // The purpose of having this function is because there are two types of
 // getProperty:
 //
-// 1. ten.getProperty
+// 1. aptima.getProperty
 // 2. msg.getProperty
 //
 // Therefore, a closure is used to abstract the way of getting values, sharing

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -83,12 +83,12 @@ void axis_addon_on_init_done(axis_env_t *self) {
       // Get 'name' from manifest, and check the consistency between the name
       // specified in the argument, and the name specified in the manifest.
       //
-      // The name in the manifest could be checked by the TEN store to ensure
+      // The name in the manifest could be checked by the APTIMA store to ensure
       // the uniqueness of the name.
       axis_ASSERT(0, "Should not happen.");
     }
 
-    // If an extension defines an extension name in its manifest file, TEN
+    // If an extension defines an extension name in its manifest file, APTIMA
     // runtime would use that name instead of the name specified in the codes to
     // register it to the extension store.
     if (strlen(manifest_name)) {

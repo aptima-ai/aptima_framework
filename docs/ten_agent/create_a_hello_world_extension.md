@@ -55,7 +55,7 @@ Now, we’ve got the following services running:
 
 • `ten_agent_dev` at `http://0.0.0.0:49483` (dev server)
 
-• `ten_agent_playground` at `http://localhost:3000` (TEN Agent playground)
+• `ten_agent_playground` at `http://localhost:3000` (APTIMA Agent playground)
 
 ## 2. Enter the docker container
 

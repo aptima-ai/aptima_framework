@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -66,7 +66,7 @@ typedef enum axis_CONNECTION_ATTACH_TO {
 // Refer to the comments on 'axis_connection_migrate()' to know about the race
 // condition if the implementation protocol reads or writes the
 // 'axis_connection_t::migration_state' field. As the race condition exists, the
-// 'axis_connection_t::migration_state' can be only accessed from the TEN world
+// 'axis_connection_t::migration_state' can be only accessed from the APTIMA world
 // (i.e., the app and engine thread). The implementation protocol will keep a
 // mirror of 'axis_connection_t::migration_state' in its thread locally if it has
 // its own thread. Refer to 'axis_protocol_asynced_t::migration_state'. In other
@@ -87,17 +87,17 @@ typedef enum axis_CONNECTION_ATTACH_TO {
 // 'axis_connection_t::migration_state', so the implementation protocol must obey
 // the following rules.
 //
-// - Only one message could be transferred to the TEN world _before_ the
+// - Only one message could be transferred to the APTIMA world _before_ the
 //   migration state is completed or reset. The implementation protocol should
 //   use the 'migration_state' field in its own thread locally to control the
 //   message flow.
 //
-// - Once the migration is completed or reset in the TEN world, the
+// - Once the migration is completed or reset in the APTIMA world, the
 //   implementation protocol will receive an event through
 //   'axis_protocol_t::on_cleaned_for_external()' callback. The implementation
 //   protocol should implements this callback, and updates its own
 //   'migrate_state' based on the second parameter (i.e., updates
-//   'migration_state' to 'INIT' if the migration is reset in the TEN world,
+//   'migration_state' to 'INIT' if the migration is reset in the APTIMA world,
 //   otherwise updates to 'DONE').
 //
 // - Only try to retrieve the runloop of the connection (i.e., the
@@ -113,21 +113,21 @@ typedef enum axis_CONNECTION_MIGRATION_STATE {
   // receives the first message, whether the connection needs to be migrated
   // depends on two conditions:
   //
-  // - Whether the message will be sent to an TEN engine, not the TEN app. In
+  // - Whether the message will be sent to an APTIMA engine, not the APTIMA app. In
   //   other words, the 'graph_id' field of the dest loc of the message is not
   //   empty, or the message is a 'start_graph' cmd (the 'start_graph' cmd
   //   enables a new engine to be created).
   //
-  // - Whether the TEN engine runs in its own thread.
+  // - Whether the APTIMA engine runs in its own thread.
   //
-  // The above conditions are determined by the TEN app based on the message, so
-  // the connection has to transfer at least one message to the TEN app. And as
+  // The above conditions are determined by the APTIMA app based on the message, so
+  // the connection has to transfer at least one message to the APTIMA app. And as
   // the migration is always asynchronous, the connection could transfer only
-  // one message to the TEN app before the migration is completed, otherwise the
+  // one message to the APTIMA app before the migration is completed, otherwise the
   // migration maybe executed twice.
   //
   // So we use this state to ensure that the connection transfer one and only
-  // one message to the TEN app before the migration is completed.
+  // one message to the APTIMA app before the migration is completed.
   axis_CONNECTION_MIGRATION_STATE_FIRST_MSG,
 
   // The connection needs to be migrated, and the migration has been completed;
@@ -167,11 +167,11 @@ typedef struct axis_connection_t {
     axis_remote_t *remote;
   } attached_target;
 
-  // The TEN app will create a 'connection' when a client request has been
+  // The APTIMA app will create a 'connection' when a client request has been
   // accepted, and the newly created connection will be kept in the
   // 'orphan_connections' list in the app (the main reason of having this list
   // is to avoid memory leakages). If the requests from the connection are sent
-  // to a TEN engine who has its own eventloop, the connection must be migrated
+  // to a APTIMA engine who has its own eventloop, the connection must be migrated
   // from the app to the engine before the engine handles any requests from that
   // 'connection'.
   //
@@ -194,13 +194,13 @@ typedef struct axis_connection_t {
   //     freed by the app. That's what the 'attach_to_type' field does.
   //
   // - The implementation protocol who has its own thread (e.g., the http
-  //   protocol) closes, and tries to send a notification to the TEN protocol
+  //   protocol) closes, and tries to send a notification to the APTIMA protocol
   //   through the eventloop. The implementation protocol gets the eventloop of
-  //   the TEN protocol based on the 'axis_connection_t::attach_to_type' field.
+  //   the APTIMA protocol based on the 'axis_connection_t::attach_to_type' field.
   //   The implementation protocol might be closed before the migration, in
   //   other words, the 'closing' notification will be sent to the app's
   //   eventloop. But when the migration is completed in the engine thread, the
-  //   owner of the connection and the TEN protocol switches to the engine. The
+  //   owner of the connection and the APTIMA protocol switches to the engine. The
   //   closure of the connection might executes in the wrong thread.
   //
   //   > Briefly, the 'closing' and other events of the connection _must_ happen
@@ -212,7 +212,7 @@ typedef struct axis_connection_t {
   // 'connect_to' cmd), which always happen in the engine thread. So the
   // 'migration_state' is always 'DONE'.
   //
-  // Note that this field will be only accessed in the TEN world, the
+  // Note that this field will be only accessed in the APTIMA world, the
   // implementation protocol who has its own thread will keep a copy of this
   // field locally.
   //

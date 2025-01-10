@@ -1,6 +1,6 @@
 # Configure Modules in Playground
 
-This guide will help you to configure modules in the TEN-Agent Playground.
+This guide will help you to configure modules in the APTIMA-Agent Playground.
 
 ## Configure Modules
 
@@ -13,7 +13,7 @@ This guide will help you to configure modules in the TEN-Agent Playground.
 
 ## Available Modules
 
-The following module types are available for the TEN-Agent Playground:
+The following module types are available for the APTIMA-Agent Playground:
 
 ### Speech Recognition (STT)
 
@@ -37,7 +37,7 @@ The Tool module provides a set of tools for the agent to use. The tools can be b
 
 ## Bind Tool Modules
 
-You can bind tool modules to `LLM` or `V2V` modules in the TEN-Agent Playground.
+You can bind tool modules to `LLM` or `V2V` modules in the APTIMA-Agent Playground.
 Tool can provide additional capabilities to the agent, such as weather check, news update, etc. You can also write your own tool extension if needed.
 
 1. Open the playground at [localhost:3000](http://localhost:3000) to configure your agent.

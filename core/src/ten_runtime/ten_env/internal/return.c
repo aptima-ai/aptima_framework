@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -40,7 +40,7 @@ static bool ten_env_return_result_internal(
     ten_cmd_base_set_cmd_id(result_cmd, cmd_id);
   }
 
-  // seq_id is important if the target of the 'cmd' is a client outside TEN.
+  // seq_id is important if the target of the 'cmd' is a client outside APTIMA.
   if (seq_id) {
     ten_cmd_base_set_seq_id(result_cmd, seq_id);
   }

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -64,7 +64,7 @@ napi_value axis_nodejs_axis_env_on_start_done(napi_env env,
   }
 
   if (!rc) {
-    axis_LOGD("TEN/JS failed to on_start_done.");
+    axis_LOGD("APTIMA/JS failed to on_start_done.");
 
     axis_string_t code_str;
     axis_string_init_formatted(&code_str, "%d", axis_error_errno(&err));

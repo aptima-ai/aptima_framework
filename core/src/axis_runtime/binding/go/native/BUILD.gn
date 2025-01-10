@@ -1,11 +1,11 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
 import("//build/options.gni")
-import("//build/axis_runtime/ten.gni")
+import("//build/axis_runtime/aptima.gni")
 
 axis_shared_library("axis_runtime_go") {
   if (is_mac || is_linux) {
@@ -38,7 +38,7 @@ axis_shared_library("axis_runtime_go") {
     ldflags += [ "-Wl,-rpath=\$ORIGIN/../../axis_runtime/lib" ]
   }
 
-  # Only export "ten" relevant symbols.
+  # Only export "aptima" relevant symbols.
   if (is_mac) {
     ldflags += [
       "-Xlinker",

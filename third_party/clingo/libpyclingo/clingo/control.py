@@ -42,14 +42,31 @@ The following example shows basic (multishot) grounding and solving:
 
 import sys
 from collections import abc
-from typing import (Any, Callable, Iterator, Optional, Sequence, Tuple, Union,
-                    cast, overload)
+from typing import (
+    Any,
+    Callable,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    cast,
+    overload,
+)
 
 if sys.version_info >= (3, 8):
     from typing import Literal
 
-from ._internal import (_c_call, _cb_error_handler, _CBData, _Error, _ffi,
-                        _handle_error, _lib, _overwritten)
+from ._internal import (
+    _c_call,
+    _cb_error_handler,
+    _CBData,
+    _Error,
+    _ffi,
+    _handle_error,
+    _lib,
+    _overwritten,
+)
 from .backend import Backend, Observer
 from .configuration import Configuration
 from .core import Logger
@@ -507,63 +524,101 @@ class Control:
         c_observer = _ffi.new(
             "clingo_ground_program_observer_t*",
             (
-                _lib.pyclingo_observer_init_program
-                if _overwritten(Observer, observer, "init_program")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_begin_step
-                if _overwritten(Observer, observer, "begin_step")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_end_step
-                if _overwritten(Observer, observer, "end_step")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_rule
-                if _overwritten(Observer, observer, "rule")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_weight_rule
-                if _overwritten(Observer, observer, "weight_rule")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_minimize
-                if _overwritten(Observer, observer, "minimize")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_project
-                if _overwritten(Observer, observer, "project")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_output_atom
-                if _overwritten(Observer, observer, "output_atom")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_output_term
-                if _overwritten(Observer, observer, "output_term")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_external
-                if _overwritten(Observer, observer, "external")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_assume
-                if _overwritten(Observer, observer, "assume")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_heuristic
-                if _overwritten(Observer, observer, "heuristic")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_acyc_edge
-                if _overwritten(Observer, observer, "acyc_edge")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_theory_term_number
-                if _overwritten(Observer, observer, "theory_term_number")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_theory_term_string
-                if _overwritten(Observer, observer, "theory_term_string")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_theory_term_compound
-                if _overwritten(Observer, observer, "theory_term_compound")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_theory_element
-                if _overwritten(Observer, observer, "theory_element")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_theory_atom
-                if _overwritten(Observer, observer, "theory_atom")
-                else _ffi.NULL,
-                _lib.pyclingo_observer_theory_atom_with_guard
-                if _overwritten(Observer, observer, "theory_atom_with_guard")
-                else _ffi.NULL,
+                (
+                    _lib.pyclingo_observer_init_program
+                    if _overwritten(Observer, observer, "init_program")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_begin_step
+                    if _overwritten(Observer, observer, "begin_step")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_end_step
+                    if _overwritten(Observer, observer, "end_step")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_rule
+                    if _overwritten(Observer, observer, "rule")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_weight_rule
+                    if _overwritten(Observer, observer, "weight_rule")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_minimize
+                    if _overwritten(Observer, observer, "minimize")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_project
+                    if _overwritten(Observer, observer, "project")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_output_atom
+                    if _overwritten(Observer, observer, "output_atom")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_output_term
+                    if _overwritten(Observer, observer, "output_term")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_external
+                    if _overwritten(Observer, observer, "external")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_assume
+                    if _overwritten(Observer, observer, "assume")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_heuristic
+                    if _overwritten(Observer, observer, "heuristic")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_acyc_edge
+                    if _overwritten(Observer, observer, "acyc_edge")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_theory_term_number
+                    if _overwritten(Observer, observer, "theory_term_number")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_theory_term_string
+                    if _overwritten(Observer, observer, "theory_term_string")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_theory_term_compound
+                    if _overwritten(Observer, observer, "theory_term_compound")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_theory_element
+                    if _overwritten(Observer, observer, "theory_element")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_theory_atom
+                    if _overwritten(Observer, observer, "theory_atom")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_observer_theory_atom_with_guard
+                    if _overwritten(Observer, observer, "theory_atom_with_guard")
+                    else _ffi.NULL
+                ),
             ),
         )
         c_data = _ffi.new_handle(_CBData(observer, self._error))
@@ -591,21 +646,31 @@ class Control:
         c_propagator = _ffi.new(
             "clingo_propagator_t*",
             (
-                _lib.pyclingo_propagator_init
-                if _overwritten(Propagator, propagator, "init")
-                else _ffi.NULL,
-                _lib.pyclingo_propagator_propagate
-                if _overwritten(Propagator, propagator, "propagate")
-                else _ffi.NULL,
-                _lib.pyclingo_propagator_undo
-                if _overwritten(Propagator, propagator, "undo")
-                else _ffi.NULL,
-                _lib.pyclingo_propagator_check
-                if _overwritten(Propagator, propagator, "check")
-                else _ffi.NULL,
-                _lib.pyclingo_propagator_decide
-                if _overwritten(Propagator, propagator, "decide")
-                else _ffi.NULL,
+                (
+                    _lib.pyclingo_propagator_init
+                    if _overwritten(Propagator, propagator, "init")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_propagator_propagate
+                    if _overwritten(Propagator, propagator, "propagate")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_propagator_undo
+                    if _overwritten(Propagator, propagator, "undo")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_propagator_check
+                    if _overwritten(Propagator, propagator, "check")
+                    else _ffi.NULL
+                ),
+                (
+                    _lib.pyclingo_propagator_decide
+                    if _overwritten(Propagator, propagator, "decide")
+                    else _ffi.NULL
+                ),
             ),
         )
         c_data = _ffi.new_handle(_CBData(propagator, self._error))
@@ -663,13 +728,16 @@ class Control:
     # this assumes that overloads are matched in the order they appear
     # unfortunately, PEP0484 does not specify any kind of semantics just giving examples
     if sys.version_info >= (3, 8):
+
         @overload
         def solve(
             self,
             assumptions: Sequence[Union[Tuple[Symbol, bool], int]] = (),
             on_model: Optional[Callable[[Model], Optional[bool]]] = None,
             on_unsat: Optional[Callable[[Sequence[int]], None]] = None,
-            on_statistics: Optional[Callable[[StatisticsMap, StatisticsMap], None]] = None,
+            on_statistics: Optional[
+                Callable[[StatisticsMap, StatisticsMap], None]
+            ] = None,
             on_finish: Optional[Callable[[SolveResult], None]] = None,
             on_core: Optional[Callable[[Sequence[int]], None]] = None,
             *,
@@ -682,7 +750,9 @@ class Control:
             assumptions: Sequence[Union[Tuple[Symbol, bool], int]] = (),
             on_model: Optional[Callable[[Model], Optional[bool]]] = None,
             on_unsat: Optional[Callable[[Sequence[int]], None]] = None,
-            on_statistics: Optional[Callable[[StatisticsMap, StatisticsMap], None]] = None,
+            on_statistics: Optional[
+                Callable[[StatisticsMap, StatisticsMap], None]
+            ] = None,
             on_finish: Optional[Callable[[SolveResult], None]] = None,
             on_core: Optional[Callable[[Sequence[int]], None]] = None,
             *,
@@ -695,21 +765,27 @@ class Control:
             assumptions: Sequence[Union[Tuple[Symbol, bool], int]] = (),
             on_model: Optional[Callable[[Model], Optional[bool]]] = None,
             on_unsat: Optional[Callable[[Sequence[int]], None]] = None,
-            on_statistics: Optional[Callable[[StatisticsMap, StatisticsMap], None]] = None,
+            on_statistics: Optional[
+                Callable[[StatisticsMap, StatisticsMap], None]
+            ] = None,
             on_finish: Optional[Callable[[SolveResult], None]] = None,
             on_core: Optional[Callable[[Sequence[int]], None]] = None,
             *,
             yield_: bool = False,
             async_: Literal[True],
         ) -> SolveHandle: ...
+
     else:
+
         @overload
         def solve(
             self,
             assumptions: Sequence[Union[Tuple[Symbol, bool], int]] = (),
             on_model: Optional[Callable[[Model], Optional[bool]]] = None,
             on_unsat: Optional[Callable[[Sequence[int]], None]] = None,
-            on_statistics: Optional[Callable[[StatisticsMap, StatisticsMap], None]] = None,
+            on_statistics: Optional[
+                Callable[[StatisticsMap, StatisticsMap], None]
+            ] = None,
             on_finish: Optional[Callable[[SolveResult], None]] = None,
             on_core: Optional[Callable[[Sequence[int]], None]] = None,
         ) -> SolveResult: ...

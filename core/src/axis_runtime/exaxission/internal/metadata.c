@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -158,8 +158,8 @@ static void axis_extension_adjust_in_path_timeout(axis_extension_t *self) {
   }
 }
 
-// Retrieve those property fields that are reserved for the TEN runtime under
-// the 'ten' namespace.
+// Retrieve those property fields that are reserved for the APTIMA runtime under
+// the 'aptima' namespace.
 static axis_value_t *axis_extension_get_axis_namespace_properties(
     axis_extension_t *self) {
   axis_ASSERT(self && axis_extension_check_integrity(self, true),
@@ -281,7 +281,7 @@ void axis_extension_merge_properties_from_graph(axis_extension_t *self) {
 }
 
 // Determine the internal properties of the extension according to the
-// 'ten' object in the extension's property store. like:
+// 'aptima' object in the extension's property store. like:
 // {
 //   "_ten": {
 //     "path_timeout": {

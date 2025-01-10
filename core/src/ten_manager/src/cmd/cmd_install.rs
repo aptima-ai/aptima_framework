@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -189,10 +189,10 @@ fn is_package_installable_in_cwd(
 ) -> Result<()> {
     match desired_pkg_type {
         PkgType::App => {
-            // The app must not be installed into a TEN package folder.
+            // The app must not be installed into a APTIMA package folder.
             if check_is_package_folder(cwd).is_ok() {
                 return Err(TmanError::Custom(
-                    "There is already a TEN package in the current folder. The TEN APP must be installed in a separate folder."
+                    "There is already a APTIMA package in the current folder. The APTIMA APP must be installed in a separate folder."
                         .to_string(),
                 )
                 .into());
@@ -202,18 +202,18 @@ fn is_package_installable_in_cwd(
         PkgType::Extension => {
             let manifest_path = cwd.join(MANIFEST_JSON_FILENAME);
             if !manifest_path.exists() {
-                // An extension can be independently installed in a non-TEN
+                // An extension can be independently installed in a non-APTIMA
                 // directory. This is mainly to allow developers to easily
                 // develop, compile, test, and release an extension.
                 return Ok(());
             }
 
-            // Otherwise, the extension must be installed in a TEN app folder.
+            // Otherwise, the extension must be installed in a APTIMA app folder.
             check_is_app_folder(cwd)?;
         }
 
         _ => {
-            // All other package types must be installed into a TEN app folder.
+            // All other package types must be installed into a APTIMA app folder.
             check_is_app_folder(cwd)?;
         }
     }
@@ -223,7 +223,7 @@ fn is_package_installable_in_cwd(
 
 // The so-called "standalone" package installation means directly installing the
 // package into the current working directory without considering the directory
-// structure of the TEN app.
+// structure of the APTIMA app.
 fn is_installing_package_standalone(
     cwd: &Path,
     desired_pkg_type: &PkgType,
@@ -232,7 +232,7 @@ fn is_installing_package_standalone(
         PkgType::App | PkgType::Extension => {
             let manifest_path = cwd.join(MANIFEST_JSON_FILENAME);
             if !manifest_path.exists() {
-                // An extension can be independently installed in a non-TEN
+                // An extension can be independently installed in a non-APTIMA
                 // directory. This is mainly to allow developers to easily
                 // develop, compile, test, and release an extension.
                 return Ok(true);
@@ -546,7 +546,7 @@ pub async fn execute_cmd(
     //    the installed package itself, ex: app or extension.
     //
     // 2. Otherwise, the affected package is always the app, as the desired
-    //    package must be installed in a TEN app in this case.
+    //    package must be installed in a APTIMA app in this case.
     let affected_pkg_name;
     let mut affected_pkg_type = PkgType::App;
 
@@ -585,7 +585,7 @@ pub async fn execute_cmd(
     // installed via the command line (if any).
     let mut extra_dependencies = vec![];
 
-    // `extra_dependency_relationships` contain TEN packages, and each TEN
+    // `extra_dependency_relationships` contain APTIMA packages, and each APTIMA
     // package is the main entity depended upon by its corresponding
     // extra_dependencies."
     let mut extra_dependency_relationships = vec![];
@@ -644,7 +644,7 @@ pub async fn execute_cmd(
             }
         } else {
             // If it is not a standalone install, then the `cwd` must be within
-            // the base directory of a TEN app.
+            // the base directory of a APTIMA app.
             let app_pkg_ = get_pkg_info_from_path(&cwd, true)?;
             affected_pkg_name = app_pkg_.basic_info.type_and_name.name.clone();
 
@@ -745,7 +745,7 @@ pub async fn execute_cmd(
 
             _ => {
                 return Err(TmanError::Custom(
-                    "Current folder should be a TEN APP or Extension package."
+                    "Current folder should be a APTIMA APP or Extension package."
                         .to_string(),
                 )
                 .into());
@@ -838,7 +838,7 @@ pub async fn execute_cmd(
             // is installed in the template mode, however the
             // package might not have a manifest.json template file
             // to rerender the package name. In this
-            // case, the installed package is invalid, because as a spec of TEN
+            // case, the installed package is invalid, because as a spec of APTIMA
             // package, the installed folder name should be the same as the
             // package name. Anyway, the package name in
             // manifest.json should be forced to replace with the
@@ -867,7 +867,7 @@ pub async fn execute_cmd(
         // Case 1: install a standalone app, i.e.: tman install app ...
         // Case 2: install a standalone extension, i.e.: tman install extension
         // ... Case 3: install dependencies of a package, i.e.: run
-        // `tman install` in a package folder, which is either a TEN app
+        // `tman install` in a package folder, which is either a APTIMA app
         // or extension.
         //
         // In case 2, after the package has been installed, its dependencies can

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -77,9 +77,9 @@ static void invoke_app_js_on_configure(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_configure() of the TEN JS app.
+    // Call on_configure() of the APTIMA JS app.
 
-    // Get the TEN JS app.
+    // Get the APTIMA JS app.
     napi_value js_app = NULL;
     status = napi_get_reference_value(
         env, call_info->app_bridge->bridge.js_instance_ref, &js_app);
@@ -120,7 +120,7 @@ static void invoke_app_js_on_init(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_init() of the TEN JS app.
+    // Call on_init() of the APTIMA JS app.
 
     napi_value js_app = NULL;
     status = napi_get_reference_value(env, app_bridge->bridge.js_instance_ref,
@@ -167,7 +167,7 @@ static void invoke_app_js_on_deinit(napi_env env, napi_value fn,
   napi_status status = napi_ok;
 
   {
-    // Call on_deinit() of the TEN JS app.
+    // Call on_deinit() of the APTIMA JS app.
 
     napi_value js_app = NULL;
     status = napi_get_reference_value(env, app_bridge->bridge.js_instance_ref,
@@ -209,7 +209,7 @@ static void proxy_on_configure(axis_app_t *app, axis_env_t *axis_env) {
                  // axis_NOLINTNEXTLINE(thread-check)
                  // thread-check: The ownership of the app_bridge is the JS main
                  // thread, therefore, in order to maintain thread safety, we
-                 // use semaphore below to prevent JS main thread and the TEN
+                 // use semaphore below to prevent JS main thread and the APTIMA
                  // app thread access the app bridge at the same time.
                  axis_nodejs_app_check_integrity(app_bridge, false),
              "Should not happen.");
@@ -365,7 +365,7 @@ static void axis_nodejs_app_destroy(axis_nodejs_app_t *self) {
 
 // Invoked when the JS app finalizes.
 static void axis_nodejs_app_finalize(napi_env env, void *data, void *hint) {
-  axis_LOGI("TEN JS app is finalized.");
+  axis_LOGI("APTIMA JS app is finalized.");
 
   axis_nodejs_app_t *app_bridge = data;
   axis_ASSERT(app_bridge && axis_nodejs_app_check_integrity(app_bridge, true),
@@ -378,7 +378,7 @@ static void axis_nodejs_app_finalize(napi_env env, void *data, void *hint) {
              status);
 
   app_bridge->bridge.js_instance_ref = NULL;
-  // Destroy the underlying TEN C app.
+  // Destroy the underlying APTIMA C app.
   axis_app_destroy(app_bridge->c_app);
 
   axis_nodejs_app_destroy(app_bridge);
@@ -402,7 +402,7 @@ static napi_value axis_nodejs_app_create(napi_env env, napi_callback_info info) 
 
   axis_signature_set(&app_bridge->signature, axis_NODEJS_APP_SIGNATURE);
 
-  // The ownership of the TEN app_bridge is the JS main thread.
+  // The ownership of the APTIMA app_bridge is the JS main thread.
   axis_sanitizer_thread_check_init_with_current_thread(
       &app_bridge->thread_check);
 
@@ -415,7 +415,7 @@ static napi_value axis_nodejs_app_create(napi_env env, napi_callback_info info) 
   GOTO_LABEL_IF_NAPI_FAIL(error, status == napi_ok,
                           "Failed to bind JS app & bridge: %d", status);
 
-  // Create the underlying TEN C app.
+  // Create the underlying APTIMA C app.
   app_bridge->c_app =
       axis_app_create(proxy_on_configure, proxy_on_init, proxy_on_deinit, NULL);
   axis_binding_handle_set_me_in_target_lang(
@@ -438,7 +438,7 @@ static void axis_nodejs_app_run_async_work(napi_env env, axis_UNUSED void *data)
   app_async_run_data_t *async_run_data = data;
   axis_ASSERT(async_run_data, "Should not happen.");
 
-  // Run the TEN app in another thread, so that the TEN app thread won't block
+  // Run the APTIMA app in another thread, so that the APTIMA app thread won't block
   // the JS main thread.
   axis_app_run(async_run_data->app_bridge->c_app, false, NULL);
 
@@ -454,11 +454,11 @@ static void axis_nodejs_app_run_async_work_complete(napi_env env,
   axis_ASSERT(async_run_data, "Should not happen.");
 
   if (async_run_data->async_action_status == 0) {
-    // The TEN app has been run successfully.
+    // The APTIMA app has been run successfully.
     status =
         napi_resolve_deferred(env, async_run_data->deferred, js_undefined(env));
   } else {
-    // The TEN app failed to run.
+    // The APTIMA app failed to run.
     status =
         napi_reject_deferred(env, async_run_data->deferred, js_undefined(env));
   }
@@ -497,7 +497,7 @@ static napi_value axis_nodejs_app_run(napi_env env, napi_callback_info info) {
                               &js_app_ref_count);
 
   // Create and attach callbacks which will be invoked during the runtime of the
-  // TEN app.
+  // APTIMA app.
   axis_nodejs_app_create_and_attach_callbacks(env, app_bridge);
 
   app_async_run_data_t *async_run_data =
@@ -512,7 +512,7 @@ static napi_value axis_nodejs_app_run(napi_env env, napi_callback_info info) {
   RETURN_UNDEFINED_IF_NAPI_FAIL(status == napi_ok && promise != NULL,
                                 "Failed to create promise: %d", status);
 
-  // Create an async work to run the TEN app in another thread.
+  // Create an async work to run the APTIMA app in another thread.
   status = napi_create_async_work(env, NULL, js_undefined(env),
                                   axis_nodejs_app_run_async_work,
                                   axis_nodejs_app_run_async_work_complete,

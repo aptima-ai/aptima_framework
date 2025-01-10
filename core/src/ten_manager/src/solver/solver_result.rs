@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -82,7 +82,7 @@ pub fn filter_solver_results_by_type_and_name<'a>(
 
     for result in solver_results.iter() {
         // After Rust 1.82, there is an `is_none_or` method, and Clippy will
-        // suggest using `is_none_or` for simplicity. However, since Ten
+        // suggest using `is_none_or` for simplicity. However, since Aptima
         // currently needs to rely on Rust 1.81 on macOS (mainly because debug
         // mode on Mac enables ASAN, and rustc must match the versions of
         // LLVM/Clang to prevent ASAN linking errors), we disable this specific

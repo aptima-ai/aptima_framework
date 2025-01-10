@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -11,7 +11,7 @@ import { Addon } from "./addon";
 import ten_addon from "../ten_addon";
 
 type Ctor<T> = {
-  new (): T;
+  new(): T;
   prototype: T;
 };
 
@@ -76,7 +76,7 @@ export class AddonManager {
     }
 
     const dirs = fs.opendirSync(extension_folder);
-    for (;;) {
+    for (; ;) {
       const entry = dirs.readSync();
       if (!entry) {
         break;

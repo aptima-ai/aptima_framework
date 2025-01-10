@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -65,7 +65,7 @@ aptima_UTILS_API bool aptima_uuid4_from_string(aptima_uuid4_t *self, aptima_stri
  * The string format is like 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx', y is either
  * 8, 9, a or b
  *
- * @param out destination ten string
+ * @param out destination aptima string
  *
  * @return `true` on success, otherwise `false`.
  */

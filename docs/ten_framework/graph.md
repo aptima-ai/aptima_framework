@@ -1,31 +1,31 @@
 # Graph
 
-In the TEN framework, there are two types of graphs:
+In the APTIMA framework, there are two types of graphs:
 
 1. Flexible
 2. Predefined
 
 |  | Flexible | Predefined |
 |----|----|----|
-| Time to start the graph | When the TEN app receives the `start_graph` command. | When the TEN app starts, or when the TEN app receives the `start_graph` command. |
-| Graph content | Specified in the `start_graph` command. | Specified in the TEN app's properties. |
+| Time to start the graph | When the APTIMA app receives the `start_graph` command. | When the APTIMA app starts, or when the APTIMA app receives the `start_graph` command. |
+| Graph content | Specified in the `start_graph` command. | Specified in the APTIMA app's properties. |
 | Graph ID | A random UUID. |A random UUID|
 
 <figure><img src="../assets/png/two_types_of_graph.png" alt=""><figcaption><p>Two Types of Graph</p></figcaption></figure>
 
-For predefined graphs, there is an `auto_start` attribute that determines whether the predefined graph will start automatically when the TEN app starts.
+For predefined graphs, there is an `auto_start` attribute that determines whether the predefined graph will start automatically when the APTIMA app starts.
 
-There is also another `singleton` attribute used to indicate whether the predefined graph can only generate *one* corresponding engine instance within the TEN app.
+There is also another `singleton` attribute used to indicate whether the predefined graph can only generate *one* corresponding engine instance within the APTIMA app.
 
 ## Graph ID and Graph Name
 
-For each graph instance generated from a graph definition, that is, an engine instance, within the TEN app, there is a unique UUID4 string representing each graph instance. This UUID4 string is called the **graph ID** of that graph.
+For each graph instance generated from a graph definition, that is, an engine instance, within the APTIMA app, there is a unique UUID4 string representing each graph instance. This UUID4 string is called the **graph ID** of that graph.
 
-For each predefined graph, a meaningful or easy-to-remember name can be assigned, known as the **graph name** of the predefined graph. When specifying a particular predefined graph, the graph name can be used to represent it. If a predefined graph has the singleton attribute, it means that the graph instance generated from this predefined graph can only exist once within the TEN app. Therefore, the TEN runtime will use the graph name to uniquely identify the single graph instance generated from the singleton predefined graph.
+For each predefined graph, a meaningful or easy-to-remember name can be assigned, known as the **graph name** of the predefined graph. When specifying a particular predefined graph, the graph name can be used to represent it. If a predefined graph has the singleton attribute, it means that the graph instance generated from this predefined graph can only exist once within the APTIMA app. Therefore, the APTIMA runtime will use the graph name to uniquely identify the single graph instance generated from the singleton predefined graph.
 
 ## Flexible Graph
 
-When the TEN app receives the `start_graph` command and creates this type of graph, it will assign a random UUID value as the ID of the newly started graph. If other clients obtain this graph's ID, they can also connect to this graph.
+When the APTIMA app receives the `start_graph` command and creates this type of graph, it will assign a random UUID value as the ID of the newly started graph. If other clients obtain this graph's ID, they can also connect to this graph.
 
 Example of a flexible graph ID:
 
@@ -33,7 +33,7 @@ Example of a flexible graph ID:
 
 ## Predefined Graph
 
-Predefined graphs are very similar to flexible graphs. The content of a flexible graph is included in the `start_graph` command, while the content of a predefined graph is defined by the TEN app. Clients only need to specify the name of the predefined graph they want to start in the `start_graph` command.
+Predefined graphs are very similar to flexible graphs. The content of a flexible graph is included in the `start_graph` command, while the content of a predefined graph is defined by the APTIMA app. Clients only need to specify the name of the predefined graph they want to start in the `start_graph` command.
 
 The main purpose of predefined graphs is for ease of use and information protection. Predefined graphs allow the client to avoid knowing the detailed content of the graph, which might be due to usability considerations or to prevent the client from accessing certain information that the graph contains.
 
@@ -41,7 +41,7 @@ Example of a predefined graph name:
 
 `http-server`
 
-When a TEN app starts, predefined graphs that are set to auto-start will also be initiated.
+When a APTIMA app starts, predefined graphs that are set to auto-start will also be initiated.
 
 ## Graph Definition
 
@@ -60,11 +60,11 @@ The definition of a graph, whether flexible or predefined, is the same. The foll
 
 Key points:
 
-1. If there is only one app, the app field can be omitted. Otherwise, it must be specified. If there is only one app and the app field is not specified, the TEN runtime will default to using `localhost` as the app field.
+1. If there is only one app, the app field can be omitted. Otherwise, it must be specified. If there is only one app and the app field is not specified, the APTIMA runtime will default to using `localhost` as the app field.
 
 2. The nodes field specifies the nodes within the graph, such as extensions, extension groups, etc.
 
-3. For each node within the graph, it can only appear once in the nodes field. If it appears multiple times, the TEN framework will throw an error, either during graph validation by the TEN manager or during graph validation by the TEN runtime.
+3. For each node within the graph, it can only appear once in the nodes field. If it appears multiple times, the APTIMA framework will throw an error, either during graph validation by the APTIMA manager or during graph validation by the APTIMA runtime.
 
 4. The way to specify an extension group within the nodes field is as follows.
 
@@ -270,7 +270,7 @@ So it looks like this:
 
 ## Definition of the `start_graph` Command
 
-Essentially, you place the complete graph definition above under the `ten` field in the `start_graph` command. The `start_graph` command will also have its attributes, such as type, seq_id, etc.
+Essentially, you place the complete graph definition above under the `aptima` field in the `start_graph` command. The `start_graph` command will also have its attributes, such as type, seq_id, etc.
 
 ```json
 {
@@ -545,4 +545,4 @@ The following is a complete definition of the `start_graph` command:
 
   However, messages with the same name can exist across different types, such as `cmd` and `data`, without causing conflicts.
 
-For further examples, refer to the `check graph` command documentation within the TEN framework's `tman`.
+For further examples, refer to the `check graph` command documentation within the APTIMA framework's `tman`.

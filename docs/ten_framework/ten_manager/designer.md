@@ -1,4 +1,4 @@
-# TEN Manager - Designer
+# APTIMA Manager - Designer
 
 To start the `tman` development server, use the following command:
 
@@ -10,7 +10,7 @@ tman designer
 
 {% endcode %}
 
-If the `base-dir` is not specified, the current working directory will be used by default. Regardless, `base-dir` must be the base directory of a TEN app.
+If the `base-dir` is not specified, the current working directory will be used by default. Regardless, `base-dir` must be the base directory of a APTIMA app.
 
 The server starts on port 49483 by default, and you can interact with the designer using the following URL:
 
@@ -199,7 +199,7 @@ Definition of the `api` object.
 | video_frame_in  |   object   |    N     | The schema of all the `IN` video_frame.  |
 | video_frame_out |   object   |    N     | The schema of all the `OUT` video_frame. |
 
-> Note that the `cmd`, `data`, `audio_frame`, `video_frame` are four types of TEN msgs.
+> Note that the `cmd`, `data`, `audio_frame`, `video_frame` are four types of APTIMA msgs.
 
 The format of the `property` is same as the schema definition. The format of `data_in` / `data_out` / `audio_frame_in` / `audio_frame_out` / `video_frame_in` / `video_frame_out` are same as follows.
 

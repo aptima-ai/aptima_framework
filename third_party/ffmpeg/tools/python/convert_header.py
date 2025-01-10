@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 # ==============================================================================
 
-str = 'FFMPEGDNNNATIVE'
+str = "FFMPEGDNNNATIVE"
 
 # increase major and reset minor when we have to re-convert the model file
 major = 1

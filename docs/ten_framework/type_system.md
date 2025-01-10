@@ -2,9 +2,9 @@
 
 ## Type
 
-The TEN framework type system is the system used within the TEN framework to define the data types of values. Developers can declare the types of message or extension properties through the TEN schema.
+The APTIMA framework type system is the system used within the APTIMA framework to define the data types of values. Developers can declare the types of message or extension properties through the APTIMA schema.
 
-The TEN framework type system includes basic types and composite types. The basic types include the following:
+The APTIMA framework type system includes basic types and composite types. The basic types include the following:
 
 | Type    | Description                                               | C++ Type      | Go Type | Python Type        |
 |---------|-----------------------------------------------------------|---------------|---------|--------------------|
@@ -54,17 +54,17 @@ cmd.SetPropertyFromJSONBytes("property_name", bytes)
 
 ## Type and Schema
 
-If a TEN schema is specified, the property type will be determined according to the corresponding TEN schema. If no TEN schema is specified, the property type will be determined based on the type of the initial value assignment. For example, if the initial assignment is `int32_t`, the property type will be `int32_t`; if the initial assignment is done using JSON, the type will be determined according to the JSON processing rules.
+If a APTIMA schema is specified, the property type will be determined according to the corresponding APTIMA schema. If no APTIMA schema is specified, the property type will be determined based on the type of the initial value assignment. For example, if the initial assignment is `int32_t`, the property type will be `int32_t`; if the initial assignment is done using JSON, the type will be determined according to the JSON processing rules.
 
 ## Conversion Rules
 
-The TEN framework supports flexible automatic conversion between different types of values. As long as the conversion does not result in a loss of value, the TEN framework will automatically perform the type conversion. However, if the conversion leads to a loss of value, such as converting a type from `int32_t` to `int8_t` when the value exceeds the range that `int8_t` can represent, the TEN framework will report an error. For example, the TEN framework will return an error for a `send_<foo>` action.
+The APTIMA framework supports flexible automatic conversion between different types of values. As long as the conversion does not result in a loss of value, the APTIMA framework will automatically perform the type conversion. However, if the conversion leads to a loss of value, such as converting a type from `int32_t` to `int8_t` when the value exceeds the range that `int8_t` can represent, the APTIMA framework will report an error. For example, the APTIMA framework will return an error for a `send_<foo>` action.
 
 ### Safe and Must-Succeed Conversion
 
-Converting a lower precision type to a higher precision type is always safe and guaranteed to succeed, as the higher precision type can fully accommodate the value of the lower precision type without data loss. This automatic conversion is called Safe Conversion. For example, when trying to retrieve an `int8` type property as `int32`, the TEN type system will automatically convert the property type to `int32`.
+Converting a lower precision type to a higher precision type is always safe and guaranteed to succeed, as the higher precision type can fully accommodate the value of the lower precision type without data loss. This automatic conversion is called Safe Conversion. For example, when trying to retrieve an `int8` type property as `int32`, the APTIMA type system will automatically convert the property type to `int32`.
 
-In the TEN Type System, the Safe Conversion rules are as follows:
+In the APTIMA Type System, the Safe Conversion rules are as follows:
 
 1. Within the `int` types, from lower to higher precision.
 2. Within the `uint` types, from lower to higher precision.
@@ -83,13 +83,13 @@ In the TEN Type System, the Safe Conversion rules are as follows:
 For example:
 
 ```cpp
-// Set property value. The type of `property_name` in TEN Runtime is `int32`.
+// Set property value. The type of `property_name` in APTIMA Runtime is `int32`.
 cmd.set_property("property_name", 100);
 
 // Get property value. Correct.
 int32_t value = cmd.get_property_int32("property_name");
 
-// Get property value. Correct. TEN Type System will automatically convert the type to `int64`.
+// Get property value. Correct. APTIMA Type System will automatically convert the type to `int64`.
 int64_t value2 = cmd.get_property_int64("property_name");
 
 // Get property value. Incorrect, an error will be thrown.
@@ -98,9 +98,9 @@ int16_t error_type = cmd.get_property_int16("property_name");
 
 ### Unsafe and Might-Fail Conversion
 
-Converting a higher precision type to a lower precision type is unsafe because the value of the higher precision type may exceed the range of the lower precision type, leading to data loss. This conversion is called Unsafe Conversion. When performing Unsafe Conversion, the TEN runtime checks for overflow. If an overflow occurs, the TEN Type System will throw an error.
+Converting a higher precision type to a lower precision type is unsafe because the value of the higher precision type may exceed the range of the lower precision type, leading to data loss. This conversion is called Unsafe Conversion. When performing Unsafe Conversion, the APTIMA runtime checks for overflow. If an overflow occurs, the APTIMA Type System will throw an error.
 
-In the TEN framework type system, the Unsafe Conversion rules are as follows:
+In the APTIMA framework type system, the Unsafe Conversion rules are as follows:
 
 1. Converting `int64` to a lower precision `int`.
 2. Converting `int64` to any precision `uint`.
@@ -117,12 +117,12 @@ In the TEN framework type system, the Unsafe Conversion rules are as follows:
 | int64   | uint64  | \[0, 2^63 - 1\]                                           |
 | float64 | float32 | \[-3.4028234663852886e+38, 3.4028234663852886e+38\]       |
 
-It is important to note that TEN runtime only performs Unsafe Conversion when deserializing a JSON document into a TEN property and the TEN property has a defined TEN schema. For example:
+It is important to note that APTIMA runtime only performs Unsafe Conversion when deserializing a JSON document into a APTIMA property and the APTIMA property has a defined APTIMA schema. For example:
 
 - When loading `property.json`.
 
-  For integers, they will be parsed as `int64` by default; for floating-point numbers, they will be parsed as `float64` by default. The TEN framework type system will perform Unsafe Conversion according to the rules mentioned above.
+  For integers, they will be parsed as `int64` by default; for floating-point numbers, they will be parsed as `float64` by default. The APTIMA framework type system will perform Unsafe Conversion according to the rules mentioned above.
 
 - When calling methods such as `set_property_from_json()`.
 
-  When passing a serialized JSON string, the TEN framework type system will also perform Unsafe Conversion according to the rules mentioned above.
+  When passing a serialized JSON string, the APTIMA framework type system will also perform Unsafe Conversion according to the rules mentioned above.

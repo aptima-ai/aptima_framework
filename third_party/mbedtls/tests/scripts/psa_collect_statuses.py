@@ -32,8 +32,9 @@ import os
 import subprocess
 import sys
 
-DEFAULT_STATUS_LOG_FILE = 'tests/statuses.log'
-DEFAULT_PSA_CONSTANT_NAMES = 'programs/psa/psa_constant_names'
+DEFAULT_STATUS_LOG_FILE = "tests/statuses.log"
+DEFAULT_PSA_CONSTANT_NAMES = "programs/psa/psa_constant_names"
+
 
 class Statuses:
     """Information about observed return statues of API functions."""
@@ -51,7 +52,7 @@ class Statuses:
         """
         with open(log_file_name) as log:
             for line in log:
-                value, function, tail = line.split(':', 2)
+                value, function, tail = line.split(":", 2)
                 if function not in self.functions:
                     self.functions[function] = {}
                 fdata = self.functions[function]
@@ -63,9 +64,9 @@ class Statuses:
     def get_constant_names(self, psa_constant_names):
         """Run psa_constant_names to obtain names for observed numerical values."""
         values = [str(value) for value in self.codes]
-        cmd = [psa_constant_names, 'status'] + values
-        output = subprocess.check_output(cmd).decode('ascii')
-        for value, name in zip(values, output.rstrip().split('\n')):
+        cmd = [psa_constant_names, "status"] + values
+        output = subprocess.check_output(cmd).decode("ascii")
+        for value, name in zip(values, output.rstrip().split("\n")):
             self.status_names[value] = name
 
     def report(self):
@@ -77,7 +78,8 @@ class Statuses:
             fdata = self.functions[function]
             names = [self.status_names[value] for value in fdata.keys()]
             for name in sorted(names):
-                sys.stdout.write('{} {}\n'.format(function, name))
+                sys.stdout.write("{} {}\n".format(function, name))
+
 
 def collect_status_logs(options):
     """Build and run unit tests and report observed function return statuses.
@@ -90,51 +92,59 @@ def collect_status_logs(options):
         os.remove(options.log_file)
     if not os.path.exists(options.log_file):
         if options.clean_before:
-            subprocess.check_call(['make', 'clean'],
-                                  cwd='tests',
-                                  stdout=sys.stderr)
-        with open(os.devnull, 'w') as devnull:
-            make_q_ret = subprocess.call(['make', '-q', 'lib', 'tests'],
-                                         stdout=devnull, stderr=devnull)
+            subprocess.check_call(["make", "clean"], cwd="tests", stdout=sys.stderr)
+        with open(os.devnull, "w") as devnull:
+            make_q_ret = subprocess.call(
+                ["make", "-q", "lib", "tests"], stdout=devnull, stderr=devnull
+            )
         if make_q_ret != 0:
-            subprocess.check_call(['make', 'RECORD_PSA_STATUS_COVERAGE_LOG=1'],
-                                  stdout=sys.stderr)
+            subprocess.check_call(
+                ["make", "RECORD_PSA_STATUS_COVERAGE_LOG=1"], stdout=sys.stderr
+            )
             rebuilt = True
-        subprocess.check_call(['make', 'test'],
-                              stdout=sys.stderr)
+        subprocess.check_call(["make", "test"], stdout=sys.stderr)
     data = Statuses()
     data.collect_log(options.log_file)
     data.get_constant_names(options.psa_constant_names)
     if rebuilt and options.clean_after:
-        subprocess.check_call(['make', 'clean'],
-                              cwd='tests',
-                              stdout=sys.stderr)
+        subprocess.check_call(["make", "clean"], cwd="tests", stdout=sys.stderr)
     return data
 
+
 def main():
-    parser = argparse.ArgumentParser(description=globals()['__doc__'])
-    parser.add_argument('--clean-after',
-                        action='store_true',
-                        help='Run "make clean" after rebuilding')
-    parser.add_argument('--clean-before',
-                        action='store_true',
-                        help='Run "make clean" before regenerating the log file)')
-    parser.add_argument('--log-file', metavar='FILE',
-                        default=DEFAULT_STATUS_LOG_FILE,
-                        help='Log file location (default: {})'.format(
-                            DEFAULT_STATUS_LOG_FILE
-                        ))
-    parser.add_argument('--psa-constant-names', metavar='PROGRAM',
-                        default=DEFAULT_PSA_CONSTANT_NAMES,
-                        help='Path to psa_constant_names (default: {})'.format(
-                            DEFAULT_PSA_CONSTANT_NAMES
-                        ))
-    parser.add_argument('--use-existing-log', '-e',
-                        action='store_true',
-                        help='Don\'t regenerate the log file if it exists')
+    parser = argparse.ArgumentParser(description=globals()["__doc__"])
+    parser.add_argument(
+        "--clean-after", action="store_true", help='Run "make clean" after rebuilding'
+    )
+    parser.add_argument(
+        "--clean-before",
+        action="store_true",
+        help='Run "make clean" before regenerating the log file)',
+    )
+    parser.add_argument(
+        "--log-file",
+        metavar="FILE",
+        default=DEFAULT_STATUS_LOG_FILE,
+        help="Log file location (default: {})".format(DEFAULT_STATUS_LOG_FILE),
+    )
+    parser.add_argument(
+        "--psa-constant-names",
+        metavar="PROGRAM",
+        default=DEFAULT_PSA_CONSTANT_NAMES,
+        help="Path to psa_constant_names (default: {})".format(
+            DEFAULT_PSA_CONSTANT_NAMES
+        ),
+    )
+    parser.add_argument(
+        "--use-existing-log",
+        "-e",
+        action="store_true",
+        help="Don't regenerate the log file if it exists",
+    )
     options = parser.parse_args()
     data = collect_status_logs(options)
     data.report()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

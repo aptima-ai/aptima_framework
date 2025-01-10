@@ -16,7 +16,7 @@ layout:
 
 We’ll cover how to view the logs, now they are ported to stdout, it's very easy to view them.
 
-For instance, if the TEN Agent is running at localhost:3000, you might see output similar to the following in the logs:
+For instance, if the APTIMA Agent is running at localhost:3000, you might see output similar to the following in the logs:
 
 <pre class="language-bash" data-title=">_ Bash" data-overflow="wrap"><code class="lang-bash">...
 [GIN] 2024/09/29 - 09:29:42 | 200 |     634.458µs |    192.168.65.1 | POST     "/ping"
@@ -32,7 +32,7 @@ For instance, if the TEN Agent is running at localhost:3000, you might see outpu
 ...
 </code></pre>
 
-And once you interact with the TEN Agent, you should then see entries like these:
+And once you interact with the APTIMA Agent, you should then see entries like these:
 
 {% code title=">_Bash" overflow="wrap" %}
 ```bash

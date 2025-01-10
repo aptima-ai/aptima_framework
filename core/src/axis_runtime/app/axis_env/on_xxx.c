@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -281,7 +281,7 @@ static void axis_app_unregister_addons_after_app_close(axis_app_t *self) {
 void axis_app_on_deinit(axis_app_t *self) {
   axis_ASSERT(self && axis_app_check_integrity(self, true), "Should not happen.");
 
-  // The world outside of TEN would do some operations after the app_run()
+  // The world outside of APTIMA would do some operations after the app_run()
   // returns, so it's best to perform the on_deinit callback _before_ the
   // runloop is stopped.
 

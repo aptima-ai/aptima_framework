@@ -1,32 +1,32 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
-// Refer to https://github.com/TEN-framework/ten_framework/LICENSE for more
+// Refer to https://github.com/APTIMA-framework/ten_framework/LICENSE for more
 // information.
 //
 
 package default_extension_go
 
 import (
-	"ten_framework/ten"
+	"ten_framework/aptima"
 	"time"
 )
 
 type defaultExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 
-	cachedCmd ten.Cmd
+	cachedCmd aptima.Cmd
 }
 
-func (ext *defaultExtension) OnConfigure(tenEnv ten.TenEnv) {
+func (ext *defaultExtension) OnConfigure(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnConfigure")
 	tenEnv.OnConfigureDone()
 }
 
 func (ext *defaultExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
 	cmdName, error := cmd.GetName()
 	if error != nil {
@@ -37,14 +37,14 @@ func (ext *defaultExtension) OnCmd(
 
 	ext.cachedCmd = cmd
 
-	videoFrame, error := ten.NewVideoFrame("video_frame")
+	videoFrame, error := aptima.NewVideoFrame("video_frame")
 	if error != nil {
 		panic("Failed to create video frame.")
 	}
 
 	videoFrame.SetWidth(320)
 	videoFrame.SetHeight(240)
-	videoFrame.SetPixelFmt(ten.PixelFmtRGBA)
+	videoFrame.SetPixelFmt(aptima.PixelFmtRGBA)
 	videoFrame.SetEOF(false)
 
 	now := time.Now()
@@ -74,8 +74,8 @@ func (ext *defaultExtension) OnCmd(
 }
 
 func (ext *defaultExtension) OnVideoFrame(
-	tenEnv ten.TenEnv,
-	frame ten.VideoFrame,
+	tenEnv aptima.TenEnv,
+	frame aptima.VideoFrame,
 ) {
 	frameName, error := frame.GetName()
 	if error != nil {
@@ -85,7 +85,7 @@ func (ext *defaultExtension) OnVideoFrame(
 	tenEnv.LogDebug("OnAudioFrame" + frameName)
 
 	pixelFmt, error := frame.GetPixelFmt()
-	if error != nil || pixelFmt != ten.PixelFmtRGBA {
+	if error != nil || pixelFmt != aptima.PixelFmtRGBA {
 		panic("Failed to get pixel fmt.")
 	}
 
@@ -142,7 +142,7 @@ func (ext *defaultExtension) OnVideoFrame(
 		panic("Cached cmd is nil.")
 	}
 
-	cmdResult, err := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, err := aptima.NewCmdResult(aptima.StatusCodeOk)
 	if err != nil {
 		panic("Failed to create cmd result.")
 	}
@@ -153,15 +153,15 @@ func (ext *defaultExtension) OnVideoFrame(
 	}
 }
 
-func newAExtension(name string) ten.Extension {
+func newAExtension(name string) aptima.Extension {
 	return &defaultExtension{}
 }
 
 func init() {
 	// Register addon.
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"default_extension_go",
-		ten.NewDefaultExtensionAddon(newAExtension),
+		aptima.NewDefaultExtensionAddon(newAExtension),
 	)
 	if err != nil {
 		panic("Failed to register addon.")

@@ -1,7 +1,7 @@
 {
-  "axisframework": "TEN 框架",
+  "axisframework": "APTIMA 框架",
   "header": {
-    "title": "Ten 管理器",
+    "title": "Aptima 管理器",
     "menu": {
       "edit": "编辑",
       "openExistingGraph": "打开现有图表",

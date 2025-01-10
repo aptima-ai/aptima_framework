@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -13,8 +13,8 @@
 static int foo() { return 0; }
 
 TEST(PathTest, positive) {
-  ten::TenString str = aptima_path_get_cwd();
-  const ten::TenString cwd = str;
+  aptima::TenString str = aptima_path_get_cwd();
+  const aptima::TenString cwd = str;
   EXPECT_FALSE(str.empty());
   AGO_LOG("Current working directory: %s\n", str.c_str());
   str = aptima_path_get_home_path();
@@ -27,9 +27,9 @@ TEST(PathTest, positive) {
   EXPECT_FALSE(str.empty());
   AGO_LOG("Executable file path: %s\n", str.c_str());
   str = "/aaa/bbb/ccc.txt";
-  ten::TenString leaf = aptima_path_get_filename(str);
+  aptima::TenString leaf = aptima_path_get_filename(str);
   AGO_LOG("Leaf of %s is: %s\n", str.c_str(), leaf.c_str());
-  ten::TenString dir = aptima_path_get_dirname(str);
+  aptima::TenString dir = aptima_path_get_dirname(str);
   AGO_LOG("Dir of %s is: %s\n", str.c_str(), dir.c_str());
   EXPECT_EQ(leaf == "ccc.txt", true);
   EXPECT_EQ(dir == "/aaa/bbb", true);
@@ -48,7 +48,7 @@ TEST(PathTest, positive) {
   EXPECT_TRUE(leaf.empty());
   EXPECT_EQ(dir == "/", true);
   str = cwd + "/.";
-  ten::TenString abs = aptima_path_realpath(str);
+  aptima::TenString abs = aptima_path_realpath(str);
   AGO_LOG("Absolute path of %s is: %s\n", str.c_str(), abs.c_str());
   EXPECT_EQ(abs == cwd, true);
   str = cwd + "/..";

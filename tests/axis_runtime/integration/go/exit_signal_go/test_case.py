@@ -70,18 +70,11 @@ def build_and_install_app():
 
     # Set environment variables based on platform
     if sys.platform == "darwin":
-        my_env["DYLD_LIBRARY_PATH"] = os.path.join(
-            base_path, "exit_signal_go_app/lib"
-        )
+        my_env["DYLD_LIBRARY_PATH"] = os.path.join(base_path, "exit_signal_go_app/lib")
     else:
-        my_env["LD_LIBRARY_PATH"] = os.path.join(
-            base_path, "exit_signal_go_app/lib"
-        )
+        my_env["LD_LIBRARY_PATH"] = os.path.join(base_path, "exit_signal_go_app/lib")
 
-        if (
-            build_config_args.enable_sanitizer
-            and not build_config_args.is_clang
-        ):
+        if build_config_args.enable_sanitizer and not build_config_args.is_clang:
             libasan_path = os.path.join(
                 base_path,
                 "exit_signal_go_app/aptima_packages/system/aptima_runtime/lib/libasan.so",

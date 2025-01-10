@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -153,8 +153,8 @@ impl PkgInfo {
 
     pub fn get_predefined_graphs(&self) -> Option<&Vec<PredefinedGraph>> {
         if let Some(property) = &self.property {
-            if let Some(ten) = &property._ten {
-                return ten.predefined_graphs.as_ref();
+            if let Some(aptima) = &property._ten {
+                return aptima.predefined_graphs.as_ref();
             }
         }
 
@@ -163,8 +163,8 @@ impl PkgInfo {
 
     pub fn update_predefined_graph(&mut self, new_graph: &PredefinedGraph) {
         if let Some(property) = &mut self.property {
-            if let Some(ten) = &mut property._ten {
-                if let Some(predefined_graphs) = &mut ten.predefined_graphs {
+            if let Some(aptima) = &mut property._ten {
+                if let Some(predefined_graphs) = &mut aptima.predefined_graphs {
                     if let Some(old_graph) = predefined_graphs
                         .iter_mut()
                         .find(|g| g.name == new_graph.name)
@@ -285,7 +285,7 @@ pub fn get_all_existed_pkgs_info_of_app_to_hashmap(
                         }
 
                         // This folder contains a manifest.json file and
-                        // that manifest.json file is a correct TEN
+                        // that manifest.json file is a correct APTIMA
                         // manifest.json file, and this package is a
                         // dependency of app, so read it to treat it as a
                         // local dependency.
@@ -402,10 +402,10 @@ pub fn ten_rust_check_graph_for_app(
 
     // `Graph::from_str` calls `validate`, and `validate` checks that there are
     // no `localhost` entries in the graph JSON (as per our rule). However, the
-    // TEN runtime first processes the content of the graph JSON, inserting
+    // APTIMA runtime first processes the content of the graph JSON, inserting
     // the appropriate `localhost` string before passing it to the Rust
     // side. Therefore, the graph JSON received here might already includes the
-    // `localhost` string processed by the TEN runtime, so `Graph::from_str`
+    // `localhost` string processed by the APTIMA runtime, so `Graph::from_str`
     // cannot be used in this context.
     //
     // let graph = Graph::from_str(graph_json)?;

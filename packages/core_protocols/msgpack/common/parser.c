@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -72,7 +72,7 @@ aptima_shared_ptr_t *aptima_msgpack_parser_parse_data(aptima_msgpack_parser_t *s
                  self->unpacked.data.type);
     }
     aptima_ASSERT(self->unpacked.data.via.ext.type == aptima_MSGPACK_EXT_TYPE_MSG,
-               "The only supported msgpack ext object type is TEN "
+               "The only supported msgpack ext object type is APTIMA "
                "aptima_msg_t, but receive type(%d)",
                self->unpacked.data.via.ext.type);
 
@@ -80,7 +80,7 @@ aptima_shared_ptr_t *aptima_msgpack_parser_parse_data(aptima_msgpack_parser_t *s
     aptima_msgpack_parser_init(&msg_parser);
 
     // Feed data gathered from step 1 (parsing the msgpack ext object) to the
-    // step 2 (parsing the TEN object).
+    // step 2 (parsing the APTIMA object).
     aptima_msgpack_parser_feed_data(&msg_parser, self->unpacked.data.via.ext.ptr,
                                  self->unpacked.data.via.ext.size);
 

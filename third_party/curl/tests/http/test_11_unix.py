@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#***************************************************************************
+# ***************************************************************************
 #                                  _   _ ____  _
 #  Project                     ___| | | |  _ \| |
 #                             / __| | | | |_) | |
@@ -34,6 +34,7 @@ from testenv import Env, CurlClient
 
 
 log = logging.getLogger(__name__)
+
 
 class UDSFaker:
 
@@ -70,12 +71,14 @@ class UDSFaker:
                 c, client_address = self._socket.accept()
                 try:
                     data = c.recv(16)
-                    c.sendall("""HTTP/1.1 200 Ok
+                    c.sendall(
+                        """HTTP/1.1 200 Ok
 Server: UdsFaker
 Content-Type: application/json
 Content-Length: 19
 
-{ "host": "faked" }""".encode())
+{ "host": "faked" }""".encode()
+                    )
                 finally:
                     c.close()
 
@@ -87,7 +90,7 @@ class TestUnix:
 
     @pytest.fixture(scope="class")
     def uds_faker(self, env: Env) -> UDSFaker:
-        uds_path = os.path.join(env.gen_dir, 'uds_11.sock')
+        uds_path = os.path.join(env.gen_dir, "uds_11.sock")
         faker = UDSFaker(path=uds_path)
         faker.start()
         yield faker
@@ -96,32 +99,44 @@ class TestUnix:
     # download http: via unix socket
     def test_11_01_unix_connect_http(self, env: Env, httpd, uds_faker, repeat):
         curl = CurlClient(env=env)
-        url = f'http://{env.domain1}:{env.http_port}/data.json'
-        r = curl.http_download(urls=[url], with_stats=True,
-                               extra_args=[
-                                 '--unix-socket', uds_faker.path,
-                               ])
+        url = f"http://{env.domain1}:{env.http_port}/data.json"
+        r = curl.http_download(
+            urls=[url],
+            with_stats=True,
+            extra_args=[
+                "--unix-socket",
+                uds_faker.path,
+            ],
+        )
         r.check_response(count=1, http_status=200)
 
     # download https: via unix socket
     @pytest.mark.skipif(condition=not Env.have_ssl_curl(), reason=f"curl without SSL")
     def test_11_02_unix_connect_http(self, env: Env, httpd, uds_faker, repeat):
         curl = CurlClient(env=env)
-        url = f'https://{env.domain1}:{env.https_port}/data.json'
-        r = curl.http_download(urls=[url], with_stats=True,
-                               extra_args=[
-                                 '--unix-socket', uds_faker.path,
-                               ])
+        url = f"https://{env.domain1}:{env.https_port}/data.json"
+        r = curl.http_download(
+            urls=[url],
+            with_stats=True,
+            extra_args=[
+                "--unix-socket",
+                uds_faker.path,
+            ],
+        )
         r.check_response(exitcode=35, http_status=None)
 
     # download HTTP/3 via unix socket
-    @pytest.mark.skipif(condition=not Env.have_h3(), reason='h3 not supported')
+    @pytest.mark.skipif(condition=not Env.have_h3(), reason="h3 not supported")
     def test_11_03_unix_connect_quic(self, env: Env, httpd, uds_faker, repeat):
         curl = CurlClient(env=env)
-        url = f'https://{env.domain1}:{env.https_port}/data.json'
-        r = curl.http_download(urls=[url], with_stats=True,
-                               alpn_proto='h3',
-                               extra_args=[
-                                 '--unix-socket', uds_faker.path,
-                               ])
+        url = f"https://{env.domain1}:{env.https_port}/data.json"
+        r = curl.http_download(
+            urls=[url],
+            with_stats=True,
+            alpn_proto="h3",
+            extra_args=[
+                "--unix-socket",
+                uds_faker.path,
+            ],
+        )
         r.check_response(exitcode=96, http_status=None)

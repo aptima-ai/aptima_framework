@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -14,26 +14,26 @@ package main
 import (
 	"fmt"
 
-	"axis_framework/ten"
+	"axis_framework/aptima"
 )
 
 type defaultApp struct {
-	ten.DefaultApp
+	aptima.DefaultApp
 }
 
-func (p *defaultApp) OnInit(tenEnv ten.TenEnv) {
+func (p *defaultApp) OnInit(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("onInit")
 	tenEnv.OnInitDone()
 }
 
-func (p *defaultApp) OnDeinit(tenEnv ten.TenEnv) {
+func (p *defaultApp) OnDeinit(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("onDeinit")
 	tenEnv.OnDeinitDone()
 }
 
 func main() {
 	// test app
-	app, err := ten.NewApp(&defaultApp{})
+	app, err := aptima.NewApp(&defaultApp{})
 	if err != nil {
 		fmt.Println("Failed to create app.")
 	}

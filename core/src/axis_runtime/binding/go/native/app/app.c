@@ -1,10 +1,10 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_runtime/binding/go/interface/ten/app.h"
+#include "axis_runtime/binding/go/interface/aptima/app.h"
 
 #include <stdlib.h>
 
@@ -15,9 +15,9 @@
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env_internal.h"
 #include "include_internal/axis_runtime/global/signal.h"
 #include "axis_runtime/binding/common.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
-#include "axis_runtime/ten.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
+#include "axis_runtime/aptima.h"
 #include "axis_runtime/axis_env_proxy/axis_env_proxy.h"
 #include "axis_utils/lib/alloc.h"
 
@@ -156,7 +156,7 @@ axis_go_app_t *axis_go_app_create(axis_go_handle_t go_app_index) {
   // then crashes the process as SIGKILL.
   //
   // However, the signal handler (i.e., axis_global_signal_handler) is an async
-  // function, which means after the handler returns, the TEN app may not be
+  // function, which means after the handler returns, the APTIMA app may not be
   // closed completely yet, and the `on_stop` or `on_deinit` callback of
   // extensions may not be called.
   //

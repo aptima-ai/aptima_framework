@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -13,7 +13,7 @@ import {
   Cmd,
   StatusCode,
   CmdResult,
-} from "ten-runtime-nodejs";
+} from "aptima-runtime-nodejs";
 
 class HttpServerExtension extends Extension {
   tenEnv: TenEnv | null = null;
@@ -71,7 +71,7 @@ class HttpServerExtension extends Extension {
 
         const _ten = jsonData["_ten"];
         if ("type" in _ten && _ten["type"] == "close_app") {
-          let closeAppCmd = Cmd.Create("ten:close_app");
+          let closeAppCmd = Cmd.Create("aptima:close_app");
           closeAppCmd.setDest("localhost");
           this.tenEnv!.sendCmd(closeAppCmd);
 

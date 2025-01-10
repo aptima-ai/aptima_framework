@@ -1,10 +1,10 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
-#include "axis_runtime/binding/go/interface/ten/extension.h"
+#include "axis_runtime/binding/go/interface/aptima/extension.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -16,9 +16,9 @@
 #include "include_internal/axis_runtime/binding/go/axis_env/axis_env_internal.h"
 #include "include_internal/axis_runtime/msg/cmd_base/cmd/cmd.h"
 #include "axis_runtime/binding/common.h"
-#include "axis_runtime/binding/go/interface/ten/common.h"
-#include "axis_runtime/binding/go/interface/ten/msg.h"
-#include "axis_runtime/binding/go/interface/ten/axis_env.h"
+#include "axis_runtime/binding/go/interface/aptima/common.h"
+#include "axis_runtime/binding/go/interface/aptima/msg.h"
+#include "axis_runtime/binding/go/interface/aptima/axis_env.h"
 #include "axis_runtime/extension/extension.h"
 #include "axis_runtime/axis_env/axis_env.h"
 #include "axis_runtime/axis_env_proxy/axis_env_proxy.h"
@@ -90,7 +90,7 @@ static void axis_go_extension_bridge_destroy(axis_go_extension_t *self) {
   axis_extension_t *c_extension = self->c_extension;
   axis_ASSERT(c_extension, "Invalid argument.");
   // axis_NOLINTNEXTLINE(thread-check)
-  // thread-check: In TEN world, the destroy operation should be performed in
+  // thread-check: In APTIMA world, the destroy operation should be performed in
   // any threads.
   axis_ASSERT(axis_extension_check_integrity(c_extension, false),
              "Invalid use of extension %p.", c_extension);

@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -30,9 +30,9 @@ extern "C" {
 }
 #endif
 
-#include "aptima_runtime/binding/cpp/ten.h"
+#include "aptima_runtime/binding/cpp/aptima.h"
 
-namespace ten {
+namespace aptima {
 namespace ffmpeg_extension {
 
 enum ENCODE_STATUS {
@@ -55,9 +55,9 @@ class muxer_t {
   bool open(const std::string &dest_name, bool realtime);
 
   ENCODE_STATUS encode_video_frame(
-      std::unique_ptr<ten::video_frame_t> video_frame);
+      std::unique_ptr<aptima::video_frame_t> video_frame);
   ENCODE_STATUS encode_audio_frame(
-      std::unique_ptr<ten::audio_frame_t> audio_frame);
+      std::unique_ptr<aptima::audio_frame_t> audio_frame);
 
   int64_t next_video_timing();
 
@@ -85,12 +85,12 @@ class muxer_t {
   bool allocate_audio_frame_(AVCodecParameters *encoded_stream_params);
 
   bool convert_audio_frame_(AVCodecParameters *encoded_stream_params,
-                            ten::audio_frame_t &aptima_audio_frame);
-  AVFrame *convert_video_frame_(ten::video_frame_t &video_frame);
+                            aptima::audio_frame_t &aptima_audio_frame);
+  AVFrame *convert_video_frame_(aptima::video_frame_t &video_frame);
 
   bool create_audio_converter_(AVCodecParameters *encoded_stream_params,
-                               ten::audio_frame_t &aptima_audio_frame);
-  bool create_video_converter_(ten::video_frame_t &video_frame);
+                               aptima::audio_frame_t &aptima_audio_frame);
+  bool create_video_converter_(aptima::video_frame_t &video_frame);
 
   // @{
   // Source video settings.
@@ -138,4 +138,4 @@ class muxer_t {
 };
 
 }  // namespace ffmpeg_extension
-}  // namespace ten
+}  // namespace aptima

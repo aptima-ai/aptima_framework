@@ -30,6 +30,7 @@ import os
 import subprocess
 import sys
 
+
 class CodeSizeComparison:
     """Compare code size between two Git revisions."""
 
@@ -58,8 +59,9 @@ class CodeSizeComparison:
 
     @staticmethod
     def validate_revision(revision):
-        result = subprocess.check_output(["git", "rev-parse", "--verify",
-                                          revision + "^{commit}"], shell=False)
+        result = subprocess.check_output(
+            ["git", "rev-parse", "--verify", revision + "^{commit}"], shell=False
+        )
         return result
 
     def _create_git_worktree(self, revision):
@@ -73,9 +75,16 @@ class CodeSizeComparison:
             print("Creating git worktree for", revision)
             git_worktree_path = os.path.join(self.repo_path, "temp-" + revision)
             subprocess.check_output(
-                [self.git_command, "worktree", "add", "--detach",
-                 git_worktree_path, revision], cwd=self.repo_path,
-                stderr=subprocess.STDOUT
+                [
+                    self.git_command,
+                    "worktree",
+                    "add",
+                    "--detach",
+                    git_worktree_path,
+                    revision,
+                ],
+                cwd=self.repo_path,
+                stderr=subprocess.STDOUT,
             )
         return git_worktree_path
 
@@ -84,8 +93,10 @@ class CodeSizeComparison:
 
         my_environment = os.environ.copy()
         subprocess.check_output(
-            [self.make_command, "-j", "lib"], env=my_environment,
-            cwd=git_worktree_path, stderr=subprocess.STDOUT,
+            [self.make_command, "-j", "lib"],
+            env=my_environment,
+            cwd=git_worktree_path,
+            stderr=subprocess.STDOUT,
         )
 
     def _gen_code_size_csv(self, revision, git_worktree_path):
@@ -110,9 +121,9 @@ class CodeSizeComparison:
         if git_worktree_path != self.repo_path:
             print("Removing temporary worktree", git_worktree_path)
             subprocess.check_output(
-                [self.git_command, "worktree", "remove", "--force",
-                 git_worktree_path], cwd=self.repo_path,
-                stderr=subprocess.STDOUT
+                [self.git_command, "worktree", "remove", "--force", git_worktree_path],
+                cwd=self.repo_path,
+                stderr=subprocess.STDOUT,
             )
 
     def _get_code_size_for_rev(self, revision):
@@ -120,8 +131,9 @@ class CodeSizeComparison:
 
         # Check if the corresponding record exists
         csv_fname = revision + ".csv"
-        if (revision != "current") and \
-           os.path.exists(os.path.join(self.csv_dir, csv_fname)):
+        if (revision != "current") and os.path.exists(
+            os.path.join(self.csv_dir, csv_fname)
+        ):
             print("Code size csv file for", revision, "already exists.")
         else:
             git_worktree_path = self._create_git_worktree(revision)
@@ -136,8 +148,12 @@ class CodeSizeComparison:
 
         old_file = open(os.path.join(self.csv_dir, self.old_rev + ".csv"), "r")
         new_file = open(os.path.join(self.csv_dir, self.new_rev + ".csv"), "r")
-        res_file = open(os.path.join(self.result_dir, "compare-" + self.old_rev
-                                     + "-" + self.new_rev + ".csv"), "w")
+        res_file = open(
+            os.path.join(
+                self.result_dir, "compare-" + self.old_rev + "-" + self.new_rev + ".csv"
+            ),
+            "w",
+        )
 
         res_file.write("file_name, this_size, old_size, change, change %\n")
         print("Generating comparison results.")
@@ -163,8 +179,11 @@ class CodeSizeComparison:
                 old_size = old_ds[fname]
                 change = this_size - old_size
                 change_pct = change / old_size
-                res_file.write("{}, {}, {}, {}, {:.2%}\n".format(fname, \
-                               this_size, old_size, change, float(change_pct)))
+                res_file.write(
+                    "{}, {}, {}, {}, {:.2%}\n".format(
+                        fname, this_size, old_size, change, float(change_pct)
+                    )
+                )
             else:
                 res_file.write("{}, {}\n".format(fname, this_size))
         return 0
@@ -177,6 +196,7 @@ class CodeSizeComparison:
         self._get_code_size_for_rev(self.new_rev)
         return self.compare_code_size()
 
+
 def main():
     parser = argparse.ArgumentParser(
         description=(
@@ -188,18 +208,27 @@ def main():
         )
     )
     parser.add_argument(
-        "-r", "--result-dir", type=str, default="comparison",
+        "-r",
+        "--result-dir",
+        type=str,
+        default="comparison",
         help="directory where comparison result is stored, \
               default is comparison",
     )
     parser.add_argument(
-        "-o", "--old-rev", type=str, help="old revision for comparison.",
+        "-o",
+        "--old-rev",
+        type=str,
+        help="old revision for comparison.",
         required=True,
     )
     parser.add_argument(
-        "-n", "--new-rev", type=str, default=None,
+        "-n",
+        "--new-rev",
+        type=str,
+        default=None,
         help="new revision for comparison, default is the current work \
-              directory, including uncommitted changes."
+              directory, including uncommitted changes.",
     )
     comp_args = parser.parse_args()
 

@@ -1,11 +1,11 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
 
-package ten
+package aptima
 
 // #include "extension.h"
 import "C"
@@ -154,7 +154,7 @@ func tenGoExtensionOnConfigure(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -163,7 +163,7 @@ func tenGoExtensionOnConfigure(
 	tenEnvInstance, ok := tenEnvObj.(*tenEnv)
 	if !ok {
 		// Should not happen.
-		panic("Invalid ten object type.")
+		panic("Invalid aptima object type.")
 	}
 
 	tenEnvInstance.attachToExtension(extensionObj)
@@ -190,7 +190,7 @@ func tenGoExtensionOnInit(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -199,7 +199,7 @@ func tenGoExtensionOnInit(
 	tenEnvInstance, ok := tenEnvObj.(*tenEnv)
 	if tenEnvInstance == nil || !ok {
 		// Should not happen.
-		panic("Invalid ten object type.")
+		panic("Invalid aptima object type.")
 	}
 
 	// As the `extension` struct embeds a user-defined extension instance
@@ -229,7 +229,7 @@ func tenGoExtensionOnStart(extensionID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -254,7 +254,7 @@ func tenGoExtensionOnStop(extensionID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -279,7 +279,7 @@ func tenGoExtensionOnDeinit(extensionID C.uintptr_t, tenEnvID C.uintptr_t) {
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -308,7 +308,7 @@ func tenGoExtensionOnCmd(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -339,7 +339,7 @@ func tenGoExtensionOnData(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -371,7 +371,7 @@ func tenGoExtensionOnVideoFrame(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)
@@ -401,7 +401,7 @@ func tenGoExtensionOnAudioFrame(
 	if !ok {
 		panic(
 			fmt.Sprintf(
-				"Failed to get ten env from handle map, id: %d.",
+				"Failed to get aptima env from handle map, id: %d.",
 				uintptr(tenEnvID),
 			),
 		)

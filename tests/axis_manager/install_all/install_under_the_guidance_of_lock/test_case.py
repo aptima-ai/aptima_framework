@@ -1,6 +1,6 @@
 #
 # Copyright © 2025 Agora
-# This file is part of TEN Framework, an open source project.
+# This file is part of APTIMA Framework, an open source project.
 # Licensed under the Apache License, Version 2.0, with certain conditions.
 # Refer to the "LICENSE" file in the root directory for more information.
 #
@@ -59,7 +59,9 @@ def test_tman_dependency_resolve():
 
     if sys.platform == "win32":
         os.environ["PATH"] = (
-            os.path.join(root_dir, "aptima_manager/lib") + ";" + os.getenv("PATH")
+            os.path.join(root_dir, "aptima_manager/lib")
+            + ";"
+            + os.getenv("PATH")
         )
         tman_bin = os.path.join(root_dir, "aptima_manager/bin/tman.exe")
     else:

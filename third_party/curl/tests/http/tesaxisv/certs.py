@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#***************************************************************************
+# ***************************************************************************
 #                                  _   _ ____  _
 #  Project                     ___| | | |  _ \| |
 #                             / __| | | | |_) | |
@@ -35,51 +35,59 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePrivateKey
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
-from cryptography.hazmat.primitives.serialization import Encoding, PrivateFormat, NoEncryption, load_pem_private_key
+from cryptography.hazmat.primitives.serialization import (
+    Encoding,
+    PrivateFormat,
+    NoEncryption,
+    load_pem_private_key,
+)
 from cryptography.x509 import ExtendedKeyUsageOID, NameOID
 
 
 EC_SUPPORTED = {}
-EC_SUPPORTED.update([(curve.name.upper(), curve) for curve in [
-    ec.SECP192R1,
-    ec.SECP224R1,
-    ec.SECP256R1,
-    ec.SECP384R1,
-]])
+EC_SUPPORTED.update(
+    [
+        (curve.name.upper(), curve)
+        for curve in [
+            ec.SECP192R1,
+            ec.SECP224R1,
+            ec.SECP256R1,
+            ec.SECP384R1,
+        ]
+    ]
+)
 
 
 def _private_key(key_type):
     if isinstance(key_type, str):
         key_type = key_type.upper()
-        m = re.match(r'^(RSA)?(\d+)$', key_type)
+        m = re.match(r"^(RSA)?(\d+)$", key_type)
         if m:
             key_type = int(m.group(2))
 
     if isinstance(key_type, int):
         return rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=key_type,
-            backend=default_backend()
+            public_exponent=65537, key_size=key_type, backend=default_backend()
         )
     if not isinstance(key_type, ec.EllipticCurve) and key_type in EC_SUPPORTED:
         key_type = EC_SUPPORTED[key_type]
-    return ec.generate_private_key(
-        curve=key_type,
-        backend=default_backend()
-    )
+    return ec.generate_private_key(curve=key_type, backend=default_backend())
 
 
 class CertificateSpec:
 
-    def __init__(self, name: Optional[str] = None,
-                 domains: Optional[List[str]] = None,
-                 email: Optional[str] = None,
-                 key_type: Optional[str] = None,
-                 single_file: bool = False,
-                 valid_from: timedelta = timedelta(days=-1),
-                 valid_to: timedelta = timedelta(days=89),
-                 client: bool = False,
-                 sub_specs: Optional[List['CertificateSpec']] = None):
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        domains: Optional[List[str]] = None,
+        email: Optional[str] = None,
+        key_type: Optional[str] = None,
+        single_file: bool = False,
+        valid_from: timedelta = timedelta(days=-1),
+        valid_to: timedelta = timedelta(days=89),
+        client: bool = False,
+        sub_specs: Optional[List["CertificateSpec"]] = None,
+    ):
         self._name = name
         self.domains = domains
         self.client = client
@@ -111,11 +119,9 @@ class CertificateSpec:
 
 class Credentials:
 
-    def __init__(self,
-                 name: str,
-                 cert: Any,
-                 pkey: Any,
-                 issuer: Optional['Credentials'] = None):
+    def __init__(
+        self, name: str, cert: Any, pkey: Any, issuer: Optional["Credentials"] = None
+    ):
         self._name = name
         self._cert = cert
         self._pkey = pkey
@@ -157,18 +163,27 @@ class Credentials:
     def pkey_pem(self) -> bytes:
         return self._pkey.private_bytes(
             Encoding.PEM,
-            PrivateFormat.TraditionalOpenSSL if self.key_type.startswith('rsa') else PrivateFormat.PKCS8,
-            NoEncryption())
+            (
+                PrivateFormat.TraditionalOpenSSL
+                if self.key_type.startswith("rsa")
+                else PrivateFormat.PKCS8
+            ),
+            NoEncryption(),
+        )
 
     @property
-    def issuer(self) -> Optional['Credentials']:
+    def issuer(self) -> Optional["Credentials"]:
         return self._issuer
 
-    def set_store(self, store: 'CertStore'):
+    def set_store(self, store: "CertStore"):
         self._store = store
 
-    def set_files(self, cert_file: str, pkey_file: Optional[str] = None,
-                  combined_file: Optional[str] = None):
+    def set_files(
+        self,
+        cert_file: str,
+        pkey_file: Optional[str] = None,
+        combined_file: Optional[str] = None,
+    ):
         self._cert_file = cert_file
         self._pkey_file = pkey_file
         self._combined_file = combined_file
@@ -185,27 +200,38 @@ class Credentials:
     def combined_file(self) -> Optional[str]:
         return self._combined_file
 
-    def get_first(self, name) -> Optional['Credentials']:
+    def get_first(self, name) -> Optional["Credentials"]:
         creds = self._store.get_credentials_for_name(name) if self._store else []
         return creds[0] if len(creds) else None
 
-    def get_credentials_for_name(self, name) -> List['Credentials']:
+    def get_credentials_for_name(self, name) -> List["Credentials"]:
         return self._store.get_credentials_for_name(name) if self._store else []
 
-    def issue_certs(self, specs: List[CertificateSpec],
-                    chain: Optional[List['Credentials']] = None) -> List['Credentials']:
+    def issue_certs(
+        self, specs: List[CertificateSpec], chain: Optional[List["Credentials"]] = None
+    ) -> List["Credentials"]:
         return [self.issue_cert(spec=spec, chain=chain) for spec in specs]
 
-    def issue_cert(self, spec: CertificateSpec,
-                   chain: Optional[List['Credentials']] = None) -> 'Credentials':
+    def issue_cert(
+        self, spec: CertificateSpec, chain: Optional[List["Credentials"]] = None
+    ) -> "Credentials":
         key_type = spec.key_type if spec.key_type else self.key_type
         creds = None
         if self._store:
             creds = self._store.load_credentials(
-                name=spec.name, key_type=key_type, single_file=spec.single_file, issuer=self)
+                name=spec.name,
+                key_type=key_type,
+                single_file=spec.single_file,
+                issuer=self,
+            )
         if creds is None:
-            creds = TestCA.create_credentials(spec=spec, issuer=self, key_type=key_type,
-                                              valid_from=spec.valid_from, valid_to=spec.valid_to)
+            creds = TestCA.create_credentials(
+                spec=spec,
+                issuer=self,
+                key_type=key_type,
+                valid_from=spec.valid_from,
+                valid_to=spec.valid_to,
+            )
             if self._store:
                 self._store.save(creds, single_file=spec.single_file)
                 if spec.type == "ca":
@@ -233,9 +259,13 @@ class CertStore:
     def path(self) -> str:
         return self._store_dir
 
-    def save(self, creds: Credentials, name: Optional[str] = None,
-             chain: Optional[List[Credentials]] = None,
-             single_file: bool = False) -> None:
+    def save(
+        self,
+        creds: Credentials,
+        name: Optional[str] = None,
+        chain: Optional[List[Credentials]] = None,
+        single_file: bool = False,
+    ) -> None:
         name = name if name is not None else creds.name
         cert_file = self.get_cert_file(name=name, key_type=creds.key_type)
         pkey_file = self.get_pkey_file(name=name, key_type=creds.key_type)
@@ -269,7 +299,7 @@ class CertStore:
             chain.append(creds)
         if not with_root and len(chain) > 1:
             chain = chain[:-1]
-        chain_file = os.path.join(self._store_dir, f'{name}-{infix}.pem')
+        chain_file = os.path.join(self._store_dir, f"{name}-{infix}.pem")
         with open(chain_file, "wb") as fd:
             for c in chain:
                 fd.write(c.cert_pem)
@@ -284,14 +314,14 @@ class CertStore:
 
     def get_cert_file(self, name: str, key_type=None) -> str:
         key_infix = ".{0}".format(key_type) if key_type is not None else ""
-        return os.path.join(self._store_dir, f'{name}{key_infix}.cert.pem')
+        return os.path.join(self._store_dir, f"{name}{key_infix}.cert.pem")
 
     def get_pkey_file(self, name: str, key_type=None) -> str:
         key_infix = ".{0}".format(key_type) if key_type is not None else ""
-        return os.path.join(self._store_dir, f'{name}{key_infix}.pkey.pem')
+        return os.path.join(self._store_dir, f"{name}{key_infix}.pkey.pem")
 
     def get_combined_file(self, name: str, key_type=None) -> str:
-        return os.path.join(self._store_dir, f'{name}.pem')
+        return os.path.join(self._store_dir, f"{name}.pem")
 
     def load_pem_cert(self, fpath: str) -> x509.Certificate:
         with open(fpath) as fd:
@@ -301,11 +331,19 @@ class CertStore:
         with open(fpath) as fd:
             return load_pem_private_key("".join(fd.readlines()).encode(), password=None)
 
-    def load_credentials(self, name: str, key_type=None,
-                         single_file: bool = False,
-                         issuer: Optional[Credentials] = None):
+    def load_credentials(
+        self,
+        name: str,
+        key_type=None,
+        single_file: bool = False,
+        issuer: Optional[Credentials] = None,
+    ):
         cert_file = self.get_cert_file(name=name, key_type=key_type)
-        pkey_file = cert_file if single_file else self.get_pkey_file(name=name, key_type=key_type)
+        pkey_file = (
+            cert_file
+            if single_file
+            else self.get_pkey_file(name=name, key_type=key_type)
+        )
         comb_file = self.get_combined_file(name=name, key_type=key_type)
         if os.path.isfile(cert_file) and os.path.isfile(pkey_file):
             cert = self.load_pem_cert(cert_file)
@@ -321,7 +359,9 @@ class CertStore:
 class TestCA:
 
     @classmethod
-    def create_root(cls, name: str, store_dir: str, key_type: str = "rsa2048") -> Credentials:
+    def create_root(
+        cls, name: str, store_dir: str, key_type: str = "rsa2048"
+    ) -> Credentials:
         store = CertStore(fpath=store_dir)
         creds = store.load_credentials(name="ca", key_type=key_type, issuer=None)
         if creds is None:
@@ -331,34 +371,57 @@ class TestCA:
         return creds
 
     @staticmethod
-    def create_credentials(spec: CertificateSpec, issuer: Credentials, key_type: Any,
-                           valid_from: timedelta = timedelta(days=-1),
-                           valid_to: timedelta = timedelta(days=89),
-                           ) -> Credentials:
+    def create_credentials(
+        spec: CertificateSpec,
+        issuer: Credentials,
+        key_type: Any,
+        valid_from: timedelta = timedelta(days=-1),
+        valid_to: timedelta = timedelta(days=89),
+    ) -> Credentials:
         """Create a certificate signed by this CA for the given domains.
         :returns: the certificate and private key PEM file paths
         """
         if spec.domains and len(spec.domains):
-            creds = TestCA._make_server_credentials(name=spec.name, domains=spec.domains,
-                                                    issuer=issuer, valid_from=valid_from,
-                                                    valid_to=valid_to, key_type=key_type)
+            creds = TestCA._make_server_credentials(
+                name=spec.name,
+                domains=spec.domains,
+                issuer=issuer,
+                valid_from=valid_from,
+                valid_to=valid_to,
+                key_type=key_type,
+            )
         elif spec.client:
-            creds = TestCA._make_client_credentials(name=spec.name, issuer=issuer,
-                                                    email=spec.email, valid_from=valid_from,
-                                                    valid_to=valid_to, key_type=key_type)
+            creds = TestCA._make_client_credentials(
+                name=spec.name,
+                issuer=issuer,
+                email=spec.email,
+                valid_from=valid_from,
+                valid_to=valid_to,
+                key_type=key_type,
+            )
         elif spec.name:
-            creds = TestCA._make_ca_credentials(name=spec.name, issuer=issuer,
-                                                valid_from=valid_from, valid_to=valid_to,
-                                                key_type=key_type)
+            creds = TestCA._make_ca_credentials(
+                name=spec.name,
+                issuer=issuer,
+                valid_from=valid_from,
+                valid_to=valid_to,
+                key_type=key_type,
+            )
         else:
             raise Exception(f"unrecognized certificate specification: {spec}")
         return creds
 
     @staticmethod
-    def _make_x509_name(org_name: str = None, common_name: str = None, parent: x509.Name = None) -> x509.Name:
+    def _make_x509_name(
+        org_name: str = None, common_name: str = None, parent: x509.Name = None
+    ) -> x509.Name:
         name_pieces = []
         if org_name:
-            oid = NameOID.ORGANIZATIONAL_UNIT_NAME if parent else NameOID.ORGANIZATION_NAME
+            oid = (
+                NameOID.ORGANIZATIONAL_UNIT_NAME
+                if parent
+                else NameOID.ORGANIZATION_NAME
+            )
             name_pieces.append(x509.NameAttribute(oid, org_name))
         elif common_name:
             name_pieces.append(x509.NameAttribute(NameOID.COMMON_NAME, common_name))
@@ -368,11 +431,11 @@ class TestCA:
 
     @staticmethod
     def _make_csr(
-            subject: x509.Name,
-            pkey: Any,
-            issuer_subject: Optional[Credentials],
-            valid_from_delta: timedelta = None,
-            valid_until_delta: timedelta = None
+        subject: x509.Name,
+        pkey: Any,
+        issuer_subject: Optional[Credentials],
+        valid_from_delta: timedelta = None,
+        valid_until_delta: timedelta = None,
     ):
         pubkey = pkey.public_key()
         issuer_subject = issuer_subject if issuer_subject is not None else subject
@@ -400,48 +463,66 @@ class TestCA:
 
     @staticmethod
     def _add_ca_usages(csr: Any) -> Any:
-        return csr.add_extension(
-            x509.BasicConstraints(ca=True, path_length=9),
-            critical=True,
-        ).add_extension(
-            x509.KeyUsage(
-                digital_signature=True,
-                content_commitment=False,
-                key_encipherment=False,
-                data_encipherment=False,
-                key_agreement=False,
-                key_cert_sign=True,
-                crl_sign=True,
-                encipher_only=False,
-                decipher_only=False),
-            critical=True
-        ).add_extension(
-            x509.ExtendedKeyUsage([
-                ExtendedKeyUsageOID.CLIENT_AUTH,
-                ExtendedKeyUsageOID.SERVER_AUTH,
-                ExtendedKeyUsageOID.CODE_SIGNING,
-            ]),
-            critical=True
+        return (
+            csr.add_extension(
+                x509.BasicConstraints(ca=True, path_length=9),
+                critical=True,
+            )
+            .add_extension(
+                x509.KeyUsage(
+                    digital_signature=True,
+                    content_commitment=False,
+                    key_encipherment=False,
+                    data_encipherment=False,
+                    key_agreement=False,
+                    key_cert_sign=True,
+                    crl_sign=True,
+                    encipher_only=False,
+                    decipher_only=False,
+                ),
+                critical=True,
+            )
+            .add_extension(
+                x509.ExtendedKeyUsage(
+                    [
+                        ExtendedKeyUsageOID.CLIENT_AUTH,
+                        ExtendedKeyUsageOID.SERVER_AUTH,
+                        ExtendedKeyUsageOID.CODE_SIGNING,
+                    ]
+                ),
+                critical=True,
+            )
         )
 
     @staticmethod
     def _add_leaf_usages(csr: Any, domains: List[str], issuer: Credentials) -> Any:
-        return csr.add_extension(
-            x509.BasicConstraints(ca=False, path_length=None),
-            critical=True,
-        ).add_extension(
-            x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
-                issuer.certificate.extensions.get_extension_for_class(
-                    x509.SubjectKeyIdentifier).value),
-            critical=False
-        ).add_extension(
-            x509.SubjectAlternativeName([x509.DNSName(domain) for domain in domains]),
-            critical=True,
-        ).add_extension(
-            x509.ExtendedKeyUsage([
-                ExtendedKeyUsageOID.SERVER_AUTH,
-            ]),
-            critical=False
+        return (
+            csr.add_extension(
+                x509.BasicConstraints(ca=False, path_length=None),
+                critical=True,
+            )
+            .add_extension(
+                x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+                    issuer.certificate.extensions.get_extension_for_class(
+                        x509.SubjectKeyIdentifier
+                    ).value
+                ),
+                critical=False,
+            )
+            .add_extension(
+                x509.SubjectAlternativeName(
+                    [x509.DNSName(domain) for domain in domains]
+                ),
+                critical=True,
+            )
+            .add_extension(
+                x509.ExtendedKeyUsage(
+                    [
+                        ExtendedKeyUsageOID.SERVER_AUTH,
+                    ]
+                ),
+                critical=False,
+            )
         )
 
     @staticmethod
@@ -452,8 +533,10 @@ class TestCA:
         ).add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
                 issuer.certificate.extensions.get_extension_for_class(
-                    x509.SubjectKeyIdentifier).value),
-            critical=False
+                    x509.SubjectKeyIdentifier
+                ).value
+            ),
+            critical=False,
         )
         if rfc82name:
             cert.add_extension(
@@ -461,19 +544,23 @@ class TestCA:
                 critical=True,
             )
         cert.add_extension(
-            x509.ExtendedKeyUsage([
-                ExtendedKeyUsageOID.CLIENT_AUTH,
-            ]),
-            critical=True
+            x509.ExtendedKeyUsage(
+                [
+                    ExtendedKeyUsageOID.CLIENT_AUTH,
+                ]
+            ),
+            critical=True,
         )
         return cert
 
     @staticmethod
-    def _make_ca_credentials(name, key_type: Any,
-                             issuer: Credentials = None,
-                             valid_from: timedelta = timedelta(days=-1),
-                             valid_to: timedelta = timedelta(days=89),
-                             ) -> Credentials:
+    def _make_ca_credentials(
+        name,
+        key_type: Any,
+        issuer: Credentials = None,
+        valid_from: timedelta = timedelta(days=-1),
+        valid_to: timedelta = timedelta(days=89),
+    ) -> Credentials:
         pkey = _private_key(key_type=key_type)
         if issuer is not None:
             issuer_subject = issuer.certificate.subject
@@ -481,48 +568,71 @@ class TestCA:
         else:
             issuer_subject = None
             issuer_key = pkey
-        subject = TestCA._make_x509_name(org_name=name, parent=issuer.subject if issuer else None)
-        csr = TestCA._make_csr(subject=subject,
-                               issuer_subject=issuer_subject, pkey=pkey,
-                               valid_from_delta=valid_from, valid_until_delta=valid_to)
+        subject = TestCA._make_x509_name(
+            org_name=name, parent=issuer.subject if issuer else None
+        )
+        csr = TestCA._make_csr(
+            subject=subject,
+            issuer_subject=issuer_subject,
+            pkey=pkey,
+            valid_from_delta=valid_from,
+            valid_until_delta=valid_to,
+        )
         csr = TestCA._add_ca_usages(csr)
-        cert = csr.sign(private_key=issuer_key,
-                        algorithm=hashes.SHA256(),
-                        backend=default_backend())
+        cert = csr.sign(
+            private_key=issuer_key, algorithm=hashes.SHA256(), backend=default_backend()
+        )
         return Credentials(name=name, cert=cert, pkey=pkey, issuer=issuer)
 
     @staticmethod
-    def _make_server_credentials(name: str, domains: List[str], issuer: Credentials,
-                                 key_type: Any,
-                                 valid_from: timedelta = timedelta(days=-1),
-                                 valid_to: timedelta = timedelta(days=89),
-                                 ) -> Credentials:
+    def _make_server_credentials(
+        name: str,
+        domains: List[str],
+        issuer: Credentials,
+        key_type: Any,
+        valid_from: timedelta = timedelta(days=-1),
+        valid_to: timedelta = timedelta(days=89),
+    ) -> Credentials:
         name = name
         pkey = _private_key(key_type=key_type)
         subject = TestCA._make_x509_name(common_name=name, parent=issuer.subject)
-        csr = TestCA._make_csr(subject=subject,
-                               issuer_subject=issuer.certificate.subject, pkey=pkey,
-                               valid_from_delta=valid_from, valid_until_delta=valid_to)
+        csr = TestCA._make_csr(
+            subject=subject,
+            issuer_subject=issuer.certificate.subject,
+            pkey=pkey,
+            valid_from_delta=valid_from,
+            valid_until_delta=valid_to,
+        )
         csr = TestCA._add_leaf_usages(csr, domains=domains, issuer=issuer)
-        cert = csr.sign(private_key=issuer.private_key,
-                        algorithm=hashes.SHA256(),
-                        backend=default_backend())
+        cert = csr.sign(
+            private_key=issuer.private_key,
+            algorithm=hashes.SHA256(),
+            backend=default_backend(),
+        )
         return Credentials(name=name, cert=cert, pkey=pkey, issuer=issuer)
 
     @staticmethod
-    def _make_client_credentials(name: str,
-                                 issuer: Credentials, email: Optional[str],
-                                 key_type: Any,
-                                 valid_from: timedelta = timedelta(days=-1),
-                                 valid_to: timedelta = timedelta(days=89),
-                                 ) -> Credentials:
+    def _make_client_credentials(
+        name: str,
+        issuer: Credentials,
+        email: Optional[str],
+        key_type: Any,
+        valid_from: timedelta = timedelta(days=-1),
+        valid_to: timedelta = timedelta(days=89),
+    ) -> Credentials:
         pkey = _private_key(key_type=key_type)
         subject = TestCA._make_x509_name(common_name=name, parent=issuer.subject)
-        csr = TestCA._make_csr(subject=subject,
-                               issuer_subject=issuer.certificate.subject, pkey=pkey,
-                               valid_from_delta=valid_from, valid_until_delta=valid_to)
+        csr = TestCA._make_csr(
+            subject=subject,
+            issuer_subject=issuer.certificate.subject,
+            pkey=pkey,
+            valid_from_delta=valid_from,
+            valid_until_delta=valid_to,
+        )
         csr = TestCA._add_client_usages(csr, issuer=issuer, rfc82name=email)
-        cert = csr.sign(private_key=issuer.private_key,
-                        algorithm=hashes.SHA256(),
-                        backend=default_backend())
+        cert = csr.sign(
+            private_key=issuer.private_key,
+            algorithm=hashes.SHA256(),
+            backend=default_backend(),
+        )
         return Credentials(name=name, cert=cert, pkey=pkey, issuer=issuer)

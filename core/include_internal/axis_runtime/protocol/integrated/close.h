@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -10,7 +10,7 @@
 
 // The brief closing flow of the 'integrated' protocol is as follows:
 //
-// 1. If the protocol is being closed from the ten world, ex: the remote is
+// 1. If the protocol is being closed from the aptima world, ex: the remote is
 //    closed.
 //
 // axis_remote_t   axis_connection_t    axis_protocol_t  axis_protocol_integrated_t

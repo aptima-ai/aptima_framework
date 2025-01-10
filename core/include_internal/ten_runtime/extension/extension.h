@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -94,13 +94,13 @@ struct ten_extension_t {
   // Public interface.
   //
   // These public APIs are all async behaviors, that is to say, addon needs to
-  // actively call on_xxx_done function to notify the TEN runtime that it is
+  // actively call on_xxx_done function to notify the APTIMA runtime that it is
   // done. But in some language bindings (such as JavaScript), because of
-  // language-level asynchronous support (such as async/await), TEN runtime can
+  // language-level asynchronous support (such as async/await), APTIMA runtime can
   // only provide async syntax API to addons (such as `async function onCmd`).
   // Addons can write async codes or sync codes in such async syntax API; but in
-  // other language bindings, if TEN runtime wants to help addons do
-  // on_xxx_done action at the end of onXxx, TEN runtime needs to provide sync
+  // other language bindings, if APTIMA runtime wants to help addons do
+  // on_xxx_done action at the end of onXxx, APTIMA runtime needs to provide sync
   // API to addons, such that onXxxSync().
 
   /**
@@ -114,7 +114,7 @@ struct ten_extension_t {
 
   /**
    * @brief Extension can initialize itself in its on_init(). After on_init() is
-   * completed, the TEN runtime will think that the extension can start to
+   * completed, the APTIMA runtime will think that the extension can start to
    * respond to commands/data/audio-frames/video-frames.
    *
    * @note Extension can _not_ interact with other extensions (ex: send_cmd)

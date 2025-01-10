@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to the "LICENSE" file in the root directory for more information.
 //
@@ -267,8 +267,8 @@ static void ten_extension_tester_create_and_start_graph(
                               "{\
            \"nodes\": [{\
               \"type\": \"extension\",\
-              \"name\": \"ten:test_extension\",\
-              \"addon\": \"ten:test_extension\",\
+              \"name\": \"aptima:test_extension\",\
+              \"addon\": \"aptima:test_extension\",\
               \"extension_group\": \"test_extension_group_1\",\
               \"app\": \"localhost\"\
            },{\
@@ -282,7 +282,7 @@ static void ten_extension_tester_create_and_start_graph(
            \"connections\": [{\
              \"app\": \"localhost\",\
              \"extension_group\": \"test_extension_group_1\",\
-             \"extension\": \"ten:test_extension\",\
+             \"extension\": \"aptima:test_extension\",\
              \"cmd\": [{\
                \"name\": \"*\",\
                \"dest\": [{\
@@ -324,7 +324,7 @@ static void ten_extension_tester_create_and_start_graph(
                \"dest\": [{\
                   \"app\": \"localhost\",\
                   \"extension_group\": \"test_extension_group_1\",\
-                  \"extension\": \"ten:test_extension\"\
+                  \"extension\": \"aptima:test_extension\"\
                }]\
              }],\
              \"data\": [{\
@@ -332,7 +332,7 @@ static void ten_extension_tester_create_and_start_graph(
                \"dest\": [{\
                   \"app\": \"localhost\",\
                   \"extension_group\": \"test_extension_group_1\",\
-                  \"extension\": \"ten:test_extension\"\
+                  \"extension\": \"aptima:test_extension\"\
                }]\
              }],\
              \"video_frame\": [{\
@@ -340,7 +340,7 @@ static void ten_extension_tester_create_and_start_graph(
                \"dest\": [{\
                   \"app\": \"localhost\",\
                   \"extension_group\": \"test_extension_group_1\",\
-                  \"extension\": \"ten:test_extension\"\
+                  \"extension\": \"aptima:test_extension\"\
                }]\
              }],\
              \"audio_frame\": [{\
@@ -348,7 +348,7 @@ static void ten_extension_tester_create_and_start_graph(
                \"dest\": [{\
                   \"app\": \"localhost\",\
                   \"extension_group\": \"test_extension_group_1\",\
-                  \"extension\": \"ten:test_extension\"\
+                  \"extension\": \"aptima:test_extension\"\
                }]\
              }]\
            }]\

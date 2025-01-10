@@ -1,5 +1,5 @@
 //
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0.
 // See the LICENSE file for more information.
 //
@@ -183,7 +183,7 @@ axis_buf_t axis_msgpack_serialize_msgs(axis_list_t *msgs, axis_error_t *err) {
 
   if (result) {
     // Note: The data in 'sbuf' would be freed later. However, it's kind of a
-    // hack, because we are expecting the freeing method in TEN would be paired
+    // hack, because we are expecting the freeing method in APTIMA would be paired
     // with the allocating method in msgpack (ex: malloc, new). And it would
     // cause maintainability issues, ex: if the freeing method is axis_FREE, it
     // would cause the internal errors in the axis_MALLOC/axis_FREE mechanism. The

@@ -1,6 +1,6 @@
 //
 // Copyright © 2025 Agora
-// This file is part of TEN Framework, an open source project.
+// This file is part of APTIMA Framework, an open source project.
 // Licensed under the Apache License, Version 2.0, with certain conditions.
 // Refer to https://github.com/aptima-ai/aptima_framework/LICENSE for more
 // information.
@@ -9,25 +9,25 @@
 package default_extension_go
 
 import (
-	"aptima_framework/ten"
+	"aptima_framework/aptima"
 )
 
 type defaultExtension struct {
-	ten.DefaultExtension
+	aptima.DefaultExtension
 
 	counter int
 }
 
-func (ext *defaultExtension) OnConfigure(tenEnv ten.TenEnv) {
+func (ext *defaultExtension) OnConfigure(tenEnv aptima.TenEnv) {
 	tenEnv.LogDebug("OnConfigure")
 	tenEnv.OnConfigureDone()
 }
 
 func (ext *defaultExtension) OnCmd(
-	tenEnv ten.TenEnv,
-	cmd ten.Cmd,
+	tenEnv aptima.TenEnv,
+	cmd aptima.Cmd,
 ) {
-	newData, error := ten.NewData("data")
+	newData, error := aptima.NewData("data")
 	if error != nil {
 		panic("Failed to create data.")
 	}
@@ -53,7 +53,7 @@ func (ext *defaultExtension) OnCmd(
 		panic("Failed to send data.")
 	}
 
-	data2, error := ten.NewData("data2")
+	data2, error := aptima.NewData("data2")
 	if error != nil {
 		panic("Failed to create data.")
 	}
@@ -64,7 +64,7 @@ func (ext *defaultExtension) OnCmd(
 		panic("Failed to send data.")
 	}
 
-	cmdResult, error := ten.NewCmdResult(ten.StatusCodeOk)
+	cmdResult, error := aptima.NewCmdResult(aptima.StatusCodeOk)
 	if error != nil {
 		panic("Failed to create cmd result.")
 	}
@@ -79,8 +79,8 @@ func (ext *defaultExtension) OnCmd(
 }
 
 func (ext *defaultExtension) OnData(
-	tenEnv ten.TenEnv,
-	data ten.Data,
+	tenEnv aptima.TenEnv,
+	data aptima.Data,
 ) {
 	dataName, error := data.GetName()
 	if error != nil {
@@ -131,15 +131,15 @@ func (ext *defaultExtension) OnData(
 	tenEnv.LogDebug("Data process done.")
 }
 
-func newAExtension(name string) ten.Extension {
+func newAExtension(name string) aptima.Extension {
 	return &defaultExtension{counter: 0}
 }
 
 func init() {
 	// Register addon.
-	err := ten.RegisterAddonAsExtension(
+	err := aptima.RegisterAddonAsExtension(
 		"default_extension_go",
-		ten.NewDefaultExtensionAddon(newAExtension),
+		aptima.NewDefaultExtensionAddon(newAExtension),
 	)
 	if err != nil {
 		panic("Failed to register addon.")
